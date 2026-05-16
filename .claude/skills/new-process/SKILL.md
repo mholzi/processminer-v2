@@ -70,10 +70,11 @@ schema section, and a labelled `index.md` with the overview fields left blank
 abbreviation and refuses to overwrite an existing process. Report whatever it
 prints; if it exits with an error, relay that to the user and stop.
 
-**Step 4 — Done.** Confirm to the user: the process is scaffolded at
-`wiki/processes/<slug>/`, every section is present and empty, and it now
-appears in the app's process switcher. Point to the next step — run
-`qer-session` to document it, or a specialist skill for one perspective.
+**Step 4 — Done.** Relay the scaffolder's printed output to the user verbatim
+— that is the deterministic record of exactly what was created. Then confirm
+the process has been **successfully created**, and note the app has switched
+to it automatically. Point to the next step — run `qer-session` to document it
+end to end, or a specialist skill for one perspective.
 
 ## Scope
 

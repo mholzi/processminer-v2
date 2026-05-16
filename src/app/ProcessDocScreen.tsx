@@ -46,6 +46,8 @@ export default function ProcessDocScreen({
     id: d.process.id,
     title: d.process.title,
   }));
+  // Slugs seen so far — to detect a process a skill just scaffolded.
+  const knownSlugs = useRef(new Set(docs.map((d) => d.slug)));
 
   const [section, setSection] = useState("process-steps");
   const [dark, setDark] = useState(false);
@@ -79,6 +81,21 @@ export default function ProcessDocScreen({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  // When a skill scaffolds a new process, the chat turn's router.refresh()
+  // brings it into `docs` — switch the app to it automatically so the user
+  // lands on the process they just created.
+  useEffect(() => {
+    const fresh = docs.find((d) => !knownSlugs.current.has(d.slug));
+    knownSlugs.current = new Set(docs.map((d) => d.slug));
+    if (fresh) {
+      setCurrentSlug(fresh.slug);
+      setSection("overview");
+      setFindings(null);
+      setIngestResult(null);
+      setIngestFile(null);
+    }
+  }, [docs]);
 
   const flatSections = schema.areas.flatMap((a) => a.sections);
 
