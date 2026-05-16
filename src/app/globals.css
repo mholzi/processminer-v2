@@ -531,7 +531,9 @@ body {
 .chat-scroll {
   flex: 1; overflow-y: auto; padding: 10px 14px;
   display: flex; flex-direction: column; gap: 8px;
+  user-select: text; -webkit-user-select: text;
 }
+.chat-msg { user-select: text; -webkit-user-select: text; cursor: text; }
 .chat-empty { font-size: 12px; color: var(--muted); line-height: 1.6; }
 .chat-msg {
   font-size: 13px; line-height: 1.55; padding: 7px 10px;

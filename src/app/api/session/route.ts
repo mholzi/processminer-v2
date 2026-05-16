@@ -7,8 +7,11 @@ import type { NextRequest } from "next/server";
 // Auth is the machine's existing Claude Code login — no API key.
 //
 // One turn per request; multi-turn continuity is the `--resume <sessionId>`
-// the client carries back. `--permission-mode acceptEdits` lets a skill write
-// wiki files without an interactive prompt (there is no terminal to prompt).
+// the client carries back. `--dangerously-skip-permissions` is required: a
+// headless run has no terminal to approve prompts, and the skills both write
+// wiki files and run the Python helper scripts (Bash) — so all permission
+// checks must be skipped. This is acceptable here: a local, internal tool
+// the user runs on their own machine.
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -35,8 +38,7 @@ export async function POST(req: NextRequest) {
     message,
     "--output-format",
     "json",
-    "--permission-mode",
-    "acceptEdits",
+    "--dangerously-skip-permissions",
   ];
   if (sessionId) args.push("--resume", sessionId);
 
