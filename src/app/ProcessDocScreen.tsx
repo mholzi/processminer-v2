@@ -236,13 +236,28 @@ export default function ProcessDocScreen({
     );
   }
 
-  // Switch the documented process. Findings are process-specific but now
-  // live in doc.lint, so nothing to clear; the chat (a general assistant)
-  // is kept.
+  // Switch the documented process. A different process gets a fresh
+  // assistant session — drop the claude session id and the transcript — and
+  // a deterministic welcome message naming the process now loaded. Blocked
+  // while a turn is running, so an in-flight reply can't land in the new
+  // process's transcript.
   function switchProcess(slug: string) {
-    if (slug === currentSlug) return;
+    if (slug === currentSlug || chatPending) return;
+    const next = docs.find((d) => d.slug === slug);
     setCurrentSlug(slug);
     setSection("process-steps");
+    setChatSessionId(null);
+    setMessages(
+      next
+        ? [
+            {
+              id: mid(),
+              role: "agent",
+              text: `Loaded **${next.process.title}** (${next.process.id}). I've started a fresh assistant session for this process — ask me to document it, run a lint pass, or work on any element.`,
+            },
+          ]
+        : [],
+    );
   }
 
   // New process — opens the chat and triggers the new-process skill.

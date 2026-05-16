@@ -71,10 +71,19 @@ abbreviation and refuses to overwrite an existing process. Report whatever it
 prints; if it exits with an error, relay that to the user and stop.
 
 **Step 4 — Done.** Relay the scaffolder's printed output to the user verbatim
-— that is the deterministic record of exactly what was created. Then confirm
-the process has been **successfully created**, and note the app has switched
-to it automatically. Point to the next step — run `qer-session` to document it
-end to end, or a specialist skill for one perspective.
+— that is the deterministic record of exactly what was created. Then close
+with this **exact template**, substituting `{process}`:
+
+> **{process}** has been successfully created, and the app has switched to it.
+>
+> The process is empty — every section is ready to be filled. The fastest way
+> to start is to **upload a process document**: click **⬆ Upload document** in
+> the top bar and drag in a PDF, Word or Markdown file. I'll review it,
+> summarise it, and extract its content into the wiki.
+>
+> Prefer a guided interview? Just ask me to run a documentation session instead.
+
+Use this wording verbatim — do not improvise the closing.
 
 ## Scope
 
