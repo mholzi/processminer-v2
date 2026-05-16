@@ -631,26 +631,38 @@ body {
 }
 .finding-els-label { font-size: 11px; color: var(--muted); }
 
-/* ---- Document ingest ---- */
-.ingest-doc {
+/* ---- Document upload modal ---- */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0, 0, 0, .42);
+}
+.modal {
+  width: min(440px, 92vw);
   border: 1px solid var(--line); border-radius: var(--r-md);
-  background: var(--surface); padding: 15px 17px; margin-bottom: 16px;
+  background: var(--surface); padding: 20px 22px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .28);
 }
-.ingest-doc-head {
-  display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+.modal-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+.modal-text {
+  font-size: 13px; line-height: 1.6; color: var(--muted); margin-bottom: 14px;
 }
-.ingest-file { font-size: 14px; font-weight: 600; }
-.ingest-tag {
-  font-family: var(--mono); font-size: 9px; font-weight: 600;
-  text-transform: uppercase; letter-spacing: .04em;
-  border-radius: 3px; padding: 1px 6px;
-  color: var(--accent); background: var(--accent-soft); border: 1px solid var(--line);
-}
-.ingest-summary { font-size: 13px; line-height: 1.65; }
-.ingest-processing {
+.upload-drop {
   border: 1px dashed var(--line); border-radius: var(--r-md);
-  padding: 22px 18px; background: var(--surface);
-  font-size: 14px; color: var(--muted);
+  padding: 30px 18px; text-align: center;
+  font-size: 13px; color: var(--muted); cursor: pointer;
+  transition: border-color .12s, background .12s;
+}
+.upload-drop:hover { border-color: var(--accent); }
+.upload-drop.dragging {
+  border-color: var(--accent); background: var(--accent-soft); color: var(--text);
+}
+.upload-drop.busy { cursor: default; opacity: .7; }
+.modal-error {
+  margin-top: 12px; font-size: 12px; color: var(--lo);
+}
+.modal-actions {
+  display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px;
 }
 
 .type-group-head {

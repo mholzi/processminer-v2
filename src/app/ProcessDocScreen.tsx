@@ -6,23 +6,16 @@ import type { Schema, ProcessDoc } from "@/lib/wiki";
 import { sectionForId } from "@/lib/nav";
 import { STUB_FINDINGS, type LintFinding } from "@/lib/lint";
 import { checkConformance } from "@/lib/conformance";
-import { stubIngest } from "@/lib/ingest";
 import ElementCard from "@/components/ElementCard";
 import RaciMatrix from "@/components/RaciMatrix";
 import ProcessFlow from "@/components/ProcessFlow";
 import OverviewPanel from "@/components/OverviewPanel";
 import AgentChat, { type ChatMessage } from "@/components/AgentChat";
 import ReviewPanel from "@/components/ReviewPanel";
-import IngestPanel from "@/components/IngestPanel";
+import UploadModal from "@/components/UploadModal";
 import CommandPalette from "@/components/CommandPalette";
 import ApprovalBar from "@/components/ApprovalBar";
 import ProcessSwitcher from "@/components/ProcessSwitcher";
-
-type IngestState = {
-  fileName: string;
-  summary: string;
-  discrepancies: LintFinding[];
-};
 
 const mid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
@@ -61,11 +54,9 @@ export default function ProcessDocScreen({
   const [findings, setFindings] = useState<LintFinding[] | null>(null);
   const [linting, setLinting] = useState(false);
 
-  // Document upload + stubbed AI extraction.
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [ingesting, setIngesting] = useState(false);
-  const [ingestFile, setIngestFile] = useState<string | null>(null);
-  const [ingestResult, setIngestResult] = useState<IngestState | null>(null);
+  // Document upload — the modal saves to raw-sources/, then the chat runs
+  // the document-ingest skill on the saved file.
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
 
   // ⌘K search palette + the real "saved" indicator.
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -92,8 +83,6 @@ export default function ProcessDocScreen({
       setCurrentSlug(fresh.slug);
       setSection("overview");
       setFindings(null);
-      setIngestResult(null);
-      setIngestFile(null);
     }
   }, [docs]);
 
@@ -213,15 +202,13 @@ export default function ProcessDocScreen({
     }, 1300);
   }
 
-  // Switch the documented process. Lint/ingest results are process-specific,
-  // so they are cleared; the chat (a general assistant) is kept.
+  // Switch the documented process. Lint results are process-specific, so
+  // they are cleared; the chat (a general assistant) is kept.
   function switchProcess(slug: string) {
     if (slug === currentSlug) return;
     setCurrentSlug(slug);
     setSection("process-steps");
     setFindings(null);
-    setIngestResult(null);
-    setIngestFile(null);
   }
 
   // New process — opens the chat and triggers the new-process skill.
@@ -230,30 +217,14 @@ export default function ProcessDocScreen({
     handleSend("I want to create a new process.");
   }
 
-  // Document upload — pick a file, then run a stubbed AI extraction that
-  // summarises it and diffs it against the wiki.
-  function onFileChosen(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    e.target.value = ""; // allow re-picking the same file
-    if (!file) return;
-    setIngestFile(file.name);
-    setIngesting(true);
-    setIngestResult(null);
+  // Document upload — once the modal has saved the file into raw-sources/,
+  // open the chat and run the document-ingest skill on it.
+  function onUploaded(path: string) {
+    setUploadModalOpen(false);
     setChatOpen(true);
-    setSection("__ingest");
-    setTimeout(() => {
-      const result = stubIngest(file.name);
-      setIngestResult({ fileName: file.name, ...result });
-      setIngesting(false);
-      setMessages((m) => [
-        ...m,
-        {
-          id: mid(),
-          role: "agent",
-          text: `Ingested “${file.name}”. I extracted the document and diffed it against the COB-003 wiki — ${result.discrepancies.length} discrepancies need clarifying. The summary and the discrepancy list are in the Document panel.`,
-        },
-      ]);
-    }, 1600);
+    handleSend(
+      `A document has been uploaded to ${path}. Run the document-ingest skill on it for the "${doc.process.title}" process.`,
+    );
   }
 
   // Deep dive — the hook that will trigger the QER brainstorming skill.
@@ -325,28 +296,12 @@ export default function ProcessDocScreen({
         >
           ⌕ Search <kbd className="kbd">⌘K</kbd>
         </button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".pdf,.doc,.docx,.txt,.md,.rtf"
-          style={{ display: "none" }}
-          onChange={onFileChosen}
-        />
         <button
           className="lint-btn"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={ingesting}
+          onClick={() => setUploadModalOpen(true)}
         >
-          {ingesting ? "Extracting…" : "⬆ Upload document"}
+          ⬆ Upload document
         </button>
-        {ingestResult && (
-          <button
-            className="lint-btn"
-            onClick={() => setSection("__ingest")}
-          >
-            Document
-          </button>
-        )}
         <button
           className="lint-btn"
           onClick={() => (findings ? setSection("__review") : runLint())}
@@ -436,38 +391,6 @@ export default function ProcessDocScreen({
                   onRerun={runLint}
                   linting={linting}
                 />
-              )}
-            </>
-          ) : section === "__ingest" ? (
-            <>
-              <div className="canvas-head">
-                <h1>Document Ingest</h1>
-                <div className="sub">
-                  An uploaded document, AI-extracted and diffed against the
-                  COB-003 wiki — resolve the discrepancies it raises.
-                </div>
-              </div>
-              {ingesting ? (
-                <div className="ingest-processing">
-                  Extracting “{ingestFile}” and diffing it against the wiki…
-                </div>
-              ) : ingestResult ? (
-                <IngestPanel
-                  fileName={ingestResult.fileName}
-                  summary={ingestResult.summary}
-                  discrepancies={ingestResult.discrepancies}
-                  onGoToElement={goToElement}
-                  onDeepDive={(f) =>
-                    deepDive({ id: f.id, title: f.title, kind: "finding" })
-                  }
-                />
-              ) : (
-                <div className="empty-state">
-                  <p>No document uploaded yet.</p>
-                  <p className="empty-hint">
-                    Use “Upload document” in the top bar to ingest one.
-                  </p>
-                </div>
               )}
             </>
           ) : (
@@ -574,6 +497,13 @@ export default function ProcessDocScreen({
         sections={flatSections}
         onPickElement={goToElement}
         onPickSection={setSection}
+      />
+
+      <UploadModal
+        open={uploadModalOpen}
+        slug={currentSlug}
+        onClose={() => setUploadModalOpen(false)}
+        onUploaded={onUploaded}
       />
     </>
   );
