@@ -19,8 +19,9 @@ In QA mode, flag any code that doesn't match DESIGN.md.
 
 ## Agent Architecture
 Read SKILLS.md before building or changing any agent/skill behaviour.
-It defines the five perspective specialists, the shared functional engine,
-the deterministic orchestrator, and the approval model.
+The skills are Claude Code skills (SKILL.md files) run in the CLI — not app
+code. SKILLS.md defines the five perspective specialists, the shared functional
+engine, the step-file orchestration workflow, and the approval model.
 Do not deviate without explicit user approval.
 
 ## Skill routing

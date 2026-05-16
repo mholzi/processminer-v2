@@ -98,6 +98,16 @@ Erzeugt aus `/plan-ceo-review` am 2026-05-16. Quelle: CEO-Plan unter
 - **Warum:** Hält das Mandat warm. v1 hat bereits management-summary-Templates.
 - **Priorität:** P2 · **Effort:** human ~S / CC ~S.
 
+### Wiki-Assistant — Streaming-Antworten
+- **Was:** Den Wiki-Assistant von einer blockierenden Server-Action auf einen
+  Streaming-Route-Handler umstellen — die Antwort erscheint Wort für Wort.
+- **Warum:** In Slice 2a (Entscheidung D2 aus /plan-eng-review) bewusst
+  zurückgestellt, um den Slice minimal zu halten; die blockierende Variante
+  geht zuerst live. Streaming ist die erwartete Chat-UX und das Muster, das die
+  orchestrierten Skills später ohnehin brauchen.
+- **Priorität:** P2 · **Effort:** human ~S / CC ~S · Quelle: /plan-eng-review
+  2026-05-16 (Slice-2a-Plan).
+
 ## P3 — Folge-Phase
 
 ### E3 — Living Docs (Drift-Detection)
