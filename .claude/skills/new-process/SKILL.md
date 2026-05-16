@@ -48,33 +48,19 @@ Offer **[Y] Yes — accept** / **[E] Edit — I have corrections**. On [E], appl
 the corrections and show all three again; loop until the user accepts. Create
 nothing until they confirm.
 
-**Step 3 — Scaffold.** Once confirmed:
+**Step 3 — Scaffold.** Once the user confirms, run the scaffolder. It is a
+Python script that does the file creation deterministically — do **not** create
+these files by hand:
 
-1. If `wiki/processes/<slug>/` already exists, stop and report it — never
-   overwrite an existing process.
-2. Read `schema/process-schema.json`. For every section across all four areas
-   **except `overview`**, create `wiki/processes/<slug>/<section-id>/` with an
-   empty `.gitkeep` file inside it.
-3. Write `wiki/processes/<slug>/index.md`:
-   ```
-   ---
-   id: <PROC>
-   type: process
-   title: <the process name>
-   status: draft
-   description: <the confirmed one-line description>
-   processOwner:
-   trigger:
-   frequency:
-   scopeIn:
-   scopeOut:
-   processInput:
-   processOutput:
-   docStatus: empty
-   ---
-   ```
-   The overview fields are intentionally **blank** — `qer-session`'s OVERVIEW
-   step fills them later. The body is empty.
+```
+python3 scripts/wiki/scaffold_process.py <slug> <PROC> "<title>" "<description>"
+```
+
+The script creates `wiki/processes/<slug>/`, a `.gitkeep`'d folder for every
+schema section, and a labelled `index.md` with the overview fields left blank
+(`qer-session`'s OVERVIEW step fills them later). It validates the slug and
+abbreviation and refuses to overwrite an existing process. Report whatever it
+prints; if it exits with an error, relay that to the user and stop.
 
 **Step 4 — Done.** Confirm to the user: the process is scaffolded at
 `wiki/processes/<slug>/`, every section is present and empty, and it now
