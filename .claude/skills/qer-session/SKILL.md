@@ -52,10 +52,10 @@ Dispatch in this order. Skip any not-built specialist.
 | Perspective | Skill | Status | Owns |
 |---|---|---|---|
 | Process | `process-specialist` | built | process-step, exception, pain-point, process-gap, role, metric |
-| Control & Compliance | `control-specialist` | not built yet | control, regulation, compliance-gap, audit-finding |
-| Client Journey | `client-journey-specialist` | not built yet | cx-touchpoint, moment, cx-channel, friction-point |
-| Innovation | `innovation-analyst` | not built yet | market-trend, innovation-idea, innovation-risk, target-state, transformation-decision, gap |
-| IT Architecture | `it-architect` | not built yet | system, integration |
+| Control & Compliance | `control-compliance-specialist` | built | control, regulation, compliance-gap, audit-finding |
+| Client Journey | `client-journey-specialist` | built | cx-touchpoint, moment, cx-channel, friction-point |
+| Innovation | `innovation-analyst` | built | market-trend, innovation-idea, innovation-risk, target-state, transformation-decision, gap |
+| IT Architecture | `it-architect` | built | system, integration |
 
 ## Principles
 
@@ -125,9 +125,9 @@ For each **built** specialist in registry order:
    perspective, or pause here?" The SME may stop at any point; a session need
    not cover every perspective in one sitting.
 
-Today only `process-specialist` is built, so a session documents the Process
-perspective and then moves to Step 4. As each further specialist is built it
-joins the registry and this step dispatches it too — no other change needed.
+All five specialists are built, so a full session documents every perspective
+in registry order — Process, then Control & Compliance, Client Journey,
+Innovation, IT Architecture — checkpointing with the SME between each.
 
 ## Step 4 — CROSS-PERSPECTIVE REVIEW
 

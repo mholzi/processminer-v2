@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Schema, ProcessDoc } from "@/lib/wiki";
 import { sectionForId } from "@/lib/nav";
-import { STUB_FINDINGS, type LintFinding } from "@/lib/lint";
-import { checkConformance } from "@/lib/conformance";
 import ElementCard from "@/components/ElementCard";
 import RaciMatrix from "@/components/RaciMatrix";
 import ProcessFlow from "@/components/ProcessFlow";
@@ -51,8 +49,12 @@ export default function ProcessDocScreen({
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [chatSessionId, setChatSessionId] = useState<string | null>(null);
   const [chatPending, setChatPending] = useState(false);
-  const [findings, setFindings] = useState<LintFinding[] | null>(null);
+  // Live activity line while a turn runs — updated from the SSE stream.
+  const [chatActivity, setChatActivity] = useState<string | null>(null);
   const [linting, setLinting] = useState(false);
+  // Findings come from the last run-lint pass — wiki/processes/<slug>/lint.json,
+  // read server-side into doc.lint. Re-running the skill refreshes it.
+  const findings = doc.lint?.findings ?? null;
 
   // Document upload — the modal saves to raw-sources/, then the chat runs
   // the document-ingest skill on the saved file.
@@ -82,7 +84,6 @@ export default function ProcessDocScreen({
     if (fresh) {
       setCurrentSlug(fresh.slug);
       setSection("overview");
-      setFindings(null);
     }
   }, [docs]);
 
@@ -131,31 +132,69 @@ export default function ProcessDocScreen({
 
   // The Process Assistant chat — backed by the local `claude` CLI via
   // /api/session. Each turn runs claude headless in the repo, so it can
-  // invoke the skills in .claude/skills/ and read/write the wiki.
-  function handleSend(text: string) {
+  // invoke the skills in .claude/skills/ and read/write the wiki. The route
+  // streams Server-Sent Events: `progress` lines drive the live activity
+  // line, `done` carries the final reply, `error` carries a failure.
+  function handleSend(text: string, opts?: { onComplete?: () => void }) {
     setMessages((m) => [...m, { id: mid(), role: "user", text }]);
     setChatPending(true);
+    setChatActivity(null);
+
+    type SessionEvent =
+      | { type: "progress"; text: string }
+      | { type: "done"; reply?: string; sessionId?: string; isError?: boolean }
+      | { type: "error"; error: string; sessionId?: string };
+
     fetch("/api/session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: text, sessionId: chatSessionId }),
     })
-      .then((r) => r.json())
-      .then((data: { reply?: string; sessionId?: string; error?: string }) => {
-        if (data.error) {
-          setMessages((m) => [
-            ...m,
-            { id: mid(), role: "agent", text: `⚠ ${data.error}` },
-          ]);
-          return;
+      .then(async (res) => {
+        if (!res.body) throw new Error("Keine Antwort vom Server.");
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buf = "";
+
+        const apply = (evt: SessionEvent) => {
+          if (evt.type === "progress") {
+            setChatActivity(evt.text);
+          } else if (evt.type === "done") {
+            if (evt.sessionId) setChatSessionId(evt.sessionId);
+            setMessages((m) => [
+              ...m,
+              { id: mid(), role: "agent", text: evt.reply || "(no reply)" },
+            ]);
+            // a skill may have written wiki files — re-read the doc view
+            router.refresh();
+          } else if (evt.type === "error") {
+            if (evt.sessionId) setChatSessionId(evt.sessionId);
+            setMessages((m) => [
+              ...m,
+              { id: mid(), role: "agent", text: `⚠ ${evt.error}` },
+            ]);
+          }
+        };
+
+        for (;;) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buf += decoder.decode(value, { stream: true });
+          let sep: number;
+          while ((sep = buf.indexOf("\n\n")) !== -1) {
+            const frame = buf.slice(0, sep);
+            buf = buf.slice(sep + 2);
+            const line = frame.startsWith("data:")
+              ? frame.slice(5).trim()
+              : frame.trim();
+            if (!line) continue;
+            try {
+              apply(JSON.parse(line) as SessionEvent);
+            } catch {
+              /* partial / non-JSON frame — ignore */
+            }
+          }
         }
-        if (data.sessionId) setChatSessionId(data.sessionId);
-        setMessages((m) => [
-          ...m,
-          { id: mid(), role: "agent", text: data.reply || "(no reply)" },
-        ]);
-        // a skill may have written wiki files this turn — re-read the doc view
-        router.refresh();
       })
       .catch((e: unknown) => {
         setMessages((m) => [
@@ -167,7 +206,11 @@ export default function ProcessDocScreen({
           },
         ]);
       })
-      .finally(() => setChatPending(false));
+      .finally(() => {
+        setChatPending(false);
+        setChatActivity(null);
+        opts?.onComplete?.();
+      });
   }
 
   // Restart the assistant session — clear the transcript and drop the claude
@@ -178,37 +221,28 @@ export default function ProcessDocScreen({
     setChatSessionId(null);
   }
 
+  // Lint — invoke the run-lint skill via the chat. It checks conformance,
+  // sweeps the wiki from all five perspectives, writes lint.json and re-opens
+  // implicated approvals. router.refresh() then brings the findings into
+  // doc.lint, which the Review panel renders.
   function runLint() {
-    if (linting) return;
-    setLinting(true);
+    if (linting || chatPending) return;
     setChatOpen(true);
-    setTimeout(() => {
-      const conformance = checkConformance(doc.elements, schema);
-      const found = [...conformance, ...STUB_FINDINGS];
-      const c = conformance.length;
-      const d = STUB_FINDINGS.filter((f) => f.kind === "discrepancy").length;
-      const q = STUB_FINDINGS.length - d;
-      setFindings(found);
-      setLinting(false);
-      setSection("__review");
-      setMessages((m) => [
-        ...m,
-        {
-          id: mid(),
-          role: "agent",
-          text: `Lint pass complete — I checked all ${doc.elements.length} elements across every section.\n\n• ${c} template-conformance issues — elements whose blocks don't match their schema template (this check is exact)\n• ${d} cross-section discrepancies\n• ${q} clarifying questions\n\nThey're in the Review panel — click any element ID to jump straight to it.`,
-        },
-      ]);
-    }, 1300);
+    setLinting(true);
+    setSection("__review");
+    handleSend(
+      `Run the run-lint skill on the process with slug "${currentSlug}".`,
+      { onComplete: () => setLinting(false) },
+    );
   }
 
-  // Switch the documented process. Lint results are process-specific, so
-  // they are cleared; the chat (a general assistant) is kept.
+  // Switch the documented process. Findings are process-specific but now
+  // live in doc.lint, so nothing to clear; the chat (a general assistant)
+  // is kept.
   function switchProcess(slug: string) {
     if (slug === currentSlug) return;
     setCurrentSlug(slug);
     setSection("process-steps");
-    setFindings(null);
   }
 
   // New process — opens the chat and triggers the new-process skill.
@@ -377,13 +411,14 @@ export default function ProcessDocScreen({
               <div className="canvas-head">
                 <h1>Lint Review</h1>
                 <div className="sub">
-                  Consistency findings across the whole COB-003 wiki —
-                  clarifying questions and discrepancies for the SME to resolve.
+                  Consistency findings across the {doc.process.title} wiki —
+                  conformance issues, discrepancies and clarifying questions
+                  for the SME to resolve.
                 </div>
               </div>
-              {findings && (
+              {doc.lint ? (
                 <ReviewPanel
-                  findings={findings}
+                  report={doc.lint}
                   onGoToElement={goToElement}
                   onDeepDive={(f) =>
                     deepDive({ id: f.id, title: f.title, kind: "finding" })
@@ -391,6 +426,21 @@ export default function ProcessDocScreen({
                   onRerun={runLint}
                   linting={linting}
                 />
+              ) : linting ? (
+                <div className="empty-state">
+                  <p>Running the lint pass…</p>
+                  <p className="empty-hint">
+                    The run-lint skill is sweeping the wiki — watch the
+                    assistant chat for live progress.
+                  </p>
+                </div>
+              ) : (
+                <div className="empty-state">
+                  <p>No lint pass has been run for this process yet.</p>
+                  <p className="empty-hint">
+                    Use “⊛ Run lint” in the top bar to run one.
+                  </p>
+                </div>
               )}
             </>
           ) : (
@@ -483,6 +533,7 @@ export default function ProcessDocScreen({
           messages={messages}
           onSend={handleSend}
           pending={chatPending}
+          activity={chatActivity}
           onRestart={restartSession}
           onRunLint={runLint}
           linting={linting}

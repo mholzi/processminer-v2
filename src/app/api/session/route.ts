@@ -6,6 +6,11 @@ import type { NextRequest } from "next/server";
 // discovers the skills in `.claude/skills/` and reads/writes the wiki files.
 // Auth is the machine's existing Claude Code login — no API key.
 //
+// The CLI runs with `--output-format stream-json`: it emits one JSON event
+// per line as work happens (tool calls, the final result). We forward those
+// to the browser as Server-Sent Events so the chat can show a live activity
+// line during a long skill run — document-ingest can take many minutes.
+//
 // One turn per request; multi-turn continuity is the `--resume <sessionId>`
 // the client carries back. `--dangerously-skip-permissions` is required: a
 // headless run has no terminal to approve prompts, and the skills both write
@@ -15,8 +20,35 @@ import type { NextRequest } from "next/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+// A skill turn can be long — document-ingest extracts dozens of elements,
+// each via the next_id → write_element → check_conformance scripts. Allow
+// generous headroom; override with SESSION_TURN_TIMEOUT_MS if needed.
+export const maxDuration = 1800;
 
-const TURN_TIMEOUT_MS = 180_000;
+const TURN_TIMEOUT_MS = Number(process.env.SESSION_TURN_TIMEOUT_MS) || 1_800_000;
+
+// Turn a CLI tool call into a short, human-readable activity line.
+function describeTool(name: string, input: Record<string, unknown>): string {
+  const base = (p: unknown) => String(p ?? "").split("/").pop() || "";
+  if (name === "Bash") {
+    const cmd = String(input?.command ?? "");
+    if (cmd.includes("write_element.py")) return "✏ Schreibt Wiki-Element …";
+    if (cmd.includes("next_id.py")) return "Vergibt Element-ID …";
+    if (cmd.includes("check_conformance.py")) return "Prüft Konformität …";
+    if (cmd.includes("add_source.py")) return "Erfasst Dokument als Quelle …";
+    if (cmd.includes("scaffold_process.py")) return "Legt Prozess an …";
+    if (cmd.includes("derive_process_meta.py"))
+      return "Leitet Prozess-Metadaten ab …";
+    return `Führt Befehl aus: ${cmd.slice(0, 48)}…`;
+  }
+  if (name === "Read") return `Liest ${base(input?.file_path)}`;
+  if (name === "Write") return `Schreibt ${base(input?.file_path)}`;
+  if (name === "Edit") return `Bearbeitet ${base(input?.file_path)}`;
+  if (name === "Skill") return `Startet Skill „${String(input?.skill ?? "")}“`;
+  if (name === "Grep" || name === "Glob") return "Durchsucht Dateien …";
+  if (name === "Task" || name === "Agent") return "Startet Teil-Agent …";
+  return `${name} …`;
+}
 
 export async function POST(req: NextRequest) {
   let body: { message?: unknown; sessionId?: unknown };
@@ -37,78 +69,130 @@ export async function POST(req: NextRequest) {
     "-p",
     message,
     "--output-format",
-    "json",
+    "stream-json",
+    "--verbose",
     "--dangerously-skip-permissions",
   ];
   if (sessionId) args.push("--resume", sessionId);
 
-  return new Promise<Response>((resolve) => {
-    const child = spawn("claude", args, { cwd: process.cwd() });
-    let stdout = "";
-    let stderr = "";
-    let settled = false;
+  const stream = new ReadableStream<Uint8Array>({
+    start(controller) {
+      const enc = new TextEncoder();
+      const child = spawn("claude", args, { cwd: process.cwd() });
 
-    const finish = (res: Response) => {
-      if (settled) return;
-      settled = true;
-      clearTimeout(timer);
-      resolve(res);
-    };
+      let stdoutBuf = "";
+      let stderr = "";
+      let liveSession = sessionId;
+      let resultSent = false;
+      let closed = false;
 
-    const timer = setTimeout(() => {
-      child.kill("SIGKILL");
-      finish(
-        Response.json(
-          { error: "The assistant took too long and was stopped." },
-          { status: 504 },
-        ),
-      );
-    }, TURN_TIMEOUT_MS);
+      const send = (obj: unknown) => {
+        if (closed) return;
+        try {
+          controller.enqueue(enc.encode(`data: ${JSON.stringify(obj)}\n\n`));
+        } catch {
+          /* controller already closed */
+        }
+      };
+      const close = () => {
+        if (closed) return;
+        closed = true;
+        clearTimeout(timer);
+        try {
+          controller.close();
+        } catch {
+          /* already closed */
+        }
+      };
 
-    child.stdout.on("data", (d) => (stdout += d));
-    child.stderr.on("data", (d) => (stderr += d));
+      const timer = setTimeout(() => {
+        child.kill("SIGKILL");
+        const tail = (stderr || stdoutBuf).trim().slice(-600);
+        const mins = Math.round(TURN_TIMEOUT_MS / 60_000);
+        send({
+          type: "error",
+          error:
+            `Der Assistent wurde nach ${mins} Min. gestoppt.` +
+            (tail ? `\n\nLetzte Ausgabe:\n${tail}` : ""),
+          sessionId: liveSession,
+        });
+        close();
+      }, TURN_TIMEOUT_MS);
 
-    child.on("error", (e) => {
-      const hint =
-        "code" in e && (e as NodeJS.ErrnoException).code === "ENOENT"
-          ? "The `claude` CLI is not on the server's PATH."
-          : e.message;
-      finish(
-        Response.json({ error: `Could not start claude: ${hint}` }, { status: 500 }),
-      );
-    });
+      const handleEvent = (evt: Record<string, unknown>) => {
+        if (typeof evt.session_id === "string") liveSession = evt.session_id;
 
-    child.on("close", (code) => {
-      if (code !== 0) {
-        finish(
-          Response.json(
-            { error: stderr.trim() || `claude exited with code ${code}.` },
-            { status: 500 },
-          ),
-        );
-        return;
-      }
-      try {
-        const parsed = JSON.parse(stdout) as {
-          result?: string;
-          session_id?: string;
-          is_error?: boolean;
-        };
-        finish(
-          Response.json({
-            reply: parsed.result ?? "",
-            sessionId: parsed.session_id ?? sessionId,
-            isError: Boolean(parsed.is_error),
-          }),
-        );
-      } catch {
-        finish(
-          Response.json(
-            { error: "Could not parse the assistant's output." },
-            { status: 500 },
-          ),
-        );
-      }
-    });
+        if (evt.type === "assistant") {
+          const msg = evt.message as { content?: unknown[] } | undefined;
+          for (const b of msg?.content ?? []) {
+            const block = b as { type?: string; name?: string; input?: unknown };
+            if (block.type === "tool_use" && block.name) {
+              send({
+                type: "progress",
+                text: describeTool(
+                  block.name,
+                  (block.input as Record<string, unknown>) ?? {},
+                ),
+              });
+            }
+          }
+        } else if (evt.type === "result") {
+          resultSent = true;
+          send({
+            type: "done",
+            reply: typeof evt.result === "string" ? evt.result : "",
+            sessionId: liveSession,
+            isError: Boolean(evt.is_error),
+          });
+          close();
+        }
+      };
+
+      child.stdout.on("data", (d: Buffer) => {
+        stdoutBuf += d.toString();
+        let nl: number;
+        while ((nl = stdoutBuf.indexOf("\n")) !== -1) {
+          const line = stdoutBuf.slice(0, nl).trim();
+          stdoutBuf = stdoutBuf.slice(nl + 1);
+          if (!line) continue;
+          try {
+            handleEvent(JSON.parse(line) as Record<string, unknown>);
+          } catch {
+            /* not a JSON event line — ignore */
+          }
+        }
+      });
+
+      child.stderr.on("data", (d: Buffer) => (stderr += d.toString()));
+
+      child.on("error", (e: NodeJS.ErrnoException) => {
+        const hint =
+          e.code === "ENOENT"
+            ? "Die `claude`-CLI ist nicht im PATH des Servers."
+            : e.message;
+        send({ type: "error", error: `claude konnte nicht starten: ${hint}` });
+        close();
+      });
+
+      child.on("close", (code) => {
+        if (!resultSent) {
+          send({
+            type: "error",
+            error: stderr.trim() || `claude wurde mit Code ${code} beendet.`,
+            sessionId: liveSession,
+          });
+        }
+        close();
+      });
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/event-stream; charset=utf-8",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+      "X-Accel-Buffering": "no",
+    },
   });
 }

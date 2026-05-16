@@ -1,26 +1,29 @@
 "use client";
 
-import type { LintFinding } from "@/lib/lint";
+import type { LintFinding, LintReport } from "@/lib/lint";
 import FindingCard from "./FindingCard";
 
-// Lint review — every finding from the last lint pass, discrepancies first.
+// Lint review — the last `run-lint` pass for the process. Discrepancies
+// first, then structure issues, then clarifying questions.
 export default function ReviewPanel({
-  findings,
+  report,
   onGoToElement,
   onDeepDive,
   onRerun,
   linting,
 }: {
-  findings: LintFinding[];
+  report: LintReport;
   onGoToElement: (id: string) => void;
   onDeepDive: (finding: LintFinding) => void;
   onRerun: () => void;
   linting: boolean;
 }) {
+  const { findings } = report;
   const discrepancies = findings.filter((f) => f.kind === "discrepancy");
   const conformance = findings.filter((f) => f.kind === "conformance");
   const questions = findings.filter((f) => f.kind === "question");
   const ordered = [...discrepancies, ...conformance, ...questions];
+  const linted = new Date(report.generatedAt);
 
   return (
     <div className="review">
@@ -41,15 +44,32 @@ export default function ReviewPanel({
           {linting ? "Linting…" : "Re-run lint"}
         </button>
       </div>
+      <div className="review-linted">
+        Last linted{" "}
+        {linted.toLocaleString([], {
+          dateStyle: "medium",
+          timeStyle: "short",
+        })}
+      </div>
 
-      {ordered.map((f) => (
-        <FindingCard
-          key={f.id}
-          finding={f}
-          onGoToElement={onGoToElement}
-          onDeepDive={onDeepDive}
-        />
-      ))}
+      {findings.length === 0 ? (
+        <div className="empty-state">
+          <p>No findings — all clear.</p>
+          <p className="empty-hint">
+            Every element conforms to its template and the wiki is consistent
+            across all five perspectives.
+          </p>
+        </div>
+      ) : (
+        ordered.map((f) => (
+          <FindingCard
+            key={f.id}
+            finding={f}
+            onGoToElement={onGoToElement}
+            onDeepDive={onDeepDive}
+          />
+        ))
+      )}
     </div>
   );
 }

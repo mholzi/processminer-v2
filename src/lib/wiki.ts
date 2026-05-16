@@ -8,6 +8,7 @@
 // `key: value`, where a value wrapped in [ ] is a comma-separated list.
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import type { LintReport } from "./lint";
 
 const ROOT = process.cwd();
 const WIKI_DIR = join(ROOT, "wiki", "processes");
@@ -80,6 +81,8 @@ export interface ProcessDoc {
   slug: string;
   process: WikiPage;
   elements: WikiPage[];
+  /** Result of the last `run-lint` pass, if one has been run. */
+  lint?: LintReport;
 }
 
 /** Parse `key: value` frontmatter. `[a, b]` becomes a string array. */
@@ -167,5 +170,15 @@ export function getProcess(slug: string): ProcessDoc | null {
       }
     }
   }
-  return { slug, process, elements };
+  // The last lint pass, if `run-lint` has written one.
+  let lint: LintReport | undefined;
+  const lintPath = join(dir, "lint.json");
+  if (existsSync(lintPath)) {
+    try {
+      lint = JSON.parse(readFileSync(lintPath, "utf8")) as LintReport;
+    } catch {
+      lint = undefined;
+    }
+  }
+  return { slug, process, elements, lint };
 }

@@ -18,6 +18,7 @@ export default function AgentChat({
   messages,
   onSend,
   pending,
+  activity,
   onRestart,
   onRunLint,
   linting,
@@ -28,6 +29,7 @@ export default function AgentChat({
   messages: ChatMessage[];
   onSend: (text: string) => void;
   pending: boolean;
+  activity?: string | null;
   onRestart: () => void;
   onRunLint: () => void;
   linting: boolean;
@@ -39,7 +41,7 @@ export default function AgentChat({
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
-  }, [messages, linting, pending]);
+  }, [messages, linting, pending, activity]);
 
   if (!open) {
     return (
@@ -97,7 +99,12 @@ export default function AgentChat({
             <ReactMarkdown>{m.text}</ReactMarkdown>
           </div>
         ))}
-        {pending && <div className="chat-msg agent pending">Working…</div>}
+        {pending && (
+          <div className="chat-msg agent pending">
+            <span className="chat-activity-dot" />
+            {activity || "Working…"}
+          </div>
+        )}
         {linting && (
           <div className="chat-msg agent pending">Linting the wiki…</div>
         )}
