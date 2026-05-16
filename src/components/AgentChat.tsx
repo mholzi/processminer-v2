@@ -17,6 +17,7 @@ export default function AgentChat({
   messages,
   onSend,
   pending,
+  onRestart,
   onRunLint,
   linting,
   findingCount,
@@ -26,6 +27,7 @@ export default function AgentChat({
   messages: ChatMessage[];
   onSend: (text: string) => void;
   pending: boolean;
+  onRestart: () => void;
   onRunLint: () => void;
   linting: boolean;
   findingCount: number | null;
@@ -64,6 +66,14 @@ export default function AgentChat({
     <aside className="rail rail-r chat">
       <div className="chat-head">
         <span className="chat-title">Process Assistant</span>
+        <button
+          className="chat-restart"
+          onClick={onRestart}
+          disabled={pending || (messages.length === 0)}
+          title="Restart the assistant session — clears this conversation"
+        >
+          ↻
+        </button>
         <button
           className="chat-collapse"
           onClick={onToggle}

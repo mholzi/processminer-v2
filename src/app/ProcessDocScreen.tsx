@@ -164,6 +164,14 @@ export default function ProcessDocScreen({
       .finally(() => setChatPending(false));
   }
 
+  // Restart the assistant session — clear the transcript and drop the claude
+  // session id, so the next message starts a fresh `claude` session.
+  function restartSession() {
+    if (chatPending) return;
+    setMessages([]);
+    setChatSessionId(null);
+  }
+
   function runLint() {
     if (linting) return;
     setLinting(true);
@@ -535,6 +543,7 @@ export default function ProcessDocScreen({
           messages={messages}
           onSend={handleSend}
           pending={chatPending}
+          onRestart={restartSession}
           onRunLint={runLint}
           linting={linting}
           findingCount={findings ? findings.length : null}

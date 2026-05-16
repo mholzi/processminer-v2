@@ -512,11 +512,18 @@ body {
   padding: 12px 14px 8px; border-bottom: 1px solid var(--line);
 }
 .chat-title { font-size: 13px; font-weight: 600; }
-.chat-collapse {
-  margin-left: auto; border: 1px solid var(--line); background: var(--surface);
+.chat-collapse,
+.chat-restart {
+  border: 1px solid var(--line); background: var(--surface);
   color: var(--muted); border-radius: var(--r-sm); cursor: pointer;
   width: 24px; height: 24px; font-size: 12px;
 }
+.chat-restart { margin-left: auto; }
+.chat-collapse:hover,
+.chat-restart:hover:not(:disabled) {
+  border-color: var(--accent); color: var(--accent);
+}
+.chat-restart:disabled { opacity: .4; cursor: not-allowed; }
 .chat-sub {
   font-family: var(--mono); font-size: 10px; color: var(--muted);
   padding: 7px 14px 0;
