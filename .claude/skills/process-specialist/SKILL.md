@@ -159,6 +159,12 @@ that happen here?"). Never skip a section silently; let the SME say "none".
 Run these in order. The SME picks the process and decides when each phase and
 the session are done; you drive the elicitation in between.
 
+**If you were invoked by the `qer-session` orchestrator:** the process is
+already selected and its overview already captured, and the orchestrator runs
+validation across all perspectives at the end. Skip Phase 0, Phase 1 and
+Phase 8 — start at Phase 2. If you were invoked directly (standalone), run
+every phase.
+
 **Phase 0 — Setup.** Ask the SME's name and role (it becomes `source` context
 and the human-in-the-loop record). Identify the process:
 - *Existing* — list the slugs under `wiki/processes/`, let them pick; read the
