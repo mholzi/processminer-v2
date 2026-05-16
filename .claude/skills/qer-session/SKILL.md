@@ -78,9 +78,9 @@ record and `source` context the specialists use.
 Identify the process:
 - **Existing** — list the slugs under `wiki/processes/`, let the SME pick. Read
   the current `index.md` so the session extends rather than duplicates.
-- **New** — agree a process name, a `<slug>` (kebab-case), and a `<PROC>`
-  abbreviation (2-4 uppercase letters, used in element ids). Create
-  `wiki/processes/<slug>/` and a skeleton `index.md` (Step 2 fills it in).
+- **New** — run the `new-process` skill (read `.claude/skills/new-process/
+  SKILL.md` and follow it) to scaffold the process folder, the section folders
+  and a skeleton `index.md`. Then continue to Step 2, which fills the overview.
 
 ## Step 2 — OVERVIEW
 

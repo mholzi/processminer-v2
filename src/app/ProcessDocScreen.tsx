@@ -199,23 +199,10 @@ export default function ProcessDocScreen({
     setIngestFile(null);
   }
 
-  // New process — invokes the (stubbed) process-creation chat skill.
+  // New process — opens the chat and triggers the new-process skill.
   function createProcess() {
     setChatOpen(true);
-    setMessages((m) => [
-      ...m,
-      { id: mid(), role: "user", text: "Create a new process" },
-    ]);
-    setTimeout(() => {
-      setMessages((m) => [
-        ...m,
-        {
-          id: mid(),
-          role: "agent",
-          text: `Let's set up a new process. The process-creation agent would now run an interactive intake — the process name and scope, its trigger and frequency, the main steps, and the systems and roles involved — then scaffold a new wiki under wiki/processes/ with the right sections.\n\nThis skill is stubbed in this build; wiring it is the next slice.`,
-        },
-      ]);
-    }, 700);
+    handleSend("I want to create a new process.");
   }
 
   // Document upload — pick a file, then run a stubbed AI extraction that
