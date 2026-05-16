@@ -142,11 +142,15 @@ least two perspectives — skipping" and move on.
 
 ## Step 5 — VALIDATION
 
-Do a gap-analysis pass over everything written this session: elements missing
-required links, blocks that read thin against their schema template, steps
-with no owner or no rationale, orphaned elements. Surface each as a short
-clarifying question — the SME can answer it now, defer it, or skip it. Apply
-any answers through the owning specialist.
+First run the deterministic conformance check —
+`python3 scripts/wiki/check_conformance.py <slug>` — which lists every element
+whose blocks don't match its schema template.
+
+Then do a judgement gap-analysis pass over everything written this session:
+elements missing required links, steps with no owner or no rationale, orphaned
+elements, anything that reads thin. Surface each finding — and each conformance
+issue from the script — as a short clarifying question the SME can answer now,
+defer, or skip. Apply any answers through the owning specialist.
 
 ## Step 6 — DONE
 

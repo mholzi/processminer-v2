@@ -213,12 +213,25 @@ counts per type, and tell the SME to review and approve them in the web app.
 
 ## Writing an element — the procedure
 
-1. Read the schema `template` for the type (and a `cob-003` example if unsure).
-2. Draft every block within its format and word range; draft the frontmatter
-   (id, type, section, title, status: draft, confidence, source, type fields,
-   relations).
-3. Present it; run Y/E/R.
-4. On [Y], write the file to its section folder immediately.
+The mechanical parts are Python scripts in `scripts/wiki/`. You do the
+judgement — draft the content — and run the scripts for everything else. Do
+**not** hand-write element files; the scripts own the format.
+
+1. Read the schema `template` for the type — the named blocks, their format
+   and word/item range.
+2. **Draft** every block within its template spec. This is your work.
+3. Present the draft to the SME; run **Y / E / R** until they accept.
+4. On **[Y]**, write it with the scripts:
+   a. **ID** — `python3 scripts/wiki/next_id.py <slug> <type>` returns the next
+      id (e.g. `PS-CRD-003`). Never count ids yourself.
+   b. **Write** — assemble a JSON spec (`slug`, `type`, `id`, `title`,
+      `confidence`, `source`, `fields` for scalar frontmatter, `relations` for
+      id-lists, `blocks`), save it to a temp file, then
+      `python3 scripts/wiki/write_element.py <spec.json>`. The script owns the
+      frontmatter, the section folder and the path — the element cannot come
+      out malformed.
+   c. **Verify** — `python3 scripts/wiki/check_conformance.py <slug> <id>`. If
+      it flags an issue, fix the draft and re-write before moving on.
 5. Move on. One confirmed element = one file on disk.
 
 ## Stay in your lane
