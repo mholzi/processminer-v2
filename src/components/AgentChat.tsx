@@ -9,13 +9,14 @@ export interface ChatMessage {
 }
 
 // Right-rail agent chat. Collapsed it is a thin rail; expanded it is a
-// conversation panel with a wiki-wide "Run lint" action. Agent replies are
-// stubbed in this build — the model is wired in a later slice.
+// conversation panel that drives the Claude Code skills via /api/session,
+// plus a wiki-wide "Run lint" action.
 export default function AgentChat({
   open,
   onToggle,
   messages,
   onSend,
+  pending,
   onRunLint,
   linting,
   findingCount,
@@ -24,6 +25,7 @@ export default function AgentChat({
   onToggle: () => void;
   messages: ChatMessage[];
   onSend: (text: string) => void;
+  pending: boolean;
   onRunLint: () => void;
   linting: boolean;
   findingCount: number | null;
@@ -34,7 +36,7 @@ export default function AgentChat({
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
-  }, [messages, linting]);
+  }, [messages, linting, pending]);
 
   if (!open) {
     return (
@@ -53,7 +55,7 @@ export default function AgentChat({
 
   function send() {
     const t = draft.trim();
-    if (!t) return;
+    if (!t || pending) return;
     onSend(t);
     setDraft("");
   }
@@ -70,13 +72,13 @@ export default function AgentChat({
           ⟩
         </button>
       </div>
-      <div className="chat-sub">Stubbed agent · whole COB-003 wiki in context</div>
+      <div className="chat-sub">Runs the process skills locally via Claude Code</div>
 
       <div className="chat-scroll" ref={scrollRef}>
-        {messages.length === 0 && !linting && (
+        {messages.length === 0 && !linting && !pending && (
           <div className="chat-empty">
-            Ask the assistant about any element — or run a lint pass to check
-            the whole wiki for gaps and cross-section discrepancies.
+            Ask the assistant to document a process or about any element — it
+            runs the process skills. Or run a lint pass over the whole wiki.
           </div>
         )}
         {messages.map((m) => (
@@ -84,6 +86,7 @@ export default function AgentChat({
             {m.text}
           </div>
         ))}
+        {pending && <div className="chat-msg agent pending">Working…</div>}
         {linting && (
           <div className="chat-msg agent pending">Linting the wiki…</div>
         )}
@@ -102,7 +105,8 @@ export default function AgentChat({
       <div className="chat-input">
         <textarea
           value={draft}
-          placeholder="Message the assistant…"
+          placeholder={pending ? "Working…" : "Message the assistant…"}
+          disabled={pending}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
@@ -111,7 +115,11 @@ export default function AgentChat({
             }
           }}
         />
-        <button className="chat-send" onClick={send} disabled={!draft.trim()}>
+        <button
+          className="chat-send"
+          onClick={send}
+          disabled={!draft.trim() || pending}
+        >
           Send
         </button>
       </div>

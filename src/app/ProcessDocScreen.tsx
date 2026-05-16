@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Schema, ProcessDoc } from "@/lib/wiki";
 import { sectionForId } from "@/lib/nav";
 import { STUB_FINDINGS, type LintFinding } from "@/lib/lint";
@@ -50,8 +51,11 @@ export default function ProcessDocScreen({
   const [dark, setDark] = useState(false);
 
   // Agent chat + lint state.
+  const router = useRouter();
   const [chatOpen, setChatOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [chatSessionId, setChatSessionId] = useState<string | null>(null);
+  const [chatPending, setChatPending] = useState(false);
   const [findings, setFindings] = useState<LintFinding[] | null>(null);
   const [linting, setLinting] = useState(false);
 
@@ -119,18 +123,45 @@ export default function ProcessDocScreen({
     }
   }
 
+  // The Process Assistant chat — backed by the local `claude` CLI via
+  // /api/session. Each turn runs claude headless in the repo, so it can
+  // invoke the skills in .claude/skills/ and read/write the wiki.
   function handleSend(text: string) {
     setMessages((m) => [...m, { id: mid(), role: "user", text }]);
-    setTimeout(() => {
-      setMessages((m) => [
-        ...m,
-        {
-          id: mid(),
-          role: "agent",
-          text: `On “${text}” — the assistant is stubbed in this build, so I can't reason over the COB-003 wiki content yet. Once the model is wired (next slice) I'll cross-check the relevant elements and answer here. In the meantime, try “Run lint” to surface gaps and discrepancies across the wiki.`,
-        },
-      ]);
-    }, 650);
+    setChatPending(true);
+    fetch("/api/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text, sessionId: chatSessionId }),
+    })
+      .then((r) => r.json())
+      .then((data: { reply?: string; sessionId?: string; error?: string }) => {
+        if (data.error) {
+          setMessages((m) => [
+            ...m,
+            { id: mid(), role: "agent", text: `⚠ ${data.error}` },
+          ]);
+          return;
+        }
+        if (data.sessionId) setChatSessionId(data.sessionId);
+        setMessages((m) => [
+          ...m,
+          { id: mid(), role: "agent", text: data.reply || "(no reply)" },
+        ]);
+        // a skill may have written wiki files this turn — re-read the doc view
+        router.refresh();
+      })
+      .catch((e: unknown) => {
+        setMessages((m) => [
+          ...m,
+          {
+            id: mid(),
+            role: "agent",
+            text: `⚠ ${e instanceof Error ? e.message : "Request failed"}`,
+          },
+        ]);
+      })
+      .finally(() => setChatPending(false));
   }
 
   function runLint() {
@@ -516,6 +547,7 @@ export default function ProcessDocScreen({
           onToggle={() => setChatOpen((v) => !v)}
           messages={messages}
           onSend={handleSend}
+          pending={chatPending}
           onRunLint={runLint}
           linting={linting}
           findingCount={findings ? findings.length : null}

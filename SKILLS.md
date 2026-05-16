@@ -40,14 +40,17 @@ Write the markdown under `wiki/`, against `schema/`, sourcing from
 `raw-sources/`. A CLI agent has filesystem tools, so there is no need for an
 embedding/retrieval subsystem — the agent searches the wiki files natively.
 
-**The web app is a separate viewer/review surface.** The Next.js app in `src/`
-shows the documented wiki: the SME reads the process doc, edits elements,
-approves/rejects them (plain file writes), and sees the deterministic
-conformance check. It does **not** invoke agents. Its current agent-triggering
-UI — the chat panel, Deep Dive, "AI edit", document upload — is stubbed and
-will be reworked or removed; those are CLI-skill concerns now (§11).
+**The web app drives the skills from its Process Assistant chat.** The Next.js
+app in `src/` shows the documented wiki *and* runs skill sessions: the chat
+panel posts to `/api/session` (`src/app/api/session/route.ts`), a route that
+spawns the local `claude` CLI headless, in the repo. `claude` discovers the
+skills in `.claude/skills/`, runs them, and reads/writes the wiki files; the
+document view re-reads after each turn. Auth is the machine's Claude Code
+login (`claude` uses its stored credentials) — **no API key**. The app must run
+locally, since it spawns `claude` on the same machine.
 
-The split: **Claude Code runs the extraction; the web app reviews the result.**
+The other agent-triggering UI — Deep Dive, "AI edit", document upload — is
+still stubbed; each will be wired to the same `/api/session` route or removed.
 
 ---
 
@@ -247,17 +250,18 @@ the five specialists (§3).
 
 ---
 
-## 12. The web app, restated
+## 12. The web app
 
-Not a skill, but it shares the wiki. Under the Claude-Code-skills runtime the
-web app's job narrows to a **viewer / review surface**:
+Not a skill, but it shares the wiki and now hosts the skills' surface:
 
-- **Keeps** — process-doc display, RACI matrix, Overview roll-up, structure
-  templates, search, inline edit, the approval model (§9), the deterministic
-  conformance check.
-- **Reworked or removed** — the chat panel, Deep Dive buttons, "AI edit",
-  document upload. These imply the app calls agents; it does not. Options:
-  remove them, or repurpose as views of CLI-session output. To be decided.
+- **Viewer / review** — process-doc display, RACI matrix, Overview roll-up,
+  structure templates, search, inline edit, the approval model (§9), the
+  deterministic conformance check.
+- **Skill runner** — the Process Assistant chat is wired to `/api/session`,
+  which runs the skills via the local `claude` CLI (§2). This is the live
+  invocation surface.
+- **Still stubbed** — Deep Dive, "AI edit", document upload. Each will be
+  wired to `/api/session` (passing a scoped prompt) or removed. To be decided.
 
 ---
 
