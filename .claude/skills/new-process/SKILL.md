@@ -35,18 +35,26 @@ wiki/processes/<slug>/
 **Step 1 — Name.** Ask the user for the process name. That is the only thing
 you ask for.
 
-**Step 2 — Draft and confirm.** From the name, generate three things and
-present them together for the user to confirm or correct:
+**Step 2 — Derive, draft, confirm.**
 
-- a **one-line description** — what the process does, one plain sentence;
-- a **slug** — kebab-case, becomes the folder name ("Card Replacement" →
-  `card-replacement`);
-- a **`<PROC>` abbreviation** — 2-4 uppercase letters, used later in element
-  IDs (e.g. `CRD`).
+1. Run `python3 scripts/wiki/derive_process_meta.py "<name>"`. It returns JSON
+   with a deterministic **slug** (kebab-case folder name) and **`<PROC>`**
+   abbreviation (uppercase, for element IDs). Use exactly what it returns — do
+   not invent your own.
+2. Draft a **one-line description** — one plain sentence on what the process
+   does. This is the one judgement item; the slug and abbreviation are not.
+3. Present all three to the user as a **bulleted list — never a table** — each
+   label in bold:
 
-Offer **[Y] Yes — accept** / **[E] Edit — I have corrections**. On [E], apply
-the corrections and show all three again; loop until the user accepts. Create
-nothing until they confirm.
+   ```
+   - **Description:** <the one-line description>
+   - **Slug:** `<slug>`
+   - **Abbreviation:** `<PROC>`
+   ```
+
+   Then offer **[Y] Yes — accept** / **[E] Edit — I have corrections**. On [E],
+   apply the corrections and show the bullets again; loop until the user
+   accepts. Create nothing until they confirm.
 
 **Step 3 — Scaffold.** Once the user confirms, run the scaffolder. It is a
 Python script that does the file creation deterministically — do **not** create

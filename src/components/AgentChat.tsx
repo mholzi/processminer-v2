@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 export interface ChatMessage {
   id: string;
@@ -93,7 +94,7 @@ export default function AgentChat({
         )}
         {messages.map((m) => (
           <div className={`chat-msg ${m.role}`} key={m.id}>
-            {m.text}
+            <ReactMarkdown>{m.text}</ReactMarkdown>
           </div>
         ))}
         {pending && <div className="chat-msg agent pending">Working…</div>}
