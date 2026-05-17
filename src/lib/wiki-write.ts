@@ -127,6 +127,30 @@ export async function setApproval(
   return { ok: true };
 }
 
+// Edit one part of an area's executive summary. The memo's four parts live in
+// summaries.json; this patches a single part's prose in place.
+export async function saveSummaryPart(
+  slug: string,
+  area: string,
+  index: number,
+  text: string,
+): Promise<{ ok: true }> {
+  const path = join(WIKI_DIR, slug, "summaries.json");
+  if (!existsSync(path)) throw new Error("No summaries file for this process.");
+  const data = JSON.parse(readFileSync(path, "utf8")) as Record<
+    string,
+    { parts: { heading: string; text: string }[]; generatedAt: string }
+  >;
+  const entry = data[area];
+  if (!entry || !Array.isArray(entry.parts) || !entry.parts[index]) {
+    throw new Error(`Summary part not found: ${area}[${index}]`);
+  }
+  entry.parts[index].text = text.trim();
+  writeFileSync(path, JSON.stringify(data, null, 2) + "\n", "utf8");
+  revalidatePath("/");
+  return { ok: true };
+}
+
 const RELEVANCE_VALUES = ["", "relevant", "disregarded"];
 
 // Per-element relevance triage — for web-sourced / ideated elements (market

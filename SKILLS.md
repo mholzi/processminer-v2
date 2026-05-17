@@ -73,6 +73,7 @@ planned.
 | **run-lint** | automated | lint pass — conformance + five-lens sweep; writes `lint.json`, re-opens implicated approvals (§9) |
 | **foundational-run** | guided | post-ingest narrated walk: challenge every As-Is element with the SME, resumable (§7) |
 | **add-entry** | interactive | add one AI-drafted element to a section — asks the SME, researches (wiki / web), refines Y/E/R, writes on approval |
+| **area-summary** | automated | generate an area's executive summary as an Amazon-style narrative memo; silent, writes summaries.json |
 | **conflict-resolution** | *planned* | the conflict-aware review flow — resolve doc-vs-wiki conflicts from a re-ingest |
 | **Wiki Assistant** | *planned* | grounded Q&A over the wiki for SME / transformation team |
 

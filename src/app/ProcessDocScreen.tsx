@@ -12,6 +12,7 @@ import OverviewPanel from "@/components/OverviewPanel";
 import AgentChat, { type ChatMessage } from "@/components/AgentChat";
 import ReviewPanel from "@/components/ReviewPanel";
 import TriagePanel from "@/components/TriagePanel";
+import SummaryPanel from "@/components/SummaryPanel";
 import UploadModal from "@/components/UploadModal";
 import CommandPalette from "@/components/CommandPalette";
 import ApprovalBar from "@/components/ApprovalBar";
@@ -175,6 +176,13 @@ export default function ProcessDocScreen({
     kind: "innovation" | "cx";
     status: "running" | "done" | "error";
     text?: string;
+  } | null>(null);
+
+  // Per-area executive summary — viewed from the nav area heading, generated
+  // silently by the area-summary skill. `summaryGen` tracks an active run.
+  const [summaryGen, setSummaryGen] = useState<{
+    area: string;
+    status: "generating" | "error";
   } | null>(null);
 
   // ⌘K search palette + the real "saved" indicator.
@@ -472,6 +480,57 @@ export default function ProcessDocScreen({
     );
   }
 
+  // Generate an area's executive summary — runs the area-summary skill
+  // silently (its own claude session, outside the chat); the panel shows the
+  // result on completion.
+  function generateAreaSummary(target: string) {
+    if (summaryGen?.status === "generating") return;
+    setSummaryGen({ area: target, status: "generating" });
+    fetch("/api/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: `Run the area-summary skill for the "${target}" area of the process with slug "${currentSlug}".`,
+        sessionId: null,
+      }),
+    })
+      .then(async (res) => {
+        if (!res.body) throw new Error("No response from the server.");
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buf = "";
+        let ok: boolean | null = null;
+        for (;;) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buf += decoder.decode(value, { stream: true });
+          let sep: number;
+          while ((sep = buf.indexOf("\n\n")) !== -1) {
+            const frame = buf.slice(0, sep);
+            buf = buf.slice(sep + 2);
+            const line = frame.startsWith("data:")
+              ? frame.slice(5).trim()
+              : frame.trim();
+            if (!line) continue;
+            try {
+              const evt = JSON.parse(line) as { type: string };
+              if (evt.type === "done") ok = true;
+              else if (evt.type === "error") ok = false;
+            } catch {
+              /* partial frame */
+            }
+          }
+        }
+        if (ok === false) {
+          setSummaryGen({ area: target, status: "error" });
+        } else {
+          setSummaryGen(null);
+          router.refresh();
+        }
+      })
+      .catch(() => setSummaryGen({ area: target, status: "error" }));
+  }
+
   // progress banner, and it ends with a dismissable notice.
   function runSourcing(kind: "innovation" | "cx") {
     if (sourcing?.status === "running") return;
@@ -650,22 +709,35 @@ export default function ProcessDocScreen({
                   area.id === "client-experience"));
             return (
             <div className="nav-area" key={area.id}>
-              <button
-                className="nav-area-label"
-                onClick={() => toggleArea(area.id)}
-                aria-expanded={!collapsed}
-              >
-                <span className={`nav-area-chevron${collapsed ? " collapsed" : ""}`}>
-                  ▾
-                </span>
-                {area.label}
-                {areaSourcing && (
+              <div className="nav-area-head">
+                <button
+                  className="nav-area-collapse"
+                  onClick={() => toggleArea(area.id)}
+                  aria-expanded={!collapsed}
+                  aria-label={collapsed ? "Expand area" : "Collapse area"}
+                >
                   <span
-                    className="nav-area-spinner"
-                    title="Sourcing from the web…"
-                  />
-                )}
-              </button>
+                    className={`nav-area-chevron${collapsed ? " collapsed" : ""}`}
+                  >
+                    ▾
+                  </span>
+                </button>
+                <button
+                  className={`nav-area-label${
+                    section === `__area:${area.id}` ? " active" : ""
+                  }`}
+                  onClick={() => setSection(`__area:${area.id}`)}
+                  title={`Executive summary of ${area.label}`}
+                >
+                  {area.label}
+                  {areaSourcing && (
+                    <span
+                      className="nav-area-spinner"
+                      title="Sourcing from the web…"
+                    />
+                  )}
+                </button>
+              </div>
               {!collapsed &&
               area.sections.map((s) => {
                 const isOverview = s.id === "overview";
@@ -822,6 +894,33 @@ export default function ProcessDocScreen({
                 </div>
               )}
             </>
+          ) : section.startsWith("__area:") ? (
+            (() => {
+              const areaId = section.slice("__area:".length);
+              const area = schema.areas.find((a) => a.id === areaId);
+              return (
+                <>
+                  <div className="canvas-head">
+                    <h1>{area?.label ?? areaId}</h1>
+                    <div className="sub">
+                      Executive summary — an Amazon-style memo across the{" "}
+                      {area?.label ?? areaId} area.
+                    </div>
+                  </div>
+                  <SummaryPanel
+                    summary={doc.summaries?.[areaId]}
+                    status={
+                      summaryGen?.area === areaId
+                        ? summaryGen.status
+                        : "idle"
+                    }
+                    slug={currentSlug}
+                    area={areaId}
+                    onGenerate={() => generateAreaSummary(areaId)}
+                  />
+                </>
+              );
+            })()
           ) : (
             <>
               <div className="canvas-head">
@@ -854,12 +953,16 @@ export default function ProcessDocScreen({
                 <RaciMatrix
                   steps={doc.elements.filter((e) => e.type === "process-step")}
                   roles={doc.elements.filter((e) => e.type === "role")}
-                  onNavigate={setSection}
+                  onGoToElement={goToElement}
                 />
               )}
               {section === "process-steps" && (
                 <ProcessFlow
                   steps={doc.elements.filter((e) => e.type === "process-step")}
+                  onGoToElement={goToElement}
+                  onDeepDive={(id, title) =>
+                    deepDive({ id, title, kind: "element" })
+                  }
                 />
               )}
               {sectionElements.length === 0 ? (

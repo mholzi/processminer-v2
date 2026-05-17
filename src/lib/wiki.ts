@@ -100,6 +100,12 @@ export interface IngestReport {
   conflicts: IngestConflict[];
   corrections: IngestCorrection[];
 }
+/** Executive summaries per area — written to summaries.json. Each is an
+ *  Amazon-style memo broken into four individually-editable parts. */
+export type SectionSummaries = Record<
+  string,
+  { parts: { heading: string; text: string }[]; generatedAt: string }
+>;
 /** The foundational-run cursor — written to review-state.json. */
 export interface ReviewState {
   slug: string;
@@ -122,6 +128,8 @@ export interface ProcessDoc {
   ingest?: IngestReport;
   /** The foundational-run cursor, if a run has been started. */
   reviewState?: ReviewState;
+  /** Per-section executive summaries, if any have been generated. */
+  summaries?: SectionSummaries;
 }
 
 /** Parse `key: value` frontmatter. `[a, b]` becomes a string array. */
@@ -227,5 +235,6 @@ export function getProcess(slug: string): ProcessDoc | null {
     lint: readJson<LintReport>("lint.json"),
     ingest: readJson<IngestReport>("ingest.json"),
     reviewState: readJson<ReviewState>("review-state.json"),
+    summaries: readJson<SectionSummaries>("summaries.json"),
   };
 }
