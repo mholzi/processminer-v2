@@ -9,11 +9,13 @@ export default function TriagePanel({
   doc,
   schema,
   onStartRun,
+  onResolveConflicts,
   onGoToElement,
 }: {
   doc: ProcessDoc;
   schema: Schema;
   onStartRun: () => void;
+  onResolveConflicts: () => void;
   onGoToElement: (id: string) => void;
 }) {
   const ingest = doc.ingest;
@@ -101,7 +103,16 @@ export default function TriagePanel({
 
       {conflicts.length > 0 && (
         <section className="triage-block">
-          <h2 className="type-group-head">Conflicts — {conflicts.length}</h2>
+          <div className="triage-block-head">
+            <h2 className="type-group-head">Conflicts — {conflicts.length}</h2>
+            <button className="triage-resolve-btn" onClick={onResolveConflicts}>
+              Resolve conflicts
+            </button>
+          </div>
+          <p className="triage-note">
+            The document contradicted the wiki here — the assistant walks you
+            through each, document version versus wiki version.
+          </p>
           {conflicts.map((c, i) => (
             <div className="triage-conflict" key={`${c.element}-${i}`}>
               <button

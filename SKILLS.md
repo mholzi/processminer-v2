@@ -55,8 +55,7 @@ stubbed.
 
 ## 3. The skill roster
 
-Eleven skills are built. One (`conflict-resolution`) and the Wiki Assistant are
-planned.
+Twelve skills are built. The Wiki Assistant is planned.
 
 | Skill | Kind | Role |
 |---|---|---|
@@ -74,7 +73,7 @@ planned.
 | **foundational-run** | guided | post-ingest narrated walk: challenge every As-Is element with the SME, resumable (§7) |
 | **add-entry** | interactive | add one AI-drafted element to a section — asks the SME, researches (wiki / web), refines Y/E/R, writes on approval |
 | **area-summary** | automated | generate an area's executive summary as an Amazon-style narrative memo; silent, writes summaries.json |
-| **conflict-resolution** | *planned* | the conflict-aware review flow — resolve doc-vs-wiki conflicts from a re-ingest |
+| **conflict-resolution** | interactive | walk each doc-vs-wiki conflict from a re-ingest with the SME — D/W/E per conflict, clears them when done (§5) |
 | **Wiki Assistant** | *planned* | grounded Q&A over the wiki for SME / transformation team |
 
 ---
@@ -345,8 +344,6 @@ cover it); the install tooling skills.
 
 ## 14. Open questions
 
-- **`conflict-resolution`** — the conflict-aware review flow is specced in
-  outline (foundational-run's close-out refers to it) but not built.
 - **Wiki Assistant** — planned, not built.
 - **Deep Dive / "AI edit"** — the last stubbed agent UI; wire to `/api/session`
   or remove.

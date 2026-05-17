@@ -466,6 +466,17 @@ export default function ProcessDocScreen({
     );
   }
 
+  // Resolve conflicts — invoke the interactive conflict-resolution skill in
+  // the chat, scoped to this process. It walks each ingest conflict with the
+  // SME, document version versus wiki version, and clears them when done.
+  function resolveConflicts() {
+    if (chatPending) return;
+    setChatOpen(true);
+    handleSend(
+      `Run the conflict-resolution skill on the process with slug "${currentSlug}".`,
+    );
+  }
+
   // Web-sourcing — run source-innovation / source-cx fully autonomously.
   // Unlike a chat turn this does not touch the chat transcript or session: it
   // runs in its own fresh `claude` session, the affected sections show a
@@ -883,6 +894,7 @@ export default function ProcessDocScreen({
                   doc={doc}
                   schema={schema}
                   onStartRun={runFoundational}
+                  onResolveConflicts={resolveConflicts}
                   onGoToElement={goToElement}
                 />
               ) : (

@@ -1,0 +1,82 @@
+---
+name: conflict-resolution
+description: >-
+  Resolve the conflicts a document ingest flagged — where a re-ingested
+  document contradicts content the wiki already holds. Walk the SME through
+  each conflict in the chat, document version versus wiki version, apply their
+  decision, and clear the resolved conflicts. Use this whenever a process has
+  ingest conflicts to work through, or the user asks to resolve conflicts.
+---
+
+# Conflict Resolution
+
+You resolve the **conflicts** a `document-ingest` flagged — the places where a
+re-ingested document contradicted content already in the wiki. `document-ingest`
+never overwrites on a conflict; it records each one and leaves the wiki element
+untouched. You walk the SME through those conflicts and apply their decision.
+
+You are invoked with a process `<slug>`. This is interactive — the SME is
+present and decides every conflict; you never resolve one yourself.
+
+## Step 1 — Read the conflicts
+
+Read `wiki/processes/<slug>/ingest.json`. Its `conflicts` array holds each
+flagged conflict: the `element` id, the `field` (a block heading or a
+frontmatter field), what the document said (`documentSays`) and what the wiki
+holds (`wikiSays`).
+
+If the array is empty, reply with exactly:
+
+> No conflicts to resolve for this process — nothing was contradicted on the
+> last ingest.
+
+and stop. Otherwise tell the SME how many conflicts there are, and begin.
+
+## Step 2 — Resolve each conflict — D / W / E
+
+Take the conflicts in order. For each, present it plainly:
+
+> **Conflict {n} of {total} — {element id} · {field}**
+>
+> - **The document says:** {documentSays}
+> - **The wiki says:** {wikiSays}
+>
+> **[D] Take the document version** · **[W] Keep the wiki version** ·
+> **[E] Edit — write a merged version**
+
+- **[W]** — keep the wiki as it is. Nothing is written.
+- **[D]** — the document wins. Read the element, replace *only* that field or
+  block with the document's version, and re-write the element with
+  `python3 scripts/wiki/write_element.py <spec.json>` — everything else
+  (its other blocks, fields, relations, status, source) unchanged.
+- **[E]** — neither is right alone. Work the merged value out with the SME,
+  then write it the same way as [D].
+
+Apply each decision before moving to the next conflict — never batch. After a
+[D] or [E] write, run `python3 scripts/wiki/check_conformance.py <slug> <id>`
+and fix any flag.
+
+## Step 3 — Clear the resolved conflicts
+
+When every conflict has been decided, run
+`python3 scripts/wiki/clear_conflicts.py <slug>` — it empties the `conflicts`
+array in `ingest.json` so the triage screen no longer flags them.
+
+## Step 4 — Report
+
+Report with this **exact template**, substituting the counts:
+
+> Conflict resolution complete — **{process}**:
+>
+> - **Document version taken:** {n}
+> - **Wiki version kept:** {n}
+> - **Merged:** {n}
+>
+> The conflicts are cleared. Review any changed elements on the cards.
+
+## Scope
+
+You resolve the conflicts in `ingest.json` and nothing else. You change only
+the conflicted field or block of an element, never the rest of it. Everything
+you write stays `status: draft` — the SME approves it in the app. You never
+invent a resolution; the SME decides every conflict.
