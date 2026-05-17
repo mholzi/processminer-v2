@@ -431,7 +431,6 @@ body {
 .strip-spacer { flex: 1; }
 .strip-actions { flex: none; display: flex; gap: 8px; }
 .canvas-strip .apbar-wrap { margin: 0 !important; flex: none; }
-.canvas-strip .lowconf-toggle { margin-top: 0; }
 
 /* ---- Back-to-top, end of a section (#10) ---- */
 .back-to-top { display: flex; justify-content: center; padding: 8px 0 12px; }
@@ -444,7 +443,7 @@ body {
 /* ---- Print / Export to PDF (#16) ---- */
 @media print {
   .topbar, .rail-l, .toast-stack, .canvas-actions,
-  .lowconf-toggle, .tip, .hcard, .shell > :last-child { display: none !important; }
+  .tip, .hcard, .shell > :last-child { display: none !important; }
   .shell { display: block !important; height: auto !important; }
   .canvas { overflow: visible !important; height: auto !important; padding: 0 !important; }
   body, .app, .canvas { background: #fff !important; }
@@ -1601,14 +1600,6 @@ body {
 .el-conf-dot.conf-med { background: var(--mid); }
 .el-conf-dot.conf-high { background: var(--hi); }
 
-/* ---- Low-confidence section filter (#9) ---- */
-.lowconf-toggle {
-  font-family: var(--mono); font-size: var(--text-xs); cursor: pointer;
-  border: 1px solid var(--line); background: var(--surface); color: var(--muted);
-  padding: 4px 12px; border-radius: var(--r-pill); margin-top: 12px;
-}
-.lowconf-toggle:hover { border-color: var(--lo); color: var(--lo); }
-.lowconf-toggle.on { background: var(--lo-bg); border-color: var(--lo); color: var(--lo); }
 
 /* ---- Empty-area next-step card (#7) ---- */
 .area-next {

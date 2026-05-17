@@ -413,8 +413,6 @@ export default function ProcessDocScreen({
     setToasts((t) => t.filter((x) => x.id !== id));
   }
 
-  // Section filter — narrow the canvas to low-confidence elements only.
-  const [lowConfOnly, setLowConfOnly] = useState(false);
   // The "+ Add entry" type-picker menu (#8).
   const [addMenuOpen, setAddMenuOpen] = useState(false);
 
@@ -530,7 +528,6 @@ export default function ProcessDocScreen({
 
   // Per-section UI state — reset when the section changes.
   useEffect(() => {
-    setLowConfOnly(false);
     setAddMenuOpen(false);
   }, [section]);
 
@@ -559,15 +556,6 @@ export default function ProcessDocScreen({
   const sectionElements = doc.elements
     .filter((e) => e.section === section)
     .sort((a, b) => a.id.localeCompare(b.id));
-  // Low-confidence triage filter (#9) — how many in this section, and the
-  // list the canvas actually renders once the filter is on.
-  const lowConfCount = sectionElements.filter(
-    (e) => String(e.confidence) === "low",
-  ).length;
-  const visibleElements =
-    lowConfOnly && lowConfCount > 0
-      ? sectionElements.filter((e) => String(e.confidence) === "low")
-      : sectionElements;
 
   // A section can hold several element types (e.g. Compliance =
   // regulations + gaps + audit findings). Group by type, ordered as in
@@ -576,7 +564,7 @@ export default function ProcessDocScreen({
     .map((t) => ({
       type: t,
       label: schema.elementTypes[t].label,
-      elements: visibleElements.filter((e) => e.type === t),
+      elements: sectionElements.filter((e) => e.type === t),
     }))
     .filter((g) => g.elements.length > 0);
   const multiType = typeGroups.length > 1;
@@ -1490,16 +1478,6 @@ export default function ProcessDocScreen({
                   <ApprovalBar elements={sectionElements} />
                 )}
                 <span className="strip-spacer" />
-                {lowConfCount > 0 && (
-                  <button
-                    className={`lowconf-toggle${lowConfOnly ? " on" : ""}`}
-                    onClick={() => setLowConfOnly((v) => !v)}
-                  >
-                    {lowConfOnly
-                      ? `Showing ${lowConfCount} low-confidence — show all`
-                      : `⚠ ${lowConfCount} low-confidence — filter`}
-                  </button>
-                )}
                 <div className="strip-actions">
                   <button
                     className="canvas-act"
@@ -1731,7 +1709,7 @@ export default function ProcessDocScreen({
                   </section>
                 ))
               ) : (
-                visibleElements.map((el) => (
+                sectionElements.map((el) => (
                   <ElementCard
                     key={el.id}
                     page={el}
