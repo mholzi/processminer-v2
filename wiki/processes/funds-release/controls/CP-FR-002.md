@@ -8,6 +8,7 @@ confidence: high
 source: funds-release-dtp-mockup.md
 controlType: PREVENTIVE
 execution: AUTOMATED
+owner: Compliance
 step: PS-FR-003
 regulatedBy: [REG-FR-001, REG-FR-002]
 ---

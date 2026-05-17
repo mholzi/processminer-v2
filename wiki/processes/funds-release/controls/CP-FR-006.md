@@ -7,6 +7,8 @@ status: draft
 confidence: high
 source: funds-release-dtp-mockup.md
 controlType: DETECTIVE
+execution: MANUAL
+owner: Ops Analyst
 regulatedBy: [REG-FR-006]
 ---
 ## What it checks

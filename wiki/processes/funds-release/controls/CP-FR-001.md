@@ -8,6 +8,7 @@ confidence: high
 source: funds-release-dtp-mockup.md
 controlType: PREVENTIVE
 execution: AUTOMATED
+owner: Ops Analyst
 step: PS-FR-002
 regulatedBy: [REG-FR-004]
 ---
