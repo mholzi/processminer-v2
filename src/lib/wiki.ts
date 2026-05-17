@@ -18,6 +18,9 @@ const SCHEMA_PATH = join(ROOT, "schema", "process-schema.json");
 export interface Section {
   id: string;
   label: string;
+  /** One line on what this section's content actually is — shown as the
+   *  canvas subtitle. */
+  description?: string;
   /** The elicitation specialist skill that owns this section, if any. */
   specialist?: string;
 }

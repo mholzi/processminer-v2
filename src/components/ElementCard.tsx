@@ -4,6 +4,7 @@ import { Fragment, useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { BlockSpec, FieldSpec, Note, WikiPage } from "@/lib/wiki";
 import type { LinkGroup } from "@/lib/relations";
+import type { LintFinding } from "@/lib/lint";
 import { isSourcedType } from "@/lib/element-types";
 import { checkElement } from "@/lib/conformance";
 import { saveElement, setApproval, setRelevance } from "@/lib/wiki-write";
@@ -33,6 +34,13 @@ function asList(v: string | string[] | undefined): string[] {
 }
 
 const TRANSITION_KINDS = ["normal", "branch", "loopback", "exception"];
+
+// Lint-finding kind → the short label shown on the inline band.
+const FINDING_KIND_LABEL: Record<string, string> = {
+  discrepancy: "Discrepancy",
+  conformance: "Structure",
+  question: "Question",
+};
 
 // Note-thread helpers (#19) — deterministic so server + client render alike.
 const NOTE_MONTHS = [
@@ -65,6 +73,8 @@ export default function ElementCard({
   links,
   onGoToElement,
   onDeepDive,
+  onFindingDeepDive,
+  findings,
   onSaved,
   defaultCollapsed,
   isCurrent,
@@ -82,6 +92,10 @@ export default function ElementCard({
   links: LinkGroup[];
   onGoToElement?: (id: string) => void;
   onDeepDive?: (id: string, title: string) => void;
+  /** Deep-dive on a lint finding (distinct from an element deep-dive). */
+  onFindingDeepDive?: (finding: LintFinding) => void;
+  /** Lint findings from the last run-lint pass that involve this element. */
+  findings?: LintFinding[];
   onSaved?: () => void;
   defaultCollapsed?: boolean;
   /** True when the foundational run's cursor is on this element. */
@@ -422,6 +436,31 @@ export default function ElementCard({
             }`}
           />
           {provenanceText}
+        </div>
+      )}
+
+      {!editing && findings && findings.length > 0 && (
+        <div className="el-findings">
+          {findings.map((f) => (
+            <div className={`el-finding ${f.kind}`} key={f.id}>
+              <span className="el-finding-kind">
+                {FINDING_KIND_LABEL[f.kind] ?? f.kind}
+              </span>
+              <span className="el-finding-text">
+                <b>{f.title}</b> {f.detail}
+              </span>
+              {onFindingDeepDive && (
+                <button
+                  type="button"
+                  className="el-finding-dd"
+                  onClick={() => onFindingDeepDive(f)}
+                  title="Start a Brainstorm deep-dive session on this finding"
+                >
+                  ⌖ Deep dive
+                </button>
+              )}
+            </div>
+          ))}
         </div>
       )}
 

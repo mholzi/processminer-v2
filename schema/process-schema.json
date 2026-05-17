@@ -9,36 +9,43 @@
       "sections": [
         {
           "id": "overview",
-          "label": "Overview"
+          "label": "Overview",
+          "description": "The process at a glance — purpose, scope, owners and the headline numbers."
         },
         {
           "id": "roles",
           "label": "Roles & Organisation",
+          "description": "The teams, functions and individuals involved in the process, and who is responsible for what.",
           "specialist": "process-specialist"
         },
         {
           "id": "process-steps",
           "label": "Process Steps",
+          "description": "The ordered steps that make up the process as it runs today, end to end.",
           "specialist": "process-specialist"
         },
         {
           "id": "exceptions",
           "label": "Exceptions",
+          "description": "The off-happy-path cases — where the process deviates, stalls or needs manual handling.",
           "specialist": "process-specialist"
         },
         {
           "id": "pain-points",
           "label": "Pain Points",
+          "description": "Where the current process hurts — friction, delays and frustrations reported by the people who run it.",
           "specialist": "process-specialist"
         },
         {
           "id": "metrics",
           "label": "Metrics",
+          "description": "The volumes, timings and service levels that quantify how the process performs.",
           "specialist": "process-specialist"
         },
         {
           "id": "process-gaps",
           "label": "Process Gaps",
+          "description": "Missing or unclear parts of the As-Is picture that need follow-up before it is complete.",
           "specialist": "process-specialist"
         }
       ]
@@ -50,21 +57,25 @@
         {
           "id": "controls",
           "label": "Controls",
+          "description": "The checks and safeguards that keep the process within risk appetite and regulatory limits.",
           "specialist": "control-compliance-specialist"
         },
         {
           "id": "regulation",
           "label": "Regulation",
+          "description": "The external rules and supervisory requirements the process must comply with.",
           "specialist": "control-compliance-specialist"
         },
         {
           "id": "control-gaps",
           "label": "Control Gaps",
+          "description": "Weaknesses or holes in the control framework that leave the process exposed.",
           "specialist": "control-compliance-specialist"
         },
         {
           "id": "audit-findings",
           "label": "Audit Findings",
+          "description": "Issues raised by internal or external audit, and their remediation status.",
           "specialist": "control-compliance-specialist"
         }
       ]
@@ -76,30 +87,36 @@
         {
           "id": "channels",
           "label": "Channels",
+          "description": "The channels through which clients reach the process — branch, online, phone, relationship manager.",
           "specialist": "client-journey-specialist"
         },
         {
           "id": "touchpoints",
           "label": "Touchpoints",
+          "description": "The individual moments where a client touches the process, step by step.",
           "specialist": "client-journey-specialist"
         },
         {
           "id": "moments",
           "label": "Moments of Truth",
+          "description": "The make-or-break interactions that most shape how clients judge the process.",
           "specialist": "client-journey-specialist"
         },
         {
           "id": "friction-points",
           "label": "Friction Points",
+          "description": "Where the client-facing journey is slow, confusing or effortful.",
           "specialist": "client-journey-specialist"
         },
         {
           "id": "competitor-cx",
-          "label": "Competitor CX"
+          "label": "Competitor CX",
+          "description": "How competitor banks and fintechs run the same client journey."
         },
         {
           "id": "cx-benchmarks",
-          "label": "CX Benchmarks"
+          "label": "CX Benchmarks",
+          "description": "Industry benchmarks and client-expectation research for this kind of journey."
         }
       ]
     },
@@ -109,25 +126,30 @@
       "sections": [
         {
           "id": "market-trends",
-          "label": "Market Trends"
+          "label": "Market Trends",
+          "description": "Market shifts, regulation and technology trends bearing on the process's future."
         },
         {
           "id": "competitor-innovation",
-          "label": "Competitor Innovation"
+          "label": "Competitor Innovation",
+          "description": "What competitors and fintechs are doing that could reshape this process."
         },
         {
           "id": "innovation-ideas",
           "label": "Innovation Ideas",
+          "description": "Concrete ideas for improving or reinventing the process.",
           "specialist": "innovation-analyst"
         },
         {
           "id": "prioritization",
           "label": "Prioritisation",
+          "description": "How the innovation ideas rank by value, effort and feasibility.",
           "specialist": "innovation-analyst"
         },
         {
           "id": "innovation-risks",
           "label": "Innovation Risks",
+          "description": "The risks that come with pursuing the innovation ideas.",
           "specialist": "innovation-analyst"
         }
       ]
@@ -139,21 +161,25 @@
         {
           "id": "to-be-design",
           "label": "TO-BE Process Design",
+          "description": "The redesigned future-state process, step by step.",
           "specialist": "innovation-analyst"
         },
         {
           "id": "transformation-decisions",
           "label": "Transformation Decisions",
+          "description": "The key decisions that shape the move from the current state to the target.",
           "specialist": "innovation-analyst"
         },
         {
           "id": "gap-resolution",
           "label": "Gap Resolution",
+          "description": "How each As-Is gap, pain point and control weakness is resolved in the target state.",
           "specialist": "innovation-analyst"
         },
         {
           "id": "validation",
           "label": "Validation",
+          "description": "Evidence and sign-off that the target design holds up.",
           "specialist": "innovation-analyst"
         }
       ]
@@ -165,11 +191,13 @@
         {
           "id": "systems",
           "label": "Systems",
+          "description": "The applications and platforms the process runs on.",
           "specialist": "it-architect"
         },
         {
           "id": "integrations",
           "label": "Integrations",
+          "description": "The interfaces and data flows that connect those systems.",
           "specialist": "it-architect"
         }
       ]
@@ -377,8 +405,7 @@
         "required": [
           "controlType",
           "execution",
-          "owner",
-          "step"
+          "owner"
         ]
       },
       "template": [

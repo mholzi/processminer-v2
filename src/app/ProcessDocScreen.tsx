@@ -6,6 +6,7 @@ import type { Schema, ProcessDoc, WikiPage } from "@/lib/wiki";
 import { isSourcedType } from "@/lib/element-types";
 import { buildRelations, type LinkGroup } from "@/lib/relations";
 import { sectionForId } from "@/lib/nav";
+import type { LintFinding } from "@/lib/lint";
 import ElementCard from "@/components/ElementCard";
 import RaciMatrix from "@/components/RaciMatrix";
 import ProcessFlow from "@/components/ProcessFlow";
@@ -210,8 +211,9 @@ function resumeMessage(d: ProcessDoc): ChatMessage | null {
   };
 }
 
-// The one main screen. Left rail is two-level: 4 areas (As-Is / Innovation /
-// Target / IT Architecture), each with its sections — views over the wiki.
+// The one main screen. Left rail is a numbered 1..6 area spine — always
+// visible so the process sequence never scrolls away — plus a collapsible
+// section panel that lists the sections of the selected area.
 // Right rail is the agent chat + the wiki-wide lint pass.
 export default function ProcessDocScreen({
   schema,
@@ -328,18 +330,36 @@ export default function ProcessDocScreen({
     openingRunDoc ? "__triage" : "process-steps",
   );
   const [dark, setDark] = useState(false);
-  // Left-nav area groups the user has collapsed (by area id).
-  const [collapsedAreas, setCollapsedAreas] = useState<Set<string>>(new Set());
-  // The whole left rail collapsed to a thin strip, hidden off to the left.
-  const [railCollapsed, setRailCollapsed] = useState(false);
+  // The numbered area spine (1..6) is always visible; the section detail
+  // panel beside it collapses to widen the canvas.
+  const [sectionsCollapsed, setSectionsCollapsed] = useState(false);
+  // Which area's sections the detail panel lists. Follows `section`
+  // whenever it resolves to an area, and stays put for area-less views
+  // (lint, triage, a source document).
+  const [navAreaId, setNavAreaId] = useState(
+    () =>
+      schema.areas.find((a) => a.sections.some((s) => s.id === section))?.id ??
+      schema.areas[0].id,
+  );
+  useEffect(() => {
+    const a = schema.areas.find(
+      (ar) =>
+        ar.sections.some((s) => s.id === section) ||
+        section === `__area:${ar.id}`,
+    );
+    if (a) setNavAreaId(a.id);
+  }, [section, schema.areas]);
 
-  function toggleArea(id: string) {
-    setCollapsedAreas((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+  // Spine click: re-clicking the active area toggles the panel; a different
+  // area selects it, reopens the panel and shows its executive summary.
+  function selectArea(id: string) {
+    if (id === navAreaId) {
+      setSectionsCollapsed((v) => !v);
+    } else {
+      setNavAreaId(id);
+      setSectionsCollapsed(false);
+      setSection(`__area:${id}`);
+    }
   }
 
   // Agent chat + lint state.
@@ -520,9 +540,10 @@ export default function ProcessDocScreen({
     document.documentElement.setAttribute("data-theme", next ? "dark" : "light");
   }
 
-  const activeLabel =
-    schema.areas.flatMap((a) => a.sections).find((s) => s.id === section)
-      ?.label ?? section;
+  const currentSection =
+    schema.areas.flatMap((a) => a.sections).find((s) => s.id === section) ??
+    null;
+  const activeLabel = currentSection?.label ?? section;
   // A section is "planned" when no element type targets it — it can't yet
   // hold anything, so the app must not promise an Add entry there.
   const sectionHasType = Object.values(schema.elementTypes).some(
@@ -576,6 +597,17 @@ export default function ProcessDocScreen({
     }
   }
 
+  // Lint findings grouped by the element id they involve — each element card
+  // shows its own findings inline. A finding spanning N elements shows on each.
+  const findingsByElement: Record<string, LintFinding[]> = {};
+  if (findings) {
+    for (const f of findings) {
+      for (const id of f.elements) {
+        (findingsByElement[id] ??= []).push(f);
+      }
+    }
+  }
+
   // Per-area review progress — drives the left-rail progress bars. An element
   // counts as reviewed when approved, or (for a web-sourced type) once triaged.
   const isReviewed = (e: WikiPage) =>
@@ -591,6 +623,15 @@ export default function ProcessDocScreen({
       reviewed: els.filter(isReviewed).length,
     };
   }
+
+  // The area the left-rail detail panel currently lists, and its 1-based
+  // position in the process sequence (the number shown on the spine).
+  const activeAreaIdx = Math.max(
+    0,
+    schema.areas.findIndex((a) => a.id === navAreaId),
+  );
+  const activeArea = schema.areas[activeAreaIdx];
+  const activeAreaNo = activeAreaIdx + 1;
 
   // The Process Assistant chat — backed by the local `claude` CLI via
   // /api/session. Each turn runs claude headless in the repo, so it can
@@ -1091,90 +1132,111 @@ export default function ProcessDocScreen({
 
       <div
         className={`shell${chatOpen ? " chat-open" : ""}${
-          railCollapsed ? " rail-collapsed" : ""
+          sectionsCollapsed ? " sections-collapsed" : ""
         }`}
       >
-        <nav className={`rail rail-l${railCollapsed ? " collapsed" : ""}`}>
-          <button
-            className="rail-toggle"
-            onClick={() => setRailCollapsed((v) => !v)}
-            aria-expanded={!railCollapsed}
-            aria-label={railCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            title={railCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            {railCollapsed ? "»" : "«"}
-          </button>
-          {!railCollapsed && (
-            <>
+        <nav className={`rail rail-l${sectionsCollapsed ? " collapsed" : ""}`}>
+          <div className="nav-spine">
+            <button
+              className="spine-toggle"
+              onClick={() => setSectionsCollapsed((v) => !v)}
+              aria-expanded={!sectionsCollapsed}
+              aria-label={
+                sectionsCollapsed ? "Show section list" : "Hide section list"
+              }
+              title={
+                sectionsCollapsed ? "Show section list" : "Hide section list"
+              }
+            >
+              {sectionsCollapsed ? "»" : "«"}
+            </button>
+            <div className="spine-nodes">
+              {schema.areas.map((area, i) => {
+                const stats = areaStats[area.id];
+                const done = stats.total > 0 && stats.reviewed === stats.total;
+                const hasFindings = area.sections.some(
+                  (s) => findingsBySection[s.id],
+                );
+                // A web-sourcing run spins against the area it fills.
+                const areaSourcing =
+                  sourcing?.status === "running" &&
+                  ((sourcing.kind === "innovation" &&
+                    area.id === "innovation") ||
+                    (sourcing.kind === "cx" &&
+                      area.id === "client-experience") ||
+                    (sourcing.kind === "regulation" &&
+                      area.id === "risk-compliance"));
+                return (
+                  <button
+                    key={area.id}
+                    className={`spine-node${
+                      area.id === navAreaId ? " active" : ""
+                    }${done ? " done" : ""}`}
+                    onClick={() => selectArea(area.id)}
+                    aria-current={area.id === navAreaId ? "true" : undefined}
+                    title={area.label}
+                  >
+                    <span className="spine-num">{i + 1}</span>
+                    <span className="spine-lbl">{area.label}</span>
+                    {areaSourcing ? (
+                      <span
+                        className="spine-spinner"
+                        title="Sourcing from the web…"
+                      />
+                    ) : hasFindings ? (
+                      <span
+                        className="spine-dot"
+                        title="Open lint findings in this area"
+                      />
+                    ) : null}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {!sectionsCollapsed && (
+            <div className="nav-sections">
               <div className="nav-scroll">
-                {schema.areas.map((area) => {
-            const collapsed = collapsedAreas.has(area.id);
-            // A web-sourcing run spins against the area heading it fills.
-            const areaSourcing =
-              sourcing?.status === "running" &&
-              ((sourcing.kind === "innovation" && area.id === "innovation") ||
-                (sourcing.kind === "cx" &&
-                  area.id === "client-experience") ||
-                (sourcing.kind === "regulation" &&
-                  area.id === "risk-compliance"));
-            return (
-            <div className="nav-area" key={area.id}>
-              <div className="nav-area-head">
-                <button
-                  className="nav-area-collapse"
-                  onClick={() => toggleArea(area.id)}
-                  aria-expanded={!collapsed}
-                  aria-label={collapsed ? "Expand area" : "Collapse area"}
-                >
-                  <span
-                    className={`nav-area-chevron${collapsed ? " collapsed" : ""}`}
+                <div className="nav-sec-head">
+                  <button
+                    className={`nav-sec-title${
+                      section === `__area:${activeArea.id}` ? " active" : ""
+                    }`}
+                    onClick={() => setSection(`__area:${activeArea.id}`)}
+                    title={`Executive summary of ${activeArea.label}`}
                   >
-                    ▾
-                  </span>
-                </button>
-                <button
-                  className={`nav-area-label${
-                    section === `__area:${area.id}` ? " active" : ""
-                  }`}
-                  onClick={() => setSection(`__area:${area.id}`)}
-                  title={`Executive summary of ${area.label}`}
-                >
-                  {area.label}
-                  {areaSourcing && (
-                    <span
-                      className="nav-area-spinner"
-                      title="Sourcing from the web…"
-                    />
+                    <span className="nav-sec-n">{activeAreaNo}</span>
+                    {activeArea.label}
+                  </button>
+                  {areaStats[activeArea.id].total > 0 && (
+                    <Tooltip
+                      label={`${areaStats[activeArea.id].reviewed} of ${
+                        areaStats[activeArea.id].total
+                      } elements reviewed`}
+                      placement="right"
+                    >
+                      <span className="nav-area-frac">
+                        {areaStats[activeArea.id].reviewed}/
+                        {areaStats[activeArea.id].total}
+                      </span>
+                    </Tooltip>
                   )}
-                </button>
-                {areaStats[area.id].total > 0 && (
-                  <Tooltip
-                    label={`${areaStats[area.id].reviewed} of ${
-                      areaStats[area.id].total
-                    } elements reviewed`}
-                    placement="right"
-                  >
-                    <span className="nav-area-frac">
-                      {areaStats[area.id].reviewed}/{areaStats[area.id].total}
-                    </span>
-                  </Tooltip>
-                )}
-              </div>
-              {areaStats[area.id].total > 0 && (
-                <div className="nav-area-meter">
-                  <i
-                    style={{
-                      width: `${Math.round(
-                        (areaStats[area.id].reviewed /
-                          areaStats[area.id].total) *
-                          100,
-                      )}%`,
-                    }}
-                  />
                 </div>
-              )}
-              {!collapsed &&
-              area.sections.map((s) => {
+                {areaStats[activeArea.id].total > 0 && (
+                  <div className="nav-area-meter">
+                    <i
+                      style={{
+                        width: `${Math.round(
+                          (areaStats[activeArea.id].reviewed /
+                            areaStats[activeArea.id].total) *
+                            100,
+                        )}%`,
+                      }}
+                    />
+                  </div>
+                )}
+                {activeArea.sections.map((s) => {
                 const isOverview = s.id === "overview";
                 const els = isOverview
                   ? []
@@ -1241,9 +1303,6 @@ export default function ProcessDocScreen({
                     </span>
                   </button>
                 );
-              })}
-            </div>
-            );
                 })}
               </div>
               <SourcesPanel
@@ -1257,7 +1316,7 @@ export default function ProcessDocScreen({
                 onOpen={(f) => setSection(`__doc:${f}`)}
                 onUpload={() => setUploadModalOpen(true)}
               />
-            </>
+            </div>
           )}
         </nav>
 
@@ -1399,9 +1458,7 @@ export default function ProcessDocScreen({
               <div className="canvas-title">
                 <h1>{activeLabel}</h1>
                 <div className="sub">
-                  {sectionElements.length}{" "}
-                  {sectionElements.length === 1 ? "element" : "elements"} — each
-                  one: view, let the AI work on it, or edit it yourself.
+                  {currentSection?.description ?? activeLabel}
                 </div>
               </div>
               <div className="canvas-strip">
@@ -1634,6 +1691,10 @@ export default function ProcessDocScreen({
                         onDeepDive={(id, title) =>
                           deepDive({ id, title, kind: "element" })
                         }
+                        findings={findingsByElement[el.id]}
+                        onFindingDeepDive={(f) =>
+                          deepDive({ id: f.id, title: f.title, kind: "finding" })
+                        }
                         defaultCollapsed={sectionElements.length > 3}
                         isCurrent={el.id === currentRunId}
                       />
@@ -1658,6 +1719,10 @@ export default function ProcessDocScreen({
                     onGoToElement={goToElement}
                     onDeepDive={(id, title) =>
                       deepDive({ id, title, kind: "element" })
+                    }
+                    findings={findingsByElement[el.id]}
+                    onFindingDeepDive={(f) =>
+                      deepDive({ id: f.id, title: f.title, kind: "finding" })
                     }
                     defaultCollapsed={sectionElements.length > 3}
                     isCurrent={el.id === currentRunId}
