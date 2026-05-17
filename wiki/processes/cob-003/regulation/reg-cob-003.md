@@ -1,7 +1,7 @@
 ---
 id: REG-COB-003
 type: regulation
-section: compliance
+section: regulation
 title: GDPR
 status: confirmed
 confidence: high

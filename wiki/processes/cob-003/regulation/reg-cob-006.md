@@ -1,7 +1,7 @@
 ---
 id: REG-COB-006
 type: regulation
-section: compliance
+section: regulation
 title: SoD Policy
 status: confirmed
 confidence: high

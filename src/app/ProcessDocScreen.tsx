@@ -27,6 +27,11 @@ const mid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
 // The signed-in SME — stamped onto review-status changes in the wiki.
 const CURRENT_USER = "M. Berger";
+const CURRENT_USER_ROLE = "Subject-Matter Expert";
+const USER_INITIALS = CURRENT_USER.split(/\s+/)
+  .map((w) => w[0])
+  .join("")
+  .toUpperCase();
 
 // Top-bar action icons — stroked line glyphs, sized + coloured via CSS.
 const IconSearch = () => (
@@ -63,14 +68,21 @@ const IconSun = () => (
     <path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2" />
   </svg>
 );
+const IconUser = () => (
+  <svg viewBox="0 0 24 24">
+    <circle cx="12" cy="8" r="3.6" />
+    <path d="M5.5 20a6.5 6.5 0 0 1 13 0" />
+  </svg>
+);
 
-// The two non-interactive web-sourcing skills, and the sections each fills.
+// The non-interactive web-sourcing skills, and the sections each fills.
 const INNOVATION_SECTIONS = [
   "market-trends",
   "competitor-innovation",
   "innovation-ideas",
 ];
 const CX_SECTIONS = ["competitor-cx", "cx-benchmarks"];
+const REGULATION_SECTIONS = ["regulation"];
 
 // Each area's foundational specialist skill — drives the empty-area next-step
 // card shown when a whole area still has no elements.
@@ -82,6 +94,11 @@ const AREA_NEXT: Record<
     skill: "process-specialist",
     label: "process specialist",
     blurb: "map the as-is process with an SME",
+  },
+  "risk-compliance": {
+    skill: "control-compliance-specialist",
+    label: "control & compliance specialist",
+    blurb: "map the controls, regulations and compliance gaps",
   },
   "client-experience": {
     skill: "client-journey-specialist",
@@ -130,9 +147,12 @@ const SPECIALIST: Record<string, { label: string; blurb: string }> = {
     blurb: "develops the forward-looking view",
   },
 };
-function sectionSourcingKind(section: string): "innovation" | "cx" | null {
+function sectionSourcingKind(
+  section: string,
+): "innovation" | "cx" | "regulation" | null {
   if (INNOVATION_SECTIONS.includes(section)) return "innovation";
   if (CX_SECTIONS.includes(section)) return "cx";
+  if (REGULATION_SECTIONS.includes(section)) return "regulation";
   return null;
 }
 
@@ -342,12 +362,14 @@ export default function ProcessDocScreen({
   // Document upload — the modal saves to raw-sources/, then the chat runs
   // the document-ingest skill on the saved file.
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  // Signed-in-user popover — the topbar person icon opens it.
+  const [userModalOpen, setUserModalOpen] = useState(false);
 
-  // A non-interactive web-sourcing run (source-innovation / source-cx). It
-  // runs outside the chat — a section banner shows progress, a dismissable
-  // notice shows the result.
+  // A non-interactive web-sourcing run (source-innovation / source-cx /
+  // source-regulation). It runs outside the chat — a section banner shows
+  // progress, a dismissable notice shows the result.
   const [sourcing, setSourcing] = useState<{
-    kind: "innovation" | "cx";
+    kind: "innovation" | "cx" | "regulation";
     status: "running" | "done" | "error";
     text?: string;
   } | null>(null);
@@ -359,9 +381,8 @@ export default function ProcessDocScreen({
     status: "generating" | "error";
   } | null>(null);
 
-  // ⌘K search palette + the real "saved" indicator.
+  // ⌘K search palette.
   const [paletteOpen, setPaletteOpen] = useState(false);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
   // Bottom-right toast stack — one home for transient outcomes.
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -570,40 +591,6 @@ export default function ProcessDocScreen({
       reviewed: els.filter(isReviewed).length,
     };
   }
-
-  // Top-bar breadcrumb — where in the wiki the canvas currently sits.
-  const crumb: { area: string | null; areaId: string | null; leaf: string } =
-    (() => {
-      if (section === "__triage")
-        return { area: null, areaId: null, leaf: "Triage" };
-      if (section === "__review")
-        return { area: null, areaId: null, leaf: "Lint Review" };
-      if (section.startsWith("__doc:"))
-        return {
-          area: "Documents",
-          areaId: null,
-          leaf: section.slice("__doc:".length),
-        };
-      if (section.startsWith("__area:")) {
-        const a = schema.areas.find(
-          (x) => x.id === section.slice("__area:".length),
-        );
-        return {
-          area: a?.label ?? "Area",
-          areaId: a?.id ?? null,
-          leaf: "Executive summary",
-        };
-      }
-      const area = schema.areas.find((a) =>
-        a.sections.some((s) => s.id === section),
-      );
-      const sec = area?.sections.find((s) => s.id === section);
-      return {
-        area: area?.label ?? null,
-        areaId: area?.id ?? null,
-        leaf: sec?.label ?? activeLabel,
-      };
-    })();
 
   // The Process Assistant chat — backed by the local `claude` CLI via
   // /api/session. Each turn runs claude headless in the repo, so it can
@@ -880,10 +867,15 @@ export default function ProcessDocScreen({
   }
 
   // progress banner, and it ends with a dismissable notice.
-  function runSourcing(kind: "innovation" | "cx") {
+  function runSourcing(kind: "innovation" | "cx" | "regulation") {
     if (sourcing?.status === "running") return;
     setSourcing({ kind, status: "running" });
-    const skill = kind === "innovation" ? "source-innovation" : "source-cx";
+    const skill =
+      kind === "innovation"
+        ? "source-innovation"
+        : kind === "cx"
+          ? "source-cx"
+          : "source-regulation";
     fetch("/api/session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -932,7 +924,11 @@ export default function ProcessDocScreen({
             kind,
             status: "done",
             text: `Sourcing of ${
-              kind === "innovation" ? "Innovation" : "Client Experience"
+              kind === "innovation"
+                ? "Innovation"
+                : kind === "cx"
+                  ? "Client Experience"
+                  : "Regulation"
             } items completed.`,
           });
           router.refresh();
@@ -947,8 +943,8 @@ export default function ProcessDocScreen({
       });
   }
 
-  // Deep dive — the hook that will trigger the QER brainstorming skill.
-  // Stubbed for now: opens the chat and frames a QER session on the target.
+  // Deep dive — the hook that will trigger the Brainstorm skill.
+  // Stubbed for now: opens the chat and frames a Brainstorm session on the target.
   function deepDive(target: {
     id: string;
     title: string;
@@ -962,14 +958,14 @@ export default function ProcessDocScreen({
     setTimeout(() => {
       const intro =
         target.kind === "finding"
-          ? `Starting a QER deep dive on finding ${target.id} (“${target.title}”). The QER agent would now run an interactive brainstorming session — working through the discrepancy with you, asking targeted clarifying questions until the wiki is consistent again.`
-          : `Starting a QER deep dive on ${target.id} (“${target.title}”). The QER agent would now run an interactive brainstorming session on this element — probing for edge cases, exceptions and tacit detail to deepen the documentation.`;
+          ? `Starting a Brainstorm deep dive on finding ${target.id} (“${target.title}”). The Brainstorm agent would now run an interactive brainstorming session — working through the discrepancy with you, asking targeted clarifying questions until the wiki is consistent again.`
+          : `Starting a Brainstorm deep dive on ${target.id} (“${target.title}”). The Brainstorm agent would now run an interactive brainstorming session on this element — probing for edge cases, exceptions and tacit detail to deepen the documentation.`;
       setMessages((m) => [
         ...m,
         {
           id: mid(),
           role: "agent",
-          text: `${intro}\n\nThe QER skill is stubbed in this build — wiring it is the next slice.`,
+          text: `${intro}\n\nThe Brainstorm skill is stubbed in this build — wiring it is the next slice.`,
         },
       ]);
     }, 700);
@@ -985,11 +981,19 @@ export default function ProcessDocScreen({
     let tries = 0;
     const tryScroll = () => {
       const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-      } else if (tries++ < 30) {
-        requestAnimationFrame(tryScroll);
+      if (!el) {
+        if (tries++ < 30) requestAnimationFrame(tryScroll);
+        return;
       }
+      // A collapsed card would otherwise scroll into view still closed —
+      // expand it via its own toggle so React owns the state, then scroll
+      // once the expanded layout has settled.
+      if (el.classList.contains("collapsed")) {
+        el.querySelector<HTMLElement>(".el-collapse")?.click();
+      }
+      requestAnimationFrame(() =>
+        el.scrollIntoView({ behavior: "smooth", block: "center" }),
+      );
     };
     requestAnimationFrame(tryScroll);
   }
@@ -1003,39 +1007,7 @@ export default function ProcessDocScreen({
           onSelect={switchProcess}
           onCreate={createProcess}
         />
-        <nav className="crumb-trail" aria-label="Location">
-          {crumb.area && (
-            <>
-              {crumb.areaId ? (
-                <button
-                  className="crumb-area crumb-link"
-                  onClick={() => setSection(`__area:${crumb.areaId}`)}
-                  title={`Open the ${crumb.area} executive summary`}
-                >
-                  {crumb.area}
-                </button>
-              ) : (
-                <span className="crumb-area">{crumb.area}</span>
-              )}
-              <span className="crumb-sep">›</span>
-            </>
-          )}
-          <span className="crumb-leaf">{crumb.leaf}</span>
-        </nav>
         <span className="spacer" />
-        <span
-          className={`save${lastSaved ? " just-saved" : ""}`}
-          key={lastSaved ? lastSaved.getTime() : "idle"}
-        >
-          <span className="dot" />{" "}
-          {lastSaved
-            ? `Saved ${lastSaved.toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}`
-            : "Auto-save on"}
-        </span>
-        <span className="sme">{CURRENT_USER} · Subject-Matter Expert</span>
         <div className="tb-icons">
           <Tooltip label="Search (⌘K)">
             <button
@@ -1105,6 +1077,15 @@ export default function ProcessDocScreen({
               {dark ? <IconSun /> : <IconMoon />}
             </button>
           </Tooltip>
+          <Tooltip label={`${CURRENT_USER} · ${CURRENT_USER_ROLE}`}>
+            <button
+              className="tb-icon"
+              onClick={() => setUserModalOpen(true)}
+              aria-label="Signed-in user"
+            >
+              <IconUser />
+            </button>
+          </Tooltip>
         </div>
       </header>
 
@@ -1133,7 +1114,9 @@ export default function ProcessDocScreen({
               sourcing?.status === "running" &&
               ((sourcing.kind === "innovation" && area.id === "innovation") ||
                 (sourcing.kind === "cx" &&
-                  area.id === "client-experience"));
+                  area.id === "client-experience") ||
+                (sourcing.kind === "regulation" &&
+                  area.id === "risk-compliance"));
             return (
             <div className="nav-area" key={area.id}>
               <div className="nav-area-head">
@@ -1294,7 +1277,6 @@ export default function ProcessDocScreen({
                 userName={CURRENT_USER}
                 onNavigate={setSection}
                 resolveSection={resolveSection}
-                onSaved={() => setLastSaved(new Date())}
               />
             </>
           ) : section === "__review" ? (
@@ -1446,6 +1428,16 @@ export default function ProcessDocScreen({
                   >
                     ⎙ Export PDF
                   </button>
+                  {sectionKind !== null && sectionElements.length > 0 && (
+                    <button
+                      className="canvas-act"
+                      onClick={() => runSourcing(sectionKind)}
+                      disabled={sourcing?.status === "running"}
+                      title="Re-run the web-sourcing skill for this section"
+                    >
+                      ✦ Refresh from the web
+                    </button>
+                  )}
                   {sectionHasType &&
                     (() => {
                     const addTypes = Object.values(schema.elementTypes)
@@ -1601,7 +1593,9 @@ export default function ProcessDocScreen({
                       <p className="empty-hint">
                         {sectionKind === "innovation"
                           ? "Let the assistant source market trends, competitor moves and innovation ideas from the web — studies, analyst reports and competitor scans in this process’s domain."
-                          : "Let the assistant scan how competitors run this client journey and gather industry CX benchmarks from the web."}
+                          : sectionKind === "regulation"
+                            ? "Let the assistant source the regulations that govern this process from the web — financial-services regulation, supervisory rules and guidance in this process’s domain."
+                            : "Let the assistant scan how competitors run this client journey and gather industry CX benchmarks from the web."}
                       </p>
                       <button
                         className="empty-cta"
@@ -1640,7 +1634,6 @@ export default function ProcessDocScreen({
                         onDeepDive={(id, title) =>
                           deepDive({ id, title, kind: "element" })
                         }
-                        onSaved={() => setLastSaved(new Date())}
                         defaultCollapsed={sectionElements.length > 3}
                         isCurrent={el.id === currentRunId}
                       />
@@ -1666,7 +1659,6 @@ export default function ProcessDocScreen({
                     onDeepDive={(id, title) =>
                       deepDive({ id, title, kind: "element" })
                     }
-                    onSaved={() => setLastSaved(new Date())}
                     defaultCollapsed={sectionElements.length > 3}
                     isCurrent={el.id === currentRunId}
                   />
@@ -1719,6 +1711,40 @@ export default function ProcessDocScreen({
         onClose={() => setUploadModalOpen(false)}
         onUploaded={onUploaded}
       />
+
+      {userModalOpen && (
+        <div
+          className="modal-overlay"
+          onClick={() => setUserModalOpen(false)}
+        >
+          <div
+            className="modal"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-label="Signed-in user"
+          >
+            <div className="modal-title">Signed-in user</div>
+            <div className="user-card">
+              <span className="user-avatar">{USER_INITIALS}</span>
+              <div>
+                <div className="user-name">{CURRENT_USER}</div>
+                <div className="user-role">{CURRENT_USER_ROLE}</div>
+              </div>
+            </div>
+            <p className="modal-text">
+              Approvals and edits in this process are stamped with this name.
+            </p>
+            <div className="modal-actions">
+              <button
+                className="act"
+                onClick={() => setUserModalOpen(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <ToastStack toasts={toasts} onDismiss={dismissToast} />
     </>

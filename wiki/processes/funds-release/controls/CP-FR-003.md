@@ -10,6 +10,7 @@ controlType: PREVENTIVE
 execution: MANUAL
 step: PS-FR-006
 owner: Ops Approver
+regulatedBy: [REG-FR-003]
 ---
 ## What it checks
 That the release is authorised by someone other than the person who performed first-line approval.

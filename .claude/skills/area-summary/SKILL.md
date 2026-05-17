@@ -2,7 +2,8 @@
 name: area-summary
 description: >-
   Generate an executive summary of one area of a process wiki — As-Is Process,
-  Client Experience, Innovation, Target Process or IT Architecture — written
+  Risk & Compliance, Client Experience, Innovation, Target Process or IT
+  Architecture — written
   as an Amazon-style narrative memo. Read every section in the area and write
   the memo into summaries.json for the app to render. Non-interactive: no SME
   questions, no approval loop. Invoked by a button. Use this whenever the user
@@ -13,8 +14,8 @@ description: >-
 
 You generate an **executive summary of one area** of a process wiki and store
 it where the app can render it. You are invoked with a process `<slug>` and an
-`<area>` id (one of `as-is`, `client-experience`, `innovation`, `target`,
-`it-architecture`).
+`<area>` id (one of `as-is`, `risk-compliance`, `client-experience`,
+`innovation`, `target`, `it-architecture`).
 
 You are non-interactive — you read, write and report. No SME questions, no
 approval loop. This is a silent generation, like `source-cx`.

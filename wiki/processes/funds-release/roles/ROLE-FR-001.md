@@ -6,6 +6,9 @@ title: Front Office
 status: draft
 confidence: high
 source: funds-release-dtp-mockup.md
+approval: approved
+approvalBy: M. Berger
+approvalDate: 2026-05-17
 ---
 ## Responsibility
 Originates funds-release demand and owns the release request submitted to Operations for an approved facility.

@@ -7,6 +7,11 @@ import { setApproval } from "@/lib/wiki-write";
 // The review-status control — in-progress / approved / rejected — for an
 // element or the process overview. Optimistic, server-action backed; the wiki
 // frontmatter is the source of truth and stamps who set it and when.
+const APPROVAL_OPTIONS = [
+  { value: "in-progress", label: "In progress" },
+  { value: "approved", label: "Approved" },
+  { value: "rejected", label: "Rejected" },
+];
 export default function ApprovalControl({
   slug,
   id,
@@ -51,15 +56,25 @@ export default function ApprovalControl({
   return (
     <span className="approval-control">
       <label className={`approval approval-${approval}`}>
+        <span className="statusctl-dot" aria-hidden="true" />
+        <span className="statusctl-label">
+          {APPROVAL_OPTIONS.find((o) => o.value === approval)?.label ?? ""}
+        </span>
+        <span className="statusctl-caret" aria-hidden="true">
+          ▾
+        </span>
         <select
+          className="statusctl-native"
           value={approval}
           disabled={pending}
           onChange={(e) => change(e.target.value)}
           aria-label="Review status"
         >
-          <option value="in-progress">In progress</option>
-          <option value="approved">Approved</option>
-          <option value="rejected">Rejected</option>
+          {APPROVAL_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
         </select>
       </label>
       {approvalBy && approvalDate && (

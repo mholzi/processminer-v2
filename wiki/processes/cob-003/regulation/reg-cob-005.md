@@ -1,7 +1,7 @@
 ---
 id: REG-COB-005
 type: regulation
-section: compliance
+section: regulation
 title: Consumer Protection Code
 status: confirmed
 confidence: high

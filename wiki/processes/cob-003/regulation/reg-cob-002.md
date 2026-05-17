@@ -1,7 +1,7 @@
 ---
 id: REG-COB-002
 type: regulation
-section: compliance
+section: regulation
 title: AML Act 2010
 status: confirmed
 confidence: high

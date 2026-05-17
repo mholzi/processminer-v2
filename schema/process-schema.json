@@ -1,7 +1,7 @@
 {
   "$schema": "processminer-wiki-schema-v2",
   "version": "2.1.0",
-  "_comment": "Karpathy LLM-Wiki layer 3 — the schema. Documentation is organised into 4 areas (As-Is Process / Innovation / Target Process / IT Architecture), each with sections. Each element type carries a 'template': the named prose blocks every element of that type must have, with format (paragraph/bullets) and length guidance. Word ranges are calibrated to the COB-003 content so conformance flags genuine deviations. The wiki/ markdown pages are layer 2; raw-sources/ is layer 1.",
+  "_comment": "Karpathy LLM-Wiki layer 3 — the schema. Documentation is organised into 6 areas (As-Is Process / Risk & Compliance / Client Experience / Innovation / Target Process / IT Architecture), each with sections. Each element type carries a 'template': the named prose blocks every element of that type must have, with format (paragraph/bullets) and length guidance. Word ranges are calibrated to the COB-003 content so conformance flags genuine deviations. The wiki/ markdown pages are layer 2; raw-sources/ is layer 1.",
   "areas": [
     {
       "id": "as-is",
@@ -27,16 +27,6 @@
           "specialist": "process-specialist"
         },
         {
-          "id": "controls",
-          "label": "Controls",
-          "specialist": "control-compliance-specialist"
-        },
-        {
-          "id": "compliance",
-          "label": "Compliance",
-          "specialist": "control-compliance-specialist"
-        },
-        {
           "id": "pain-points",
           "label": "Pain Points",
           "specialist": "process-specialist"
@@ -50,6 +40,32 @@
           "id": "process-gaps",
           "label": "Process Gaps",
           "specialist": "process-specialist"
+        }
+      ]
+    },
+    {
+      "id": "risk-compliance",
+      "label": "Risk & Compliance",
+      "sections": [
+        {
+          "id": "controls",
+          "label": "Controls",
+          "specialist": "control-compliance-specialist"
+        },
+        {
+          "id": "regulation",
+          "label": "Regulation",
+          "specialist": "control-compliance-specialist"
+        },
+        {
+          "id": "control-gaps",
+          "label": "Control Gaps",
+          "specialist": "control-compliance-specialist"
+        },
+        {
+          "id": "audit-findings",
+          "label": "Audit Findings",
+          "specialist": "control-compliance-specialist"
         }
       ]
     },
@@ -398,13 +414,22 @@
     },
     "regulation": {
       "label": "Regulation",
-      "section": "compliance",
+      "section": "regulation",
       "idPrefix": "REG",
       "frontmatter": {
         "fields": [
           {
             "key": "domain",
             "label": "Domain"
+          },
+          {
+            "key": "asOf",
+            "label": "As of"
+          },
+          {
+            "key": "source",
+            "label": "Source",
+            "urlKey": "sourceUrl"
           }
         ],
         "relations": [
@@ -443,8 +468,8 @@
       ]
     },
     "compliance-gap": {
-      "label": "Compliance Gap",
-      "section": "compliance",
+      "label": "Control Gap",
+      "section": "control-gaps",
       "idPrefix": "CG",
       "frontmatter": {
         "fields": [
@@ -495,7 +520,7 @@
     },
     "audit-finding": {
       "label": "Audit Finding",
-      "section": "compliance",
+      "section": "audit-findings",
       "idPrefix": "OAF",
       "frontmatter": {
         "fields": [

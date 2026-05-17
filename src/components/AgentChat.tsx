@@ -68,7 +68,7 @@ export default function AgentChat({
   return (
     <aside className="rail rail-r chat">
       <div className="chat-head">
-        <span className="chat-title">Process Assistant</span>
+        <span className="chat-title">ProcessMiner</span>
         <button
           className="chat-restart"
           onClick={onRestart}

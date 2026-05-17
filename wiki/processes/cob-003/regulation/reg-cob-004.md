@@ -1,7 +1,7 @@
 ---
 id: REG-COB-004
 type: regulation
-section: compliance
+section: regulation
 title: PSD2
 status: confirmed
 confidence: high

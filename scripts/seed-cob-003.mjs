@@ -126,7 +126,7 @@ for (const s of steps) {
   page(`steps/${s.id.toLowerCase()}.md`, fm, blocks(...s.blocks));
 }
 
-// ── AS-IS · Controls ──────────────────────────────────────────────────────
+// ── RISK & COMPLIANCE · Controls ──────────────────────────────────────────
 const controls = [
   {
     id: "CP-COB-001", title: "Customer Identification", controlType: "PREVENTIVE",
@@ -192,7 +192,7 @@ for (const c of controls) {
   }, blocks(...c.blocks));
 }
 
-// ── AS-IS · Compliance · Regulations ──────────────────────────────────────
+// ── RISK & COMPLIANCE · Regulations ───────────────────────────────────────
 const regs = [
   {
     id: "REG-COB-001", title: "CDD Regulations 2010", domain: "Customer Due Diligence",
@@ -250,12 +250,12 @@ const regs = [
   },
 ];
 for (const r of regs) {
-  page(`compliance/${r.id.toLowerCase()}.md`, {
-    ...base(r.id, "regulation", "compliance", r.title), domain: r.domain, controls: r.controls,
+  page(`regulation/${r.id.toLowerCase()}.md`, {
+    ...base(r.id, "regulation", "regulation", r.title), domain: r.domain, controls: r.controls,
   }, blocks(...r.blocks));
 }
 
-// ── AS-IS · Compliance · Compliance gaps + audit finding ──────────────────
+// ── RISK & COMPLIANCE · Control gaps + audit finding ──────────────────────
 const complianceGaps = [
   {
     id: "CG-COB-001", title: "Product Disclosure only medium-effective",
@@ -277,12 +277,12 @@ const complianceGaps = [
   },
 ];
 for (const g of complianceGaps) {
-  const fm = { ...base(g.id, "compliance-gap", "compliance", g.title), severity: g.severity, gapStatus: g.gapStatus };
+  const fm = { ...base(g.id, "compliance-gap", "control-gaps", g.title), severity: g.severity, gapStatus: g.gapStatus };
   if (g.control) fm.control = g.control;
-  page(`compliance/${g.id.toLowerCase()}.md`, fm, blocks(...g.blocks));
+  page(`control-gaps/${g.id.toLowerCase()}.md`, fm, blocks(...g.blocks));
 }
-page("compliance/oaf-cob-001.md", {
-  ...base("OAF-COB-001", "audit-finding", "compliance", "Internal Audit Q3 2024 — Control Testing"),
+page("audit-findings/oaf-cob-001.md", {
+  ...base("OAF-COB-001", "audit-finding", "audit-findings", "Internal Audit Q3 2024 — Control Testing"),
   auditDate: "2024-Q3", findingStatus: "closed", severity: "NONE",
 }, blocks(
   ["Finding", "Internal Audit tested the COB-003 control framework in Q3 2024 and found no material weaknesses. The documented control points operated as designed across the audit sample."],

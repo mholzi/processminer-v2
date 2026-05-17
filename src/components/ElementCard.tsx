@@ -146,6 +146,8 @@ export default function ElementCard({
     ? String(page.meta[`${reviewField}Date`])
     : null;
   const [review, setReviewLocal] = useState(serverReview);
+  const reviewLabel =
+    reviewOptions.find((o) => o.value === review)?.label ?? "";
   const [reviewPending, startReview] = useTransition();
   const [reviewError, setReviewError] = useState<string | null>(null);
   useEffect(() => {
@@ -261,12 +263,17 @@ export default function ElementCard({
         : review === "disregarded"
           ? "disregarded by"
           : "flagged by";
+  // An approved element drops the "AI-drafted" provenance — once the SME has
+  // signed off, the only thing that matters is who approved it and when.
+  const approved = review === "approved";
   const provenanceText =
-    reviewBy && reviewDate
-      ? `${isDraft ? "AI-drafted" : "Authored"} · ${reviewVerb} ${reviewBy}, ${reviewDate}`
-      : isDraft
-        ? "AI-drafted · awaiting confirmation"
-        : "Authored · not yet confirmed";
+    approved && reviewBy && reviewDate
+      ? `Approved by ${reviewBy}, ${reviewDate}`
+      : reviewBy && reviewDate
+        ? `${isDraft ? "AI-drafted" : "Authored"} · ${reviewVerb} ${reviewBy}, ${reviewDate}`
+        : isDraft
+          ? "AI-drafted · awaiting confirmation"
+          : "Authored · not yet confirmed";
 
   return (
     <article
@@ -291,34 +298,6 @@ export default function ElementCard({
             <span className={`el-conf-dot conf-${page.confidence}`} />
           </Tooltip>
         )}
-        {!editing && (
-          <label
-            className={`${sourced ? "relevance" : "approval"} ${
-              sourced ? "relevance" : "approval"
-            }-${review || "none"}`}
-          >
-            <select
-              value={review}
-              disabled={reviewPending}
-              onChange={(e) => changeReview(e.target.value)}
-              aria-label="Review status"
-            >
-              {reviewOptions.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-        {page.status === "draft" && <span className="tag">AI draft</span>}
-        {editing && <span className="tag editing-tag">Editing</span>}
-        {isCurrent && !editing && (
-          <span className="tag current-tag">Under review</span>
-        )}
-        {!editing && reviewError && (
-          <span className="el-edit-err">{reviewError}</span>
-        )}
         {template && template.length > 0 && !isCollapsed && (
           <button
             className={`el-struct-btn${issueCount > 0 ? " has-issues" : ""}`}
@@ -336,10 +315,38 @@ export default function ElementCard({
             )}
           </button>
         )}
-        {!editing && reviewBy && reviewDate && (
-          <span className="approval-meta">
-            {reviewBy} · {reviewDate}
-          </span>
+        {!editing && (
+          <label
+            className={`${sourced ? "relevance" : "approval"} ${
+              sourced ? "relevance" : "approval"
+            }-${review || "none"}`}
+          >
+            <span className="statusctl-dot" aria-hidden="true" />
+            <span className="statusctl-label">{reviewLabel}</span>
+            <span className="statusctl-caret" aria-hidden="true">
+              ▾
+            </span>
+            <select
+              className="statusctl-native"
+              value={review}
+              disabled={reviewPending}
+              onChange={(e) => changeReview(e.target.value)}
+              aria-label="Review status"
+            >
+              {reviewOptions.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+        {editing && <span className="tag editing-tag">Editing</span>}
+        {isCurrent && !editing && (
+          <span className="tag current-tag">Under review</span>
+        )}
+        {!editing && reviewError && (
+          <span className="el-edit-err">{reviewError}</span>
         )}
       </div>
 
@@ -409,7 +416,11 @@ export default function ElementCard({
 
       {!editing && (
         <div className="el-provenance">
-          <span className={`pv-dot ${isDraft ? "pv-ai" : "pv-human"}`} />
+          <span
+            className={`pv-dot ${
+              approved ? "pv-approved" : isDraft ? "pv-ai" : "pv-human"
+            }`}
+          />
           {provenanceText}
         </div>
       )}
@@ -604,17 +615,25 @@ export default function ElementCard({
               ) : (
                 <>
                   {onDeepDive && (
-                    <button
-                      className="act ai"
-                      onClick={() => onDeepDive(page.id, page.title)}
-                      title="Start a QER deep-dive session on this element"
-                    >
-                      ⌖ Deep dive
-                    </button>
+                    <Tooltip label="Deep dive — start a Brainstorm session on this element">
+                      <button
+                        className="act ai act-icon"
+                        onClick={() => onDeepDive(page.id, page.title)}
+                        aria-label="Deep dive"
+                      >
+                        ✦
+                      </button>
+                    </Tooltip>
                   )}
-                  <button className="act" onClick={startEdit}>
-                    ✎ Edit yourself
-                  </button>
+                  <Tooltip label="Edit yourself">
+                    <button
+                      className="act act-icon"
+                      onClick={startEdit}
+                      aria-label="Edit yourself"
+                    >
+                      ✎
+                    </button>
+                  </Tooltip>
                 </>
               )}
             </div>

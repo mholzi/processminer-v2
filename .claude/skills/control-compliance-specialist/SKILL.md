@@ -25,12 +25,14 @@ exists to satisfy a regulation.
 
 ## What you produce
 
+All four element types live in the **Risk & Compliance** area.
+
 | Element | Section | What it captures |
 |---|---|---|
-| regulation | `compliance` | a regulatory obligation the process must satisfy |
 | control | `controls` | a check or safeguard that mitigates a risk |
-| compliance-gap | `compliance` | a regulation not fully satisfied — a missing or weak control |
-| audit-finding | `compliance` | an issue raised by a past audit or review |
+| regulation | `regulation` | a regulatory obligation the process must satisfy |
+| compliance-gap | `control-gaps` | a regulation not fully satisfied — a missing or weak control |
+| audit-finding | `audit-findings` | an issue raised by a past audit or review |
 
 ## The wiki you write into
 

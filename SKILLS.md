@@ -69,6 +69,7 @@ Twelve skills are built. The Wiki Assistant is planned.
 | **document-ingest** | automated | extract an uploaded document into draft elements; verifies each draft against the source (§5) |
 | **source-innovation** | automated | non-interactive web research → draft `market-trend`, competitor-move and `innovation-idea` elements |
 | **source-cx** | automated | non-interactive web research → draft competitor-CX and `cx-benchmark` elements |
+| **source-regulation** | automated | non-interactive web research → draft `regulation` elements for the Risk & Compliance area |
 | **run-lint** | automated | lint pass — conformance + five-lens sweep; writes `lint.json`, re-opens implicated approvals (§9) |
 | **foundational-run** | guided | post-ingest narrated walk: challenge every As-Is element with the SME, resumable (§7) |
 | **add-entry** | interactive | add one AI-drafted element to a section — asks the SME, researches (wiki / web), refines Y/E/R, writes on approval |
@@ -91,9 +92,16 @@ question bank, the functional pattern (§5), and the slice of the schema it owns
 | **Innovation Analyst** | forward-looking — refine the sourced trends/competitors/ideas, weigh risk, design the target state | market-trend, competitor-eu/-global/-fintech, innovation-idea, innovation-risk, target-state, transformation-decision, gap |
 | **IT Architect** | the systems landscape | system, integration |
 
-Mapped to the five schema areas:
+Mapped to the six schema areas:
 
-- **As-Is Process** — worked by Process and Control & Compliance.
+- **As-Is Process** — worked by the Process Specialist. Roles, process steps,
+  exceptions, pain points, metrics and process gaps.
+- **Risk & Compliance** — the Control & Compliance Specialist's. Controls,
+  regulations, control gaps and audit findings, each in its own section. The
+  non-interactive `source-regulation` skill web-sources the first pass of
+  `regulation` elements — the financial-services regulation and supervisory
+  rules that govern the process; the Control & Compliance Specialist then
+  refines those with the SME and maps each to the controls that satisfy it.
 - **Client Experience** — the Client Journey Specialist's. Channels,
   touchpoints, moments and friction points are the process's own journey,
   documented with the SME; the non-interactive `source-cx` skill web-sources
@@ -292,6 +300,7 @@ buttons that post a fixed message to `/api/session`:
 | `foundational-run` | the triage screen's "Start / Resume foundational run" |
 | `source-innovation` | the "✦ Source from the web" empty-state CTA on the Market Trends / Competitor / Innovation Ideas sections |
 | `source-cx` | the "✦ Source from the web" empty-state CTA on the Competitor CX / CX Benchmarks sections |
+| `source-regulation` | the "✦ Source from the web" empty-state CTA / "✦ Refresh from the web" toolbar button on the Regulation section |
 | `run-lint` | the "⊛ Run lint" top-bar button |
 | `qer-session`, the specialists | free chat, or `qer-session` dispatches the specialists |
 

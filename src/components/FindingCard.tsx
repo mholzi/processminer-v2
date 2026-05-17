@@ -27,7 +27,7 @@ export default function FindingCard({
         <button
           className="act ai finding-dd"
           onClick={() => onDeepDive(f)}
-          title="Start a QER deep-dive session on this finding"
+          title="Start a Brainstorm deep-dive session on this finding"
         >
           ⌖ Deep dive
         </button>

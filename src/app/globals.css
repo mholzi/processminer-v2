@@ -51,25 +51,6 @@ body {
 .topbar .crumb { font-family: var(--mono); font-size: 11px; color: var(--muted); }
 .topbar .pname { font-weight: 600; font-size: 15px; }
 
-/* ---- Top bar: breadcrumb trail ---- */
-.crumb-trail {
-  display: flex; align-items: center; gap: 7px;
-  font-family: var(--mono); font-size: 11px;
-  padding-left: 4px; min-width: 0;
-}
-.crumb-area { color: var(--muted); }
-.crumb-sep { color: var(--muted); opacity: .55; }
-.crumb-leaf {
-  color: var(--ink); font-weight: 500;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-/* Clickable breadcrumb segment (#10) — jumps to the area summary. */
-.crumb-link {
-  font-family: var(--mono); font-size: 11px;
-  border: 0; background: none; padding: 0 1px; cursor: pointer;
-  color: var(--accent); border-bottom: 1px dotted var(--accent);
-}
-.crumb-link:hover { background: var(--accent-soft); }
 
 /* ---- Top bar: icon-button action cluster ---- */
 .tb-icons {
@@ -97,7 +78,7 @@ body {
 }
 
 /* ---- Process switcher ---- */
-.procsw { position: relative; }
+.procsw { position: relative; display: flex; align-items: center; gap: 8px; }
 .procsw-trigger {
   display: flex; align-items: center; gap: 8px;
   background: none; border: 0; cursor: pointer; font-family: var(--font);
@@ -146,17 +127,6 @@ body {
 }
 .procsw-new:hover { background: var(--accent-soft); }
 .topbar .spacer { flex: 1; }
-.save {
-  display: flex; align-items: center; gap: 6px; color: var(--hi);
-  font-size: 12px; padding: 2px 6px; border-radius: var(--r-sm);
-}
-.save.just-saved { animation: save-flash 1.5s ease-out; }
-@keyframes save-flash {
-  0%, 65% { background: var(--hi-bg); }
-  100% { background: transparent; }
-}
-.save .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--hi); }
-.sme { font-size: 12px; color: var(--muted); }
 .theme-btn {
   font-family: var(--mono); font-size: 11px; cursor: pointer;
   border: 1px solid var(--line); background: var(--surface); color: var(--ink);
@@ -686,8 +656,8 @@ body {
 .el-block-text { font-size: 14px; line-height: 1.6; }
 .el-body p, .overview p { margin-bottom: 6px; }
 .el-body p:last-child, .overview p:last-child { margin-bottom: 0; }
-.el-body ul, .overview ul { padding-left: 18px; margin: 4px 0; }
-.el-body li, .overview li { margin-bottom: 3px; }
+.el-body ul, .overview ul, .el-block-text ul { padding-left: 18px; margin: 4px 0; }
+.el-body li, .overview li, .el-block-text li { margin-bottom: 3px; }
 .el-fields { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px; }
 .el-field { font-size: 12px; color: var(--muted); }
 .el-field b { color: var(--ink); font-weight: 500; }
@@ -785,49 +755,52 @@ body {
 .conf.low { background: var(--lo-bg); color: var(--lo); } .conf.low .cd { background: var(--lo); }
 .src { font-family: var(--mono); font-size: 10px; color: var(--muted); }
 
-/* per-element review status — the select itself is colour-coded */
-.approval { display: inline-flex; align-items: center; }
-.approval select {
-  font-family: var(--font); font-size: 12px; font-weight: 500;
-  border: 1px solid var(--line); border-radius: var(--r-sm);
-  padding: 3px 8px; cursor: pointer;
-  background: var(--surface); color: var(--ink);
+/* per-element review status — a status pill: dot + label + quiet caret
+   (design-shotgun variant A). The native <select> sits transparent on top,
+   so it keeps full keyboard + native-menu behaviour while the pill carries
+   the look. --sc drives the dot + text colour, --sc-bg the soft tint. */
+.approval, .relevance {
+  position: relative;
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-left: auto;
+  padding: 4px 9px;
+  border: 1px solid transparent; border-radius: var(--r-sm);
+  font-family: var(--font); font-size: 11px; font-weight: 500;
+  color: var(--sc, var(--muted));
+  background: var(--sc-bg, var(--surface));
+  cursor: pointer;
 }
-.approval select:focus { outline: none; }
-.approval select:disabled { cursor: progress; }
-.approval-in-progress select {
-  color: var(--mid); background: var(--mid-bg);
-  border-color: color-mix(in srgb, var(--mid) 45%, transparent);
+.approval:hover, .relevance:hover {
+  border-color: color-mix(in srgb, var(--sc, var(--muted)) 35%, transparent);
 }
-.approval-approved select {
-  color: var(--hi); background: var(--hi-bg);
-  border-color: color-mix(in srgb, var(--hi) 45%, transparent);
+.approval:focus-within, .relevance:focus-within {
+  outline: 2px solid color-mix(in srgb, var(--sc, var(--muted)) 40%, transparent);
+  outline-offset: 1px;
 }
-.approval-rejected select {
-  color: var(--lo); background: var(--lo-bg);
-  border-color: color-mix(in srgb, var(--lo) 45%, transparent);
+.statusctl-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--sc, var(--muted)); flex: none;
 }
+.statusctl-label { white-space: nowrap; }
+.statusctl-caret { font-size: 8px; opacity: .5; }
+.statusctl-native {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  margin: 0; padding: 0; border: 0; font-size: 11px;
+  opacity: 0; cursor: pointer;
+}
+.statusctl-native:disabled { cursor: progress; }
+
+.approval-in-progress  { --sc: var(--mid);   --sc-bg: var(--mid-bg); }
+.approval-approved     { --sc: var(--hi);    --sc-bg: var(--hi-bg); }
+.approval-rejected     { --sc: var(--lo);    --sc-bg: var(--lo-bg); }
+.relevance-none        { --sc: var(--muted); --sc-bg: var(--surface);
+                         border-color: var(--line); }
+.relevance-relevant    { --sc: var(--hi);    --sc-bg: var(--hi-bg); }
+.relevance-disregarded { --sc: var(--muted); --sc-bg: var(--bg); }
+.relevance-disregarded .statusctl-label { text-decoration: line-through; }
+
 .approval-meta {
   font-family: var(--mono); font-size: 10px; color: var(--muted);
-}
-
-/* Relevance triage — for web-sourced / ideated elements. */
-.relevance { display: inline-flex; align-items: center; }
-.relevance select {
-  font-family: var(--font); font-size: 12px; font-weight: 500;
-  border: 1px solid var(--line); border-radius: var(--r-sm);
-  padding: 3px 8px; cursor: pointer;
-}
-.relevance select:focus { outline: none; }
-.relevance select:disabled { cursor: progress; }
-.relevance-none select { color: var(--muted); background: var(--surface); }
-.relevance-relevant select {
-  color: var(--hi); background: var(--hi-bg);
-  border-color: color-mix(in srgb, var(--hi) 45%, transparent);
-}
-.relevance-disregarded select {
-  color: var(--muted); background: var(--bg);
-  text-decoration: line-through;
 }
 
 /* element structure / schema-template panel */
@@ -950,6 +923,11 @@ body {
 }
 .act.ai { border-color: var(--accent); color: var(--accent); }
 .act:disabled { opacity: .55; cursor: not-allowed; }
+/* Icon-only card actions — square button, glyph centred, text via tooltip. */
+.act-icon {
+  width: 28px; height: 28px; padding: 0; font-size: 14px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+}
 
 /* ---- inline edit mode ---- */
 .el.editing { border-color: var(--accent); }
@@ -1263,6 +1241,20 @@ body {
   display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px;
 }
 
+/* Signed-in-user modal */
+.user-card {
+  display: flex; align-items: center; gap: 12px;
+  margin: 4px 0 14px;
+}
+.user-avatar {
+  width: 40px; height: 40px; border-radius: 50%; flex: none;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent-soft); color: var(--accent);
+  font-size: 14px; font-weight: 600; letter-spacing: .02em;
+}
+.user-name { font-size: 15px; font-weight: 600; color: var(--ink); }
+.user-role { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
 .type-group-head {
   font-size: 13px; font-weight: 600; color: var(--muted);
   text-transform: uppercase; letter-spacing: .04em;
@@ -1399,6 +1391,7 @@ body {
 }
 .el-provenance .pv-ai { background: var(--accent); }
 .el-provenance .pv-human { background: var(--hi); }
+.el-provenance .pv-approved { background: var(--hi); }
 
 /* ---- Live conformance warnings while editing (#7) ---- */
 .el-edit-text.has-warn { border-color: var(--lo); }

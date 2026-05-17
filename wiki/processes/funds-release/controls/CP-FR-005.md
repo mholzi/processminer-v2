@@ -8,6 +8,7 @@ confidence: high
 source: funds-release-dtp-mockup.md
 controlType: DETECTIVE
 execution: MANUAL
+regulatedBy: [REG-FR-003]
 ---
 ## What it checks
 That the balances of held accounts agree with the funds recorded as released.

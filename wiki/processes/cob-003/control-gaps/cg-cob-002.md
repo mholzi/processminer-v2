@@ -1,7 +1,7 @@
 ---
 id: CG-COB-002
 type: compliance-gap
-section: compliance
+section: control-gaps
 title: Account configuration verification not in the control set
 status: confirmed
 confidence: high

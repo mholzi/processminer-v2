@@ -9,6 +9,7 @@ source: funds-release-dtp-mockup.md
 controlType: PREVENTIVE
 execution: AUTOMATED
 step: PS-FR-002
+regulatedBy: [REG-FR-004]
 ---
 ## What it checks
 That the requested release amount does not exceed the available undrawn limit on the approved corporate credit facility.

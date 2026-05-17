@@ -1,7 +1,7 @@
 ---
 id: CG-COB-001
 type: compliance-gap
-section: compliance
+section: control-gaps
 title: Product Disclosure only medium-effective
 status: confirmed
 confidence: high

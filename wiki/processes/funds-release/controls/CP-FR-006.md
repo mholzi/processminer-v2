@@ -7,6 +7,7 @@ status: draft
 confidence: high
 source: funds-release-dtp-mockup.md
 controlType: DETECTIVE
+regulatedBy: [REG-FR-006]
 ---
 ## What it checks
 That the audit log is complete and captures all actors and timestamps for releases.

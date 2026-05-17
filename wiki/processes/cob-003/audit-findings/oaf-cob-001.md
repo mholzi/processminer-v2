@@ -1,7 +1,7 @@
 ---
 id: OAF-COB-001
 type: audit-finding
-section: compliance
+section: audit-findings
 title: Internal Audit Q3 2024 — Control Testing
 status: confirmed
 confidence: high

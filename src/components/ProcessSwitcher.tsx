@@ -49,9 +49,6 @@ export default function ProcessSwitcher({
         aria-expanded={open}
       >
         <span className="crumb">PROCESSES ▸</span>
-        <span className="pname">
-          {current ? `${current.id} · ${current.title}` : "—"}
-        </span>
         <span className="procsw-caret">▾</span>
         {anyAttention && (
           <span
@@ -60,6 +57,9 @@ export default function ProcessSwitcher({
           />
         )}
       </button>
+      <span className="pname">
+        {current ? `${current.id} · ${current.title}` : "—"}
+      </span>
 
       {open && (
         <>

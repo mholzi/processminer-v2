@@ -9,6 +9,7 @@ source: funds-release-dtp-mockup.md
 controlType: PREVENTIVE
 execution: AUTOMATED
 step: PS-FR-003
+regulatedBy: [REG-FR-001, REG-FR-002]
 ---
 ## What it checks
 Whether the release item or its beneficiary returns a sanctions or AML screening hit.

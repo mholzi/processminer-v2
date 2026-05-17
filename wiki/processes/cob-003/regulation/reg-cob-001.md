@@ -1,7 +1,7 @@
 ---
 id: REG-COB-001
 type: regulation
-section: compliance
+section: regulation
 title: CDD Regulations 2010
 status: confirmed
 confidence: high

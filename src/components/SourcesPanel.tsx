@@ -47,7 +47,8 @@ export default function SourcesPanel({
   onOpen: (file: string) => void;
   onUpload: () => void;
 }) {
-  const [open, setOpen] = useState(true);
+  // Collapsed on load — the SME opens it when they want the document list.
+  const [open, setOpen] = useState(false);
 
   return (
     <div className="sources">

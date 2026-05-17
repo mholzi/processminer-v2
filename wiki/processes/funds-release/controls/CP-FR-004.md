@@ -10,6 +10,7 @@ controlType: PREVENTIVE
 execution: MANUAL
 step: PS-FR-005
 owner: Treasury
+regulatedBy: [REG-FR-005]
 ---
 ## What it checks
 That funding is available for the value date before a release at or above the Treasury threshold is executed.
