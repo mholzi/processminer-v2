@@ -46,7 +46,7 @@ export default function ReviewPanel({
       </div>
       <div className="review-linted">
         Last linted{" "}
-        {linted.toLocaleString([], {
+        {linted.toLocaleString("en-GB", {
           dateStyle: "medium",
           timeStyle: "short",
         })}

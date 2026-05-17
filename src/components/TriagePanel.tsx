@@ -74,7 +74,7 @@ export default function TriagePanel({
           </div>
           {ingest && (
             <div className="triage-receipt-when">
-              {new Date(ingest.generatedAt).toLocaleString([], {
+              {new Date(ingest.generatedAt).toLocaleString("en-GB", {
                 dateStyle: "medium",
                 timeStyle: "short",
               })}

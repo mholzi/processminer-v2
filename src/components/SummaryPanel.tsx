@@ -126,7 +126,7 @@ export default function SummaryPanel({
       <div className="section-summary-foot">
         <span>
           Generated{" "}
-          {new Date(summary.generatedAt).toLocaleString([], {
+          {new Date(summary.generatedAt).toLocaleString("en-GB", {
             dateStyle: "medium",
             timeStyle: "short",
           })}
