@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { join, basename } from "node:path";
+import { join, basename, sep } from "node:path";
 import type { NextRequest } from "next/server";
 import { listSources } from "@/lib/wiki";
 
@@ -17,7 +17,10 @@ export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const slug = searchParams.get("slug");
-  if (!slug || !/^[A-Za-z0-9._-]+$/.test(slug)) {
+  // Process slugs are kebab-case (see derive_process_meta.py /
+  // scaffold_process.py). The strict grammar has no dots or slashes, so a
+  // slug can never traverse out of raw-sources/ (e.g. `..`).
+  if (!slug || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
     return Response.json({ error: "Bad or missing slug." }, { status: 400 });
   }
 
@@ -26,13 +29,16 @@ export async function GET(req: NextRequest) {
     return Response.json({ files: listSources(slug) });
   }
 
-  // Pin the read to a safe basename inside raw-sources/<slug>/ — never escape.
+  // basename() drops any directory part of `file`; the resolved path is then
+  // asserted to stay inside raw-sources/<slug>/ — defence in depth.
+  const dir = join(process.cwd(), "raw-sources", slug);
   const name = basename(file);
+  const target = join(dir, name);
+  if (!target.startsWith(dir + sep)) {
+    return Response.json({ error: "Document not found." }, { status: 404 });
+  }
   try {
-    const content = await readFile(
-      join(process.cwd(), "raw-sources", slug, name),
-      "utf8",
-    );
+    const content = await readFile(target, "utf8");
     return Response.json({ name, content });
   } catch {
     return Response.json({ error: "Document not found." }, { status: 404 });

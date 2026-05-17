@@ -1356,7 +1356,8 @@
           {
             "key": "addresses",
             "label": "Addresses",
-            "target": "process-gap"
+            "target": "process-gap",
+            "reverseLabel": "Addressed by"
           },
           {
             "key": "fromTrend",
