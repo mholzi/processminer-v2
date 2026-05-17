@@ -32,9 +32,9 @@ write is `status: draft`; the SME reviews and approves it later in the app.
 
 | Element | Section | What it captures |
 |---|---|---|
-| competitor-cx-eu | `competitor-cx-european` | how a European corporate bank runs this client journey |
-| competitor-cx-global | `competitor-cx-global` | how a global corporate bank runs this client journey |
-| competitor-cx-fintech | `competitor-cx-fintech` | how a fintech runs this client journey |
+| competitor-cx-eu | `competitor-cx` | how a European corporate bank runs this client journey |
+| competitor-cx-global | `competitor-cx` | how a global corporate bank runs this client journey |
+| competitor-cx-fintech | `competitor-cx` | how a fintech runs this client journey |
 | cx-benchmark | `cx-benchmarks` | an industry CX standard or client-expectation signal |
 
 You do **not** produce channels, touchpoints, moments or friction-points —

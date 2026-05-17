@@ -126,3 +126,43 @@ export async function setApproval(
   revalidatePath("/");
   return { ok: true };
 }
+
+const RELEVANCE_VALUES = ["", "relevant", "disregarded"];
+
+// Per-element relevance triage — for web-sourced / ideated elements (market
+// trends, competitors, innovation ideas, CX benchmarks). A lighter review
+// than approval: the SME marks whether the signal is relevant or to disregard.
+export async function setRelevance(
+  slug: string,
+  id: string,
+  relevance: string,
+  by: string,
+): Promise<{ ok: true }> {
+  if (!RELEVANCE_VALUES.includes(relevance)) {
+    throw new Error(`Invalid relevance value: ${relevance}`);
+  }
+  const path = findApprovableFile(slug, id);
+  if (!path) throw new Error(`Element not found: ${id}`);
+
+  const raw = readFileSync(path, "utf8");
+  const match = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+  if (!match) throw new Error(`Malformed wiki page: ${id}`);
+
+  const date = new Date().toISOString().slice(0, 10);
+  const lines = match[1].split("\n");
+  const upsert = (key: string, value: string) => {
+    const i = lines.findIndex((l) => {
+      const c = l.indexOf(":");
+      return c !== -1 && l.slice(0, c).trim() === key;
+    });
+    if (i === -1) lines.push(`${key}: ${value}`);
+    else lines[i] = `${key}: ${value}`;
+  };
+  upsert("relevance", relevance);
+  upsert("relevanceBy", by);
+  upsert("relevanceDate", date);
+
+  writeFileSync(path, `---\n${lines.join("\n")}\n---\n${match[2]}`, "utf8");
+  revalidatePath("/");
+  return { ok: true };
+}

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Schema, ProcessDoc } from "@/lib/wiki";
+import { isSourcedType } from "@/lib/element-types";
 import { sectionForId } from "@/lib/nav";
 import ElementCard from "@/components/ElementCard";
 import RaciMatrix from "@/components/RaciMatrix";
@@ -15,11 +16,25 @@ import UploadModal from "@/components/UploadModal";
 import CommandPalette from "@/components/CommandPalette";
 import ApprovalBar from "@/components/ApprovalBar";
 import ProcessSwitcher from "@/components/ProcessSwitcher";
+import Markdown from "@/components/Markdown";
 
 const mid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
 // The signed-in SME — stamped onto review-status changes in the wiki.
 const CURRENT_USER = "M. Berger";
+
+// The two non-interactive web-sourcing skills, and the sections each fills.
+const INNOVATION_SECTIONS = [
+  "market-trends",
+  "competitor-innovation",
+  "innovation-ideas",
+];
+const CX_SECTIONS = ["competitor-cx", "cx-benchmarks"];
+function sectionSourcingKind(section: string): "innovation" | "cx" | null {
+  if (INNOVATION_SECTIONS.includes(section)) return "innovation";
+  if (CX_SECTIONS.includes(section)) return "cx";
+  return null;
+}
 
 // Process-scope handover. Prepended to the first message of a scoped chat
 // session, this tells the headless `claude` CLI which process the SME has
@@ -153,6 +168,15 @@ export default function ProcessDocScreen({
   // the document-ingest skill on the saved file.
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
 
+  // A non-interactive web-sourcing run (source-innovation / source-cx). It
+  // runs outside the chat — a section banner shows progress, a dismissable
+  // notice shows the result.
+  const [sourcing, setSourcing] = useState<{
+    kind: "innovation" | "cx";
+    status: "running" | "done" | "error";
+    text?: string;
+  } | null>(null);
+
   // ⌘K search palette + the real "saved" indicator.
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -220,6 +244,13 @@ export default function ProcessDocScreen({
   const activeLabel =
     schema.areas.flatMap((a) => a.sections).find((s) => s.id === section)
       ?.label ?? section;
+  // Which web-sourcing skill fills this section, and whether a run of that
+  // kind is in progress right now.
+  const sectionKind = sectionSourcingKind(section);
+  const sourcingHere =
+    sourcing?.status === "running" &&
+    sectionKind !== null &&
+    sourcing.kind === sectionKind;
   const sectionElements = doc.elements
     .filter((e) => e.section === section)
     .sort((a, b) => a.id.localeCompare(b.id));
@@ -427,25 +458,86 @@ export default function ProcessDocScreen({
     );
   }
 
-  // Source innovation — invoke the non-interactive source-innovation skill,
-  // which web-searches and fills the Market Trends, Competitor and Innovation
-  // Ideas sections.
-  function sourceInnovation() {
+  // Web-sourcing — run source-innovation / source-cx fully autonomously.
+  // Unlike a chat turn this does not touch the chat transcript or session: it
+  // runs in its own fresh `claude` session, the affected sections show a
+  // Add entry — invoke the interactive add-entry skill in the chat, scoped to
+  // the section the SME is viewing. It asks what to add, researches, drafts,
+  // and writes the element on approval.
+  function addEntry() {
     if (chatPending) return;
     setChatOpen(true);
     handleSend(
-      `Run the source-innovation skill on the process with slug "${currentSlug}".`,
+      `Run the add-entry skill for the "${section}" section of the process with slug "${currentSlug}".`,
     );
   }
 
-  // Source CX — invoke the non-interactive source-cx skill, which web-searches
-  // and fills the Competitor CX + CX Benchmarks sections.
-  function sourceCx() {
-    if (chatPending) return;
-    setChatOpen(true);
-    handleSend(
-      `Run the source-cx skill on the process with slug "${currentSlug}".`,
-    );
+  // progress banner, and it ends with a dismissable notice.
+  function runSourcing(kind: "innovation" | "cx") {
+    if (sourcing?.status === "running") return;
+    setSourcing({ kind, status: "running" });
+    const skill = kind === "innovation" ? "source-innovation" : "source-cx";
+    fetch("/api/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: `Run the ${skill} skill on the process with slug "${currentSlug}".`,
+        sessionId: null,
+      }),
+    })
+      .then(async (res) => {
+        if (!res.body) throw new Error("No response from the server.");
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buf = "";
+        let final: { ok: boolean; text: string } | null = null;
+        for (;;) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buf += decoder.decode(value, { stream: true });
+          let sep: number;
+          while ((sep = buf.indexOf("\n\n")) !== -1) {
+            const frame = buf.slice(0, sep);
+            buf = buf.slice(sep + 2);
+            const line = frame.startsWith("data:")
+              ? frame.slice(5).trim()
+              : frame.trim();
+            if (!line) continue;
+            try {
+              const evt = JSON.parse(line) as {
+                type: string;
+                reply?: string;
+                error?: string;
+              };
+              if (evt.type === "done")
+                final = { ok: true, text: evt.reply || "Sourcing complete." };
+              else if (evt.type === "error")
+                final = { ok: false, text: evt.error || "Sourcing failed." };
+            } catch {
+              /* partial / non-JSON frame */
+            }
+          }
+        }
+        if (final && !final.ok) {
+          setSourcing({ kind, status: "error", text: final.text });
+        } else {
+          setSourcing({
+            kind,
+            status: "done",
+            text: `Sourcing of ${
+              kind === "innovation" ? "Innovation" : "Client Experience"
+            } items completed.`,
+          });
+          router.refresh();
+        }
+      })
+      .catch((e: unknown) => {
+        setSourcing({
+          kind,
+          status: "error",
+          text: e instanceof Error ? e.message : "Sourcing failed.",
+        });
+      });
   }
 
   // Deep dive — the hook that will trigger the QER brainstorming skill.
@@ -550,6 +642,12 @@ export default function ProcessDocScreen({
         <nav className="rail rail-l">
           {schema.areas.map((area) => {
             const collapsed = collapsedAreas.has(area.id);
+            // A web-sourcing run spins against the area heading it fills.
+            const areaSourcing =
+              sourcing?.status === "running" &&
+              ((sourcing.kind === "innovation" && area.id === "innovation") ||
+                (sourcing.kind === "cx" &&
+                  area.id === "client-experience"));
             return (
             <div className="nav-area" key={area.id}>
               <button
@@ -561,6 +659,12 @@ export default function ProcessDocScreen({
                   ▾
                 </span>
                 {area.label}
+                {areaSourcing && (
+                  <span
+                    className="nav-area-spinner"
+                    title="Sourcing from the web…"
+                  />
+                )}
               </button>
               {!collapsed &&
               area.sections.map((s) => {
@@ -569,9 +673,14 @@ export default function ProcessDocScreen({
                   ? []
                   : doc.elements.filter((e) => e.section === s.id);
                 const count = isOverview ? null : els.length;
-                const approved = els.filter(
-                  (e) =>
-                    String(e.meta.approval ?? "in-progress") === "approved",
+                // An element is "reviewed" when approved — or, for a
+                // web-sourced type, when triaged relevant or disregarded.
+                const reviewed = els.filter((e) =>
+                  isSourcedType(e.type)
+                    ? ["relevant", "disregarded"].includes(
+                        String(e.meta.relevance ?? ""),
+                      )
+                    : String(e.meta.approval ?? "in-progress") === "approved",
                 ).length;
                 // Section review state: empty / gaps / approved.
                 let state: "empty" | "gaps" | "approved";
@@ -588,12 +697,12 @@ export default function ProcessDocScreen({
                       : "Overview not yet approved";
                 } else if (els.length === 0) {
                   state = "empty";
-                } else if (approved === els.length) {
+                } else if (reviewed === els.length) {
                   state = "approved";
-                  dotTitle = `All ${els.length} element(s) approved`;
+                  dotTitle = `All ${els.length} element(s) reviewed`;
                 } else {
                   state = "gaps";
-                  dotTitle = `${approved} of ${els.length} approved`;
+                  dotTitle = `${reviewed} of ${els.length} reviewed`;
                 }
                 const flag = findingsBySection[s.id];
                 return (
@@ -717,15 +826,30 @@ export default function ProcessDocScreen({
             <>
               <div className="canvas-head">
                 <h1>{activeLabel}</h1>
+                <button
+                  className="add-entry-btn"
+                  onClick={addEntry}
+                  disabled={chatPending}
+                  title="Add an entry — the assistant drafts it with you"
+                >
+                  + Add entry
+                </button>
                 <div className="sub">
                   {sectionElements.length}{" "}
                   {sectionElements.length === 1 ? "element" : "elements"} — each
                   one: view, let the AI work on it, or edit it yourself.
                 </div>
-                {sectionElements.length > 0 && (
+                {sectionElements.length > 0 && sectionKind === null && (
                   <ApprovalBar elements={sectionElements} />
                 )}
               </div>
+              {sourcingHere && (
+                <div className="source-status">
+                  <span className="source-status-dot" /> Sourcing from the web
+                  — this can take a couple of minutes. New drafts will appear
+                  here when it finishes.
+                </div>
+              )}
               {section === "roles" && (
                 <RaciMatrix
                   steps={doc.elements.filter((e) => e.type === "process-step")}
@@ -741,52 +865,31 @@ export default function ProcessDocScreen({
               {sectionElements.length === 0 ? (
                 <div className="empty-state">
                   <p>No elements in “{activeLabel}” yet.</p>
-                  {[
-                    "market-trends",
-                    "innovation-ideas",
-                    "competitors-european",
-                    "competitors-global",
-                    "competitors-fintech",
-                  ].includes(section) ? (
-                    <>
-                      <p className="empty-hint">
-                        Let the assistant source market trends, competitor
-                        moves and innovation ideas from the web — studies,
-                        analyst reports and competitor scans in this
-                        process’s domain.
-                      </p>
-                      <button
-                        className="empty-cta"
-                        onClick={sourceInnovation}
-                        disabled={chatPending}
-                      >
-                        ✦ Source from the web
-                      </button>
-                    </>
-                  ) : [
-                      "competitor-cx-european",
-                      "competitor-cx-global",
-                      "competitor-cx-fintech",
-                      "cx-benchmarks",
-                    ].includes(section) ? (
-                    <>
-                      <p className="empty-hint">
-                        Let the assistant scan how competitors run this client
-                        journey and gather industry CX benchmarks from the web.
-                      </p>
-                      <button
-                        className="empty-cta"
-                        onClick={sourceCx}
-                        disabled={chatPending}
-                      >
-                        ✦ Source from the web
-                      </button>
-                    </>
-                  ) : (
+                  {sectionKind === null ? (
                     <p className="empty-hint">
                       Let the AI suggest a draft — or capture the first element
                       yourself.
                     </p>
+                  ) : sourcingHere ? (
+                    <p className="empty-hint">
+                      Sourcing from the web — the drafts will appear here when
+                      it finishes.
+                    </p>
+                  ) : (
+                    <>
+                      <p className="empty-hint">
+                        {sectionKind === "innovation"
+                          ? "Let the assistant source market trends, competitor moves and innovation ideas from the web — studies, analyst reports and competitor scans in this process’s domain."
+                          : "Let the assistant scan how competitors run this client journey and gather industry CX benchmarks from the web."}
+                      </p>
+                      <button
+                        className="empty-cta"
+                        onClick={() => runSourcing(sectionKind)}
+                        disabled={sourcing?.status === "running"}
+                      >
+                        ✦ Source from the web
+                      </button>
+                    </>
                   )}
                 </div>
               ) : multiType ? (
@@ -869,6 +972,26 @@ export default function ProcessDocScreen({
         onClose={() => setUploadModalOpen(false)}
         onUploaded={onUploaded}
       />
+
+      {sourcing && sourcing.status !== "running" && (
+        <div className={`sourcing-notif ${sourcing.status}`} role="status">
+          <button
+            className="sourcing-notif-x"
+            onClick={() => setSourcing(null)}
+            aria-label="Dismiss"
+          >
+            ×
+          </button>
+          <div className="sourcing-notif-head">
+            {sourcing.status === "done"
+              ? "✦ Web sourcing complete"
+              : "⚠ Web sourcing failed"}
+          </div>
+          <div className="sourcing-notif-body">
+            <Markdown text={sourcing.text ?? ""} />
+          </div>
+        </div>
+      )}
     </>
   );
 }

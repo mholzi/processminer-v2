@@ -26,9 +26,7 @@
         { "id": "touchpoints", "label": "Touchpoints" },
         { "id": "moments", "label": "Moments of Truth" },
         { "id": "friction-points", "label": "Friction Points" },
-        { "id": "competitor-cx-european", "label": "Competitor CX — European" },
-        { "id": "competitor-cx-global", "label": "Competitor CX — Global" },
-        { "id": "competitor-cx-fintech", "label": "Competitor CX — Fintech" },
+        { "id": "competitor-cx", "label": "Competitor CX" },
         { "id": "cx-benchmarks", "label": "CX Benchmarks" }
       ]
     },
@@ -37,9 +35,7 @@
       "label": "Innovation",
       "sections": [
         { "id": "market-trends", "label": "Market Trends" },
-        { "id": "competitors-european", "label": "Competitors — European" },
-        { "id": "competitors-global", "label": "Competitors — Global" },
-        { "id": "competitors-fintech", "label": "Competitors — Fintech" },
+        { "id": "competitor-innovation", "label": "Competitor Innovation" },
         { "id": "innovation-ideas", "label": "Innovation Ideas" },
         { "id": "prioritization", "label": "Prioritisation" },
         { "id": "innovation-risks", "label": "Innovation Risks" }
@@ -186,7 +182,7 @@
     },
     "competitor-cx-eu": {
       "label": "European Competitor CX",
-      "section": "competitor-cx-european",
+      "section": "competitor-cx",
       "idPrefix": "CXE",
       "template": [
         { "heading": "The journey", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "How a European corporate bank runs this client journey." },
@@ -196,7 +192,7 @@
     },
     "competitor-cx-global": {
       "label": "Global Competitor CX",
-      "section": "competitor-cx-global",
+      "section": "competitor-cx",
       "idPrefix": "CXG",
       "template": [
         { "heading": "The journey", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "How a global corporate bank runs this client journey." },
@@ -206,7 +202,7 @@
     },
     "competitor-cx-fintech": {
       "label": "Fintech Competitor CX",
-      "section": "competitor-cx-fintech",
+      "section": "competitor-cx",
       "idPrefix": "CXF",
       "template": [
         { "heading": "The journey", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "How a fintech runs this client journey." },
@@ -256,7 +252,7 @@
     },
     "competitor-eu": {
       "label": "European Competitor",
-      "section": "competitors-european",
+      "section": "competitor-innovation",
       "idPrefix": "CEU",
       "template": [
         { "heading": "The move", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "The innovation a European corporate bank is pursuing, described plainly." },
@@ -266,7 +262,7 @@
     },
     "competitor-global": {
       "label": "Global Competitor",
-      "section": "competitors-global",
+      "section": "competitor-innovation",
       "idPrefix": "CGL",
       "template": [
         { "heading": "The move", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "The innovation a global corporate bank is pursuing, described plainly." },
@@ -276,7 +272,7 @@
     },
     "competitor-fintech": {
       "label": "Fintech Competitor",
-      "section": "competitors-fintech",
+      "section": "competitor-innovation",
       "idPrefix": "CFT",
       "template": [
         { "heading": "The move", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "The innovation a fintech is pursuing, described plainly." },

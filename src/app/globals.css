@@ -130,6 +130,12 @@ body {
   font-size: 8px; line-height: 1; transition: transform 120ms ease-in-out;
 }
 .nav-area-chevron.collapsed { transform: rotate(-90deg); }
+.nav-area-spinner {
+  flex: none; width: 10px; height: 10px; margin-left: auto;
+  border: 2px solid var(--line); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 .nav-item {
   display: flex; align-items: center; gap: 10px; width: 100%;
   padding: 6px 16px 6px 22px; font-size: 13px; cursor: pointer; text-align: left;
@@ -162,8 +168,17 @@ body {
 
 /* ---- Canvas ---- */
 .canvas { overflow-y: auto; padding: 26px 38px; }
+.canvas-head { position: relative; }
 .canvas-head h1 { font-size: 24px; font-weight: 600; letter-spacing: -.02em; }
 .canvas-head .sub { color: var(--muted); font-size: 13px; margin: 3px 0 20px; }
+.add-entry-btn {
+  position: absolute; top: 2px; right: 0; cursor: pointer;
+  font-family: var(--font); font-size: 12px; font-weight: 500;
+  border: 1px solid var(--accent); background: var(--surface);
+  color: var(--accent); padding: 5px 11px; border-radius: var(--r-sm);
+}
+.add-entry-btn:hover { background: var(--accent-soft); }
+.add-entry-btn:disabled { opacity: .5; cursor: not-allowed; }
 
 .overview { border: 1px solid var(--line); border-radius: var(--r-md);
   background: var(--surface); padding: 16px 18px; font-size: 14px; }
@@ -180,6 +195,7 @@ body {
 .ovw-fact:last-child { border-bottom: 0; }
 .ovw-fact dt { font-size: 12px; color: var(--muted); }
 .ovw-fact dd { font-size: 13px; }
+.ovw-fact-list { margin: 0; padding-left: 16px; display: grid; gap: 3px; }
 
 .ovw-tiles {
   display: grid; gap: 9px;
@@ -348,6 +364,25 @@ body {
 }
 .approval-meta {
   font-family: var(--mono); font-size: 10px; color: var(--muted);
+}
+
+/* Relevance triage — for web-sourced / ideated elements. */
+.relevance { display: inline-flex; align-items: center; }
+.relevance select {
+  font-family: var(--font); font-size: 12px; font-weight: 500;
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  padding: 3px 8px; cursor: pointer;
+}
+.relevance select:focus { outline: none; }
+.relevance select:disabled { cursor: progress; }
+.relevance-none select { color: var(--muted); background: var(--surface); }
+.relevance-relevant select {
+  color: var(--hi); background: var(--hi-bg);
+  border-color: color-mix(in srgb, var(--hi) 45%, transparent);
+}
+.relevance-disregarded select {
+  color: var(--muted); background: var(--bg);
+  text-decoration: line-through;
 }
 
 /* element structure / schema-template panel */
@@ -792,6 +827,39 @@ body {
 }
 [data-theme="dark"] .empty-cta { color: #101216; }
 .empty-cta:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ---- Web-sourcing: section banner + result notice ---- */
+.source-status {
+  display: flex; align-items: center; gap: 8px;
+  border: 1px solid var(--accent); background: var(--accent-soft);
+  border-radius: var(--r-md); padding: 10px 14px; margin-bottom: 14px;
+  font-size: 13px; color: var(--ink);
+}
+.source-status-dot {
+  flex: none; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent); animation: activity-pulse 1.1s ease-in-out infinite;
+}
+.sourcing-notif {
+  position: fixed; right: 20px; bottom: 20px; z-index: 60;
+  width: min(380px, calc(100vw - 40px));
+  border: 1px solid var(--line); border-radius: var(--r-md);
+  background: var(--surface); padding: 14px 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .28);
+}
+.sourcing-notif.done { border-left: 3px solid var(--hi); }
+.sourcing-notif.error { border-left: 3px solid var(--lo); }
+.sourcing-notif-x {
+  position: absolute; top: 7px; right: 10px;
+  border: 0; background: none; cursor: pointer;
+  font-size: 18px; line-height: 1; color: var(--muted);
+}
+.sourcing-notif-head {
+  font-size: 13px; font-weight: 600; margin-bottom: 6px; padding-right: 16px;
+}
+.sourcing-notif-body { font-size: 12px; line-height: 1.6; color: var(--muted); }
+.sourcing-notif-body p { margin: 0 0 .4em; }
+.sourcing-notif-body p:last-child { margin-bottom: 0; }
+.sourcing-notif-body ul { margin: .3em 0; padding-left: 1.1em; }
 
 .slice-note {
   margin-top: 18px; font-size: 11px; color: var(--muted);

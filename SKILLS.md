@@ -72,6 +72,7 @@ planned.
 | **source-cx** | automated | non-interactive web research → draft competitor-CX and `cx-benchmark` elements |
 | **run-lint** | automated | lint pass — conformance + five-lens sweep; writes `lint.json`, re-opens implicated approvals (§9) |
 | **foundational-run** | guided | post-ingest narrated walk: challenge every As-Is element with the SME, resumable (§7) |
+| **add-entry** | interactive | add one AI-drafted element to a section — asks the SME, researches (wiki / web), refines Y/E/R, writes on approval |
 | **conflict-resolution** | *planned* | the conflict-aware review flow — resolve doc-vs-wiki conflicts from a re-ingest |
 | **Wiki Assistant** | *planned* | grounded Q&A over the wiki for SME / transformation team |
 
@@ -248,9 +249,15 @@ operates in the web app on the wiki files.
 - **"Done" = an element is approved.** Per element — `in-progress` / `approved`
   / `rejected`, stamped with who and when. The **process overview is approvable
   too**, like an element.
+- **Web-sourced / ideated elements are triaged, not approved.** Market trends,
+  competitor moves (innovation and CX), innovation ideas and CX benchmarks
+  carry a binary `relevance` — `relevant` / `disregarded` — instead of
+  approval. The SME judges whether the signal matters, not whether it
+  documents the process accurately. A section of these is "done" when every
+  element has been triaged either way.
 - **No separate section/process "done" state** — a computed roll-up; the left
   nav shows each section's state with a status dot (empty / has gaps / fully
-  approved).
+  reviewed — approved or triaged, by the element's model).
 - **No locking** — approved elements stay editable.
 - **Approved reverts to `in-progress`** when a pillar of "done" breaks:
 

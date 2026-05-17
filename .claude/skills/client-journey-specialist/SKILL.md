@@ -29,7 +29,7 @@ you own the **Client Journey perspective** only (see "Stay in your lane").
 | cx-touchpoint | `touchpoints` | a single interaction the client has with the bank |
 | moment | `moments` | a moment of truth — an emotionally pivotal point |
 | friction-point | `friction-points` | client-facing pain — friction the *client* experiences |
-| competitor-cx-eu / -global / -fintech | `competitor-cx-european` / `-global` / `-fintech` | how a competitor runs this client journey |
+| competitor-cx-eu / -global / -fintech | `competitor-cx` | how a competitor runs this client journey |
 | cx-benchmark | `cx-benchmarks` | an industry CX standard or client-expectation signal |
 
 The four journey types are the process's **own** client experience — you

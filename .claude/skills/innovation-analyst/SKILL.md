@@ -34,7 +34,7 @@ work that needs the SME: risks, the target state, transformation, gaps. You do
 | Element | Section | What it captures |
 |---|---|---|
 | market-trend | `market-trends` | an external market or industry trend |
-| competitor-eu / -global / -fintech | `competitors-european` / `-global` / `-fintech` | an innovation a competitor bank or fintech is pursuing |
+| competitor-eu / -global / -fintech | `competitor-innovation` | an innovation a competitor bank or fintech is pursuing |
 | innovation-idea | `innovation-ideas` | an idea to improve the process |
 | innovation-risk | `innovation-risks` | a risk of pursuing an idea or the transformation |
 | target-state | `to-be-design` | how the process should work in the future |

@@ -32,9 +32,9 @@ write is `status: draft`; the SME reviews and approves it later in the app.
 | Element | Section | What it captures |
 |---|---|---|
 | market-trend | `market-trends` | an external trend, technology shift or market move |
-| competitor-eu | `competitors-european` | an innovation a European corporate bank is pursuing |
-| competitor-global | `competitors-global` | an innovation a global corporate bank is pursuing |
-| competitor-fintech | `competitors-fintech` | an innovation a fintech is pursuing |
+| competitor-eu | `competitor-innovation` | an innovation a European corporate bank is pursuing |
+| competitor-global | `competitor-innovation` | an innovation a global corporate bank is pursuing |
+| competitor-fintech | `competitor-innovation` | an innovation a fintech is pursuing |
 | innovation-idea | `innovation-ideas` | an idea to improve the process |
 
 You do **not** produce innovation-risks, target-state, transformation-decision

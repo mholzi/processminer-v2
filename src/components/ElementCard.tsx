@@ -3,8 +3,9 @@
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { BlockSpec, WikiPage } from "@/lib/wiki";
+import { isSourcedType } from "@/lib/element-types";
 import { checkElement } from "@/lib/conformance";
-import { saveElement, setApproval } from "@/lib/wiki-write";
+import { saveElement, setApproval, setRelevance } from "@/lib/wiki-write";
 import Markdown from "./Markdown";
 
 /** Human-readable spec line for one template block. */
@@ -270,30 +271,51 @@ export default function ElementCard({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
-  // Per-element review status — controlled by the wiki, updated optimistically.
-  const serverApproval = String(page.meta.approval ?? "in-progress");
-  const approvalBy = page.meta.approvalBy ? String(page.meta.approvalBy) : null;
-  const approvalDate = page.meta.approvalDate
-    ? String(page.meta.approvalDate)
+  // Per-element review — controlled by the wiki, updated optimistically.
+  // Documentation elements are "approved"; web-sourced / ideated elements
+  // (trends, competitors, ideas, benchmarks) are triaged "relevant /
+  // disregard". One control, two models.
+  const sourced = isSourcedType(page.type);
+  const reviewField = sourced ? "relevance" : "approval";
+  const reviewOptions = sourced
+    ? [
+        { value: "", label: "To review" },
+        { value: "relevant", label: "Relevant" },
+        { value: "disregarded", label: "Disregard" },
+      ]
+    : [
+        { value: "in-progress", label: "In progress" },
+        { value: "approved", label: "Approved" },
+        { value: "rejected", label: "Rejected" },
+      ];
+  const serverReview = String(
+    page.meta[reviewField] ?? (sourced ? "" : "in-progress"),
+  );
+  const reviewBy = page.meta[`${reviewField}By`]
+    ? String(page.meta[`${reviewField}By`])
     : null;
-  const [approval, setApprovalLocal] = useState(serverApproval);
-  const [approvalPending, startApproval] = useTransition();
-  const [approvalError, setApprovalError] = useState<string | null>(null);
+  const reviewDate = page.meta[`${reviewField}Date`]
+    ? String(page.meta[`${reviewField}Date`])
+    : null;
+  const [review, setReviewLocal] = useState(serverReview);
+  const [reviewPending, startReview] = useTransition();
+  const [reviewError, setReviewError] = useState<string | null>(null);
   useEffect(() => {
-    setApprovalLocal(serverApproval);
-  }, [serverApproval]);
+    setReviewLocal(serverReview);
+  }, [serverReview]);
 
-  function changeApproval(value: string) {
-    setApprovalLocal(value);
-    setApprovalError(null);
-    startApproval(async () => {
+  function changeReview(value: string) {
+    setReviewLocal(value);
+    setReviewError(null);
+    startReview(async () => {
       try {
-        await setApproval(slug, page.id, value, userName);
+        if (sourced) await setRelevance(slug, page.id, value, userName);
+        else await setApproval(slug, page.id, value, userName);
         router.refresh();
         onSaved?.();
       } catch (e) {
-        setApprovalLocal(serverApproval);
-        setApprovalError(
+        setReviewLocal(serverReview);
+        setReviewError(
           e instanceof Error ? e.message : "Could not save status",
         );
       }
@@ -347,23 +369,29 @@ export default function ElementCard({
       <div className="el-top">
         <span className="el-id">{page.id}</span>
         {!editing && (
-          <label className={`approval approval-${approval}`}>
+          <label
+            className={`${sourced ? "relevance" : "approval"} ${
+              sourced ? "relevance" : "approval"
+            }-${review || "none"}`}
+          >
             <select
-              value={approval}
-              disabled={approvalPending}
-              onChange={(e) => changeApproval(e.target.value)}
+              value={review}
+              disabled={reviewPending}
+              onChange={(e) => changeReview(e.target.value)}
               aria-label="Review status"
             >
-              <option value="in-progress">In progress</option>
-              <option value="approved">Approved</option>
-              <option value="rejected">Rejected</option>
+              {reviewOptions.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
             </select>
           </label>
         )}
         {page.status === "draft" && <span className="tag">AI draft</span>}
         {editing && <span className="tag editing-tag">Editing</span>}
-        {!editing && approvalError && (
-          <span className="el-edit-err">{approvalError}</span>
+        {!editing && reviewError && (
+          <span className="el-edit-err">{reviewError}</span>
         )}
         {template && template.length > 0 && (
           <button
@@ -382,9 +410,9 @@ export default function ElementCard({
             )}
           </button>
         )}
-        {!editing && approvalBy && approvalDate && (
+        {!editing && reviewBy && reviewDate && (
           <span className="approval-meta">
-            {approvalBy} · {approvalDate}
+            {reviewBy} · {reviewDate}
           </span>
         )}
       </div>
