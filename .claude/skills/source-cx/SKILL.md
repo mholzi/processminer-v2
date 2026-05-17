@@ -44,8 +44,10 @@ those are the process's own journey, `client-journey-specialist`'s and
 ## The wiki you write into
 
 **Read `schema/process-schema.json` first** — it defines, per element type, the
-`section`, the `idPrefix` (CXE, CXG, CXF, CXB) and the `template`. The scripts
-in `scripts/wiki/` own the file format; you do the judgement.
+`section`, the `idPrefix` and the `template`. The scripts in `scripts/wiki/`
+own the file format; you do the judgement. When unsure of an element type's
+exact shape, run `python3 scripts/wiki/show_template.py <type>` — it prints the
+section, id prefix and blocks straight from the schema.
 
 ## Step 1 — Read the process
 
@@ -56,6 +58,11 @@ client journey to benchmark. Also read any existing `competitor-cx-*` and
 `cx-benchmark` elements: you extend, you never duplicate.
 
 ## Step 2 — Scan competitor CX
+
+Before the first write, clear the run manifest —
+`python3 scripts/wiki/reset_manifest.py <slug>`. Every element you write is
+logged to it; Step 4's report counts are read back from the manifest, not
+tallied from memory.
 
 Scan how competitors run *this* client journey, in **three tiers, in this
 order** — the order reflects how close each set is to the bank:
@@ -70,8 +77,8 @@ case studies. Write one element per material example:
 - Blocks: *The journey* — how the competitor runs it; *Relevance* — the
   experience gap it opens for this process; *Evidence* — the review, case
   study or announcement.
-- Frontmatter: `competitor:` the named bank or fintech; `source:` /
-  `sourceUrl:` / `asOf:` (today's date, ISO).
+- Frontmatter: `competitor:` the named bank or fintech; `source:` and
+  `sourceUrl:`. (`asOf:` is auto-stamped by `write_element.py` — leave it out.)
 - Write each with `next_id.py` → `write_element.py` (`status: draft`,
   `confidence: medium`; `low` if thinly evidenced) → `check_conformance.py`.
 
@@ -83,13 +90,20 @@ corporate clients expect (status visibility, digital self-service). Write a
 `cx-benchmark` element per material benchmark:
 - Blocks: *The benchmark* — the standard or expectation; *Relevance* — how this
   process measures against it; *Evidence* — the specific figure or survey.
-- Frontmatter: `source:` / `sourceUrl:` / `asOf:`.
+- Frontmatter: `source:` and `sourceUrl:`. (`asOf:` is auto-stamped — leave
+  it out.)
 
 Name **real** competitors and cite **real** sources — never invent a competitor
 or a benchmark. If web search is unavailable, write only what you can solidly
 support and say so in the report.
 
 ## Step 4 — Report
+
+Run `python3 scripts/wiki/source_report.py <slug>` — it reads the run manifest
+and prints how many elements were written, per type. Map those counts into the
+template: `competitor-cx-eu` / `-global` / `-fintech` → the Competitor CX total
+and its European / global / fintech split; `cx-benchmark` → CX benchmarks. Do
+not recount from memory.
 
 Report with this **exact template**, substituting the counts:
 

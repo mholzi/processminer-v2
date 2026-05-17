@@ -150,12 +150,19 @@ cannot come out malformed and every run reads the same.
 | `wiki_lib.py` | shared helpers — paths, frontmatter parse, schema load |
 | `derive_process_meta.py` | process name → deterministic slug + abbreviation |
 | `scaffold_process.py` | create the process folder, section folders, blank `index.md` |
+| `write_overview.py` | fill the process overview (`index.md`) from a JSON spec |
 | `next_id.py` | next element id for a type |
+| `show_template.py` | print an element type's conformant skeleton from the schema |
 | `write_element.py` | write a conformant element file from a JSON spec |
+| `patch_element.py` | change one block or field of an element in place |
 | `check_conformance.py` | check elements against their schema templates |
 | `add_source.py` | record an uploaded document in `index.md` |
 | `apply_lint.py` | write `lint.json`, re-open implicated approvals |
-| `write_ingest_report.py` | write `ingest.json` |
+| `write_ingest_report.py` | write `ingest.json` (created/updated from the run manifest) |
+| `reset_manifest.py` | clear the run manifest before a counted run |
+| `source_report.py` | count a sourcing run's elements per type, from the manifest |
+| `clear_conflicts.py` | empty the resolved `conflicts` from `ingest.json` |
+| `write_summary.py` | write an area's executive summary into `summaries.json` |
 | `set_approval.py` | set an element's (or the overview's) approval |
 | `review_cursor.py` | build / advance / report the foundational-run queue |
 

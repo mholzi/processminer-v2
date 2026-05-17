@@ -8,10 +8,17 @@ format and length) before moving on — instead of eyeballing it.
 Usage:
   check_conformance.py <slug>               check every element in the process
   check_conformance.py <slug> <element-id>  check one element
+  check_conformance.py <slug> --json        emit conformance findings as JSON
+
+With --json the script prints a JSON array of finding objects — one per
+non-conforming element, already shaped {kind, title, detail, elements} — so
+run-lint can use them directly without re-typing the ✓/✗ text into findings.
+A conforming process prints [].
 """
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -83,14 +90,17 @@ def check_element(body: str, template: list[dict]) -> list[str]:
 
 
 def main(argv: list[str]) -> None:
+    as_json = "--json" in argv
+    argv = [a for a in argv if a != "--json"]
     if len(argv) not in (1, 2):
-        sys.exit("usage: check_conformance.py <slug> [element-id]")
+        sys.exit("usage: check_conformance.py <slug> [element-id] [--json]")
     slug = argv[0]
     only = argv[1] if len(argv) == 2 else None
 
     types = element_types()
     checked = 0
     flagged = 0
+    findings: list[dict] = []
     for _path, meta, body in iter_elements(slug):
         if only and meta.get("id") != only:
             continue
@@ -99,15 +109,27 @@ def main(argv: list[str]) -> None:
             continue
         checked += 1
         issues = check_element(body, info["template"])
+        eid = meta.get("id")
+        etype = meta.get("type")
         if issues:
             flagged += 1
-            print(f"✗ {meta.get('id')} ({meta.get('type')})")
-            for issue in issues:
-                print(f"    - {issue}")
-        else:
-            print(f"✓ {meta.get('id')} ({meta.get('type')}) conforms")
+            if as_json:
+                findings.append({
+                    "kind": "conformance",
+                    "title": f"Structure: {eid} deviates from its {etype} template",
+                    "detail": "; ".join(issues),
+                    "elements": [eid],
+                })
+            else:
+                print(f"✗ {eid} ({etype})")
+                for issue in issues:
+                    print(f"    - {issue}")
+        elif not as_json:
+            print(f"✓ {eid} ({etype}) conforms")
 
-    if checked == 0:
+    if as_json:
+        print(json.dumps(findings, indent=2, ensure_ascii=False))
+    elif checked == 0:
         print("no elements to check" + (f" for id {only}" if only else ""))
     else:
         print(f"\n{checked} checked · {flagged} with issues")

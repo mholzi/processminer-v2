@@ -27,16 +27,14 @@ all sections, all element types.
 
 ## Step 2 — Conformance check (deterministic)
 
-Run `python3 scripts/wiki/check_conformance.py <slug>`. It compares every
-element against its element type's schema template. For **each element it
-marks `✗`**, record one finding:
+Run `python3 scripts/wiki/check_conformance.py <slug> --json`. It compares
+every element against its element type's schema template and prints a **JSON
+array of conformance findings** — one object per non-conforming element, each
+already shaped `{kind: "conformance", title, detail, elements}`.
 
-- `kind`: `conformance`
-- `title`: `Structure: {id} deviates from its {type} template`
-- `detail`: the issues it listed for that element, joined into one sentence
-- `elements`: `[{id}]`
-
-Elements it marks `✓` produce no finding.
+Keep that array exactly as printed. You do not author, reshape or re-type
+these findings — they are fully deterministic. A conforming process prints
+`[]`. This array is the conformance half of Step 4's input.
 
 ## Step 3 — Cross-perspective sweep (judgement)
 
@@ -61,10 +59,17 @@ concretely, and an `elements` list of the **actual element ids** involved.
 Be specific and conservative: only record a finding you can point to in the
 elements. Do not invent issues to pad the list.
 
+**Confirm coverage.** Every run sweeps all five lenses, even when a lens
+yields nothing. After the sweep, state one coverage line naming all five —
+e.g. `Swept: Process · Control & Compliance · Client Journey · Innovation ·
+IT Architecture` — so a thorough run is visibly distinct from one that
+skipped a lens.
+
 ## Step 4 — Apply (deterministic)
 
-Assemble all findings — conformance findings from Step 2, then discrepancies,
-then questions — into a JSON array, each finding an object:
+Assemble the full findings array: the conformance array from Step 2 **kept
+exactly as the script printed it**, followed by the discrepancy and question
+findings you wrote in Step 3. Each finding is an object:
 
 ```json
 { "kind": "discrepancy", "title": "...", "detail": "...", "elements": ["PS-COB-004", "CP-COB-004"] }

@@ -74,7 +74,8 @@ python3 scripts/wiki/write_summary.py <slug> <area> <summary.md>
 ```
 
 It stores the summary in `summaries.json`, keyed by area — the file the app's
-summary panel reads.
+summary panel reads. The script checks the memo has exactly the four headings
+above, in order; if it errors, fix the headings and run it again.
 
 Then report exactly one line:
 

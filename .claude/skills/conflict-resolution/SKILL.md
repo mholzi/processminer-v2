@@ -45,12 +45,16 @@ Take the conflicts in order. For each, present it plainly:
 > **[E] Edit — write a merged version**
 
 - **[W]** — keep the wiki as it is. Nothing is written.
-- **[D]** — the document wins. Read the element, replace *only* that field or
-  block with the document's version, and re-write the element with
-  `python3 scripts/wiki/write_element.py <spec.json>` — everything else
-  (its other blocks, fields, relations, status, source) unchanged.
+- **[D]** — the document wins. Apply the document's version with
+  `patch_element.py` — it changes only the conflicted part and leaves the rest
+  of the element byte-identical, so you never re-type the whole element:
+  - a block conflict — `python3 scripts/wiki/patch_element.py <slug> <id>
+    --block "<heading>" <textfile>`
+  - a frontmatter field — `python3 scripts/wiki/patch_element.py <slug> <id>
+    --field "<key>" "<value>"`, or `--list "<key>" "<id1,id2>"` for an
+    id-list / relation.
 - **[E]** — neither is right alone. Work the merged value out with the SME,
-  then write it the same way as [D].
+  then apply it with `patch_element.py` exactly as in [D].
 
 Apply each decision before moving to the next conflict — never batch. After a
 [D] or [E] write, run `python3 scripts/wiki/check_conformance.py <slug> <id>`

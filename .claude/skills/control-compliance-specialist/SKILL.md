@@ -35,7 +35,7 @@ exists to satisfy a regulation.
 ## The wiki you write into
 
 **Read `schema/process-schema.json` first.** It defines, per element type: the
-`section`, the `idPrefix` (REG, CP, CG, OAF), and the `template` — the named
+`section`, the `idPrefix`, and the `template` — the named
 `## ` prose blocks every element must have, with their format and word range.
 Every element follows its template exactly; a deterministic conformance check
 (`check_conformance.py`) will flag any drift.
@@ -69,10 +69,11 @@ owner: KYC Analyst
 - **Blocks** — exactly the headings the schema `template` lists for this type,
   in order, each within its format and word range.
 
-When unsure of the exact frontmatter fields for a type, **read an existing
-element of the same type under `wiki/processes/cob-003/`** as a worked example.
-If none exists, follow the schema template and keep frontmatter minimal:
-`id, type, section, title, status, confidence, source` plus the relations.
+When unsure of an element type's exact shape, run
+`python3 scripts/wiki/show_template.py <type>` — it prints the section, the id
+prefix and every `## ` block with its format and length, from the schema. Keep
+frontmatter minimal: `id, type, section, title, status, confidence, source`
+plus the relations.
 
 ## Your role
 

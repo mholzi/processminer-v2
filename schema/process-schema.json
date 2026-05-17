@@ -65,6 +65,7 @@
       "label": "Role",
       "section": "roles",
       "idPrefix": "ROLE",
+      "frontmatter": { "fields": [], "relations": ["systems", "controls"] },
       "template": [
         { "heading": "Responsibility", "format": "paragraph", "paragraphs": "1", "words": "8–45", "purpose": "What the role owns in the process, stated in one clear sentence." },
         { "heading": "In this process", "format": "paragraph", "paragraphs": "1–2", "words": "10–50", "purpose": "The specific steps and controls this role performs in this process." }
@@ -74,6 +75,7 @@
       "label": "Process Step",
       "section": "process-steps",
       "idPrefix": "PS",
+      "frontmatter": { "fields": ["owner", "sla", "condition"], "relations": ["systems"] },
       "template": [
         { "heading": "What happens", "format": "paragraph", "paragraphs": "1–2", "words": "20–95", "purpose": "The concrete actions performed in this step, in plain language." },
         { "heading": "Inputs", "format": "bullets", "items": "2–6", "purpose": "Each thing the step consumes — documents, data or prior outputs." },
@@ -85,6 +87,7 @@
       "label": "Exception",
       "section": "exceptions",
       "idPrefix": "EX",
+      "frontmatter": { "fields": ["category", "frequencyPct", "impact", "handlingOwner"], "relations": ["affects"] },
       "template": [
         { "heading": "Description", "format": "paragraph", "paragraphs": "1", "words": "12–50", "purpose": "What the exception is and the conditions under which it arises." },
         { "heading": "Handling", "format": "paragraph", "paragraphs": "1–2", "words": "10–60", "purpose": "How the exception is resolved, and by whom." },
@@ -95,6 +98,7 @@
       "label": "Control",
       "section": "controls",
       "idPrefix": "CP",
+      "frontmatter": { "fields": ["controlType", "execution", "effectiveness", "owner"], "relations": ["step", "regulatedBy"] },
       "template": [
         { "heading": "What it checks", "format": "paragraph", "paragraphs": "1", "words": "10–40", "purpose": "The specific risk or condition the control verifies." },
         { "heading": "Control activity", "format": "paragraph", "paragraphs": "1", "words": "10–50", "purpose": "How the control is performed, by whom and with what." },
@@ -106,6 +110,7 @@
       "label": "Regulation",
       "section": "compliance",
       "idPrefix": "REG",
+      "frontmatter": { "fields": ["domain"], "relations": ["controls"] },
       "template": [
         { "heading": "What it requires", "format": "paragraph", "paragraphs": "1", "words": "6–45", "purpose": "The obligations the regulation imposes on the process." },
         { "heading": "Why it applies", "format": "paragraph", "paragraphs": "1", "words": "8–45", "purpose": "Why this regulation is in scope for this process." },
@@ -116,6 +121,7 @@
       "label": "Compliance Gap",
       "section": "compliance",
       "idPrefix": "CG",
+      "frontmatter": { "fields": ["severity", "gapStatus"], "relations": ["control"] },
       "template": [
         { "heading": "The gap", "format": "paragraph", "paragraphs": "1", "words": "12–45", "purpose": "What is missing or non-compliant." },
         { "heading": "Risk", "format": "paragraph", "paragraphs": "1", "words": "8–40", "purpose": "The regulatory or operational exposure the gap creates." },
@@ -126,6 +132,7 @@
       "label": "Audit Finding",
       "section": "compliance",
       "idPrefix": "OAF",
+      "frontmatter": { "fields": ["auditDate", "findingStatus", "severity"], "relations": [] },
       "template": [
         { "heading": "Finding", "format": "paragraph", "paragraphs": "1–2", "words": "15–60", "purpose": "What the audit observed, with enough context to act on." },
         { "heading": "Recommendation", "format": "paragraph", "paragraphs": "1", "words": "10–45", "purpose": "The auditor's recommended action." }
@@ -135,6 +142,7 @@
       "label": "Pain Point",
       "section": "pain-points",
       "idPrefix": "PP",
+      "frontmatter": { "fields": ["category", "severity", "priority"], "relations": ["affects"] },
       "template": [
         { "heading": "Description", "format": "paragraph", "paragraphs": "1", "words": "12–50", "purpose": "What the pain point is, from the staff or process view." },
         { "heading": "Impact", "format": "paragraph", "paragraphs": "1", "words": "8–45", "purpose": "How it slows, costs or degrades the process." },
@@ -145,6 +153,7 @@
       "label": "Friction Point",
       "section": "friction-points",
       "idPrefix": "FP",
+      "frontmatter": { "fields": ["severity"], "relations": ["occursAt", "painPoint", "addressedBy"] },
       "template": [
         { "heading": "Description", "format": "paragraph", "paragraphs": "1", "words": "10–45", "purpose": "Where and how the client experiences friction." },
         { "heading": "Root cause", "format": "paragraph", "paragraphs": "1", "words": "6–40", "purpose": "Why the friction occurs." },
@@ -155,6 +164,7 @@
       "label": "Touchpoint",
       "section": "touchpoints",
       "idPrefix": "JT",
+      "frontmatter": { "fields": ["channel", "ces"], "relations": ["occursAt"] },
       "template": [
         { "heading": "What the client does", "format": "paragraph", "paragraphs": "1", "words": "8–40", "purpose": "The client's action at this touchpoint." },
         { "heading": "What the bank does", "format": "paragraph", "paragraphs": "1", "words": "6–35", "purpose": "The bank's response or action at this touchpoint." },
@@ -165,6 +175,7 @@
       "label": "Moment That Matters",
       "section": "moments",
       "idPrefix": "MT",
+      "frontmatter": { "fields": ["sentiment"], "relations": ["touchpoint"] },
       "template": [
         { "heading": "The moment", "format": "paragraph", "paragraphs": "1", "words": "6–35", "purpose": "The specific moment in the client journey." },
         { "heading": "Why it matters", "format": "paragraph", "paragraphs": "1", "words": "10–45", "purpose": "Why this moment shapes the client's overall perception." },
@@ -175,6 +186,7 @@
       "label": "Channel",
       "section": "channels",
       "idPrefix": "CH",
+      "frontmatter": { "fields": ["channelType"], "relations": ["touchpoints"] },
       "template": [
         { "heading": "Description", "format": "paragraph", "paragraphs": "1", "words": "5–35", "purpose": "What the channel is and how clients reach it." },
         { "heading": "Usage", "format": "paragraph", "paragraphs": "1", "words": "8–40", "purpose": "When and how much the channel is used in onboarding." }
@@ -184,6 +196,7 @@
       "label": "European Competitor CX",
       "section": "competitor-cx",
       "idPrefix": "CXE",
+      "frontmatter": { "fields": ["competitor", "asOf", "sourceUrl"], "relations": [] },
       "template": [
         { "heading": "The journey", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "How a European corporate bank runs this client journey." },
         { "heading": "Relevance", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "What it means for this process — the experience gap it opens." },
@@ -194,6 +207,7 @@
       "label": "Global Competitor CX",
       "section": "competitor-cx",
       "idPrefix": "CXG",
+      "frontmatter": { "fields": ["competitor", "asOf", "sourceUrl"], "relations": [] },
       "template": [
         { "heading": "The journey", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "How a global corporate bank runs this client journey." },
         { "heading": "Relevance", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "What it means for this process — the experience gap it opens." },
@@ -204,6 +218,7 @@
       "label": "Fintech Competitor CX",
       "section": "competitor-cx",
       "idPrefix": "CXF",
+      "frontmatter": { "fields": ["competitor", "asOf", "sourceUrl"], "relations": [] },
       "template": [
         { "heading": "The journey", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "How a fintech runs this client journey." },
         { "heading": "Relevance", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "What it means for this process — the experience gap it opens." },
@@ -214,6 +229,7 @@
       "label": "CX Benchmark",
       "section": "cx-benchmarks",
       "idPrefix": "CXB",
+      "frontmatter": { "fields": ["asOf", "sourceUrl"], "relations": [] },
       "template": [
         { "heading": "The benchmark", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "The industry CX standard or client expectation, described plainly." },
         { "heading": "Relevance", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "How this process measures against it." },
@@ -224,6 +240,7 @@
       "label": "Metric",
       "section": "metrics",
       "idPrefix": "M",
+      "frontmatter": { "fields": ["value", "trend"], "relations": [] },
       "template": [
         { "heading": "Definition", "format": "paragraph", "paragraphs": "1", "words": "6–35", "purpose": "What the metric measures and how it is calculated." },
         { "heading": "Current reading", "format": "paragraph", "paragraphs": "1", "words": "4–35", "purpose": "The latest value and the trend." },
@@ -234,6 +251,7 @@
       "label": "Process Gap",
       "section": "process-gaps",
       "idPrefix": "PG",
+      "frontmatter": { "fields": ["area", "gapStatus"], "relations": [] },
       "template": [
         { "heading": "The gap", "format": "paragraph", "paragraphs": "1", "words": "10–45", "purpose": "What is missing in how the process is run or measured." },
         { "heading": "Impact", "format": "paragraph", "paragraphs": "1", "words": "8–40", "purpose": "What the gap prevents or puts at risk." },
@@ -244,6 +262,7 @@
       "label": "Market Trend",
       "section": "market-trends",
       "idPrefix": "TR",
+      "frontmatter": { "fields": ["horizon", "asOf", "sourceUrl"], "relations": ["bearsOn"] },
       "template": [
         { "heading": "The trend", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "The market or industry trend, described plainly." },
         { "heading": "Relevance", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "Why the trend matters for this process." },
@@ -254,6 +273,7 @@
       "label": "European Competitor",
       "section": "competitor-innovation",
       "idPrefix": "CEU",
+      "frontmatter": { "fields": ["competitor", "asOf", "sourceUrl"], "relations": ["bearsOn"] },
       "template": [
         { "heading": "The move", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "The innovation a European corporate bank is pursuing, described plainly." },
         { "heading": "Relevance", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "What it means for this process — the competitive gap it opens." },
@@ -264,6 +284,7 @@
       "label": "Global Competitor",
       "section": "competitor-innovation",
       "idPrefix": "CGL",
+      "frontmatter": { "fields": ["competitor", "asOf", "sourceUrl"], "relations": ["bearsOn"] },
       "template": [
         { "heading": "The move", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "The innovation a global corporate bank is pursuing, described plainly." },
         { "heading": "Relevance", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "What it means for this process — the competitive gap it opens." },
@@ -274,6 +295,7 @@
       "label": "Fintech Competitor",
       "section": "competitor-innovation",
       "idPrefix": "CFT",
+      "frontmatter": { "fields": ["competitor", "asOf", "sourceUrl"], "relations": ["bearsOn"] },
       "template": [
         { "heading": "The move", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "The innovation a fintech is pursuing, described plainly." },
         { "heading": "Relevance", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "What it means for this process — the competitive gap it opens." },
@@ -284,6 +306,7 @@
       "label": "Innovation Idea",
       "section": "innovation-ideas",
       "idPrefix": "II",
+      "frontmatter": { "fields": ["category", "strategicFit", "complexity"], "relations": ["addresses", "fromTrend", "fromCompetitor"] },
       "template": [
         { "heading": "The idea", "format": "paragraph", "paragraphs": "1–2", "words": "12–55", "purpose": "The proposed change, described plainly." },
         { "heading": "Expected benefit", "format": "paragraph", "paragraphs": "1", "words": "10–45", "purpose": "The outcome it would deliver and for whom." },
@@ -294,6 +317,7 @@
       "label": "Innovation Risk",
       "section": "innovation-risks",
       "idPrefix": "IR",
+      "frontmatter": { "fields": ["severity"], "relations": [] },
       "template": [
         { "heading": "The risk", "format": "paragraph", "paragraphs": "1", "words": "12–50", "purpose": "What could go wrong with the innovation." },
         { "heading": "Likelihood & impact", "format": "paragraph", "paragraphs": "1", "words": "10–45", "purpose": "How likely the risk is and how severe its effect." },
@@ -304,6 +328,7 @@
       "label": "TO-BE Element",
       "section": "to-be-design",
       "idPrefix": "TS",
+      "frontmatter": { "fields": [], "relations": ["replaces"] },
       "template": [
         { "heading": "Target description", "format": "paragraph", "paragraphs": "1–2", "words": "20–95", "purpose": "How the step or process works in the target state." },
         { "heading": "What changes", "format": "bullets", "items": "2–6", "purpose": "Each concrete change from the As-Is." },
@@ -314,6 +339,7 @@
       "label": "Transformation Decision",
       "section": "transformation-decisions",
       "idPrefix": "TD",
+      "frontmatter": { "fields": ["decisionType", "decisionStatus"], "relations": [] },
       "template": [
         { "heading": "The decision", "format": "paragraph", "paragraphs": "1", "words": "10–50", "purpose": "What was decided." },
         { "heading": "Options considered", "format": "bullets", "items": "2–5", "purpose": "The alternatives that were weighed." },
@@ -324,6 +350,7 @@
       "label": "Gap",
       "section": "gap-resolution",
       "idPrefix": "VG",
+      "frontmatter": { "fields": ["validationArea", "gapStatus"], "relations": [] },
       "template": [
         { "heading": "The gap", "format": "paragraph", "paragraphs": "1", "words": "10–50", "purpose": "The As-Is gap being resolved." },
         { "heading": "Resolution", "format": "paragraph", "paragraphs": "1–2", "words": "12–60", "purpose": "How the target state closes the gap." },
@@ -334,6 +361,7 @@
       "label": "System",
       "section": "systems",
       "idPrefix": "SYS",
+      "frontmatter": { "fields": ["systemType"], "relations": ["steps", "integrates"] },
       "template": [
         { "heading": "Purpose", "format": "paragraph", "paragraphs": "1", "words": "4–30", "purpose": "What the system is for." },
         { "heading": "Role in this process", "format": "paragraph", "paragraphs": "1", "words": "6–40", "purpose": "Which steps use the system and how." }
@@ -343,11 +371,27 @@
       "label": "Integration",
       "section": "integrations",
       "idPrefix": "INT",
+      "frontmatter": { "fields": [], "relations": ["systems"] },
       "template": [
         { "heading": "What connects", "format": "paragraph", "paragraphs": "1", "words": "6–30", "purpose": "The two systems the integration links." },
         { "heading": "What flows", "format": "bullets", "items": "2–6", "purpose": "Each kind of data that moves across the integration." }
       ]
     }
   },
-  "relationTypes": ["affects", "controls-step", "regulated-by", "occurs-at", "used-in", "integrates-with", "links-to", "resolves", "bears-on", "from-trend", "from-competitor"]
+  "relationTypes": ["affects", "controls-step", "regulated-by", "occurs-at", "used-in", "integrates-with", "links-to", "resolves", "bears-on", "from-trend", "from-competitor"],
+  "_fieldValuesComment": "Allowed values for the enumerated frontmatter fields — the single source skills draw on, surfaced by show_template.py. Open-text fields (owner, source, competitor, …) are not listed.",
+  "fieldValues": {
+    "horizon": ["regulatory-deadline", "near-term", "emerging"],
+    "severity": ["HIGH", "MEDIUM", "LOW", "NONE"],
+    "impact": ["HIGH", "MEDIUM", "LOW"],
+    "effectiveness": ["HIGH", "MEDIUM", "LOW"],
+    "complexity": ["HIGH", "MEDIUM", "LOW"],
+    "strategicFit": ["HIGH", "MEDIUM", "LOW"],
+    "priority": ["P1", "P2", "P3"],
+    "controlType": ["PREVENTIVE", "DETECTIVE", "CORRECTIVE"],
+    "execution": ["MANUAL", "AUTOMATED"],
+    "systemType": ["CORE", "SUPPORTING", "EXTERNAL"],
+    "channelType": ["DIGITAL", "ASSISTED"],
+    "sentiment": ["positive", "negative", "critical"]
+  }
 }

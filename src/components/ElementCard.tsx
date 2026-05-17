@@ -37,7 +37,11 @@ const TYPE_CONFIG: Record<string, { fields: Field[]; links: Link[] }> = {
       { label: "SLA", key: "sla" },
       { label: "Condition", key: "condition" },
     ],
-    links: [{ label: "Systems", key: "systems" }],
+    links: [
+      { label: "Systems", key: "systems" },
+      // `controls` is not a stored field — supplied via derivedLinks.
+      { label: "Controls", key: "controls" },
+    ],
   },
   exception: {
     fields: [
@@ -246,27 +250,55 @@ export default function ElementCard({
   userName,
   typeLabel,
   template,
-  onNavigate,
+  onGoToElement,
   onDeepDive,
   onSaved,
   resolveSection,
+  defaultCollapsed,
+  isCurrent,
+  derivedLinks,
 }: {
   page: WikiPage;
   slug: string;
   userName: string;
   typeLabel: string;
   template?: BlockSpec[];
-  onNavigate?: (section: string) => void;
+  onGoToElement?: (id: string) => void;
   onDeepDive?: (id: string, title: string) => void;
   onSaved?: () => void;
   resolveSection?: (id: string) => string | null;
+  defaultCollapsed?: boolean;
+  /** True when the foundational run's cursor is on this element. */
+  isCurrent?: boolean;
+  /** Relations computed by the parent — override the stored frontmatter. */
+  derivedLinks?: Record<string, string[]>;
 }) {
   const [showTemplate, setShowTemplate] = useState(false);
+  // Collapsed cards show only their header row, so a long section is a
+  // scannable list. Long sections open collapsed (see `defaultCollapsed`).
+  const [collapsed, setCollapsed] = useState(defaultCollapsed ?? false);
 
   // Live template-conformance check for this element (deterministic, cheap).
   const checks = template ? checkElement(page, template) : [];
   const issueCount = checks.filter((c) => !c.ok).length;
   const cfg = TYPE_CONFIG[page.type] ?? { fields: [], links: [] };
+
+  // Typed outgoing relations (process-step `transitions`): `to|kind|when`.
+  // The flat fields/links models can't carry a kind + a condition, so these
+  // render in their own block.
+  const TRANSITION_KINDS = ["normal", "branch", "loopback", "exception"];
+  const transitions = asList(page.meta.transitions)
+    .map((entry) => {
+      const parts = entry.split("|");
+      const kind = (parts[1] ?? "normal").trim();
+      return {
+        to: (parts[0] ?? "").trim(),
+        kind: TRANSITION_KINDS.includes(kind) ? kind : "normal",
+        when: parts.slice(2).join("|").trim(),
+      };
+    })
+    .filter((t) => t.to);
+
   const isDraft = page.status === "draft";
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -331,6 +363,10 @@ export default function ElementCard({
   const [fields, setFields] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
 
+  // Editing — and being the foundational run's current element — force the
+  // full card open.
+  const isCollapsed = collapsed && !editing && !isCurrent;
+
   function startEdit() {
     setTitle(page.title);
     setBlocks(page.blocks.map((b) => ({ ...b })));
@@ -363,10 +399,21 @@ export default function ElementCard({
 
   return (
     <article
-      className={`el${isDraft ? " draft" : ""}${editing ? " editing" : ""}`}
+      className={`el${isDraft ? " draft" : ""}${editing ? " editing" : ""}${
+        isCollapsed ? " collapsed" : ""
+      }${isCurrent ? " is-current" : ""}`}
       id={page.id}
     >
       <div className="el-top">
+        <button
+          type="button"
+          className="el-collapse"
+          onClick={() => setCollapsed((v) => !v)}
+          aria-expanded={!isCollapsed}
+          title={isCollapsed ? "Expand" : "Collapse"}
+        >
+          {isCollapsed ? "▸" : "▾"}
+        </button>
         <span className="el-id">{page.id}</span>
         {!editing && (
           <label
@@ -390,10 +437,13 @@ export default function ElementCard({
         )}
         {page.status === "draft" && <span className="tag">AI draft</span>}
         {editing && <span className="tag editing-tag">Editing</span>}
+        {isCurrent && !editing && (
+          <span className="tag current-tag">Under review</span>
+        )}
         {!editing && reviewError && (
           <span className="el-edit-err">{reviewError}</span>
         )}
-        {template && template.length > 0 && (
+        {template && template.length > 0 && !isCollapsed && (
           <button
             className={`el-struct-btn${issueCount > 0 ? " has-issues" : ""}`}
             onClick={() => setShowTemplate((v) => !v)}
@@ -417,7 +467,7 @@ export default function ElementCard({
         )}
       </div>
 
-      {showTemplate && template && template.length > 0 && (
+      {showTemplate && !isCollapsed && template && template.length > 0 && (
         <div className="el-template">
           <div className="el-tpl-head">Schema template · {typeLabel}</div>
           <div
@@ -483,6 +533,8 @@ export default function ElementCard({
         <div className="el-title">{page.title}</div>
       )}
 
+      {!isCollapsed && (
+        <>
       {editing ? (
         blocks.length > 0 ? (
           <div className="el-blocks">
@@ -577,20 +629,22 @@ export default function ElementCard({
 
       {!editing &&
         cfg.links.map((lg) => {
-          const targets = asList(page.meta[lg.key]);
+          // A derived relation (computed by the parent from other elements)
+          // overrides the stored frontmatter — one source of truth.
+          const targets = derivedLinks?.[lg.key] ?? asList(page.meta[lg.key]);
           if (targets.length === 0) return null;
           return (
             <div className="links" key={lg.key}>
               <span className="link-group-label">{lg.label}:</span>
               {targets.map((t) => {
                 const sec = resolveSection?.(t) ?? null;
-                return sec && onNavigate ? (
+                return sec && onGoToElement ? (
                   <button
                     type="button"
                     className="link-chip link-chip-nav"
                     key={t}
-                    onClick={() => onNavigate(sec)}
-                    title={`Go to “${sec}”`}
+                    onClick={() => onGoToElement(t)}
+                    title={`Go to ${t}`}
                   >
                     {t}
                   </button>
@@ -603,6 +657,44 @@ export default function ElementCard({
             </div>
           );
         })}
+
+      {!editing && transitions.length > 0 && (
+        <div className="el-transitions">
+          <span className="el-transitions-label">Transitions</span>
+          {transitions.map((t) => {
+            const sec = resolveSection?.(t.to) ?? null;
+            const label =
+              t.kind === "normal"
+                ? "next"
+                : t.kind === "loopback"
+                  ? "loop-back"
+                  : t.kind;
+            return (
+              <div
+                className={`el-transition el-transition-${t.kind}`}
+                key={`${t.to}-${t.when}`}
+              >
+                {sec && onGoToElement ? (
+                  <button
+                    type="button"
+                    className="link-chip link-chip-nav"
+                    onClick={() => onGoToElement(t.to)}
+                    title={`Go to ${t.to}`}
+                  >
+                    {t.to}
+                  </button>
+                ) : (
+                  <span className="link-chip">{t.to}</span>
+                )}
+                <span className="el-transition-meta">
+                  {label}
+                  {t.when ? ` · ${t.when}` : ""}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       <div className="el-meta">
         {!editing && isDraft && page.confidence && (
@@ -650,6 +742,8 @@ export default function ElementCard({
           )}
         </div>
       </div>
+        </>
+      )}
     </article>
   );
 }

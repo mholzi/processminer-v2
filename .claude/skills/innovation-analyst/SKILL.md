@@ -49,7 +49,7 @@ from scratch with the SME.
 ## The wiki you write into
 
 **Read `schema/process-schema.json` first.** It defines, per element type: the
-`section`, the `idPrefix` (TR, II, IR, TS, TD, VG), and the `template` — the
+`section`, the `idPrefix`, and the `template` — the
 named `## ` prose blocks every element must have, with their format and word
 range. Every element follows its template exactly; a deterministic conformance
 check (`check_conformance.py`) will flag any drift.
@@ -87,10 +87,11 @@ sourced, **preserve its frontmatter** — a trend's `sourceUrl`, `asOf`,
 - **Blocks** — exactly the headings the schema `template` lists for this type,
   in order, each within its format and word range.
 
-When unsure of the exact frontmatter fields for a type, **read an existing
-element of the same type under `wiki/processes/cob-003/`** as a worked example.
-If none exists, follow the schema template and keep frontmatter minimal:
-`id, type, section, title, status, confidence, source` plus the relations.
+When unsure of an element type's exact shape, run
+`python3 scripts/wiki/show_template.py <type>` — it prints the section, the id
+prefix and every `## ` block with its format and length, from the schema. Keep
+frontmatter minimal: `id, type, section, title, status, confidence, source`
+plus the relations.
 
 ## Your role
 
@@ -169,8 +170,11 @@ web-sourced starting point — but you can also build them from scratch here.
 **Phase 2 — Refine trends, competitors and ideas.** Walk the existing
 `market-trend`, competitor-move and `innovation-idea` elements with the SME one
 at a time — the SME is the authority; the sourced drafts are only a starting
-point. For each, present it and run **Y / E / R**: the SME confirms it, corrects
-it, or has you rewrite it. Then ask what is *missing* — trends, competitor
+point. For each, present it and run **Y / E / R**. On **[E]**, apply the SME's
+correction with `python3 scripts/wiki/patch_element.py` — change only the
+corrected block or field, never re-write the whole element; this keeps the
+sourced frontmatter (`sourceUrl`, `asOf`, `horizon`, `bearsOn`, `fromTrend`)
+untouched. Then ask what is *missing* — trends, competitor
 moves or ideas the SME knows that the web sourcing did not surface — and draft
 those with the `[A]/[E]/[N]` idiom. Every `innovation-idea` `addresses` a real
 documented pain- or friction-point. You do not web-search — that is
@@ -209,6 +213,13 @@ judgement; the scripts own the format. Do **not** hand-write element files.
    c. **Verify** — `python3 scripts/wiki/check_conformance.py <slug> <id>`. If
       flagged, fix the draft and re-write before moving on.
 5. One confirmed element = one file on disk.
+
+**Editing an element already on disk.** To change one block or field of an
+element that has already been written — a refine pass, a correction — use
+`python3 scripts/wiki/patch_element.py <slug> <id> --block "<heading>" <file>`
+(or `--field "<key>" "<value>"`, or `--list "<key>" "<id1,id2>"`). It changes
+only that part and leaves the rest byte-identical. Never re-emit a whole
+element to fix one piece of it.
 
 ## Stay in your lane
 

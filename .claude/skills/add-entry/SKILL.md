@@ -21,9 +21,11 @@ counterpart to the bulk `source-innovation` / `source-cx` skills.
 
 ## Step 1 — Read the section's context
 
-- Read `schema/process-schema.json` for the section: the element type(s) it
-  holds and each type's `template` — the named `## ` blocks, their format and
-  word range.
+- Read `schema/process-schema.json` for the section — the element type(s) it
+  holds. For each of those types run `python3 scripts/wiki/show_template.py
+  <type>`: it prints the type's `## ` blocks **and** its type-specific
+  frontmatter fields and relations, so the entry you draft is as complete as
+  one the dedicated sourcing skills produce.
 - Read the section's existing elements in `wiki/processes/<slug>/<section>/`
   so the new entry fits and does not duplicate one already there.
 - Read `index.md` for the process — its domain, what it does, its scope.
@@ -50,9 +52,11 @@ Research the entry before drafting — never draft from a blank guess:
   competitor move, a CX benchmark — or when the SME's request needs facts you
   do not have. Cite the real source; never invent one.
 
-Then draft the element: every block per its schema `template`, the frontmatter
-fields and relations the type needs, an honest `confidence`, and a `source`
-(the SME, the wiki element, or the study/URL the research found). If the
+Then draft the element: every block per its schema `template`, **every
+frontmatter field and relation `show_template.py` listed for the type** (for a
+web-sourced type that means `sourceUrl`, `asOf` and the rest — do not leave
+them off), an honest `confidence`, and a `source` (the SME, the wiki element,
+or the study/URL the research found). If the
 section holds several element types, pick the type from what the SME
 described; if it is genuinely ambiguous, ask which.
 

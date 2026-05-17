@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import re
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -109,3 +110,42 @@ def iter_elements(slug: str):
 def word_count(text: str) -> int:
     text = text.strip()
     return len(text.split()) if text else 0
+
+
+# ---- Run manifest -------------------------------------------------------
+# write_element.py appends one line per write here, recording whether the
+# element was created or updated. A reporting script (write_ingest_report.py)
+# reads it so created/updated counts are derived mechanically, never tallied
+# from the model's memory. One manifest per process slug.
+
+
+def manifest_path(slug: str) -> Path:
+    return Path(tempfile.gettempdir()) / f"wiki-run-{slug}.jsonl"
+
+
+def log_write(slug: str, eid: str, etype: str, action: str) -> None:
+    """Append one element-write record (action: 'created' | 'updated')."""
+    rec = json.dumps({"id": eid, "type": etype, "action": action})
+    with manifest_path(slug).open("a", encoding="utf-8") as fh:
+        fh.write(rec + "\n")
+
+
+def read_manifest(slug: str) -> list[dict]:
+    """Every write record for a process, in order; [] if no manifest."""
+    path = manifest_path(slug)
+    if not path.is_file():
+        return []
+    out = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            out.append(json.loads(line))
+        except json.JSONDecodeError:
+            continue
+    return out
+
+
+def reset_manifest(slug: str) -> None:
+    manifest_path(slug).unlink(missing_ok=True)

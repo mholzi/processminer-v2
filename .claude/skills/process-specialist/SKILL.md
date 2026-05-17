@@ -78,18 +78,18 @@ systems: [SYS-COB-001, SYS-COB-002]
 ...
 ```
 
-- **id** — `<idPrefix>-<PROC>-<NNN>`. `idPrefix` from the schema (PS, EX, PP,
-  PG, ROLE, M). `PROC` is a 2-4 letter uppercase abbreviation of the process
-  (e.g. `COB` for Client Onboarding). `NNN` is a zero-padded sequence.
+- **id** — `<idPrefix>-<PROC>-<NNN>`. `next_id.py` builds it from the schema —
+  you never assemble an id yourself.
 - **status** — always `draft`. You never set `approved`; the SME does that
   later, in the web app.
 - **Relations** are id lists in `[ ]` — e.g. an exception's `affects: [PS-…]`.
 - **Blocks** — exactly the headings the schema `template` lists for this type,
   in order, each within its format and word range.
 
-When unsure of the exact frontmatter fields for a type, **read an existing
-element of the same type under `wiki/processes/cob-003/`** as a worked example —
-it is seeded and conformant.
+When unsure of an element type's exact shape, run
+`python3 scripts/wiki/show_template.py <type>` — it prints the section, the id
+prefix and every `## ` block with its format and length, straight from the
+schema.
 
 ## Your role
 
@@ -169,13 +169,18 @@ every phase.
 and the human-in-the-loop record). Identify the process:
 - *Existing* — list the slugs under `wiki/processes/`, let them pick; read the
   current `index.md` and elements so you extend rather than duplicate.
-- *New* — agree a name and a `<slug>` (kebab-case) and a `<PROC>` abbreviation;
-  create `wiki/processes/<slug>/` and a skeleton `index.md`.
+- *New* — agree a name with the SME, then run the `new-process` skill (read
+  `.claude/skills/new-process/SKILL.md` and follow it) to scaffold the process
+  folder, the section folders and a skeleton `index.md`. Never hand-create
+  them. Phase 1 then fills the overview.
 
 **Phase 1 — Overview.** Elicit purpose, trigger, frequency, volume, and what is
-in / out of scope. Draft the `index.md`: overview fields in frontmatter
-(`processOwner`, `trigger`, `frequency`, `scopeIn`, `scopeOut`, `processInput`,
-`processOutput`, `docStatus`) and a 2-paragraph Purpose as the body. Y/E/R.
+in / out of scope. Draft the overview, run Y/E/R, and on **[Y]** write it with
+`python3 scripts/wiki/write_overview.py <spec.json>` — never hand-edit
+`index.md`. The spec carries the overview fields (`processOwner`, `trigger`,
+`frequency`, `scopeIn`, `scopeOut`, `processInput`, `processOutput`,
+`docStatus`) and a 2-paragraph `purpose` body; the script owns the format and
+preserves the process identity. See "Writing an element" for the script idiom.
 
 **Phase 2 — Process steps.** The spine. Aim for 5-15 major steps. Offer three
 ways in: "walk me through it start to finish", "I'll draft a step list from

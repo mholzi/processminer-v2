@@ -25,6 +25,11 @@ from wiki_lib import WIKI_DIR, iter_elements, parse_frontmatter  # noqa: E402
 
 STATUSES = ("in-progress", "approved", "rejected")
 
+# An approval must be stamped with a real SME name. These are the values a
+# skill produces when it was never told one — reject them so a guess never
+# lands in the wiki as an approval author.
+PLACEHOLDER_NAMES = {"", "sme", "the sme", "<sme name>", "sme name", "unknown"}
+
 
 def patch(path: Path, status: str, by: str, today: str) -> None:
     raw = path.read_text(encoding="utf-8")
@@ -54,6 +59,11 @@ def main(argv: list[str]) -> None:
     slug, eid, status, by = argv
     if status not in STATUSES:
         sys.exit(f"error: status must be one of {', '.join(STATUSES)}")
+    if by.strip().lower() in PLACEHOLDER_NAMES:
+        sys.exit(
+            f"error: '{by}' is not a real SME name — pass the name of the "
+            "SME present in the session, not a placeholder"
+        )
 
     proc_dir = WIKI_DIR / slug
     if not proc_dir.is_dir():

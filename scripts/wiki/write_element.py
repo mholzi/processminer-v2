@@ -27,12 +27,19 @@ The `section` is derived from the element type via the schema — do not pass it
 
 from __future__ import annotations
 
+import datetime
 import json
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from wiki_lib import ROOT, WIKI_DIR, element_types, serialize_element  # noqa: E402
+from wiki_lib import (  # noqa: E402
+    ROOT,
+    WIKI_DIR,
+    element_types,
+    log_write,
+    serialize_element,
+)
 
 REQUIRED = ("slug", "type", "id", "title", "blocks")
 
@@ -76,12 +83,23 @@ def main(argv: list[str]) -> None:
     for key, val in (spec.get("relations") or {}).items():
         frontmatter[key] = list(val)
 
+    # Auto-stamp `asOf` — the date a web-sourced element was sourced — when the
+    # type declares the field and the spec did not supply it. Guarantees a
+    # consistent ISO date and takes the burden off the skill.
+    fm_fields = types[etype].get("frontmatter", {}).get("fields", [])
+    if "asOf" in fm_fields and not frontmatter.get("asOf"):
+        frontmatter["asOf"] = datetime.date.today().isoformat()
+
     section_dir = proc_dir / section
     section_dir.mkdir(parents=True, exist_ok=True)
     path = section_dir / f"{spec['id']}.md"
-    path.write_text(serialize_element(frontmatter, spec["blocks"]), encoding="utf-8")
 
-    print(f"wrote {path.relative_to(ROOT)}")
+    # Record created vs updated for the run manifest before the write lands.
+    action = "updated" if path.is_file() else "created"
+    path.write_text(serialize_element(frontmatter, spec["blocks"]), encoding="utf-8")
+    log_write(spec["slug"], spec["id"], etype, action)
+
+    print(f"wrote {path.relative_to(ROOT)} ({action})")
 
 
 if __name__ == "__main__":

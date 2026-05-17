@@ -38,9 +38,13 @@ you ask for.
 **Step 2 — Derive, draft, confirm.**
 
 1. Run `python3 scripts/wiki/derive_process_meta.py "<name>"`. It returns JSON
-   with a deterministic **slug** (kebab-case folder name) and **`<PROC>`**
-   abbreviation (uppercase, for element IDs). Use exactly what it returns — do
-   not invent your own.
+   with a deterministic **slug** (kebab-case folder name), a **`<PROC>`**
+   abbreviation (uppercase, for element IDs), and **`slugTaken`**. Use exactly
+   what it returns — do not invent your own.
+
+   If **`slugTaken` is `true`**, a process with this slug already exists. Do
+   not confirm or scaffold — tell the user plainly that the name collides with
+   an existing process and ask for a different name, then return to Step 1.
 2. Draft a **one-line description** — one plain sentence on what the process
    does. This is the one judgement item; the slug and abbreviation are not.
 3. Present all three to the user as a **bulleted list — never a table** — each

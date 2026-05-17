@@ -9,7 +9,11 @@ Usage:
   derive_process_meta.py "<process name>"
 
 Prints one line of JSON:
-  {"slug": "funds-release", "proc": "FR"}
+  {"slug": "funds-release", "proc": "FR", "slugTaken": false}
+
+`slugTaken` is true when wiki/processes/<slug>/ already exists — the
+new-process skill warns the user at the confirm step instead of letting
+scaffold_process.py fail after they have already accepted.
 """
 
 from __future__ import annotations
@@ -17,6 +21,10 @@ from __future__ import annotations
 import json
 import re
 import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from wiki_lib import WIKI_DIR  # noqa: E402
 
 STOPWORDS = {
     "of", "the", "a", "an", "and", "for", "to", "in", "on", "at", "by",
@@ -60,7 +68,9 @@ def main(argv: list[str]) -> None:
     if not 2 <= len(proc) <= 4:
         sys.exit(f"error: could not derive an abbreviation from '{name}'")
 
-    print(json.dumps({"slug": slug, "proc": proc}))
+    slug_taken = (WIKI_DIR / slug).is_dir()
+
+    print(json.dumps({"slug": slug, "proc": proc, "slugTaken": slug_taken}))
 
 
 if __name__ == "__main__":

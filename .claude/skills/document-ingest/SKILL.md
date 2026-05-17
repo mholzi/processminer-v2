@@ -88,25 +88,34 @@ On **[Y]** — continue to Step 3.
    - Note every element where verification removed or corrected a claim — these
      go in the Step 4 summary.
 
-4. **Write.** For each verified element, write it with the scripts: new topics
-   get an id from `python3 scripts/wiki/next_id.py <slug> <type>` (updates keep
-   their id), then `python3 scripts/wiki/write_element.py <spec.json>`
-   (`status: draft`, `source: {file}`, the verified `confidence`).
+4. **Write.** First clear the run manifest —
+   `python3 scripts/wiki/reset_manifest.py <slug>` — so a previous run cannot
+   inflate the counts. Then for each verified element, write it with the
+   scripts: new topics get an id from `python3 scripts/wiki/next_id.py <slug>
+   <type>` (updates keep their id), then
+   `python3 scripts/wiki/write_element.py <spec.json>` (`status: draft`,
+   `source: {file}`, the verified `confidence`). Each write records itself in
+   the manifest as created or updated — you do **not** track those lists
+   yourself.
 
 5. **Check conformance.** Run `python3 scripts/wiki/check_conformance.py <slug>`
    and fix any element you wrote that it flags.
 
 6. **Write the ingest report.** Assemble a JSON object — `file` (the source
-   filename), `created` and `updated` (id lists), `conflicts` (each
-   `{element, field, documentSays, wikiSays}`), `corrections` (each
-   `{element, field, removed}` from Step 3's verification) — save it to a temp
-   file, then run `python3 scripts/wiki/write_ingest_report.py <slug> <report.json>`.
-   This writes `ingest.json`, which the app's triage screen reads.
+   filename), `conflicts` (each `{element, field, documentSays, wikiSays}`),
+   `corrections` (each `{element, field, removed}` from Step 3's
+   verification). Do **not** include `created` or `updated` — the script
+   derives those from the run manifest. Save the object to a temp file, then
+   run `python3 scripts/wiki/write_ingest_report.py <slug> <report.json>`. It
+   writes `ingest.json` (which the app's triage screen reads) and prints the
+   canonical created / updated / conflict / correction counts — use those
+   printed counts in Step 4.
 
 ## Step 4 — Summarise the extraction
 
-Report what happened with this **exact template**, substituting the counts and
-the conflict list:
+Report what happened with this **exact template**. The created / updated /
+conflict / correction counts are the ones `write_ingest_report.py` just
+printed — do not recount from memory:
 
 > Extraction complete — from **{file}**:
 >

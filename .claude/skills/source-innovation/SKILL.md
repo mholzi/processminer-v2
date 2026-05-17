@@ -43,10 +43,11 @@ or gap elements — those are `innovation-analyst`'s, with the SME.
 ## The wiki you write into
 
 **Read `schema/process-schema.json` first** — it defines, per element type, the
-`section`, the `idPrefix` (TR, CEU, CGL, CFT, II) and the `template` (the named `## ` blocks,
-their format and word range). The scripts in `scripts/wiki/` own the file
-format; you do the judgement. Read an existing element of the type under
-`wiki/processes/cob-003/` as a worked example when unsure of the frontmatter.
+`section`, the `idPrefix` and the `template` (the named `## ` blocks, their
+format and word range). The scripts in `scripts/wiki/` own the file format; you
+do the judgement. When unsure of an element type's exact shape, run
+`python3 scripts/wiki/show_template.py <type>` — it prints the section, id
+prefix and blocks straight from the schema.
 
 ## Step 1 — Read the process
 
@@ -71,6 +72,11 @@ knowledge solidly supports, at `low` confidence, and say so in the summary —
 
 ## Step 3 — Write market trends
 
+Before the first write, clear the run manifest —
+`python3 scripts/wiki/reset_manifest.py <slug>`. Every element you write is
+logged to it; Step 6's report counts are read back from the manifest, not
+tallied from memory.
+
 For each trend that matters to this process, draft a `market-trend` element per
 its schema template. **Ground every claim in a source you actually found** — a
 claim you cannot trace to a study or report does not go in.
@@ -80,15 +86,14 @@ for this process; *Evidence* — the **specific figure or statistic** behind it
 (*"abandonment 70%, up from 48% in 2023"*), the data point, not a re-listing of
 who published it.
 
-Each element's frontmatter carries:
-- `source:` the study or publication name; `sourceUrl:` its URL — store the
-  link, a reviewer must be able to click through.
-- `asOf:` today's date (ISO `YYYY-MM-DD`) — trends decay; this records when it
-  was sourced.
-- `horizon:` one of `regulatory-deadline` (a dated compliance obligation),
-  `near-term` (already arriving), `emerging` (a longer-range direction).
-- `bearsOn:` a relation — the ids of the process elements the trend bears on
-  (steps, systems, pain-points), drawn from the As-Is you read in Step 1.
+Each element's frontmatter — `show_template.py market-trend` lists every field
+and the allowed values for the enumerated ones (e.g. `horizon`). Notes
+specific to sourcing:
+- `source:` / `sourceUrl:` — the study or publication and its URL; a reviewer
+  must be able to click through.
+- `asOf:` — leave it out; `write_element.py` auto-stamps today's date.
+- `bearsOn:` the ids of the process elements the trend bears on (steps,
+  systems, pain-points), drawn from the As-Is you read in Step 1.
 
 Then write it: `next_id.py` → `write_element.py` (`status: draft`,
 `confidence: medium` — web-sourced, not yet SME-validated; `low` if thinly
@@ -138,6 +143,12 @@ Draft per template, write with the same three scripts (`status: draft`,
 `confidence: low`–`medium` — these are unvalidated proposals). Run conformance.
 
 ## Step 6 — Report
+
+Run `python3 scripts/wiki/source_report.py <slug>` — it reads the run manifest
+and prints how many elements were written, per type. Map those counts into the
+template: `market-trend` → Market trends; `competitor-eu` / `-global` /
+`-fintech` → the Competitor moves total and its European / global / fintech
+split; `innovation-idea` → Innovation ideas. Do not recount from memory.
 
 Report with this **exact template**, substituting the counts:
 

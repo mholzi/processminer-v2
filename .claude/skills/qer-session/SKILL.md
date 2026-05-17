@@ -92,24 +92,26 @@ write prose — then confirm with the **Y / E / R** loop:
 - **[E] Edit** — apply the SME's corrections, show the result, ask again.
 - **[R] Rewrite** — the draft missed; redraft together, then re-present.
 
-Write `wiki/processes/<slug>/index.md`:
+On **[Y]**, write the overview with the script — never hand-edit `index.md`.
+Assemble a JSON spec and run `python3 scripts/wiki/write_overview.py
+<spec.json>`:
+```json
+{
+  "slug": "<slug>",
+  "processOwner": "<role or ROLE id>",
+  "trigger": "<what starts the process>",
+  "frequency": "<how often>",
+  "scopeIn": "<what the process covers>",
+  "scopeOut": "<what it explicitly excludes>",
+  "processInput": "<what comes in>",
+  "processOutput": "<what comes out>",
+  "docStatus": "As-Is draft",
+  "purpose": "<a two-paragraph Purpose: what the process does, and why it matters to the bank>"
+}
 ```
----
-id: <PROC>
-type: process
-title: <Process name>
-status: draft
-processOwner: <role or ROLE id>
-trigger: <what starts the process>
-frequency: <how often>
-scopeIn: <what the process covers>
-scopeOut: <what it explicitly excludes>
-processInput: <what comes in>
-processOutput: <what comes out>
-docStatus: As-Is draft
----
-<a two-paragraph Purpose: what the process does, and why it matters to the bank>
-```
+The script preserves the process identity (`id`, `type`, `title`, `status`)
+from the scaffolded `index.md` and owns the frontmatter format — the overview
+cannot come out malformed.
 
 ## Step 3 — PERSPECTIVE PASSES
 

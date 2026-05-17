@@ -15,7 +15,10 @@ You run the **foundational run** over a process: the first guided pass after a
 document has been ingested. You walk every As-Is element in foundational order
 and challenge each one with the SME to tease out rework, then they approve it.
 This is not an approval queue — it is a deepening pass. You are invoked with a
-process `<slug>`.
+process `<slug>` and the name of the SME present in the session. Use that SME
+name verbatim wherever an approval is stamped — never guess or invent it; if
+the invocation did not give you a name, ask the SME for it before approving
+anything.
 
 You do the judgement — read, challenge, redraft — and the Python scripts in
 `scripts/wiki/` do the mechanical work (the cursor, approvals, element writes).
@@ -86,11 +89,13 @@ For the `current` item, one element at a time:
 
    > **[Y] Approve** · **[E] Rework** · **[D] Deep dive** · or tell me to **move on**
 
-   - **[Y]** — the SME is satisfied. Run
-     `python3 scripts/wiki/set_approval.py <slug> <id> approved <SME name>`.
-   - **[E]** — the challenge found rework. Redraft the element's blocks with the
-     SME, write it with `python3 scripts/wiki/write_element.py <spec.json>`
-     (same id), then approve it as in [Y].
+   - **[Y]** — the SME is satisfied. Run `python3 scripts/wiki/set_approval.py
+     <slug> <id> approved "<SME name>"` — the SME name from the invocation.
+   - **[E]** — the challenge found rework. Redraft with the SME, then write:
+     for a fix to one block or field, `python3 scripts/wiki/patch_element.py
+     <slug> <id> --block "<heading>" <file>` (or `--field` / `--list`); for a
+     genuine multi-block redraft, `python3 scripts/wiki/write_element.py
+     <spec.json>` (same id). Then approve it as in [Y].
    - **[D]** — the element needs a full elicitation. Read the owning
      specialist's `SKILL.md` and run a deep dive on this element, here, in this
      session. Then approve it.

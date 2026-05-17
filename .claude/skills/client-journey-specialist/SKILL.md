@@ -40,7 +40,7 @@ with the SME and add what the sourcing missed. You do no web research yourself.
 ## The wiki you write into
 
 **Read `schema/process-schema.json` first.** It defines, per element type: the
-`section`, the `idPrefix` (CH, JT, MT, FP, CXE, CXG, CXF, CXB), and the `template` — the named
+`section`, the `idPrefix`, and the `template` — the named
 `## ` prose blocks every element must have, with their format and word range.
 Every element follows its template exactly; a deterministic conformance check
 (`check_conformance.py`) will flag any drift.
@@ -72,10 +72,11 @@ addressedBy: II-COB-001
 - **Blocks** — exactly the headings the schema `template` lists for this type,
   in order, each within its format and word range.
 
-When unsure of the exact frontmatter fields for a type, **read an existing
-element of the same type under `wiki/processes/cob-003/`** as a worked example.
-If none exists, follow the schema template and keep frontmatter minimal:
-`id, type, section, title, status, confidence, source` plus the relations.
+When unsure of an element type's exact shape, run
+`python3 scripts/wiki/show_template.py <type>` — it prints the section, the id
+prefix and every `## ` block with its format and length, from the schema. Keep
+frontmatter minimal: `id, type, section, title, status, confidence, source`
+plus the relations.
 
 ## Your role
 
@@ -165,7 +166,10 @@ staff pain point.
 **Phase 6 — Refine competitor CX & benchmarks.** Walk the existing
 `competitor-cx-*` and `cx-benchmark` elements with the SME — the SME is the
 authority; the web-sourced drafts are a starting point. For each, run
-**Y / E / R**, and use them to pressure-test the journey you just documented:
+**Y / E / R** — on **[E]**, apply the correction with
+`python3 scripts/wiki/patch_element.py`, changing only the corrected block or
+field rather than re-writing the whole element. Use them to pressure-test the
+journey you just documented:
 where a competitor or a benchmark exposes a gap, note it as a friction point
 or flag it for the Innovation Analyst. You do not web-search — that is
 `source-cx`'s job. If nothing has been sourced, say so and move on.
@@ -193,6 +197,13 @@ judgement; the scripts own the format. Do **not** hand-write element files.
    c. **Verify** — `python3 scripts/wiki/check_conformance.py <slug> <id>`. If
       flagged, fix the draft and re-write before moving on.
 5. One confirmed element = one file on disk.
+
+**Editing an element already on disk.** To change one block or field of an
+element that has already been written — a refine pass, a correction — use
+`python3 scripts/wiki/patch_element.py <slug> <id> --block "<heading>" <file>`
+(or `--field "<key>" "<value>"`, or `--list "<key>" "<id1,id2>"`). It changes
+only that part and leaves the rest byte-identical. Never re-emit a whole
+element to fix one piece of it.
 
 ## Stay in your lane
 

@@ -115,6 +115,38 @@ export default function ProcessDocScreen({
     openingRunDoc ? openingRunDoc.slug : docs[0].slug,
   );
   const doc = docs.find((d) => d.slug === currentSlug) ?? docs[0];
+  // The element the foundational run's cursor is on, if a run is active —
+  // threaded into the section views as a "you are here" highlight.
+  const currentRunId =
+    doc.reviewState && !doc.reviewState.done
+      ? (doc.reviewState.queue[doc.reviewState.cursor] ?? null)
+      : null;
+
+  // `affects` on an exception is derived, not stored: every process-step
+  // whose `transitions` exit to an exception affects it. One source of truth.
+  const exceptionIds = new Set(
+    doc.elements.filter((e) => e.type === "exception").map((e) => e.id),
+  );
+  const affectsByException: Record<string, string[]> = {};
+  for (const el of doc.elements) {
+    if (el.type !== "process-step") continue;
+    const raw = el.meta.transitions;
+    const list = !raw ? [] : Array.isArray(raw) ? raw : [raw];
+    for (const entry of list) {
+      const to = entry.split("|")[0]?.trim();
+      if (to && exceptionIds.has(to))
+        (affectsByException[to] ??= []).push(el.id);
+    }
+  }
+  // Which controls cover each step — the process flow flags uncontrolled steps.
+  const controlsByStep: Record<string, string[]> = {};
+  for (const el of doc.elements) {
+    if (el.type !== "control") continue;
+    const step = el.meta.step;
+    if (typeof step === "string" && step)
+      (controlsByStep[step] ??= []).push(el.id);
+  }
+
   const processList = docs.map((d) => ({
     slug: d.slug,
     id: d.process.id,
@@ -138,6 +170,8 @@ export default function ProcessDocScreen({
   const [dark, setDark] = useState(false);
   // Left-nav area groups the user has collapsed (by area id).
   const [collapsedAreas, setCollapsedAreas] = useState<Set<string>>(new Set());
+  // The whole left rail collapsed to a thin strip, hidden off to the left.
+  const [railCollapsed, setRailCollapsed] = useState(false);
 
   function toggleArea(id: string) {
     setCollapsedAreas((prev) => {
@@ -462,7 +496,8 @@ export default function ProcessDocScreen({
     if (chatPending) return;
     setChatOpen(true);
     handleSend(
-      `Run the foundational-run skill on the process with slug "${currentSlug}".`,
+      `Run the foundational-run skill on the process with slug "${currentSlug}". ` +
+        `The SME present in this session is ${CURRENT_USER} — stamp approvals with that name.`,
     );
   }
 
@@ -642,11 +677,19 @@ export default function ProcessDocScreen({
     const sec = sectionForId(schema, id);
     if (!sec) return;
     setSection(sec);
-    setTimeout(() => {
-      document
-        .getElementById(id)
-        ?.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 60);
+    // A fixed timeout races the new section's render — the element may not
+    // exist yet, or its position shifts as siblings lay out. Retry across
+    // animation frames until the element is in the DOM, then scroll.
+    let tries = 0;
+    const tryScroll = () => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      } else if (tries++ < 30) {
+        requestAnimationFrame(tryScroll);
+      }
+    };
+    requestAnimationFrame(tryScroll);
   }
 
   return (
@@ -708,9 +751,23 @@ export default function ProcessDocScreen({
         </button>
       </header>
 
-      <div className={`shell${chatOpen ? " chat-open" : ""}`}>
-        <nav className="rail rail-l">
-          {schema.areas.map((area) => {
+      <div
+        className={`shell${chatOpen ? " chat-open" : ""}${
+          railCollapsed ? " rail-collapsed" : ""
+        }`}
+      >
+        <nav className={`rail rail-l${railCollapsed ? " collapsed" : ""}`}>
+          <button
+            className="rail-toggle"
+            onClick={() => setRailCollapsed((v) => !v)}
+            aria-expanded={!railCollapsed}
+            aria-label={railCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            title={railCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {railCollapsed ? "»" : "«"}
+          </button>
+          {!railCollapsed &&
+            schema.areas.map((area) => {
             const collapsed = collapsedAreas.has(area.id);
             // A web-sourcing run spins against the area heading it fills.
             const areaSourcing =
@@ -975,6 +1032,9 @@ export default function ProcessDocScreen({
                   onDeepDive={(id, title) =>
                     deepDive({ id, title, kind: "element" })
                   }
+                  knownIds={new Set(doc.elements.map((e) => e.id))}
+                  currentId={currentRunId ?? undefined}
+                  controlsByStep={controlsByStep}
                 />
               )}
               {sectionElements.length === 0 ? (
@@ -1021,12 +1081,21 @@ export default function ProcessDocScreen({
                           schema.elementTypes[el.type]?.label ?? el.type
                         }
                         template={schema.elementTypes[el.type]?.template}
-                        onNavigate={setSection}
+                        onGoToElement={goToElement}
                         onDeepDive={(id, title) =>
                           deepDive({ id, title, kind: "element" })
                         }
                         onSaved={() => setLastSaved(new Date())}
                         resolveSection={resolveSection}
+                        defaultCollapsed={sectionElements.length > 3}
+                        isCurrent={el.id === currentRunId}
+                        derivedLinks={
+                          el.type === "exception"
+                            ? { affects: affectsByException[el.id] ?? [] }
+                            : el.type === "process-step"
+                              ? { controls: controlsByStep[el.id] ?? [] }
+                              : undefined
+                        }
                       />
                     ))}
                   </section>
@@ -1040,12 +1109,21 @@ export default function ProcessDocScreen({
                     userName={CURRENT_USER}
                     typeLabel={schema.elementTypes[el.type]?.label ?? el.type}
                     template={schema.elementTypes[el.type]?.template}
-                    onNavigate={setSection}
+                    onGoToElement={goToElement}
                     onDeepDive={(id, title) =>
                       deepDive({ id, title, kind: "element" })
                     }
                     onSaved={() => setLastSaved(new Date())}
                     resolveSection={resolveSection}
+                    defaultCollapsed={sectionElements.length > 3}
+                    isCurrent={el.id === currentRunId}
+                    derivedLinks={
+                      el.type === "exception"
+                        ? { affects: affectsByException[el.id] ?? [] }
+                        : el.type === "process-step"
+                          ? { controls: controlsByStep[el.id] ?? [] }
+                          : undefined
+                    }
                   />
                 ))
               )}
