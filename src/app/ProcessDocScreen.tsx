@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Schema, ProcessDoc } from "@/lib/wiki";
+import type { Schema, ProcessDoc, WikiPage } from "@/lib/wiki";
 import { isSourcedType } from "@/lib/element-types";
+import { buildRelations, type LinkGroup } from "@/lib/relations";
 import { sectionForId } from "@/lib/nav";
 import ElementCard from "@/components/ElementCard";
 import RaciMatrix from "@/components/RaciMatrix";
@@ -17,12 +18,51 @@ import UploadModal from "@/components/UploadModal";
 import CommandPalette from "@/components/CommandPalette";
 import ApprovalBar from "@/components/ApprovalBar";
 import ProcessSwitcher from "@/components/ProcessSwitcher";
-import Markdown from "@/components/Markdown";
+import SourcesPanel from "@/components/SourcesPanel";
+import SourceDocViewer from "@/components/SourceDocViewer";
+import Tooltip from "@/components/Tooltip";
+import ToastStack, { type Toast } from "@/components/ToastStack";
 
 const mid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
 // The signed-in SME — stamped onto review-status changes in the wiki.
 const CURRENT_USER = "M. Berger";
+
+// Top-bar action icons — stroked line glyphs, sized + coloured via CSS.
+const IconSearch = () => (
+  <svg viewBox="0 0 24 24">
+    <circle cx="11" cy="11" r="7" />
+    <path d="M21 21l-4.3-4.3" />
+  </svg>
+);
+const IconUpload = () => (
+  <svg viewBox="0 0 24 24">
+    <path d="M12 16V4M6 10l6-6 6 6" />
+    <path d="M4 20h16" />
+  </svg>
+);
+const IconRun = () => (
+  <svg viewBox="0 0 24 24">
+    <path d="M6 4l14 8-14 8z" />
+  </svg>
+);
+const IconLint = () => (
+  <svg viewBox="0 0 24 24">
+    <path d="M9 11l3 3 8-8" />
+    <path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9" />
+  </svg>
+);
+const IconMoon = () => (
+  <svg viewBox="0 0 24 24">
+    <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z" />
+  </svg>
+);
+const IconSun = () => (
+  <svg viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2" />
+  </svg>
+);
 
 // The two non-interactive web-sourcing skills, and the sections each fills.
 const INNOVATION_SECTIONS = [
@@ -31,6 +71,65 @@ const INNOVATION_SECTIONS = [
   "innovation-ideas",
 ];
 const CX_SECTIONS = ["competitor-cx", "cx-benchmarks"];
+
+// Each area's foundational specialist skill — drives the empty-area next-step
+// card shown when a whole area still has no elements.
+const AREA_NEXT: Record<
+  string,
+  { skill: string; label: string; blurb: string }
+> = {
+  "as-is": {
+    skill: "process-specialist",
+    label: "process specialist",
+    blurb: "map the as-is process with an SME",
+  },
+  "client-experience": {
+    skill: "client-journey-specialist",
+    label: "client journey specialist",
+    blurb: "map the client journey",
+  },
+  innovation: {
+    skill: "innovation-analyst",
+    label: "innovation analyst",
+    blurb: "develop the forward-looking view",
+  },
+  target: {
+    skill: "innovation-analyst",
+    label: "innovation analyst",
+    blurb: "design the target state",
+  },
+  "it-architecture": {
+    skill: "it-architect",
+    label: "IT architect",
+    blurb: "map the systems landscape",
+  },
+};
+
+// Display copy for each elicitation specialist — keyed by skill name, the
+// value a section carries in `schema.areas[].sections[].specialist`. Used to
+// offer an empty section its owning specialist as the call-to-action.
+const SPECIALIST: Record<string, { label: string; blurb: string }> = {
+  "process-specialist": {
+    label: "Process Specialist",
+    blurb: "maps the As-Is process with you",
+  },
+  "control-compliance-specialist": {
+    label: "Control & Compliance Specialist",
+    blurb: "documents the controls, regulations and compliance gaps",
+  },
+  "client-journey-specialist": {
+    label: "Client Journey Specialist",
+    blurb: "maps the client journey",
+  },
+  "it-architect": {
+    label: "IT Architect",
+    blurb: "maps the systems landscape",
+  },
+  "innovation-analyst": {
+    label: "Innovation Analyst",
+    blurb: "develops the forward-looking view",
+  },
+};
 function sectionSourcingKind(section: string): "innovation" | "cx" | null {
   if (INNOVATION_SECTIONS.includes(section)) return "innovation";
   if (CX_SECTIONS.includes(section)) return "cx";
@@ -147,11 +246,52 @@ export default function ProcessDocScreen({
       (controlsByStep[step] ??= []).push(el.id);
   }
 
-  const processList = docs.map((d) => ({
-    slug: d.slug,
-    id: d.process.id,
-    title: d.process.title,
-  }));
+  // Generic forward + reverse relation index — drives every card's link
+  // groups from the schema. Built once per doc, not per render.
+  const relIndex = useMemo(
+    () => buildRelations(schema, doc.elements),
+    [schema, doc],
+  );
+  // Link groups for one element's card: schema-driven forward + reverse, plus
+  // the transitions-derived `affects` for exceptions (not a stored relation).
+  function elementLinks(el: WikiPage): LinkGroup[] {
+    const groups = [...relIndex.forward(el), ...relIndex.reverse(el.id)];
+    if (el.type === "exception" && (affectsByException[el.id]?.length ?? 0) > 0)
+      groups.push({ label: "Affects", ids: affectsByException[el.id] });
+    return groups;
+  }
+
+  // Resolve a referenced element id to its page + type label — backs the
+  // hovercards on link chips, transitions and the process flow.
+  const elementsById = useMemo(
+    () => new Map(doc.elements.map((e) => [e.id, e])),
+    [doc],
+  );
+  function getRef(id: string) {
+    const page = elementsById.get(id);
+    return page
+      ? { page, typeLabel: schema.elementTypes[page.type]?.label ?? page.type }
+      : undefined;
+  }
+
+  // Per-process attention counts — drive the switcher's badges (#18). An
+  // element is reviewed when approved, or (web-sourced) once triaged.
+  const processList = docs.map((d) => {
+    const reviewed = (e: WikiPage) =>
+      isSourcedType(e.type)
+        ? ["relevant", "disregarded"].includes(String(e.meta.relevance ?? ""))
+        : String(e.meta.approval ?? "in-progress") === "approved";
+    return {
+      slug: d.slug,
+      id: d.process.id,
+      title: d.process.title,
+      status: {
+        review: d.elements.filter((e) => !reviewed(e)).length,
+        conflicts: d.ingest?.conflicts?.length ?? 0,
+        lint: d.lint?.findings?.length ?? 0,
+      },
+    };
+  });
   // Slugs seen so far — to detect a process a skill just scaffolded.
   const knownSlugs = useRef(new Set(docs.map((d) => d.slug)));
   // Last foundational-run cursor the canvas followed (`slug:cursor`). Seeded
@@ -223,6 +363,20 @@ export default function ProcessDocScreen({
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
+  // Bottom-right toast stack — one home for transient outcomes.
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  function pushToast(kind: Toast["kind"], title: string, body?: string) {
+    setToasts((t) => [...t, { id: mid(), kind, title, body }]);
+  }
+  function dismissToast(id: string) {
+    setToasts((t) => t.filter((x) => x.id !== id));
+  }
+
+  // Section filter — narrow the canvas to low-confidence elements only.
+  const [lowConfOnly, setLowConfOnly] = useState(false);
+  // The "+ Add entry" type-picker menu (#8).
+  const [addMenuOpen, setAddMenuOpen] = useState(false);
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
@@ -277,6 +431,68 @@ export default function ProcessDocScreen({
 
   const flatSections = schema.areas.flatMap((a) => a.sections);
 
+  // Keyboard navigation — [ / ] step through sections, j / k scroll the
+  // element cards. Ignored while typing in a field or with the palette open.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.metaKey || e.ctrlKey || e.altKey || paletteOpen) return;
+      const t = e.target as HTMLElement | null;
+      if (
+        t &&
+        (t.tagName === "INPUT" ||
+          t.tagName === "TEXTAREA" ||
+          t.tagName === "SELECT" ||
+          t.isContentEditable)
+      )
+        return;
+      if (e.key === "[" || e.key === "]") {
+        const idx = flatSections.findIndex((s) => s.id === section);
+        if (idx === -1) return;
+        const next = idx + (e.key === "]" ? 1 : -1);
+        if (next >= 0 && next < flatSections.length) {
+          e.preventDefault();
+          setSection(flatSections[next].id);
+        }
+      } else if (e.key === "j" || e.key === "k") {
+        const cards = Array.from(
+          document.querySelectorAll<HTMLElement>(".canvas .el"),
+        );
+        if (cards.length === 0) return;
+        e.preventDefault();
+        const target =
+          e.key === "j"
+            ? cards.find((c) => c.getBoundingClientRect().top > 110)
+            : [...cards]
+                .reverse()
+                .find((c) => c.getBoundingClientRect().top < 70);
+        target?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [flatSections, section, paletteOpen]);
+
+  // A finished web-sourcing run surfaces as a toast, then clears.
+  useEffect(() => {
+    if (sourcing && sourcing.status !== "running") {
+      pushToast(
+        sourcing.status === "done" ? "success" : "error",
+        sourcing.status === "done"
+          ? "Web sourcing complete"
+          : "Web sourcing failed",
+        sourcing.text,
+      );
+      setSourcing(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sourcing]);
+
+  // Per-section UI state — reset when the section changes.
+  useEffect(() => {
+    setLowConfOnly(false);
+    setAddMenuOpen(false);
+  }, [section]);
+
   function toggleTheme() {
     const next = !dark;
     setDark(next);
@@ -296,6 +512,15 @@ export default function ProcessDocScreen({
   const sectionElements = doc.elements
     .filter((e) => e.section === section)
     .sort((a, b) => a.id.localeCompare(b.id));
+  // Low-confidence triage filter (#9) — how many in this section, and the
+  // list the canvas actually renders once the filter is on.
+  const lowConfCount = sectionElements.filter(
+    (e) => String(e.confidence) === "low",
+  ).length;
+  const visibleElements =
+    lowConfOnly && lowConfCount > 0
+      ? sectionElements.filter((e) => String(e.confidence) === "low")
+      : sectionElements;
 
   // A section can hold several element types (e.g. Compliance =
   // regulations + gaps + audit findings). Group by type, ordered as in
@@ -304,7 +529,7 @@ export default function ProcessDocScreen({
     .map((t) => ({
       type: t,
       label: schema.elementTypes[t].label,
-      elements: sectionElements.filter((e) => e.type === t),
+      elements: visibleElements.filter((e) => e.type === t),
     }))
     .filter((g) => g.elements.length > 0);
   const multiType = typeGroups.length > 1;
@@ -324,6 +549,56 @@ export default function ProcessDocScreen({
         findingsBySection[s] = (findingsBySection[s] ?? 0) + 1;
     }
   }
+
+  // Per-area review progress — drives the left-rail progress bars. An element
+  // counts as reviewed when approved, or (for a web-sourced type) once triaged.
+  const isReviewed = (e: WikiPage) =>
+    isSourcedType(e.type)
+      ? ["relevant", "disregarded"].includes(String(e.meta.relevance ?? ""))
+      : String(e.meta.approval ?? "in-progress") === "approved";
+  const areaStats: Record<string, { reviewed: number; total: number }> = {};
+  for (const area of schema.areas) {
+    const ids = new Set(area.sections.map((s) => s.id));
+    const els = doc.elements.filter((e) => ids.has(e.section));
+    areaStats[area.id] = {
+      total: els.length,
+      reviewed: els.filter(isReviewed).length,
+    };
+  }
+
+  // Top-bar breadcrumb — where in the wiki the canvas currently sits.
+  const crumb: { area: string | null; areaId: string | null; leaf: string } =
+    (() => {
+      if (section === "__triage")
+        return { area: null, areaId: null, leaf: "Triage" };
+      if (section === "__review")
+        return { area: null, areaId: null, leaf: "Lint Review" };
+      if (section.startsWith("__doc:"))
+        return {
+          area: "Documents",
+          areaId: null,
+          leaf: section.slice("__doc:".length),
+        };
+      if (section.startsWith("__area:")) {
+        const a = schema.areas.find(
+          (x) => x.id === section.slice("__area:".length),
+        );
+        return {
+          area: a?.label ?? "Area",
+          areaId: a?.id ?? null,
+          leaf: "Executive summary",
+        };
+      }
+      const area = schema.areas.find((a) =>
+        a.sections.some((s) => s.id === section),
+      );
+      const sec = area?.sections.find((s) => s.id === section);
+      return {
+        area: area?.label ?? null,
+        areaId: area?.id ?? null,
+        leaf: sec?.label ?? activeLabel,
+      };
+    })();
 
   // The Process Assistant chat — backed by the local `claude` CLI via
   // /api/session. Each turn runs claude headless in the repo, so it can
@@ -433,6 +708,15 @@ export default function ProcessDocScreen({
   // sweeps the wiki from all five perspectives, writes lint.json and re-opens
   // implicated approvals. router.refresh() then brings the findings into
   // doc.lint, which the Review panel renders.
+  // Launch an area's foundational specialist — the empty-area next-step CTA.
+  function runAreaSpecialist(skill: string) {
+    if (chatPending) return;
+    setChatOpen(true);
+    handleSend(
+      `Run the ${skill} skill on the process with slug "${currentSlug}".`,
+    );
+  }
+
   function runLint() {
     if (linting || chatPending) return;
     setChatOpen(true);
@@ -440,7 +724,16 @@ export default function ProcessDocScreen({
     setSection("__review");
     handleSend(
       `Run the run-lint skill on the process with slug "${currentSlug}".`,
-      { onComplete: () => setLinting(false) },
+      {
+        onComplete: () => {
+          setLinting(false);
+          pushToast(
+            "success",
+            "Lint pass complete",
+            "Open Review in the top bar to see the findings.",
+          );
+        },
+      },
     );
   }
 
@@ -518,11 +811,15 @@ export default function ProcessDocScreen({
   // Add entry — invoke the interactive add-entry skill in the chat, scoped to
   // the section the SME is viewing. It asks what to add, researches, drafts,
   // and writes the element on approval.
-  function addEntry() {
+  function addEntry(typeLabel?: string) {
     if (chatPending) return;
+    setAddMenuOpen(false);
     setChatOpen(true);
+    const typeNote = typeLabel
+      ? ` The SME wants to add a "${typeLabel}" element.`
+      : "";
     handleSend(
-      `Run the add-entry skill for the "${section}" section of the process with slug "${currentSlug}".`,
+      `Run the add-entry skill for the "${section}" section of the process with slug "${currentSlug}".${typeNote}`,
     );
   }
 
@@ -701,6 +998,25 @@ export default function ProcessDocScreen({
           onSelect={switchProcess}
           onCreate={createProcess}
         />
+        <nav className="crumb-trail" aria-label="Location">
+          {crumb.area && (
+            <>
+              {crumb.areaId ? (
+                <button
+                  className="crumb-area crumb-link"
+                  onClick={() => setSection(`__area:${crumb.areaId}`)}
+                  title={`Open the ${crumb.area} executive summary`}
+                >
+                  {crumb.area}
+                </button>
+              ) : (
+                <span className="crumb-area">{crumb.area}</span>
+              )}
+              <span className="crumb-sep">›</span>
+            </>
+          )}
+          <span className="crumb-leaf">{crumb.leaf}</span>
+        </nav>
         <span className="spacer" />
         <span
           className={`save${lastSaved ? " just-saved" : ""}`}
@@ -715,40 +1031,76 @@ export default function ProcessDocScreen({
             : "Auto-save on"}
         </span>
         <span className="sme">{CURRENT_USER} · Subject-Matter Expert</span>
-        <button
-          className="lint-btn"
-          onClick={() => setPaletteOpen(true)}
-          title="Search (⌘K)"
-        >
-          ⌕ Search <kbd className="kbd">⌘K</kbd>
-        </button>
-        <button
-          className="lint-btn"
-          onClick={() => setUploadModalOpen(true)}
-        >
-          ⬆ Upload document
-        </button>
-        {(doc.ingest || doc.reviewState) && (
-          <button className="lint-btn" onClick={() => setSection("__triage")}>
-            {doc.reviewState && !doc.reviewState.done
-              ? `Run · ${doc.reviewState.cursor} / ${doc.reviewState.total}`
-              : "Triage"}
-          </button>
-        )}
-        <button
-          className="lint-btn"
-          onClick={() => (findings ? setSection("__review") : runLint())}
-          disabled={linting}
-        >
-          {linting
-            ? "Linting…"
-            : findings
-              ? `Review · ${findings.length}`
-              : "⊛ Run lint"}
-        </button>
-        <button className="theme-btn" onClick={toggleTheme}>
-          {dark ? "light" : "dark"}
-        </button>
+        <div className="tb-icons">
+          <Tooltip label="Search (⌘K)">
+            <button
+              className="tb-icon"
+              onClick={() => setPaletteOpen(true)}
+              aria-label="Search"
+            >
+              <IconSearch />
+            </button>
+          </Tooltip>
+          <Tooltip label="Upload document">
+            <button
+              className="tb-icon"
+              onClick={() => setUploadModalOpen(true)}
+              aria-label="Upload document"
+            >
+              <IconUpload />
+            </button>
+          </Tooltip>
+          {(doc.ingest || doc.reviewState) && (
+            <Tooltip
+              label={
+                doc.reviewState && !doc.reviewState.done
+                  ? `Foundational run · ${doc.reviewState.cursor} / ${doc.reviewState.total}`
+                  : "Triage"
+              }
+            >
+              <button
+                className="tb-icon"
+                onClick={() => setSection("__triage")}
+                aria-label="Triage"
+              >
+                <IconRun />
+                {doc.reviewState && !doc.reviewState.done && (
+                  <span className="tb-badge">{doc.reviewState.cursor}</span>
+                )}
+              </button>
+            </Tooltip>
+          )}
+          <Tooltip
+            label={
+              linting
+                ? "Running lint…"
+                : findings
+                  ? `Lint review · ${findings.length} finding(s)`
+                  : "Run lint"
+            }
+          >
+            <button
+              className="tb-icon"
+              onClick={() => (findings ? setSection("__review") : runLint())}
+              disabled={linting}
+              aria-label="Run lint"
+            >
+              <IconLint />
+              {findings && findings.length > 0 && (
+                <span className="tb-badge">{findings.length}</span>
+              )}
+            </button>
+          </Tooltip>
+          <Tooltip label="Toggle light / dark">
+            <button
+              className="tb-icon"
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+            >
+              {dark ? <IconSun /> : <IconMoon />}
+            </button>
+          </Tooltip>
+        </div>
       </header>
 
       <div
@@ -766,8 +1118,10 @@ export default function ProcessDocScreen({
           >
             {railCollapsed ? "»" : "«"}
           </button>
-          {!railCollapsed &&
-            schema.areas.map((area) => {
+          {!railCollapsed && (
+            <>
+              <div className="nav-scroll">
+                {schema.areas.map((area) => {
             const collapsed = collapsedAreas.has(area.id);
             // A web-sourcing run spins against the area heading it fills.
             const areaSourcing =
@@ -805,7 +1159,32 @@ export default function ProcessDocScreen({
                     />
                   )}
                 </button>
+                {areaStats[area.id].total > 0 && (
+                  <Tooltip
+                    label={`${areaStats[area.id].reviewed} of ${
+                      areaStats[area.id].total
+                    } elements reviewed`}
+                    placement="right"
+                  >
+                    <span className="nav-area-frac">
+                      {areaStats[area.id].reviewed}/{areaStats[area.id].total}
+                    </span>
+                  </Tooltip>
+                )}
               </div>
+              {areaStats[area.id].total > 0 && (
+                <div className="nav-area-meter">
+                  <i
+                    style={{
+                      width: `${Math.round(
+                        (areaStats[area.id].reviewed /
+                          areaStats[area.id].total) *
+                          100,
+                      )}%`,
+                    }}
+                  />
+                </div>
+              )}
               {!collapsed &&
               area.sections.map((s) => {
                 const isOverview = s.id === "overview";
@@ -856,18 +1235,17 @@ export default function ProcessDocScreen({
                     <span className="nav-label">{s.label}</span>
                     <span className="nav-meta">
                       {flag ? (
-                        <span
-                          className="nav-flag"
-                          title={`${flag} lint finding${flag === 1 ? "" : "s"}`}
+                        <Tooltip
+                          label={`${flag} lint finding${flag === 1 ? "" : "s"}`}
+                          placement="right"
                         >
-                          !
-                        </span>
+                          <span className="nav-flag">!</span>
+                        </Tooltip>
                       ) : null}
                       {state !== "empty" && (
-                        <span
-                          className={`nav-dot nav-dot-${state}`}
-                          title={dotTitle}
-                        />
+                        <Tooltip label={dotTitle} placement="right">
+                          <span className={`nav-dot nav-dot-${state}`} />
+                        </Tooltip>
                       )}
                       {count !== null && (
                         <span className="count">{count}</span>
@@ -878,7 +1256,21 @@ export default function ProcessDocScreen({
               })}
             </div>
             );
-          })}
+                })}
+              </div>
+              <SourcesPanel
+                sources={doc.sources}
+                ingest={doc.ingest}
+                activeFile={
+                  section.startsWith("__doc:")
+                    ? section.slice("__doc:".length)
+                    : null
+                }
+                onOpen={(f) => setSection(`__doc:${f}`)}
+                onUpload={() => setUploadModalOpen(true)}
+              />
+            </>
+          )}
         </nav>
 
         <main className="canvas">
@@ -971,6 +1363,15 @@ export default function ProcessDocScreen({
                 <>
                   <div className="canvas-head">
                     <h1>{area?.label ?? areaId}</h1>
+                    <div className="canvas-actions">
+                      <button
+                        className="canvas-act"
+                        onClick={() => window.print()}
+                        title="Export this area as a PDF"
+                      >
+                        ⎙ Export PDF
+                      </button>
+                    </div>
                     <div className="sub">
                       Executive summary — an Amazon-style memo across the{" "}
                       {area?.label ?? areaId} area.
@@ -990,26 +1391,100 @@ export default function ProcessDocScreen({
                 </>
               );
             })()
+          ) : section.startsWith("__doc:") ? (
+            (() => {
+              const file = section.slice("__doc:".length);
+              return (
+                <>
+                  <div className="canvas-head">
+                    <h1>{file}</h1>
+                    <div className="sub">
+                      Imported source document — raw-sources/{currentSlug}/
+                      {file}
+                    </div>
+                  </div>
+                  <SourceDocViewer slug={currentSlug} file={file} />
+                </>
+              );
+            })()
           ) : (
             <>
-              <div className="canvas-head">
+              <div className="canvas-title">
                 <h1>{activeLabel}</h1>
-                <button
-                  className="add-entry-btn"
-                  onClick={addEntry}
-                  disabled={chatPending}
-                  title="Add an entry — the assistant drafts it with you"
-                >
-                  + Add entry
-                </button>
                 <div className="sub">
                   {sectionElements.length}{" "}
                   {sectionElements.length === 1 ? "element" : "elements"} — each
                   one: view, let the AI work on it, or edit it yourself.
                 </div>
+              </div>
+              <div className="canvas-strip">
+                <span className="strip-name">{activeLabel}</span>
                 {sectionElements.length > 0 && sectionKind === null && (
                   <ApprovalBar elements={sectionElements} />
                 )}
+                <span className="strip-spacer" />
+                {lowConfCount > 0 && (
+                  <button
+                    className={`lowconf-toggle${lowConfOnly ? " on" : ""}`}
+                    onClick={() => setLowConfOnly((v) => !v)}
+                  >
+                    {lowConfOnly
+                      ? `Showing ${lowConfCount} low-confidence — show all`
+                      : `⚠ ${lowConfCount} low-confidence — filter`}
+                  </button>
+                )}
+                <div className="strip-actions">
+                  <button
+                    className="canvas-act"
+                    onClick={() => window.print()}
+                    title="Export this section as a PDF"
+                  >
+                    ⎙ Export PDF
+                  </button>
+                  {(() => {
+                    const addTypes = Object.values(schema.elementTypes)
+                      .filter((t) => t.section === section)
+                      .map((t) => t.label);
+                    return (
+                      <div className="add-entry-wrap">
+                        <button
+                          className="add-entry-btn"
+                          onClick={() =>
+                            addTypes.length > 1
+                              ? setAddMenuOpen((v) => !v)
+                              : addEntry(addTypes[0])
+                          }
+                          disabled={chatPending}
+                          title="Add an entry — the assistant drafts it with you"
+                        >
+                          + Add entry{addTypes.length > 1 ? " ▾" : ""}
+                        </button>
+                        {addMenuOpen && addTypes.length > 1 && (
+                          <>
+                            <div
+                              className="add-menu-scrim"
+                              onClick={() => setAddMenuOpen(false)}
+                            />
+                            <div className="add-menu" role="menu">
+                              <div className="add-menu-head">
+                                Add to {activeLabel}
+                              </div>
+                              {addTypes.map((tl) => (
+                                <button
+                                  key={tl}
+                                  className="add-menu-item"
+                                  onClick={() => addEntry(tl)}
+                                >
+                                  {tl}
+                                </button>
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })()}
+                </div>
               </div>
               {sourcingHere && (
                 <div className="source-status">
@@ -1041,10 +1516,65 @@ export default function ProcessDocScreen({
                 <div className="empty-state">
                   <p>No elements in “{activeLabel}” yet.</p>
                   {sectionKind === null ? (
-                    <p className="empty-hint">
-                      Let the AI suggest a draft — or capture the first element
-                      yourself.
-                    </p>
+                    (() => {
+                      const areaOf = schema.areas.find((a) =>
+                        a.sections.some((s) => s.id === section),
+                      );
+                      const next = areaOf ? AREA_NEXT[areaOf.id] : undefined;
+                      const areaEmpty =
+                        areaOf && areaStats[areaOf.id]?.total === 0;
+                      if (areaEmpty && next)
+                        return (
+                          <div className="area-next">
+                            <h3>{areaOf!.label} is empty</h3>
+                            <p>
+                              No elements anywhere in this area yet. Run the{" "}
+                              {next.label} to {next.blurb}.
+                            </p>
+                            <button
+                              onClick={() => runAreaSpecialist(next.skill)}
+                              disabled={chatPending}
+                            >
+                              Start the {next.label}
+                            </button>
+                          </div>
+                        );
+                      const sec = areaOf?.sections.find(
+                        (s) => s.id === section,
+                      );
+                      const spec = sec?.specialist
+                        ? SPECIALIST[sec.specialist]
+                        : undefined;
+                      return spec ? (
+                        <>
+                          <p className="empty-hint">
+                            The {spec.label} {spec.blurb} — or add one entry
+                            yourself.
+                          </p>
+                          <button
+                            className="empty-cta"
+                            onClick={() => runAreaSpecialist(sec!.specialist!)}
+                            disabled={chatPending}
+                          >
+                            ✦ Start the {spec.label}
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <p className="empty-hint">
+                            Let the assistant draft the first one with you —
+                            or capture it yourself.
+                          </p>
+                          <button
+                            className="empty-cta"
+                            onClick={() => addEntry()}
+                            disabled={chatPending}
+                          >
+                            ✦ Add the first entry
+                          </button>
+                        </>
+                      );
+                    })()
                   ) : sourcingHere ? (
                     <p className="empty-hint">
                       Sourcing from the web — the drafts will appear here when
@@ -1081,27 +1611,26 @@ export default function ProcessDocScreen({
                           schema.elementTypes[el.type]?.label ?? el.type
                         }
                         template={schema.elementTypes[el.type]?.template}
+                        fieldSpecs={
+                          schema.elementTypes[el.type]?.frontmatter?.fields ??
+                          []
+                        }
+                        links={elementLinks(el)}
+                        getRef={getRef}
+                        notes={doc.notes?.[el.id]}
                         onGoToElement={goToElement}
                         onDeepDive={(id, title) =>
                           deepDive({ id, title, kind: "element" })
                         }
                         onSaved={() => setLastSaved(new Date())}
-                        resolveSection={resolveSection}
                         defaultCollapsed={sectionElements.length > 3}
                         isCurrent={el.id === currentRunId}
-                        derivedLinks={
-                          el.type === "exception"
-                            ? { affects: affectsByException[el.id] ?? [] }
-                            : el.type === "process-step"
-                              ? { controls: controlsByStep[el.id] ?? [] }
-                              : undefined
-                        }
                       />
                     ))}
                   </section>
                 ))
               ) : (
-                sectionElements.map((el) => (
+                visibleElements.map((el) => (
                   <ElementCard
                     key={el.id}
                     page={el}
@@ -1109,31 +1638,38 @@ export default function ProcessDocScreen({
                     userName={CURRENT_USER}
                     typeLabel={schema.elementTypes[el.type]?.label ?? el.type}
                     template={schema.elementTypes[el.type]?.template}
+                    fieldSpecs={
+                      schema.elementTypes[el.type]?.frontmatter?.fields ?? []
+                    }
+                    links={elementLinks(el)}
+                    getRef={getRef}
+                    notes={doc.notes?.[el.id]}
                     onGoToElement={goToElement}
                     onDeepDive={(id, title) =>
                       deepDive({ id, title, kind: "element" })
                     }
                     onSaved={() => setLastSaved(new Date())}
-                    resolveSection={resolveSection}
                     defaultCollapsed={sectionElements.length > 3}
                     isCurrent={el.id === currentRunId}
-                    derivedLinks={
-                      el.type === "exception"
-                        ? { affects: affectsByException[el.id] ?? [] }
-                        : el.type === "process-step"
-                          ? { controls: controlsByStep[el.id] ?? [] }
-                          : undefined
-                    }
                   />
                 ))
+              )}
+              {sectionElements.length > 0 && (
+                <div className="back-to-top">
+                  <button
+                    onClick={() =>
+                      document
+                        .querySelector(".canvas")
+                        ?.scrollTo({ top: 0, behavior: "smooth" })
+                    }
+                  >
+                    ↑ Back to top
+                  </button>
+                </div>
               )}
             </>
           )}
 
-          <p className="slice-note">
-            Slice 1 — UI shell + file-backed Karpathy wiki, four areas. Agent
-            chat and lint are stubbed; the model is wired in slice 2.
-          </p>
         </main>
 
         <AgentChat
@@ -1166,25 +1702,7 @@ export default function ProcessDocScreen({
         onUploaded={onUploaded}
       />
 
-      {sourcing && sourcing.status !== "running" && (
-        <div className={`sourcing-notif ${sourcing.status}`} role="status">
-          <button
-            className="sourcing-notif-x"
-            onClick={() => setSourcing(null)}
-            aria-label="Dismiss"
-          >
-            ×
-          </button>
-          <div className="sourcing-notif-head">
-            {sourcing.status === "done"
-              ? "✦ Web sourcing complete"
-              : "⚠ Web sourcing failed"}
-          </div>
-          <div className="sourcing-notif-body">
-            <Markdown text={sourcing.text ?? ""} />
-          </div>
-        </div>
-      )}
+      <ToastStack toasts={toasts} onDismiss={dismissToast} />
     </>
   );
 }

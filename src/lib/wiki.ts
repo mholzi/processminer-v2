@@ -18,6 +18,8 @@ const SCHEMA_PATH = join(ROOT, "schema", "process-schema.json");
 export interface Section {
   id: string;
   label: string;
+  /** The elicitation specialist skill that owns this section, if any. */
+  specialist?: string;
 }
 export interface Area {
   id: string;
@@ -36,12 +38,30 @@ export interface BlockSpec {
   items?: string;
   purpose: string;
 }
+/** A type-specific scalar frontmatter field, with its display metadata. */
+export interface FieldSpec {
+  key: string;
+  label: string;
+  /** Appended to the value on display, e.g. "%". */
+  suffix?: string;
+  /** When set, the value links to the URL held in this other meta key. */
+  urlKey?: string;
+}
+/** A relation field — an id list pointing at other elements. */
+export interface RelationSpec {
+  key: string;
+  label: string;
+  /** The element type this relation points at. */
+  target?: string;
+  /** When set, the target element shows a reverse-link group with this label. */
+  reverseLabel?: string;
+}
 /** Type-specific frontmatter — keys beyond the universal id/type/section/
  *  title/status/confidence/source. `required` are flagged when absent. */
 export interface FrontmatterSpec {
-  fields: string[];
-  relations: string[];
-  required: string[];
+  fields: FieldSpec[];
+  relations: RelationSpec[];
+  required?: string[];
 }
 export interface ElementType {
   label: string;
@@ -139,6 +159,17 @@ export interface SourceFile {
   uploadedAt: string;
 }
 
+/** An SME note left on an element — a question or comment for a colleague. */
+export interface Note {
+  id: string;
+  author: string;
+  text: string;
+  /** ISO-8601 timestamp. */
+  ts: string;
+  /** Set when this note replies to another note (that note's id). */
+  replyTo?: string;
+}
+
 export interface ProcessDoc {
   slug: string;
   process: WikiPage;
@@ -153,6 +184,8 @@ export interface ProcessDoc {
   reviewState?: ReviewState;
   /** Per-section executive summaries, if any have been generated. */
   summaries?: SectionSummaries;
+  /** SME note threads, keyed by element id — notes.json. */
+  notes?: Record<string, Note[]>;
 }
 
 /** Parse `key: value` frontmatter. `[a, b]` becomes a string array. */
@@ -273,5 +306,6 @@ export function getProcess(slug: string): ProcessDoc | null {
     ingest: readJson<IngestReport>("ingest.json"),
     reviewState: readJson<ReviewState>("review-state.json"),
     summaries: readJson<SectionSummaries>("summaries.json"),
+    notes: readJson<Record<string, Note[]>>("notes.json"),
   };
 }

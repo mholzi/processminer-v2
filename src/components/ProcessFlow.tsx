@@ -1,4 +1,5 @@
 import type { WikiPage } from "@/lib/wiki";
+import ElementHovercard from "./ElementHovercard";
 
 // The process-step flow — an enhanced horizontal strip. Steps sit in `sequence`
 // order; an SVG overlay draws the real transitions parsed from each step's
@@ -249,7 +250,9 @@ export default function ProcessFlow({
                     title={`Review: ${stepApproval(s)}`}
                   />
                 </span>
-                <span className="flow-node-title">{s.title}</span>
+                <ElementHovercard element={s} typeLabel="Process step">
+                  <span className="flow-node-title">{s.title}</span>
+                </ElementHovercard>
                 <span
                   className={`flow-node-ctl${controls.length ? "" : " none"}`}
                   title={

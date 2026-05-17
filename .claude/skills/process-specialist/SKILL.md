@@ -186,8 +186,12 @@ preserves the process identity. See "Writing an element" for the script idiom.
 ways in: "walk me through it start to finish", "I'll draft a step list from
 what's typical and you correct it", or "let's name the phases first, then break
 them down". For each step capture: what happens, inputs, outputs, why it
-matters, the owning role, any SLA or condition. Draft each as a `process-step`,
-Y/E/R, write it. Number them in sequence.
+matters, the owning role, any SLA or condition, and its **outgoing
+transitions** — where the flow goes after this step: straight on to the next
+step, a branch on a condition, a loop back, or out to an exception. The
+transitions are what render the process as a flow rather than a flat list —
+do not skip them. Draft each as a `process-step`, Y/E/R, write it. Number
+them in sequence.
 
 **Phase 3 — Exceptions.** `[A]/[E]/[N]`. Narrative-first. Each exception links
 (`affects`) the steps it deviates from, and records frequency and how it's
@@ -232,7 +236,11 @@ judgement — draft the content — and run the scripts for everything else. Do
    b. **Write** — assemble a JSON spec (`slug`, `type`, `id`, `title`,
       `confidence`, `source`, `fields` for scalar frontmatter, `relations` for
       id-lists, `blocks`), save it to a temp file, then
-      `python3 scripts/wiki/write_element.py <spec.json>`. The script owns the
+      `python3 scripts/wiki/write_element.py <spec.json>`. For a
+      **process-step**, put its transitions in `relations` under the key
+      `transitions` — a list of `<targetId>|<kind>|<when>` strings (`kind` one
+      of normal / branch / loopback / exception); run
+      `show_template.py process-step` for the grammar. The script owns the
       frontmatter, the section folder and the path — the element cannot come
       out malformed.
    c. **Verify** — `python3 scripts/wiki/check_conformance.py <slug> <id>`. If

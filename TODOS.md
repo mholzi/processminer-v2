@@ -126,6 +126,20 @@ Erzeugt aus `/plan-ceo-review` am 2026-05-16. Quelle: CEO-Plan unter
 - **Warum:** Detail-Interaktion, in der Design-Review als offen markiert.
 - **Priorität:** P2 · **Effort:** human ~S / CC ~S.
 
+### Element-Diff-Ansicht (#1 · Variante 1A — Inline-Track-Changes)
+- **Was:** KI-Bearbeitungen an einem Element als Inline-Track-Changes zeigen —
+  Streichungen und Hinzufügungen direkt im Fließtext, mit Keep / Revert.
+- **Warum:** Im Design-Shotgun 2026-05-17 gewählt (Variante 1A). Macht die
+  „maschinell entworfen vs. menschlich bestätigt"-Signatur aus DESIGN.md sichtbar.
+- **Blockiert:** Es gibt noch keine KI-Bearbeitungs-Pipeline — also keine
+  Vorher/Nachher-Daten zum Diffen. Optionen: (A) Diff gegen die letzte
+  Git-Version des Element-Files (echtes „was hat sich zuletzt geändert"),
+  (B) den Renderer bauen und ruhend lassen, bis eine KI-Edit-Funktion
+  Diff-Daten liefert.
+- **Priorität:** P2 · **Effort:** human ~M / CC ~M · **Depends:** KI-Edit-Pipeline
+  oder Git-Diff-Route · Quelle: Design-Shotgun 2026-05-17, Mockups unter
+  `~/.gstack/projects/Processminer2/designs/badges-diff-notes-20260517/`.
+
 ## Verworfen
 
 - **Delight Prozess-Diff-Ansicht** — nicht gewählt.

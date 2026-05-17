@@ -69,16 +69,30 @@ def main(argv: list[str]) -> None:
     if fields:
         print("    fields:")
         for f in fields:
-            vals = field_values.get(f)
-            print(f"      {f}   — one of: {' | '.join(vals)}" if vals else f"      {f}")
+            # frontmatter.fields is a list of {key, label, ...} objects.
+            key = f["key"] if isinstance(f, dict) else f
+            vals = field_values.get(key)
+            print(f"      {key}   — one of: {' | '.join(vals)}" if vals else f"      {key}")
     else:
         print("    fields:    (none)")
     if relations:
         print("    relations (id lists, written [a, b]):")
         for r in relations:
-            print(f"      {r}")
+            # frontmatter.relations is a list of {key, label, ...} objects.
+            print(f"      {r['key'] if isinstance(r, dict) else r}")
     else:
         print("    relations: (none)")
+
+    tr = fm.get("transitions")
+    if tr:
+        print(
+            f"    transitions: a list `transitions: [...]`, each entry "
+            f"`{tr.get('format', '')}`"
+        )
+        if tr.get("kinds"):
+            print(f"      kinds: {' | '.join(tr['kinds'])}")
+        if tr.get("note"):
+            print(f"      {tr['note']}")
 
     print()
     print("  Blocks — exactly these ## headings, in this order:")

@@ -1,12 +1,19 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { Fragment, useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import type { BlockSpec, WikiPage } from "@/lib/wiki";
+import type { BlockSpec, FieldSpec, Note, WikiPage } from "@/lib/wiki";
+import type { LinkGroup } from "@/lib/relations";
 import { isSourcedType } from "@/lib/element-types";
 import { checkElement } from "@/lib/conformance";
 import { saveElement, setApproval, setRelevance } from "@/lib/wiki-write";
 import Markdown from "./Markdown";
+import Tooltip from "./Tooltip";
+import ElementHovercard from "./ElementHovercard";
+
+// Which fields and relations a card shows is no longer hand-kept here — it is
+// driven from `schema/process-schema.json` (each type's `frontmatter` block).
+// The parent resolves it and passes `fieldSpecs` + `links`; see src/lib/relations.ts.
 
 /** Human-readable spec line for one template block. */
 function specText(b: BlockSpec): string {
@@ -20,228 +27,32 @@ function specText(b: BlockSpec): string {
   return bits.length ? `Paragraph · ${bits.join(" · ")}` : "Paragraph";
 }
 
-// Per-type display config: which frontmatter fields to show, and which fields
-// hold the n:m relations (rendered as wiki-page link chips).
-type Field = {
-  label: string;
-  key: string;
-  suffix?: string;
-  /** When set, the field value links to the URL held in this meta key. */
-  urlKey?: string;
-};
-type Link = { label: string; key: string };
-const TYPE_CONFIG: Record<string, { fields: Field[]; links: Link[] }> = {
-  "process-step": {
-    fields: [
-      { label: "Owner", key: "owner" },
-      { label: "SLA", key: "sla" },
-      { label: "Condition", key: "condition" },
-    ],
-    links: [
-      { label: "Systems", key: "systems" },
-      // `controls` is not a stored field — supplied via derivedLinks.
-      { label: "Controls", key: "controls" },
-    ],
-  },
-  exception: {
-    fields: [
-      { label: "Category", key: "category" },
-      { label: "Frequency", key: "frequencyPct", suffix: "%" },
-      { label: "Impact", key: "impact" },
-      { label: "Handling", key: "handlingOwner" },
-    ],
-    links: [{ label: "Affects", key: "affects" }],
-  },
-  control: {
-    fields: [
-      { label: "Type", key: "controlType" },
-      { label: "Execution", key: "execution" },
-      { label: "Effectiveness", key: "effectiveness" },
-      { label: "Owner", key: "owner" },
-    ],
-    links: [
-      { label: "Step", key: "step" },
-      { label: "Regulated by", key: "regulatedBy" },
-    ],
-  },
-  regulation: {
-    fields: [{ label: "Domain", key: "domain" }],
-    links: [{ label: "Controls", key: "controls" }],
-  },
-  "compliance-gap": {
-    fields: [
-      { label: "Severity", key: "severity" },
-      { label: "Status", key: "gapStatus" },
-    ],
-    links: [{ label: "Control", key: "control" }],
-  },
-  "audit-finding": {
-    fields: [
-      { label: "Audit", key: "auditDate" },
-      { label: "Status", key: "findingStatus" },
-      { label: "Severity", key: "severity" },
-    ],
-    links: [],
-  },
-  "pain-point": {
-    fields: [
-      { label: "Category", key: "category" },
-      { label: "Severity", key: "severity" },
-      { label: "Priority", key: "priority" },
-    ],
-    links: [{ label: "Affects", key: "affects" }],
-  },
-  "friction-point": {
-    fields: [{ label: "Severity", key: "severity" }],
-    links: [
-      { label: "Occurs at", key: "occursAt" },
-      { label: "Pain point", key: "painPoint" },
-      { label: "Addressed by", key: "addressedBy" },
-    ],
-  },
-  "cx-touchpoint": {
-    fields: [
-      { label: "Channel", key: "channel" },
-      { label: "Client Effort Score", key: "ces", suffix: " / 7" },
-    ],
-    links: [{ label: "Step", key: "occursAt" }],
-  },
-  moment: {
-    fields: [{ label: "Sentiment", key: "sentiment" }],
-    links: [{ label: "Touchpoint", key: "touchpoint" }],
-  },
-  "cx-channel": {
-    fields: [{ label: "Type", key: "channelType" }],
-    links: [{ label: "Touchpoints", key: "touchpoints" }],
-  },
-  role: {
-    fields: [],
-    links: [
-      { label: "Systems", key: "systems" },
-      { label: "Controls", key: "controls" },
-    ],
-  },
-  metric: {
-    fields: [
-      { label: "Value", key: "value" },
-      { label: "Trend", key: "trend" },
-    ],
-    links: [],
-  },
-  "process-gap": {
-    fields: [
-      { label: "Area", key: "area" },
-      { label: "Status", key: "gapStatus" },
-    ],
-    links: [],
-  },
-  "innovation-idea": {
-    fields: [
-      { label: "Category", key: "category" },
-      { label: "Strategic fit", key: "strategicFit" },
-      { label: "Complexity", key: "complexity" },
-    ],
-    links: [
-      { label: "Addresses", key: "addresses" },
-      { label: "From trend", key: "fromTrend" },
-      { label: "From competitor", key: "fromCompetitor" },
-    ],
-  },
-  "market-trend": {
-    fields: [
-      { label: "Horizon", key: "horizon" },
-      { label: "Sourced", key: "asOf" },
-      { label: "Source", key: "source", urlKey: "sourceUrl" },
-    ],
-    links: [{ label: "Bears on", key: "bearsOn" }],
-  },
-  "competitor-eu": {
-    fields: [
-      { label: "Competitor", key: "competitor" },
-      { label: "Sourced", key: "asOf" },
-      { label: "Source", key: "source", urlKey: "sourceUrl" },
-    ],
-    links: [{ label: "Bears on", key: "bearsOn" }],
-  },
-  "competitor-global": {
-    fields: [
-      { label: "Competitor", key: "competitor" },
-      { label: "Sourced", key: "asOf" },
-      { label: "Source", key: "source", urlKey: "sourceUrl" },
-    ],
-    links: [{ label: "Bears on", key: "bearsOn" }],
-  },
-  "competitor-fintech": {
-    fields: [
-      { label: "Competitor", key: "competitor" },
-      { label: "Sourced", key: "asOf" },
-      { label: "Source", key: "source", urlKey: "sourceUrl" },
-    ],
-    links: [{ label: "Bears on", key: "bearsOn" }],
-  },
-  "competitor-cx-eu": {
-    fields: [
-      { label: "Competitor", key: "competitor" },
-      { label: "Sourced", key: "asOf" },
-      { label: "Source", key: "source", urlKey: "sourceUrl" },
-    ],
-    links: [],
-  },
-  "competitor-cx-global": {
-    fields: [
-      { label: "Competitor", key: "competitor" },
-      { label: "Sourced", key: "asOf" },
-      { label: "Source", key: "source", urlKey: "sourceUrl" },
-    ],
-    links: [],
-  },
-  "competitor-cx-fintech": {
-    fields: [
-      { label: "Competitor", key: "competitor" },
-      { label: "Sourced", key: "asOf" },
-      { label: "Source", key: "source", urlKey: "sourceUrl" },
-    ],
-    links: [],
-  },
-  "cx-benchmark": {
-    fields: [
-      { label: "Sourced", key: "asOf" },
-      { label: "Source", key: "source", urlKey: "sourceUrl" },
-    ],
-    links: [],
-  },
-  "innovation-risk": { fields: [{ label: "Severity", key: "severity" }], links: [] },
-  "target-state": { fields: [], links: [{ label: "Replaces", key: "replaces" }] },
-  "transformation-decision": {
-    fields: [
-      { label: "Type", key: "decisionType" },
-      { label: "Status", key: "decisionStatus" },
-    ],
-    links: [],
-  },
-  gap: {
-    fields: [
-      { label: "Area", key: "validationArea" },
-      { label: "Status", key: "gapStatus" },
-    ],
-    links: [],
-  },
-  system: {
-    fields: [{ label: "Type", key: "systemType" }],
-    links: [
-      { label: "Steps", key: "steps" },
-      { label: "Integrates with", key: "integrates" },
-    ],
-  },
-  integration: {
-    fields: [],
-    links: [{ label: "Systems", key: "systems" }],
-  },
-};
-
 function asList(v: string | string[] | undefined): string[] {
   if (!v) return [];
   return Array.isArray(v) ? v : [v];
+}
+
+const TRANSITION_KINDS = ["normal", "branch", "loopback", "exception"];
+
+// Note-thread helpers (#19) — deterministic so server + client render alike.
+const NOTE_MONTHS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+function noteDate(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime())
+    ? ""
+    : `${d.getUTCDate()} ${NOTE_MONTHS[d.getUTCMonth()]}`;
+}
+function noteInitials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 }
 
 export default function ElementCard({
@@ -250,28 +61,35 @@ export default function ElementCard({
   userName,
   typeLabel,
   template,
+  fieldSpecs,
+  links,
   onGoToElement,
   onDeepDive,
   onSaved,
-  resolveSection,
   defaultCollapsed,
   isCurrent,
-  derivedLinks,
+  getRef,
+  notes,
 }: {
   page: WikiPage;
   slug: string;
   userName: string;
   typeLabel: string;
   template?: BlockSpec[];
+  /** Type-specific scalar fields to display — from the schema. */
+  fieldSpecs: FieldSpec[];
+  /** Forward + reverse relation groups, assembled by the parent. */
+  links: LinkGroup[];
   onGoToElement?: (id: string) => void;
   onDeepDive?: (id: string, title: string) => void;
   onSaved?: () => void;
-  resolveSection?: (id: string) => string | null;
   defaultCollapsed?: boolean;
   /** True when the foundational run's cursor is on this element. */
   isCurrent?: boolean;
-  /** Relations computed by the parent — override the stored frontmatter. */
-  derivedLinks?: Record<string, string[]>;
+  /** Resolve a referenced element id to its page + type label, for hovercards. */
+  getRef?: (id: string) => { page: WikiPage; typeLabel: string } | undefined;
+  /** SME note thread for this element (#19). */
+  notes?: Note[];
 }) {
   const [showTemplate, setShowTemplate] = useState(false);
   // Collapsed cards show only their header row, so a long section is a
@@ -281,12 +99,10 @@ export default function ElementCard({
   // Live template-conformance check for this element (deterministic, cheap).
   const checks = template ? checkElement(page, template) : [];
   const issueCount = checks.filter((c) => !c.ok).length;
-  const cfg = TYPE_CONFIG[page.type] ?? { fields: [], links: [] };
 
   // Typed outgoing relations (process-step `transitions`): `to|kind|when`.
-  // The flat fields/links models can't carry a kind + a condition, so these
-  // render in their own block.
-  const TRANSITION_KINDS = ["normal", "branch", "loopback", "exception"];
+  // These carry per-edge metadata (kind + condition) a plain relation can't,
+  // so they render in their own block, not via `links`.
   const transitions = asList(page.meta.transitions)
     .map((entry) => {
       const parts = entry.split("|");
@@ -360,20 +176,27 @@ export default function ElementCard({
   const [title, setTitle] = useState(page.title);
   const [blocks, setBlocks] = useState(page.blocks);
   const [body, setBody] = useState(page.body);
-  const [fields, setFields] = useState<Record<string, string>>({});
+  const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
 
   // Editing — and being the foundational run's current element — force the
   // full card open.
   const isCollapsed = collapsed && !editing && !isCurrent;
 
+  // Live conformance — re-checked against the in-edit blocks so the SME sees
+  // template deviations before saving, not only after (#7).
+  const liveChecks =
+    editing && template
+      ? checkElement({ ...page, title, blocks, body }, template)
+      : [];
+
   function startEdit() {
     setTitle(page.title);
     setBlocks(page.blocks.map((b) => ({ ...b })));
     setBody(page.body);
     const fv: Record<string, string> = {};
-    for (const f of cfg.fields) fv[f.key] = String(page.meta[f.key] ?? "");
-    setFields(fv);
+    for (const f of fieldSpecs) fv[f.key] = String(page.meta[f.key] ?? "");
+    setFieldValues(fv);
     setError(null);
     setEditing(true);
   }
@@ -384,7 +207,7 @@ export default function ElementCard({
       try {
         await saveElement(slug, page.id, {
           title: title.trim(),
-          fields,
+          fields: fieldValues,
           blocks: blocks.map((b) => ({ heading: b.heading, text: b.text })),
           body,
         });
@@ -396,6 +219,43 @@ export default function ElementCard({
       }
     });
   }
+
+  // SME note thread (#19) — notes arrive from notes.json via the parent;
+  // posting hits /api/notes, then router.refresh() brings the thread back.
+  const noteList = notes ?? [];
+  const [noteDraft, setNoteDraft] = useState("");
+  const [replyTo, setReplyTo] = useState<string | null>(null);
+  const [notesOpen, setNotesOpen] = useState(true);
+  const [notePending, startNote] = useTransition();
+
+  function postNote() {
+    const text = noteDraft.trim();
+    if (!text || notePending) return;
+    startNote(async () => {
+      await fetch("/api/notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          slug,
+          elementId: page.id,
+          author: userName,
+          text,
+          replyTo: replyTo ?? undefined,
+        }),
+      });
+      setNoteDraft("");
+      setReplyTo(null);
+      router.refresh();
+    });
+  }
+
+  // Provenance — DESIGN.md's signature: machine-drafted vs human-confirmed.
+  const provenanceText =
+    reviewBy && reviewDate
+      ? `${isDraft ? "AI-drafted" : "Authored"} · confirmed by ${reviewBy}, ${reviewDate}`
+      : isDraft
+        ? "AI-drafted · awaiting confirmation"
+        : "Authored · not yet confirmed";
 
   return (
     <article
@@ -415,6 +275,11 @@ export default function ElementCard({
           {isCollapsed ? "▸" : "▾"}
         </button>
         <span className="el-id">{page.id}</span>
+        {page.confidence && (
+          <Tooltip label={`${page.confidence} confidence`}>
+            <span className={`el-conf-dot conf-${page.confidence}`} />
+          </Tooltip>
+        )}
         {!editing && (
           <label
             className={`${sourced ? "relevance" : "approval"} ${
@@ -470,9 +335,7 @@ export default function ElementCard({
       {showTemplate && !isCollapsed && template && template.length > 0 && (
         <div className="el-template">
           <div className="el-tpl-head">Schema template · {typeLabel}</div>
-          <div
-            className={`el-tpl-status ${issueCount > 0 ? "bad" : "ok"}`}
-          >
+          <div className={`el-tpl-status ${issueCount > 0 ? "bad" : "ok"}`}>
             {issueCount > 0
               ? `This element does not match the template — ${issueCount} block${issueCount === 1 ? "" : "s"} need work.`
               : "This element conforms to the template."}
@@ -533,215 +396,322 @@ export default function ElementCard({
         <div className="el-title">{page.title}</div>
       )}
 
+      {!editing && (
+        <div className="el-provenance">
+          <span className={`pv-dot ${isDraft ? "pv-ai" : "pv-human"}`} />
+          {provenanceText}
+        </div>
+      )}
+
       {!isCollapsed && (
         <>
-      {editing ? (
-        blocks.length > 0 ? (
-          <div className="el-blocks">
-            {blocks.map((b, i) => (
-              <div className="el-block" key={b.heading}>
-                <div className="el-block-head">{b.heading}</div>
-                <textarea
-                  className="el-edit-text"
-                  value={b.text}
-                  aria-label={b.heading}
-                  onChange={(e) => {
-                    const next = [...blocks];
-                    next[i] = { ...next[i], text: e.target.value };
-                    setBlocks(next);
-                  }}
-                />
+          {editing ? (
+            blocks.length > 0 ? (
+              <div className="el-blocks">
+                {blocks.map((b, i) => {
+                  const chk = liveChecks.find((c) => c.heading === b.heading);
+                  const bad = chk ? !chk.ok : false;
+                  return (
+                    <div className="el-block" key={b.heading}>
+                      <div className="el-block-head">{b.heading}</div>
+                      <textarea
+                        className={`el-edit-text${bad ? " has-warn" : ""}`}
+                        value={b.text}
+                        aria-label={b.heading}
+                        onChange={(e) => {
+                          const next = [...blocks];
+                          next[i] = { ...next[i], text: e.target.value };
+                          setBlocks(next);
+                        }}
+                      />
+                      {bad && chk?.issue && (
+                        <div className="el-edit-warn">⚠ {chk.issue}</div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-            ))}
-          </div>
-        ) : (
-          <textarea
-            className="el-edit-text el-edit-body"
-            value={body}
-            aria-label="Body"
-            onChange={(e) => setBody(e.target.value)}
-          />
-        )
-      ) : page.blocks.length > 0 ? (
-        <div className="el-blocks">
-          {page.blocks.map((b) => (
-            <div className="el-block" key={b.heading}>
-              <div className="el-block-head">{b.heading}</div>
-              <div className="el-block-text">
-                <Markdown text={b.text} />
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        page.body && (
-          <div className="el-body">
-            <Markdown text={page.body} />
-          </div>
-        )
-      )}
-
-      {editing
-        ? cfg.fields.length > 0 && (
-            <div className="el-edit-fields">
-              {cfg.fields.map((f) => (
-                <label className="el-edit-field" key={f.key}>
-                  <span>{f.label}</span>
-                  <input
-                    value={fields[f.key] ?? ""}
-                    onChange={(e) =>
-                      setFields({ ...fields, [f.key]: e.target.value })
-                    }
-                  />
-                </label>
+            ) : (
+              <textarea
+                className="el-edit-text el-edit-body"
+                value={body}
+                aria-label="Body"
+                onChange={(e) => setBody(e.target.value)}
+              />
+            )
+          ) : page.blocks.length > 0 ? (
+            <div className="el-blocks">
+              {page.blocks.map((b) => (
+                <div className="el-block" key={b.heading}>
+                  <div className="el-block-head">{b.heading}</div>
+                  <div className="el-block-text">
+                    <Markdown text={b.text} />
+                  </div>
+                </div>
               ))}
             </div>
-          )
-        : cfg.fields.some((f) => page.meta[f.key]) && (
-            <div className="el-fields">
-              {cfg.fields.map((f) => {
-                const val = page.meta[f.key];
-                if (!val) return null;
-                const text = `${String(val)}${f.suffix ?? ""}`;
-                const url = f.urlKey ? page.meta[f.urlKey] : undefined;
-                return (
-                  <span className="el-field" key={f.key}>
-                    {f.label}:{" "}
-                    <b>
-                      {url ? (
-                        <a
-                          className="el-field-link"
-                          href={String(url)}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {text}
-                        </a>
-                      ) : (
-                        text
-                      )}
-                    </b>
-                  </span>
-                );
-              })}
-            </div>
-          )}
-
-      {!editing &&
-        cfg.links.map((lg) => {
-          // A derived relation (computed by the parent from other elements)
-          // overrides the stored frontmatter — one source of truth.
-          const targets = derivedLinks?.[lg.key] ?? asList(page.meta[lg.key]);
-          if (targets.length === 0) return null;
-          return (
-            <div className="links" key={lg.key}>
-              <span className="link-group-label">{lg.label}:</span>
-              {targets.map((t) => {
-                const sec = resolveSection?.(t) ?? null;
-                return sec && onGoToElement ? (
-                  <button
-                    type="button"
-                    className="link-chip link-chip-nav"
-                    key={t}
-                    onClick={() => onGoToElement(t)}
-                    title={`Go to ${t}`}
-                  >
-                    {t}
-                  </button>
-                ) : (
-                  <span className="link-chip" key={t}>
-                    {t}
-                  </span>
-                );
-              })}
-            </div>
-          );
-        })}
-
-      {!editing && transitions.length > 0 && (
-        <div className="el-transitions">
-          <span className="el-transitions-label">Transitions</span>
-          {transitions.map((t) => {
-            const sec = resolveSection?.(t.to) ?? null;
-            const label =
-              t.kind === "normal"
-                ? "next"
-                : t.kind === "loopback"
-                  ? "loop-back"
-                  : t.kind;
-            return (
-              <div
-                className={`el-transition el-transition-${t.kind}`}
-                key={`${t.to}-${t.when}`}
-              >
-                {sec && onGoToElement ? (
-                  <button
-                    type="button"
-                    className="link-chip link-chip-nav"
-                    onClick={() => onGoToElement(t.to)}
-                    title={`Go to ${t.to}`}
-                  >
-                    {t.to}
-                  </button>
-                ) : (
-                  <span className="link-chip">{t.to}</span>
-                )}
-                <span className="el-transition-meta">
-                  {label}
-                  {t.when ? ` · ${t.when}` : ""}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      <div className="el-meta">
-        {!editing && isDraft && page.confidence && (
-          <span className={`conf ${page.confidence}`}>
-            <span className="cd" /> Confidence: {page.confidence}
-          </span>
-        )}
-        {editing && error && <span className="el-edit-err">{error}</span>}
-        <div className="el-actions">
-          {editing ? (
-            <>
-              <button
-                className="act ai"
-                onClick={save}
-                disabled={pending}
-              >
-                {pending ? "Saving…" : "Save"}
-              </button>
-              <button
-                className="act"
-                onClick={() => setEditing(false)}
-                disabled={pending}
-              >
-                Cancel
-              </button>
-            </>
           ) : (
-            <>
-              {onDeepDive && (
-                <button
-                  className="act ai"
-                  onClick={() => onDeepDive(page.id, page.title)}
-                  title="Start a QER deep-dive session on this element"
-                >
-                  ⌖ Deep dive
-                </button>
-              )}
-              <button className="act" disabled title="coming in slice 2">
-                ⌘ AI edit
-              </button>
-              <button className="act" onClick={startEdit}>
-                ✎ Edit yourself
-              </button>
-            </>
+            page.body && (
+              <div className="el-body">
+                <Markdown text={page.body} />
+              </div>
+            )
           )}
-        </div>
-      </div>
+
+          {editing
+            ? fieldSpecs.length > 0 && (
+                <div className="el-edit-fields">
+                  {fieldSpecs.map((f) => (
+                    <label className="el-edit-field" key={f.key}>
+                      <span>{f.label}</span>
+                      <input
+                        value={fieldValues[f.key] ?? ""}
+                        onChange={(e) =>
+                          setFieldValues({
+                            ...fieldValues,
+                            [f.key]: e.target.value,
+                          })
+                        }
+                      />
+                    </label>
+                  ))}
+                </div>
+              )
+            : fieldSpecs.some((f) => page.meta[f.key]) && (
+                <div className="el-fields">
+                  {fieldSpecs.map((f) => {
+                    const val = page.meta[f.key];
+                    if (!val) return null;
+                    const text = `${String(val)}${f.suffix ?? ""}`;
+                    const url = f.urlKey ? page.meta[f.urlKey] : undefined;
+                    return (
+                      <span className="el-field" key={f.key}>
+                        {f.label}:{" "}
+                        <b>
+                          {url ? (
+                            <a
+                              className="el-field-link"
+                              href={String(url)}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              {text}
+                            </a>
+                          ) : (
+                            text
+                          )}
+                        </b>
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
+
+          {!editing &&
+            links.map((lg) => (
+              <div className="links" key={lg.label}>
+                <span className="link-group-label">{lg.label}:</span>
+                {lg.ids.map((t) => {
+                  const ref = getRef?.(t);
+                  return (
+                    <ElementHovercard
+                      key={t}
+                      element={ref?.page}
+                      typeLabel={ref?.typeLabel}
+                    >
+                      <button
+                        type="button"
+                        className="link-chip link-chip-nav"
+                        onClick={() => onGoToElement?.(t)}
+                      >
+                        {t}
+                      </button>
+                    </ElementHovercard>
+                  );
+                })}
+              </div>
+            ))}
+
+          {!editing && transitions.length > 0 && (
+            <div className="el-transitions">
+              <span className="el-transitions-label">Transitions</span>
+              {transitions.map((t) => {
+                const label =
+                  t.kind === "normal"
+                    ? "next"
+                    : t.kind === "loopback"
+                      ? "loop-back"
+                      : t.kind;
+                return (
+                  <div
+                    className={`el-transition el-transition-${t.kind}`}
+                    key={`${t.to}-${t.when}`}
+                  >
+                    <ElementHovercard
+                      element={getRef?.(t.to)?.page}
+                      typeLabel={getRef?.(t.to)?.typeLabel}
+                    >
+                      <button
+                        type="button"
+                        className="link-chip link-chip-nav"
+                        onClick={() => onGoToElement?.(t.to)}
+                      >
+                        {t.to}
+                      </button>
+                    </ElementHovercard>
+                    <span className="el-transition-meta">
+                      {label}
+                      {t.when ? ` · ${t.when}` : ""}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          <div className="el-meta">
+            {!editing && isDraft && page.confidence && (
+              <span className={`conf ${page.confidence}`}>
+                <span className="cd" /> Confidence: {page.confidence}
+              </span>
+            )}
+            {editing && error && <span className="el-edit-err">{error}</span>}
+            <div className="el-actions">
+              {editing ? (
+                <>
+                  <button className="act ai" onClick={save} disabled={pending}>
+                    {pending ? "Saving…" : "Save"}
+                  </button>
+                  <button
+                    className="act"
+                    onClick={() => setEditing(false)}
+                    disabled={pending}
+                  >
+                    Cancel
+                  </button>
+                </>
+              ) : (
+                <>
+                  {onDeepDive && (
+                    <button
+                      className="act ai"
+                      onClick={() => onDeepDive(page.id, page.title)}
+                      title="Start a QER deep-dive session on this element"
+                    >
+                      ⌖ Deep dive
+                    </button>
+                  )}
+                  <button className="act" onClick={startEdit}>
+                    ✎ Edit yourself
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
+          {!editing && (
+            <div className="el-thread">
+              <button
+                type="button"
+                className="el-thread-head"
+                onClick={() => setNotesOpen((v) => !v)}
+                aria-expanded={notesOpen}
+              >
+                <span className="el-thread-chev">
+                  {notesOpen ? "▾" : "▸"}
+                </span>
+                Discussion
+                {noteList.length > 0 && (
+                  <span className="el-thread-n">· {noteList.length}</span>
+                )}
+              </button>
+              {notesOpen && (
+                <>
+                  {noteList
+                    .filter((n) => !n.replyTo)
+                    .map((n) => (
+                      <Fragment key={n.id}>
+                        <div className="el-note">
+                          <span className="el-note-av">
+                            {noteInitials(n.author)}
+                          </span>
+                          <div className="el-note-body">
+                            <div className="el-note-top">
+                              <span className="el-note-who">{n.author}</span>
+                              <span className="el-note-when">
+                                {noteDate(n.ts)}
+                              </span>
+                            </div>
+                            <div className="el-note-text">{n.text}</div>
+                            <button
+                              type="button"
+                              className="el-note-reply"
+                              onClick={() => setReplyTo(n.id)}
+                            >
+                              ↩ Reply
+                            </button>
+                          </div>
+                        </div>
+                        {noteList
+                          .filter((r) => r.replyTo === n.id)
+                          .map((r) => (
+                            <div className="el-note reply" key={r.id}>
+                              <span className="el-note-av">
+                                {noteInitials(r.author)}
+                              </span>
+                              <div className="el-note-body">
+                                <div className="el-note-top">
+                                  <span className="el-note-who">
+                                    {r.author}
+                                  </span>
+                                  <span className="el-note-when">
+                                    {noteDate(r.ts)}
+                                  </span>
+                                </div>
+                                <div className="el-note-text">{r.text}</div>
+                              </div>
+                            </div>
+                          ))}
+                      </Fragment>
+                    ))}
+                  <div className="el-note-input">
+                    {replyTo && (
+                      <span className="el-note-replying">
+                        Replying ·{" "}
+                        <button
+                          type="button"
+                          onClick={() => setReplyTo(null)}
+                        >
+                          cancel
+                        </button>
+                      </span>
+                    )}
+                    <div className="el-note-row">
+                      <input
+                        value={noteDraft}
+                        onChange={(e) => setNoteDraft(e.target.value)}
+                        placeholder={
+                          replyTo
+                            ? "Write a reply…"
+                            : "Add a note for the team…"
+                        }
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") postNote();
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={postNote}
+                        disabled={notePending || !noteDraft.trim()}
+                      >
+                        {notePending ? "…" : "Post"}
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </>
       )}
     </article>
