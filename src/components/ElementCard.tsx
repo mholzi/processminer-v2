@@ -250,9 +250,20 @@ export default function ElementCard({
   }
 
   // Provenance — DESIGN.md's signature: machine-drafted vs human-confirmed.
+  // The verb tracks the review state: an element re-opened by run-lint is
+  // stamped with a By/Date but is *not* confirmed, so "confirmed by" would
+  // misread. Only an approved/relevant element is confirmed.
+  const reviewVerb =
+    review === "approved" || review === "relevant"
+      ? "confirmed by"
+      : review === "rejected"
+        ? "rejected by"
+        : review === "disregarded"
+          ? "disregarded by"
+          : "flagged by";
   const provenanceText =
     reviewBy && reviewDate
-      ? `${isDraft ? "AI-drafted" : "Authored"} · confirmed by ${reviewBy}, ${reviewDate}`
+      ? `${isDraft ? "AI-drafted" : "Authored"} · ${reviewVerb} ${reviewBy}, ${reviewDate}`
       : isDraft
         ? "AI-drafted · awaiting confirmation"
         : "Authored · not yet confirmed";
