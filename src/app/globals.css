@@ -620,6 +620,77 @@ body {
   font-size: 11px; color: var(--muted); font-family: var(--mono);
   margin: -8px 0 14px 2px;
 }
+
+/* ---- Triage screen ---- */
+.triage-lead {
+  font-size: 13px; line-height: 1.6; color: var(--muted); margin-bottom: 14px;
+}
+.triage-stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 10px; margin-bottom: 16px;
+}
+.triage-stat {
+  border: 1px solid var(--line); border-radius: var(--r-md);
+  background: var(--surface); padding: 12px 14px;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.triage-stat-value {
+  font-family: var(--mono); font-size: 22px; font-weight: 600; color: var(--ink);
+}
+.triage-stat-label { font-size: 11px; color: var(--muted); }
+.triage-run {
+  display: flex; align-items: center; gap: 16px;
+  border: 1px solid var(--accent); border-radius: var(--r-md);
+  background: var(--accent-soft); padding: 15px 17px; margin-bottom: 18px;
+}
+.triage-run-text { display: flex; flex-direction: column; gap: 3px; }
+.triage-run-text strong { font-size: 14px; }
+.triage-run-text span { font-size: 12px; color: var(--muted); }
+.triage-run-btn {
+  margin-left: auto; flex: none; cursor: pointer;
+  font-family: var(--font); font-size: 13px; font-weight: 600;
+  border: none; background: var(--accent); color: #fff;
+  padding: 9px 16px; border-radius: var(--r-sm);
+}
+[data-theme="dark"] .triage-run-btn { color: #101216; }
+.triage-block { margin-top: 18px; }
+.triage-note { font-size: 12px; color: var(--muted); margin: -4px 0 10px; }
+.triage-conflict, .triage-correction {
+  border: 1px solid var(--line); border-radius: var(--r-md);
+  background: var(--surface); padding: 11px 13px; margin-bottom: 8px;
+}
+.triage-correction {
+  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+}
+.triage-conflict-field {
+  font-family: var(--mono); font-size: 11px; color: var(--muted);
+}
+.triage-conflict-versions {
+  display: flex; flex-direction: column; gap: 4px;
+  margin-top: 7px; font-size: 13px; line-height: 1.55;
+}
+.triage-tag {
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .04em;
+  border-radius: 3px; padding: 1px 6px; margin-right: 4px;
+  color: var(--accent); background: var(--accent-soft); border: 1px solid var(--line);
+}
+.triage-correction-text { font-size: 13px; }
+.triage-empty-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.triage-empty {
+  font-size: 12px; color: var(--muted);
+  border: 1px solid var(--line); border-radius: 3px; padding: 2px 8px;
+  background: var(--surface);
+}
+
+/* ---- Overview review status ---- */
+.ovw-review {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.ovw-review-label { font-size: 13px; font-weight: 600; }
+.approval-control { display: inline-flex; align-items: center; gap: 8px; }
 .finding {
   border: 1px solid var(--line); border-left: 3px solid var(--line);
   border-radius: var(--r-md); background: var(--surface);

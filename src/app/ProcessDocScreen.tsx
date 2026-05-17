@@ -10,6 +10,7 @@ import ProcessFlow from "@/components/ProcessFlow";
 import OverviewPanel from "@/components/OverviewPanel";
 import AgentChat, { type ChatMessage } from "@/components/AgentChat";
 import ReviewPanel from "@/components/ReviewPanel";
+import TriagePanel from "@/components/TriagePanel";
 import UploadModal from "@/components/UploadModal";
 import CommandPalette from "@/components/CommandPalette";
 import ApprovalBar from "@/components/ApprovalBar";
@@ -39,6 +40,8 @@ export default function ProcessDocScreen({
   }));
   // Slugs seen so far — to detect a process a skill just scaffolded.
   const knownSlugs = useRef(new Set(docs.map((d) => d.slug)));
+  // Last foundational-run cursor the canvas followed (`slug:cursor`).
+  const followedRef = useRef<string | null>(null);
 
   const [section, setSection] = useState("process-steps");
   const [dark, setDark] = useState(false);
@@ -86,6 +89,32 @@ export default function ProcessDocScreen({
       setSection("overview");
     }
   }, [docs]);
+
+  // While a foundational run is active, the canvas follows the skill's lead —
+  // review-state.json advances each turn, and the app opens the section of
+  // the element now under review.
+  useEffect(() => {
+    const rs = doc.reviewState;
+    if (!rs || rs.done) return;
+    const key = `${doc.slug}:${rs.cursor}`;
+    if (followedRef.current === key) return;
+    followedRef.current = key;
+    const id = rs.queue[rs.cursor];
+    if (!id) return;
+    if (id === doc.process.id) {
+      setSection("overview");
+      return;
+    }
+    const sec = sectionForId(schema, id);
+    if (sec) {
+      setSection(sec);
+      setTimeout(() => {
+        document
+          .getElementById(id)
+          ?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 80);
+    }
+  }, [doc, schema]);
 
   const flatSections = schema.areas.flatMap((a) => a.sections);
 
@@ -273,6 +302,17 @@ export default function ProcessDocScreen({
     setChatOpen(true);
     handleSend(
       `A document has been uploaded to ${path}. Run the document-ingest skill on it for the "${doc.process.title}" process.`,
+      { onComplete: () => setSection("__triage") },
+    );
+  }
+
+  // Foundational run — invoke the foundational-run skill via the chat. It
+  // builds or resumes the review queue; the canvas then follows the cursor.
+  function runFoundational() {
+    if (chatPending) return;
+    setChatOpen(true);
+    handleSend(
+      `Run the foundational-run skill on the process with slug "${currentSlug}".`,
     );
   }
 
@@ -351,6 +391,13 @@ export default function ProcessDocScreen({
         >
           ⬆ Upload document
         </button>
+        {(doc.ingest || doc.reviewState) && (
+          <button className="lint-btn" onClick={() => setSection("__triage")}>
+            {doc.reviewState && !doc.reviewState.done
+              ? `Run · ${doc.reviewState.cursor} / ${doc.reviewState.total}`
+              : "Triage"}
+          </button>
+        )}
         <button
           className="lint-btn"
           onClick={() => (findings ? setSection("__review") : runLint())}
@@ -417,8 +464,11 @@ export default function ProcessDocScreen({
               <OverviewPanel
                 process={doc.process}
                 elements={doc.elements}
+                slug={doc.slug}
+                userName={CURRENT_USER}
                 onNavigate={setSection}
                 resolveSection={resolveSection}
+                onSaved={() => setLastSaved(new Date())}
               />
             </>
           ) : section === "__review" ? (
@@ -454,6 +504,31 @@ export default function ProcessDocScreen({
                   <p>No lint pass has been run for this process yet.</p>
                   <p className="empty-hint">
                     Use “⊛ Run lint” in the top bar to run one.
+                  </p>
+                </div>
+              )}
+            </>
+          ) : section === "__triage" ? (
+            <>
+              <div className="canvas-head">
+                <h1>Triage</h1>
+                <div className="sub">
+                  What the last ingest produced for {doc.process.title} — and
+                  the launch point for the foundational run.
+                </div>
+              </div>
+              {doc.ingest || doc.reviewState ? (
+                <TriagePanel
+                  doc={doc}
+                  schema={schema}
+                  onStartRun={runFoundational}
+                  onGoToElement={goToElement}
+                />
+              ) : (
+                <div className="empty-state">
+                  <p>No document has been ingested for this process yet.</p>
+                  <p className="empty-hint">
+                    Use “⬆ Upload document” in the top bar to ingest one.
                   </p>
                 </div>
               )}

@@ -21,6 +21,28 @@ function findElementFile(slug: string, id: string): string | null {
   return null;
 }
 
+/** Resolve an id to its wiki file — an element page, or index.md when the id
+ *  is the process overview's (the overview is approvable like an element). */
+function findApprovableFile(slug: string, id: string): string | null {
+  const elementFile = findElementFile(slug, id);
+  if (elementFile) return elementFile;
+  const index = join(WIKI_DIR, slug, "index.md");
+  if (existsSync(index)) {
+    const m = readFileSync(index, "utf8").match(/^---\n([\s\S]*?)\n---/);
+    for (const line of m ? m[1].split("\n") : []) {
+      const idx = line.indexOf(":");
+      if (
+        idx !== -1 &&
+        line.slice(0, idx).trim() === "id" &&
+        line.slice(idx + 1).trim() === id
+      ) {
+        return index;
+      }
+    }
+  }
+  return null;
+}
+
 export async function saveElement(
   slug: string,
   id: string,
@@ -79,7 +101,7 @@ export async function setApproval(
   if (!APPROVAL_VALUES.includes(approval)) {
     throw new Error(`Invalid approval value: ${approval}`);
   }
-  const path = findElementFile(slug, id);
+  const path = findApprovableFile(slug, id);
   if (!path) throw new Error(`Element not found: ${id}`);
 
   const raw = readFileSync(path, "utf8");

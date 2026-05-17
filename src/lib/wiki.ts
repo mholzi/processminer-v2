@@ -77,12 +77,51 @@ export interface WikiPage {
   blocks: ProseBlock[];
 }
 
+/** A conflict document-ingest flagged — doc vs wiki, left for the SME. */
+export interface IngestConflict {
+  element: string;
+  field: string;
+  documentSays: string;
+  wikiSays: string;
+}
+/** A claim verification removed from a draft before it was written. */
+export interface IngestCorrection {
+  element: string;
+  field: string;
+  removed: string;
+}
+/** Result of the last document-ingest — written to ingest.json. */
+export interface IngestReport {
+  generatedAt: string;
+  slug: string;
+  file: string;
+  created: string[];
+  updated: string[];
+  conflicts: IngestConflict[];
+  corrections: IngestCorrection[];
+}
+/** The foundational-run cursor — written to review-state.json. */
+export interface ReviewState {
+  slug: string;
+  /** Ordered element ids (the overview id first). */
+  queue: string[];
+  cursor: number;
+  total: number;
+  done: boolean;
+  startedAt: string;
+  updatedAt: string;
+}
+
 export interface ProcessDoc {
   slug: string;
   process: WikiPage;
   elements: WikiPage[];
   /** Result of the last `run-lint` pass, if one has been run. */
   lint?: LintReport;
+  /** Result of the last document-ingest, if one has been run. */
+  ingest?: IngestReport;
+  /** The foundational-run cursor, if a run has been started. */
+  reviewState?: ReviewState;
 }
 
 /** Parse `key: value` frontmatter. `[a, b]` becomes a string array. */
@@ -170,15 +209,23 @@ export function getProcess(slug: string): ProcessDoc | null {
       }
     }
   }
-  // The last lint pass, if `run-lint` has written one.
-  let lint: LintReport | undefined;
-  const lintPath = join(dir, "lint.json");
-  if (existsSync(lintPath)) {
+  // Sidecar JSON artifacts the skills write — lint pass, ingest result,
+  // foundational-run cursor. Each is optional and read defensively.
+  const readJson = <T>(name: string): T | undefined => {
+    const path = join(dir, name);
+    if (!existsSync(path)) return undefined;
     try {
-      lint = JSON.parse(readFileSync(lintPath, "utf8")) as LintReport;
+      return JSON.parse(readFileSync(path, "utf8")) as T;
     } catch {
-      lint = undefined;
+      return undefined;
     }
-  }
-  return { slug, process, elements, lint };
+  };
+  return {
+    slug,
+    process,
+    elements,
+    lint: readJson<LintReport>("lint.json"),
+    ingest: readJson<IngestReport>("ingest.json"),
+    reviewState: readJson<ReviewState>("review-state.json"),
+  };
 }

@@ -1,6 +1,7 @@
 import type { WikiPage } from "@/lib/wiki";
 import Markdown from "./Markdown";
 import ApprovalBar from "./ApprovalBar";
+import ApprovalControl from "./ApprovalControl";
 
 // The Overview — a roll-up dashboard, not free text. Three blocks:
 // Process Facts · At a Glance (counts from every section) · Purpose.
@@ -13,13 +14,19 @@ function str(v: string | string[] | undefined): string {
 export default function OverviewPanel({
   process,
   elements,
+  slug,
+  userName,
   onNavigate,
   resolveSection,
+  onSaved,
 }: {
   process: WikiPage;
   elements: WikiPage[];
+  slug: string;
+  userName: string;
   onNavigate: (section: string) => void;
   resolveSection: (id: string) => string | null;
+  onSaved?: () => void;
 }) {
   const count = (type: string) => elements.filter((e) => e.type === type).length;
   const metricValue = (id: string) =>
@@ -60,6 +67,24 @@ export default function OverviewPanel({
 
   return (
     <div className="ovw">
+      {/* Overview review status — the overview is approvable like an element */}
+      <div className="ovw-review">
+        <span className="ovw-review-label">Overview review</span>
+        <ApprovalControl
+          slug={slug}
+          id={process.id}
+          approval={String(process.meta.approval ?? "in-progress")}
+          approvalBy={
+            process.meta.approvalBy ? String(process.meta.approvalBy) : null
+          }
+          approvalDate={
+            process.meta.approvalDate ? String(process.meta.approvalDate) : null
+          }
+          userName={userName}
+          onSaved={onSaved}
+        />
+      </div>
+
       {/* Process Facts */}
       <section>
         <h2 className="type-group-head">Process Facts</h2>
@@ -116,7 +141,7 @@ export default function OverviewPanel({
       <section>
         <h2 className="type-group-head">Review Progress</h2>
         <div className="ovw-progress">
-          <ApprovalBar elements={elements} showLegend />
+          <ApprovalBar elements={[process, ...elements]} showLegend />
         </div>
       </section>
 
