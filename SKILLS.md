@@ -48,8 +48,7 @@ view re-reads after each turn. Auth is the machine's Claude Code login — **no
 API key**. The app runs locally, since it spawns `claude` on the same machine.
 
 The app invokes skills both from **free chat** (description match) and from
-**buttons** that send a fixed message (§10). Deep Dive and "AI edit" are still
-stubbed.
+**buttons** that send a fixed message (§10). "AI edit" is still stubbed.
 
 ---
 
@@ -302,7 +301,7 @@ buttons that post a fixed message to `/api/session`:
 | `source-cx` | the "✦ Source from the web" empty-state CTA on the Competitor CX / CX Benchmarks sections |
 | `source-regulation` | the "✦ Source from the web" empty-state CTA / "✦ Refresh from the web" toolbar button on the Regulation section |
 | `run-lint` | the "⊛ Run lint" top-bar button |
-| `qer-session`, the specialists | free chat, or `qer-session` dispatches the specialists |
+| `qer-session`, the specialists | free chat; `qer-session` dispatches them; or the **Deep Dive** button — routes the owning specialist by the element's section (§4/§9) |
 
 ---
 
@@ -318,8 +317,10 @@ Not a skill, but it shares the wiki and hosts the skills' surface:
   foundational-run launch/resume point.
 - **Skill runner** — the Process Assistant chat, wired to `/api/session`,
   streaming live activity per turn (§2).
-- **Still stubbed** — Deep Dive and "AI edit". Each will be wired to
-  `/api/session` or removed.
+- **Deep Dive** — wired (§11): an element routes the Brainstorm of its
+  section's owning specialist; a finding routes through its first implicated
+  element. Authored routing, not an LLM decision.
+- **Still stubbed** — "AI edit". Will be wired to `/api/session` or removed.
 
 ---
 
@@ -362,8 +363,7 @@ cover it); the install tooling skills.
 ## 14. Open questions
 
 - **Wiki Assistant** — planned, not built.
-- **Deep Dive / "AI edit"** — the last stubbed agent UI; wire to `/api/session`
-  or remove.
+- **"AI edit"** — the last stubbed agent UI; wire to `/api/session` or remove.
 - **Long skill runs** — a turn is held open as one HTTP request (timeout 30
   min). A genuinely long run (a large ingest) would be more robust as an async
   job; not yet needed.

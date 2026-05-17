@@ -984,32 +984,49 @@ export default function ProcessDocScreen({
       });
   }
 
-  // Deep dive — the hook that will trigger the Brainstorm skill.
-  // Stubbed for now: opens the chat and frames a Brainstorm session on the target.
+  // The perspective specialist that owns an element's section. The schema
+  // assigns a `specialist` to every section; routing through it keeps skill
+  // selection authored, not an LLM decision (SKILLS.md §4/§9).
+  function specialistForId(id: string): string | null {
+    const secId = sectionForId(schema, id);
+    if (!secId) return null;
+    for (const area of schema.areas) {
+      const sec = area.sections.find((s) => s.id === secId);
+      if (sec) return sec.specialist ?? null;
+    }
+    return null;
+  }
+
+  // Deep dive — run the owning specialist's Brainstorm on the target via
+  // /api/session. An element routes by its own section; a finding routes
+  // through its first implicated element. The specialist carries the
+  // Brainstorm pattern inline (SKILLS.md §5) — there is no separate skill.
   function deepDive(target: {
     id: string;
     title: string;
     kind: "element" | "finding";
+    /** Finding only — the element IDs the finding implicates. */
+    elements?: string[];
+    /** Finding only — the discrepancy explanation / clarifying question. */
+    detail?: string;
   }) {
+    if (chatPending) return;
+    const routeId =
+      target.kind === "finding" ? (target.elements?.[0] ?? null) : target.id;
+    const specialist = routeId ? specialistForId(routeId) : null;
+    const skillClause = specialist
+      ? `run the ${specialist} skill on the process with slug "${currentSlug}" and `
+      : "";
+    const message =
+      target.kind === "finding"
+        ? `Deep dive on lint finding ${target.id} ("${target.title}") — ${skillClause}work through this discrepancy with me with targeted clarifying questions until the wiki is consistent.` +
+          (target.detail ? `\n\nFinding detail: ${target.detail}` : "") +
+          (target.elements?.length
+            ? `\nImplicated elements: ${target.elements.join(", ")}.`
+            : "")
+        : `Deep dive on element ${target.id} ("${target.title}") — ${skillClause}brainstorm this element with me: probe for edge cases, exceptions and tacit detail to deepen its documentation.`;
     setChatOpen(true);
-    setMessages((m) => [
-      ...m,
-      { id: mid(), role: "user", text: `Deep dive — ${target.id}: ${target.title}` },
-    ]);
-    setTimeout(() => {
-      const intro =
-        target.kind === "finding"
-          ? `Starting a Brainstorm deep dive on finding ${target.id} (“${target.title}”). The Brainstorm agent would now run an interactive brainstorming session — working through the discrepancy with you, asking targeted clarifying questions until the wiki is consistent again.`
-          : `Starting a Brainstorm deep dive on ${target.id} (“${target.title}”). The Brainstorm agent would now run an interactive brainstorming session on this element — probing for edge cases, exceptions and tacit detail to deepen the documentation.`;
-      setMessages((m) => [
-        ...m,
-        {
-          id: mid(),
-          role: "agent",
-          text: `${intro}\n\nThe Brainstorm skill is stubbed in this build — wiring it is the next slice.`,
-        },
-      ]);
-    }, 700);
+    handleSend(message);
   }
 
   function goToElement(id: string) {
@@ -1353,7 +1370,13 @@ export default function ProcessDocScreen({
                   report={doc.lint}
                   onGoToElement={goToElement}
                   onDeepDive={(f) =>
-                    deepDive({ id: f.id, title: f.title, kind: "finding" })
+                    deepDive({
+                      id: f.id,
+                      title: f.title,
+                      kind: "finding",
+                      elements: f.elements,
+                      detail: f.detail,
+                    })
                   }
                   onRerun={runLint}
                   linting={linting}
@@ -1693,7 +1716,13 @@ export default function ProcessDocScreen({
                         }
                         findings={findingsByElement[el.id]}
                         onFindingDeepDive={(f) =>
-                          deepDive({ id: f.id, title: f.title, kind: "finding" })
+                          deepDive({
+                      id: f.id,
+                      title: f.title,
+                      kind: "finding",
+                      elements: f.elements,
+                      detail: f.detail,
+                    })
                         }
                         defaultCollapsed={sectionElements.length > 3}
                         isCurrent={el.id === currentRunId}
@@ -1722,7 +1751,13 @@ export default function ProcessDocScreen({
                     }
                     findings={findingsByElement[el.id]}
                     onFindingDeepDive={(f) =>
-                      deepDive({ id: f.id, title: f.title, kind: "finding" })
+                      deepDive({
+                      id: f.id,
+                      title: f.title,
+                      kind: "finding",
+                      elements: f.elements,
+                      detail: f.detail,
+                    })
                     }
                     defaultCollapsed={sectionElements.length > 3}
                     isCurrent={el.id === currentRunId}
