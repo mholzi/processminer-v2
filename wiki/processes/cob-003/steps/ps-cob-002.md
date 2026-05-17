@@ -10,9 +10,9 @@ sequence: 2
 owner: KYC Analyst
 sla: 2-5 business days
 systems: [SYS-COB-003, SYS-COB-004]
-approval: approved
-approvalBy: M. Berger
-approvalDate: 2026-05-16
+approval: in-progress
+approvalBy: run-lint
+approvalDate: 2026-05-17
 ---
 ## What happens
 The KYC Analyst verifies the identity of the business and its beneficial owners, runs regulatory screening for PEP, sanctions and adverse-media risk, and assigns a customer risk rating. Documents are checked against the KYC platform; any screening match is escalated to Compliance.

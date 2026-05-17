@@ -1,0 +1,303 @@
+{
+  "generatedAt": "2026-05-17T16:12:14.488413+00:00",
+  "slug": "funds-release",
+  "summary": {
+    "conformance": 16,
+    "discrepancy": 11,
+    "question": 2
+  },
+  "findings": [
+    {
+      "id": "F-001",
+      "kind": "conformance",
+      "title": "Structure: CP-FR-001 deviates from its control template",
+      "detail": "required frontmatter “owner” is missing",
+      "elements": [
+        "CP-FR-001"
+      ]
+    },
+    {
+      "id": "F-002",
+      "kind": "conformance",
+      "title": "Structure: CP-FR-002 deviates from its control template",
+      "detail": "required frontmatter “owner” is missing",
+      "elements": [
+        "CP-FR-002"
+      ]
+    },
+    {
+      "id": "F-003",
+      "kind": "conformance",
+      "title": "Structure: CP-FR-005 deviates from its control template",
+      "detail": "required frontmatter “owner” is missing; required frontmatter “step” is missing",
+      "elements": [
+        "CP-FR-005"
+      ]
+    },
+    {
+      "id": "F-004",
+      "kind": "conformance",
+      "title": "Structure: CP-FR-006 deviates from its control template",
+      "detail": "required frontmatter “execution” is missing; required frontmatter “owner” is missing; required frontmatter “step” is missing",
+      "elements": [
+        "CP-FR-006"
+      ]
+    },
+    {
+      "id": "F-005",
+      "kind": "conformance",
+      "title": "Structure: EX-FR-001 deviates from its exception template",
+      "detail": "required frontmatter “impact” is missing; required frontmatter “affects” is missing",
+      "elements": [
+        "EX-FR-001"
+      ]
+    },
+    {
+      "id": "F-006",
+      "kind": "conformance",
+      "title": "Structure: EX-FR-002 deviates from its exception template",
+      "detail": "required frontmatter “impact” is missing; required frontmatter “affects” is missing",
+      "elements": [
+        "EX-FR-002"
+      ]
+    },
+    {
+      "id": "F-007",
+      "kind": "conformance",
+      "title": "Structure: EX-FR-003 deviates from its exception template",
+      "detail": "required frontmatter “impact” is missing; required frontmatter “affects” is missing",
+      "elements": [
+        "EX-FR-003"
+      ]
+    },
+    {
+      "id": "F-008",
+      "kind": "conformance",
+      "title": "Structure: EX-FR-004 deviates from its exception template",
+      "detail": "required frontmatter “impact” is missing; required frontmatter “affects” is missing",
+      "elements": [
+        "EX-FR-004"
+      ]
+    },
+    {
+      "id": "F-009",
+      "kind": "conformance",
+      "title": "Structure: PS-FR-001 deviates from its process-step template",
+      "detail": "required frontmatter “owner” is missing",
+      "elements": [
+        "PS-FR-001"
+      ]
+    },
+    {
+      "id": "F-010",
+      "kind": "conformance",
+      "title": "Structure: PS-FR-003 deviates from its process-step template",
+      "detail": "“What happens” long at 101 words (template 20–95)",
+      "elements": [
+        "PS-FR-003"
+      ]
+    },
+    {
+      "id": "F-011",
+      "kind": "conformance",
+      "title": "Structure: PS-FR-009 deviates from its process-step template",
+      "detail": "required frontmatter “owner” is missing",
+      "elements": [
+        "PS-FR-009"
+      ]
+    },
+    {
+      "id": "F-012",
+      "kind": "conformance",
+      "title": "Structure: SYS-FR-001 deviates from its system template",
+      "detail": "required frontmatter “systemType” is missing",
+      "elements": [
+        "SYS-FR-001"
+      ]
+    },
+    {
+      "id": "F-013",
+      "kind": "conformance",
+      "title": "Structure: SYS-FR-002 deviates from its system template",
+      "detail": "required frontmatter “systemType” is missing",
+      "elements": [
+        "SYS-FR-002"
+      ]
+    },
+    {
+      "id": "F-014",
+      "kind": "conformance",
+      "title": "Structure: SYS-FR-003 deviates from its system template",
+      "detail": "required frontmatter “systemType” is missing",
+      "elements": [
+        "SYS-FR-003"
+      ]
+    },
+    {
+      "id": "F-015",
+      "kind": "conformance",
+      "title": "Structure: SYS-FR-004 deviates from its system template",
+      "detail": "required frontmatter “systemType” is missing",
+      "elements": [
+        "SYS-FR-004"
+      ]
+    },
+    {
+      "id": "F-016",
+      "kind": "conformance",
+      "title": "Structure: SYS-FR-005 deviates from its system template",
+      "detail": "required frontmatter “systemType” is missing",
+      "elements": [
+        "SYS-FR-005"
+      ]
+    },
+    {
+      "id": "F-017",
+      "kind": "discrepancy",
+      "title": "Flow mismatch: EX-FR-001 `affects` vs process-step transitions",
+      "detail": "process-step(s) PS-FR-002 transition into it, but its `affects` omits them.",
+      "elements": [
+        "EX-FR-001",
+        "PS-FR-002"
+      ]
+    },
+    {
+      "id": "F-018",
+      "kind": "discrepancy",
+      "title": "Flow mismatch: EX-FR-002 `affects` vs process-step transitions",
+      "detail": "process-step(s) PS-FR-003 transition into it, but its `affects` omits them.",
+      "elements": [
+        "EX-FR-002",
+        "PS-FR-003"
+      ]
+    },
+    {
+      "id": "F-019",
+      "kind": "discrepancy",
+      "title": "Flow mismatch: EX-FR-003 `affects` vs process-step transitions",
+      "detail": "process-step(s) PS-FR-005 transition into it, but its `affects` omits them.",
+      "elements": [
+        "EX-FR-003",
+        "PS-FR-005"
+      ]
+    },
+    {
+      "id": "F-020",
+      "kind": "discrepancy",
+      "title": "Flow mismatch: EX-FR-004 `affects` vs process-step transitions",
+      "detail": "process-step(s) PS-FR-006 transition into it, but its `affects` omits them.",
+      "elements": [
+        "EX-FR-004",
+        "PS-FR-006"
+      ]
+    },
+    {
+      "id": "F-021",
+      "kind": "discrepancy",
+      "title": "First-line approval segregation of duties is not covered by a control",
+      "detail": "PS-FR-004 requires the first-line approver to be a different analyst from the one who validated the request at PS-FR-002 — a segregation-of-duties rule. The only segregation control, CP-FR-003, covers the four-eyes check at PS-FR-006 (approver ≠ first-line approver). No control enforces the validator-≠-first-line-approver split, so that separation is asserted in step prose but uncontrolled.",
+      "elements": [
+        "PS-FR-004",
+        "CP-FR-003",
+        "PS-FR-002"
+      ]
+    },
+    {
+      "id": "F-022",
+      "kind": "discrepancy",
+      "title": "PS-FR-001 and PS-FR-009 carry no RACI assignment",
+      "detail": "No role records a `raci` entry for PS-FR-001 (Receive request) or PS-FR-009 (Refer for limit review). ROLE-FR-001 Front Office originates and submits the release request but has no `raci` field at all, so the intake step has no Responsible role; PS-FR-009's onward referral to Compliance and the relationship manager is likewise unassigned.",
+      "elements": [
+        "PS-FR-001",
+        "PS-FR-009",
+        "ROLE-FR-001"
+      ]
+    },
+    {
+      "id": "F-023",
+      "kind": "discrepancy",
+      "title": "Role prose claims accountability the RACI codes never assign",
+      "detail": "ROLE-FR-001, ROLE-FR-003, ROLE-FR-004 and ROLE-FR-005 each describe themselves as 'accountable' for a step, but every `raci` entry across all roles uses only R and C — no Accountable (A) is assigned for any process-step. ROLE-FR-001 Front Office carries no `raci` field despite its prose claiming accountability for the release request.",
+      "elements": [
+        "ROLE-FR-001",
+        "ROLE-FR-003",
+        "ROLE-FR-004",
+        "ROLE-FR-005"
+      ]
+    },
+    {
+      "id": "F-024",
+      "kind": "discrepancy",
+      "title": "Client-experience evidence is not traced to the process",
+      "detail": "Every market-trend and competitor-innovation element carries a `bearsOn` relation tying it to the steps, metrics or gaps it touches, but the three cx-benchmarks (CXB-FR-001..003) and six competitor-cx elements (CXE/CXF/CXG-FR-*) carry none. The client-experience gaps they describe — no real-time visibility, no client portal — are not linked to PS-FR-007, PS-FR-008 or the metrics, so the CX evidence sits unconnected to the process it indicts.",
+      "elements": [
+        "CXB-FR-001",
+        "CXB-FR-002",
+        "CXB-FR-003",
+        "CXE-FR-001",
+        "CXE-FR-002",
+        "CXF-FR-001",
+        "CXF-FR-002",
+        "CXG-FR-001",
+        "CXG-FR-002"
+      ]
+    },
+    {
+      "id": "F-025",
+      "kind": "discrepancy",
+      "title": "Process index `docStatus` says empty but the process is fully documented",
+      "detail": "The Funds Release index page carries `docStatus: empty` while the process holds nine steps, six controls, four exceptions, five roles, five systems and a full CX/innovation set, and is itself `approval: approved`. The `docStatus` value contradicts the documented and approved state.",
+      "elements": [
+        "FR"
+      ]
+    },
+    {
+      "id": "F-026",
+      "kind": "discrepancy",
+      "title": "Steps reference exceptions by ad-hoc codes that no exception carries",
+      "detail": "PS-FR-002, PS-FR-003 and PS-FR-005 refer in prose to exceptions as 'E-1', 'E-2' and 'E-3', but the documented exception elements are EX-FR-001..004 and carry no such short code. The prose references resolve to nothing — a reader cannot follow 'E-2' to EX-FR-002.",
+      "elements": [
+        "PS-FR-002",
+        "PS-FR-003",
+        "PS-FR-005",
+        "EX-FR-001",
+        "EX-FR-002",
+        "EX-FR-003"
+      ]
+    },
+    {
+      "id": "F-027",
+      "kind": "discrepancy",
+      "title": "Systems carry a stale `steps` frontmatter list",
+      "detail": "SYS-FR-001..005 each declare a `steps` id list, but the schema's system type no longer defines that relation — `process-step.systems` is now the authoritative link (it produces the reverse 'Steps' group on each system). The `steps` field on the system pages is dead frontmatter that will silently drift from the process-step links it duplicates.",
+      "elements": [
+        "SYS-FR-001",
+        "SYS-FR-002",
+        "SYS-FR-003",
+        "SYS-FR-004",
+        "SYS-FR-005"
+      ]
+    },
+    {
+      "id": "F-028",
+      "kind": "question",
+      "title": "Should the incomplete-request friction be a documented gap?",
+      "detail": "II-FR-002 (front-office self-service portal) lists `addresses: [PG-FR-001]` — the duplicate-detection gap — but its stated benefit also says it 'cuts the incomplete or invalid requests that today bounce back from validation as exception E-1' (EX-FR-001). That incomplete-request friction has no process-gap element, so part of what II-FR-002 solves is not represented as a gap. Should it be one?",
+      "elements": [
+        "II-FR-002",
+        "EX-FR-001",
+        "PG-FR-001"
+      ]
+    },
+    {
+      "id": "F-029",
+      "kind": "question",
+      "title": "Is PS-FR-008 meant to be a terminal step?",
+      "detail": "PS-FR-008 (Confirm & close) carries a single `branch` transition — to PS-FR-009 when the facility is near its limit — and no `normal` transition for the close-out path that most items take. A `branch` implies a choice, but only one arm is encoded; the ordinary 'release closed, no referral' outcome is left implicit. Should PS-FR-008's terminal path be made explicit, or is the step intended to simply end?",
+      "elements": [
+        "PS-FR-008",
+        "PS-FR-009"
+      ]
+    }
+  ]
+}

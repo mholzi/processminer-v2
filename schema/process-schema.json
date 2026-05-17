@@ -220,7 +220,8 @@
           {
             "key": "systems",
             "label": "Systems",
-            "target": "system"
+            "target": "system",
+            "reverseLabel": "Steps"
           }
         ],
         "required": [
@@ -1576,11 +1577,6 @@
           }
         ],
         "relations": [
-          {
-            "key": "steps",
-            "label": "Steps",
-            "target": "process-step"
-          },
           {
             "key": "integrates",
             "label": "Integrates with",

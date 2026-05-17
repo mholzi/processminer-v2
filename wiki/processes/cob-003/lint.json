@@ -1,0 +1,289 @@
+{
+  "generatedAt": "2026-05-17T07:23:01.271485+00:00",
+  "slug": "cob-003",
+  "summary": {
+    "conformance": 9,
+    "discrepancy": 16,
+    "question": 3
+  },
+  "findings": [
+    {
+      "id": "F-001",
+      "kind": "conformance",
+      "title": "Structure: PS-COB-001 deviates from its process-step template",
+      "detail": "The 'Inputs' and 'Outputs' blocks are written as paragraphs, but the process-step template requires both to be bullet lists.",
+      "elements": [
+        "PS-COB-001"
+      ]
+    },
+    {
+      "id": "F-002",
+      "kind": "conformance",
+      "title": "Structure: PS-COB-002 deviates from its process-step template",
+      "detail": "The 'Inputs' and 'Outputs' blocks are written as paragraphs, but the process-step template requires both to be bullet lists.",
+      "elements": [
+        "PS-COB-002"
+      ]
+    },
+    {
+      "id": "F-003",
+      "kind": "conformance",
+      "title": "Structure: PS-COB-003 deviates from its process-step template",
+      "detail": "The 'Inputs' and 'Outputs' blocks are written as paragraphs, but the process-step template requires both to be bullet lists.",
+      "elements": [
+        "PS-COB-003"
+      ]
+    },
+    {
+      "id": "F-004",
+      "kind": "conformance",
+      "title": "Structure: PS-COB-004 deviates from its process-step template",
+      "detail": "The 'Inputs' and 'Outputs' blocks are written as paragraphs, but the process-step template requires both to be bullet lists.",
+      "elements": [
+        "PS-COB-004"
+      ]
+    },
+    {
+      "id": "F-005",
+      "kind": "conformance",
+      "title": "Structure: PS-COB-005 deviates from its process-step template",
+      "detail": "The 'Inputs' and 'Outputs' blocks are written as paragraphs, but the process-step template requires both to be bullet lists.",
+      "elements": [
+        "PS-COB-005"
+      ]
+    },
+    {
+      "id": "F-006",
+      "kind": "conformance",
+      "title": "Structure: PS-COB-006 deviates from its process-step template",
+      "detail": "The 'Inputs' and 'Outputs' blocks are written as paragraphs, but the process-step template requires both to be bullet lists.",
+      "elements": [
+        "PS-COB-006"
+      ]
+    },
+    {
+      "id": "F-007",
+      "kind": "conformance",
+      "title": "Structure: INT-COB-001 deviates from its integration template",
+      "detail": "The 'What flows' block is written as a paragraph, but the integration template requires it to be a bullet list.",
+      "elements": [
+        "INT-COB-001"
+      ]
+    },
+    {
+      "id": "F-008",
+      "kind": "conformance",
+      "title": "Structure: INT-COB-002 deviates from its integration template",
+      "detail": "The 'What flows' block is written as a paragraph, but the integration template requires it to be a bullet list.",
+      "elements": [
+        "INT-COB-002"
+      ]
+    },
+    {
+      "id": "F-009",
+      "kind": "conformance",
+      "title": "Structure: INT-COB-003 deviates from its integration template",
+      "detail": "The 'What flows' block is written as a paragraph, but the integration template requires it to be a bullet list.",
+      "elements": [
+        "INT-COB-003"
+      ]
+    },
+    {
+      "id": "F-010",
+      "kind": "discrepancy",
+      "title": "PS-COB-006 ownership conflicts with the RACI matrix",
+      "detail": "PS-COB-006 names the Team Lead as owner and ROLE-COB-005 states in prose that it is responsible for the Post-Onboarding Quality Check, but the RACI matrix assigns PS-COB-006:R to ROLE-COB-001 (Operations Officer) and only PS-COB-006:A to ROLE-COB-005 — and ROLE-COB-001's own description does not mention the step.",
+      "elements": [
+        "PS-COB-006",
+        "ROLE-COB-001",
+        "ROLE-COB-005"
+      ]
+    },
+    {
+      "id": "F-011",
+      "kind": "discrepancy",
+      "title": "SYS-COB-001 claims steps that do not list it",
+      "detail": "SYS-COB-001 (CRM) lists all six process steps and its prose says every step reads and updates the CRM case, but PS-COB-002, PS-COB-003, PS-COB-004 and PS-COB-006 do not include SYS-COB-001 in their systems field.",
+      "elements": [
+        "SYS-COB-001",
+        "PS-COB-002",
+        "PS-COB-003",
+        "PS-COB-004",
+        "PS-COB-006"
+      ]
+    },
+    {
+      "id": "F-012",
+      "kind": "discrepancy",
+      "title": "SYS-COB-002 claims steps that do not list it",
+      "detail": "SYS-COB-002 (OWS) lists all six process steps and its prose says it drives the sequence and timing for all six, but PS-COB-002, PS-COB-003, PS-COB-004 and PS-COB-005 do not include SYS-COB-002 in their systems field.",
+      "elements": [
+        "SYS-COB-002",
+        "PS-COB-002",
+        "PS-COB-003",
+        "PS-COB-004",
+        "PS-COB-005"
+      ]
+    },
+    {
+      "id": "F-013",
+      "kind": "discrepancy",
+      "title": "SYS-COB-007 claims PS-COB-002, which does not list it",
+      "detail": "SYS-COB-007 (DMS) lists PS-COB-002 among its steps, but PS-COB-002's systems field names only SYS-COB-003 and SYS-COB-004.",
+      "elements": [
+        "SYS-COB-007",
+        "PS-COB-002"
+      ]
+    },
+    {
+      "id": "F-014",
+      "kind": "discrepancy",
+      "title": "Credit Assessment step has no control linked",
+      "detail": "No control element links to PS-COB-003. Every other step has at least one control (CP-COB-003 on PS-COB-001, CP-COB-001/002 on PS-COB-002, CP-COB-004 on PS-COB-004, CP-COB-005 on PS-COB-005), yet the credit decision — where the Credit Analyst approves a limit within their own authority — is governed by no documented control.",
+      "elements": [
+        "PS-COB-003"
+      ]
+    },
+    {
+      "id": "F-015",
+      "kind": "discrepancy",
+      "title": "Segregation-of-duties policy relies on a four-eyes check that is not a documented control",
+      "detail": "REG-COB-006 (SoD Policy) has an empty controls list and states it is met through the four-eyes check performed during Account Setup (PS-COB-004), but no control element captures that four-eyes check. CG-COB-002 notes the same check as a missing control, framed as account-configuration verification.",
+      "elements": [
+        "REG-COB-006",
+        "PS-COB-004",
+        "CG-COB-002"
+      ]
+    },
+    {
+      "id": "F-016",
+      "kind": "discrepancy",
+      "title": "Friction point FP-COB-004 is linked to an unrelated pain point",
+      "detail": "FP-COB-004 (Complex Ownership Questions, root cause: KYC questions written in regulatory rather than client language) sets painPoint PP-COB-003, but PP-COB-003 is 'KYC screening false positives' — a screening-threshold problem. The two describe different issues, and no pain point captures the ownership-question complexity.",
+      "elements": [
+        "FP-COB-004",
+        "PP-COB-003"
+      ]
+    },
+    {
+      "id": "F-017",
+      "kind": "discrepancy",
+      "title": "FP-COB-004 has no addressedBy back-link",
+      "detail": "II-COB-007 addresses FP-COB-004, but FP-COB-004 carries no addressedBy field — unlike FP-COB-001, FP-COB-002 and FP-COB-003, which each link back to the idea addressing them.",
+      "elements": [
+        "FP-COB-004",
+        "II-COB-007"
+      ]
+    },
+    {
+      "id": "F-018",
+      "kind": "discrepancy",
+      "title": "Pain point 'Credit bureau delays' has no innovation idea",
+      "detail": "PP-COB-005 has no innovation-idea and no friction point addressing it; the credit-bureau delay raised on PS-COB-003 is documented but not carried into the innovation perspective.",
+      "elements": [
+        "PP-COB-005"
+      ]
+    },
+    {
+      "id": "F-019",
+      "kind": "discrepancy",
+      "title": "Pain point 'Welcome call scheduling' has no innovation idea",
+      "detail": "PP-COB-006 has no innovation-idea addressing it, although the pain point itself notes the obvious fix — client self-scheduling — and it drives repeated effort on PS-COB-005.",
+      "elements": [
+        "PP-COB-006"
+      ]
+    },
+    {
+      "id": "F-020",
+      "kind": "discrepancy",
+      "title": "PS-COB-001 contains stray text",
+      "detail": "The 'What happens' block of PS-COB-001 ends with the stray characters 'fghfh' appended to its final sentence — an apparent accidental edit.",
+      "elements": [
+        "PS-COB-001"
+      ]
+    },
+    {
+      "id": "F-021",
+      "kind": "discrepancy",
+      "title": "EX-COB-005 names an undocumented role",
+      "detail": "EX-COB-005 is handled by a 'Senior KYC Analyst', but no role element documents that role, even though it performs enhanced due diligence on roughly 20% of applications.",
+      "elements": [
+        "EX-COB-005"
+      ]
+    },
+    {
+      "id": "F-022",
+      "kind": "discrepancy",
+      "title": "Pain point PP-COB-002 understates the number of systems",
+      "detail": "PP-COB-002 says staff move between 'six or more systems' and enumerates six (CRM, OWS, KYC platform, screening, core banking, card management), but eight systems are documented for the process — the enumeration omits SYS-COB-006 (CDS) and SYS-COB-007 (DMS).",
+      "elements": [
+        "PP-COB-002",
+        "SYS-COB-006",
+        "SYS-COB-007"
+      ]
+    },
+    {
+      "id": "F-023",
+      "kind": "discrepancy",
+      "title": "Touchpoint 'Receive account activation' is mapped to the wrong step",
+      "detail": "JT-COB-004 (Receive account activation) sets occursAt PS-COB-004 (Account Setup & Configuration), but it describes the bank sending the activation notice with access details — work that PS-COB-005 (Client Communication & Activation) explicitly owns. PS-COB-004's prose describes no client-facing communication.",
+      "elements": [
+        "JT-COB-004",
+        "PS-COB-004",
+        "PS-COB-005"
+      ]
+    },
+    {
+      "id": "F-024",
+      "kind": "discrepancy",
+      "title": "Cycle-time metric conflicts with the per-step SLAs",
+      "detail": "M-COB-002 gives the processing time from application receipt to a live account as 4-6 hours, but the step SLAs spanning that window are denominated in business days — PS-COB-002 at 2-5 business days and PS-COB-003 at 3 business days alone far exceed a 4-6 hour total.",
+      "elements": [
+        "M-COB-002",
+        "PS-COB-002",
+        "PS-COB-003"
+      ]
+    },
+    {
+      "id": "F-025",
+      "kind": "discrepancy",
+      "title": "Complexity figures disagree between the metric and the exception",
+      "detail": "M-COB-003 puts the complex-application share at 30%, defining complex as multi-layer ownership, trusts or foreign shareholders. EX-COB-005 uses the same definition but states the complex-ownership exception occurs on about 20% of applications.",
+      "elements": [
+        "M-COB-003",
+        "EX-COB-005"
+      ]
+    },
+    {
+      "id": "F-026",
+      "kind": "question",
+      "title": "Who owns control CP-COB-004?",
+      "detail": "CP-COB-004 names its owner as 'IT/Operations', which is not a documented role, while ROLE-COB-001 (Operations Officer) lists CP-COB-004 among its controls. Which role owns the control?",
+      "elements": [
+        "CP-COB-004",
+        "ROLE-COB-001"
+      ]
+    },
+    {
+      "id": "F-027",
+      "kind": "question",
+      "title": "Is the external credit bureau a missing system and integration?",
+      "detail": "PS-COB-003 relies on external bureau data and PP-COB-005 describes a fire-and-forget bureau integration, but no system element documents the external credit bureau and SYS-COB-006 (CDS) has an empty integrates list — unlike the comparable external screening dependency documented as SYS-COB-004 and integration INT-COB-002. Should a system and integration be added?",
+      "elements": [
+        "PS-COB-003",
+        "SYS-COB-006",
+        "PP-COB-005"
+      ]
+    },
+    {
+      "id": "F-028",
+      "kind": "question",
+      "title": "Should PG-COB-001 and PG-COB-003 be consolidated?",
+      "detail": "PG-COB-001 (SLA adherence not measured) and PG-COB-003 (per-step processing time not captured) both call for capturing per-step start/end times in OWS. Are these one gap or two?",
+      "elements": [
+        "PG-COB-001",
+        "PG-COB-003"
+      ]
+    }
+  ]
+}

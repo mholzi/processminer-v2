@@ -502,6 +502,11 @@ export default function ProcessDocScreen({
   const activeLabel =
     schema.areas.flatMap((a) => a.sections).find((s) => s.id === section)
       ?.label ?? section;
+  // A section is "planned" when no element type targets it — it can't yet
+  // hold anything, so the app must not promise an Add entry there.
+  const sectionHasType = Object.values(schema.elementTypes).some(
+    (t) => t.section === section,
+  );
   // Which web-sourcing skill fills this section, and whether a run of that
   // kind is in progress right now.
   const sectionKind = sectionSourcingKind(section);
@@ -1441,7 +1446,8 @@ export default function ProcessDocScreen({
                   >
                     ⎙ Export PDF
                   </button>
-                  {(() => {
+                  {sectionHasType &&
+                    (() => {
                     const addTypes = Object.values(schema.elementTypes)
                       .filter((t) => t.section === section)
                       .map((t) => t.label);
@@ -1514,6 +1520,16 @@ export default function ProcessDocScreen({
               )}
               {sectionElements.length === 0 ? (
                 <div className="empty-state">
+                  {!sectionHasType ? (
+                    <>
+                      <p>{activeLabel} is not yet available.</p>
+                      <p className="empty-hint">
+                        This section is planned — its element type has not been
+                        built yet, so nothing can be added here.
+                      </p>
+                    </>
+                  ) : (
+                    <>
                   <p>No elements in “{activeLabel}” yet.</p>
                   {sectionKind === null ? (
                     (() => {
@@ -1594,6 +1610,8 @@ export default function ProcessDocScreen({
                       >
                         ✦ Source from the web
                       </button>
+                    </>
+                  )}
                     </>
                   )}
                 </div>

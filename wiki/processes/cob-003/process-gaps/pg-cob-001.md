@@ -8,6 +8,9 @@ confidence: high
 source: DTP-BB-ONB-001 v2.3
 area: Metrics
 gapStatus: open
+approval: rejected
+approvalBy: M. Berger
+approvalDate: 2026-05-17
 ---
 ## The gap
 Each step has a defined SLA, but whether those SLAs are actually being met is not measured or reported anywhere.
