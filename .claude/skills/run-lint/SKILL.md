@@ -25,7 +25,7 @@ Take the process title from `wiki/processes/<slug>/index.md`. Read every
 element under `wiki/processes/<slug>/` so you have the whole process in view —
 all sections, all element types.
 
-## Step 2 — Conformance check (deterministic)
+## Step 2 — Deterministic checks
 
 Run `python3 scripts/wiki/check_conformance.py <slug> --json`. It compares
 every element against its element type's schema template **and its required
@@ -33,9 +33,14 @@ frontmatter**, and prints a **JSON array of conformance findings** — one
 object per non-conforming element, each already shaped
 `{kind: "conformance", title, detail, elements}`.
 
-Keep that array exactly as printed. You do not author, reshape or re-type
-these findings — they are fully deterministic. A conforming process prints
-`[]`. This array is the conformance half of Step 4's input.
+Then run `python3 scripts/wiki/check_transitions.py <slug> --json`. It
+reconciles each exception's `affects` against the process-steps whose
+`transitions` flow into it, and prints a **JSON array of `discrepancy`
+findings** — one per exception where the two disagree.
+
+Keep both arrays exactly as printed. You do not author, reshape or re-type
+these findings — they are fully deterministic; a clean process prints `[]`.
+Together they are the deterministic half of Step 4's input.
 
 ## Step 3 — Cross-perspective sweep (judgement)
 
@@ -68,9 +73,10 @@ skipped a lens.
 
 ## Step 4 — Apply (deterministic)
 
-Assemble the full findings array: the conformance array from Step 2 **kept
-exactly as the script printed it**, followed by the discrepancy and question
-findings you wrote in Step 3. Each finding is an object:
+Assemble the full findings array: the conformance array and the
+transitions-reconciliation array from Step 2 — **both kept exactly as the
+scripts printed them** — followed by the discrepancy and question findings you
+wrote in Step 3. Each finding is an object:
 
 ```json
 { "kind": "discrepancy", "title": "...", "detail": "...", "elements": ["PS-COB-004", "CP-COB-004"] }

@@ -155,7 +155,8 @@ cannot come out malformed and every run reads the same.
 | `show_template.py` | print an element type's conformant skeleton from the schema |
 | `write_element.py` | write a conformant element file from a JSON spec |
 | `patch_element.py` | change one block or field of an element in place |
-| `check_conformance.py` | check elements against their schema templates |
+| `check_conformance.py` | check elements against their schema templates + required frontmatter |
+| `check_transitions.py` | reconcile exception `affects` against process-step `transitions` |
 | `add_source.py` | record an uploaded document in `index.md` |
 | `apply_lint.py` | write `lint.json`, re-open implicated approvals |
 | `write_ingest_report.py` | write `ingest.json` (created/updated from the run manifest) |

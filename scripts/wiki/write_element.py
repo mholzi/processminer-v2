@@ -23,6 +23,10 @@ Spec shape:
   }
 
 The `section` is derived from the element type via the schema — do not pass it.
+
+Rewriting an existing id is non-lossy: any frontmatter key the spec omits
+(approval/relevance stamps, `transitions`, hand-added keys) is carried forward
+from the file on disk. The spec wins for every key it names.
 """
 
 from __future__ import annotations
@@ -38,6 +42,7 @@ from wiki_lib import (  # noqa: E402
     WIKI_DIR,
     element_types,
     log_write,
+    parse_frontmatter,
     serialize_element,
 )
 
@@ -85,17 +90,31 @@ def main(argv: list[str]) -> None:
 
     # Auto-stamp `asOf` — the date a web-sourced element was sourced — when the
     # type declares the field and the spec did not supply it. Guarantees a
-    # consistent ISO date and takes the burden off the skill.
-    fm_fields = types[etype].get("frontmatter", {}).get("fields", [])
-    if "asOf" in fm_fields and not frontmatter.get("asOf"):
+    # consistent ISO date and takes the burden off the skill. The schema's
+    # frontmatter.fields entries are {key, label, …} objects.
+    fm = types[etype].get("frontmatter", {}) or {}
+    declared = {
+        (f["key"] if isinstance(f, dict) else f) for f in fm.get("fields", [])
+    } | set(fm.get("required", []))
+    if "asOf" in declared and not frontmatter.get("asOf"):
         frontmatter["asOf"] = datetime.date.today().isoformat()
 
     section_dir = proc_dir / section
     section_dir.mkdir(parents=True, exist_ok=True)
     path = section_dir / f"{spec['id']}.md"
+    existed = path.is_file()
+
+    # Rewriting an existing element: carry forward every frontmatter key the
+    # spec did not re-supply — approval/relevance stamps, `transitions`, any
+    # hand-added key — so a rewrite is never lossy. The spec wins for every
+    # key it names; only untouched keys are preserved.
+    if existed:
+        prior, _ = parse_frontmatter(path.read_text(encoding="utf-8"))
+        for key, val in prior.items():
+            frontmatter.setdefault(key, val)
 
     # Record created vs updated for the run manifest before the write lands.
-    action = "updated" if path.is_file() else "created"
+    action = "updated" if existed else "created"
     path.write_text(serialize_element(frontmatter, spec["blocks"]), encoding="utf-8")
     log_write(spec["slug"], spec["id"], etype, action)
 

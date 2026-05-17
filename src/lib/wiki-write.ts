@@ -60,23 +60,58 @@ export async function saveElement(
   const match = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
   if (!match) throw new Error(`Malformed wiki page: ${id}`);
 
-  // Rebuild frontmatter line-by-line — patch title, the exposed fields, and
-  // promote an AI draft to "confirmed": a human edit is a human confirmation
-  // (DESIGN.md — provenance-first).
-  const frontmatter = match[1]
-    .split("\n")
-    .map((line) => {
-      const idx = line.indexOf(":");
-      if (idx === -1) return line;
-      const key = line.slice(0, idx).trim();
-      if (key === "title") return `title: ${edit.title}`;
-      if (key === "status") return "status: confirmed";
-      if (Object.prototype.hasOwnProperty.call(edit.fields, key)) {
-        return `${key}: ${edit.fields[key]}`;
-      }
-      return line;
-    })
-    .join("\n");
+  const fmLines = match[1].split("\n");
+  const lineValue = (k: string): string => {
+    for (const l of fmLines) {
+      const i = l.indexOf(":");
+      if (i !== -1 && l.slice(0, i).trim() === k) return l.slice(i + 1).trim();
+    }
+    return "";
+  };
+
+  // A content edit invalidates any prior review verdict — an `approved`
+  // approval (or a `relevant`/`disregarded` triage) certified the *old*
+  // content. Re-open it so the SME re-reviews, and clear the now-stale
+  // by/date stamp. Mirrors how run-lint re-opens an implicated approval.
+  const reopenApproval = lineValue("approval") === "approved";
+  const reopenRelevance = ["relevant", "disregarded"].includes(
+    lineValue("relevance"),
+  );
+
+  // Rebuild frontmatter line-by-line — patch title, the exposed fields,
+  // re-open a stale review verdict, and promote an AI draft to "confirmed":
+  // a human edit is a human confirmation (DESIGN.md — provenance-first).
+  const patchedFields = new Set<string>();
+  const fmOut = fmLines.map((line) => {
+    const idx = line.indexOf(":");
+    if (idx === -1) return line;
+    const key = line.slice(0, idx).trim();
+    if (key === "title") return `title: ${edit.title}`;
+    if (key === "status") return "status: confirmed";
+    if (reopenApproval && key === "approval") return "approval: in-progress";
+    if (reopenApproval && (key === "approvalBy" || key === "approvalDate")) {
+      return `${key}:`;
+    }
+    if (reopenRelevance && key === "relevance") return "relevance:";
+    if (reopenRelevance && (key === "relevanceBy" || key === "relevanceDate")) {
+      return `${key}:`;
+    }
+    if (Object.prototype.hasOwnProperty.call(edit.fields, key)) {
+      patchedFields.add(key);
+      return `${key}: ${edit.fields[key]}`;
+    }
+    return line;
+  });
+
+  // A field the element had no frontmatter line for — append it, so a value
+  // the SME typed into a newly-exposed field is not silently dropped. Blank
+  // values stay omitted (no point writing an empty `sla:`).
+  for (const [key, value] of Object.entries(edit.fields)) {
+    if (!patchedFields.has(key) && value.trim() !== "") {
+      fmOut.push(`${key}: ${value.trim()}`);
+    }
+  }
+  const frontmatter = fmOut.join("\n");
 
   const body =
     edit.blocks.length > 0
