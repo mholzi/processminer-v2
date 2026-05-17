@@ -21,7 +21,13 @@ function specText(b: BlockSpec): string {
 
 // Per-type display config: which frontmatter fields to show, and which fields
 // hold the n:m relations (rendered as wiki-page link chips).
-type Field = { label: string; key: string; suffix?: string };
+type Field = {
+  label: string;
+  key: string;
+  suffix?: string;
+  /** When set, the field value links to the URL held in this meta key. */
+  urlKey?: string;
+};
 type Link = { label: string; key: string };
 const TYPE_CONFIG: Record<string, { fields: Field[]; links: Link[] }> = {
   "process-step": {
@@ -130,9 +136,75 @@ const TYPE_CONFIG: Record<string, { fields: Field[]; links: Link[] }> = {
       { label: "Strategic fit", key: "strategicFit" },
       { label: "Complexity", key: "complexity" },
     ],
-    links: [{ label: "Addresses", key: "addresses" }],
+    links: [
+      { label: "Addresses", key: "addresses" },
+      { label: "From trend", key: "fromTrend" },
+      { label: "From competitor", key: "fromCompetitor" },
+    ],
   },
-  "market-trend": { fields: [{ label: "Source", key: "trendSource" }], links: [] },
+  "market-trend": {
+    fields: [
+      { label: "Horizon", key: "horizon" },
+      { label: "Sourced", key: "asOf" },
+      { label: "Source", key: "source", urlKey: "sourceUrl" },
+    ],
+    links: [{ label: "Bears on", key: "bearsOn" }],
+  },
+  "competitor-eu": {
+    fields: [
+      { label: "Competitor", key: "competitor" },
+      { label: "Sourced", key: "asOf" },
+      { label: "Source", key: "source", urlKey: "sourceUrl" },
+    ],
+    links: [{ label: "Bears on", key: "bearsOn" }],
+  },
+  "competitor-global": {
+    fields: [
+      { label: "Competitor", key: "competitor" },
+      { label: "Sourced", key: "asOf" },
+      { label: "Source", key: "source", urlKey: "sourceUrl" },
+    ],
+    links: [{ label: "Bears on", key: "bearsOn" }],
+  },
+  "competitor-fintech": {
+    fields: [
+      { label: "Competitor", key: "competitor" },
+      { label: "Sourced", key: "asOf" },
+      { label: "Source", key: "source", urlKey: "sourceUrl" },
+    ],
+    links: [{ label: "Bears on", key: "bearsOn" }],
+  },
+  "competitor-cx-eu": {
+    fields: [
+      { label: "Competitor", key: "competitor" },
+      { label: "Sourced", key: "asOf" },
+      { label: "Source", key: "source", urlKey: "sourceUrl" },
+    ],
+    links: [],
+  },
+  "competitor-cx-global": {
+    fields: [
+      { label: "Competitor", key: "competitor" },
+      { label: "Sourced", key: "asOf" },
+      { label: "Source", key: "source", urlKey: "sourceUrl" },
+    ],
+    links: [],
+  },
+  "competitor-cx-fintech": {
+    fields: [
+      { label: "Competitor", key: "competitor" },
+      { label: "Sourced", key: "asOf" },
+      { label: "Source", key: "source", urlKey: "sourceUrl" },
+    ],
+    links: [],
+  },
+  "cx-benchmark": {
+    fields: [
+      { label: "Sourced", key: "asOf" },
+      { label: "Source", key: "source", urlKey: "sourceUrl" },
+    ],
+    links: [],
+  },
   "innovation-risk": { fields: [{ label: "Severity", key: "severity" }], links: [] },
   "target-state": { fields: [], links: [{ label: "Replaces", key: "replaces" }] },
   "transformation-decision": {
@@ -447,17 +519,31 @@ export default function ElementCard({
           )
         : cfg.fields.some((f) => page.meta[f.key]) && (
             <div className="el-fields">
-              {cfg.fields.map((f) =>
-                page.meta[f.key] ? (
+              {cfg.fields.map((f) => {
+                const val = page.meta[f.key];
+                if (!val) return null;
+                const text = `${String(val)}${f.suffix ?? ""}`;
+                const url = f.urlKey ? page.meta[f.urlKey] : undefined;
+                return (
                   <span className="el-field" key={f.key}>
                     {f.label}:{" "}
                     <b>
-                      {String(page.meta[f.key])}
-                      {f.suffix ?? ""}
+                      {url ? (
+                        <a
+                          className="el-field-link"
+                          href={String(url)}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {text}
+                        </a>
+                      ) : (
+                        text
+                      )}
                     </b>
                   </span>
-                ) : null,
-              )}
+                );
+              })}
             </div>
           )}
 

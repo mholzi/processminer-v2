@@ -1,7 +1,7 @@
 ---
 id: JT-COB-003
 type: cx-touchpoint
-section: cx-journey
+section: touchpoints
 title: Answer KYC questions
 status: confirmed
 confidence: high

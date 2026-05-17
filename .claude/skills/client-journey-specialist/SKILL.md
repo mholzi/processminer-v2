@@ -25,15 +25,22 @@ you own the **Client Journey perspective** only (see "Stay in your lane").
 
 | Element | Section | What it captures |
 |---|---|---|
-| cx-channel | `cx-journey` | a channel the client uses (portal, branch, phone, email) |
-| cx-touchpoint | `cx-journey` | a single interaction the client has with the bank |
-| moment | `cx-journey` | a moment of truth — an emotionally pivotal point |
+| cx-channel | `channels` | a channel the client uses (portal, branch, phone, email) |
+| cx-touchpoint | `touchpoints` | a single interaction the client has with the bank |
+| moment | `moments` | a moment of truth — an emotionally pivotal point |
 | friction-point | `friction-points` | client-facing pain — friction the *client* experiences |
+| competitor-cx-eu / -global / -fintech | `competitor-cx-european` / `-global` / `-fintech` | how a competitor runs this client journey |
+| cx-benchmark | `cx-benchmarks` | an industry CX standard or client-expectation signal |
+
+The four journey types are the process's **own** client experience — you
+document them with the SME. The competitor-CX and benchmark elements are
+usually web-sourced first by the `source-cx` skill; here you **refine** those
+with the SME and add what the sourcing missed. You do no web research yourself.
 
 ## The wiki you write into
 
 **Read `schema/process-schema.json` first.** It defines, per element type: the
-`section`, the `idPrefix` (CH, JT, MT, FP), and the `template` — the named
+`section`, the `idPrefix` (CH, JT, MT, FP, CXE, CXG, CXF, CXB), and the `template` — the named
 `## ` prose blocks every element must have, with their format and word range.
 Every element follows its template exactly; a deterministic conformance check
 (`check_conformance.py`) will flag any drift.
@@ -124,7 +131,7 @@ Never skip a section silently; let the SME say "none".
 
 Run these in order. **If you were invoked by the `qer-session` orchestrator**,
 the process is already selected and its overview captured, and the orchestrator
-runs validation at the end — skip Phases 0, 1 and 6, start at Phase 2. Invoked
+runs validation at the end — skip Phases 0, 1 and 7, start at Phase 2. Invoked
 directly (standalone), run every phase.
 
 **Phase 0 — Setup.** Ask the SME's name and role. Identify the process: list
@@ -132,9 +139,11 @@ the slugs under `wiki/processes/`, let them pick; read its `index.md` and the
 existing elements — especially the `process-step`s — so you can place
 touchpoints against them.
 
-**Phase 1 — Orientation.** Read the documented process steps. You do not
+**Phase 1 — Orientation.** Read the documented process steps — you do not
 re-document them; you confirm with the SME which steps the client is actually
-present at — those are where touchpoints live.
+present at, since those are where touchpoints live. Also read any existing
+`competitor-cx-*` and `cx-benchmark` elements (web-sourced by `source-cx`):
+they tell you what good looks like as you document the journey.
 
 **Phase 2 — Channels.** The channels the client uses to interact — online
 portal, branch, phone, email, post. For each: what it is and how it's used in
@@ -153,7 +162,15 @@ confusion, repetition the *client* experiences. Capture severity, root cause,
 client impact; link `occursAt` the step, and `painPoint` where it mirrors a
 staff pain point.
 
-**Phase 6 — Validation.** Before closing, sweep what you wrote: touchpoints not
+**Phase 6 — Refine competitor CX & benchmarks.** Walk the existing
+`competitor-cx-*` and `cx-benchmark` elements with the SME — the SME is the
+authority; the web-sourced drafts are a starting point. For each, run
+**Y / E / R**, and use them to pressure-test the journey you just documented:
+where a competitor or a benchmark exposes a gap, note it as a friction point
+or flag it for the Innovation Analyst. You do not web-search — that is
+`source-cx`'s job. If nothing has been sourced, say so and move on.
+
+**Phase 7 — Validation.** Before closing, sweep what you wrote: touchpoints not
 on any channel or step, friction points not linked to a step, a journey with
 gaps where the client surely interacts. Surface each as a short clarifying
 question, then summarise: every element written, counts per type, and tell the
@@ -179,7 +196,8 @@ judgement; the scripts own the format. Do **not** hand-write element files.
 
 ## Stay in your lane
 
-You own **cx-channel, cx-touchpoint, moment, friction-point**. You do **not**
+You own **cx-channel, cx-touchpoint, moment, friction-point**, and you refine
+the web-sourced **competitor-cx-\* and cx-benchmark** elements. You do **not**
 create process steps, exceptions, roles, metrics, process gaps, pain points,
 controls, regulations, compliance gaps, audit findings, systems, integrations,
 market trends, innovation or target-state elements.

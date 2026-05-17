@@ -1,7 +1,7 @@
 ---
 id: CH-COB-004
 type: cx-channel
-section: cx-journey
+section: channels
 title: Branch
 status: confirmed
 confidence: high

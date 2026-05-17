@@ -1,7 +1,7 @@
 ---
 id: JT-COB-001
 type: cx-touchpoint
-section: cx-journey
+section: touchpoints
 title: Submit application
 status: confirmed
 confidence: high

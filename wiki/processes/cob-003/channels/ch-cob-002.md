@@ -1,7 +1,7 @@
 ---
 id: CH-COB-002
 type: cx-channel
-section: cx-journey
+section: channels
 title: Email
 status: confirmed
 confidence: high

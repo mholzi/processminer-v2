@@ -21,6 +21,60 @@ const mid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 // The signed-in SME — stamped onto review-status changes in the wiki.
 const CURRENT_USER = "M. Berger";
 
+// Process-scope handover. Prepended to the first message of a scoped chat
+// session, this tells the headless `claude` CLI which process the SME has
+// open and locks the whole session to it — the CLI has no other way to know.
+// Sent once per session; later turns inherit it via `--resume`. The
+// + New-process flow is cross-process by nature and opts out (unscoped).
+function scopePreamble(d: ProcessDoc): string {
+  const { id, title } = d.process;
+  return [
+    "[SESSION SCOPE — applies to this whole conversation]",
+    `You are the Process Assistant for exactly one process: ${title} (${id}).`,
+    `Its wiki content is wiki/processes/${d.slug}/; its source documents`,
+    `are under raw-sources/${d.slug}/.`,
+    "",
+    "Rules, in force for every turn of this session:",
+    `1. Only consider, discuss and change content belonging to ${id}.`,
+    "2. Never read or modify another process under wiki/processes/ or",
+    "   raw-sources/, and never change anything else in the repository.",
+    "3. If asked to do anything else — work on another process, change",
+    "   application code, or anything unrelated to documenting this",
+    "   process — decline: briefly say you are scoped to this process and",
+    "   cannot help with that, in the language the SME is using.",
+    "4. schema/, scripts/ and .claude/skills/ are shared framework the",
+    "   skills need — reading and running those is allowed and expected.",
+    "",
+    "The SME's request follows below.",
+    "",
+    "---",
+    "",
+  ].join("\n");
+}
+
+// A fresh page load has no live chat — but a foundational run may still be
+// mid-flight on disk (review-state.json). Seed the chat with a deterministic
+// "welcome back" so the SME sees the outstanding work and where to resume it.
+function resumeMessage(d: ProcessDoc): ChatMessage | null {
+  const rs = d.reviewState;
+  if (!rs || rs.done) return null;
+  const currentId = rs.queue[rs.cursor];
+  const current =
+    currentId === d.process.id
+      ? d.process
+      : d.elements.find((e) => e.id === currentId);
+  const next = current ? `**${current.id}** — ${current.title}` : currentId;
+  return {
+    id: mid(),
+    role: "agent",
+    text:
+      `Welcome back. The **foundational run** for **${d.process.title}** is ` +
+      `paused at **item ${rs.cursor + 1} of ${rs.total}** — next up is ${next}.` +
+      `\n\nOpen **Triage** in the top bar and press **Resume** to continue the ` +
+      `challenged walk through the As-Is elements.`,
+  };
+}
+
 // The one main screen. Left rail is two-level: 4 areas (As-Is / Innovation /
 // Target / IT Architecture), each with its sections — views over the wiki.
 // Right rail is the agent chat + the wiki-wide lint pass.
@@ -31,7 +85,19 @@ export default function ProcessDocScreen({
   schema: Schema;
   docs: ProcessDoc[];
 }) {
-  const [currentSlug, setCurrentSlug] = useState(docs[0].slug);
+  // If a foundational run is in progress on any process, the app opens on it
+  // (most-recently-touched first) so a reload never strands outstanding work —
+  // it lands on Triage, opens the chat and seeds a resume prompt.
+  const openingRunDoc =
+    docs
+      .filter((d) => d.reviewState && !d.reviewState.done)
+      .sort((a, b) =>
+        b.reviewState!.updatedAt.localeCompare(a.reviewState!.updatedAt),
+      )[0] ?? null;
+
+  const [currentSlug, setCurrentSlug] = useState(
+    openingRunDoc ? openingRunDoc.slug : docs[0].slug,
+  );
   const doc = docs.find((d) => d.slug === currentSlug) ?? docs[0];
   const processList = docs.map((d) => ({
     slug: d.slug,
@@ -40,16 +106,40 @@ export default function ProcessDocScreen({
   }));
   // Slugs seen so far — to detect a process a skill just scaffolded.
   const knownSlugs = useRef(new Set(docs.map((d) => d.slug)));
-  // Last foundational-run cursor the canvas followed (`slug:cursor`).
-  const followedRef = useRef<string | null>(null);
+  // Last foundational-run cursor the canvas followed (`slug:cursor`). Seeded
+  // to the opening run's cursor so the mount-time follow doesn't yank the
+  // canvas off the Triage panel — it only follows once the cursor advances.
+  const followedRef = useRef<string | null>(
+    openingRunDoc
+      ? `${openingRunDoc.slug}:${openingRunDoc.reviewState!.cursor}`
+      : null,
+  );
 
-  const [section, setSection] = useState("process-steps");
+  // With a run in progress, open straight on Triage so Resume is one click.
+  const [section, setSection] = useState(
+    openingRunDoc ? "__triage" : "process-steps",
+  );
   const [dark, setDark] = useState(false);
+  // Left-nav area groups the user has collapsed (by area id).
+  const [collapsedAreas, setCollapsedAreas] = useState<Set<string>>(new Set());
+
+  function toggleArea(id: string) {
+    setCollapsedAreas((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
 
   // Agent chat + lint state.
   const router = useRouter();
-  const [chatOpen, setChatOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  // Outstanding work opens the chat with a seeded resume prompt.
+  const [chatOpen, setChatOpen] = useState(Boolean(openingRunDoc));
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    const m = openingRunDoc ? resumeMessage(openingRunDoc) : null;
+    return m ? [m] : [];
+  });
   const [chatSessionId, setChatSessionId] = useState<string | null>(null);
   const [chatPending, setChatPending] = useState(false);
   // Live activity line while a turn runs — updated from the SSE stream.
@@ -87,6 +177,9 @@ export default function ProcessDocScreen({
     if (fresh) {
       setCurrentSlug(fresh.slug);
       setSection("overview");
+      // A freshly-scaffolded process gets a fresh, scoped assistant session —
+      // drop the session id so the next turn hands the new process over.
+      setChatSessionId(null);
     }
   }, [docs]);
 
@@ -164,10 +257,23 @@ export default function ProcessDocScreen({
   // invoke the skills in .claude/skills/ and read/write the wiki. The route
   // streams Server-Sent Events: `progress` lines drive the live activity
   // line, `done` carries the final reply, `error` carries a failure.
-  function handleSend(text: string, opts?: { onComplete?: () => void }) {
+  function handleSend(
+    text: string,
+    opts?: { onComplete?: () => void; unscoped?: boolean },
+  ) {
     setMessages((m) => [...m, { id: mid(), role: "user", text }]);
     setChatPending(true);
     setChatActivity(null);
+
+    // The + New-process flow is inherently cross-process, so it runs in its
+    // own fresh, unscoped session — otherwise the scope lock would make the
+    // assistant decline its own scaffolding request.
+    const unscoped = opts?.unscoped === true;
+    const sessionId = unscoped ? null : chatSessionId;
+    // First turn of a scoped session: hand the open process to the CLI and
+    // lock the session to it. Later turns inherit it via --resume.
+    const wireText =
+      !unscoped && sessionId === null ? scopePreamble(doc) + text : text;
 
     type SessionEvent =
       | { type: "progress"; text: string }
@@ -177,7 +283,7 @@ export default function ProcessDocScreen({
     fetch("/api/session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text, sessionId: chatSessionId }),
+      body: JSON.stringify({ message: wireText, sessionId }),
     })
       .then(async (res) => {
         if (!res.body) throw new Error("Keine Antwort vom Server.");
@@ -274,25 +380,30 @@ export default function ProcessDocScreen({
     if (slug === currentSlug || chatPending) return;
     const next = docs.find((d) => d.slug === slug);
     setCurrentSlug(slug);
-    setSection("process-steps");
     setChatSessionId(null);
+    // A process mid-foundational-run opens on Triage with the resume prompt,
+    // exactly as a reload would; otherwise a fresh welcome.
+    const resume = next ? resumeMessage(next) : null;
+    setSection(resume ? "__triage" : "process-steps");
     setMessages(
-      next
-        ? [
-            {
-              id: mid(),
-              role: "agent",
-              text: `Loaded **${next.process.title}** (${next.process.id}). I've started a fresh assistant session for this process — ask me to document it, run a lint pass, or work on any element.`,
-            },
-          ]
-        : [],
+      resume
+        ? [resume]
+        : next
+          ? [
+              {
+                id: mid(),
+                role: "agent",
+                text: `Loaded **${next.process.title}** (${next.process.id}). I've started a fresh assistant session for this process — ask me to document it, run a lint pass, or work on any element.`,
+              },
+            ]
+          : [],
     );
   }
 
   // New process — opens the chat and triggers the new-process skill.
   function createProcess() {
     setChatOpen(true);
-    handleSend("I want to create a new process.");
+    handleSend("I want to create a new process.", { unscoped: true });
   }
 
   // Document upload — once the modal has saved the file into raw-sources/,
@@ -313,6 +424,27 @@ export default function ProcessDocScreen({
     setChatOpen(true);
     handleSend(
       `Run the foundational-run skill on the process with slug "${currentSlug}".`,
+    );
+  }
+
+  // Source innovation — invoke the non-interactive source-innovation skill,
+  // which web-searches and fills the Market Trends, Competitor and Innovation
+  // Ideas sections.
+  function sourceInnovation() {
+    if (chatPending) return;
+    setChatOpen(true);
+    handleSend(
+      `Run the source-innovation skill on the process with slug "${currentSlug}".`,
+    );
+  }
+
+  // Source CX — invoke the non-interactive source-cx skill, which web-searches
+  // and fills the Competitor CX + CX Benchmarks sections.
+  function sourceCx() {
+    if (chatPending) return;
+    setChatOpen(true);
+    handleSend(
+      `Run the source-cx skill on the process with slug "${currentSlug}".`,
     );
   }
 
@@ -416,19 +548,60 @@ export default function ProcessDocScreen({
 
       <div className={`shell${chatOpen ? " chat-open" : ""}`}>
         <nav className="rail rail-l">
-          {schema.areas.map((area) => (
+          {schema.areas.map((area) => {
+            const collapsed = collapsedAreas.has(area.id);
+            return (
             <div className="nav-area" key={area.id}>
-              <div className="nav-area-label">{area.label}</div>
-              {area.sections.map((s) => {
-                const count =
-                  s.id === "overview"
-                    ? null
-                    : doc.elements.filter((e) => e.section === s.id).length;
+              <button
+                className="nav-area-label"
+                onClick={() => toggleArea(area.id)}
+                aria-expanded={!collapsed}
+              >
+                <span className={`nav-area-chevron${collapsed ? " collapsed" : ""}`}>
+                  ▾
+                </span>
+                {area.label}
+              </button>
+              {!collapsed &&
+              area.sections.map((s) => {
+                const isOverview = s.id === "overview";
+                const els = isOverview
+                  ? []
+                  : doc.elements.filter((e) => e.section === s.id);
+                const count = isOverview ? null : els.length;
+                const approved = els.filter(
+                  (e) =>
+                    String(e.meta.approval ?? "in-progress") === "approved",
+                ).length;
+                // Section review state: empty / gaps / approved.
+                let state: "empty" | "gaps" | "approved";
+                let dotTitle = "";
+                if (isOverview) {
+                  state =
+                    String(doc.process.meta.approval ?? "in-progress") ===
+                    "approved"
+                      ? "approved"
+                      : "gaps";
+                  dotTitle =
+                    state === "approved"
+                      ? "Overview approved"
+                      : "Overview not yet approved";
+                } else if (els.length === 0) {
+                  state = "empty";
+                } else if (approved === els.length) {
+                  state = "approved";
+                  dotTitle = `All ${els.length} element(s) approved`;
+                } else {
+                  state = "gaps";
+                  dotTitle = `${approved} of ${els.length} approved`;
+                }
                 const flag = findingsBySection[s.id];
                 return (
                   <button
                     key={s.id}
-                    className={`nav-item${s.id === section ? " active" : ""}`}
+                    className={`nav-item${s.id === section ? " active" : ""}${
+                      state === "empty" ? " nav-empty" : ""
+                    }`}
                     onClick={() => setSection(s.id)}
                   >
                     <span className="nav-label">{s.label}</span>
@@ -441,6 +614,12 @@ export default function ProcessDocScreen({
                           !
                         </span>
                       ) : null}
+                      {state !== "empty" && (
+                        <span
+                          className={`nav-dot nav-dot-${state}`}
+                          title={dotTitle}
+                        />
+                      )}
                       {count !== null && (
                         <span className="count">{count}</span>
                       )}
@@ -449,7 +628,8 @@ export default function ProcessDocScreen({
                 );
               })}
             </div>
-          ))}
+            );
+          })}
         </nav>
 
         <main className="canvas">
@@ -561,10 +741,53 @@ export default function ProcessDocScreen({
               {sectionElements.length === 0 ? (
                 <div className="empty-state">
                   <p>No elements in “{activeLabel}” yet.</p>
-                  <p className="empty-hint">
-                    Let the AI suggest a draft — or capture the first element
-                    yourself. (Slice 2)
-                  </p>
+                  {[
+                    "market-trends",
+                    "innovation-ideas",
+                    "competitors-european",
+                    "competitors-global",
+                    "competitors-fintech",
+                  ].includes(section) ? (
+                    <>
+                      <p className="empty-hint">
+                        Let the assistant source market trends, competitor
+                        moves and innovation ideas from the web — studies,
+                        analyst reports and competitor scans in this
+                        process’s domain.
+                      </p>
+                      <button
+                        className="empty-cta"
+                        onClick={sourceInnovation}
+                        disabled={chatPending}
+                      >
+                        ✦ Source from the web
+                      </button>
+                    </>
+                  ) : [
+                      "competitor-cx-european",
+                      "competitor-cx-global",
+                      "competitor-cx-fintech",
+                      "cx-benchmarks",
+                    ].includes(section) ? (
+                    <>
+                      <p className="empty-hint">
+                        Let the assistant scan how competitors run this client
+                        journey and gather industry CX benchmarks from the web.
+                      </p>
+                      <button
+                        className="empty-cta"
+                        onClick={sourceCx}
+                        disabled={chatPending}
+                      >
+                        ✦ Source from the web
+                      </button>
+                    </>
+                  ) : (
+                    <p className="empty-hint">
+                      Let the AI suggest a draft — or capture the first element
+                      yourself.
+                    </p>
+                  )}
                 </div>
               ) : multiType ? (
                 typeGroups.map((g) => (

@@ -1,7 +1,7 @@
 ---
 id: JT-COB-004
 type: cx-touchpoint
-section: cx-journey
+section: touchpoints
 title: Receive account activation
 status: confirmed
 confidence: high

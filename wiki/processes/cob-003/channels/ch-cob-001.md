@@ -1,7 +1,7 @@
 ---
 id: CH-COB-001
 type: cx-channel
-section: cx-journey
+section: channels
 title: Online Portal
 status: confirmed
 confidence: high

@@ -14,10 +14,22 @@
         { "id": "controls", "label": "Controls" },
         { "id": "compliance", "label": "Compliance" },
         { "id": "pain-points", "label": "Pain Points" },
-        { "id": "friction-points", "label": "Friction Points" },
-        { "id": "cx-journey", "label": "CX Journey" },
         { "id": "metrics", "label": "Metrics" },
         { "id": "process-gaps", "label": "Process Gaps" }
+      ]
+    },
+    {
+      "id": "client-experience",
+      "label": "Client Experience",
+      "sections": [
+        { "id": "channels", "label": "Channels" },
+        { "id": "touchpoints", "label": "Touchpoints" },
+        { "id": "moments", "label": "Moments of Truth" },
+        { "id": "friction-points", "label": "Friction Points" },
+        { "id": "competitor-cx-european", "label": "Competitor CX — European" },
+        { "id": "competitor-cx-global", "label": "Competitor CX — Global" },
+        { "id": "competitor-cx-fintech", "label": "Competitor CX — Fintech" },
+        { "id": "cx-benchmarks", "label": "CX Benchmarks" }
       ]
     },
     {
@@ -25,6 +37,9 @@
       "label": "Innovation",
       "sections": [
         { "id": "market-trends", "label": "Market Trends" },
+        { "id": "competitors-european", "label": "Competitors — European" },
+        { "id": "competitors-global", "label": "Competitors — Global" },
+        { "id": "competitors-fintech", "label": "Competitors — Fintech" },
         { "id": "innovation-ideas", "label": "Innovation Ideas" },
         { "id": "prioritization", "label": "Prioritisation" },
         { "id": "innovation-risks", "label": "Innovation Risks" }
@@ -142,7 +157,7 @@
     },
     "cx-touchpoint": {
       "label": "Touchpoint",
-      "section": "cx-journey",
+      "section": "touchpoints",
       "idPrefix": "JT",
       "template": [
         { "heading": "What the client does", "format": "paragraph", "paragraphs": "1", "words": "8–40", "purpose": "The client's action at this touchpoint." },
@@ -152,7 +167,7 @@
     },
     "moment": {
       "label": "Moment That Matters",
-      "section": "cx-journey",
+      "section": "moments",
       "idPrefix": "MT",
       "template": [
         { "heading": "The moment", "format": "paragraph", "paragraphs": "1", "words": "6–35", "purpose": "The specific moment in the client journey." },
@@ -162,11 +177,51 @@
     },
     "cx-channel": {
       "label": "Channel",
-      "section": "cx-journey",
+      "section": "channels",
       "idPrefix": "CH",
       "template": [
         { "heading": "Description", "format": "paragraph", "paragraphs": "1", "words": "5–35", "purpose": "What the channel is and how clients reach it." },
         { "heading": "Usage", "format": "paragraph", "paragraphs": "1", "words": "8–40", "purpose": "When and how much the channel is used in onboarding." }
+      ]
+    },
+    "competitor-cx-eu": {
+      "label": "European Competitor CX",
+      "section": "competitor-cx-european",
+      "idPrefix": "CXE",
+      "template": [
+        { "heading": "The journey", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "How a European corporate bank runs this client journey." },
+        { "heading": "Relevance", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "What it means for this process — the experience gap it opens." },
+        { "heading": "Evidence", "format": "paragraph", "paragraphs": "1", "words": "8–40", "purpose": "The review, case study or announcement that evidences it." }
+      ]
+    },
+    "competitor-cx-global": {
+      "label": "Global Competitor CX",
+      "section": "competitor-cx-global",
+      "idPrefix": "CXG",
+      "template": [
+        { "heading": "The journey", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "How a global corporate bank runs this client journey." },
+        { "heading": "Relevance", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "What it means for this process — the experience gap it opens." },
+        { "heading": "Evidence", "format": "paragraph", "paragraphs": "1", "words": "8–40", "purpose": "The review, case study or announcement that evidences it." }
+      ]
+    },
+    "competitor-cx-fintech": {
+      "label": "Fintech Competitor CX",
+      "section": "competitor-cx-fintech",
+      "idPrefix": "CXF",
+      "template": [
+        { "heading": "The journey", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "How a fintech runs this client journey." },
+        { "heading": "Relevance", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "What it means for this process — the experience gap it opens." },
+        { "heading": "Evidence", "format": "paragraph", "paragraphs": "1", "words": "8–40", "purpose": "The review, case study or announcement that evidences it." }
+      ]
+    },
+    "cx-benchmark": {
+      "label": "CX Benchmark",
+      "section": "cx-benchmarks",
+      "idPrefix": "CXB",
+      "template": [
+        { "heading": "The benchmark", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "The industry CX standard or client expectation, described plainly." },
+        { "heading": "Relevance", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "How this process measures against it." },
+        { "heading": "Evidence", "format": "paragraph", "paragraphs": "1", "words": "8–40", "purpose": "The specific figure or signal — survey, study or standard." }
       ]
     },
     "metric": {
@@ -196,7 +251,37 @@
       "template": [
         { "heading": "The trend", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "The market or industry trend, described plainly." },
         { "heading": "Relevance", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "Why the trend matters for this process." },
-        { "heading": "Evidence", "format": "paragraph", "paragraphs": "1", "words": "8–40", "purpose": "The source or signal behind the trend." }
+        { "heading": "Evidence", "format": "paragraph", "paragraphs": "1", "words": "8–40", "purpose": "The specific figure, statistic or signal that evidences the trend — the data point, not a re-listing of the source." }
+      ]
+    },
+    "competitor-eu": {
+      "label": "European Competitor",
+      "section": "competitors-european",
+      "idPrefix": "CEU",
+      "template": [
+        { "heading": "The move", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "The innovation a European corporate bank is pursuing, described plainly." },
+        { "heading": "Relevance", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "What it means for this process — the competitive gap it opens." },
+        { "heading": "Evidence", "format": "paragraph", "paragraphs": "1", "words": "8–40", "purpose": "The announcement, report or launch that evidences the move." }
+      ]
+    },
+    "competitor-global": {
+      "label": "Global Competitor",
+      "section": "competitors-global",
+      "idPrefix": "CGL",
+      "template": [
+        { "heading": "The move", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "The innovation a global corporate bank is pursuing, described plainly." },
+        { "heading": "Relevance", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "What it means for this process — the competitive gap it opens." },
+        { "heading": "Evidence", "format": "paragraph", "paragraphs": "1", "words": "8–40", "purpose": "The announcement, report or launch that evidences the move." }
+      ]
+    },
+    "competitor-fintech": {
+      "label": "Fintech Competitor",
+      "section": "competitors-fintech",
+      "idPrefix": "CFT",
+      "template": [
+        { "heading": "The move", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "The innovation a fintech is pursuing, described plainly." },
+        { "heading": "Relevance", "format": "paragraph", "paragraphs": "1", "words": "12–55", "purpose": "What it means for this process — the competitive gap it opens." },
+        { "heading": "Evidence", "format": "paragraph", "paragraphs": "1", "words": "8–40", "purpose": "The announcement, report or launch that evidences the move." }
       ]
     },
     "innovation-idea": {
@@ -268,5 +353,5 @@
       ]
     }
   },
-  "relationTypes": ["affects", "controls-step", "regulated-by", "occurs-at", "used-in", "integrates-with", "links-to", "resolves"]
+  "relationTypes": ["affects", "controls-step", "regulated-by", "occurs-at", "used-in", "integrates-with", "links-to", "resolves", "bears-on", "from-trend", "from-competitor"]
 }

@@ -1,7 +1,7 @@
 ---
 id: JT-COB-002
 type: cx-touchpoint
-section: cx-journey
+section: touchpoints
 title: Provide missing documents
 status: confirmed
 confidence: high

@@ -1,7 +1,7 @@
 ---
 id: CH-COB-003
 type: cx-channel
-section: cx-journey
+section: channels
 title: Phone
 status: confirmed
 confidence: high

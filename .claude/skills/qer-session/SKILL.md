@@ -53,8 +53,8 @@ Dispatch in this order. Skip any not-built specialist.
 |---|---|---|---|
 | Process | `process-specialist` | built | process-step, exception, pain-point, process-gap, role, metric |
 | Control & Compliance | `control-compliance-specialist` | built | control, regulation, compliance-gap, audit-finding |
-| Client Journey | `client-journey-specialist` | built | cx-touchpoint, moment, cx-channel, friction-point |
-| Innovation | `innovation-analyst` | built | market-trend, innovation-idea, innovation-risk, target-state, transformation-decision, gap |
+| Client Journey | `client-journey-specialist` | built | cx-channel, cx-touchpoint, moment, friction-point, competitor-cx, cx-benchmark |
+| Innovation | `innovation-analyst` | built | market-trend, competitor moves, innovation-idea, innovation-risk, target-state, transformation-decision, gap |
 | IT Architecture | `it-architect` | built | system, integration |
 
 ## Principles

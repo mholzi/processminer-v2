@@ -1,7 +1,7 @@
 ---
 id: JT-COB-005
 type: cx-touchpoint
-section: cx-journey
+section: touchpoints
 title: Welcome call
 status: confirmed
 confidence: high

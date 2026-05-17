@@ -1,7 +1,7 @@
 ---
 id: MT-COB-001
 type: moment
-section: cx-journey
+section: moments
 title: First response from the bank
 status: confirmed
 confidence: high

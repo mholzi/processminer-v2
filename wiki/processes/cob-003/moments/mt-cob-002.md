@@ -1,7 +1,7 @@
 ---
 id: MT-COB-002
 type: moment
-section: cx-journey
+section: moments
 title: The account is ready to use
 status: confirmed
 confidence: high

@@ -119,10 +119,17 @@ body {
 /* ---- Left rail: two-level area / section nav ---- */
 .nav-area { margin-bottom: 10px; }
 .nav-area-label {
+  display: flex; align-items: center; gap: 6px; width: 100%;
   font-family: var(--mono); font-size: 10px; text-transform: uppercase;
   letter-spacing: .07em; color: var(--accent); font-weight: 600;
-  padding: 10px 16px 5px;
+  padding: 10px 16px 5px; background: none; border: 0; cursor: pointer;
+  text-align: left;
 }
+.nav-area-label:hover { color: var(--ink); }
+.nav-area-chevron {
+  font-size: 8px; line-height: 1; transition: transform 120ms ease-in-out;
+}
+.nav-area-chevron.collapsed { transform: rotate(-90deg); }
 .nav-item {
   display: flex; align-items: center; gap: 10px; width: 100%;
   padding: 6px 16px 6px 22px; font-size: 13px; cursor: pointer; text-align: left;
@@ -131,6 +138,16 @@ body {
 .nav-item:hover { background: var(--accent-soft); }
 .nav-item.active { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); font-weight: 600; }
 .nav-item .count { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+/* Per-section review state — empty / gaps / fully approved. */
+.nav-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex: none;
+  box-sizing: border-box;
+}
+.nav-dot-approved { background: var(--hi); }
+.nav-dot-gaps { border: 1.5px solid var(--muted); }
+.nav-item.nav-empty .nav-label { color: var(--muted); }
+.nav-item.nav-empty .count { opacity: 0.45; }
 
 /* ---- Right rail: collapsed agent hints ---- */
 .rrail-btn {
@@ -239,6 +256,8 @@ body {
 .el-fields { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 8px; }
 .el-field { font-size: 12px; color: var(--muted); }
 .el-field b { color: var(--ink); font-weight: 500; }
+.el-field-link { color: var(--bright); text-decoration: none; }
+.el-field-link:hover { text-decoration: underline; }
 
 /* relation chips (the n:m links — wiki-page links) */
 .links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
@@ -765,6 +784,14 @@ body {
 }
 .empty-state p { font-size: 14px; }
 .empty-state .empty-hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+.empty-cta {
+  margin-top: 12px; cursor: pointer;
+  font-family: var(--font); font-size: 13px; font-weight: 600;
+  border: none; background: var(--accent); color: #fff;
+  padding: 8px 15px; border-radius: var(--r-sm);
+}
+[data-theme="dark"] .empty-cta { color: #101216; }
+.empty-cta:disabled { opacity: .5; cursor: not-allowed; }
 
 .slice-note {
   margin-top: 18px; font-size: 11px; color: var(--muted);

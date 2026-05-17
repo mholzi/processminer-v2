@@ -1,7 +1,7 @@
 ---
 id: MT-COB-003
 type: moment
-section: cx-journey
+section: moments
 title: Another document request
 status: confirmed
 confidence: high
