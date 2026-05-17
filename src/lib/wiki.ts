@@ -6,12 +6,13 @@
 //
 // Each wiki page is `---\n<frontmatter>\n---\n<body>`. Frontmatter is minimal:
 // `key: value`, where a value wrapped in [ ] is a comma-separated list.
-import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 import type { LintReport } from "./lint";
 
 const ROOT = process.cwd();
 const WIKI_DIR = join(ROOT, "wiki", "processes");
+const SOURCES_DIR = join(ROOT, "raw-sources");
 const SCHEMA_PATH = join(ROOT, "schema", "process-schema.json");
 
 export interface Section {
@@ -35,10 +36,19 @@ export interface BlockSpec {
   items?: string;
   purpose: string;
 }
+/** Type-specific frontmatter — keys beyond the universal id/type/section/
+ *  title/status/confidence/source. `required` are flagged when absent. */
+export interface FrontmatterSpec {
+  fields: string[];
+  relations: string[];
+  required: string[];
+}
 export interface ElementType {
   label: string;
   section: string;
   idPrefix: string;
+  /** The type-specific frontmatter keys and which of them are required. */
+  frontmatter?: FrontmatterSpec;
   /** The named prose blocks every element of this type must carry. */
   template?: BlockSpec[];
 }
@@ -46,6 +56,8 @@ export interface Schema {
   version: string;
   areas: Area[];
   elementTypes: Record<string, ElementType>;
+  /** Allowed values for the enumerated frontmatter fields. */
+  fieldValues?: Record<string, string[]>;
 }
 
 /** Flat list of every section across all areas. */
@@ -118,10 +130,21 @@ export interface ReviewState {
   updatedAt: string;
 }
 
+/** An imported source document — a file under raw-sources/<slug>/. */
+export interface SourceFile {
+  name: string;
+  /** Size in bytes. */
+  size: number;
+  /** Last-modified time, ISO-8601 — the upload time in practice. */
+  uploadedAt: string;
+}
+
 export interface ProcessDoc {
   slug: string;
   process: WikiPage;
   elements: WikiPage[];
+  /** Imported source documents — raw-sources/<slug>/, newest first. */
+  sources: SourceFile[];
   /** Result of the last `run-lint` pass, if one has been run. */
   lint?: LintReport;
   /** Result of the last document-ingest, if one has been run. */
@@ -203,6 +226,19 @@ export function listProcesses(): { slug: string; title: string }[] {
     });
 }
 
+/** List the imported source documents for a process — raw-sources/<slug>/. */
+export function listSources(slug: string): SourceFile[] {
+  const dir = join(SOURCES_DIR, slug);
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir, { withFileTypes: true })
+    .filter((d) => d.isFile() && !d.name.startsWith("."))
+    .map((d) => {
+      const s = statSync(join(dir, d.name));
+      return { name: d.name, size: s.size, uploadedAt: s.mtime.toISOString() };
+    })
+    .sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt));
+}
+
 /** Read a full process: the index page plus every element page. */
 export function getProcess(slug: string): ProcessDoc | null {
   const dir = join(WIKI_DIR, slug);
@@ -232,6 +268,7 @@ export function getProcess(slug: string): ProcessDoc | null {
     slug,
     process,
     elements,
+    sources: listSources(slug),
     lint: readJson<LintReport>("lint.json"),
     ingest: readJson<IngestReport>("ingest.json"),
     reviewState: readJson<ReviewState>("review-state.json"),

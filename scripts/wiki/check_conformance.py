@@ -3,7 +3,8 @@
 
 The Python twin of src/lib/conformance.ts. A skill runs this on what it wrote
 to verify each element matches its type's template (the named blocks, their
-format and length) before moving on — instead of eyeballing it.
+format and length) and carries the required frontmatter — before moving on,
+instead of eyeballing it.
 
 Usage:
   check_conformance.py <slug>               check every element in the process
@@ -43,8 +44,20 @@ def bullet_count(text: str) -> int:
     return sum(1 for ln in text.split("\n") if re.match(r"^\s*[-*]\s+", ln))
 
 
-def check_element(body: str, template: list[dict]) -> list[str]:
+def check_frontmatter(meta: dict, info: dict) -> list[str]:
+    """Required frontmatter the element type declares but the element lacks."""
     issues: list[str] = []
+    required = (info.get("frontmatter") or {}).get("required") or []
+    for key in required:
+        val = meta.get(key)
+        if val is None or val == "" or val == []:
+            issues.append(f"required frontmatter “{key}” is missing")
+    return issues
+
+
+def check_element(meta: dict, body: str, info: dict) -> list[str]:
+    issues: list[str] = []
+    template = info.get("template") or []
     blocks = {b["heading"]: b for b in parse_blocks(body)}
     tpl_headings = {s["heading"] for s in template}
 
@@ -86,6 +99,8 @@ def check_element(body: str, template: list[dict]) -> list[str]:
     for heading in blocks:
         if heading not in tpl_headings:
             issues.append(f"“{heading}” block is not in the template")
+
+    issues.extend(check_frontmatter(meta, info))
     return issues
 
 
@@ -108,7 +123,7 @@ def main(argv: list[str]) -> None:
         if not info or not info.get("template"):
             continue
         checked += 1
-        issues = check_element(body, info["template"])
+        issues = check_element(meta, body, info)
         eid = meta.get("id")
         etype = meta.get("type")
         if issues:

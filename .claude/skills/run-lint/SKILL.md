@@ -28,9 +28,10 @@ all sections, all element types.
 ## Step 2 — Conformance check (deterministic)
 
 Run `python3 scripts/wiki/check_conformance.py <slug> --json`. It compares
-every element against its element type's schema template and prints a **JSON
-array of conformance findings** — one object per non-conforming element, each
-already shaped `{kind: "conformance", title, detail, elements}`.
+every element against its element type's schema template **and its required
+frontmatter**, and prints a **JSON array of conformance findings** — one
+object per non-conforming element, each already shaped
+`{kind: "conformance", title, detail, elements}`.
 
 Keep that array exactly as printed. You do not author, reshape or re-type
 these findings — they are fully deterministic. A conforming process prints
