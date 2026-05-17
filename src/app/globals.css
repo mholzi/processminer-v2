@@ -1230,7 +1230,12 @@ body {
   color: var(--accent); padding: 4px 10px; border-radius: var(--r-sm);
 }
 .triage-item {
-  display: flex; align-items: flex-start; gap: 13px; width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "id   go"
+    "main main";
+  gap: 6px 13px; width: 100%;
   text-align: left; cursor: pointer; font-family: var(--font);
   border: 1px solid var(--line); border-radius: var(--r-sm);
   background: var(--surface); padding: 10px 13px; margin-bottom: 7px;
@@ -1241,12 +1246,14 @@ body {
   background: var(--surface); border-color: var(--line);
 }
 .triage-item-id {
+  grid-area: id;
   font-family: var(--mono); font-size: 11px; color: var(--muted);
-  width: 76px; flex: none; line-height: 1.5; padding-top: 1px;
+  line-height: 1.5;
 }
 .triage-item-main {
+  grid-area: main;
   display: flex; flex-direction: column; gap: 3px;
-  flex: 1; min-width: 0;
+  min-width: 0;
 }
 .triage-item-nm { font-size: 13px; font-weight: 500; color: var(--ink); }
 .triage-item-why {
@@ -1256,8 +1263,9 @@ body {
   font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--ink);
 }
 .triage-item-go {
+  grid-area: go;
   font-size: 12px; font-weight: 600; color: var(--accent);
-  white-space: nowrap; flex: none; padding-top: 1px;
+  white-space: nowrap;
 }
 .triage-empty-row { display: flex; flex-wrap: wrap; gap: 6px; }
 .triage-empty {
