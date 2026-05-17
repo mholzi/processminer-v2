@@ -85,3 +85,4 @@ Erstellt von `/design-consultation` am 2026-05-16.
 | 2026-05-16 | Akzent = Deutsche Bank Blue #0018A8 + Bright Blue #00A3E0 | Internes DB-Tool — markenkonform; v2 ist sichtbar Teil der Bank |
 | 2026-05-16 | Schrift = Deutsche Bank Text/Display, Geist nur Fallback | Hausschriften lizenziert; stützen „ernsthaft“ stärker als neutrale Schrift |
 | 2026-05-16 | Eine-Schriftfamilie-Disziplin, minimal Motion, Desktop-only | Ruhe, Dichte, Compliance-Tauglichkeit (Plan F6) |
+| 2026-05-17 | Token-System in `globals.css`: `--text-*`, `--space-*`, `--r-pill`. Alle `font-size` auf die Typo-Skala, alle `padding`/`margin`/`gap` auf die 4px-Skala gerundet; 12px ist das Minimum (kein Sub-12-Tier). Geteilte `:focus-visible`-Regel. | `/design-review` — Skala wird durchgesetzt statt handgetippt; Konsistenz über alle Screens, Tastatur-Fokus überall sichtbar |
