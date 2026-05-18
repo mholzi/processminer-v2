@@ -2,20 +2,20 @@
 id: TR-FR-002
 type: market-trend
 section: market-trends
-title: Verification of Payee mandatory for euro credit transfers
+title: AI sanctions-screening false-positive reduction
 status: draft
 confidence: medium
-source: LSEG - Verification of Payee becomes mandatory: new regulatory rules in EU payments; European Payments Council - Verification of Payee scheme rulebook
-sourceUrl: https://www.lseg.com/en/insights/risk-intelligence/verification-of-payee-becomes-mandatory-new-regulatory-rules-in-eu-payments
-asOf: 2026-05-17
-horizon: regulatory-deadline
-bearsOn: [PS-FR-002, PS-FR-003, EX-FR-001]
+source: Everest Group 2025 benchmarking, via fintech.global
+horizon: near-term
+sourceUrl: https://fintech.global/2025/05/22/why-ai-is-reshaping-sanctions-compliance-for-financial-institutions/
+bearsOn: [PS-FR-003]
+asOf: 2026-05-18
 ---
 ## The trend
-Under the EU Instant Payments Regulation, payment service providers must offer Verification of Payee — a check that the beneficiary name matches the account number — before a euro credit transfer is authorised. It became mandatory for euro-area providers on 9 October 2025.
+Banks are applying machine learning, natural-language processing and graph analytics to sanctions and AML screening, adding context to potential hits so genuine matches are separated from noise without an analyst reviewing every alert.
 
 ## Relevance
-Funds Release validates the facility and screens the beneficiary for sanctions, but it does not confirm that the beneficiary name matches the account. A misdirected or fraudulently altered beneficiary instruction can pass validation and screening today and surface only as a failed or recalled payment after execution.
+PS-FR-003 routes every potential hit to Compliance for manual adjudication; AI-assisted screening would cut the false-positive volume reaching adjudicators, speeding clean releases and freeing Compliance to focus on genuine financial-crime risk.
 
 ## Evidence
-From 9 October 2025 all euro-area providers must verify the payee name against the IBAN before a credit transfer; the obligation extends to non-euro EU providers by July 2027.
+Everest Group's 2025 benchmarking finds 85–90% of screening alerts are false positives; AI deployments report 20–70%+ reduction, with some vendors cutting false positives by over 90%.

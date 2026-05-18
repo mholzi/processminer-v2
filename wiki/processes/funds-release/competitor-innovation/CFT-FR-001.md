@@ -2,23 +2,20 @@
 id: CFT-FR-001
 type: competitor-fintech
 section: competitor-innovation
-title: ComplyAdvantage delivers continuous AI payment screening
+title: Modern Treasury — payment operations as one API
 status: draft
 confidence: medium
-source: ComplyAdvantage - The best payment screening software and companies in 2025; fintech.global - Best AML and sanctions software in 2026
-competitor: ComplyAdvantage
-sourceUrl: https://complyadvantage.com/insights/best-payment-screening-software/
-asOf: 2026-05-17
-bearsOn: [PS-FR-003, EX-FR-002]
-relevance: relevant
-relevanceBy: M. Berger
-relevanceDate: 2026-05-17
+source: Modern Treasury
+competitor: Modern Treasury
+sourceUrl: https://www.moderntreasury.com/
+bearsOn: [PS-FR-001, PS-FR-007]
+asOf: 2026-05-18
 ---
 ## The move
-ComplyAdvantage offers API-first, AI-driven payment screening with real-time, continuously updated sanctions and watchlist data, automated risk scoring and behavioural anomaly detection, deployable into a payment flow in days rather than months.
+Modern Treasury offers a single API for multi-rail payments with programmable bank accounts, real-time reporting and built-in compliance, letting an institution stand up automated payment operations in days rather than months.
 
 ## Relevance
-Funds Release screens through an in-house engine and adjudicates potential hits manually in Compliance. A fintech delivering continuous, learning screening by API shows how the screening step could clear more items automatically and shrink the manual adjudication queue.
+Funds Release queues, routes and posts releases across four systems with manual re-keys and an undocumented STP path; a fintech delivering payment operations as one integrated API shows how far that orchestration gap runs.
 
 ## Evidence
-ComplyAdvantage provides real-time, AI-driven screening across sanctions, watchlists, adverse media and politically exposed persons through an API-first platform with continuous risk scoring.
+Modern Treasury markets one API for multi-rail payments — programmable accounts, real-time reporting and built-in compliance — with payment operations live 'in days, not months'.

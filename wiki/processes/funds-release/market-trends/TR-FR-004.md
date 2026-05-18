@@ -2,20 +2,20 @@
 id: TR-FR-004
 type: market-trend
 section: market-trends
-title: Real-time, AI-driven treasury and autonomous liquidity
+title: Agentic AI for payment operations
 status: draft
 confidence: medium
-source: Cash Management Leadership Institute - Real-Time Treasury: APIs, Instant Payments and AI-Driven Forecasting in 2025; Capgemini - AI-powered cash management
-sourceUrl: https://www.cashmanagement.org/cash-management/ai-driven-forecasting-in-2025/
-asOf: 2026-05-17
+source: McKinsey, 'The paradigm shift: how agentic AI is redefining banking operations'
 horizon: emerging
-bearsOn: [PS-FR-005, EX-FR-003]
+sourceUrl: https://www.mckinsey.com/capabilities/operations/our-insights/the-paradigm-shift-how-agentic-ai-is-redefining-banking-operations
+bearsOn: [PS-FR-002, PS-FR-004, PS-FR-006]
+asOf: 2026-05-18
 ---
 ## The trend
-Corporate treasury is moving to real-time, AI-driven liquidity management — unifying bank APIs and ERP data so funding positions update continuously and cash forecasts approach 90 percent accuracy, with agentic systems beginning to plan and execute liquidity actions autonomously.
+Banks are deploying agentic AI — software agents that investigate context and take multi-step action across workflows — to run routine payment-operations cases end to end, escalating only the highest-complexity exceptions to human review.
 
 ## Relevance
-Funds Release relies on a manual Treasury confirmation for releases at or above EUR 5 million, and defers the release as an exception when funding cannot be confirmed for the value date. Real-time liquidity data could make that confirmation instant and pre-empt the deferral.
+Funds Release leans on analysts for validation, exception handling and a thin 4-eyes bench; agentic agents could triage and prepare items so scarce staff focus on judgement rather than routine processing. Agentic agents are also a candidate compensating control for STP releases, which receive system-applied approval at PS-FR-004 with no human dual-control (CG-FR-001).
 
 ## Evidence
-Surveys cited for 2025 find 82 percent of treasuries exploring AI but only 5 percent scaling it; AI-driven forecasting is reported to reach around 90 percent accuracy.
+McKinsey reports manual intervention falling to 15–20% of case volume under agent-led orchestration; one global bank's 'agentic AI factory' of ten agent squads recorded 200–2,000% productivity gains.

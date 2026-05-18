@@ -9,6 +9,7 @@
 import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 import type { LintReport } from "./lint";
+import type { TargetReview } from "./target-review";
 
 const ROOT = process.cwd();
 const WIKI_DIR = join(ROOT, "wiki", "processes");
@@ -181,6 +182,8 @@ export interface ProcessDoc {
   sources: SourceFile[];
   /** Result of the last `run-lint` pass, if one has been run. */
   lint?: LintReport;
+  /** Result of the last `council-review` pass, if one has been run. */
+  targetReview?: TargetReview;
   /** Result of the last document-ingest, if one has been run. */
   ingest?: IngestReport;
   /** The foundational-run cursor, if a run has been started. */
@@ -306,6 +309,7 @@ export function getProcess(slug: string): ProcessDoc | null {
     elements,
     sources: listSources(slug),
     lint: readJson<LintReport>("lint.json"),
+    targetReview: readJson<TargetReview>("target-review.json"),
     ingest: readJson<IngestReport>("ingest.json"),
     reviewState: readJson<ReviewState>("review-state.json"),
     summaries: readJson<SectionSummaries>("summaries.json"),

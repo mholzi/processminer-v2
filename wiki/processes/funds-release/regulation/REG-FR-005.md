@@ -2,18 +2,19 @@
 id: REG-FR-005
 type: regulation
 section: regulation
-title: Intraday liquidity monitoring (BCBS 248 / MaRisk BTR)
+title: Digital Operational Resilience Act (DORA)
 status: draft
 confidence: medium
-source: funds-release-dtp-mockup.md
-domain: Liquidity Risk
-controls: [CP-FR-004]
+source: Regulation (EU) 2022/2554 (Digital Operational Resilience Act)
+domain: Operational Risk
+sourceUrl: https://eur-lex.europa.eu/eli/reg/2022/2554/oj
+asOf: 2026-05-18
 ---
 ## What it requires
-That the bank manages its intraday liquidity so that large outgoing payments are funded for their value date.
+Financial entities must manage ICT risk for the systems supporting their business processes, keep those systems resilient to disruption, and report major ICT-related and payment-related incidents to the competent authority.
 
 ## Why it applies
-Releases at or above the Treasury threshold move material sums and must be funded on the day they settle.
+The release process runs straight-through on the payments workflow tool, sanctions engine and core banking system; the resilience of these ICT systems is essential to releasing funds correctly and on time.
 
 ## How it is met
-Through CP-FR-004, under which Treasury confirms funding availability for releases at or above the EUR 5,000,000 equivalent threshold.
+No process control maps directly; ICT resilience sits with the systems owners — to be confirmed with the SME against the IT architecture documentation.

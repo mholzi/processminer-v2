@@ -6,14 +6,19 @@ title: Approver unavailable / 4-eyes breach
 status: draft
 confidence: high
 source: funds-release-dtp-mockup.md
-category: Operational
-handlingOwner: Ops Team Lead
+category: Approval
+impact: LOW
+handlingOwner: Operations Team Lead
+affects: [PS-FR-006]
+approval: approved
+approvalBy: M. Berger
+approvalDate: 2026-05-17
 ---
 ## Description
-The four-eyes second-line approval cannot be completed because the approver is unavailable, or completing it would breach the four-eyes principle.
+The nominated second-line approver is unavailable, or proceeding would breach the 4-eyes principle — the latter arises when the only approver available for the item is the same Operations Analyst who gave its first-line approval, which would put one person on both control lines.
 
 ## Handling
-The item is parked and escalated to the Ops Team Lead, who reassigns it to an eligible approver.
+The item is parked and escalated to the Operations Team Lead (ROLE-FR-006), who reassigns the second-line approval to an eligible approver. Reassignment works only when one exists; where both nominated approvers are absent the target is undefined (see PG-FR-002). The SLA clock keeps running while the item is parked, so this internal staffing delay counts against the turnaround metrics.
 
 ## Impact
-The release is held until an independent approver is reassigned, delaying authorisation and execution.
+Delays second-line approval and the release until the parked item is reassigned; because the SLA clock keeps running, the delay counts against the turnaround metrics.

@@ -25,7 +25,20 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from wiki_lib import element_types, iter_elements, parse_blocks, word_count  # noqa: E402
+from wiki_lib import (  # noqa: E402
+    PROVENANCE_SOURCES,
+    element_types,
+    iter_elements,
+    parse_blocks,
+    parse_provenance,
+    template_headings,
+    word_count,
+)
+
+# Sources whose claim must be backed by a verbatim quote / snippet. `proposed`
+# is AI-added and unconfirmed (evidence may be empty); `legacy-approved`
+# predates the rule (HALLUCINATION-PLAN.md D5).
+EVIDENCE_REQUIRED = {"elicited", "document", "web"}
 
 
 def parse_range(spec: str) -> tuple[int, int]:
@@ -52,6 +65,55 @@ def check_frontmatter(meta: dict, info: dict) -> list[str]:
         val = meta.get(key)
         if val is None or val == "" or val == []:
             issues.append(f"required frontmatter “{key}” is missing")
+    return issues
+
+
+def check_provenance(meta: dict, info: dict) -> list[str]:
+    """Every template heading needs a provenance entry; the map keys must not
+    drift from the template; evidence must back an elicited/document/web claim.
+    The hallucination countermeasure (HALLUCINATION-PLAN.md)."""
+    issues: list[str] = []
+    tpl = template_headings(info)
+    if not tpl:
+        return issues
+    prov = parse_provenance(meta)
+    if not prov:
+        issues.append(
+            "provenance map is missing — every heading must record where its "
+            "content came from"
+        )
+        return issues
+
+    for heading in tpl:
+        if heading not in prov:
+            issues.append(f"“{heading}” has no provenance entry")
+
+    # Keys that name no template heading — catches a renamed/stray heading
+    # whose evidence would otherwise silently orphan.
+    for key in prov:
+        if key not in tpl:
+            issues.append(
+                f"provenance entry “{key}” names no template heading "
+                "(renamed or stray)"
+            )
+
+    for heading, entry in prov.items():
+        if heading not in tpl:
+            continue
+        if not isinstance(entry, dict):
+            issues.append(f"“{heading}” provenance entry is malformed")
+            continue
+        source = entry.get("source")
+        if source not in PROVENANCE_SOURCES:
+            issues.append(
+                f"“{heading}” provenance source “{source}” is not one of "
+                f"{', '.join(sorted(PROVENANCE_SOURCES))}"
+            )
+            continue
+        if source in EVIDENCE_REQUIRED and not str(entry.get("evidence", "")).strip():
+            issues.append(
+                f"“{heading}” is {source} but carries no evidence quote"
+            )
     return issues
 
 
@@ -101,6 +163,7 @@ def check_element(meta: dict, body: str, info: dict) -> list[str]:
             issues.append(f"“{heading}” block is not in the template")
 
     issues.extend(check_frontmatter(meta, info))
+    issues.extend(check_provenance(meta, info))
     return issues
 
 

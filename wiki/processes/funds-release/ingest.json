@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-17T06:34:47.709908+00:00",
+  "generatedAt": "2026-05-17T21:07:47.915796+00:00",
   "slug": "funds-release",
   "file": "funds-release-dtp-mockup.md",
   "created": [
@@ -33,15 +33,30 @@
     "SYS-FR-005",
     "M-FR-001",
     "M-FR-002",
-    "M-FR-003"
+    "M-FR-003",
+    "M-FR-004",
+    "PG-FR-001",
+    "PG-FR-002",
+    "PG-FR-003",
+    "PG-FR-004"
   ],
   "updated": [],
   "conflicts": [],
   "corrections": [
     {
-      "element": "PS-FR-003",
-      "field": "Why it matters",
-      "removed": "the claim that releasing funds to a sanctioned party is a 'reportable compliance breach' — the document describes the screening step but never states a regulatory reporting consequence"
+      "element": "EX-FR-003",
+      "field": "Impact",
+      "removed": "an inferred reference to the front office managing the revised timing with its client — the document mentions only that Treasury and the front office are notified"
+    },
+    {
+      "element": "EX-FR-004",
+      "field": "Description",
+      "removed": "an inferred cause for the 4-eyes breach (that the only available approver had given first-line approval) — the document states only \"Approver unavailable / 4-eyes breach\""
+    },
+    {
+      "element": "EX-FR-004",
+      "field": "Handling",
+      "removed": "the detail that the item is reassigned \"to an available independent approver\" — the document says only that it is escalated to the Ops Team Lead for reassignment"
     }
   ]
 }

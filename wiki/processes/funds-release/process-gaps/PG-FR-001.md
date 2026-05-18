@@ -2,19 +2,22 @@
 id: PG-FR-001
 type: process-gap
 section: process-gaps
-title: No duplicate-request detection at receipt
+title: Treasury threshold FX conversion rate and evaluation point undefined
 status: draft
 confidence: high
-source: Foundational run deep dive — Markus Holzhauser
-area: Controls
+source: funds-release-dtp-mockup.md
+area: Liquidity confirmation
 gapStatus: open
-affects: [PS-FR-001]
+affects: [PS-FR-005]
+approval: approved
+approvalBy: M. Berger
+approvalDate: 2026-05-18
 ---
 ## The gap
-The Receive request step has no check for duplicate drawdown requests. Duplicate requests are queued and processed like any other item, with nothing at receipt or validation flagging that the same release has already been raised.
+A fixed EUR 5,000,000 Treasury threshold, FX-converted at the release-day rate for non-EUR currencies. Undefined: which FX rate source and timestamp is used, at which step the threshold test is evaluated, and whether it is re-tested if the rate moves between PS-FR-004 and PS-FR-005.
 
 ## Impact
-Duplicate items consume rework and can result in the same funds being released twice, an error typically caught only afterward by the daily reconciliation control.
+A borderline non-EUR release near EUR 5m could fall either side of the threshold depending on the rate chosen or the moment it is tested, risking inconsistent application of the Treasury funding-confirmation control.
 
 ## Next step
-Introduce a duplicate-detection check at receipt or validation, so repeated requests for the same release are flagged before processing.
+Confirm with the Head of Payment Operations which FX rate source and timestamp is used, and at which step the threshold test is evaluated.

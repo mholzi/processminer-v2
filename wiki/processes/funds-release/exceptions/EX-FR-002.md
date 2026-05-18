@@ -6,14 +6,19 @@ title: Confirmed sanctions/AML hit
 status: draft
 confidence: high
 source: funds-release-dtp-mockup.md
-category: Compliance
-handlingOwner: Compliance
+category: Financial crime
+impact: HIGH
+handlingOwner: Compliance / Financial Crime
+affects: [PS-FR-003]
+approval: approved
+approvalBy: M. Berger
+approvalDate: 2026-05-17
 ---
 ## Description
-A sanctions or AML screening match on the release is confirmed as a genuine hit during compliance screening.
+A potential sanctions or AML hit raised during screening is reviewed by Compliance and confirmed as a genuine hit.
 
 ## Handling
-The item is frozen and escalated to Compliance and Financial Crime; the release is blocked pending investigation.
+The item is frozen and the release blocked. Compliance already holds it as adjudicator and escalates to Financial Crime. The SLA clock pauses during adjudication and freeze, as for EX-FR-001, so the indefinite hold does not breach M-FR-003. Terminal outcome: funds are not released, the item is cancelled, and Financial Crime decides whether a SAR is filed.
 
 ## Impact
-High — the funds release is blocked and the item frozen for the duration of the Financial Crime investigation.
+Ends the release — the funds are not released and the item is cancelled — and exposes the bank to financial-crime and regulatory risk until the investigation concludes.

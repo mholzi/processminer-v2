@@ -8,18 +8,20 @@ confidence: high
 source: funds-release-dtp-mockup.md
 controlType: PREVENTIVE
 execution: AUTOMATED
-owner: Ops Analyst
-step: PS-FR-002
-regulatedBy: [REG-FR-004]
+owner: Payment Operations is accountable for the control rule; the Facility Management System owner is accountable for the integrity of the limit data the check reads
+step: [PS-FR-002]
+approval: approved
+approvalBy: M. Berger
+approvalDate: 2026-05-17
 ---
 ## What it checks
-That the requested release amount does not exceed the available undrawn limit on the approved corporate credit facility.
+That the requested release amount does not exceed the available undrawn limit on the corporate credit facility, as read at validation.
 
 ## Control activity
-An automated, preventive check compares the requested amount against the facility's available limit during request validation, using data from the Facility Management System.
+An automated check compares the requested amount against the available limit held in the facility management system during validation. The check is point-in-time: the available limit is not decremented when a release is approved, and the check is not re-run at execution.
 
 ## Risk addressed
-A release that draws more than the approved credit facility allows.
+Releasing funds beyond the facility's approved limit and creating an unauthorised credit exposure.
 
 ## Timing
-Runs automatically on every release item during validation.
+Runs automatically on every release item once, during validation; it is not repeated at execution — see control gap CG-FR-002.

@@ -2,18 +2,22 @@
 id: II-FR-003
 type: innovation-idea
 section: innovation-ideas
-title: Continuous reconciliation of held versus released balances
+title: Document the STP path as an explicit spine branch
 status: draft
-confidence: low
-source: Derived from market trends TR-FR-004 and TR-FR-005 (web-sourced)
-addresses: [PG-FR-001]
-fromTrend: [TR-FR-004, TR-FR-005]
+confidence: medium
+source: source-innovation web research
+category: Process design
+strategicFit: HIGH
+complexity: MEDIUM
+addresses: [PG-FR-005]
+fromTrend: [TR-FR-005, TR-FR-001]
+fromCompetitor: [CEU-FR-001]
 ---
 ## The idea
-Replace the once-a-day reconciliation of held versus released balances with continuous, real-time matching that runs as items execute, so a duplicate or double release is detected within minutes rather than at the next day's control run.
+Make the straight-through path an explicit branch in the process spine — its automated validation, screening and approval, the conditions under which an item drops to manual handling, and the controls covering it. This is a prerequisite for the STP control layer (II-FR-008), not a substitute for it.
 
 ## Expected benefit
-Shrinks the window in which a double release goes undetected from up to a day to minutes, limiting exposure and making recovery far more likely while the funds can still be recalled.
+The automated path that handles the bulk of clean releases becomes reviewable and auditable, giving the STP control layer (II-FR-008) a documented foundation to attach to and giving audit a clear picture of how STP items are validated, screened and approved.
 
 ## Feasibility
-Medium effort — depends on real-time feeds from the core banking and workflow systems. It strengthens rather than replaces the existing detective control, so it carries low process risk.
+Largely a documentation and modelling effort over existing behaviour, with low technical risk; depends on SME walkthroughs of the live STP logic and alignment with the control-gap remediation.

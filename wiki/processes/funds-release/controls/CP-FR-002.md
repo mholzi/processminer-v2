@@ -8,18 +8,21 @@ confidence: high
 source: funds-release-dtp-mockup.md
 controlType: PREVENTIVE
 execution: AUTOMATED
-owner: Compliance
-step: PS-FR-003
-regulatedBy: [REG-FR-001, REG-FR-002]
+effectiveness: MEDIUM
+owner: Financial Crime / Sanctions team, Compliance
+step: [PS-FR-003]
+approval: approved
+approvalBy: M. Berger
+approvalDate: 2026-05-17
 ---
 ## What it checks
-Whether the release item or its beneficiary returns a sanctions or AML screening hit.
+Whether the named beneficiary or the beneficiary bank / correspondent matches a sanctions list or triggers an AML alert.
 
 ## Control activity
-An automated, preventive screening engine checks every item in real time; clean items pass and potential hits are routed to Compliance for adjudication.
+An automated screening engine screens every item in real time against sanctions and AML lists; clean items pass automatically and potential hits are routed to Compliance for adjudication.
 
 ## Risk addressed
-Releasing funds to a sanctioned party or a party linked to financial crime.
+Releasing funds to a sanctioned party — including through a sanctioned beneficiary bank — or otherwise facilitating money laundering.
 
 ## Timing
-Runs automatically on every release item during compliance screening.
+Runs automatically in real time on every release item. Effectiveness is rated MEDIUM: it carries inherent false-negative exposure from list freshness, name-matching fuzziness and no screening of the underlying obligor at release.

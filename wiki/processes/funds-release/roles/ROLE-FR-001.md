@@ -11,7 +11,7 @@ approvalBy: M. Berger
 approvalDate: 2026-05-17
 ---
 ## Responsibility
-Originates funds-release demand and owns the release request submitted to Operations for an approved facility.
+Front Office originates a release on the primary drawdown-request path — submitting the drawdown request for an approved facility — and is accountable for that request. It does not originate the scheduled auto-release or the manual analyst-initiated entry points.
 
 ## In this process
-Submits the release request and is accountable and responsible for it; receives the final release confirmation once funds are posted, and is otherwise kept informed across the process.
+It submits the drawdown request that triggers the primary release path and receives the closing confirmation once the release has been executed. It also reworks and resubmits a request returned to it under EX-FR-001 after a validation failure, and is a notified party on a funding deferral under EX-FR-003.

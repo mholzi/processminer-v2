@@ -2,19 +2,19 @@
 id: CG-FR-002
 type: compliance-gap
 section: control-gaps
-title: Reconciliation is T+1, manual and detective only
+title: Facility limit check is point-in-time — concurrent releases can over-draw
 status: draft
 confidence: high
-source: funds-release-dtp-mockup.md
-severity: MEDIUM
+source: SME interview - M. Berger
+severity: HIGH
 gapStatus: open
-control: [CP-FR-005]
+control: [CP-FR-001]
 ---
 ## The gap
-CP-FR-005 reconciles held versus released balances only once a day and after the fact, so a posting error can stand uncorrected for up to a business day.
+CP-FR-001's limit check runs once, at validation, against the available undrawn limit as read then. The limit is not decremented when a release is approved, and the check is not re-run at execution.
 
 ## Risk
-A release error or balance mismatch reaching the client and the general ledger before anyone detects it.
+Concurrent releases against the same facility can each pass validation and together over-draw the facility — the unauthorised credit exposure the control exists to prevent.
 
 ## Remediation
-Move reconciliation to an intraday automated check, or add a same-day exception sweep for releases above the Treasury threshold.
+Decrement the available limit when a release is approved, or re-run the limit check at execution, so the control reflects in-flight releases rather than a single validation-time figure.

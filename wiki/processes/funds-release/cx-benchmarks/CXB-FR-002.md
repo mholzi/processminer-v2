@@ -2,18 +2,18 @@
 id: CXB-FR-002
 type: cx-benchmark
 section: cx-benchmarks
-title: Treasurers judge banks against consumer apps and switch when service lags
+title: Corporate treasurers expect digital self-service lending
 status: draft
 confidence: medium
-source: McKinsey — Charting a path to increasing transaction banking value by 50 percent (2025)
-sourceUrl: https://www.mckinsey.com/industries/financial-services/our-insights/charting-a-path-to-increasing-transaction-banking-value-by-50-percent
-asOf: 2026-05-17
+source: Finastra — Digital self-service in corporate lending: the treasury perspective
+sourceUrl: https://www.finastra.com/viewpoints/articles/digital-self-service-corporate-lending-treasury-perspective
+asOf: 2026-05-18
 ---
 ## The benchmark
-McKinsey's 2025 transaction-banking research finds corporate treasurers now hold their banks to the standard of consumer apps and increasingly switch when service falls short — up to 20 percent of clients move banks each year, even for historically sticky operational deposits.
+Corporate treasurers increasingly expect lending to be digital self-service. Finastra notes that much of treasury's bank lending is still manual and spreadsheet-based — enough that one team member can be fully occupied managing external debt — a service level corporates no longer accept.
 
 ## Relevance
-Funds Release offers the client no portal, no self-service and no status tracking — exactly the below-par, opaque service McKinsey says treasurers no longer tolerate. The experience gap is a retention risk for the bank, not only an efficiency one.
+Funds Release keeps the client outside the workflow: the drawdown lands in an Operations queue with no client-facing portal. That matches the manual, low-visibility model treasurers are now pushing their banks to replace with self-service.
 
 ## Evidence
-McKinsey's 2025 transaction-banking analysis and Corporate and Commercial Deposits Survey report up to 20 percent annual client switching and falling tolerance for onboarding and service friction.
+Finastra's treasury-perspective viewpoint states it is "still not unusual" for the majority of a treasury department's bank relationships to deliver a very manual, spreadsheet-based lending service.

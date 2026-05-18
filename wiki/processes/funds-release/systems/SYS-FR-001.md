@@ -6,10 +6,14 @@ title: Payments Workflow Tool
 status: draft
 confidence: high
 source: funds-release-dtp-mockup.md
-steps: [PS-FR-001, PS-FR-004, PS-FR-006, PS-FR-008]
+systemType: CORE
+steps: [PS-FR-001, PS-FR-002, PS-FR-004, PS-FR-006, PS-FR-007, PS-FR-008]
+approval: approved
+approvalBy: M. Berger
+approvalDate: 2026-05-18
 ---
 ## Purpose
-Manages the queue, routing, approvals and audit log for payment processing.
+Workflow platform that queues, routes and tracks payment release items and runs the automated straight-through path.
 
 ## Role in this process
-Holds release items in the Operations queue, routes them between steps, captures the approvals, and records the audit log of actors and timestamps.
+For STP items it is the execution engine — automating validation, generating both approval lines and triggering posting — and auto-creating held-payment queue items. For non-STP items it queues, routes and captures the human approvals, recording the audit log throughout.

@@ -121,3 +121,29 @@ control gaps or audit findings, never ask the SME anything, never run an
 approval loop, never set `approved`. You never duplicate a regulation the wiki
 already holds, never write anything you cannot ground in a real source, and
 never invent a regulation.
+
+<!-- WEB-PROVENANCE-BLOCK:start -->
+## Provenance — web-sourced content is unconfirmed
+
+This block is identical in the three `source-*` skills (HALLUCINATION-PLAN.md).
+Do not edit one copy — a drift check fails CI.
+
+You source from the web with no SME present. Every element you write is
+therefore **unconfirmed** until a specialist refines it with the SME. Record
+that honestly in the `provenance` map of the `write_element.py` spec — one
+entry per block heading, every entry `source: web`:
+
+    "provenance": {
+      "The trend":  { "source": "web",
+                      "evidence": "<url> — \"<verbatim snippet>\" — fetched <YYYY-MM-DD>" },
+      "Relevance":  { "source": "web", "evidence": "<url> — \"...\" — fetched <YYYY-MM-DD>" },
+      "Evidence":   { "source": "web", "evidence": "<url> — \"...\" — fetched <YYYY-MM-DD>" }
+    }
+
+`evidence` is the page URL, the verbatim snippet you drew the claim from, and
+the date you fetched it — a web page mutates, so the snippet is the durable
+record. A `web` heading carries no SME confirmation, so `set_approval.py`
+**blocks approval** of the element until the owning specialist walks it through
+the SME, at which point each confirmed heading flips to `elicited`. Do not try
+to approve a web-sourced element yourself.
+<!-- WEB-PROVENANCE-BLOCK:end -->

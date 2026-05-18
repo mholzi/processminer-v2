@@ -6,26 +6,26 @@ title: Compliance screening
 status: draft
 confidence: high
 source: funds-release-dtp-mockup.md
-sequence: 3
-owner: Ops Analyst
+owner: Sanctions Screening Engine (SYS-FR-003) for automated screening; Compliance for adjudication of potential hits
 systems: [SYS-FR-003]
-transitions: [PS-FR-004|normal|clean or cleared, EX-FR-002|exception|confirmed hit]
-approval: in-progress
-approvalBy: run-lint
+transitions: [PS-FR-004|normal|when screening is clear automatically or a potential hit is adjudicated a false positive, EX-FR-002|exception|when a sanctions or AML hit is confirmed]
+approval: approved
+approvalBy: M. Berger
 approvalDate: 2026-05-17
 ---
 ## What happens
-Every validated release item is screened automatically by the Sanctions Screening Engine for sanctions and AML hits. Only the beneficiary is screened at this step; the drawing customer is not re-screened here. A clean item passes straight through with no manual handling and continues to first-line approval. A potential hit takes the item off the automatic path and routes it to Compliance for adjudication: a false-positive match is cleared and the item resumes, while a confirmed match is handled as exception E-2. The Ops Analyst owns the workflow item throughout; Compliance is involved only when a hit is routed for adjudication.
+Every item is screened automatically by the sanctions screening engine against sanctions lists and AML rules. A clean item passes straight through. An item with a potential hit is routed to Compliance, which adjudicates it: a false positive is cleared back into the flow and a genuine hit is confirmed as an exception. Screening covers the named beneficiary and the beneficiary bank or correspondent; the underlying facility obligor is screened at facility origination and is not re-screened at release.
 
 ## Inputs
-- The validated release request
-- The beneficiary's details, screened against sanctions and AML lists
+- Validated release request
+- Beneficiary and beneficiary-bank / correspondent details for screening
+- Sanctions lists and AML rules held in the screening engine
 
 ## Outputs
-- A clean item cleared automatically and continued to first-line approval
-- A potential hit routed to Compliance for adjudication
-- A false-positive match cleared by Compliance, with the item resumed
-- A confirmed match handled as exception E-2
+- Screening result — clean, false positive cleared by Compliance, or confirmed hit
+- Clean and analyst-cleared items passed to first-line approval
+- Items with a confirmed hit routed to EX-FR-002
+- Adjudication disposition — cleared or confirmed, adjudicator name and rationale — recorded in the workflow tool audit log
 
 ## Why it matters
-Sanctions and AML screening is the bank's compliance checkpoint; preventing the release of funds to a sanctioned or flagged beneficiary is what this step exists to do.
+Sanctions and AML screening prevents the bank from releasing funds to a sanctioned or illicit party — including through a sanctioned beneficiary bank or correspondent — a core financial-crime and regulatory safeguard.

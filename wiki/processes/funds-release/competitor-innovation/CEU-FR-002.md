@@ -2,20 +2,20 @@
 id: CEU-FR-002
 type: competitor-eu
 section: competitor-innovation
-title: ING pursues autonomous payments as a staged evolution
+title: BNP Paribas — AI industrialised across operations
 status: draft
 confidence: medium
-source: The Asian Banker - Banks converge on AI, interoperability and tokenisation to build the next frontier of payments and trade (Sibos 2025)
-competitor: ING
-sourceUrl: https://www.theasianbanker.com/updates-and-articles/banks-converge-on-ai-interoperability-and-tokenisation-to-build-the-next-frontier-of-payments-and-trade
-asOf: 2026-05-17
-bearsOn: [PS-FR-003, PS-FR-004, PS-FR-006]
+source: Klover.ai / The Banking Scene, 2025
+competitor: BNP Paribas
+sourceUrl: https://www.klover.ai/bnp-paribas-ai-strategy-analysis-of-dominance-in-banking-ai/
+bearsOn: [PS-FR-002, PS-FR-006]
+asOf: 2026-05-18
 ---
 ## The move
-ING is pursuing autonomous payments as a staged evolution — progressively automating payment processing and embedding AI into fraud prevention and operations, so routine payments need less manual handling and intervention concentrates on genuine risk.
+BNP Paribas has scaled AI across its operations to over 750 use cases in production, targeting 1,000, with a stated €500 million AI-value goal and a multi-year partnership with Mistral AI spanning support, sales and IT.
 
 ## Relevance
-Funds Release still routes every item through a first-line approval and a manual four-eyes check. A European peer steadily removing manual touches from low-risk payments will widen the gap in cost per release and in processing speed.
+A peer European bank industrialising AI across operational workflows will compress validation and approval handling; Funds Release, still analyst-driven at PS-FR-002 and PS-FR-006, risks a widening efficiency gap on its manual release path.
 
 ## Evidence
-At Sibos 2025, ING's Head of Payment and Settlement Services described autonomous payments as a deliberate, staged evolution; ING has live AI use cases in fraud prevention and operations.
+Reported by Klover.ai and The Banking Scene in 2025: 750+ AI use cases in production, a 1,000 target, a €500m AI-value goal, and the Mistral AI partnership.

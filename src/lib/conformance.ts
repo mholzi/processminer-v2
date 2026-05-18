@@ -123,6 +123,91 @@ export function checkElement(
   return checks;
 }
 
+// Provenance sources — the hallucination countermeasure (HALLUCINATION-PLAN.md).
+// Mirrors PROVENANCE_SOURCES / UNCONFIRMED_SOURCES / EVIDENCE_REQUIRED in
+// scripts/wiki/wiki_lib.py and check_conformance.py — keep the two in step.
+const PROVENANCE_SOURCES = new Set([
+  "elicited",
+  "document",
+  "proposed",
+  "web",
+  "legacy-approved",
+]);
+/** Sources that mean "not yet confirmed by the SME" — these block approval. */
+export const UNCONFIRMED_SOURCES = new Set(["proposed", "web"]);
+/** Sources whose claim must be backed by a verbatim quote / snippet. */
+const EVIDENCE_REQUIRED = new Set(["elicited", "document", "web"]);
+
+/** The element's provenance map, decoded. {} if absent or malformed.
+ *  The value is stored JSON-encoded on one frontmatter line. */
+export function parseProvenance(
+  page: WikiPage,
+): Record<string, { source?: string; evidence?: string }> {
+  const raw = page.meta["provenance"];
+  if (typeof raw !== "string" || !raw.trim()) return {};
+  try {
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? (parsed as Record<string, { source?: string; evidence?: string }>)
+      : {};
+  } catch {
+    return {};
+  }
+}
+
+/** Every template heading needs a provenance entry; the map keys must not
+ *  drift from the template; evidence must back an elicited/document/web claim.
+ *  The Python twin is check_provenance() in check_conformance.py. */
+export function checkProvenance(page: WikiPage, type: ElementType): string[] {
+  const issues: string[] = [];
+  const template = type.template ?? [];
+  if (template.length === 0) return issues;
+  const tpl = template.map((b) => b.heading);
+  const prov = parseProvenance(page);
+
+  if (Object.keys(prov).length === 0) {
+    issues.push(
+      "provenance map is missing — every heading must record where its content came from",
+    );
+    return issues;
+  }
+
+  for (const heading of tpl) {
+    if (!(heading in prov)) issues.push(`“${heading}” has no provenance entry`);
+  }
+  // Keys that name no template heading — the rename / stray-heading drift.
+  for (const key of Object.keys(prov)) {
+    if (!tpl.includes(key)) {
+      issues.push(
+        `provenance entry “${key}” names no template heading (renamed or stray)`,
+      );
+    }
+  }
+  for (const heading of tpl) {
+    const entry = prov[heading];
+    if (entry === undefined) continue;
+    if (typeof entry !== "object" || entry === null || Array.isArray(entry)) {
+      issues.push(`“${heading}” provenance entry is malformed`);
+      continue;
+    }
+    const source = typeof entry.source === "string" ? entry.source : undefined;
+    if (!source || !PROVENANCE_SOURCES.has(source)) {
+      issues.push(
+        `“${heading}” provenance source “${source}” is not one of ${[
+          ...PROVENANCE_SOURCES,
+        ]
+          .sort()
+          .join(", ")}`,
+      );
+      continue;
+    }
+    if (EVIDENCE_REQUIRED.has(source) && !String(entry.evidence ?? "").trim()) {
+      issues.push(`“${heading}” is ${source} but carries no evidence quote`);
+    }
+  }
+  return issues;
+}
+
 /** Required frontmatter the element type declares but the element lacks. */
 export function checkFrontmatter(page: WikiPage, type: ElementType): string[] {
   const required = type.frontmatter?.required ?? [];
@@ -157,7 +242,14 @@ export function checkConformance(
             .map((c) => `“${c.heading}” ${c.issue}`)
         : [];
     const fmIssues = checkFrontmatter(el, type);
-    if (blockIssues.length === 0 && fmIssues.length === 0) continue;
+    const provIssues =
+      template && template.length ? checkProvenance(el, type) : [];
+    if (
+      blockIssues.length === 0 &&
+      fmIssues.length === 0 &&
+      provIssues.length === 0
+    )
+      continue;
 
     n += 1;
     findings.push({
@@ -167,6 +259,7 @@ export function checkConformance(
       detail: `Does not match the ${type.label} schema — ${[
         ...blockIssues,
         ...fmIssues,
+        ...provIssues,
       ].join("; ")}.`,
       elements: [el.id],
     });

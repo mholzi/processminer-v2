@@ -2,20 +2,20 @@
 id: CGL-FR-001
 type: competitor-global
 section: competitor-innovation
-title: JPMorgan offers condition-based programmable payments
+title: J.P. Morgan — pre-initiation payment risk scoring
 status: draft
 confidence: medium
-source: J.P. Morgan - Programmable payments: automation becomes reality; J.P. Morgan Payments newsroom
-competitor: JPMorgan
-sourceUrl: https://www.jpmorgan.com/insights/payments/blockchain-digital-assets/programmable-payments-automation-becomes-reality
-asOf: 2026-05-17
-bearsOn: [PS-FR-005, PS-FR-007]
+source: J.P. Morgan Payments insights, 2025
+competitor: J.P. Morgan
+sourceUrl: https://www.jpmorgan.com/insights/payments/payments-optimization/ai-payments-efficiency-fraud-reduction
+bearsOn: [PS-FR-002, PS-FR-003]
+asOf: 2026-05-18
 ---
 ## The move
-JPMorgan offers programmable payments that execute automatically when predefined conditions are met, alongside JPM Coin for round-the-clock liquidity movement and an AI-powered Cash Flow Intelligence service for multi-bank forecasting.
+J.P. Morgan has launched an AI- and machine-learning-powered Account Confidence Score that assesses fraud and payment risk before a payment is initiated within its global cash-management platform, and is pursuing full AI integration across business units.
 
 ## Relevance
-Funds Release executes only after a manual liquidity confirmation and dual approval, and posts within a cut-off window. Condition-based automated release and round-the-clock liquidity show a model in which releases settle without the manual confirmation steps and timing constraints this process carries.
+Funds Release screens and validates only after an item enters the queue; a peer scoring payment risk pre-initiation shifts risk detection upstream, setting a benchmark the downstream PS-FR-002 and PS-FR-003 checks do not match.
 
 ## Evidence
-J.P. Morgan describes programmable payments executing on predefined conditions with no manual intervention, and JPM Coin enabling clients to move liquidity outside traditional banking hours.
+J.P. Morgan Payments announced the Account Confidence Score within the JPMorgan Access cash-management platform; reported across J.P. Morgan payments insights, 2025.

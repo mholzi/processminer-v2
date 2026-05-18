@@ -1,6 +1,6 @@
 {
   "$schema": "processminer-wiki-schema-v2",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "_comment": "Karpathy LLM-Wiki layer 3 — the schema. Documentation is organised into 6 areas (As-Is Process / Risk & Compliance / Client Experience / Innovation / Target Process / IT Architecture), each with sections. Each element type carries a 'template': the named prose blocks every element of that type must have, with format (paragraph/bullets) and length guidance. Word ranges are calibrated to the COB-003 content so conformance flags genuine deviations. The wiki/ markdown pages are layer 2; raw-sources/ is layer 1.",
   "areas": [
     {
@@ -1185,7 +1185,7 @@
               "system",
               "pain-point",
               "control",
-              "control-gap"
+              "compliance-gap"
             ]
           }
         ],
@@ -1248,7 +1248,7 @@
               "system",
               "pain-point",
               "control",
-              "control-gap"
+              "compliance-gap"
             ]
           }
         ],
@@ -1311,7 +1311,7 @@
               "system",
               "pain-point",
               "control",
-              "control-gap"
+              "compliance-gap"
             ]
           }
         ],
@@ -1374,7 +1374,7 @@
               "system",
               "pain-point",
               "control",
-              "control-gap"
+              "compliance-gap"
             ]
           }
         ],
@@ -1435,7 +1435,7 @@
               "process-gap",
               "pain-point",
               "friction-point",
-              "control-gap"
+              "compliance-gap"
             ],
             "reverseLabel": "Addressed by"
           },
@@ -1532,7 +1532,18 @@
           {
             "key": "replaces",
             "label": "Replaces",
-            "target": "process-step"
+            "target": "process-step",
+            "reverseLabel": "Becomes"
+          },
+          {
+            "key": "systems",
+            "label": "Systems",
+            "target": "system"
+          },
+          {
+            "key": "risks",
+            "label": "Risks",
+            "target": "innovation-risk"
           }
         ],
         "required": []
@@ -1575,7 +1586,32 @@
             "label": "Status"
           }
         ],
-        "relations": [],
+        "relations": [
+          {
+            "key": "resolves",
+            "label": "Resolves",
+            "target": [
+              "pain-point",
+              "process-gap",
+              "compliance-gap",
+              "friction-point",
+              "audit-finding"
+            ],
+            "reverseLabel": "Resolved by"
+          },
+          {
+            "key": "realises",
+            "label": "Realises",
+            "target": "target-state",
+            "reverseLabel": "Driven by"
+          },
+          {
+            "key": "fromIdea",
+            "label": "From idea",
+            "target": "innovation-idea",
+            "reverseLabel": "Taken forward by"
+          }
+        ],
         "required": [
           "decisionType",
           "decisionStatus"
@@ -1795,6 +1831,14 @@
       "positive",
       "negative",
       "critical"
+    ],
+    "provenanceSource": [
+      "elicited",
+      "document",
+      "proposed",
+      "web",
+      "legacy-approved"
     ]
-  }
+  },
+  "_provenanceComment": "Hallucination countermeasure (HALLUCINATION-PLAN.md). Every template-bearing element carries a `provenance` frontmatter key: a JSON object keyed by template heading title, each value {source, evidence}. `source` is one of fieldValues.provenanceSource — elicited (the SME said it; evidence is the verbatim SME quote), document (from an uploaded source; evidence is the source quote), proposed (AI-added, unconfirmed; evidence empty), web (web-sourced, unconfirmed; evidence is URL + snippet + fetch date), legacy-approved (predates this rule; evidence not required). check_conformance.py requires a provenance entry for every template heading, requires non-empty evidence for elicited/document/web, and cross-checks the map keys against the template headings. set_approval.py blocks `approved` while any heading is proposed or web (unconfirmed)."
 }

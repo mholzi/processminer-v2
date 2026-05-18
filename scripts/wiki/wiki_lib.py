@@ -112,6 +112,43 @@ def word_count(text: str) -> int:
     return len(text.split()) if text else 0
 
 
+# ---- Provenance ---------------------------------------------------------
+# Hallucination countermeasure (HALLUCINATION-PLAN.md). Every template-bearing
+# element carries a `provenance` frontmatter key whose value is a JSON object
+# keyed by template heading title — {heading: {source, evidence}}. It is stored
+# JSON-encoded on one line so the flat frontmatter parser keeps it as an opaque
+# string; only the scripts that care decode it.
+
+PROVENANCE_SOURCES = {"elicited", "document", "proposed", "web", "legacy-approved"}
+# Sources that mean "not yet confirmed by the SME" — these block approval.
+UNCONFIRMED_SOURCES = {"proposed", "web"}
+
+
+def template_headings(info: dict) -> list[str]:
+    """The ordered template heading titles for an element type."""
+    return [s["heading"] for s in (info.get("template") or [])]
+
+
+def parse_provenance(meta: dict) -> dict:
+    """The element's provenance map, decoded. {} if absent or malformed."""
+    raw = meta.get("provenance")
+    if not raw:
+        return {}
+    if isinstance(raw, dict):
+        return raw
+    try:
+        val = json.loads(raw)
+        return val if isinstance(val, dict) else {}
+    except (json.JSONDecodeError, TypeError):
+        return {}
+
+
+def dump_provenance(prov: dict) -> str:
+    """Serialise a provenance map to the one-line JSON string stored in
+    frontmatter. Sorted keys so a rewrite is byte-stable."""
+    return json.dumps(prov, ensure_ascii=False, sort_keys=True)
+
+
 # ---- Run manifest -------------------------------------------------------
 # write_element.py appends one line per write here, recording whether the
 # element was created or updated. A reporting script (write_ingest_report.py)

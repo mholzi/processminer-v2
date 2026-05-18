@@ -21,7 +21,13 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from wiki_lib import WIKI_DIR, iter_elements, parse_frontmatter  # noqa: E402
+from wiki_lib import (  # noqa: E402
+    UNCONFIRMED_SOURCES,
+    WIKI_DIR,
+    iter_elements,
+    parse_frontmatter,
+    parse_provenance,
+)
 
 STATUSES = ("in-progress", "approved", "rejected")
 
@@ -53,6 +59,24 @@ def patch(path: Path, status: str, by: str, today: str) -> None:
     path.write_text("---\n" + "\n".join(fm) + "\n---\n" + body, encoding="utf-8")
 
 
+def gate_approval(eid: str, meta: dict) -> None:
+    """Block `approved` while any heading is still unconfirmed by the SME —
+    `proposed` (AI-added) or `web` (web-sourced). The hallucination
+    countermeasure's approval gate (HALLUCINATION-PLAN.md)."""
+    prov = parse_provenance(meta)
+    unconfirmed = sorted(
+        h for h, e in prov.items()
+        if isinstance(e, dict) and e.get("source") in UNCONFIRMED_SOURCES
+    )
+    if unconfirmed:
+        sys.exit(
+            f"error: {eid} cannot be approved — these headings are not yet "
+            f"confirmed by the SME: {', '.join(unconfirmed)}. Walk each one "
+            "through the SME (it flips to `elicited` on confirmation), then "
+            "approve."
+        )
+
+
 def main(argv: list[str]) -> None:
     if len(argv) != 4:
         sys.exit("usage: set_approval.py <slug> <id> <status> <by>")
@@ -74,6 +98,8 @@ def main(argv: list[str]) -> None:
     # An element?
     for path, meta, _body in iter_elements(slug):
         if str(meta.get("id")) == eid:
+            if status == "approved":
+                gate_approval(eid, meta)
             patch(path, status, by, today)
             print(f"{eid}: approval set to {status} by {by}")
             return

@@ -6,7 +6,7 @@ import type { BlockSpec, FieldSpec, Note, WikiPage } from "@/lib/wiki";
 import type { LinkGroup } from "@/lib/relations";
 import type { LintFinding } from "@/lib/lint";
 import { isSourcedType } from "@/lib/element-types";
-import { checkElement } from "@/lib/conformance";
+import { checkElement, parseProvenance } from "@/lib/conformance";
 import { saveElement, setApproval, setRelevance } from "@/lib/wiki-write";
 import Markdown from "./Markdown";
 import Tooltip from "./Tooltip";
@@ -34,6 +34,33 @@ function asList(v: string | string[] | undefined): string[] {
 }
 
 const TRANSITION_KINDS = ["normal", "branch", "loopback", "exception"];
+
+// Per-heading provenance (HALLUCINATION-PLAN.md) — the short tag and its
+// hover text, by source. `proposed` / `web` are unconfirmed by the SME.
+const PROV_LABEL: Record<string, string> = {
+  elicited: "SME",
+  document: "DOC",
+  proposed: "PROPOSED",
+  web: "WEB",
+  "legacy-approved": "LEGACY",
+};
+function provTooltip(source: string, evidence?: string): string {
+  const ev = (evidence ?? "").trim();
+  switch (source) {
+    case "elicited":
+      return ev ? `Confirmed by the SME: “${ev}”` : "Confirmed by the SME";
+    case "document":
+      return ev ? `From the source document: “${ev}”` : "From the source document";
+    case "web":
+      return ev ? `Web-sourced — ${ev}` : "Web-sourced — not yet SME-confirmed";
+    case "proposed":
+      return "AI-proposed — not yet confirmed by the SME";
+    case "legacy-approved":
+      return "Approved before provenance tracking began";
+    default:
+      return source;
+  }
+}
 
 // Lint-finding kind → the short label shown on the inline band.
 const FINDING_KIND_LABEL: Record<string, string> = {
@@ -73,6 +100,7 @@ export default function ElementCard({
   links,
   onGoToElement,
   onDeepDive,
+  onShowOnFlow,
   onFindingDeepDive,
   findings,
   onSaved,
@@ -92,6 +120,9 @@ export default function ElementCard({
   links: LinkGroup[];
   onGoToElement?: (id: string) => void;
   onDeepDive?: (id: string, title: string) => void;
+  /** Show this target-state theme on the As-Is process flow. Target-state
+   *  cards only — sets the theme selector and navigates to Process Steps. */
+  onShowOnFlow?: (themeId: string) => void;
   /** Deep-dive on a lint finding (distinct from an element deep-dive). */
   onFindingDeepDive?: (finding: LintFinding) => void;
   /** Lint findings from the last run-lint pass that involve this element. */
@@ -205,6 +236,10 @@ export default function ElementCard({
     editing && template
       ? checkElement({ ...page, title, blocks, body }, template)
       : [];
+
+  // Per-heading provenance (HALLUCINATION-PLAN.md) — which headings the SME
+  // confirmed vs what the AI proposed. Keyed by heading title.
+  const provenance = parseProvenance(page);
 
   function startEdit() {
     setTitle(page.title);
@@ -502,14 +537,31 @@ export default function ElementCard({
             )
           ) : page.blocks.length > 0 ? (
             <div className="el-blocks">
-              {page.blocks.map((b) => (
-                <div className="el-block" key={b.heading}>
-                  <div className="el-block-head">{b.heading}</div>
-                  <div className="el-block-text">
-                    <Markdown text={b.text} />
+              {page.blocks.map((b) => {
+                const pv = provenance[b.heading];
+                const src =
+                  pv && typeof pv.source === "string" ? pv.source : undefined;
+                return (
+                  <div
+                    className={`el-block${src ? ` prov-${src}` : ""}`}
+                    key={b.heading}
+                  >
+                    <div className="el-block-head">
+                      <span className="el-block-head-name">{b.heading}</span>
+                      {src && PROV_LABEL[src] && (
+                        <Tooltip label={provTooltip(src, pv?.evidence)}>
+                          <span className={`el-prov-tag prov-${src}`}>
+                            {PROV_LABEL[src]}
+                          </span>
+                        </Tooltip>
+                      )}
+                    </div>
+                    <div className="el-block-text">
+                      <Markdown text={b.text} />
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             page.body && (
@@ -661,6 +713,17 @@ export default function ElementCard({
                         aria-label="Deep dive"
                       >
                         ✦
+                      </button>
+                    </Tooltip>
+                  )}
+                  {onShowOnFlow && page.type === "target-state" && (
+                    <Tooltip label="Show on As-Is flow — highlight the steps this theme replaces">
+                      <button
+                        className="act act-icon"
+                        onClick={() => onShowOnFlow(page.id)}
+                        aria-label="Show on As-Is flow"
+                      >
+                        ⇄
                       </button>
                     </Tooltip>
                   )}

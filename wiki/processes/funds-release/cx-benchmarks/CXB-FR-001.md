@@ -2,18 +2,18 @@
 id: CXB-FR-001
 type: cx-benchmark
 section: cx-benchmarks
-title: Corporate clients expect real-time cash visibility as standard
+title: End-to-end payment tracking as the industry baseline
 status: draft
 confidence: medium
-source: Capgemini — World Payments Report 2025
-sourceUrl: https://www.capgemini.com/gb-en/insights/research-library/world-payments-report-2025/
-asOf: 2026-05-17
+source: SWIFT — gpi
+sourceUrl: https://www.swift.com/products/swift-gpi
+asOf: 2026-05-18
 ---
 ## The benchmark
-The World Payments Report 2025 surveyed 600 corporate treasurers and over 200 senior bank payment executives, and concluded that current corporate transaction-banking and cash-management services fall short — clients now expect real-time payment execution and real-time cash visibility as standard.
+SWIFT gpi has made end-to-end payment tracking the industry baseline — a real-time "flight map" where every bank in the chain updates a shared tracker. Nearly 60% of gpi transfers reach the beneficiary within 30 minutes and almost all within 24 hours.
 
 ## Relevance
-Funds Release gives the client visibility only once, in a confirmation at close, with no real-time view of a release in progress. Against the report's real-time-visibility expectation, the process sits clearly behind the corporate-client standard.
+Funds Release gives the client no equivalent tracker. Between submitting a drawdown request and the closing confirmation the release is opaque, falling well short of the live visibility corporate clients now treat as a standard service level.
 
 ## Evidence
-Capgemini's World Payments Report 2025, based on 600 corporate treasurers and over 200 bank executives, finds transaction-banking services fall short of real-time visibility expectations.
+SWIFT reports nearly 60% of gpi payments credit the beneficiary within 30 minutes and almost all within 24 hours, with the gpi Tracker giving real-time end-to-end status and a full audit trail.

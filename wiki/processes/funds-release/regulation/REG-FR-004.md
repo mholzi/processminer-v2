@@ -2,18 +2,20 @@
 id: REG-FR-004
 type: regulation
 section: regulation
-title: CRR large-exposure & facility limits
+title: BaFin Minimum Requirements for Risk Management (MaRisk)
 status: draft
-confidence: high
-source: funds-release-dtp-mockup.md
-domain: Credit Risk
-controls: [CP-FR-001]
+confidence: medium
+source: BaFin MaRisk Circular (under §25a KWG)
+domain: Operational Risk
+sourceUrl: https://www.bafin.de/EN/Aufsicht/BankenFinanzdienstleister/Risikomanagement/risikomanagement_node_en.html
+controls: [CP-FR-003]
+asOf: 2026-05-18
 ---
 ## What it requires
-That drawings stay within approved facility limits so the bank's exposures remain within the regulatory large-exposure ceilings of the Capital Requirements Regulation.
+Institutions must operate a proper internal control system with clear segregation of duties — so processing-sensitive activities are not concentrated in one person — and document their processes so they remain auditable.
 
 ## Why it applies
-A release draws against a corporate credit facility — it directly increases the bank's credit exposure to that client.
+Funds release is a processing-sensitive payment activity where one person both initiating and authorising a release would breach the segregation of duties MaRisk requires of a credit institution.
 
 ## How it is met
-Through CP-FR-001, which checks the requested amount against the available undrawn limit during request validation.
+The 4-eyes control (CP-FR-003) at PS-FR-006 splits first- and second-line approval; STP items bypass the human second line — a gap recorded in CG-FR-001.

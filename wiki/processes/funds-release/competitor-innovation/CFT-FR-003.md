@@ -2,20 +2,20 @@
 id: CFT-FR-003
 type: competitor-fintech
 section: competitor-innovation
-title: Kyriba powers API-based real-time corporate liquidity
+title: Baton Systems — liquidity-gated payment release
 status: draft
 confidence: medium
-source: Cash Management Leadership Institute - Real-Time Treasury 2025; Kyriba - APIs for Treasury Management
-competitor: Kyriba
-sourceUrl: https://www.kyriba.com/resource/kyriba-apis/
-asOf: 2026-05-17
-bearsOn: [PS-FR-005, EX-FR-003]
+source: Baton Systems / Financial IT
+competitor: Baton Systems
+sourceUrl: https://batonsystems.com/solutions/real-time-intraday-liquidity-management-solution/
+bearsOn: [PS-FR-005]
+asOf: 2026-05-18
 ---
 ## The move
-Kyriba delivers API-based real-time liquidity and cash management; in November 2025 U.S. Bank launched a Liquidity Manager built on Kyriba, giving corporate clients continuous, automated visibility of their funding positions.
+Baton Systems' Core-Payments platform programs payment-release logic so settlement instructions are automatically sequenced and held or released by priority, counterparty performance and available liquidity, with real-time intraday tooling consolidating funding sources enterprise-wide.
 
 ## Relevance
-Funds Release confirms funding for large releases through a manual Treasury check and defers the release when funding cannot be confirmed. Real-time liquidity APIs would let that confirmation be automatic and current, removing a manual step and a cause of deferral.
+PS-FR-005's Treasury confirmation is point-in-time and never earmarks funding (PP-FR-001); Baton shows release execution gated on real-time, ring-fenced liquidity — the reservation capability Funds Release leaves unused.
 
 ## Evidence
-U.S. Bank unveiled a Liquidity Manager built with Kyriba in November 2025, providing API-based real-time liquidity management for corporate treasuries.
+Baton Systems, orchestrating $20–30bn of daily settlement value, launched intraday liquidity tools in Core-Payments that release payments against real-time available liquidity.

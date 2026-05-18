@@ -2,19 +2,19 @@
 id: CXF-FR-001
 type: competitor-cx-fintech
 section: competitor-cx
-title: iwoca lets approved businesses draw funds in minutes, self-service
+title: Fundbox — on-demand line-of-credit drawdown
 status: draft
 confidence: medium
-source: iwoca — Instant Business Loans; Wikipedia — iwoca
-competitor: iwoca
-sourceUrl: https://www.iwoca.co.uk/finance-options/instant-business-loans
-asOf: 2026-05-17
+competitor: Fundbox
+source: Fundbox
+sourceUrl: https://fundbox.com/
+asOf: 2026-05-18
 ---
 ## The journey
-Fintech lender iwoca runs a flexi-loan that works as a line of credit: an approved business draws funds itself, whenever needed, paying interest only on what it uses. Decisions are same-day, and iwoca's record for putting funds in an account is two minutes thirty-seven seconds.
+Fundbox clients draw against a business line of credit on demand from a self-service dashboard — an AI credit decision in as little as three minutes, no draw fees, funds by the next business day, with balances and repayments tracked live in the portal.
 
 ## Relevance
-Funds Release runs a manual path measured in same-business-day terms with a two-hour STP target, and the client can neither self-initiate nor watch the release. iwoca shows corporate clients a near-instant, fully self-service drawdown — reframing what fast means.
+A fintech has compressed request-to-funds to minutes-then-next-day with full client visibility. Funds Release runs a multi-step manual-or-STP queue with no client tracking, exposing a sharp speed-and-transparency gap on the same draw-down-and-release journey.
 
 ## Evidence
-iwoca's instant-business-loans pages and public profile cite same-day decisions, self-service drawdown on a flexi-loan, and a record funding time of two minutes thirty-seven seconds.
+Fundbox states clients can draw funds at any time on a 3-minute AI credit decision with next-business-day funding, tracking balances through the line-of-credit dashboard; it holds a 5-star Trustpilot rating across 4,300+ reviews.

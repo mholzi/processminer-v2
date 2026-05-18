@@ -25,8 +25,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from wiki_lib import (  # noqa: E402
     ROOT,
+    dump_provenance,
     iter_elements,
     parse_blocks,
+    parse_provenance,
     serialize_element,
 )
 
@@ -63,7 +65,14 @@ def main(argv: list[str]) -> None:
                 f"blocks are: {have}"
             )
         target["text"] = text
-        what = f"block '## {key}'"
+        # Editing a block's prose invalidates its provenance: the new text is
+        # AI-authored and unconfirmed until the SME re-approves it. Flip the
+        # heading back to `proposed` (HALLUCINATION-PLAN.md — the critical gap:
+        # without this, a hallucination re-enters an approved element silently).
+        prov = parse_provenance(meta)
+        prov[key] = {"source": "proposed", "evidence": ""}
+        meta["provenance"] = dump_provenance(prov)
+        what = f"block '## {key}' (provenance reset to proposed)"
     elif mode == "--list":
         items = [x.strip() for x in value.split(",") if x.strip()]
         meta[key] = items

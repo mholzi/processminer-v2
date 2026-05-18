@@ -8,18 +8,21 @@ confidence: high
 source: funds-release-dtp-mockup.md
 controlType: PREVENTIVE
 execution: MANUAL
-step: PS-FR-005
+effectiveness: MEDIUM
 owner: Treasury
-regulatedBy: [REG-FR-005]
+step: [PS-FR-005]
+approval: approved
+approvalBy: M. Berger
+approvalDate: 2026-05-18
 ---
 ## What it checks
-That funding is available for the value date before a release at or above the Treasury threshold is executed.
+That funding is available for the value date before a release at or above the fixed EUR 5,000,000 threshold proceeds — non-EUR amounts FX-converted at the release-day rate.
 
 ## Control activity
-A preventive, manual control under which Treasury confirms funding availability for releases at or above the EUR 5,000,000 equivalent threshold.
+Treasury manually confirms funding availability for the value date on every release at or above the threshold. The confirmation is a point-in-time check, not an earmark — it does not reserve the funding against the release (see PP-FR-001 and control gap CG-FR-004).
 
 ## Risk addressed
-Executing a large release the bank cannot fund on the value date.
+Committing funds for a large release that the bank cannot fund on the value date.
 
 ## Timing
-Performed per release whenever the amount reaches the Treasury threshold.
+Performed per item on releases at or above the Treasury threshold. Effectiveness is rated MEDIUM — the point-in-time confirmation can be overtaken before execution (EX-FR-005).

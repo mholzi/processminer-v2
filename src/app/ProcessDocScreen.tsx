@@ -18,6 +18,12 @@ import AgentChat, { type ChatMessage } from "@/components/AgentChat";
 import ReviewPanel from "@/components/ReviewPanel";
 import TriagePanel from "@/components/TriagePanel";
 import SummaryPanel from "@/components/SummaryPanel";
+import { CoveragePanel, CoverageRollup } from "@/components/CoveragePanel";
+import { computeCoverage } from "@/lib/coverage";
+import TargetReviewPanel from "@/components/TargetReviewPanel";
+import TargetSynthesis from "@/components/TargetSynthesis";
+import ControlsInTarget from "@/components/ControlsInTarget";
+import { COUNCIL_SPECIALISTS } from "@/lib/target-review";
 import UploadModal from "@/components/UploadModal";
 import CommandPalette from "@/components/CommandPalette";
 import ApprovalBar from "@/components/ApprovalBar";
@@ -260,13 +266,17 @@ export default function ProcessDocScreen({
         (affectsByException[to] ??= []).push(el.id);
     }
   }
-  // Which controls cover each step — the process flow flags uncontrolled steps.
+  // Which controls cover each step — the process flow flags uncontrolled
+  // steps. `step` is authored as a list (`step: [PS-FR-002]`) but may also
+  // be a bare string — normalise to a list so neither form is missed.
   const controlsByStep: Record<string, string[]> = {};
   for (const el of doc.elements) {
     if (el.type !== "control") continue;
-    const step = el.meta.step;
-    if (typeof step === "string" && step)
-      (controlsByStep[step] ??= []).push(el.id);
+    const raw = el.meta.step;
+    const steps = Array.isArray(raw) ? raw : raw ? [raw] : [];
+    for (const stepId of steps) {
+      if (stepId) (controlsByStep[stepId] ??= []).push(el.id);
+    }
   }
 
   // Generic forward + reverse relation index — drives every card's link
@@ -275,6 +285,10 @@ export default function ProcessDocScreen({
     () => buildRelations(schema, doc.elements),
     [schema, doc],
   );
+  // Target-state coverage — pure set arithmetic over the loaded doc, the same
+  // client-side useMemo pattern as buildRelations. Backs the Validation
+  // section and the Target Process area overview.
+  const coverage = useMemo(() => computeCoverage(doc), [doc]);
   // Link groups for one element's card: schema-driven forward + reverse, plus
   // the transitions-derived `affects` for exceptions (not a stored relation).
   function elementLinks(el: WikiPage): LinkGroup[] {
@@ -333,6 +347,9 @@ export default function ProcessDocScreen({
   const [section, setSection] = useState(
     openingRunDoc ? "__triage" : "process-steps",
   );
+  // The target-state theme selected in the As-Is overlay — its `replaces`
+  // steps light up in the process flow. Null = no theme picked.
+  const [selectedThemeId, setSelectedThemeId] = useState<string | null>(null);
   const [dark, setDark] = useState(false);
   // The numbered area spine (1..6) is always visible; the section detail
   // panel beside it collapses to widen the canvas.
@@ -773,6 +790,29 @@ export default function ProcessDocScreen({
             "Open Review in the top bar to see the findings.",
           );
         },
+      },
+    );
+  }
+
+  // Council review — invoke the council-review skill via the chat. The four
+  // (or one) perspective specialists challenge the proposed target and write
+  // target-review.json; router.refresh() brings it into doc.targetReview,
+  // which the Validation section's Council Review panel renders.
+  function runCouncilReview(specialist?: string) {
+    if (chatPending) return;
+    setChatOpen(true);
+    handleSend(
+      `Run the council-review skill on the process with slug "${currentSlug}"` +
+        (specialist
+          ? `, with only the ${specialist} specialist.`
+          : ", with the full council (all four perspective specialists)."),
+      {
+        onComplete: () =>
+          pushToast(
+            "success",
+            "Council review complete",
+            "See the Council Review panel in the Validation section.",
+          ),
       },
     );
   }
@@ -1439,6 +1479,60 @@ export default function ProcessDocScreen({
                 </div>
               )}
             </>
+          ) : section === "validation" ? (
+            <>
+              <div className="canvas-head">
+                <h1>Validation</h1>
+                <div className="sub">
+                  Does the target state resolve every open As-Is problem?
+                  Coverage and consistency, computed live from the
+                  transformation decisions.
+                </div>
+              </div>
+              <CoveragePanel
+                coverage={coverage}
+                getRef={getRef}
+                onGoToElement={goToElement}
+              />
+              <section className="trv-block">
+                <h2 className="type-group-head">Council review</h2>
+                <p className="trv-block-sub">
+                  The four other perspective specialists challenge the proposed
+                  target — collectively, or one lens at a time.
+                </p>
+                <div className="trv-invoke">
+                  <button
+                    className="canvas-act"
+                    onClick={() => runCouncilReview()}
+                    disabled={chatPending}
+                  >
+                    ✦ Run full council
+                  </button>
+                  {COUNCIL_SPECIALISTS.map((s) => (
+                    <button
+                      key={s.id}
+                      className="canvas-act"
+                      onClick={() => runCouncilReview(s.id)}
+                      disabled={chatPending}
+                    >
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+                {doc.targetReview ? (
+                  <TargetReviewPanel
+                    review={doc.targetReview}
+                    getRef={getRef}
+                    onGoToElement={goToElement}
+                  />
+                ) : (
+                  <p className="empty-hint">
+                    No council review has been run yet — run the full council,
+                    or ask a single specialist, above.
+                  </p>
+                )}
+              </section>
+            </>
           ) : section.startsWith("__area:") ? (
             (() => {
               const areaId = section.slice("__area:".length);
@@ -1461,6 +1555,25 @@ export default function ProcessDocScreen({
                       {area?.label ?? areaId} area.
                     </div>
                   </div>
+                  {areaId === "target" && (
+                    <>
+                      <section className="cov-area">
+                        <h2 className="type-group-head">
+                          Transformation coverage
+                        </h2>
+                        <CoverageRollup coverage={coverage} />
+                      </section>
+                      <ControlsInTarget
+                        controls={doc.elements.filter(
+                          (e) => e.type === "control",
+                        )}
+                        themes={doc.elements.filter(
+                          (e) => e.type === "target-state",
+                        )}
+                        onGoToElement={goToElement}
+                      />
+                    </>
+                  )}
                   <SummaryPanel
                     summary={doc.summaries?.[areaId]}
                     status={
@@ -1606,18 +1719,72 @@ export default function ProcessDocScreen({
                   onGoToElement={goToElement}
                 />
               )}
-              {section === "process-steps" && (
-                <ProcessFlow
+              {section === "to-be-design" && (
+                <TargetSynthesis
                   steps={doc.elements.filter((e) => e.type === "process-step")}
+                  themes={doc.elements.filter((e) => e.type === "target-state")}
                   onGoToElement={goToElement}
-                  onDeepDive={(id, title) =>
-                    deepDive({ id, title, kind: "element" })
-                  }
-                  knownIds={new Set(doc.elements.map((e) => e.id))}
-                  currentId={currentRunId ?? undefined}
-                  controlsByStep={controlsByStep}
                 />
               )}
+              {section === "process-steps" &&
+                (() => {
+                  const themes = doc.elements.filter(
+                    (e) => e.type === "target-state",
+                  );
+                  const theme =
+                    themes.find((t) => t.id === selectedThemeId) ?? null;
+                  const replaces = theme
+                    ? Array.isArray(theme.meta.replaces)
+                      ? theme.meta.replaces
+                      : theme.meta.replaces
+                        ? [theme.meta.replaces]
+                        : []
+                    : [];
+                  const highlight = theme ? new Set(replaces) : undefined;
+                  return (
+                    <>
+                      {themes.length > 0 && (
+                        <div className="flow-themepick">
+                          <label htmlFor="flow-theme">
+                            Overlay a target theme
+                          </label>
+                          <select
+                            id="flow-theme"
+                            value={selectedThemeId ?? ""}
+                            onChange={(e) =>
+                              setSelectedThemeId(e.target.value || null)
+                            }
+                          >
+                            <option value="">Show a target theme…</option>
+                            {themes.map((t) => (
+                              <option key={t.id} value={t.id}>
+                                {t.id} · {t.title}
+                              </option>
+                            ))}
+                          </select>
+                          {theme && replaces.length === 0 && (
+                            <span className="flow-themepick-note">
+                              This theme touches no As-Is steps.
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      <ProcessFlow
+                        steps={doc.elements.filter(
+                          (e) => e.type === "process-step",
+                        )}
+                        onGoToElement={goToElement}
+                        onDeepDive={(id, title) =>
+                          deepDive({ id, title, kind: "element" })
+                        }
+                        knownIds={new Set(doc.elements.map((e) => e.id))}
+                        currentId={currentRunId ?? undefined}
+                        controlsByStep={controlsByStep}
+                        highlight={highlight}
+                      />
+                    </>
+                  );
+                })()}
               {sectionElements.length === 0 ? (
                 <div className="empty-state">
                   {!sectionHasType ? (
@@ -1742,6 +1909,10 @@ export default function ProcessDocScreen({
                         onDeepDive={(id, title) =>
                           deepDive({ id, title, kind: "element" })
                         }
+                        onShowOnFlow={(themeId) => {
+                          setSelectedThemeId(themeId);
+                          setSection("process-steps");
+                        }}
                         findings={findingsByElement[el.id]}
                         onFindingDeepDive={(f) =>
                           deepDive({
@@ -1777,6 +1948,10 @@ export default function ProcessDocScreen({
                     onDeepDive={(id, title) =>
                       deepDive({ id, title, kind: "element" })
                     }
+                    onShowOnFlow={(themeId) => {
+                      setSelectedThemeId(themeId);
+                      setSection("process-steps");
+                    }}
                     findings={findingsByElement[el.id]}
                     onFindingDeepDive={(f) =>
                       deepDive({

@@ -20,6 +20,11 @@ Erzeugt aus `/plan-ceo-review` am 2026-05-16. Quelle: CEO-Plan unter
   LLM-Confidence ist mit Korrektheit unkorreliert. In einem Compliance-Kontext
   die gefährlichste offene Lücke.
 - **Priorität:** P1 · **Effort:** human ~M / CC ~S-M.
+- **Status (2026-05-18):** Geplant — Architektur gelockt via `/plan-eng-review`
+  (Entscheidungen D1–D9). Plan + Implementierungs-Tasks T1–T11 in
+  `HALLUCINATION-PLAN.md`. Kern: per-Heading-Provenienz (elicited/proposed/
+  document/web/legacy-approved), Inline-SME-Zitat als Evidenz, ehrliches
+  Read-back, Approval-Gate auf `proposed`-Headings.
 
 ### QER-Abbruchkriterium ("fertig"-Definition)
 - **Was:** Definieren, wann ein Prozess "ausreichend dokumentiert" ist.
@@ -139,6 +144,21 @@ Erzeugt aus `/plan-ceo-review` am 2026-05-16. Quelle: CEO-Plan unter
 - **Priorität:** P2 · **Effort:** human ~M / CC ~M · **Depends:** KI-Edit-Pipeline
   oder Git-Diff-Route · Quelle: Design-Shotgun 2026-05-17, Mockups unter
   `~/.gstack/projects/Processminer2/designs/badges-diff-notes-20260517/`.
+- **Update (2026-05-18):** Blocker entfällt mit `HALLUCINATION-PLAN.md` — der
+  per-Heading-`proposed`-vs-`elicited`-Split IST die Vorher/Nachher-Datenquelle.
+  Siehe Task T9 im Plan; die Diff-Ansicht rendert die Provenienz-Headings.
+
+### TypeScript-Test-Runner einführen (Vitest)
+- **Was:** Einen TS-Test-Runner (Vitest + jsdom) einrichten — `test`-Script,
+  Konfiguration, erste Suiten.
+- **Warum:** `src/` ist komplett ungetestet; `package.json` hat nur den
+  Python-Harness `test:scripts`. Jedes TS-Modul — inkl. `coverage.ts` aus dem
+  Target-State-Traceability-Layer — geht ohne automatisiertes Netz live.
+- **Kontext:** Im /plan-eng-review 2026-05-18 (Target-State Traceability &
+  Coverage Layer) direkt aufgeschlagen; für das Feature bewusst nicht
+  mitgenommen, als Projekt-Lücke aber festgehalten. `coverage.ts` (reine
+  Funktionen) ist das erste, was abgedeckt werden sollte.
+- **Priorität:** P2 · **Effort:** human ~M / CC ~1h.
 
 ## Verworfen
 

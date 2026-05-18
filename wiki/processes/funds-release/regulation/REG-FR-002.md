@@ -2,18 +2,20 @@
 id: REG-FR-002
 type: regulation
 section: regulation
-title: Anti-Money Laundering (GwG / EU AMLD)
+title: German Money Laundering Act (Geldwäschegesetz, GwG)
 status: draft
-confidence: high
-source: funds-release-dtp-mockup.md
+confidence: medium
+source: German Money Laundering Act (Geldwäschegesetz, GwG)
 domain: Financial Crime
+sourceUrl: https://www.bafin.de/SharedDocs/Veroeffentlichungen/EN/Aufsichtsrecht/Gesetz/GwG_en.html
 controls: [CP-FR-002]
+asOf: 2026-05-18
 ---
 ## What it requires
-That the bank detects and reports suspicious transactions and does not process a release linked to money laundering or terrorist financing.
+Obliged institutions must screen transactions and counterparties for money-laundering risk, monitor for suspicious activity, and file a suspicious activity report with the Financial Intelligence Unit without delay where a suspicion arises.
 
 ## Why it applies
-A release executes an outgoing fund movement to a beneficiary — exactly the transaction anti-money-laundering rules require the bank to monitor.
+Releasing funds against a corporate facility is a transaction an obliged credit institution must subject to AML monitoring and screening, and a confirmed concern can require a suspicious activity report.
 
 ## How it is met
-Through CP-FR-002's AML screening at PS-FR-003; confirmed hits are routed to Compliance for adjudication before any release proceeds.
+Automated AML and sanctions screening (CP-FR-002) runs at PS-FR-003; a confirmed hit is frozen at EX-FR-002, where Financial Crime decides whether a SAR is filed.

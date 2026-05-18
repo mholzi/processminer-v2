@@ -2,19 +2,19 @@
 id: CXE-FR-002
 type: competitor-cx-eu
 section: competitor-cx
-title: ING makes lending a self-managed channel for corporate clients
+title: ING — InsideBusiness self-service lending portal and API
 status: draft
 confidence: medium
-source: ING Wholesale Banking — InsideBusiness
 competitor: ING
+source: ING Wholesale Banking — InsideBusiness
 sourceUrl: https://www.ingwb.com/en/insidebusiness
-asOf: 2026-05-17
+asOf: 2026-05-18
 ---
 ## The journey
-ING serves corporate clients through InsideBusiness, an interactive portal and mobile app where lending sits alongside payments, cash management and trade finance as a self-managed channel; client-side administrators control entitlements centrally, so the client drives its lending activity digitally.
+ING corporate clients run lending, payments and trade finance through the InsideBusiness Portal and app, a single self-service channel where, ING says, key banking tasks complete instantly. An InsideBusiness Connect API lets a client's own systems initiate transactions and pull status directly.
 
 ## Relevance
-In Funds Release the front office submits a release request and is then only an informed party with no channel of its own. ING's model — lending as a self-service channel the client operates and administers — exposes how little digital agency this process gives the client.
+This points Funds Release toward client-initiated, status-visible drawdowns over both portal and API. Here the release request instead enters a shared Operations queue (PS-FR-001) that the client cannot see into or track, leaving the client outside the workflow.
 
 ## Evidence
-ING Wholesale Banking describes InsideBusiness as interactive portal and app channels covering payments, cash management, trade finance and lending, self-managed by client administrators.
+ING Wholesale Banking markets InsideBusiness as global access to lending and trade finance "all in one secure app and portal", complemented by the InsideBusiness Connect API for system-to-system banking.

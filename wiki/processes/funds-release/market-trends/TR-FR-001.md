@@ -2,20 +2,20 @@
 id: TR-FR-001
 type: market-trend
 section: market-trends
-title: EU Instant Payments Regulation reshapes release speed
+title: ISO 20022 structured-data migration
 status: draft
 confidence: medium
-source: European Commission - New EU rules make instant euro payments faster and safer (2025); EY - EU Instant Payments Regulation: five key hurdles for banks
-sourceUrl: https://finance.ec.europa.eu/news/new-eu-rules-make-instant-euro-payments-faster-and-safer-2025-10-10_en
-asOf: 2026-05-17
+source: SWIFT / J.P. Morgan ISO 20022 migration guidance
 horizon: regulatory-deadline
-bearsOn: [PS-FR-007, PS-FR-003, M-FR-001, M-FR-002]
+sourceUrl: https://www.swift.com/standards/iso-20022/iso-20022-financial-institutions-focus-payments-instructions
+bearsOn: [PS-FR-002, PS-FR-003]
+asOf: 2026-05-18
 ---
 ## The trend
-The EU Instant Payments Regulation requires euro-area payment service providers to send and receive credit transfers around the clock and to execute each payment within ten seconds, with no surcharge over a standard transfer; the obligation applied to euro-area providers from October 2025 and extends to non-euro EU providers in 2027.
+Payments are migrating to the ISO 20022 messaging standard, which carries richer, structured data — discrete fields for parties, addresses and remittance information — replacing the free-text MT formats that dominated cross-border payments for decades.
 
 ## Relevance
-Funds Release still targets release within two hours and the same business day, and depends on a 14:00 CET cut-off for same-day value. As corporate clients adopt instant rails, that batch-and-cut-off model, and the manual screening and approval steps behind it, will look slow against a ten-second expectation.
+Funds Release validates and screens each item against beneficiary and facility data; structured ISO 20022 fields let PS-FR-002 and PS-FR-003 match against discrete identifiers rather than free text, lifting straight-through rates and sharpening sanctions screening accuracy.
 
 ## Evidence
-From October 2025 euro-area providers must execute instant euro transfers within ten seconds, around the clock; Deutsche Bank reported SEPA Instant volumes up 27 percent year on year in January 2025.
+SWIFT's MT-to-ISO 20022 coexistence period for cross-border payments closed on 22 November 2025; from November 2026 SWIFT rejects payments carrying unstructured addresses.

@@ -53,6 +53,7 @@ export default function ProcessFlow({
   knownIds,
   currentId,
   controlsByStep,
+  highlight,
 }: {
   steps: WikiPage[];
   onGoToElement: (id: string) => void;
@@ -63,6 +64,8 @@ export default function ProcessFlow({
   currentId?: string;
   /** Control ids covering each step — uncontrolled steps are flagged. */
   controlsByStep: Record<string, string[]>;
+  /** Step ids to highlight — the As-Is steps a selected target theme replaces. */
+  highlight?: Set<string>;
 }) {
   const sorted = [...steps].sort(
     (a, b) => Number(a.meta.sequence ?? 0) - Number(b.meta.sequence ?? 0),
@@ -234,7 +237,9 @@ export default function ProcessFlow({
               key={s.id}
               className={`flow-node${isConditional(i) ? " is-conditional" : ""}${
                 stepIssues[i].length > 0 ? " is-warn" : ""
-              }${s.id === currentId ? " is-current" : ""}`}
+              }${s.id === currentId ? " is-current" : ""}${
+                highlight?.has(s.id) ? " is-highlighted" : ""
+              }`}
               style={{ left: left(i), top: TOP, width: NODE_W, height: NODE_H }}
             >
               <button

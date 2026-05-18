@@ -6,10 +6,14 @@ title: Sanctions Screening Engine
 status: draft
 confidence: high
 source: funds-release-dtp-mockup.md
+systemType: CORE
 steps: [PS-FR-003]
+approval: approved
+approvalBy: M. Berger
+approvalDate: 2026-05-18
 ---
 ## Purpose
-Performs real-time sanctions and AML screening.
+Engine that screens release items against external sanctions lists and AML rules.
 
 ## Role in this process
-Screens each release item for sanctions and AML hits during compliance screening.
+Screens every release item for sanctions and AML hits in real time, passing clean items and flagging potential hits for adjudication. It carries CP-FR-002 and depends on an inbound daily feed of the external OFAC, EU and UN sanctions lists.

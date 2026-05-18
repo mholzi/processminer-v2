@@ -2,20 +2,20 @@
 id: CGL-FR-002
 type: competitor-global
 section: competitor-innovation
-title: Bank of America adds generative AI to CashPro treasury
+title: Citi — generative and agentic AI in operations
 status: draft
 confidence: medium
-source: Cash Management Leadership Institute - Real-Time Treasury: APIs, Instant Payments and AI-Driven Forecasting in 2025
-competitor: Bank of America
-sourceUrl: https://www.cashmanagement.org/cash-management/ai-driven-forecasting-in-2025/
-asOf: 2026-05-17
-bearsOn: [PS-FR-002, PS-FR-005]
+source: Citi AI rollout, via Training The Street 2025 Global Outlook
+competitor: Citi
+sourceUrl: https://trainingthestreet.com/the-state-of-ai-in-finance-2025-global-outlook/
+bearsOn: [PS-FR-002, PS-FR-004, PS-FR-006]
+asOf: 2026-05-18
 ---
 ## The move
-Bank of America has upgraded its CashPro corporate banking platform with generative-AI cash forecasting and conversational query, letting corporate treasury staff interrogate positions and forecasts in natural language rather than assembling them by hand.
+Citi has rolled proprietary generative-AI tools to more than 150,000 employees across 80 countries, embedding copilots into operational workflows and piloting early agentic-AI systems designed for autonomous decision-making.
 
 ## Relevance
-Funds Release depends on a manual Treasury liquidity confirmation and manual validation of facility and limit data. A global peer giving treasury staff AI-generated, conversational access to liquidity positions makes the bank's manual confirmation step look slow and effortful.
+Citi is pushing AI into the operational decisions Funds Release still makes manually — validation and 4-eyes approval; agentic decisioning at a global peer raises the bar for the manual release path's speed and cost.
 
 ## Evidence
-Bank of America upgraded CashPro with generative forecasting and conversational queries, reported in November 2025.
+Reported in 2025: Citi's proprietary genAI reaches 150,000+ employees in 80 countries, backed by a $12bn annual technology budget, with early agentic-AI pilots underway.

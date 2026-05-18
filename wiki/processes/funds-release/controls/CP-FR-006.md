@@ -8,17 +8,20 @@ confidence: high
 source: funds-release-dtp-mockup.md
 controlType: DETECTIVE
 execution: MANUAL
-owner: Ops Analyst
-regulatedBy: [REG-FR-006]
+effectiveness: LOW
+owner: Payment Operations
+approval: approved
+approvalBy: M. Berger
+approvalDate: 2026-05-17
 ---
 ## What it checks
-That the audit log is complete and captures all actors and timestamps for releases.
+That the audit log records a complete set of actors and timestamps for each release reviewed. It verifies presence and completeness only — not whether a human approver is present.
 
 ## Control activity
-A detective control under which the release audit log is reviewed for completeness of actors and timestamps.
+A Payment Operations reviewer checks a risk-weighted monthly sample — roughly 25 releases, all those at or above EUR 5m plus a random selection of smaller ones — confirming every step in each sampled release carries a recorded actor and timestamp.
 
 ## Risk addressed
-An incomplete audit trail that cannot evidence who approved and executed a release.
+Gaps in the audit trail that would undermine traceability and accountability for released funds.
 
 ## Timing
-Carried out as a monthly review.
+Performed monthly on a sample. An incomplete log has no defined resolution or escalation path (see CG-FR-003), and the review does not flag STP releases lacking a human approver (see CG-FR-001).

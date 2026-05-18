@@ -193,11 +193,20 @@ the Phase 6 close-out (see below).
 or the transformation — adoption, regulatory, delivery, dependency risk.
 
 **Phase 4 — Target state.** `[A]/[E]/[N]`. How the process should work in the
-future — the to-be design, drawn from the ideas the SME wants to pursue.
+future — the to-be design, drawn from the ideas the SME wants to pursue. On
+each `target-state`, capture `replaces` — the As-Is `process-step`s the theme
+touches; it drives the As-Is↔To-Be overlay in the app.
 
 **Phase 5 — Transformation decisions & gaps.** `[A]/[E]/[N]`. The decisions
 taken to reach the target state (`transformation-decision`), and the `gap`
-elements — what stands between As-Is and target, and how to close each.
+elements — what stands between As-Is and target, and how to close each. On each
+`transformation-decision`, capture two relations: `resolves` — the As-Is
+problems it resolves (`pain-point` / `process-gap` / `compliance-gap` /
+`friction-point` / `audit-finding`) — and `realises` — the `target-state`
+themes it brings about (optional; a governance or sequencing decision may
+realise none). These two drive the computed coverage check: every *open* As-Is
+problem should be `resolved` by at least one decision; an uncovered problem is
+either a real gap in the transformation or a missing decision.
 
 **Phase 6 — Validation.** Before closing, sweep what you wrote: ideas that
 address no documented problem, a target state with no ideas behind it, gaps not
@@ -252,3 +261,55 @@ You *read* the As-Is freely — it is your input. But when the SME wants to
 correct an As-Is element, acknowledge it, note it briefly ("I'll flag that for
 the Process / Control / Client Journey specialist"), and steer back to the
 forward view.
+
+<!-- PROVENANCE-BLOCK:start -->
+## Provenance — separate what the SME said from what you added
+
+This block is identical in all five specialist skills and in `foundational-run`
+(HALLUCINATION-PLAN.md). Do not edit one copy — a drift check fails CI.
+
+Every element heading records where its content came from. The danger this
+guards against is not an invented fact — it is **you inflating a thin SME
+comment into a confident, detailed paragraph**, adding plausible operational
+detail the SME never said. A tidy draft reads right and gets approved, and the
+made-up part rides in on the back of the real part.
+
+**Read-back is mandatory.** When you turn something the SME said into a fuller
+block, state plainly what you added beyond their words before they accept it:
+
+> "You told me the analyst checks the limit. I also wrote that it is automated,
+> runs at validation, and reads the facility system — you did not say those.
+> True, or cut them?"
+
+This converts a rubber-stamp into a real check. Never present an inflated draft
+as if the SME had said all of it.
+
+**Mark each heading's provenance.** When you write an element, include a
+`provenance` map in the `write_element.py` spec — one entry per block heading:
+
+    "provenance": {
+      "What it checks":   { "source": "elicited",
+                            "evidence": "<verbatim SME quote>" },
+      "Control activity": { "source": "proposed", "evidence": "" }
+    }
+
+`source` is one of:
+- **elicited** — the SME stated this content and confirmed it in read-back.
+  `evidence` is the verbatim SME quote. Use this *only* after the SME has
+  explicitly confirmed this specific heading.
+- **document** — taken from an uploaded source document. `evidence` is the
+  verbatim quote from that document.
+- **proposed** — you drafted or inflated it and the SME has not yet confirmed
+  it. `evidence` is empty. **This is the default** — a heading you do not list,
+  or any content the SME has not explicitly confirmed, is `proposed`.
+
+A heading left `proposed` is honest, not a failure: it tells the SME and the
+app exactly which content still needs confirming. An element with any
+`proposed` heading **cannot be approved** — `set_approval.py` blocks it. When
+the SME confirms a `proposed` heading in read-back, rewrite the element with
+that heading marked `elicited` and its evidence quote filled in.
+
+**Editing re-opens a heading.** `patch_element.py --block` automatically resets
+the edited heading to `proposed` — reworked prose is unconfirmed until the SME
+approves it again. Do not fight this; it is the safety net.
+<!-- PROVENANCE-BLOCK:end -->

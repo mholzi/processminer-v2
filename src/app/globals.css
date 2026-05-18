@@ -643,6 +643,12 @@ body {
 .flow-node.is-current {
   border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent);
 }
+/* As-Is step a selected target theme replaces — a crisp accent ring, no
+   accent-soft fill (that token means "agent draft"); the ring weight is the
+   non-colour cue. */
+.flow-node.is-highlighted {
+  border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent);
+}
 .flow-node-top {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
 }
@@ -711,6 +717,24 @@ body {
   letter-spacing: .06em; color: var(--muted); margin-bottom: 4px;
 }
 .el-block-text { font-size: var(--text-base); line-height: 1.6; }
+
+/* ---- Per-heading provenance (HALLUCINATION-PLAN.md T9) ----
+   Each heading carries a tag for where its content came from. Unconfirmed
+   content — `proposed` (AI-drafted) and `web` (web-sourced) — is set apart
+   with a left rule so the SME sees at a glance what still needs confirming. */
+.el-prov-tag {
+  font-family: var(--mono); font-size: 9px; font-weight: 600;
+  letter-spacing: .04em; padding: 1px 5px; border-radius: 3px;
+  margin-left: 6px; vertical-align: middle; cursor: default;
+}
+.el-prov-tag.prov-elicited { background: var(--hi-bg); color: var(--hi); }
+.el-prov-tag.prov-document { background: var(--mid-bg); color: var(--mid); }
+.el-prov-tag.prov-proposed { background: var(--lo-bg); color: var(--lo); }
+.el-prov-tag.prov-web { background: var(--lo-bg); color: var(--lo); }
+.el-prov-tag.prov-legacy-approved { background: var(--mid-bg); color: var(--muted); }
+.el-block.prov-proposed, .el-block.prov-web {
+  border-left: 2px solid var(--lo); padding-left: 8px;
+}
 .el-body p, .overview p { margin-bottom: 8px; }
 .el-body p:last-child, .overview p:last-child { margin-bottom: 0; }
 .el-body ul, .overview ul, .el-block-text ul { padding-left: 16px; margin: 4px 0; }
@@ -804,12 +828,15 @@ body {
 .raci-legend .raci-badge { width: 18px; height: 18px; font-size: var(--text-xs); }
 
 .el-meta { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+/* Confidence (HALLUCINATION-PLAN.md T11) — the AI's self-grade. Provenance is
+   the trust signal now; confidence is subordinated to a quiet muted line so it
+   no longer reads as a peer of the per-heading provenance tags. */
 .conf { display: inline-flex; align-items: center; gap: 4px; font-size: var(--text-xs);
-  font-weight: 600; padding: 2px 8px; border-radius: var(--r-md); }
-.conf .cd { width: 7px; height: 7px; border-radius: 50%; }
-.conf.high { background: var(--hi-bg); color: var(--hi); } .conf.high .cd { background: var(--hi); }
-.conf.medium { background: var(--mid-bg); color: var(--mid); } .conf.medium .cd { background: var(--mid); }
-.conf.low { background: var(--lo-bg); color: var(--lo); } .conf.low .cd { background: var(--lo); }
+  font-weight: 400; padding: 0; background: none; color: var(--muted); }
+.conf .cd { width: 6px; height: 6px; border-radius: 50%; opacity: .6; }
+.conf.high .cd { background: var(--hi); }
+.conf.medium .cd { background: var(--mid); }
+.conf.low .cd { background: var(--lo); }
 .src { font-family: var(--mono); font-size: var(--text-xs); color: var(--muted); }
 
 /* per-element review status — a status pill: dot + label + quiet caret
@@ -1692,3 +1719,167 @@ body {
 }
 .area-next button:hover { opacity: .9; }
 .area-next button:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ---- Target-state coverage (Validation section + area overview) ---- */
+.cov-rollup { display: flex; flex-direction: column; gap: 4px; }
+.cov-rollup-fig {
+  font-family: var(--mono); font-variant-numeric: tabular-nums;
+  font-size: var(--text-2xl); font-weight: 600; color: var(--ink); line-height: 1.1;
+}
+.cov-rollup-of { color: var(--muted); font-weight: 400; }
+.cov-rollup-label { font-size: var(--text-sm); color: var(--muted); }
+.cov-bar {
+  display: block; height: 6px; margin-top: 4px; max-width: 320px;
+  background: var(--line); border-radius: var(--r-pill); overflow: hidden;
+}
+.cov-bar-fill { display: block; height: 100%; background: var(--accent); }
+
+.cov-panel { display: flex; flex-direction: column; gap: 24px; }
+.cov-section { display: flex; flex-direction: column; gap: 8px; }
+.cov-section-head { font-size: var(--text-sm); font-weight: 600; color: var(--ink); }
+.cov-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.cov-allclear {
+  font-size: var(--text-sm); color: var(--hi);
+  background: var(--hi-bg); border-radius: var(--r-md); padding: 12px 16px;
+}
+.cov-note { font-size: var(--text-xs); color: var(--muted); }
+.cov-findings { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.cov-finding {
+  display: flex; align-items: baseline; gap: 8px;
+  font-size: var(--text-sm); color: var(--ink);
+}
+.cov-sev {
+  flex: none; width: 7px; height: 7px; border-radius: 50%;
+  position: relative; top: 1px;
+}
+.cov-sev-error { background: var(--lo); }
+.cov-sev-warning { background: var(--mid); }
+.cov-finding-msg { flex: 1; }
+.cov-finding-refs { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.cov-area { margin-bottom: 24px; }
+
+/* Coverage broken down by problem type */
+.cov-typegroups { display: flex; flex-direction: column; gap: 14px; }
+.cov-typegroup { display: flex; flex-direction: column; gap: 6px; }
+.cov-typegroup-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 3px;
+}
+.cov-typegroup-label {
+  font-size: var(--text-sm); font-weight: 600; color: var(--ink);
+}
+.cov-typegroup-count {
+  font-family: var(--mono); font-variant-numeric: tabular-nums;
+  font-size: var(--text-xs); color: var(--muted);
+}
+.cov-chip-mark { font-family: var(--mono); margin-right: 4px; }
+.cov-chip-covered .cov-chip-mark { color: var(--hi); }
+.cov-chip-uncovered .cov-chip-mark { color: var(--muted); }
+
+/* As-Is overlay — the target-theme selector above the process flow */
+.flow-themepick {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+}
+.flow-themepick label {
+  font-size: var(--text-xs); color: var(--muted);
+}
+.flow-themepick select {
+  font-family: var(--font); font-size: var(--text-sm); color: var(--ink);
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-sm); padding: 4px 8px; max-width: 360px;
+}
+.flow-themepick-note { font-size: var(--text-xs); color: var(--muted); }
+
+/* ---- Council Review panel (target-review.json) ---- */
+.trv-panel { display: flex; flex-direction: column; gap: 12px; }
+.trv-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  gap: 16px; font-size: var(--text-xs); color: var(--muted);
+}
+.trv-head-ran { font-family: var(--mono); }
+.trv-error {
+  font-size: var(--text-sm); color: var(--lo);
+  background: var(--lo-bg); border-radius: var(--r-sm); padding: 8px 12px;
+}
+.trv-items { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.trv-item {
+  display: flex; flex-direction: column; gap: 6px;
+  border: 1px solid var(--line); border-radius: var(--r-md);
+  padding: 12px 16px; background: var(--surface);
+}
+.trv-item-accepted { border-color: var(--hi); }
+.trv-item-rejected { opacity: 0.6; }
+.trv-item-top { display: flex; align-items: baseline; gap: 8px; }
+.trv-spec {
+  font-size: var(--text-xs); font-weight: 600; color: var(--accent);
+}
+.trv-item-id {
+  font-family: var(--mono); font-size: var(--text-xs); color: var(--muted);
+}
+.trv-state {
+  margin-left: auto; font-size: var(--text-xs); text-transform: capitalize;
+}
+.trv-state-pending { color: var(--mid); }
+.trv-state-accepted { color: var(--hi); }
+.trv-state-rejected { color: var(--muted); }
+.trv-item-title { font-size: var(--text-sm); font-weight: 600; color: var(--ink); }
+.trv-item-detail { font-size: var(--text-sm); color: var(--ink); line-height: 1.5; }
+.trv-item-targets { display: flex; flex-wrap: wrap; gap: 4px; }
+.trv-item-actions {
+  display: flex; align-items: center; gap: 8px; margin-top: 2px;
+}
+.trv-item-note { font-size: var(--text-xs); color: var(--muted); }
+.trv-block { display: flex; flex-direction: column; gap: 8px; margin-top: 32px; }
+.trv-block-sub { font-size: var(--text-sm); color: var(--muted); }
+.trv-invoke { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+
+/* ---- Target synthesis (top of TO-BE Process Design) ---- */
+.tsyn { display: flex; flex-direction: column; gap: 8px; margin-bottom: 32px; }
+.tsyn-sub { font-size: var(--text-sm); color: var(--muted); }
+.tsyn-rows { list-style: none; display: flex; flex-direction: column; }
+.tsyn-row {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.4fr);
+  align-items: baseline; gap: 12px;
+  padding: 8px 0; border-top: 1px solid var(--line);
+}
+.tsyn-row:last-child { border-bottom: 1px solid var(--line); }
+.tsyn-row-unchanged { opacity: 0.55; }
+.tsyn-asis { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.tsyn-asis-title { font-size: var(--text-sm); color: var(--ink); }
+.tsyn-arrow { color: var(--muted); font-size: var(--text-sm); }
+.tsyn-target { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; }
+.tsyn-unchanged { font-size: var(--text-sm); color: var(--muted); }
+.tsyn-theme { display: inline-flex; align-items: baseline; gap: 6px; }
+.tsyn-theme-id { font-family: var(--mono); color: var(--accent); }
+.tsyn-theme-title { color: var(--ink); }
+
+/* ---- Controls in the target (Target area overview) ---- */
+.cit { display: flex; flex-direction: column; gap: 8px; margin-bottom: 32px; }
+.cit-sub { font-size: var(--text-sm); color: var(--muted); }
+.cit-group { display: flex; flex-direction: column; gap: 4px; margin-top: 12px; }
+.cit-group-head {
+  display: flex; align-items: baseline; gap: 8px;
+  border-bottom: 1px solid var(--line); padding-bottom: 3px;
+}
+.cit-group-label {
+  font-size: var(--text-sm); font-weight: 600; color: var(--ink);
+}
+.cit-group-count {
+  font-family: var(--mono); font-variant-numeric: tabular-nums;
+  font-size: var(--text-xs); color: var(--muted);
+}
+.cit-group-blurb { font-size: var(--text-xs); color: var(--muted); }
+.cit-rows { list-style: none; display: flex; flex-direction: column; }
+.cit-row {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.4fr);
+  align-items: baseline; gap: 12px;
+  padding: 8px 0; border-top: 1px solid var(--line);
+}
+.cit-row:first-child { border-top: none; }
+.cit-control { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.cit-control-title { font-size: var(--text-sm); color: var(--ink); }
+.cit-arrow { color: var(--muted); font-size: var(--text-sm); }
+.cit-themes { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; }
+.cit-theme { display: inline-flex; align-items: baseline; gap: 6px; }
+.cit-theme-id { font-family: var(--mono); color: var(--accent); }
+.cit-theme-title { color: var(--ink); }

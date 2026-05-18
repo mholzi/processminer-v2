@@ -2,18 +2,20 @@
 id: REG-FR-001
 type: regulation
 section: regulation
-title: EU & UN financial sanctions
+title: EU Funds Transfer Regulation (Wire Transfer Regulation)
 status: draft
-confidence: high
-source: funds-release-dtp-mockup.md
-domain: Sanctions
+confidence: medium
+source: Regulation (EU) 2023/1113 (Funds Transfer Regulation)
+domain: Financial Crime
+sourceUrl: https://eur-lex.europa.eu/eli/reg/2023/1113/oj/eng
 controls: [CP-FR-002]
+asOf: 2026-05-18
 ---
 ## What it requires
-That every release and its beneficiary are screened against the EU and UN consolidated sanctions lists, and that funds are never released to a designated party.
+Transfers of funds must be accompanied by complete, verified information on the payer and the payee; missing or incomplete data must be weighed as a factor in deciding whether to report the transfer to the Financial Intelligence Unit.
 
 ## Why it applies
-Funds release is the point at which money leaves the bank to a counterparty — the moment sanctions exposure crystallises.
+Each release executes a transfer of funds to a named beneficiary, frequently through a beneficiary bank or correspondent, placing it squarely within the Regulation's scope as a payment service provider's transfer of funds.
 
 ## How it is met
-Through control CP-FR-002, which screens every release item in real time during compliance screening (PS-FR-003).
+Beneficiary and beneficiary-bank details are captured at PS-FR-001 and screened at PS-FR-003 (CP-FR-002); the completeness of the payment data is confirmed at validation.

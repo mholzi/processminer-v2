@@ -225,3 +225,67 @@ export async function setRelevance(
   revalidatePath("/");
   return { ok: true };
 }
+
+const TRIAGE_VALUES = ["pending", "accepted", "rejected"];
+
+// Triage one council-review item — the SME's accept / reject ruling. Writes
+// the new triage state to target-review.json; an `accepted` item re-opens
+// every implicated transformation-decision that is currently `approval:
+// approved` (the accepted feedback invalidates that sign-off — mirrors how
+// run-lint re-opens an implicated approval).
+export async function triageTargetReview(
+  slug: string,
+  itemId: string,
+  triage: string,
+): Promise<{ ok: true }> {
+  if (!TRIAGE_VALUES.includes(triage)) {
+    throw new Error(`Invalid triage value: ${triage}`);
+  }
+  const path = join(WIKI_DIR, slug, "target-review.json");
+  if (!existsSync(path)) throw new Error("No council review for this process.");
+  const review = JSON.parse(readFileSync(path, "utf8")) as {
+    items: { id: string; triage: string; targets: string[] }[];
+  };
+  const item = review.items.find((i) => i.id === itemId);
+  if (!item) throw new Error(`Review item not found: ${itemId}`);
+  item.triage = triage;
+  writeFileSync(path, JSON.stringify(review, null, 2) + "\n", "utf8");
+
+  if (triage === "accepted") {
+    const date = new Date().toISOString().slice(0, 10);
+    for (const id of item.targets) {
+      const file = findElementFile(slug, id);
+      if (!file) continue;
+      const raw = readFileSync(file, "utf8");
+      const m = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+      if (!m) continue;
+      const lines = m[1].split("\n");
+      const value = (k: string): string => {
+        for (const l of lines) {
+          const i = l.indexOf(":");
+          if (i !== -1 && l.slice(0, i).trim() === k) {
+            return l.slice(i + 1).trim();
+          }
+        }
+        return "";
+      };
+      // A non-approved decision is left untouched — only a live sign-off
+      // needs re-opening.
+      if (value("approval") !== "approved") continue;
+      const upsert = (k: string, v: string) => {
+        const i = lines.findIndex((l) => {
+          const c = l.indexOf(":");
+          return c !== -1 && l.slice(0, c).trim() === k;
+        });
+        if (i === -1) lines.push(`${k}: ${v}`);
+        else lines[i] = `${k}: ${v}`;
+      };
+      upsert("approval", "in-progress");
+      upsert("approvalBy", "council-review");
+      upsert("approvalDate", date);
+      writeFileSync(file, `---\n${lines.join("\n")}\n---\n${m[2]}`, "utf8");
+    }
+  }
+  revalidatePath("/");
+  return { ok: true };
+}

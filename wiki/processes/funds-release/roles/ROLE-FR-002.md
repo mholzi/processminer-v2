@@ -2,14 +2,16 @@
 id: ROLE-FR-002
 type: role
 section: roles
-title: Ops Analyst
+title: Operations Analyst
 status: draft
 confidence: high
 source: funds-release-dtp-mockup.md
-raci: [PS-FR-002:R, PS-FR-003:C, PS-FR-004:R, PS-FR-007:R, PS-FR-008:R]
+approval: approved
+approvalBy: M. Berger
+approvalDate: 2026-05-17
 ---
 ## Responsibility
-Owns day-to-day execution of the release — validating requests, granting first-line approval, posting the release and confirming completion.
+The Operations Analyst runs the day-to-day release work on non-STP and exception items — validating requests, giving first-line approval and executing the release in the core banking system. STP items are validated, approved and posted by the system without the analyst.
 
 ## In this process
-Responsible for validating the request, first-line approval, executing the release in the core banking system and confirming completion to the front office; consulted on sanctions and AML screening.
+For non-STP and exception items it validates each request for completeness, gives first-line approval and executes the posting in the core banking system. It also creates the queue item on the manual-initiation path, reworks loopback items returned from the 4-eyes step, and handles failed postings as the EX-FR-005 handling owner.

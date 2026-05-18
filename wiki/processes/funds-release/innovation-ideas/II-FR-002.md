@@ -2,18 +2,22 @@
 id: II-FR-002
 type: innovation-idea
 section: innovation-ideas
-title: Front-office self-service release portal with pre-submission checks
+title: Automate the Treasury confirmation feed
 status: draft
-confidence: low
-source: Derived from market trends TR-FR-001 and TR-FR-005 (web-sourced)
-addresses: [PG-FR-001]
-fromTrend: [TR-FR-001, TR-FR-005]
+confidence: medium
+source: source-innovation web research
+category: Integration
+strategicFit: HIGH
+complexity: MEDIUM
+addresses: [PG-FR-008, PG-FR-007]
+fromTrend: [TR-FR-005]
+fromCompetitor: [CFT-FR-001]
 ---
 ## The idea
-Give the front office a structured self-service portal to raise release requests, which shows the requester any in-flight or recent requests for the same facility and runs facility, limit, document and business-day checks before the request can be submitted.
+Build a system integration between the Treasury liquidity platform and the payments workflow tool so the funding confirmation flows automatically into the workflow item, replacing Treasury's manual re-key of the 'confirmed' flag.
 
 ## Expected benefit
-Stops duplicate requests at source by surfacing existing ones to the requester, and cuts the incomplete or invalid requests that today bounce back from validation as exception E-1.
+Removing the manual re-key closes the error path where a release proceeds without a genuine confirmation or a confirmed one is blocked, and gives the release a documented, auditable integration between the two systems.
 
 ## Feasibility
-Medium effort — needs a front-office interface and validation services over the facility and queue systems. It mirrors the batch pre-validation banks built for instant payments, so the pattern is already proven.
+A point-to-point interface between two existing systems — moderate build effort; depends on an available API or message feed on SYS-FR-004 and on documenting the integration in the IT architecture pass.

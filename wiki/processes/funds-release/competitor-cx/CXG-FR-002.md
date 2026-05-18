@@ -2,19 +2,19 @@
 id: CXG-FR-002
 type: competitor-cx-global
 section: competitor-cx
-title: Citi gives mid-sized corporates end-to-end status visibility on lending
+title: J.P. Morgan — Access and Connect unified portal
 status: draft
 confidence: medium
-source: Citi — press release, Citi Commercial Bank digitising lending (2025)
-competitor: Citi
-sourceUrl: https://www.citigroup.com/global/news/press-release/2025/citi-commercial-bank-transforming-digitizing-lending-experience-mid-sized-corporates
-asOf: 2026-05-17
+competitor: J.P. Morgan
+source: J.P. Morgan Payments — Access & Connect
+sourceUrl: https://www.jpmorgan.com/commercial-banking/connect
+asOf: 2026-05-18
 ---
 ## The journey
-Citi Commercial Bank has digitised lending for mid-sized corporates on CitiDirect Commercial Banking: a digital credit application with codified requirements, electronic signatures and end-to-end status visibility, plus self-service credit management with one-click financial uploads and automated covenant monitoring.
+J.P. Morgan corporate clients manage loans, payments and accounts through one unified portal — Access and Connect — with real-time account balances, real-time insights and 24/7 self-service tools, available across more than 50 countries from any device.
 
 ## Relevance
-Citi's end-to-end status visibility is the standout — the client tracks a request through the bank. Funds Release offers no client-facing tracking, so the front office cannot see where a release sits between submission and confirmation and must chase Operations.
+The benchmark is a single always-on dashboard where the client watches a release move in real time. Funds Release gives the client no live view: status is opaque between the request and the final confirmation, a visibility gap against this standard.
 
 ## Evidence
-Citi's 2025 announcement reports the digital credit application gives end-to-end status visibility, is live in six markets, and is used by roughly 20 percent of commercial bank clients there.
+J.P. Morgan markets Access with real-time account balances and 24/7 self-service, and Connect as one portal bringing loans, payments and reporting together with real-time insights.

@@ -2,19 +2,19 @@
 id: CG-FR-004
 type: compliance-gap
 section: control-gaps
-title: Sanctions list currency not evidenced
+title: Treasury funding confirmation is point-in-time — not an earmark
 status: draft
 confidence: high
-source: funds-release-dtp-mockup.md
-severity: HIGH
+source: SME interview - M. Berger
+severity: MEDIUM
 gapStatus: open
-control: [CP-FR-002]
+control: [CP-FR-004]
 ---
 ## The gap
-CP-FR-002 screens against sanctions lists, but no control proves the lists loaded into the screening engine are the current EU and UN consolidated versions.
+CP-FR-004 confirms funding is available for the value date as a point-in-time check; it does not earmark or reserve the funding against the release. Confirmed funding can be consumed by another release before execution.
 
 ## Risk
-Screening against a stale list and clearing a release to a newly designated party.
+A large release that passed funding confirmation can still fail at execution (EX-FR-005) because the confirmed funding was not locked — the control provides assurance it cannot keep.
 
 ## Remediation
-Add an automated daily check that verifies the screening engine's list version against the official source and alerts on a mismatch.
+Earmark Treasury-confirmed funding against the named release until it is posted, or re-confirm funding at execution, so the control's assurance holds to the point of release.

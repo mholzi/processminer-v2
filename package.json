@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:scripts": "python3 scripts/wiki/test_wiki_scripts.py"
+    "test:scripts": "python3 scripts/wiki/test_wiki_scripts.py",
+    "eval:read-back": "python3 eval/read-back/run.py"
   },
   "dependencies": {
     "next": "^16.2.6",
