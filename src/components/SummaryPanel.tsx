@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { saveSummaryPart } from "@/lib/wiki-write";
 
 type Part = { heading: string; text: string };
@@ -118,7 +119,9 @@ export default function SummaryPanel({
             </div>
           ) : (
             <div className="summary-part-body">
-              <ReactMarkdown>{part.text}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {part.text}
+              </ReactMarkdown>
             </div>
           )}
         </div>

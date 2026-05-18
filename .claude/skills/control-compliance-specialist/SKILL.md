@@ -174,6 +174,12 @@ and approve them in the web app.
 The mechanical parts are Python scripts in `scripts/wiki/`. You do the
 judgement; the scripts own the format. Do **not** hand-write element files.
 
+**Reserve the id before you name it.** Never tell the SME an element's id
+until `next_id.py` has assigned it — a guessed id ("this will be CG-FR-003")
+is often wrong, because the real id depends on creation order. Refer to a
+not-yet-written element by description ("a new control gap"); state its id
+only once it has been written.
+
 1. Read the schema `template` for the type — blocks, format, word range.
 2. **Draft** every block within its spec. This is your work.
 3. Present the draft; run **Y / E / R** until the SME accepts.

@@ -1,8 +1,9 @@
 import { getSchema, listProcesses, getProcess, type ProcessDoc } from "@/lib/wiki";
-import ProcessDocScreen from "./ProcessDocScreen";
+import AuthGate from "./AuthGate";
 
 // Server component: reads the file-backed Karpathy wiki and hands every
-// documented process to the client screen, which switches between them.
+// documented process to the client app. AuthGate gates it behind a
+// name + role identity, then renders the process-doc screen.
 export default function Home() {
   const schema = getSchema();
   const docs = listProcesses()
@@ -21,5 +22,5 @@ export default function Home() {
     );
   }
 
-  return <ProcessDocScreen schema={schema} docs={docs} />;
+  return <AuthGate schema={schema} docs={docs} />;
 }

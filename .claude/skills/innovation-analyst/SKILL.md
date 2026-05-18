@@ -180,6 +180,15 @@ those with the `[A]/[E]/[N]` idiom. Every `innovation-idea` `addresses` a real
 documented pain- or friction-point. You do not web-search — that is
 `source-innovation`'s job.
 
+When the SME wants a new `market-trend` or competitor-move that you cannot
+cite — those types require a verified `sourceUrl` and you do not web-search —
+do **not** drop it or leave it as prose in the chat. Draft and write the
+element normally, but set `sourceUrl: pending` (the literal word), `status:
+draft` and `confidence: low`. A `pending` sourceUrl is still a real, visible
+draft card; it marks the element for a later `source-innovation` pass to
+verify it and attach the citation. List every `sourceUrl: pending` element in
+the Phase 6 close-out (see below).
+
 **Phase 3 — Innovation risks.** `[A]/[E]/[N]`. The risks of pursuing the ideas
 or the transformation — adoption, regulatory, delivery, dependency risk.
 
@@ -194,12 +203,21 @@ elements — what stands between As-Is and target, and how to close each.
 address no documented problem, a target state with no ideas behind it, gaps not
 traced to a target state, ideas with no risk named. Surface each as a short
 clarifying question, then summarise: every element written, counts per type,
-and tell the SME to review and approve them in the web app.
+and tell the SME to review and approve them in the web app. If any element was
+written with `sourceUrl: pending`, list those separately by id and title under
+a clear heading — "Needs a source-innovation pass to attach the citation" — so
+the handoff is an explicit, actionable list, not a buried sentence.
 
 ## Writing an element — the procedure
 
 The mechanical parts are Python scripts in `scripts/wiki/`. You do the
 judgement; the scripts own the format. Do **not** hand-write element files.
+
+**Reserve the id before you name it.** Never tell the SME an element's id
+until `next_id.py` has assigned it — a guessed id ("this will be PG-FR-005")
+is often wrong, because the real id depends on creation order. Refer to a
+not-yet-written element by description ("a new innovation risk"); state its
+id only once it has been written.
 
 1. Read the schema `template` for the type — blocks, format, word range.
 2. **Draft** every block within its spec. This is your work.

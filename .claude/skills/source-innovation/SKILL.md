@@ -57,6 +57,26 @@ friction-points** — innovation ideas address those. Also read any existing
 `market-trend`, competitor and `innovation-idea` elements: you extend, you
 never duplicate an element the wiki already holds.
 
+Read **wider than the happy-path spine**. Two things the documented As-Is
+carries that sourcing routinely misses:
+- **The control and regulatory angle.** Read the `control`, `control-gap`,
+  `compliance-gap` and `audit-finding` elements. A control gap is as real an
+  improvement target as a pain-point — innovation ideas address those too, and
+  trends about evolving supervisory expectations bear directly on them.
+- **Automated / straight-through branches.** A process step often has an
+  automated or STP variant alongside the manual one. Trends and competitor
+  moves about automation, agentic AI and continuous controls bear on the
+  *automated* branch — not only the manual steps. Account for both.
+
+**Fill any pending elements first.** An element with `sourceUrl: pending` is a
+draft the `innovation-analyst` wrote but could not cite — it is waiting for
+exactly this skill. Before sourcing anything fresh, for each pending element:
+web-search to verify its claim, then attach the real `source` and `sourceUrl`
+with `python3 scripts/wiki/patch_element.py`, and raise `confidence` from `low`
+if the web confirms it. If the web does not support the claim, leave it
+`pending` and say so in the Step 6 report. Never duplicate a pending element
+with a freshly-sourced one — fill it in place.
+
 ## Step 2 — Scan the web
 
 Build search queries from the process — its title, what it does, its industry
@@ -92,8 +112,11 @@ specific to sourcing:
 - `source:` / `sourceUrl:` — the study or publication and its URL; a reviewer
   must be able to click through.
 - `asOf:` — leave it out; `write_element.py` auto-stamps today's date.
-- `bearsOn:` the ids of the process elements the trend bears on (steps,
-  systems, pain-points), drawn from the As-Is you read in Step 1.
+- `bearsOn:` the ids of the process elements the trend bears on — steps
+  (manual *and* automated/STP branches), systems, pain-points, and any
+  `control` or `control-gap` the trend speaks to. A trend about automated
+  controls or agentic AI bears on the STP branch and the control gaps, not
+  just the manual steps — link those, not only the happy path.
 
 Then write it: `next_id.py` → `write_element.py` (`status: draft`,
 `confidence: medium` — web-sourced, not yet SME-validated; `low` if thinly
@@ -129,12 +152,16 @@ competitor or a move. A handful of material moves per tier, not a dump.
 ## Step 5 — Write innovation ideas
 
 Derive `innovation-idea` elements from the trends, the competitor moves and the
-documented pain- and friction-points. Every idea must `addresses` at least one
-real documented pain- or friction-point id — an idea that solves no documented
-problem is not written. Each element's frontmatter carries:
-- `addresses:` **every** pain-point, friction-point or process-gap the idea
-  genuinely relieves — not just one. A unified-workspace idea that removes
-  re-keying *and* slow handovers links both.
+documented problems. Before you finish, **cross-check every documented problem
+for an idea** — walk the pain-points, friction-points, process-gaps *and the
+control-gaps*; a control gap with no idea against it is exactly the omission to
+catch. Every idea must `addresses` at least one real documented problem id — an
+idea that solves no documented problem is not written. Each element's
+frontmatter carries:
+- `addresses:` **every** pain-point, friction-point, process-gap or
+  control-gap the idea genuinely relieves — not just one. A unified-workspace
+  idea that removes re-keying *and* slow handovers links both; an automated-
+  control idea links the control gap it closes.
 - `fromTrend:` the `market-trend` id(s) the idea derives from.
 - `fromCompetitor:` the competitor-move id(s) the idea is inspired by, if any —
   so an idea traces idea → trend/competitor → source.
@@ -164,6 +191,8 @@ Report with this **exact template**, substituting the counts:
 > innovation-analyst for the deeper forward-looking work.
 
 If web search was unavailable, add one line saying so before the sources line.
+If you filled any `sourceUrl: pending` elements (or left some still pending
+because the web did not support them), add one line saying which.
 
 ## Scope
 

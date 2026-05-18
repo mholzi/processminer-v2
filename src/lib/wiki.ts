@@ -54,8 +54,8 @@ export interface FieldSpec {
 export interface RelationSpec {
   key: string;
   label: string;
-  /** The element type this relation points at. */
-  target?: string;
+  /** The element type(s) this relation may point at — one type, or several. */
+  target?: string | string[];
   /** When set, the target element shows a reverse-link group with this label. */
   reverseLabel?: string;
 }

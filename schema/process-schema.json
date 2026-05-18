@@ -1079,9 +1079,7 @@
           }
         ],
         "relations": [],
-        "required": [
-          "value"
-        ]
+        "required": []
       },
       "template": [
         {
@@ -1182,7 +1180,13 @@
           {
             "key": "bearsOn",
             "label": "Bears on",
-            "target": "process-step"
+            "target": [
+              "process-step",
+              "system",
+              "pain-point",
+              "control",
+              "control-gap"
+            ]
           }
         ],
         "required": [
@@ -1239,7 +1243,13 @@
           {
             "key": "bearsOn",
             "label": "Bears on",
-            "target": "process-step"
+            "target": [
+              "process-step",
+              "system",
+              "pain-point",
+              "control",
+              "control-gap"
+            ]
           }
         ],
         "required": [
@@ -1296,7 +1306,13 @@
           {
             "key": "bearsOn",
             "label": "Bears on",
-            "target": "process-step"
+            "target": [
+              "process-step",
+              "system",
+              "pain-point",
+              "control",
+              "control-gap"
+            ]
           }
         ],
         "required": [
@@ -1353,7 +1369,13 @@
           {
             "key": "bearsOn",
             "label": "Bears on",
-            "target": "process-step"
+            "target": [
+              "process-step",
+              "system",
+              "pain-point",
+              "control",
+              "control-gap"
+            ]
           }
         ],
         "required": [
@@ -1409,7 +1431,12 @@
           {
             "key": "addresses",
             "label": "Addresses",
-            "target": "process-gap",
+            "target": [
+              "process-gap",
+              "pain-point",
+              "friction-point",
+              "control-gap"
+            ],
             "reverseLabel": "Addressed by"
           },
           {
@@ -1420,7 +1447,11 @@
           {
             "key": "fromCompetitor",
             "label": "From competitor",
-            "target": "competitor-eu"
+            "target": [
+              "competitor-eu",
+              "competitor-global",
+              "competitor-fintech"
+            ]
           }
         ],
         "required": [

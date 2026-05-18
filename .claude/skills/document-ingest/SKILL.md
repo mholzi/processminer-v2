@@ -73,6 +73,25 @@ On **[Y]** — continue to Step 3.
      which block or field, what the document says versus what the wiki says.
      Draft nothing for it.
 
+   Map each frontmatter field to what the document actually states — never
+   force content into a field just because the schema marks it `required`.
+   Two field-mapping rules that recur:
+
+   - **Metric `target` vs `value`.** A figure the document gives as a
+     service-level / SLA *target* (e.g. "within 2 hours", "same business
+     day") belongs in `target`. `value` is the metric's *measured actual* —
+     a process-design or as-is document rarely supplies one. When the
+     document gives no measured actual, set `value` to `Not measured` and
+     leave `trend` empty; do **not** put the target figure in `value`.
+
+   - **`owner` granularity — keep it consistent.** A step's `owner` is who
+     *performs* it; if the step is automated and no person acts, write the
+     system or `Unassigned`, not a team. A control's `owner` is the
+     accountable *function* (e.g. "Payment Operations", "Compliance") —
+     never a named individual or a job title, and never an operator just
+     because the control is automated. Pick the same grain for every
+     element of a type; do not mix function, role and individual.
+
 3. **Verify each draft against the source — before you write it.** No SME is
    in the loop, so the document is the only authority. For every element you
    drafted, re-read the passage it came from and challenge it claim by claim:

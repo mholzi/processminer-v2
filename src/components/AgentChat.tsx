@@ -1,12 +1,94 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
+import {
+  Fragment,
+  cloneElement,
+  createElement,
+  isValidElement,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import ReactMarkdown, { type Components } from "react-markdown";
+import remarkGfm from "remark-gfm";
+import type { WikiPage } from "@/lib/wiki";
+import ElementHovercard from "./ElementHovercard";
 
 export interface ChatMessage {
   id: string;
   role: "user" | "agent";
   text: string;
+}
+
+// Resolve an element id (e.g. "PS-FR-001") to its page + type label.
+export type GetRef = (
+  id: string,
+) => { page: WikiPage; typeLabel: string } | undefined;
+
+// Element ids look like <PREFIX>-<SLUG>-<NUMBER>, e.g. PS-FR-001, OAF-FR-012.
+const ELEMENT_ID = /\b[A-Z]{1,4}-[A-Z]{2,4}-\d{3}\b/g;
+
+// Split a plain text run, wrapping every resolvable element id in a hovercard
+// so it previews on hover. Ids that don't resolve are left as plain text.
+function linkifyText(text: string, getRef: GetRef): ReactNode {
+  const out: ReactNode[] = [];
+  let last = 0;
+  let m: RegExpExecArray | null;
+  ELEMENT_ID.lastIndex = 0;
+  while ((m = ELEMENT_ID.exec(text))) {
+    const ref = getRef(m[0]);
+    if (!ref) continue;
+    if (m.index > last) out.push(text.slice(last, m.index));
+    out.push(
+      <ElementHovercard
+        key={`${m[0]}-${m.index}`}
+        element={ref.page}
+        typeLabel={ref.typeLabel}
+      >
+        <span className="chat-ref">{m[0]}</span>
+      </ElementHovercard>,
+    );
+    last = m.index + m[0].length;
+  }
+  if (out.length === 0) return text;
+  if (last < text.length) out.push(text.slice(last));
+  return out;
+}
+
+// Recurse through rendered markdown children, linkifying text runs. Code and
+// pre blocks are left untouched — ids inside literal code aren't references.
+function linkify(node: ReactNode, getRef: GetRef): ReactNode {
+  if (typeof node === "string") return linkifyText(node, getRef);
+  if (Array.isArray(node))
+    return node.map((n, i) => (
+      <Fragment key={i}>{linkify(n, getRef)}</Fragment>
+    ));
+  if (isValidElement(node)) {
+    if (node.type === "code" || node.type === "pre") return node;
+    const children = (node.props as { children?: ReactNode }).children;
+    if (children == null) return node;
+    return cloneElement(node, undefined, linkify(children, getRef));
+  }
+  return node;
+}
+
+// Markdown block tags whose text content may carry element-id references.
+const LINKABLE = [
+  "p", "li", "td", "th", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote",
+] as const;
+
+function buildComponents(getRef: GetRef): Components {
+  const out: Record<
+    string,
+    (props: { node?: unknown; children?: ReactNode }) => ReactNode
+  > = {};
+  for (const tag of LINKABLE) {
+    out[tag] = ({ node: _node, children, ...rest }) =>
+      createElement(tag, rest, linkify(children, getRef));
+  }
+  return out as Components;
 }
 
 // Right-rail agent chat. Collapsed it is a thin rail; expanded it is a
@@ -23,6 +105,7 @@ export default function AgentChat({
   onRunLint,
   linting,
   findingCount,
+  getRef,
 }: {
   open: boolean;
   onToggle: () => void;
@@ -34,9 +117,11 @@ export default function AgentChat({
   onRunLint: () => void;
   linting: boolean;
   findingCount: number | null;
+  getRef: GetRef;
 }) {
   const [draft, setDraft] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const mdComponents = useMemo(() => buildComponents(getRef), [getRef]);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -96,7 +181,9 @@ export default function AgentChat({
         )}
         {messages.map((m) => (
           <div className={`chat-msg ${m.role}`} key={m.id}>
-            <ReactMarkdown>{m.text}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+              {m.text}
+            </ReactMarkdown>
           </div>
         ))}
         {pending && (

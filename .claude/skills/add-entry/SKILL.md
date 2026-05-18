@@ -72,6 +72,9 @@ Loop until [Y]. Always offer all three.
 
 ## Step 5 — Write it
 
+While drafting and presenting (Steps 3–4) the element has no id yet — refer to
+it by description, never guess an id. The id is assigned here, at write time.
+
 On **[Y]**:
 1. `python3 scripts/wiki/next_id.py <slug> <type>` — the id.
 2. Assemble a JSON spec (`slug`, `type`, `id`, `title`, `confidence`,

@@ -70,7 +70,7 @@ Twelve skills are built. The Wiki Assistant is planned.
 | **source-cx** | automated | non-interactive web research → draft competitor-CX and `cx-benchmark` elements |
 | **source-regulation** | automated | non-interactive web research → draft `regulation` elements for the Risk & Compliance area |
 | **run-lint** | automated | lint pass — conformance + five-lens sweep; writes `lint.json`, re-opens implicated approvals (§9) |
-| **foundational-run** | guided | post-ingest narrated walk: challenge every As-Is element with the SME, resumable (§7) |
+| **foundational-run** | guided | post-ingest narrated walk: challenge every current-state element with the SME, resumable (§7) |
 | **add-entry** | interactive | add one AI-drafted element to a section — asks the SME, researches (wiki / web), refines Y/E/R, writes on approval |
 | **area-summary** | automated | generate an area's executive summary as an Amazon-style narrative memo; silent, writes summaries.json |
 | **conflict-resolution** | interactive | walk each doc-vs-wiki conflict from a re-ingest with the SME — D/W/E per conflict, clears them when done (§5) |
@@ -174,6 +174,13 @@ cannot come out malformed and every run reads the same.
 | `set_approval.py` | set an element's (or the overview's) approval |
 | `review_cursor.py` | build / advance / report the foundational-run queue |
 
+**Reserve an element id before you name it.** `next_id.py` assigns ids in
+creation order, so an id is only known once the element is written. A skill
+must never speak an id to the SME before `next_id.py` has assigned it — a
+guessed id ("this will be `PG-FR-005`") is often wrong. Refer to a
+not-yet-written element by description; state its id only once written. This
+matters in an audit-facing tool, where the SME follows the work by id.
+
 Skills also write **sidecar JSON artifacts** into the process folder, which the
 app reads: `lint.json` (run-lint findings), `ingest.json` (document-ingest
 result — the triage screen), `review-state.json` (foundational-run cursor).
@@ -189,8 +196,8 @@ the instant inline per-element badge.
 
 ```
 new-process ─▶ document-ingest ─▶ [triage screen] ─▶ foundational-run
-  scaffold       extract + verify     what landed      challenge each As-Is
-                 draft elements       + launch         element, SME approves
+  scaffold       extract + verify     what landed      challenge each current-
+                 draft elements       + launch         state element, approve
 ```
 
 - `new-process` scaffolds the empty process and points the user to upload a
@@ -199,8 +206,9 @@ new-process ─▶ document-ingest ─▶ [triage screen] ─▶ foundational-ru
   against the source, and writes `ingest.json`.
 - The **triage screen** (app) shows what the ingest produced and launches the
   **foundational run** — a narrated, resumable walk where the meticulous
-  Process Analyst persona challenges every As-Is element and the SME approves
-  it. Its close-out points to `conflict-resolution` for any later re-ingest.
+  Process Analyst persona challenges every current-state element (each through
+  its owning specialist's lens) and the SME approves it. Its close-out points
+  to `conflict-resolution` for any later re-ingest.
 
 **Alongside:**
 - `qer-session` — the interactive multi-perspective session (§8), for

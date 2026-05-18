@@ -131,7 +131,7 @@ export default function TriagePanel({
               <button className="triage-run-btn" onClick={onStartRun}>
                 {runState === "in-progress"
                   ? `Resume foundational run · ${rs!.cursor} / ${rs!.total}`
-                  : `Start foundational run · ${doc.elements.length + 1}`}
+                  : `Start foundational run · ${doc.elements.length + 1} items`}
               </button>
               <div className="triage-receipt-note">
                 {runState === "in-progress"

@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import type { Schema, ProcessDoc, WikiPage } from "@/lib/wiki";
 import { isSourcedType } from "@/lib/element-types";
+import { initials, type User } from "@/lib/user";
 import { buildRelations, type LinkGroup } from "@/lib/relations";
 import { sectionForId } from "@/lib/nav";
 import type { LintFinding } from "@/lib/lint";
@@ -25,14 +28,6 @@ import Tooltip from "@/components/Tooltip";
 import ToastStack, { type Toast } from "@/components/ToastStack";
 
 const mid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-
-// The signed-in SME — stamped onto review-status changes in the wiki.
-const CURRENT_USER = "M. Berger";
-const CURRENT_USER_ROLE = "Subject-Matter Expert";
-const USER_INITIALS = CURRENT_USER.split(/\s+/)
-  .map((w) => w[0])
-  .join("")
-  .toUpperCase();
 
 // Top-bar action icons — stroked line glyphs, sized + coloured via CSS.
 const IconSearch = () => (
@@ -218,9 +213,15 @@ function resumeMessage(d: ProcessDoc): ChatMessage | null {
 export default function ProcessDocScreen({
   schema,
   docs,
+  user,
+  onUpdateUser,
+  onSignOut,
 }: {
   schema: Schema;
   docs: ProcessDoc[];
+  user: User;
+  onUpdateUser: (user: User) => void;
+  onSignOut: () => void;
 }) {
   // If a foundational run is in progress on any process, the app opens on it
   // (most-recently-touched first) so a reload never strands outstanding work —
@@ -289,12 +290,15 @@ export default function ProcessDocScreen({
     () => new Map(doc.elements.map((e) => [e.id, e])),
     [doc],
   );
-  function getRef(id: string) {
-    const page = elementsById.get(id);
-    return page
-      ? { page, typeLabel: schema.elementTypes[page.type]?.label ?? page.type }
-      : undefined;
-  }
+  const getRef = useCallback(
+    (id: string) => {
+      const page = elementsById.get(id);
+      return page
+        ? { page, typeLabel: schema.elementTypes[page.type]?.label ?? page.type }
+        : undefined;
+    },
+    [elementsById, schema],
+  );
 
   // Per-process attention counts — drive the switcher's badges (#18). An
   // element is reviewed when approved, or (web-sourced) once triaged.
@@ -382,17 +386,22 @@ export default function ProcessDocScreen({
   // Document upload — the modal saves to raw-sources/, then the chat runs
   // the document-ingest skill on the saved file.
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
-  // Signed-in-user popover — the topbar person icon opens it.
+  // Signed-in-user popover — the topbar person icon opens it. The name/role
+  // fields are editable; `userEdit` holds the draft while the modal is open.
   const [userModalOpen, setUserModalOpen] = useState(false);
+  const [userEdit, setUserEdit] = useState<User>(user);
 
   // A non-interactive web-sourcing run (source-innovation / source-cx /
   // source-regulation). It runs outside the chat — a section banner shows
-  // progress, a dismissable notice shows the result.
+  // progress, then a result banner with a link that opens the full report.
   const [sourcing, setSourcing] = useState<{
     kind: "innovation" | "cx" | "regulation";
     status: "running" | "done" | "error";
     text?: string;
+    report?: string;
   } | null>(null);
+  // Whether the web-sourcing result popup is open.
+  const [sourceResultOpen, setSourceResultOpen] = useState(false);
 
   // Per-area executive summary — viewed from the nav area heading, generated
   // silently by the area-summary skill. `summaryGen` tracks an active run.
@@ -435,12 +444,27 @@ export default function ProcessDocScreen({
     knownSlugs.current = new Set(docs.map((d) => d.slug));
     if (fresh) {
       setCurrentSlug(fresh.slug);
+      window.history.replaceState(null, "", `?p=${fresh.slug}`);
       setSection("overview");
       // A freshly-scaffolded process gets a fresh, scoped assistant session —
       // drop the session id so the next turn hands the new process over.
       setChatSessionId(null);
     }
   }, [docs]);
+
+  // Process selection survives a browser reload: the current slug is mirrored
+  // into the URL (?p=<slug>) on every switch, and restored from it on mount.
+  // Without this a reload strands the user on docs[0].
+  useEffect(() => {
+    const urlSlug = new URLSearchParams(window.location.search).get("p");
+    if (urlSlug && urlSlug !== currentSlug && docs.some((d) => d.slug === urlSlug)) {
+      switchProcess(urlSlug);
+    } else if (!urlSlug) {
+      window.history.replaceState(null, "", `?p=${currentSlug}`);
+    }
+    // Mount-only: restore once from the URL, then switchProcess keeps it synced.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // While a foundational run is active, the canvas follows the skill's lead —
   // review-state.json advances each turn, and the app opens the section of
@@ -511,16 +535,11 @@ export default function ProcessDocScreen({
     return () => window.removeEventListener("keydown", onKey);
   }, [flatSections, section, paletteOpen]);
 
-  // A finished web-sourcing run surfaces as a toast, then clears.
+  // A failed web-sourcing run surfaces as a toast, then clears. A successful
+  // one is kept in state so its result banner persists until dismissed.
   useEffect(() => {
-    if (sourcing && sourcing.status !== "running") {
-      pushToast(
-        sourcing.status === "done" ? "success" : "error",
-        sourcing.status === "done"
-          ? "Web sourcing complete"
-          : "Web sourcing failed",
-        sourcing.text,
-      );
+    if (sourcing && sourcing.status === "error") {
+      pushToast("error", "Web sourcing failed", sourcing.text);
       setSourcing(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -767,6 +786,8 @@ export default function ProcessDocScreen({
     if (slug === currentSlug || chatPending) return;
     const next = docs.find((d) => d.slug === slug);
     setCurrentSlug(slug);
+    // Mirror the selection into the URL so a browser reload restores it.
+    window.history.replaceState(null, "", `?p=${slug}`);
     setChatSessionId(null);
     // A process mid-foundational-run opens on Triage with the resume prompt,
     // exactly as a reload would; otherwise a fresh welcome.
@@ -811,7 +832,7 @@ export default function ProcessDocScreen({
     setChatOpen(true);
     handleSend(
       `Run the foundational-run skill on the process with slug "${currentSlug}". ` +
-        `The SME present in this session is ${CURRENT_USER} — stamp approvals with that name.`,
+        `The SME present in this session is ${user.name} — stamp approvals with that name.`,
     );
   }
 
@@ -959,6 +980,7 @@ export default function ProcessDocScreen({
                   ? "Client Experience"
                   : "Regulation"
             } items completed.`,
+            report: final?.text,
           });
           router.refresh();
         }
@@ -1088,7 +1110,9 @@ export default function ProcessDocScreen({
               >
                 <IconRun />
                 {doc.reviewState && !doc.reviewState.done && (
-                  <span className="tb-badge">{doc.reviewState.cursor}</span>
+                  <span className="tb-badge">
+                    {doc.reviewState.total - doc.reviewState.cursor}
+                  </span>
                 )}
               </button>
             </Tooltip>
@@ -1123,10 +1147,13 @@ export default function ProcessDocScreen({
               {dark ? <IconSun /> : <IconMoon />}
             </button>
           </Tooltip>
-          <Tooltip label={`${CURRENT_USER} · ${CURRENT_USER_ROLE}`}>
+          <Tooltip label={`${user.name} · ${user.role}`}>
             <button
               className="tb-icon"
-              onClick={() => setUserModalOpen(true)}
+              onClick={() => {
+                setUserEdit(user);
+                setUserModalOpen(true);
+              }}
               aria-label="Signed-in user"
             >
               <IconUser />
@@ -1338,7 +1365,7 @@ export default function ProcessDocScreen({
                 process={doc.process}
                 elements={doc.elements}
                 slug={doc.slug}
-                userName={CURRENT_USER}
+                userName={user.name}
                 onNavigate={setSection}
                 resolveSection={resolveSection}
               />
@@ -1549,6 +1576,29 @@ export default function ProcessDocScreen({
                   here when it finishes.
                 </div>
               )}
+              {sourcing?.status === "done" &&
+                sourcing.kind === sectionKind && (
+                  <div className="source-status source-status-done">
+                    <span className="source-status-dot" /> Web sourcing
+                    complete — the drafts are below.
+                    {sourcing.report && (
+                      <button
+                        type="button"
+                        className="source-result-link"
+                        onClick={() => setSourceResultOpen(true)}
+                      >
+                        View result
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className="source-result-dismiss"
+                      onClick={() => setSourcing(null)}
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                )}
               {section === "roles" && (
                 <RaciMatrix
                   steps={doc.elements.filter((e) => e.type === "process-step")}
@@ -1676,7 +1726,7 @@ export default function ProcessDocScreen({
                         key={el.id}
                         page={el}
                         slug={doc.slug}
-                        userName={CURRENT_USER}
+                        userName={user.name}
                         typeLabel={
                           schema.elementTypes[el.type]?.label ?? el.type
                         }
@@ -1714,7 +1764,7 @@ export default function ProcessDocScreen({
                     key={el.id}
                     page={el}
                     slug={doc.slug}
-                    userName={CURRENT_USER}
+                    userName={user.name}
                     typeLabel={schema.elementTypes[el.type]?.label ?? el.type}
                     template={schema.elementTypes[el.type]?.template}
                     fieldSpecs={
@@ -1771,6 +1821,7 @@ export default function ProcessDocScreen({
           onRunLint={runLint}
           linting={linting}
           findingCount={findings ? findings.length : null}
+          getRef={getRef}
         />
       </div>
 
@@ -1803,19 +1854,97 @@ export default function ProcessDocScreen({
           >
             <div className="modal-title">Signed-in user</div>
             <div className="user-card">
-              <span className="user-avatar">{USER_INITIALS}</span>
+              <span className="user-avatar">
+                {initials(userEdit.name.trim() || user.name)}
+              </span>
               <div>
-                <div className="user-name">{CURRENT_USER}</div>
-                <div className="user-role">{CURRENT_USER_ROLE}</div>
+                <div className="user-name">{user.name}</div>
+                <div className="user-role">{user.role}</div>
               </div>
             </div>
             <p className="modal-text">
               Approvals and edits in this process are stamped with this name.
+              Change it below, or sign out to switch user.
             </p>
+            <label className="login-field">
+              <span>Name</span>
+              <input
+                value={userEdit.name}
+                onChange={(e) =>
+                  setUserEdit((u) => ({ ...u, name: e.target.value }))
+                }
+              />
+            </label>
+            <label className="login-field">
+              <span>Role</span>
+              <input
+                value={userEdit.role}
+                onChange={(e) =>
+                  setUserEdit((u) => ({ ...u, role: e.target.value }))
+                }
+              />
+            </label>
             <div className="modal-actions">
+              <button
+                className="act act-signout"
+                onClick={() => {
+                  setUserModalOpen(false);
+                  onSignOut();
+                }}
+              >
+                Sign out
+              </button>
+              <span className="modal-actions-gap" />
               <button
                 className="act"
                 onClick={() => setUserModalOpen(false)}
+              >
+                Close
+              </button>
+              <button
+                className="act ai"
+                disabled={
+                  !userEdit.name.trim() ||
+                  !userEdit.role.trim() ||
+                  (userEdit.name.trim() === user.name &&
+                    userEdit.role.trim() === user.role)
+                }
+                onClick={() => {
+                  onUpdateUser({
+                    name: userEdit.name.trim(),
+                    role: userEdit.role.trim(),
+                  });
+                  setUserModalOpen(false);
+                }}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {sourceResultOpen && sourcing?.report && (
+        <div
+          className="modal-overlay"
+          onClick={() => setSourceResultOpen(false)}
+        >
+          <div
+            className="modal"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-label="Web sourcing result"
+          >
+            <div className="modal-title">Web sourcing result</div>
+            <div className="source-result-body">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {sourcing.report}
+              </ReactMarkdown>
+            </div>
+            <div className="modal-actions">
+              <button
+                className="act"
+                onClick={() => setSourceResultOpen(false)}
               >
                 Close
               </button>

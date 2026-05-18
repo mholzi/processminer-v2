@@ -32,21 +32,21 @@ function describeTool(name: string, input: Record<string, unknown>): string {
   const base = (p: unknown) => String(p ?? "").split("/").pop() || "";
   if (name === "Bash") {
     const cmd = String(input?.command ?? "");
-    if (cmd.includes("write_element.py")) return "✏ Schreibt Wiki-Element …";
-    if (cmd.includes("next_id.py")) return "Vergibt Element-ID …";
-    if (cmd.includes("check_conformance.py")) return "Prüft Konformität …";
-    if (cmd.includes("add_source.py")) return "Erfasst Dokument als Quelle …";
-    if (cmd.includes("scaffold_process.py")) return "Legt Prozess an …";
+    if (cmd.includes("write_element.py")) return "✏ Writing wiki element …";
+    if (cmd.includes("next_id.py")) return "Assigning element ID …";
+    if (cmd.includes("check_conformance.py")) return "Checking conformance …";
+    if (cmd.includes("add_source.py")) return "Recording document as a source …";
+    if (cmd.includes("scaffold_process.py")) return "Creating process …";
     if (cmd.includes("derive_process_meta.py"))
-      return "Leitet Prozess-Metadaten ab …";
-    return `Führt Befehl aus: ${cmd.slice(0, 48)}…`;
+      return "Deriving process metadata …";
+    return `Running command: ${cmd.slice(0, 48)}…`;
   }
-  if (name === "Read") return `Liest ${base(input?.file_path)}`;
-  if (name === "Write") return `Schreibt ${base(input?.file_path)}`;
-  if (name === "Edit") return `Bearbeitet ${base(input?.file_path)}`;
-  if (name === "Skill") return `Startet Skill „${String(input?.skill ?? "")}“`;
-  if (name === "Grep" || name === "Glob") return "Durchsucht Dateien …";
-  if (name === "Task" || name === "Agent") return "Startet Teil-Agent …";
+  if (name === "Read") return `Reading ${base(input?.file_path)}`;
+  if (name === "Write") return `Writing ${base(input?.file_path)}`;
+  if (name === "Edit") return `Editing ${base(input?.file_path)}`;
+  if (name === "Skill") return `Starting skill “${String(input?.skill ?? "")}”`;
+  if (name === "Grep" || name === "Glob") return "Searching files …";
+  if (name === "Task" || name === "Agent") return "Starting sub-agent …";
   return `${name} …`;
 }
 
@@ -112,8 +112,8 @@ export async function POST(req: NextRequest) {
         send({
           type: "error",
           error:
-            `Der Assistent wurde nach ${mins} Min. gestoppt.` +
-            (tail ? `\n\nLetzte Ausgabe:\n${tail}` : ""),
+            `The assistant was stopped after ${mins} min.` +
+            (tail ? `\n\nLast output:\n${tail}` : ""),
           sessionId: liveSession,
         });
         close();
@@ -168,9 +168,9 @@ export async function POST(req: NextRequest) {
       child.on("error", (e: NodeJS.ErrnoException) => {
         const hint =
           e.code === "ENOENT"
-            ? "Die `claude`-CLI ist nicht im PATH des Servers."
+            ? "The `claude` CLI is not on the server's PATH."
             : e.message;
-        send({ type: "error", error: `claude konnte nicht starten: ${hint}` });
+        send({ type: "error", error: `claude failed to start: ${hint}` });
         close();
       });
 
@@ -178,7 +178,7 @@ export async function POST(req: NextRequest) {
         if (!resultSent) {
           send({
             type: "error",
-            error: stderr.trim() || `claude wurde mit Code ${code} beendet.`,
+            error: stderr.trim() || `claude exited with code ${code}.`,
             sessionId: liveSession,
           });
         }

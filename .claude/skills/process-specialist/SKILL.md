@@ -226,6 +226,12 @@ The mechanical parts are Python scripts in `scripts/wiki/`. You do the
 judgement — draft the content — and run the scripts for everything else. Do
 **not** hand-write element files; the scripts own the format.
 
+**Reserve the id before you name it.** Never tell the SME an element's id
+until `next_id.py` has assigned it — a guessed id ("this will be PS-FR-009")
+is often wrong, because the real id depends on creation order. Refer to a
+not-yet-written element by description ("a new process step"); state its id
+only once it has been written.
+
 1. Read the schema `template` for the type — the named blocks, their format
    and word/item range.
 2. **Draft** every block within its template spec. This is your work.
