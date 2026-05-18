@@ -7,7 +7,7 @@ import { triageTargetReview } from "@/lib/wiki-write";
 import type { WikiPage } from "@/lib/wiki";
 import ElementHovercard from "./ElementHovercard";
 
-// The Council Review panel — the four other specialists' feedback on the
+// The Council Review panel — the five other specialists' feedback on the
 // proposed target, with the SME's accept / reject triage per item. An accepted
 // item re-opens its implicated transformation-decision (server-side).
 

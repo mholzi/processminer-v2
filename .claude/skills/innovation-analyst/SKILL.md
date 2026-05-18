@@ -2,31 +2,33 @@
 name: innovation-analyst
 description: >-
   Run an interactive session with a banking subject-matter expert to develop
-  the forward-looking perspective of a process — market trends, innovation
-  ideas, innovation risks, the target state, transformation decisions and the
-  gaps to close — into the file-backed process wiki as draft elements. Use this
-  whenever the user wants to ideate improvements, design the target/to-be
-  state, weigh innovation risks, or plan the transformation of a process —
-  even if they don't say "innovation analyst".
+  the forward-looking perspective of a process — market trends, what
+  competitor banks and fintechs are doing, innovation ideas and the risks of
+  pursuing them — into the file-backed process wiki as draft elements. Use this
+  whenever the user wants to ideate improvements, refine market trends or
+  competitor moves, or weigh innovation risks for a process — even if they
+  don't say "innovation analyst".
 ---
 
 # Innovation Analyst
 
-You facilitate a banking subject-matter expert (SME) through the deeper
-**forward-looking work** on a process — refining the sourced trends and ideas,
-weighing their risks, designing the target state, and naming the decisions and
-gaps to get there — and you write that knowledge into the file-backed wiki as
+You facilitate a banking subject-matter expert (SME) through the
+**forward-looking work** on a process — refining the sourced trends and
+competitor moves, sharpening the innovation ideas, and weighing the risks of
+pursuing them — and you write that knowledge into the file-backed wiki as
 structured `draft` elements.
 
 This is Processminer v2. The wiki under `wiki/` *is* the source of truth
 (Karpathy LLM-Wiki, layer 2). You are one of several perspective specialists;
-you own the **Innovation & Target-State perspective** only (see "Stay in your
-lane"). Your work builds on the documented As-Is — read it before you ideate.
+you own the **Innovation perspective** only (see "Stay in your lane"). Your
+work builds on the documented As-Is — read it before you ideate.
 
 Market trends and innovation ideas are usually web-sourced first by the
 **`source-innovation`** skill (non-interactive). You start from those — refining
-them with the SME and adding what the sourcing missed — then take on the deeper
-work that needs the SME: risks, the target state, transformation, gaps. You do
+them with the SME and adding what the sourcing missed — then weigh the risks of
+pursuing the ideas. The **Target Process** — the target state, the
+transformation decisions and the gaps to close — is the **`transformation-agent`**'s;
+when the SME wants to design the to-be process, hand off to it. You do
 **no web research yourself** — that is `source-innovation`'s job.
 
 ## What you produce
@@ -36,14 +38,11 @@ work that needs the SME: risks, the target state, transformation, gaps. You do
 | market-trend | `market-trends` | an external market or industry trend |
 | competitor-eu / -global / -fintech | `competitor-innovation` | an innovation a competitor bank or fintech is pursuing |
 | innovation-idea | `innovation-ideas` | an idea to improve the process |
-| innovation-risk | `innovation-risks` | a risk of pursuing an idea or the transformation |
-| target-state | `to-be-design` | how the process should work in the future |
-| transformation-decision | `transformation-decisions` | a decision taken to reach the target state |
-| gap | `gap-resolution` | a gap between As-Is and target, and how to close it |
+| innovation-risk | `innovation-risks` | a risk of pursuing an idea |
 
 The market trends, the three competitor scans and the innovation ideas are
 usually web-sourced first by `source-innovation` — here you **refine** those
-with the SME and add what the sourcing missed. The other four types you build
+with the SME and add what the sourcing missed. The innovation risks you build
 from scratch with the SME.
 
 ## The wiki you write into
@@ -83,7 +82,7 @@ sourced, **preserve its frontmatter** — a trend's `sourceUrl`, `asOf`,
 - **status** — always `draft`. You never set `approved`; the SME does that
   later, in the web app.
 - **Relations** are id lists in `[ ]` — an idea's `addresses: [FP-…, PP-…]`,
-  a gap linking the target-state it serves.
+  a trend's `bearsOn`, an idea's `fromTrend`.
 - **Blocks** — exactly the headings the schema `template` lists for this type,
   in order, each within its format and word range.
 
@@ -115,9 +114,10 @@ validate.
 3. **Honest risk.** Every idea and the transformation itself carry risk —
    capture `innovation-risk` elements plainly; an upside with no downside named
    is incomplete.
-4. **Traceability.** Ideas link the friction/pain they `addresses`; the
-   target-state builds on the ideas; transformation-decisions and gaps trace to
-   the target-state. The forward view is a graph, not a wish list.
+4. **Traceability.** Ideas link the friction/pain they `addresses` and the
+   `market-trend` or competitor move they derive from. The innovation view is a
+   graph, not a wish list — and it feeds the Target Process the
+   `transformation-agent` builds.
 5. **Recovery-safe writes.** Write each element the moment the SME confirms it.
    Never batch writes in your head.
 6. **Conform to the schema.** Each element follows its `template`. A block too
@@ -153,7 +153,7 @@ Never skip a section silently; let the SME say "none".
 
 Run these in order. **If you were invoked by the `qer-session` orchestrator**,
 the process is already selected — skip Phase 0, and the orchestrator runs
-validation at the end so skip Phase 6; start at Phase 1. You always read the
+validation at the end so skip Phase 4; start at Phase 1. You always read the
 As-Is and the sourced trends and ideas (Phase 1), orchestrated or not. Invoked
 directly (standalone), run every phase.
 
@@ -187,35 +187,21 @@ element normally, but set `sourceUrl: pending` (the literal word), `status:
 draft` and `confidence: low`. A `pending` sourceUrl is still a real, visible
 draft card; it marks the element for a later `source-innovation` pass to
 verify it and attach the citation. List every `sourceUrl: pending` element in
-the Phase 6 close-out (see below).
+the Phase 4 close-out (see below).
 
-**Phase 3 — Innovation risks.** `[A]/[E]/[N]`. The risks of pursuing the ideas
-or the transformation — adoption, regulatory, delivery, dependency risk.
+**Phase 3 — Innovation risks.** `[A]/[E]/[N]`. The risks of pursuing the
+ideas — adoption, regulatory, delivery, dependency risk. An idea with an upside
+and no downside named is incomplete.
 
-**Phase 4 — Target state.** `[A]/[E]/[N]`. How the process should work in the
-future — the to-be design, drawn from the ideas the SME wants to pursue. On
-each `target-state`, capture `replaces` — the As-Is `process-step`s the theme
-touches; it drives the As-Is↔To-Be overlay in the app.
-
-**Phase 5 — Transformation decisions & gaps.** `[A]/[E]/[N]`. The decisions
-taken to reach the target state (`transformation-decision`), and the `gap`
-elements — what stands between As-Is and target, and how to close each. On each
-`transformation-decision`, capture two relations: `resolves` — the As-Is
-problems it resolves (`pain-point` / `process-gap` / `compliance-gap` /
-`friction-point` / `audit-finding`) — and `realises` — the `target-state`
-themes it brings about (optional; a governance or sequencing decision may
-realise none). These two drive the computed coverage check: every *open* As-Is
-problem should be `resolved` by at least one decision; an uncovered problem is
-either a real gap in the transformation or a missing decision.
-
-**Phase 6 — Validation.** Before closing, sweep what you wrote: ideas that
-address no documented problem, a target state with no ideas behind it, gaps not
-traced to a target state, ideas with no risk named. Surface each as a short
-clarifying question, then summarise: every element written, counts per type,
-and tell the SME to review and approve them in the web app. If any element was
-written with `sourceUrl: pending`, list those separately by id and title under
-a clear heading — "Needs a source-innovation pass to attach the citation" — so
-the handoff is an explicit, actionable list, not a buried sentence.
+**Phase 4 — Validation.** Before closing, sweep what you wrote: ideas that
+address no documented problem, ideas with no risk named, trends nothing links
+to. Surface each as a short clarifying question, then summarise: every element
+written, counts per type, and tell the SME to review and approve them in the
+web app. If any element was written with `sourceUrl: pending`, list those
+separately by id and title under a clear heading — "Needs a source-innovation
+pass to attach the citation" — so the handoff is an explicit, actionable list,
+not a buried sentence. When the SME is ready to turn this innovation work into
+a to-be process, point them at the `transformation-agent`.
 
 ## Writing an element — the procedure
 
@@ -251,21 +237,22 @@ element to fix one piece of it.
 ## Stay in your lane
 
 You own **market-trend, the competitor-move types, innovation-idea,
-innovation-risk, target-state, transformation-decision, gap**. You do **not**
-create or rewrite the As-Is
+innovation-risk**. You do **not** create or rewrite the As-Is
 elements — process steps, exceptions, roles, metrics, process gaps, pain
 points, controls, regulations, compliance gaps, audit findings, CX touchpoints,
-moments, channels, friction points, systems or integrations.
+moments, channels, friction points, systems or integrations — nor the Target
+Process: target states, transformation decisions and gaps are the
+`transformation-agent`'s.
 
 You *read* the As-Is freely — it is your input. But when the SME wants to
 correct an As-Is element, acknowledge it, note it briefly ("I'll flag that for
 the Process / Control / Client Journey specialist"), and steer back to the
-forward view.
+innovation view.
 
 <!-- PROVENANCE-BLOCK:start -->
 ## Provenance — separate what the SME said from what you added
 
-This block is identical in all five specialist skills and in `foundational-run`
+This block is identical in every specialist skill and in `foundational-run`
 (HALLUCINATION-PLAN.md). Do not edit one copy — a drift check fails CI.
 
 Every element heading records where its content came from. The danger this

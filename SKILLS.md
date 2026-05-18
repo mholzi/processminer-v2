@@ -18,12 +18,12 @@ LLM-Wiki (`raw-sources/` → `wiki/` → `schema/`).
 
 The design has **two axes**:
 
-- **Perspective specialists** — five domain experts, each looking at the same
+- **Perspective specialists** — six domain experts, each looking at the same
   process through a different lens (§4).
 - **The functional pattern** — a shared interaction pattern (brainstorm /
   author / verify) every specialist runs with its own expertise (§5).
 
-One pattern + five expertise packages — plus a set of cross-cutting and
+One pattern + six expertise packages — plus a set of cross-cutting and
 automated skills (§3).
 
 ---
@@ -54,7 +54,7 @@ The app invokes skills both from **free chat** (description match) and from
 
 ## 3. The skill roster
 
-Twelve skills are built. The Wiki Assistant is planned.
+These skills are built; the Wiki Assistant is planned.
 
 | Skill | Kind | Role |
 |---|---|---|
@@ -62,13 +62,15 @@ Twelve skills are built. The Wiki Assistant is planned.
 | **process-specialist** | specialist | As-Is operational mechanics (§4) |
 | **control-compliance-specialist** | specialist | risk & regulatory (§4) |
 | **client-journey-specialist** | specialist | client experience (§4) |
-| **innovation-analyst** | specialist | forward-looking — refine, risk, target state (§4) |
+| **innovation-analyst** | specialist | forward-looking — refine sourced trends/ideas, weigh risk (§4) |
+| **transformation-agent** | specialist | the Target Process — target state, transformation decisions, gaps (§4) |
 | **it-architect** | specialist | systems landscape (§4) |
 | **new-process** | automated | scaffold a process folder + section folders + blank `index.md` |
 | **document-ingest** | automated | extract an uploaded document into draft elements; verifies each draft against the source (§5) |
 | **source-innovation** | automated | non-interactive web research → draft `market-trend`, competitor-move and `innovation-idea` elements |
 | **source-cx** | automated | non-interactive web research → draft competitor-CX and `cx-benchmark` elements |
 | **source-regulation** | automated | non-interactive web research → draft `regulation` elements for the Risk & Compliance area |
+| **source-target** | automated | non-interactive — consolidate the documented perspectives into a first-stub Target Process (target states, decisions, gaps) |
 | **run-lint** | automated | lint pass — conformance + five-lens sweep; writes `lint.json`, re-opens implicated approvals (§9) |
 | **foundational-run** | guided | post-ingest narrated walk: challenge every current-state element with the SME, resumable (§7) |
 | **add-entry** | interactive | add one AI-drafted element to a section — asks the SME, researches (wiki / web), refines Y/E/R, writes on approval |
@@ -88,7 +90,8 @@ question bank, the functional pattern (§5), and the slice of the schema it owns
 | **Process Specialist** | operational mechanics — who does what, in what order, where it breaks | process-step, exception, role, metric, process-gap, pain-point |
 | **Control & Compliance Specialist** | risk & regulatory (one specialist — a control exists to satisfy a regulation) | control, regulation, compliance-gap, audit-finding |
 | **Client Journey Specialist** | the customer's experience — effort, emotion, friction | cx-channel, cx-touchpoint, moment, friction-point, competitor-cx-\*, cx-benchmark |
-| **Innovation Analyst** | forward-looking — refine the sourced trends/competitors/ideas, weigh risk, design the target state | market-trend, competitor-eu/-global/-fintech, innovation-idea, innovation-risk, target-state, transformation-decision, gap |
+| **Innovation Analyst** | forward-looking — refine the sourced trends/competitors/ideas, weigh risk | market-trend, competitor-eu/-global/-fintech, innovation-idea, innovation-risk |
+| **Transformation Agent** | the forward synthesis — turn the documented perspectives into a target state, the decisions to reach it and the gaps to close | target-state, transformation-decision, gap |
 | **IT Architect** | the systems landscape | system, integration |
 
 Mapped to the six schema areas:
@@ -106,11 +109,16 @@ Mapped to the six schema areas:
   documented with the SME; the non-interactive `source-cx` skill web-sources
   the comparative layer — competitor CX (three tiers: European corporate
   banks, global corporate banks, fintechs) and CX benchmarks.
-- **Innovation + Target Process** — the Innovation Analyst's. The non-
-  interactive `source-innovation` skill web-sources the first pass of
-  `market-trend`, competitor-move and `innovation-idea` elements — competitors
-  scanned in three tiers; the Innovation Analyst then refines those with the
-  SME and does the deeper work (risk, target state, transformation, gaps).
+- **Innovation** — the Innovation Analyst's. The non-interactive
+  `source-innovation` skill web-sources the first pass of `market-trend`,
+  competitor-move and `innovation-idea` elements — competitors scanned in three
+  tiers; the Innovation Analyst then refines those with the SME and weighs the
+  risks of pursuing them.
+- **Target Process** — the Transformation Agent's. The non-interactive
+  `source-target` skill consolidates the documented As-Is, risk,
+  client-experience, innovation and systems work into a first-stub target
+  state, transformation decisions and gaps; the Transformation Agent then
+  refines that with the SME and closes the open coverage.
 - **IT Architecture** — the IT Architect's.
 
 Note: **pain-points** are staff/process pain (→ Process, As-Is); **friction-
@@ -215,6 +223,8 @@ new-process ─▶ document-ingest ─▶ [triage screen] ─▶ foundational-ru
   documenting a process by SME interview rather than from a document.
 - `source-innovation` then `innovation-analyst` — web-source the innovation
   perspective, then refine + deepen it with the SME.
+- `source-target` then `transformation-agent` — consolidate the documented
+  perspectives into a first-stub Target Process, then refine it with the SME.
 - `run-lint` — the consistency checkpoint, run any time (§9).
 
 ---
@@ -308,6 +318,7 @@ buttons that post a fixed message to `/api/session`:
 | `source-innovation` | the "✦ Source from the web" empty-state CTA on the Market Trends / Competitor / Innovation Ideas sections |
 | `source-cx` | the "✦ Source from the web" empty-state CTA on the Competitor CX / CX Benchmarks sections |
 | `source-regulation` | the "✦ Source from the web" empty-state CTA / "✦ Refresh from the web" toolbar button on the Regulation section |
+| `source-target` | the empty-state CTA on the Target Process area, when the whole area is still empty |
 | `run-lint` | the "⊛ Run lint" top-bar button |
 | `qer-session`, the specialists | free chat; `qer-session` dispatches them; or the **Deep Dive** button — routes the owning specialist by the element's section (§4/§9) |
 
@@ -378,5 +389,5 @@ cover it); the install tooling skills.
 
 Decided: runtime is Claude Code skills driven by the app (§2); completion is
 human-driven (§10); orchestration is an authored step sequence (§8); the roster
-is five specialists plus the automated skills (§3); verification is folded into
+is six specialists plus the automated skills (§3); verification is folded into
 `document-ingest`, not a standalone Verifier (§5).

@@ -54,8 +54,9 @@ Dispatch in this order. Skip any not-built specialist.
 | Process | `process-specialist` | built | process-step, exception, pain-point, process-gap, role, metric |
 | Control & Compliance | `control-compliance-specialist` | built | control, regulation, compliance-gap, audit-finding |
 | Client Journey | `client-journey-specialist` | built | cx-channel, cx-touchpoint, moment, friction-point, competitor-cx, cx-benchmark |
-| Innovation | `innovation-analyst` | built | market-trend, competitor moves, innovation-idea, innovation-risk, target-state, transformation-decision, gap |
+| Innovation | `innovation-analyst` | built | market-trend, competitor moves, innovation-idea, innovation-risk |
 | IT Architecture | `it-architect` | built | system, integration |
+| Target Process | `transformation-agent` | built | target-state, transformation-decision, gap |
 
 ## Principles
 
@@ -127,9 +128,11 @@ For each **built** specialist in registry order:
    perspective, or pause here?" The SME may stop at any point; a session need
    not cover every perspective in one sitting.
 
-All five specialists are built, so a full session documents every perspective
+All six specialists are built, so a full session documents every perspective
 in registry order — Process, then Control & Compliance, Client Journey,
-Innovation, IT Architecture — checkpointing with the SME between each.
+Innovation, IT Architecture and Target Process — checkpointing with the SME
+between each. The Target Process pass runs last: it synthesises the documented
+perspectives, so they must exist first.
 
 ## Step 4 — CROSS-PERSPECTIVE REVIEW
 

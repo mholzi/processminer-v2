@@ -149,10 +149,24 @@ fields (a 3-5 word title, the blocks, the severity, the linked steps) from what
 they said, draft the element, and run Y/E/R.
 
 ### Entry idiom for optional sections
-Exceptions, pain points and gaps may legitimately be empty. Open each with:
+Exceptions, pain points, gaps and stakeholders may legitimately be empty. Open
+each with:
 **[A] Add one · [E] Explore — help me find them · [N] None / move on.**
 "Explore" means you probe with prompts ("processes like this often hit X — does
 that happen here?"). Never skip a section silently; let the SME say "none".
+
+**Record the section's completeness.** An empty folder cannot tell "the SME
+confirmed none" from "never worked". When a section is done, run
+`python3 scripts/wiki/set_section_status.py <slug> <section-id> <status> "<SME name>"`:
+- on **[N] None** — status `confirmed-empty` (the SME was asked, there are none)
+- on finishing a section with elements — status `worked`
+
+### Glossary
+When a banking term, acronym or system name comes up that a reader of the
+baseline might not know, capture it:
+`python3 scripts/wiki/write_glossary.py <slug> "<term>" <TERM|ACRONYM|SYSTEM> "<one-line definition>"`.
+The glossary is a `glossary.json` sidecar, not an element — no Y/E/R, just
+record it as you go.
 
 ## The session — phases
 
@@ -209,6 +223,13 @@ run or measured — no owner for a step, no SLA tracking, an unclear handoff.
 responsibility in one line, and what it does in this process. Link the steps
 it owns.
 
+**Phase 6b — Stakeholders.** `[A]/[E]/[N]`. The people and parties with an
+interest in the process beyond those who run it — the sponsor, the process
+owner, governance bodies, regulators, the client, key vendors. For each
+`stakeholder`: who they are, their stake in the process, how they are engaged,
+their `stakeholderType` and `influence`. Roles do the work; stakeholders hold
+an interest — do not duplicate a role as a stakeholder.
+
 **Phase 7 — Metrics.** How the process is measured today — cycle time, volume,
 error rates. Capture the definition, the current reading, and why it matters.
 If the SME says a thing isn't measured, that's a Phase 5 gap, not a metric.
@@ -255,10 +276,11 @@ only once it has been written.
 
 ## Stay in your lane
 
-You own **process-step, exception, pain-point, process-gap, role, metric** and
-the overview. You do **not** create controls, regulations, compliance gaps,
-audit findings, systems, integrations, CX touchpoints, moments, channels,
-friction points, market trends, innovation ideas, target-state or
+You own **process-step, exception, pain-point, process-gap, role, metric,
+stakeholder** and the overview, plus the `glossary.json` sidecar. You do **not**
+create controls, regulations, compliance gaps, audit findings, systems,
+integrations, CX touchpoints, moments, channels, friction points, market
+trends, innovation ideas, requirements, dependencies, target-state or
 transformation elements.
 
 When the SME mentions one — "there's a four-eyes check here", "that runs on the
@@ -270,7 +292,7 @@ hand-off beats a half-built element in the wrong perspective.
 <!-- PROVENANCE-BLOCK:start -->
 ## Provenance — separate what the SME said from what you added
 
-This block is identical in all five specialist skills and in `foundational-run`
+This block is identical in every specialist skill and in `foundational-run`
 (HALLUCINATION-PLAN.md). Do not edit one copy — a drift check fails CI.
 
 Every element heading records where its content came from. The danger this

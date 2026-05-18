@@ -174,6 +174,26 @@ export interface Note {
   replyTo?: string;
 }
 
+/** One glossary term — an entry in glossary.json (CONTENT-MODEL-PLAN.md D1).
+ *  The glossary is a sidecar, not an element: reference data, no provenance. */
+export interface GlossaryTerm {
+  term: string;
+  /** TERM | ACRONYM | SYSTEM */
+  termType: string;
+  definition: string;
+}
+
+/** A section's completeness marker — a value in sections.json, keyed by
+ *  section id (CONTENT-MODEL-PLAN.md D5). Tells `confirmed-empty` (the SME
+ *  said the process has none) apart from `not-visited` (never worked). */
+export interface SectionStatus {
+  /** worked | confirmed-empty | not-visited */
+  status: string;
+  count: number;
+  date: string;
+  by?: string;
+}
+
 export interface ProcessDoc {
   slug: string;
   process: WikiPage;
@@ -192,6 +212,10 @@ export interface ProcessDoc {
   summaries?: SectionSummaries;
   /** SME note threads, keyed by element id — notes.json. */
   notes?: Record<string, Note[]>;
+  /** Process glossary — glossary.json. */
+  glossary?: GlossaryTerm[];
+  /** Per-section completeness markers — sections.json, keyed by section id. */
+  sectionStatus?: Record<string, SectionStatus>;
 }
 
 /** Parse `key: value` frontmatter. `[a, b]` becomes a string array. */
@@ -314,5 +338,7 @@ export function getProcess(slug: string): ProcessDoc | null {
     reviewState: readJson<ReviewState>("review-state.json"),
     summaries: readJson<SectionSummaries>("summaries.json"),
     notes: readJson<Record<string, Note[]>>("notes.json"),
+    glossary: readJson<GlossaryTerm[]>("glossary.json"),
+    sectionStatus: readJson<Record<string, SectionStatus>>("sections.json"),
   };
 }

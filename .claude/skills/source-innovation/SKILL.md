@@ -20,8 +20,9 @@ move and `innovation-idea` draft elements. You are invoked with a process
 
 This is the web-research analogue of `document-ingest`: it extracts from an
 uploaded document, you extract from the live web. The deep, interactive
-forward-looking work — risks, target state, transformation, refining ideas with
-the SME — is `innovation-analyst`'s; you only do the fast sourcing pass.
+forward-looking work — refining the ideas and weighing their risks with the
+SME — is `innovation-analyst`'s; the Target Process is the
+`transformation-agent`'s. You only do the fast sourcing pass.
 
 **You are non-interactive.** No SME is present. You ask nothing, you run no
 approval loop — you read, search, draft, write, and report. Everything you
@@ -37,8 +38,9 @@ write is `status: draft`; the SME reviews and approves it later in the app.
 | competitor-fintech | `competitor-innovation` | an innovation a fintech is pursuing |
 | innovation-idea | `innovation-ideas` | an idea to improve the process |
 
-You do **not** produce innovation-risks, target-state, transformation-decision
-or gap elements — those are `innovation-analyst`'s, with the SME.
+You do **not** produce innovation-risks — those are `innovation-analyst`'s —
+nor the Target Process: target-state, transformation-decision and gap elements
+are the `transformation-agent`'s. All need the SME.
 
 ## The wiki you write into
 
@@ -205,7 +207,7 @@ you never invent a competitor.
 <!-- WEB-PROVENANCE-BLOCK:start -->
 ## Provenance — web-sourced content is unconfirmed
 
-This block is identical in the three `source-*` skills (HALLUCINATION-PLAN.md).
+This block is identical in the three web-sourcing skills (HALLUCINATION-PLAN.md).
 Do not edit one copy — a drift check fails CI.
 
 You source from the web with no SME present. Every element you write is

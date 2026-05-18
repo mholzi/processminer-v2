@@ -149,8 +149,8 @@ export function CoveragePanel({
       <div className="empty-state">
         <p>No transformation decisions yet.</p>
         <p className="empty-hint">
-          Coverage appears once decisions are authored. Run the Innovation
-          Analyst, or add a transformation decision, to start.
+          Coverage appears once decisions are authored. Run the Transformation
+          Agent, or add a transformation decision, to start.
         </p>
       </div>
     );

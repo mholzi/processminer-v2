@@ -11,9 +11,9 @@ frequencyPct: 30
 impact: MEDIUM
 handlingOwner: Operations Officer
 affects: [PS-COB-001, PS-COB-002]
-approval: approved
-approvalBy: M. Berger
-approvalDate: 2026-05-16
+approval: in-progress
+approvalBy: run-lint
+approvalDate: 2026-05-18
 ---
 ## Description
 Triggered when required documents are missing after submission. It is the most common exception in the process, firing on roughly 30% of applications.

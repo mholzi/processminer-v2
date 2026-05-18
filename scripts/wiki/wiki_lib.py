@@ -149,6 +149,60 @@ def dump_provenance(prov: dict) -> str:
     return json.dumps(prov, ensure_ascii=False, sort_keys=True)
 
 
+# ---- Section + ownership resolution -------------------------------------
+# CONTENT-MODEL-PLAN.md D2/D6. The `assumptions` section has no fixed owning
+# specialist; an assumption is challenged through whichever specialist owns
+# the element its `bearsOn` points at. These helpers do that resolution
+# deterministically, so no skill repeats the rule as prose.
+
+
+def find_section(section_id: str, schema: dict | None = None) -> dict | None:
+    """The section object for an id, searched across every area. None if absent."""
+    schema = schema or load_schema()
+    for area in schema["areas"]:
+        for sec in area["sections"]:
+            if sec["id"] == section_id:
+                return sec
+    return None
+
+
+def section_specialist(section_id: str, schema: dict | None = None) -> str | None:
+    """The specialist that owns a section, or None when the section declares
+    none (e.g. `assumptions`, `competitor-cx`)."""
+    sec = find_section(section_id, schema)
+    return (sec or {}).get("specialist")
+
+
+def owner_of(slug: str, element_id: str, schema: dict | None = None) -> str | None:
+    """The specialist that owns an element — via its type's section. None when
+    the element is not found or its section declares no specialist."""
+    schema = schema or load_schema()
+    types = element_types(schema)
+    for _path, meta, _body in iter_elements(slug):
+        if str(meta.get("id")) == str(element_id):
+            info = types.get(str(meta.get("type", "")))
+            if not info:
+                return None
+            return section_specialist(info.get("section"), schema)
+    return None
+
+
+def assumption_owner(
+    slug: str, meta: dict, schema: dict | None = None
+) -> tuple[str | None, str | None]:
+    """The specialist that should challenge an `assumption`, resolved from its
+    `bearsOn` target. Returns (owner, target_id):
+      (specialist, id) — resolved
+      (None, id)       — bearsOn points at a missing element (unresolvable)
+      (None, None)     — bearsOn is empty
+    """
+    bears = meta.get("bearsOn")
+    target = (bears[0] if bears else None) if isinstance(bears, list) else (bears or None)
+    if not target:
+        return None, None
+    return owner_of(slug, target, schema), target
+
+
 # ---- Run manifest -------------------------------------------------------
 # write_element.py appends one line per write here, recording whether the
 # element was created or updated. A reporting script (write_ingest_report.py)

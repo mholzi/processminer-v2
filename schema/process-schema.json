@@ -1,6 +1,6 @@
 {
   "$schema": "processminer-wiki-schema-v2",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "_comment": "Karpathy LLM-Wiki layer 3 — the schema. Documentation is organised into 6 areas (As-Is Process / Risk & Compliance / Client Experience / Innovation / Target Process / IT Architecture), each with sections. Each element type carries a 'template': the named prose blocks every element of that type must have, with format (paragraph/bullets) and length guidance. Word ranges are calibrated to the COB-003 content so conformance flags genuine deviations. The wiki/ markdown pages are layer 2; raw-sources/ is layer 1.",
   "areas": [
     {
@@ -16,6 +16,12 @@
           "id": "roles",
           "label": "Roles & Organisation",
           "description": "The teams, functions and individuals involved in the process, and who is responsible for what.",
+          "specialist": "process-specialist"
+        },
+        {
+          "id": "stakeholders",
+          "label": "Stakeholders",
+          "description": "The people and parties with an interest in the process — sponsors, owners, governance, regulators, clients and vendors.",
           "specialist": "process-specialist"
         },
         {
@@ -162,25 +168,42 @@
           "id": "to-be-design",
           "label": "TO-BE Process Design",
           "description": "The redesigned future-state process, step by step.",
-          "specialist": "innovation-analyst"
+          "specialist": "transformation-agent"
         },
         {
           "id": "transformation-decisions",
           "label": "Transformation Decisions",
           "description": "The key decisions that shape the move from the current state to the target.",
-          "specialist": "innovation-analyst"
+          "specialist": "transformation-agent"
+        },
+        {
+          "id": "requirements",
+          "label": "Requirements",
+          "description": "Testable statements of what the target process and systems must do, derived from the transformation decisions and gaps.",
+          "specialist": "transformation-agent"
+        },
+        {
+          "id": "dependencies",
+          "label": "Dependencies",
+          "description": "The target process's boundary — the upstream feeders and downstream consumers it connects to.",
+          "specialist": "transformation-agent"
+        },
+        {
+          "id": "assumptions",
+          "label": "Assumptions",
+          "description": "What the target design and the transformation rest on — assumptions still to be confirmed."
         },
         {
           "id": "gap-resolution",
           "label": "Gap Resolution",
           "description": "How each As-Is gap, pain point and control weakness is resolved in the target state.",
-          "specialist": "innovation-analyst"
+          "specialist": "transformation-agent"
         },
         {
           "id": "validation",
           "label": "Validation",
           "description": "Evidence and sign-off that the target design holds up.",
-          "specialist": "innovation-analyst"
+          "specialist": "transformation-agent"
         }
       ]
     },
@@ -1756,6 +1779,215 @@
           "purpose": "Each kind of data that moves across the integration."
         }
       ]
+    },
+    "requirement": {
+      "label": "Requirement",
+      "section": "requirements",
+      "idPrefix": "REQ",
+      "frontmatter": {
+        "fields": [
+          {
+            "key": "reqType",
+            "label": "Type"
+          },
+          {
+            "key": "moscow",
+            "label": "MoSCoW"
+          }
+        ],
+        "relations": [
+          {
+            "key": "derivedFrom",
+            "label": "Derived from",
+            "target": [
+              "transformation-decision",
+              "gap",
+              "target-state"
+            ]
+          },
+          {
+            "key": "addresses",
+            "label": "Addresses",
+            "target": "gap"
+          }
+        ],
+        "required": [
+          "reqType",
+          "moscow",
+          "derivedFrom"
+        ]
+      },
+      "template": [
+        {
+          "heading": "Requirement",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "10–50",
+          "purpose": "One testable statement of what the target process or system must do."
+        },
+        {
+          "heading": "Rationale",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "10–50",
+          "purpose": "The transformation decision or gap this requirement comes from."
+        },
+        {
+          "heading": "Acceptance criteria",
+          "format": "bullets",
+          "items": "2–6",
+          "purpose": "How you would confirm the requirement is met."
+        }
+      ]
+    },
+    "process-dependency": {
+      "label": "Process Dependency",
+      "section": "dependencies",
+      "idPrefix": "DEP",
+      "frontmatter": {
+        "fields": [
+          {
+            "key": "direction",
+            "label": "Direction"
+          }
+        ],
+        "relations": [
+          {
+            "key": "atStep",
+            "label": "At step",
+            "target": "process-step"
+          },
+          {
+            "key": "viaSystem",
+            "label": "Via system",
+            "target": "system"
+          }
+        ],
+        "required": [
+          "direction",
+          "atStep"
+        ]
+      },
+      "template": [
+        {
+          "heading": "The dependency",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "8–45",
+          "purpose": "The connected process or party at the boundary."
+        },
+        {
+          "heading": "What crosses the boundary",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "10–50",
+          "purpose": "The data, trigger or artefact handed over, and in which direction."
+        },
+        {
+          "heading": "Why it matters",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "6–40",
+          "purpose": "The impact if the dependency fails or runs late."
+        }
+      ]
+    },
+    "stakeholder": {
+      "label": "Stakeholder",
+      "section": "stakeholders",
+      "idPrefix": "STK",
+      "frontmatter": {
+        "fields": [
+          {
+            "key": "stakeholderType",
+            "label": "Type"
+          },
+          {
+            "key": "influence",
+            "label": "Influence"
+          }
+        ],
+        "relations": [
+          {
+            "key": "roles",
+            "label": "Roles",
+            "target": "role"
+          }
+        ],
+        "required": [
+          "stakeholderType"
+        ]
+      },
+      "template": [
+        {
+          "heading": "Who they are",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "8–45",
+          "purpose": "The stakeholder and their part of the organisation or the outside party."
+        },
+        {
+          "heading": "Stake in the process",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "10–50",
+          "purpose": "What they need from the process and what they care about."
+        },
+        {
+          "heading": "Engagement",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "6–40",
+          "purpose": "How the stakeholder is involved, and at what cadence."
+        }
+      ]
+    },
+    "assumption": {
+      "label": "Assumption",
+      "section": "assumptions",
+      "idPrefix": "ASM",
+      "frontmatter": {
+        "fields": [
+          {
+            "key": "assumptionStatus",
+            "label": "Status"
+          }
+        ],
+        "relations": [
+          {
+            "key": "bearsOn",
+            "label": "Bears on",
+            "target": "*"
+          }
+        ],
+        "required": [
+          "assumptionStatus",
+          "bearsOn"
+        ]
+      },
+      "template": [
+        {
+          "heading": "The assumption",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "8–45",
+          "purpose": "What is being assumed."
+        },
+        {
+          "heading": "Why it is unconfirmed",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "8–45",
+          "purpose": "What is unknown, and why it could not be verified."
+        },
+        {
+          "heading": "Impact if wrong",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "6–40",
+          "purpose": "What breaks if the assumption does not hold."
+        }
+      ]
     }
   },
   "relationTypes": [
@@ -1838,6 +2070,40 @@
       "proposed",
       "web",
       "legacy-approved"
+    ],
+    "reqType": [
+      "FUNCTIONAL",
+      "NON-FUNCTIONAL"
+    ],
+    "moscow": [
+      "MUST",
+      "SHOULD",
+      "COULD",
+      "WONT"
+    ],
+    "direction": [
+      "UPSTREAM",
+      "DOWNSTREAM",
+      "BIDIRECTIONAL"
+    ],
+    "stakeholderType": [
+      "SPONSOR",
+      "PROCESS-OWNER",
+      "GOVERNANCE",
+      "REGULATOR",
+      "CLIENT",
+      "VENDOR",
+      "INTERNAL"
+    ],
+    "assumptionStatus": [
+      "OPEN",
+      "CONFIRMED",
+      "INVALIDATED"
+    ],
+    "sectionStatus": [
+      "worked",
+      "confirmed-empty",
+      "not-visited"
     ]
   },
   "_provenanceComment": "Hallucination countermeasure (HALLUCINATION-PLAN.md). Every template-bearing element carries a `provenance` frontmatter key: a JSON object keyed by template heading title, each value {source, evidence}. `source` is one of fieldValues.provenanceSource — elicited (the SME said it; evidence is the verbatim SME quote), document (from an uploaded source; evidence is the source quote), proposed (AI-added, unconfirmed; evidence empty), web (web-sourced, unconfirmed; evidence is URL + snippet + fetch date), legacy-approved (predates this rule; evidence not required). check_conformance.py requires a provenance entry for every template heading, requires non-empty evidence for elicited/document/web, and cross-checks the map keys against the template headings. set_approval.py blocks `approved` while any heading is proposed or web (unconfirmed)."

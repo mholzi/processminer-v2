@@ -7,9 +7,9 @@ SKILL.md stands alone" principle). Inline repetition drifts: this check fails
 if the copies of a marked region are not byte-identical.
 
 Two blocks are checked:
-  PROVENANCE-BLOCK      — read-back instructions, in the 5 specialist skills
-                          and `foundational-run` (6 copies)
-  WEB-PROVENANCE-BLOCK  — web-sourced provenance, in the 3 `source-*` skills
+  PROVENANCE-BLOCK      — read-back instructions, in the 6 specialist skills
+                          and `foundational-run` (7 copies)
+  WEB-PROVENANCE-BLOCK  — web-sourced provenance, in the 3 web-sourcing skills
 
 Usage:
   check_skill_blocks.py            verify; exit non-zero on drift or a missing block
@@ -31,6 +31,7 @@ SHARED_BLOCKS = [
             "control-compliance-specialist",
             "client-journey-specialist",
             "innovation-analyst",
+            "transformation-agent",
             "it-architect",
             "foundational-run",
         ],

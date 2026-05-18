@@ -8,9 +8,9 @@ confidence: high
 source: DTP-BB-ONB-001 v2.3
 value: 80–120 / month
 trend: +12–15% YoY
-approval: approved
-approvalBy: M. Berger
-approvalDate: 2026-05-16
+approval: in-progress
+approvalBy: run-lint
+approvalDate: 2026-05-18
 ---
 ## Definition
 The number of onboarding applications received per month.

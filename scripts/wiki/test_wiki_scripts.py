@@ -28,7 +28,11 @@ SLUG, PROC = "selftest-tmp", "SELF"
 PROC_DIR = ROOT / "wiki" / "processes" / SLUG
 
 sys.path.insert(0, str(ROOT / "scripts" / "wiki"))
-from wiki_lib import parse_frontmatter  # noqa: E402
+from wiki_lib import (  # noqa: E402
+    assumption_owner,
+    owner_of,
+    parse_frontmatter,
+)
 
 _passed = 0
 _failed = 0
@@ -70,6 +74,26 @@ EXC_BLOCKS = [
     {"heading": "Description", "text": "The documents the client submitted are incomplete and the request cannot be processed as it stands."},
     {"heading": "Handling", "text": "The officer returns the request to the client with a written list of exactly what is missing."},
     {"heading": "Impact", "text": "Adds a delay to the onboarding cycle and frustrates the client."},
+]
+REQ_BLOCKS = [
+    {"heading": "Requirement", "text": "The target system must auto-release every clean straight-through item below the configured limit with no manual intervention."},
+    {"heading": "Rationale", "text": "This operationalises the transformation decision to move clean items onto a straight-through path."},
+    {"heading": "Acceptance criteria", "text": "- A clean item below the limit posts with no human touch\n- Every auto-release is written to the audit log"},
+]
+DEP_BLOCKS = [
+    {"heading": "The dependency", "text": "The credit facility origination process, which approves the facility this process draws against."},
+    {"heading": "What crosses the boundary", "text": "An approved facility record flows downstream into this process as the precondition for any release."},
+    {"heading": "Why it matters", "text": "Without an approved facility there is nothing to release against and the process cannot start."},
+]
+STK_BLOCKS = [
+    {"heading": "Who they are", "text": "The Head of Payment Operations, who owns the release process end to end."},
+    {"heading": "Stake in the process", "text": "They are accountable for throughput, control and the audit trail, and answer for any release failure."},
+    {"heading": "Engagement", "text": "Consulted on process changes and informed of exceptions on a weekly cadence."},
+]
+ASM_BLOCKS = [
+    {"heading": "The assumption", "text": "The sanctions screening list is refreshed daily before the business day opens."},
+    {"heading": "Why it is unconfirmed", "text": "The refresh cadence was stated by the business SME but not verified against the feed."},
+    {"heading": "Impact if wrong", "text": "A stale list would let a sanctioned counterparty pass screening undetected."},
 ]
 
 
@@ -169,6 +193,31 @@ def run() -> None:
     print("\n— apply_lint —")
     r = script("apply_lint.py", SLUG, spec_file(findings))
     chk("apply_lint writes lint.json", r.returncode == 0 and (PROC_DIR / "lint.json").is_file(), r.stderr)
+
+    print("\n— resolve_finding —")
+    known = [
+        {"kind": "question", "title": "Resolve-test question",
+         "detail": "A clarifying question for the resolve test.",
+         "elements": ["PS-SELF-001"]},
+        {"kind": "discrepancy", "title": "Resolve-test discrepancy",
+         "detail": "A discrepancy for the resolve test.",
+         "elements": ["PS-SELF-001"]},
+    ]
+    script("apply_lint.py", SLUG, spec_file(known))
+    r = script("resolve_finding.py", SLUG, "F-001", "--note", "Fixed in deep-dive.")
+    lint = json.loads((PROC_DIR / "lint.json").read_text())
+    f1 = next(f for f in lint["findings"] if f["id"] == "F-001")
+    f2 = next(f for f in lint["findings"] if f["id"] == "F-002")
+    chk("resolve_finding marks the finding resolved",
+        r.returncode == 0 and f1.get("status") == "resolved", r.stderr)
+    chk("resolve_finding stamps resolvedBy / resolvedAt / note",
+        bool(f1.get("resolvedBy")) and bool(f1.get("resolvedAt"))
+        and f1.get("resolutionNote") == "Fixed in deep-dive.")
+    chk("resolve_finding leaves other findings open", f2.get("status") != "resolved")
+    chk("resolve_finding is idempotent",
+        script("resolve_finding.py", SLUG, "F-001").returncode == 0)
+    chk("resolve_finding rejects an unknown finding id",
+        script("resolve_finding.py", SLUG, "F-999").returncode != 0)
 
     print("\n— review_cursor / set_approval —")
     r = script("review_cursor.py", "build", SLUG)
@@ -319,11 +368,83 @@ def run() -> None:
     chk("clear_conflicts", r.returncode == 0
         and json.loads((PROC_DIR / "ingest.json").read_text())["conflicts"] == [], r.stderr)
 
+    print("\n— content-model: new element types (requirement/dependency/stakeholder/assumption) —")
+    script("write_element.py", spec_file(
+        {"slug": SLUG, "type": "requirement", "id": "REQ-SELF-001",
+         "title": "Auto-release clean items",
+         "fields": {"reqType": "FUNCTIONAL", "moscow": "MUST"},
+         "relations": {"derivedFrom": ["TD-SELF-001"]}, "blocks": REQ_BLOCKS}))
+    r = script("check_conformance.py", SLUG, "REQ-SELF-001")
+    chk("requirement element conforms", "conforms" in r.stdout, r.stdout)
+    script("write_element.py", spec_file(
+        {"slug": SLUG, "type": "process-dependency", "id": "DEP-SELF-001",
+         "title": "Facility origination", "fields": {"direction": "UPSTREAM"},
+         "relations": {"atStep": ["PS-SELF-001"]}, "blocks": DEP_BLOCKS}))
+    r = script("check_conformance.py", SLUG, "DEP-SELF-001")
+    chk("process-dependency element conforms", "conforms" in r.stdout, r.stdout)
+    script("write_element.py", spec_file(
+        {"slug": SLUG, "type": "stakeholder", "id": "STK-SELF-001",
+         "title": "Head of Payment Operations",
+         "fields": {"stakeholderType": "PROCESS-OWNER", "influence": "HIGH"},
+         "blocks": STK_BLOCKS}))
+    r = script("check_conformance.py", SLUG, "STK-SELF-001")
+    chk("stakeholder element conforms", "conforms" in r.stdout, r.stdout)
+    script("write_element.py", spec_file(
+        {"slug": SLUG, "type": "assumption", "id": "ASM-SELF-001",
+         "title": "Sanctions list refreshed daily",
+         "fields": {"assumptionStatus": "OPEN"},
+         "relations": {"bearsOn": ["PS-SELF-001"]}, "blocks": ASM_BLOCKS}))
+    r = script("check_conformance.py", SLUG, "ASM-SELF-001")
+    chk("assumption element conforms", "conforms" in r.stdout, r.stdout)
+    # The required traceability relation is enforced.
+    script("write_element.py", spec_file(
+        {"slug": SLUG, "type": "requirement", "id": "REQ-SELF-002", "title": "No source",
+         "fields": {"reqType": "FUNCTIONAL", "moscow": "SHOULD"}, "blocks": REQ_BLOCKS}))
+    r = script("check_conformance.py", SLUG, "REQ-SELF-002")
+    chk("a requirement with no derivedFrom is flagged", "derivedFrom" in r.stdout, r.stdout)
+
+    print("\n— content-model: owner resolution (D2) —")
+    chk("owner_of resolves an element to its section's specialist",
+        owner_of(SLUG, "PS-SELF-001") == "process-specialist",
+        owner_of(SLUG, "PS-SELF-001"))
+    asm_meta, _ = parse_frontmatter(
+        (PROC_DIR / "assumptions" / "ASM-SELF-001.md").read_text())
+    owner, tgt = assumption_owner(SLUG, asm_meta)
+    chk("assumption_owner resolves via bearsOn",
+        owner == "process-specialist" and tgt == "PS-SELF-001", (owner, tgt))
+    owner2, tgt2 = assumption_owner(SLUG, {"bearsOn": ["NOPE-SELF-999"]})
+    chk("assumption_owner flags a dangling bearsOn",
+        owner2 is None and tgt2 == "NOPE-SELF-999", (owner2, tgt2))
+
+    print("\n— content-model: section status + glossary sidecars —")
+    r = script("set_section_status.py", SLUG, "stakeholders", "worked", "M. Berger")
+    chk("set_section_status: worked", r.returncode == 0, r.stderr)
+    script("set_section_status.py", SLUG, "pain-points", "confirmed-empty", "M. Berger")
+    secs = json.loads((PROC_DIR / "sections.json").read_text())
+    chk("section status records confirmed-empty",
+        secs.get("pain-points", {}).get("status") == "confirmed-empty", secs)
+    chk("section status counts elements on disk",
+        secs.get("stakeholders", {}).get("count") == 1, secs)
+    script("set_section_status.py", SLUG, "stakeholders", "worked")
+    secs2 = json.loads((PROC_DIR / "sections.json").read_text())
+    chk("set_section_status is idempotent (count from disk, not accumulated)",
+        secs2.get("stakeholders", {}).get("count") == 1, secs2)
+    r = script("set_section_status.py", SLUG, "not-a-section", "worked")
+    chk("set_section_status rejects an unknown section", r.returncode != 0)
+    r = script("write_glossary.py", SLUG, "STP", "ACRONYM", "Straight-through processing.")
+    chk("write_glossary writes a term",
+        r.returncode == 0 and (PROC_DIR / "glossary.json").is_file(), r.stderr)
+    script("write_glossary.py", SLUG, "FMS", "SYSTEM", "Facility Management System.")
+    script("write_glossary.py", SLUG, "stp", "ACRONYM",
+           "Straight-through processing — clean items, no manual touch.")
+    gloss = json.loads((PROC_DIR / "glossary.json").read_text())
+    chk("write_glossary upserts a term case-insensitively", len(gloss) == 2, gloss)
+
     print("\n— skills: PROVENANCE-BLOCK drift check —")
     r = subprocess.run(
         ["python3", str(ROOT / "scripts" / "check_skill_blocks.py")],
         capture_output=True, text=True, cwd=ROOT)
-    chk("PROVENANCE-BLOCK is byte-identical across the 6 skills",
+    chk("PROVENANCE-BLOCK is byte-identical across the 7 skills",
         r.returncode == 0, r.stdout + r.stderr)
 
 

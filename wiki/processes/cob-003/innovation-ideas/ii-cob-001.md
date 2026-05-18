@@ -10,6 +10,9 @@ category: Customer Experience
 strategicFit: HIGH
 complexity: MEDIUM
 addresses: [FP-COB-001]
+relevance: relevant
+relevanceBy: marlus
+relevanceDate: 2026-05-18
 ---
 ## The idea
 An interactive checklist that adapts to the client's business type and validates uploads in real time, so the client sees immediately what is still missing or wrong.

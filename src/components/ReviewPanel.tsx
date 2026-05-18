@@ -1,10 +1,11 @@
 "use client";
 
-import type { LintFinding, LintReport } from "@/lib/lint";
+import { isResolved, type LintFinding, type LintReport } from "@/lib/lint";
 import FindingCard from "./FindingCard";
 
-// Lint review — the last `run-lint` pass for the process. Discrepancies
-// first, then structure issues, then clarifying questions.
+// Lint review — the last `run-lint` pass for the process. Open findings
+// first (discrepancies, then structure issues, then clarifying questions),
+// then a collapsed group of findings already resolved in a deep-dive.
 export default function ReviewPanel({
   report,
   onGoToElement,
@@ -19,9 +20,13 @@ export default function ReviewPanel({
   linting: boolean;
 }) {
   const { findings } = report;
-  const discrepancies = findings.filter((f) => f.kind === "discrepancy");
-  const conformance = findings.filter((f) => f.kind === "conformance");
-  const questions = findings.filter((f) => f.kind === "question");
+  const open = findings.filter((f) => !isResolved(f));
+  const resolved = findings.filter(isResolved);
+  const byKind = (kind: LintFinding["kind"]) =>
+    open.filter((f) => f.kind === kind);
+  const discrepancies = byKind("discrepancy");
+  const conformance = byKind("conformance");
+  const questions = byKind("question");
   const ordered = [...discrepancies, ...conformance, ...questions];
   const linted = new Date(report.generatedAt);
 
@@ -29,7 +34,7 @@ export default function ReviewPanel({
     <div className="review">
       <div className="review-summary">
         <span className="rs-stat">
-          <b>{findings.length}</b> findings
+          <b>{open.length}</b> open
         </span>
         <span className="rs-stat">
           <b>{discrepancies.length}</b> discrepancies
@@ -40,6 +45,11 @@ export default function ReviewPanel({
         <span className="rs-stat">
           <b>{questions.length}</b> clarifying questions
         </span>
+        {resolved.length > 0 && (
+          <span className="rs-stat">
+            <b>{resolved.length}</b> resolved
+          </span>
+        )}
         <button className="rs-rerun" onClick={onRerun} disabled={linting}>
           {linting ? "Linting…" : "Re-run lint"}
         </button>
@@ -52,12 +62,13 @@ export default function ReviewPanel({
         })}
       </div>
 
-      {findings.length === 0 ? (
+      {open.length === 0 ? (
         <div className="empty-state">
-          <p>No findings — all clear.</p>
+          <p>No open findings — all clear.</p>
           <p className="empty-hint">
-            Every element conforms to its template and the wiki is consistent
-            across all five perspectives.
+            {resolved.length > 0
+              ? "Every finding has been resolved in a deep-dive. Re-run lint to confirm the wiki is consistent across all five perspectives."
+              : "Every element conforms to its template and the wiki is consistent across all five perspectives."}
           </p>
         </div>
       ) : (
@@ -69,6 +80,23 @@ export default function ReviewPanel({
             onDeepDive={onDeepDive}
           />
         ))
+      )}
+
+      {resolved.length > 0 && (
+        <details className="review-resolved">
+          <summary>
+            {resolved.length} resolved finding{resolved.length === 1 ? "" : "s"}{" "}
+            — not yet re-verified by a lint pass
+          </summary>
+          {resolved.map((f) => (
+            <FindingCard
+              key={f.id}
+              finding={f}
+              onGoToElement={onGoToElement}
+              onDeepDive={onDeepDive}
+            />
+          ))}
+        </details>
       )}
     </div>
   );

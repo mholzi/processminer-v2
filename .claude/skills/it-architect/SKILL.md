@@ -192,7 +192,7 @@ back to the systems landscape.
 <!-- PROVENANCE-BLOCK:start -->
 ## Provenance — separate what the SME said from what you added
 
-This block is identical in all five specialist skills and in `foundational-run`
+This block is identical in every specialist skill and in `foundational-run`
 (HALLUCINATION-PLAN.md). Do not edit one copy — a drift check fails CI.
 
 Every element heading records where its content came from. The danger this

@@ -10,6 +10,9 @@ category: Process
 strategicFit: MEDIUM
 complexity: LOW
 addresses: [FP-COB-002]
+relevance: relevant
+relevanceBy: marlus
+relevanceDate: 2026-05-18
 ---
 ## The idea
 Replace manual chasing with an automated reminder sequence that escalates if documents are still missing.

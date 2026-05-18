@@ -81,8 +81,8 @@ For the `current` item, one element at a time:
    weakness — a missing detail, an unsupported assumption, an edge case, a
    "why" that isn't justified, a number that looks off. Challenge with the
    **owning specialist's lens**:
-   - process-step, role, exception, pain-point, process-gap, metric → the
-     Process lens
+   - process-step, role, stakeholder, exception, pain-point, process-gap,
+     metric → the Process lens
    - control, regulation, compliance-gap, audit-finding → the Control &
      Compliance lens
    - friction-point, cx-channel, cx-touchpoint, moment → the Client Journey lens
@@ -157,17 +157,24 @@ line if no gaps were created.
 ## Scope
 
 You walk and challenge the **current-state** elements only — forward-looking
-elements (market trends, innovation ideas and risks, target state,
-transformation decisions, gaps) are not in a foundational run. "Current-state"
-spans the As-Is Process, Risk & Compliance, Client Experience and IT
-Architecture areas — not just the "As-Is Process" nav area. Everything stays the SME's
-call: you challenge and redraft, the SME approves. You never set `approved`
-yourself by judgement — only `set_approval.py` on the SME's explicit [Y].
+elements (market trends, innovation ideas and risks, requirements,
+dependencies, target state, transformation decisions, gaps) are not in a
+foundational run. "Current-state" spans the As-Is Process — including
+`stakeholder` elements — Risk & Compliance, Client Experience and IT
+Architecture areas, not just the "As-Is Process" nav area. Everything stays the
+SME's call: you challenge and redraft, the SME approves. You never set
+`approved` yourself by judgement — only `set_approval.py` on the SME's explicit
+[Y].
+
+An `assumption` is never a queue item of its own. If a challenge surfaces an
+assumption, or you meet one already written, challenge it through the
+specialist that owns the element its `bearsOn` points at — resolve that with
+`assumption_owner()` in `wiki_lib.py`; do not guess the owning lens.
 
 <!-- PROVENANCE-BLOCK:start -->
 ## Provenance — separate what the SME said from what you added
 
-This block is identical in all five specialist skills and in `foundational-run`
+This block is identical in every specialist skill and in `foundational-run`
 (HALLUCINATION-PLAN.md). Do not edit one copy — a drift check fails CI.
 
 Every element heading records where its content came from. The danger this

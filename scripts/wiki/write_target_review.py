@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Write a council-review pass result — deterministic.
 
-The council-review skill does the judgement (the four perspective specialists
+The council-review skill does the judgement (the five perspective specialists
 challenge the proposed target) and hands the result to this script as a JSON
 file:
 
   { "ran": ["process-specialist", "control-compliance-specialist",
-            "client-journey-specialist", "it-architect"],
+            "client-journey-specialist", "innovation-analyst",
+            "it-architect"],
     "items": [ { "specialist": "control-compliance-specialist",
                  "title": "<one-line headline>",
                  "detail": "<the specialist's feedback>",
@@ -41,6 +42,7 @@ SPECIALISTS = (
     "process-specialist",
     "control-compliance-specialist",
     "client-journey-specialist",
+    "innovation-analyst",
     "it-architect",
 )
 

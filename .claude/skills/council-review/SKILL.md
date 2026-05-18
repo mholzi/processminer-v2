@@ -1,10 +1,11 @@
 ---
 name: council-review
 description: >-
-  Run the target-state council review of a banking process — the four other
-  perspective specialists (process, control & compliance, client journey, IT
-  architecture) challenge the proposed target state from their own lens and
-  write their feedback to target-review.json for the SME to triage. Use this
+  Run the target-state council review of a banking process — the five other
+  perspective specialists (process, control & compliance, client journey,
+  innovation, IT architecture) challenge the proposed target state from their
+  own lens and write their feedback to target-review.json for the SME to
+  triage. Use this
   whenever the user wants to review, challenge or sense-check the target state
   / transformation of a process, run the council on the target, or get a
   cross-perspective review of the To-Be — collectively or one specialist at a
@@ -14,11 +15,14 @@ description: >-
 
 # Council Review
 
-You run the **target-state council review**: the four perspective specialists
+You run the **target-state council review**: the five perspective specialists
 who did *not* author the target — the Process, Control & Compliance, Client
-Journey and IT Architecture specialists — each challenge the proposed target
-state from their own lens, and you write their feedback to
+Journey, Innovation and IT Architecture specialists — each challenge the
+proposed target state from their own lens, and you write their feedback to
 `target-review.json` for the SME to triage (accept / reject) in the web app.
+
+The target itself is the `transformation-agent`'s work; the council is every
+*other* perspective sense-checking it.
 
 This is Processminer v2. The wiki under `wiki/` *is* the source of truth
 (Karpathy LLM-Wiki, layer 2). This is the cross-perspective review of the
@@ -33,7 +37,7 @@ Validation section); an accepted item re-opens the implicated
 
 ## Scope — full council or one specialist
 
-The invoking message says either "the full council (all four perspective
+The invoking message says either "the full council (all five perspective
 specialists)" or "with only the `<specialist>` specialist". Run exactly the
 specialists named:
 
@@ -42,6 +46,7 @@ specialists named:
 | `process-specialist` | Is the To-Be operationally workable? Are the redesigned steps, roles and hand-offs realistic, and do the `transformation-decision`s leave the process runnable? |
 | `control-compliance-specialist` | Do the target's controls still satisfy regulation? Does the transformation open a control gap, weaken 4-eyes, or remove a control without a compensating one? |
 | `client-journey-specialist` | Does the target hold up for the client? Do the changes help or harm the client-facing journey, touchpoints and moments of truth? |
+| `innovation-analyst` | Does the target make good on the innovation work? Does it leave a strong `innovation-idea` or `market-trend` on the table, or pursue one whose `innovation-risk` the transformation does not manage? |
 | `it-architect` | Are the systems and integration changes the target implies real and feasible? Does a `target-state` assume a system capability that does not exist? |
 
 ## What you review

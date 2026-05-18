@@ -62,11 +62,17 @@ function provTooltip(source: string, evidence?: string): string {
   }
 }
 
-// Lint-finding kind → the short label shown on the inline band.
+// Lint-finding kind → the short label shown on the inline annotation row.
 const FINDING_KIND_LABEL: Record<string, string> = {
   discrepancy: "Discrepancy",
   conformance: "Structure",
   question: "Question",
+};
+// Kind → the leading glyph in the annotation row's marker column.
+const FINDING_KIND_GLYPH: Record<string, string> = {
+  discrepancy: "▲",
+  conformance: "△",
+  question: "?",
 };
 
 // Note-thread helpers (#19) — deterministic so server + client render alike.
@@ -478,22 +484,27 @@ export default function ElementCard({
         <div className="el-findings">
           {findings.map((f) => (
             <div className={`el-finding ${f.kind}`} key={f.id}>
-              <span className="el-finding-kind">
-                {FINDING_KIND_LABEL[f.kind] ?? f.kind}
-              </span>
-              <span className="el-finding-text">
+              <div className="el-finding-head">
+                <span className="el-finding-kind">
+                  {FINDING_KIND_LABEL[f.kind] ?? f.kind}
+                </span>
+                {onFindingDeepDive && (
+                  <button
+                    type="button"
+                    className="el-finding-dd"
+                    onClick={() => onFindingDeepDive(f)}
+                    title="Start a Brainstorm deep-dive session on this finding"
+                  >
+                    ⌖ Deep dive
+                  </button>
+                )}
+              </div>
+              <div className="el-finding-text">
+                <span className="el-finding-glyph" aria-hidden="true">
+                  {FINDING_KIND_GLYPH[f.kind] ?? "•"}
+                </span>
                 <b>{f.title}</b> {f.detail}
-              </span>
-              {onFindingDeepDive && (
-                <button
-                  type="button"
-                  className="el-finding-dd"
-                  onClick={() => onFindingDeepDive(f)}
-                  title="Start a Brainstorm deep-dive session on this finding"
-                >
-                  ⌖ Deep dive
-                </button>
-              )}
+              </div>
             </div>
           ))}
         </div>

@@ -9,7 +9,7 @@ import { isSourcedType } from "@/lib/element-types";
 import { initials, type User } from "@/lib/user";
 import { buildRelations, type LinkGroup } from "@/lib/relations";
 import { sectionForId } from "@/lib/nav";
-import type { LintFinding } from "@/lib/lint";
+import { isResolved, type LintFinding } from "@/lib/lint";
 import ElementCard from "@/components/ElementCard";
 import RaciMatrix from "@/components/RaciMatrix";
 import ProcessFlow from "@/components/ProcessFlow";
@@ -86,8 +86,9 @@ const INNOVATION_SECTIONS = [
 const CX_SECTIONS = ["competitor-cx", "cx-benchmarks"];
 const REGULATION_SECTIONS = ["regulation"];
 
-// Each area's foundational specialist skill — drives the empty-area next-step
-// card shown when a whole area still has no elements.
+// Each area's first-step skill — drives the empty-area next-step card shown
+// when a whole area still has no elements. Usually the area's owning
+// specialist; for Target Process it's source-target, which stubs the area.
 const AREA_NEXT: Record<
   string,
   { skill: string; label: string; blurb: string }
@@ -113,9 +114,9 @@ const AREA_NEXT: Record<
     blurb: "develop the forward-looking view",
   },
   target: {
-    skill: "innovation-analyst",
-    label: "innovation analyst",
-    blurb: "design the target state",
+    skill: "source-target",
+    label: "target consolidation",
+    blurb: "draft a first-stub target state from the work so far",
   },
   "it-architecture": {
     skill: "it-architect",
@@ -147,6 +148,10 @@ const SPECIALIST: Record<string, { label: string; blurb: string }> = {
   "innovation-analyst": {
     label: "Innovation Analyst",
     blurb: "develops the forward-looking view",
+  },
+  "transformation-agent": {
+    label: "Transformation Agent",
+    blurb: "designs the target state with you",
   },
 };
 function sectionSourcingKind(
@@ -328,7 +333,7 @@ export default function ProcessDocScreen({
       status: {
         review: d.elements.filter((e) => !reviewed(e)).length,
         conflicts: d.ingest?.conflicts?.length ?? 0,
-        lint: d.lint?.findings?.length ?? 0,
+        lint: d.lint?.findings?.filter((f) => !isResolved(f)).length ?? 0,
       },
     };
   });
@@ -399,6 +404,10 @@ export default function ProcessDocScreen({
   // Findings come from the last run-lint pass — wiki/processes/<slug>/lint.json,
   // read server-side into doc.lint. Re-running the skill refreshes it.
   const findings = doc.lint?.findings ?? null;
+  // Findings still open — resolved ones (closed in a deep-dive) drop out of
+  // the section/element badges and the top-bar count, but stay in doc.lint
+  // for the Review panel's collapsed "resolved" group.
+  const openFindings = findings?.filter((f) => !isResolved(f)) ?? null;
 
   // Document upload — the modal saves to raw-sources/, then the chat runs
   // the document-ingest skill on the saved file.
@@ -609,8 +618,8 @@ export default function ProcessDocScreen({
   // How many lint findings touch each section (a finding counts once per
   // section it reaches through its elements).
   const findingsBySection: Record<string, number> = {};
-  if (findings) {
-    for (const f of findings) {
+  if (openFindings) {
+    for (const f of openFindings) {
       const secs = new Set(
         f.elements
           .map((id) => sectionForId(schema, id))
@@ -624,8 +633,8 @@ export default function ProcessDocScreen({
   // Lint findings grouped by the element id they involve — each element card
   // shows its own findings inline. A finding spanning N elements shows on each.
   const findingsByElement: Record<string, LintFinding[]> = {};
-  if (findings) {
-    for (const f of findings) {
+  if (openFindings) {
+    for (const f of openFindings) {
       for (const id of f.elements) {
         (findingsByElement[id] ??= []).push(f);
       }
@@ -794,7 +803,7 @@ export default function ProcessDocScreen({
     );
   }
 
-  // Council review — invoke the council-review skill via the chat. The four
+  // Council review — invoke the council-review skill via the chat. The five
   // (or one) perspective specialists challenge the proposed target and write
   // target-review.json; router.refresh() brings it into doc.targetReview,
   // which the Validation section's Council Review panel renders.
@@ -805,7 +814,7 @@ export default function ProcessDocScreen({
       `Run the council-review skill on the process with slug "${currentSlug}"` +
         (specialist
           ? `, with only the ${specialist} specialist.`
-          : ", with the full council (all four perspective specialists)."),
+          : ", with the full council (all five perspective specialists)."),
       {
         onComplete: () =>
           pushToast(
@@ -1073,7 +1082,8 @@ export default function ProcessDocScreen({
           (target.detail ? `\n\nFinding detail: ${target.detail}` : "") +
           (target.elements?.length
             ? `\nImplicated elements: ${target.elements.join(", ")}.`
-            : "")
+            : "") +
+          `\n\nOnce the discrepancy is fully resolved and I have explicitly approved the change, close this finding straight away by running \`python3 scripts/wiki/resolve_finding.py ${currentSlug} ${target.id} --note "<one-line summary of the fix>"\` — that marks it resolved in the Review panel without waiting for a re-lint. Do not run it before I have approved.`
         : `Deep dive on element ${target.id} ("${target.title}") — ${skillClause}brainstorm this element with me: probe for edge cases, exceptions and tacit detail to deepen its documentation.`;
     setChatOpen(true);
     handleSend(message);
@@ -1161,8 +1171,8 @@ export default function ProcessDocScreen({
             label={
               linting
                 ? "Running lint…"
-                : findings
-                  ? `Lint review · ${findings.length} finding(s)`
+                : openFindings
+                  ? `Lint review · ${openFindings.length} open finding(s)`
                   : "Run lint"
             }
           >
@@ -1173,8 +1183,8 @@ export default function ProcessDocScreen({
               aria-label="Run lint"
             >
               <IconLint />
-              {findings && findings.length > 0 && (
-                <span className="tb-badge">{findings.length}</span>
+              {openFindings && openFindings.length > 0 && (
+                <span className="tb-badge">{openFindings.length}</span>
               )}
             </button>
           </Tooltip>
@@ -1497,7 +1507,7 @@ export default function ProcessDocScreen({
               <section className="trv-block">
                 <h2 className="type-group-head">Council review</h2>
                 <p className="trv-block-sub">
-                  The four other perspective specialists challenge the proposed
+                  The five other perspective specialists challenge the proposed
                   target — collectively, or one lens at a time.
                 </p>
                 <div className="trv-invoke">
