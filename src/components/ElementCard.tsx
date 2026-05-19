@@ -11,6 +11,8 @@ import { saveElement, setApproval, setRelevance } from "@/lib/wiki-write";
 import Markdown from "./Markdown";
 import Tooltip from "./Tooltip";
 import ElementHovercard from "./ElementHovercard";
+import RelativeTime from "./RelativeTime";
+import FindingDismiss from "./FindingDismiss";
 
 // Which fields and relations a card shows is no longer hand-kept here — it is
 // driven from `schema/process-schema.json` (each type's `frontmatter` block).
@@ -76,15 +78,15 @@ const FINDING_KIND_GLYPH: Record<string, string> = {
 };
 
 // Note-thread helpers (#19) — deterministic so server + client render alike.
-const NOTE_MONTHS = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-];
-function noteDate(iso: string): string {
-  const d = new Date(iso);
-  return Number.isNaN(d.getTime())
-    ? ""
-    : `${d.getUTCDate()} ${NOTE_MONTHS[d.getUTCMonth()]}`;
+/** A one-line content preview for a collapsed card — the first prose block,
+ *  bullets and line breaks flattened, so a long section scans without expanding. */
+function previewLine(blocks: { heading: string; text: string }[]): string {
+  const text = blocks[0]?.text ?? "";
+  return text
+    .replace(/^[-*]\s+/gm, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 200);
 }
 function noteInitials(name: string): string {
   return name
@@ -313,6 +315,20 @@ export default function ElementCard({
     });
   }
 
+  // Manually mark a comment resolved (or reopen it) — distinct from the
+  // comment-review skill, which resolves comments after triaging them.
+  function resolveNote(noteId: string, resolved: boolean) {
+    if (notePending) return;
+    startNote(async () => {
+      await fetch("/api/notes", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug, elementId: page.id, noteId, resolved }),
+      });
+      router.refresh();
+    });
+  }
+
   // Provenance — DESIGN.md's signature: machine-drafted vs human-confirmed.
   // The verb tracks the review state: an element re-opened by run-lint is
   // stamped with a By/Date but is *not* confirmed, so "confirmed by" would
@@ -473,6 +489,10 @@ export default function ElementCard({
         <div className="el-title">{page.title}</div>
       )}
 
+      {isCollapsed && !editing && previewLine(page.blocks) !== "" && (
+        <div className="el-collapsed-preview">{previewLine(page.blocks)}</div>
+      )}
+
       {!editing && (
         <div className="el-provenance">
           <span
@@ -502,6 +522,7 @@ export default function ElementCard({
                     ⌖ Deep dive
                   </button>
                 )}
+                <FindingDismiss slug={slug} findingId={f.id} by={userName} />
               </div>
               <div className="el-finding-text">
                 <span className="el-finding-glyph" aria-hidden="true">
@@ -820,9 +841,10 @@ export default function ElementCard({
                           <div className="el-note-body">
                             <div className="el-note-top">
                               <span className="el-note-who">{n.author}</span>
-                              <span className="el-note-when">
-                                {noteDate(n.ts)}
-                              </span>
+                              <RelativeTime
+                                ts={n.ts}
+                                className="el-note-when"
+                              />
                               {n.resolved && (
                                 <span className="el-note-resolved">
                                   ✓ Resolved
@@ -830,13 +852,23 @@ export default function ElementCard({
                               )}
                             </div>
                             <div className="el-note-text">{n.text}</div>
-                            <button
-                              type="button"
-                              className="el-note-reply"
-                              onClick={() => setReplyTo(n.id)}
-                            >
-                              ↩ Reply
-                            </button>
+                            <div className="el-note-actions">
+                              <button
+                                type="button"
+                                className="el-note-reply"
+                                onClick={() => setReplyTo(n.id)}
+                              >
+                                ↩ Reply
+                              </button>
+                              <button
+                                type="button"
+                                className="el-note-reply"
+                                onClick={() => resolveNote(n.id, !n.resolved)}
+                                disabled={notePending}
+                              >
+                                {n.resolved ? "↺ Reopen" : "✓ Resolve"}
+                              </button>
+                            </div>
                           </div>
                         </div>
                         {noteList
@@ -851,9 +883,10 @@ export default function ElementCard({
                                   <span className="el-note-who">
                                     {r.author}
                                   </span>
-                                  <span className="el-note-when">
-                                    {noteDate(r.ts)}
-                                  </span>
+                                  <RelativeTime
+                                    ts={r.ts}
+                                    className="el-note-when"
+                                  />
                                 </div>
                                 <div className="el-note-text">{r.text}</div>
                               </div>

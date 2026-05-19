@@ -16,7 +16,7 @@ import { isSourcedType } from "@/lib/element-types";
 import { initials, type User } from "@/lib/user";
 import { buildRelations, type LinkGroup } from "@/lib/relations";
 import { sectionForId } from "@/lib/nav";
-import { isResolved, type LintFinding } from "@/lib/lint";
+import { isOpen, type LintFinding } from "@/lib/lint";
 import ElementCard from "@/components/ElementCard";
 import RaciMatrix from "@/components/RaciMatrix";
 import ProcessFlow from "@/components/ProcessFlow";
@@ -359,7 +359,7 @@ export default function ProcessDocScreen({
       status: {
         review: d.elements.filter((e) => !reviewed(e)).length,
         conflicts: d.ingest?.conflicts?.length ?? 0,
-        lint: d.lint?.findings?.filter((f) => !isResolved(f)).length ?? 0,
+        lint: d.lint?.findings?.filter(isOpen).length ?? 0,
       },
     };
   });
@@ -378,6 +378,12 @@ export default function ProcessDocScreen({
   const [section, setSection] = useState(
     openingRunDoc ? "__triage" : "process-steps",
   );
+  // Element-list view filter for the current section: all, only those a lint
+  // finding touches, or only those not yet reviewed. Set by the nav `!` badge
+  // and the area progress meter; reset to "all" on a plain section change.
+  const [elemFilter, setElemFilter] = useState<
+    "all" | "flagged" | "unreviewed"
+  >("all");
   // The target-state theme selected in the As-Is overlay — its `replaces`
   // steps light up in the process flow. Null = no theme picked.
   const [selectedThemeId, setSelectedThemeId] = useState<string | null>(null);
@@ -442,7 +448,7 @@ export default function ProcessDocScreen({
   // Findings still open — resolved ones (closed in a deep-dive) drop out of
   // the section/element badges and the top-bar count, but stay in doc.lint
   // for the Review panel's collapsed "resolved" group.
-  const openFindings = findings?.filter((f) => !isResolved(f)) ?? null;
+  const openFindings = findings?.filter(isOpen) ?? null;
 
   // Document upload — the modal saves to raw-sources/, then the chat runs
   // the document-ingest skill on the saved file.
@@ -691,6 +697,23 @@ export default function ProcessDocScreen({
       reviewed: els.filter(isReviewed).length,
     };
   }
+
+  // Element-list filter (#2 / #6). The chips in the section header and the
+  // counts they show are computed here; `visibleElements` is what the section
+  // actually renders.
+  const elemVisible = (e: WikiPage) =>
+    elemFilter === "all"
+      ? true
+      : elemFilter === "flagged"
+        ? Boolean(findingsByElement[e.id])
+        : !isReviewed(e);
+  const flaggedCount = sectionElements.filter(
+    (e) => findingsByElement[e.id],
+  ).length;
+  const unreviewedCount = sectionElements.filter(
+    (e) => !isReviewed(e),
+  ).length;
+  const visibleElements = sectionElements.filter(elemVisible);
 
   // A brand-new process: no elements anywhere, and no ingest or foundational
   // run started. Drives the "getting started" empty state and lets the
@@ -1173,6 +1196,8 @@ export default function ProcessDocScreen({
     const sec = sectionForId(schema, id);
     if (!sec) return;
     setSection(sec);
+    // Clear any element filter so the jump target is never filtered out.
+    setElemFilter("all");
     // A fixed timeout races the new section's render — the element may not
     // exist yet, or its position shifts as siblings lay out. Retry across
     // animation frames until the element is in the DOM, then scroll.
@@ -1378,15 +1403,38 @@ export default function ProcessDocScreen({
                   </button>
                   {areaStats[activeArea.id].total > 0 && (
                     <Tooltip
-                      label={`${areaStats[activeArea.id].reviewed} of ${
+                      label={
+                        areaStats[activeArea.id].reviewed ===
                         areaStats[activeArea.id].total
-                      } elements reviewed`}
+                          ? `All ${areaStats[activeArea.id].total} elements reviewed`
+                          : `${areaStats[activeArea.id].reviewed} of ${
+                              areaStats[activeArea.id].total
+                            } elements reviewed — click to jump to what's left`
+                      }
                       placement="right"
                     >
-                      <span className="nav-area-frac">
+                      <button
+                        type="button"
+                        className="nav-area-frac"
+                        disabled={
+                          areaStats[activeArea.id].reviewed ===
+                          areaStats[activeArea.id].total
+                        }
+                        onClick={() => {
+                          const target = activeArea.sections.find((s) =>
+                            doc.elements.some(
+                              (e) => e.section === s.id && !isReviewed(e),
+                            ),
+                          );
+                          if (target) {
+                            setSection(target.id);
+                            setElemFilter("unreviewed");
+                          }
+                        }}
+                      >
                         {areaStats[activeArea.id].reviewed}/
                         {areaStats[activeArea.id].total}
-                      </span>
+                      </button>
                     </Tooltip>
                   )}
                 </div>
@@ -1447,16 +1495,40 @@ export default function ProcessDocScreen({
                     className={`nav-item${s.id === section ? " active" : ""}${
                       state === "empty" ? " nav-empty" : ""
                     }`}
-                    onClick={() => setSection(s.id)}
+                    onClick={() => {
+                      setSection(s.id);
+                      setElemFilter("all");
+                    }}
                   >
                     <span className="nav-label">{s.label}</span>
                     <span className="nav-meta">
                       {flag ? (
                         <Tooltip
-                          label={`${flag} lint finding${flag === 1 ? "" : "s"}`}
+                          label={`${flag} lint finding${
+                            flag === 1 ? "" : "s"
+                          } — click to filter this section`}
                           placement="right"
                         >
-                          <span className="nav-flag">!</span>
+                          <span
+                            className="nav-flag"
+                            role="button"
+                            tabIndex={0}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSection(s.id);
+                              setElemFilter("flagged");
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setSection(s.id);
+                                setElemFilter("flagged");
+                              }
+                            }}
+                          >
+                            !
+                          </span>
                         </Tooltip>
                       ) : null}
                       {state !== "empty" && (
@@ -1712,6 +1784,50 @@ export default function ProcessDocScreen({
                 {sectionElements.length > 0 && sectionKind === null && (
                   <ApprovalBar elements={sectionElements} />
                 )}
+                {sectionElements.length > 0 &&
+                  sectionKind === null &&
+                  (flaggedCount > 0 ||
+                    unreviewedCount > 0 ||
+                    elemFilter !== "all") && (
+                    <div
+                      className="elem-filter"
+                      role="group"
+                      aria-label="Filter elements"
+                    >
+                      <button
+                        type="button"
+                        className={`elem-filter-chip${
+                          elemFilter === "all" ? " active" : ""
+                        }`}
+                        onClick={() => setElemFilter("all")}
+                      >
+                        All {sectionElements.length}
+                      </button>
+                      {(flaggedCount > 0 || elemFilter === "flagged") && (
+                        <button
+                          type="button"
+                          className={`elem-filter-chip${
+                            elemFilter === "flagged" ? " active" : ""
+                          }`}
+                          onClick={() => setElemFilter("flagged")}
+                        >
+                          Flagged {flaggedCount}
+                        </button>
+                      )}
+                      {(unreviewedCount > 0 ||
+                        elemFilter === "unreviewed") && (
+                        <button
+                          type="button"
+                          className={`elem-filter-chip${
+                            elemFilter === "unreviewed" ? " active" : ""
+                          }`}
+                          onClick={() => setElemFilter("unreviewed")}
+                        >
+                          Unreviewed {unreviewedCount}
+                        </button>
+                      )}
+                    </div>
+                  )}
                 <span className="strip-spacer" />
                 <div className="strip-actions">
                   <button
@@ -2006,10 +2122,13 @@ export default function ProcessDocScreen({
                   )}
                 </div>
               ) : multiType ? (
-                typeGroups.map((g) => (
+                typeGroups.map((g) => {
+                  const gels = g.elements.filter(elemVisible);
+                  if (gels.length === 0) return null;
+                  return (
                   <section key={g.type}>
                     <h2 className="type-group-head">{g.label}</h2>
-                    {g.elements.map((el) => (
+                    {gels.map((el) => (
                       <ElementCard
                         key={el.id}
                         page={el}
@@ -2051,9 +2170,10 @@ export default function ProcessDocScreen({
                       />
                     ))}
                   </section>
-                ))
+                  );
+                })
               ) : (
-                sectionElements.map((el) => (
+                visibleElements.map((el) => (
                   <ElementCard
                     key={el.id}
                     page={el}
@@ -2092,6 +2212,21 @@ export default function ProcessDocScreen({
                   />
                 ))
               )}
+              {sectionKind === null &&
+                sectionElements.length > 0 &&
+                visibleElements.length === 0 && (
+                  <div className="elem-filter-empty">
+                    No{" "}
+                    {elemFilter === "flagged" ? "flagged" : "unreviewed"}{" "}
+                    elements in this section.{" "}
+                    <button
+                      type="button"
+                      onClick={() => setElemFilter("all")}
+                    >
+                      Show all {sectionElements.length}
+                    </button>
+                  </div>
+                )}
               {sectionElements.length > 0 && (
                 <div className="back-to-top">
                   <button

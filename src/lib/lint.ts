@@ -19,24 +19,40 @@ export interface LintFinding {
   /** Element IDs the finding involves — rendered as jump-to chips. */
   elements: string[];
   /**
-   * "open" (the default — absent means open) or "resolved". A finding is
-   * resolved the moment a chat deep-dive fixes the discrepancy and the SME
-   * approves the change, without waiting for the next full re-lint. The next
-   * `run-lint` pass rewrites lint.json from scratch, so a resolved finding
-   * either disappears (the fix held) or re-surfaces as open (it did not).
+   * "open" (the default — absent means open), "resolved" or "dismissed". A
+   * finding is resolved the moment a chat deep-dive fixes the discrepancy and
+   * the SME approves the change; it is dismissed when the SME judges it not
+   * worth acting on and records a reason. The next `run-lint` pass rewrites
+   * lint.json from scratch, so either state holds only until the next run.
    */
-  status?: "open" | "resolved";
+  status?: "open" | "resolved" | "dismissed";
   /** Resolved only — who closed it (the deep-dive specialist / SME). */
   resolvedBy?: string;
   /** Resolved only — ISO date the finding was closed. */
   resolvedAt?: string;
   /** Resolved only — one-line note on what the deep-dive changed. */
   resolutionNote?: string;
+  /** Dismissed only — who set it aside. */
+  dismissedBy?: string;
+  /** Dismissed only — ISO date it was dismissed. */
+  dismissedAt?: string;
+  /** Dismissed only — why the SME judged it not worth acting on. */
+  dismissReason?: string;
 }
 
-/** A finding is open unless it has been explicitly resolved. */
+/** A finding resolved via a deep-dive. */
 export function isResolved(f: LintFinding): boolean {
   return f.status === "resolved";
+}
+
+/** A finding the SME set aside with a recorded reason. */
+export function isDismissed(f: LintFinding): boolean {
+  return f.status === "dismissed";
+}
+
+/** A finding is open unless it has been resolved or dismissed. */
+export function isOpen(f: LintFinding): boolean {
+  return !isResolved(f) && !isDismissed(f);
 }
 
 /** A whole lint pass result — one per process, written to lint.json. */
