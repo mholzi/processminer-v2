@@ -1388,7 +1388,7 @@ export default function ProcessDocScreen({
       <div
         className={`shell${chatOpen ? " chat-open" : ""}${
           sectionsCollapsed ? " sections-collapsed" : ""
-        }`}
+        }${appView === "feedback" ? " is-hidden" : ""}`}
         style={{ "--chat-w": `${chatWidth}px` } as CSSProperties}
       >
         <nav className={`rail rail-l${sectionsCollapsed ? " collapsed" : ""}`}>

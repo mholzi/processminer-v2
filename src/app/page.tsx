@@ -1,4 +1,5 @@
 import { getSchema, listProcesses, getProcess, type ProcessDoc } from "@/lib/wiki";
+import { listFeedback } from "@/lib/feedback-store";
 import AuthGate from "./AuthGate";
 
 // The wiki under wiki/ is a live filesystem source of truth: skill Python
@@ -29,5 +30,5 @@ export default function Home() {
     );
   }
 
-  return <AuthGate schema={schema} docs={docs} />;
+  return <AuthGate schema={schema} docs={docs} feedback={listFeedback()} />;
 }

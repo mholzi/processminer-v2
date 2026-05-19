@@ -31,11 +31,13 @@ export default function ProcessSwitcher({
   currentSlug,
   onSelect,
   onCreate,
+  onOpenFeedback,
 }: {
   processes: { slug: string; id: string; title: string; status: ProcStatus }[];
   currentSlug: string;
   onSelect: (slug: string) => void;
   onCreate: () => void;
+  onOpenFeedback: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const current = processes.find((p) => p.slug === currentSlug);
@@ -98,6 +100,15 @@ export default function ProcessSwitcher({
               }}
             >
               + New process
+            </button>
+            <button
+              className="procsw-new"
+              onClick={() => {
+                onOpenFeedback();
+                setOpen(false);
+              }}
+            >
+              ★ App feedback
             </button>
           </div>
         </>

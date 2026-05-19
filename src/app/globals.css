@@ -2084,9 +2084,12 @@ body {
 .cit-theme-title { color: var(--ink); }
 
 /* ---- App Feedback screen ---- */
+/* Sits in the shell's slot below the topbar — same height calc as .shell, so
+   the feedback page lines up exactly with the process view it replaces. */
+.shell.is-hidden { display: none; }
 .fb-overlay {
-  position: fixed; left: 0; right: 0; bottom: 0; top: 84px;
-  z-index: 30; background: var(--bg); overflow-y: auto;
+  height: calc(100vh - 84px);
+  background: var(--bg); overflow-y: auto;
 }
 .fb-main { max-width: 760px; margin: 0 auto; padding: 24px 32px 64px; }
 .fb-back {

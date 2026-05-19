@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Schema, ProcessDoc } from "@/lib/wiki";
+import type { FeedbackItem } from "@/lib/feedback";
 import { loadUser, saveUser, clearUser, type User } from "@/lib/user";
 import LoginGate from "@/components/LoginGate";
 import ProcessDocScreen from "./ProcessDocScreen";
@@ -13,9 +14,11 @@ import ProcessDocScreen from "./ProcessDocScreen";
 export default function AuthGate({
   schema,
   docs,
+  feedback,
 }: {
   schema: Schema;
   docs: ProcessDoc[];
+  feedback: FeedbackItem[];
 }) {
   const [user, setUser] = useState<User | null>(null);
   // localStorage is only readable on the client — stay null until mounted.
@@ -42,6 +45,7 @@ export default function AuthGate({
     <ProcessDocScreen
       schema={schema}
       docs={docs}
+      feedback={feedback}
       user={user}
       onUpdateUser={handleLogin}
       onSignOut={handleSignOut}
