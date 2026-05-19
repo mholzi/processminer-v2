@@ -12,6 +12,9 @@ resolves: [PP-DDMM-002, CG-DDMM-003, PG-DDMM-001, PG-DDMM-005]
 realises: [TS-DDMM-004]
 fromIdea: [II-DDMM-007]
 provenance: {"Options considered": {"evidence": "SME confirmed options and rationale — accepted without edit.", "source": "elicited"}, "Rationale": {"evidence": "SME confirmed rationale — accepted without edit.", "source": "elicited"}, "The decision": {"evidence": "SME (M. Vogel) accepted all ten decisions without edit.", "source": "elicited"}}
+approval: approved
+approvalBy: Markus
+approvalDate: 2026-05-19
 ---
 ## The decision
 Replace the fixed 50-mandate batch threshold with a Compliance-approved risk-based routing model in MMS; create a lighter checker certification track for routine spot-checks; extend four-eyes coverage to high-risk single-mandate registrations.

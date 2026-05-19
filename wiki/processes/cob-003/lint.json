@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-05-18T14:43:27.006111+00:00",
+  "generatedAt": "2026-05-19T06:17:07.972163+00:00",
   "slug": "cob-003",
   "summary": {
     "conformance": 79,
-    "discrepancy": 19,
+    "discrepancy": 8,
     "question": 3
   },
   "findings": [
@@ -721,236 +721,104 @@
     {
       "id": "F-080",
       "kind": "discrepancy",
-      "title": "Flow mismatch: EX-COB-001 `affects` vs process-step transitions",
-      "detail": "its `affects` lists PS-COB-001, PS-COB-002, but no process-step transitions into it.",
+      "title": "Orphan exception: EX-COB-001",
+      "detail": "No process-step `transitions` flow into EX-COB-001 — nothing in the documented flow reaches this exception.",
       "elements": [
-        "EX-COB-001",
-        "PS-COB-001",
-        "PS-COB-002"
+        "EX-COB-001"
       ]
     },
     {
       "id": "F-081",
       "kind": "discrepancy",
-      "title": "Flow mismatch: EX-COB-002 `affects` vs process-step transitions",
-      "detail": "its `affects` lists PS-COB-002, but no process-step transitions into it.",
+      "title": "Orphan exception: EX-COB-002",
+      "detail": "No process-step `transitions` flow into EX-COB-002 — nothing in the documented flow reaches this exception.",
       "elements": [
-        "EX-COB-002",
-        "PS-COB-002"
+        "EX-COB-002"
       ]
     },
     {
       "id": "F-082",
       "kind": "discrepancy",
-      "title": "Flow mismatch: EX-COB-003 `affects` vs process-step transitions",
-      "detail": "its `affects` lists PS-COB-003, but no process-step transitions into it.",
+      "title": "Orphan exception: EX-COB-003",
+      "detail": "No process-step `transitions` flow into EX-COB-003 — nothing in the documented flow reaches this exception.",
       "elements": [
-        "EX-COB-003",
-        "PS-COB-003"
+        "EX-COB-003"
       ]
     },
     {
       "id": "F-083",
       "kind": "discrepancy",
-      "title": "Flow mismatch: EX-COB-004 `affects` vs process-step transitions",
-      "detail": "its `affects` lists PS-COB-004, but no process-step transitions into it.",
+      "title": "Orphan exception: EX-COB-004",
+      "detail": "No process-step `transitions` flow into EX-COB-004 — nothing in the documented flow reaches this exception.",
       "elements": [
-        "EX-COB-004",
-        "PS-COB-004"
+        "EX-COB-004"
       ]
     },
     {
       "id": "F-084",
       "kind": "discrepancy",
-      "title": "Flow mismatch: EX-COB-005 `affects` vs process-step transitions",
-      "detail": "its `affects` lists PS-COB-002, but no process-step transitions into it.",
+      "title": "Orphan exception: EX-COB-005",
+      "detail": "No process-step `transitions` flow into EX-COB-005 — nothing in the documented flow reaches this exception.",
       "elements": [
-        "EX-COB-005",
-        "PS-COB-002"
+        "EX-COB-005"
       ]
     },
     {
       "id": "F-085",
       "kind": "discrepancy",
-      "title": "SYS-COB-001 claims steps that do not list it",
-      "detail": "SYS-COB-001 (CRM) lists all six process steps and its prose says every step reads and updates the CRM case, but PS-COB-002, PS-COB-003, PS-COB-004 and PS-COB-006 do not include SYS-COB-001 in their systems field.",
-      "elements": [
-        "SYS-COB-001",
-        "PS-COB-002",
-        "PS-COB-003",
-        "PS-COB-004",
-        "PS-COB-006"
-      ]
-    },
-    {
-      "id": "F-086",
-      "kind": "discrepancy",
-      "title": "SYS-COB-002 claims steps that do not list it",
-      "detail": "SYS-COB-002 (OWS) lists all six process steps and its prose says it drives the sequence and timing for all six, but PS-COB-002, PS-COB-003, PS-COB-004 and PS-COB-005 do not include SYS-COB-002 in their systems field.",
-      "elements": [
-        "SYS-COB-002",
-        "PS-COB-002",
-        "PS-COB-003",
-        "PS-COB-004",
-        "PS-COB-005"
-      ]
-    },
-    {
-      "id": "F-087",
-      "kind": "discrepancy",
-      "title": "SYS-COB-007 claims PS-COB-002, which does not list it",
-      "detail": "SYS-COB-007 (DMS) lists PS-COB-002 among its steps, but PS-COB-002's systems field names only SYS-COB-003 and SYS-COB-004.",
-      "elements": [
-        "SYS-COB-007",
-        "PS-COB-002"
-      ]
-    },
-    {
-      "id": "F-088",
-      "kind": "discrepancy",
-      "title": "Credit Assessment step has no control linked",
-      "detail": "No control element links to PS-COB-003. Every other step that carries operational risk has at least one control (CP-COB-003 on PS-COB-001, CP-COB-001/002 on PS-COB-002, CP-COB-004 on PS-COB-004, CP-COB-005 on PS-COB-005), yet the credit decision — where the Credit Analyst approves a limit within their own authority — is governed by no documented control.",
+      "title": "PS-COB-003 (Credit Assessment) has no control linked",
+      "detail": "Every other substantive step has at least one named control: PS-COB-001 has CP-COB-003, PS-COB-002 has CP-COB-001 and CP-COB-002, PS-COB-004 has CP-COB-004, PS-COB-005 has CP-COB-005. PS-COB-003 is the only non-quality-check process step with no control, leaving the credit decisioning activity uncontrolled from a formal compliance perspective.",
       "elements": [
         "PS-COB-003"
       ]
     },
     {
-      "id": "F-089",
+      "id": "F-086",
       "kind": "discrepancy",
-      "title": "Segregation-of-duties policy relies on a four-eyes check that is not a documented control",
-      "detail": "REG-COB-006 (SoD Policy) has an empty controls list and states it is met through the four-eyes check performed during Account Setup (PS-COB-004), but no control element captures that four-eyes check. CG-COB-002 notes the same check as a missing control, framed as account-configuration verification.",
+      "title": "PS-COB-001 body contains junk text",
+      "detail": "The 'What happens' section of PS-COB-001 ends with the spurious characters 'fghfh' appended to the final sentence: '...Incomplete applications are flagged and returned to the client before they consume pipeline capacity.fghfh'. This is a data-entry artifact that should be removed.",
       "elements": [
-        "REG-COB-006",
-        "PS-COB-004",
-        "CG-COB-002"
+        "PS-COB-001"
       ]
     },
     {
-      "id": "F-090",
+      "id": "F-087",
       "kind": "discrepancy",
-      "title": "Friction point FP-COB-004 is linked to an unrelated pain point",
-      "detail": "FP-COB-004 (Complex Ownership Questions, root cause: KYC questions written in regulatory rather than client language) sets painPoint PP-COB-003, but PP-COB-003 is 'KYC screening false positives' — a screening-threshold problem. The two describe different issues, and no pain point captures the ownership-question complexity.",
-      "elements": [
-        "FP-COB-004",
-        "PP-COB-003"
-      ]
-    },
-    {
-      "id": "F-091",
-      "kind": "discrepancy",
-      "title": "FP-COB-004 has no addressedBy back-link",
-      "detail": "II-COB-007 addresses FP-COB-004, but FP-COB-004 carries no addressedBy field — unlike FP-COB-001, FP-COB-002 and FP-COB-003, which each link back to the idea addressing them.",
+      "title": "FP-COB-004 missing addressedBy back-link to II-COB-007",
+      "detail": "II-COB-007 (Conversational KYC assistant for ownership questions) declares addresses: [FP-COB-004], but FP-COB-004 (Complex Ownership Questions) has no addressedBy field. The other three friction points all carry a reciprocal addressedBy link; FP-COB-004 is the only one where the back-link is absent.",
       "elements": [
         "FP-COB-004",
         "II-COB-007"
       ]
     },
     {
-      "id": "F-092",
-      "kind": "discrepancy",
-      "title": "PS-COB-001 contains stray text",
-      "detail": "The 'What happens' block of PS-COB-001 ends with the stray characters 'fghfh' appended to its final sentence — an apparent accidental edit.",
+      "id": "F-088",
+      "kind": "question",
+      "title": "II-COB-009 and II-COB-011 have no friction-point or pain-point in their addresses list",
+      "detail": "II-COB-009 (Real-time SLA and per-step timing dashboard) addresses only process gaps PG-COB-001 and PG-COB-003; II-COB-011 (Continuous controls monitoring) addresses only control gaps CG-COB-001 and CG-COB-002. Every other innovation idea traces to at least one FP or PP. Is it intentional that these two ideas have no FP/PP link, or should each be associated with a pain-point such as the operational and staff pain behind the missing measurement and the audit-evidence gap?",
       "elements": [
-        "PS-COB-001"
+        "II-COB-009",
+        "II-COB-011"
       ]
     },
     {
-      "id": "F-093",
-      "kind": "discrepancy",
-      "title": "EX-COB-005 names an undocumented role",
-      "detail": "EX-COB-005 is handled by a 'Senior KYC Analyst', but no role element documents that role, even though it performs enhanced due diligence on roughly 20% of applications.",
+      "id": "F-089",
+      "kind": "question",
+      "title": "SYS-COB-006 (CDS) and SYS-COB-007 (DMS) have no documented integrations",
+      "detail": "Both systems list integrates: []. CDS is the credit decisioning system used in PS-COB-003; it must receive KYC-cleared data and return a credit decision, yet no integration element captures how. DMS (OpenText) stores application documents from intake through KYC and is referenced in PS-COB-001's systems list, yet has no documented connection to CRM, OWS, or the KYC platform. Are these integrations deliberately omitted (e.g. file-share or manual hand-off), or are INT elements still to be written?",
       "elements": [
-        "EX-COB-005"
-      ]
-    },
-    {
-      "id": "F-094",
-      "kind": "discrepancy",
-      "title": "Pain point PP-COB-002 understates the number of systems",
-      "detail": "PP-COB-002 says staff move between 'six or more systems' and enumerates six (CRM, OWS, KYC platform, screening, core banking, card management), but eight systems are documented for the process — the enumeration omits SYS-COB-006 (CDS) and SYS-COB-007 (DMS).",
-      "elements": [
-        "PP-COB-002",
         "SYS-COB-006",
         "SYS-COB-007"
       ]
     },
     {
-      "id": "F-095",
-      "kind": "discrepancy",
-      "title": "Touchpoint 'Receive account activation' is mapped to the wrong step",
-      "detail": "JT-COB-004 (Receive account activation) sets occursAt PS-COB-004 (Account Setup & Configuration), but it describes the bank sending the activation notice with access details — work that PS-COB-005 (Client Communication & Activation) explicitly owns. PS-COB-004's prose describes no client-facing communication.",
-      "elements": [
-        "JT-COB-004",
-        "PS-COB-004",
-        "PS-COB-005"
-      ]
-    },
-    {
-      "id": "F-096",
-      "kind": "discrepancy",
-      "title": "Cycle-time metric conflicts with the per-step SLAs",
-      "detail": "M-COB-002 gives the processing time from application receipt to a live account as 4-6 hours, but the step SLAs spanning that window are denominated in business days — PS-COB-002 at 2-5 business days and PS-COB-003 at 3 business days alone far exceed a 4-6 hour total.",
-      "elements": [
-        "M-COB-002",
-        "PS-COB-002",
-        "PS-COB-003"
-      ]
-    },
-    {
-      "id": "F-097",
-      "kind": "discrepancy",
-      "title": "Complexity figures disagree between the metric and the exception",
-      "detail": "M-COB-003 puts the complex-application share at 30%, defining complex as multi-layer ownership, trusts or foreign shareholders. EX-COB-005 uses the same definition but states the complex-ownership exception occurs on about 20% of applications.",
-      "elements": [
-        "M-COB-003",
-        "EX-COB-005"
-      ]
-    },
-    {
-      "id": "F-098",
-      "kind": "discrepancy",
-      "title": "Web-sourced innovation ideas name a trend in prose but carry no fromTrend link",
-      "detail": "II-COB-004, II-COB-005, II-COB-006 and II-COB-007 each state in their source line that they were derived from a market trend (TR-COB-004, TR-COB-001, TR-COB-003, and TR-COB-001/TR-COB-004 respectively), but their fromTrend relation is empty — unlike the newer II-COB-008 to II-COB-011, which populate it. The trend-to-idea traceability is missing from the structured relation.",
-      "elements": [
-        "II-COB-004",
-        "II-COB-005",
-        "II-COB-006",
-        "II-COB-007",
-        "TR-COB-001",
-        "TR-COB-003",
-        "TR-COB-004"
-      ]
-    },
-    {
-      "id": "F-099",
+      "id": "F-090",
       "kind": "question",
-      "title": "Who owns control CP-COB-004?",
-      "detail": "CP-COB-004 names its owner as 'IT/Operations', which is not a documented role, while ROLE-COB-001 (Operations Officer) lists CP-COB-004 among its controls. Which role owns the control?",
+      "title": "SYS-COB-007 (DMS) not listed in PS-COB-002 systems",
+      "detail": "SYS-COB-007's own description says it 'holds the application documents from intake through KYC', implying it is accessed during both PS-COB-001 and PS-COB-002. However PS-COB-002's systems field lists only SYS-COB-003 and SYS-COB-004. Does the KYC Analyst access DMS during identity verification, or do documents move entirely into the KYC platform (SYS-COB-003) at intake so that DMS plays no active role in PS-COB-002?",
       "elements": [
-        "CP-COB-004",
-        "ROLE-COB-001"
-      ]
-    },
-    {
-      "id": "F-100",
-      "kind": "question",
-      "title": "Is the external credit bureau a missing system and integration?",
-      "detail": "PS-COB-003 relies on external bureau data and PP-COB-005 describes a fire-and-forget bureau integration, but no system element documents the external credit bureau and SYS-COB-006 (CDS) has an empty integrates list — unlike the comparable external screening dependency documented as SYS-COB-004 and integration INT-COB-002. Should a system and integration be added?",
-      "elements": [
-        "PS-COB-003",
-        "SYS-COB-006",
-        "PP-COB-005"
-      ]
-    },
-    {
-      "id": "F-101",
-      "kind": "question",
-      "title": "Should PG-COB-001 and PG-COB-003 be consolidated?",
-      "detail": "PG-COB-001 (SLA adherence not measured) and PG-COB-003 (per-step processing time not captured) both call for capturing per-step start/end times in OWS, and innovation idea II-COB-009 addresses the two together as a single dashboard. Are these one gap or two?",
-      "elements": [
-        "PG-COB-001",
-        "PG-COB-003",
-        "II-COB-009"
+        "SYS-COB-007",
+        "PS-COB-002"
       ]
     }
   ]
