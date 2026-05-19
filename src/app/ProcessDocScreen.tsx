@@ -39,6 +39,8 @@ import SourcesPanel from "@/components/SourcesPanel";
 import SourceDocViewer from "@/components/SourceDocViewer";
 import Tooltip from "@/components/Tooltip";
 import ToastStack, { type Toast } from "@/components/ToastStack";
+import FeedbackScreen from "@/components/FeedbackScreen";
+import type { FeedbackItem } from "@/lib/feedback";
 
 const mid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
@@ -235,12 +237,14 @@ function resumeMessage(d: ProcessDoc): ChatMessage | null {
 export default function ProcessDocScreen({
   schema,
   docs,
+  feedback,
   user,
   onUpdateUser,
   onSignOut,
 }: {
   schema: Schema;
   docs: ProcessDoc[];
+  feedback: FeedbackItem[];
   user: User;
   onUpdateUser: (user: User) => void;
   onSignOut: () => void;
@@ -258,6 +262,9 @@ export default function ProcessDocScreen({
   const [currentSlug, setCurrentSlug] = useState(
     openingRunDoc ? openingRunDoc.slug : docs[0].slug,
   );
+  // The app has two top-level views: the process documentation shell, and the
+  // App Feedback page (feedback on the tool itself, kept in feedback/).
+  const [appView, setAppView] = useState<"process" | "feedback">("process");
   const doc = docs.find((d) => d.slug === currentSlug) ?? docs[0];
   // The element the foundational run's cursor is on, if a run is active —
   // threaded into the section views as a "you are here" highlight.
@@ -537,7 +544,12 @@ export default function ProcessDocScreen({
   // into the URL (?p=<slug>) on every switch, and restored from it on mount.
   // Without this a reload strands the user on docs[0].
   useEffect(() => {
-    const urlSlug = new URLSearchParams(window.location.search).get("p");
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("view") === "feedback") {
+      setAppView("feedback");
+      return;
+    }
+    const urlSlug = params.get("p");
     if (urlSlug && urlSlug !== currentSlug && docs.some((d) => d.slug === urlSlug)) {
       switchProcess(urlSlug);
     } else if (!urlSlug) {
@@ -953,6 +965,18 @@ export default function ProcessDocScreen({
     handleSend("I want to create a new process.", { unscoped: true });
   }
 
+  // The App Feedback page — feedback on the tool itself, kept in feedback/.
+  // Opening it leaves the process shell mounted underneath; the URL carries
+  // the view so a browser reload returns here.
+  function openFeedback() {
+    setAppView("feedback");
+    window.history.replaceState(null, "", "?view=feedback");
+  }
+  function closeFeedback() {
+    setAppView("process");
+    window.history.replaceState(null, "", `?p=${currentSlug}`);
+  }
+
   // Document upload — once the modal has saved the file into raw-sources/,
   // open the chat and run the document-ingest skill on it.
   function onUploaded(path: string) {
@@ -1245,8 +1269,15 @@ export default function ProcessDocScreen({
         <ProcessSwitcher
           processes={processList}
           currentSlug={currentSlug}
-          onSelect={switchProcess}
-          onCreate={createProcess}
+          onSelect={(slug) => {
+            setAppView("process");
+            switchProcess(slug);
+          }}
+          onCreate={() => {
+            setAppView("process");
+            createProcess();
+          }}
+          onOpenFeedback={openFeedback}
         />
         <button
           className="tb-newproc"
@@ -1345,6 +1376,14 @@ export default function ProcessDocScreen({
           </Tooltip>
         </div>
       </header>
+
+      {appView === "feedback" && (
+        <FeedbackScreen
+          feedback={feedback}
+          user={user}
+          onClose={closeFeedback}
+        />
+      )}
 
       <div
         className={`shell${chatOpen ? " chat-open" : ""}${
@@ -2005,6 +2044,7 @@ export default function ProcessDocScreen({
                         steps={doc.elements.filter(
                           (e) => e.type === "process-step",
                         )}
+                        roles={doc.elements.filter((e) => e.type === "role")}
                         onGoToElement={goToElement}
                         onDeepDive={(id, title) =>
                           deepDive({ id, title, kind: "element" })

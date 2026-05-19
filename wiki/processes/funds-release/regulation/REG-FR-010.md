@@ -8,7 +8,6 @@ confidence: medium
 source: German Commercial Code §257 (HGB) and German Fiscal Code §147 (AO), as detailed by the GoBD
 domain: Data, Records & Reporting
 sourceUrl: https://www.gesetze-im-internet.de/hgb/__257.html
-controls: [CP-FR-006]
 asOf: 2026-05-18
 ---
 ## What it requires

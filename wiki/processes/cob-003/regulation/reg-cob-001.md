@@ -7,7 +7,6 @@ status: confirmed
 confidence: high
 source: DTP-BB-ONB-001 v2.3
 domain: Customer Due Diligence
-controls: [CP-COB-001]
 ---
 ## What it requires
 That the bank identifies and verifies every customer and understands the nature of the relationship before doing business.

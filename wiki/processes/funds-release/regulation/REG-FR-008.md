@@ -8,7 +8,6 @@ confidence: medium
 source: Foreign Trade and Payments Act (Außenwirtschaftsgesetz, AWG) and Foreign Trade and Payments Ordinance (AWV)
 domain: Financial Crime
 sourceUrl: https://www.gesetze-im-internet.de/englisch_awg/englisch_awg.html
-controls: [CP-FR-002]
 asOf: 2026-05-18
 ---
 ## What it requires

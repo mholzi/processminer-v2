@@ -13,6 +13,7 @@ step: [PS-FR-002]
 approval: approved
 approvalBy: M. Berger
 approvalDate: 2026-05-17
+regulatedBy: [REG-FR-006, REG-FR-015]
 ---
 ## What it checks
 That the requested release amount does not exceed the available undrawn limit on the corporate credit facility, as read at validation.

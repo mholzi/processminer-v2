@@ -26,11 +26,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from wiki_lib import (  # noqa: E402
     ROOT,
     dump_provenance,
+    element_types,
     iter_elements,
     parse_blocks,
     parse_provenance,
     serialize_element,
 )
+
+# List frontmatter keys that are not schema relations but are legitimately
+# id-lists (per-edge metadata handled separately — see relations.ts).
+NON_RELATION_LISTS = {"transitions", "raci"}
 
 
 def main(argv: list[str]) -> None:
@@ -74,6 +79,23 @@ def main(argv: list[str]) -> None:
         meta["provenance"] = dump_provenance(prov)
         what = f"block '## {key}' (provenance reset to proposed)"
     elif mode == "--list":
+        # A relation list must be a schema-declared relation for this element's
+        # type. A relation's reverse view (e.g. a system's steps) is derived
+        # from the canonical side, never stored — patching it creates the
+        # one-sided links lint then has to chase. Fail loudly on the misuse.
+        if key not in NON_RELATION_LISTS:
+            etype = str(meta.get("type", ""))
+            info = element_types().get(etype, {})
+            rel_keys = {
+                r["key"]
+                for r in ((info.get("frontmatter") or {}).get("relations") or [])
+            }
+            if key not in rel_keys:
+                sys.exit(
+                    f"error: '{key}' is not a schema relation for type "
+                    f"'{etype}'. Its reverse view is derived from the "
+                    f"canonical side — patch that side instead."
+                )
         items = [x.strip() for x in value.split(",") if x.strip()]
         meta[key] = items
         what = f"field '{key}' (list)"

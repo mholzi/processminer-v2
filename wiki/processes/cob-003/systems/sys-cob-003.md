@@ -7,7 +7,6 @@ status: confirmed
 confidence: high
 source: DTP-BB-ONB-001 v2.3
 systemType: CORE
-steps: [PS-COB-002]
 integrates: [SYS-COB-004]
 ---
 ## Purpose

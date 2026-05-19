@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: funds-release-dtp-mockup.md
 systemType: CORE
-steps: [PS-FR-007]
 approval: approved
 approvalBy: M. Berger
 approvalDate: 2026-05-18

@@ -426,7 +426,8 @@
           {
             "key": "regulatedBy",
             "label": "Regulated by",
-            "target": "regulation"
+            "target": "regulation",
+            "reverseLabel": "Controls"
           }
         ],
         "required": [
@@ -486,13 +487,7 @@
             "urlKey": "sourceUrl"
           }
         ],
-        "relations": [
-          {
-            "key": "controls",
-            "label": "Controls",
-            "target": "control"
-          }
-        ],
+        "relations": [],
         "required": [
           "domain"
         ]
@@ -1730,8 +1725,7 @@
           }
         ],
         "required": [
-          "systemType",
-          "steps"
+          "systemType"
         ]
       },
       "template": [

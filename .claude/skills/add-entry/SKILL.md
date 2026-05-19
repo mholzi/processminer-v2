@@ -63,7 +63,8 @@ described; if it is genuinely ambiguous, ask which.
 ## Step 4 — Refine with the SME — Y / E / R
 
 Present the draft and offer exactly three choices:
-- **[Y] Yes** — accurate, accept it. Write the element.
+- **[Y] Yes** — accept the draft. Write the element as `status: draft`; the
+  SME approves it later in the app, not here.
 - **[E] Edit** — apply the SME's corrections, show the result, ask again.
 - **[R] Rewrite** — the draft missed; redraft (sharper questions, more
   research) and re-present.

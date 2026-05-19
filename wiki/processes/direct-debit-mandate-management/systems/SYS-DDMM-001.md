@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: ddmm-dtp-mockup.md
 systemType: SUPPORTING
-steps: [PS-DDMM-001, PS-DDMM-006]
 provenance: {"Purpose": {"evidence": "Creditor Portal | Channel for creditors to submit mandate requests and files", "source": "document"}, "Role in this process": {"evidence": "SME (M. Vogel) confirmed: confirmation content varies by request type (established at PS-DDMM-006); portal is also the creditor-facing status display for in-flight requests; EX-DDMM-002 and EX-DDMM-004 show as pending/in-progress; return channel for EX-DDMM-001 reason-coded rejections.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel

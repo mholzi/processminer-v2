@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: sepa-payments-dtp-mockup.md
 systemType: SUPPORTING
-steps: [PS-SPP-001]
 provenance: {"Purpose": {"evidence": "", "source": "proposed"}, "Role in this process": {"evidence": "", "source": "proposed"}}
 ---
 ## Purpose

@@ -14,6 +14,7 @@ step: [PS-FR-005]
 approval: approved
 approvalBy: M. Berger
 approvalDate: 2026-05-18
+regulatedBy: [REG-FR-013]
 ---
 ## What it checks
 That funding is available for the value date before a release at or above the fixed EUR 5,000,000 threshold proceeds — non-EUR amounts FX-converted at the release-day rate.

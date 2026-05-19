@@ -8,7 +8,6 @@ confidence: high
 source: M. Vogel, Senior Payments Operations Analyst
 domain: Payment Services
 asOf: 2026-05-19
-controls: [CP-DDMM-001, CP-DDMM-004]
 provenance: {"How it is met": {"evidence": "SME accepted CP-DDMM-001, CP-DDMM-004, PS-DDMM-007 and PS-DDMM-005 links as correct.", "source": "elicited"}, "What it requires": {"evidence": "SME confirmed PSD2 in scope; mandate authorisation requirement, 8-week unconditional refund right, R-transaction obligations.", "source": "elicited"}, "Why it applies": {"evidence": "SME confirmed: bank holds mandates authorising SDD collections; incorrect/uncancelled mandate undermines debtor refund rights and bank liability.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel

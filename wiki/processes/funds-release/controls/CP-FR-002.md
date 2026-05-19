@@ -14,6 +14,7 @@ step: [PS-FR-003]
 approval: approved
 approvalBy: M. Berger
 approvalDate: 2026-05-17
+regulatedBy: [REG-FR-001, REG-FR-002, REG-FR-003, REG-FR-008, REG-FR-014]
 ---
 ## What it checks
 Whether the named beneficiary or the beneficiary bank / correspondent matches a sanctions list or triggers an AML alert.

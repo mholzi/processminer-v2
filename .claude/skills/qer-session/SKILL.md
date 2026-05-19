@@ -112,7 +112,8 @@ volume, what is in scope and out of scope.** Draft it — never make the SME
 write prose — then confirm with the **Y / E / R** loop. Offer the SME exactly
 these three choices, verbatim, never just two:
 
-- **[Y] Yes** — accurate, accept it.
+- **[Y] Yes** — accept the draft. The overview is written `status: draft`;
+  the SME approves it later in the app, not here.
 - **[E] Edit** — apply the SME's corrections, show the result, ask again.
 - **[R] Rewrite** — the draft missed; redraft together, then re-present.
 

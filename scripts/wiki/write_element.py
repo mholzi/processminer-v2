@@ -93,7 +93,26 @@ def main(argv: list[str]) -> None:
         frontmatter["source"] = spec["source"]
     for key, val in (spec.get("fields") or {}).items():
         frontmatter[key] = val
+    # A relation key must be one the schema declares for this element type.
+    # The reverse view of a relation (e.g. a system's "Steps", derived from
+    # each process-step's `systems`) is computed by the app, never stored —
+    # writing it creates the one-sided links lint then has to chase. Drop any
+    # relation key the type does not declare, and say so.
+    rel_keys = {
+        r["key"]
+        for r in ((types[etype].get("frontmatter") or {}).get("relations") or [])
+    }
+    # `transitions` / `raci` are id-lists carrying per-edge metadata — not
+    # schema relations, but legitimate frontmatter (see relations.ts).
+    rel_keys |= {"transitions", "raci"}
     for key, val in (spec.get("relations") or {}).items():
+        if key not in rel_keys:
+            print(
+                f"warning: dropped relation '{key}' — not a schema relation "
+                f"for type '{etype}'; its reverse view is derived, not stored",
+                file=sys.stderr,
+            )
+            continue
         frontmatter[key] = list(val)
 
     # Provenance map (HALLUCINATION-PLAN.md): one entry per block heading,

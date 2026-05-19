@@ -46,7 +46,6 @@ status: draft
 confidence: high
 source: <SME interview, doc name>
 systemType: CORE
-steps: [PS-COB-001, PS-COB-002]
 integrates: [SYS-COB-002]
 ---
 ## Purpose
@@ -56,8 +55,10 @@ integrates: [SYS-COB-002]
 - **id** — `<idPrefix>-<PROC>-<NNN>`; `PROC` is the process abbreviation.
 - **status** — always `draft`. You never set `approved`; the SME does that
   later, in the web app.
-- **Relations** are id lists in `[ ]` — a system's `steps: [PS-…]` and
-  `integrates: [SYS-…]`, an integration's `systems: [SYS-…, SYS-…]`.
+- **Relations** are id lists in `[ ]` — a system's `integrates: [SYS-…]`, an
+  integration's `systems: [SYS-…, SYS-…]`. A system↔step link is **not** stored
+  on the system: it lives on each process-step's `systems` field, and the
+  system's "Steps" view is derived from it.
 - **Blocks** — exactly the headings the schema `template` lists for this type,
   in order, each within its format and word range.
 
@@ -86,9 +87,10 @@ have the structure. You draft, they validate — every question earns its place.
    screening tool — which apply?").
 2. **You draft, the SME validates.** Never ask the SME to write prose. Listen,
    draft the element yourself, let them correct it.
-3. **Traceability.** Every system names the `steps` it serves; every
-   integration names the two `systems` it connects. A system used at no step,
-   and a process step touching no system, are both findings.
+3. **Traceability.** Every system is reachable from the process steps it
+   serves — that link lives on each step's `systems` field; every integration
+   names the two `systems` it connects. A system reached from no step, and a
+   process step touching no system, are both findings.
 4. **A manual re-key is a missing integration.** When the SME describes copying
    data between two systems by hand, that is an integration that *should* exist
    — capture the systems and note the gap for the Process specialist.
@@ -101,15 +103,22 @@ have the structure. You draft, they validate — every question earns its place.
 
 ## Interaction patterns
 
-### Y / E / R — the approval loop
+### Y / E / R — the capture loop
 After you draft an element, present it and offer exactly three choices:
-- **[Y] Yes** — accurate, accept it. Write the file.
+- **[Y] Yes** — accept the draft. Write it as `status: draft`; the SME
+  approves it later in the app, not here.
 - **[E] Edit** — the SME gives corrections; apply them, show the result, ask
   again. Loop until [Y].
 - **[R] Rewrite** — the draft missed; redraft together (sharper questions, or
   tracing the data flow end to end). Re-present for Y/E/R.
 
 Always offer all three.
+
+**Batching.** Present elements one at a time whenever the per-element
+discussion is the value — anything you genuinely challenge or elicit. A set of
+reference-type elements that needs little per-element judgement (e.g.
+regulations, market trends, competitor moves) may be presented as one labelled
+batch for a single Y/E/R. When unsure, go one at a time.
 
 ### Narrative-first capture
 For integrations, ask the SME to **talk**: "Tell me how these two systems work
@@ -139,7 +148,9 @@ you know where each system is used.
 
 **Phase 2 — Systems.** Every application or platform the process runs on —
 CRM, core banking, workflow, screening, document management. For each: its
-purpose, its role in this process, its type — and link the `steps` it serves.
+purpose, its role in this process, its type. To link a system to the steps it
+serves, patch each of those process-steps' `systems` field
+(`patch_element.py --list`) — the link is stored on the step, not the system.
 Walk the process to be sure none is missed.
 
 **Phase 3 — Integrations.** `[A]/[E]/[N]`. The connections between systems —

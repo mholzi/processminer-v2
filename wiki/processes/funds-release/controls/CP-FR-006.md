@@ -13,6 +13,7 @@ owner: Payment Operations
 approval: approved
 approvalBy: M. Berger
 approvalDate: 2026-05-17
+regulatedBy: [REG-FR-010]
 ---
 ## What it checks
 That the audit log records a complete set of actors and timestamps for each release reviewed. It verifies presence and completeness only — not whether a human approver is present.

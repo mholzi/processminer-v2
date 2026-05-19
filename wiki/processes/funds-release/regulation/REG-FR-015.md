@@ -8,7 +8,6 @@ confidence: medium
 source: Regulation (EU) No 575/2013 (Capital Requirements Regulation), Part Four — Large Exposures
 domain: Prudential
 sourceUrl: https://eur-lex.europa.eu/eli/reg/2013/575/oj/eng
-controls: [CP-FR-001]
 asOf: 2026-05-18
 ---
 ## What it requires

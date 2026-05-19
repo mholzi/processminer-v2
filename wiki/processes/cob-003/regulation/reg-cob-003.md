@@ -7,7 +7,6 @@ status: confirmed
 confidence: high
 source: DTP-BB-ONB-001 v2.3
 domain: Data Protection
-controls: [CP-COB-003]
 ---
 ## What it requires
 A lawful basis for processing personal data, with the data subject informed and consenting.

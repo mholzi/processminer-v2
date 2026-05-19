@@ -8,7 +8,6 @@ confidence: medium
 source: Regulation (EU) 2024/1624 (Anti-Money Laundering Regulation)
 domain: Financial Crime
 sourceUrl: https://eur-lex.europa.eu/eli/reg/2024/1624/oj/eng
-controls: [CP-FR-002]
 asOf: 2026-05-18
 ---
 ## What it requires

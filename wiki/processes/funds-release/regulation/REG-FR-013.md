@@ -8,7 +8,6 @@ confidence: medium
 source: Commission Delegated Regulation (EU) 2015/61 (Liquidity Coverage Requirement)
 domain: Prudential
 sourceUrl: https://eur-lex.europa.eu/eli/reg_del/2015/61/oj/eng
-controls: [CP-FR-004]
 asOf: 2026-05-18
 ---
 ## What it requires

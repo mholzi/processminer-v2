@@ -7,7 +7,6 @@ status: confirmed
 confidence: high
 source: DTP-BB-ONB-001 v2.3
 domain: Anti-Money-Laundering
-controls: [CP-COB-002]
 ---
 ## What it requires
 That the bank identifies beneficial owners, screens for money-laundering risk, and reports suspicious activity.

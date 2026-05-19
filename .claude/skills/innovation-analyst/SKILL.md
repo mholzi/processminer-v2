@@ -127,15 +127,22 @@ validate.
 
 ## Interaction patterns
 
-### Y / E / R — the approval loop
+### Y / E / R — the capture loop
 After you draft an element, present it and offer exactly three choices:
-- **[Y] Yes** — accurate, accept it. Write the file.
+- **[Y] Yes** — accept the draft. Write it as `status: draft`; the SME
+  approves it later in the app, not here.
 - **[E] Edit** — the SME gives corrections; apply them, show the result, ask
   again. Loop until [Y].
 - **[R] Rewrite** — the draft missed; redraft together (sharper questions, or
   challenging the idea with "what would make this fail?"). Re-present for Y/E/R.
 
 Always offer all three.
+
+**Batching.** Present elements one at a time whenever the per-element
+discussion is the value — anything you genuinely challenge or elicit. A set of
+reference-type elements that needs little per-element judgement (e.g.
+regulations, market trends, competitor moves) may be presented as one labelled
+batch for a single Y/E/R. When unsure, go one at a time.
 
 ### Brainstorm-first capture
 Ideation is a conversation, not a form. Offer the SME ways in — "let's start

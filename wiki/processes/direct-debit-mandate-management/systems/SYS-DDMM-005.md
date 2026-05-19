@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: ddmm-dtp-mockup.md
 systemType: CORE
-steps: [PS-DDMM-002]
 provenance: {"Purpose": {"evidence": "Core Banking System | Debtor account reachability and status checks", "source": "document"}, "Role in this process": {"evidence": "Core Banking System | Debtor account reachability and status checks. The debtor IBAN passes checksum and reachability validation.", "source": "document"}}
 approval: approved
 approvalBy: M. Vogel

@@ -120,7 +120,12 @@ For the `current` item, one element at a time:
 4. **Advance.** Run `python3 scripts/wiki/review_cursor.py advance <slug>`. If
    it reports `done`, go to Step 4; otherwise present the next `current` item.
 
-Work one element per exchange. Never batch — the challenge is the value.
+Work one element per exchange. Never batch the challenged walk — the challenge
+*is* the value, and a batched challenge earns a batched, shallow answer. The
+one carve-out: the **process-gap tail** of the queue (process-gaps come last)
+may be presented together, since gaps are cross-referential and low-challenge;
+steps, roles, controls, systems and every other current-state element are
+always one per exchange.
 
 **New elements you create mid-run.** A challenge often surfaces something
 missing — an unnamed role, an undocumented exception, a pain point, a gap.

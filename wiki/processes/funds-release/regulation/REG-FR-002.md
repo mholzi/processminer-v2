@@ -8,7 +8,6 @@ confidence: medium
 source: German Money Laundering Act (Geldwäschegesetz, GwG)
 domain: Financial Crime
 sourceUrl: https://www.bafin.de/SharedDocs/Veroeffentlichungen/EN/Aufsichtsrecht/Gesetz/GwG_en.html
-controls: [CP-FR-002]
 asOf: 2026-05-18
 ---
 ## What it requires

@@ -7,7 +7,6 @@ status: confirmed
 confidence: high
 source: DTP-BB-ONB-001 v2.3
 domain: Payment Services Directive 2
-controls: [CP-COB-004]
 ---
 ## What it requires
 Strong Customer Authentication for account access and payments.

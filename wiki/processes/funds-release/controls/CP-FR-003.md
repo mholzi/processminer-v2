@@ -14,6 +14,7 @@ step: [PS-FR-006]
 approval: approved
 approvalBy: M. Berger
 approvalDate: 2026-05-17
+regulatedBy: [REG-FR-004]
 ---
 ## What it checks
 That a non-STP or exception release is authorised by two independent people and not by a single individual. STP-eligible clean items are exempt — they receive a system-applied approval.

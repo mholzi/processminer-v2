@@ -7,7 +7,6 @@ status: confirmed
 confidence: high
 source: DTP-BB-ONB-001 v2.3
 domain: Segregation of Duties (internal policy)
-controls: []
 ---
 ## What it requires
 That no single person both performs and approves a sensitive action. This is an internal segregation-of-duties policy rather than external law.

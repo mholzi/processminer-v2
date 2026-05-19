@@ -8,7 +8,6 @@ confidence: medium
 source: EU restrictive-measures framework (incl. Council Regulation (EU) No 269/2014)
 domain: Financial Crime
 sourceUrl: https://finance.ec.europa.eu/eu-and-world/sanctions-restrictive-measures/overview-sanctions-and-related-resources_en
-controls: [CP-FR-002]
 asOf: 2026-05-18
 ---
 ## What it requires

@@ -8,7 +8,6 @@ confidence: medium
 source: BaFin MaRisk Circular (under §25a KWG)
 domain: Operational Risk
 sourceUrl: https://www.bafin.de/EN/Aufsicht/BankenFinanzdienstleister/Risikomanagement/risikomanagement_node_en.html
-controls: [CP-FR-003]
 asOf: 2026-05-18
 ---
 ## What it requires

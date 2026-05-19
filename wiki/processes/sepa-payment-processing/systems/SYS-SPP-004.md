@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: sepa-payments-dtp-mockup.md
 systemType: SUPPORTING
-steps: [PS-SPP-004]
 provenance: {"Purpose": {"evidence": "Sanctions Screening Engine | Real-time sanctions / AML screening", "source": "document"}, "Role in this process": {"evidence": "Sanctions Screening Engine | Real-time sanctions / AML screening", "source": "document"}}
 ---
 ## Purpose

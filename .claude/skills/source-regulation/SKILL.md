@@ -85,8 +85,10 @@ obligation that genuinely applies to *this* process:
   "Operational Risk"); `source:` the regulation's name or the citing
   publication; `sourceUrl:` the page you drew it from. (`asOf:` is auto-stamped
   by `write_element.py` — leave it out.)
-- Where a regulation is clearly satisfied by an existing control, set the
-  `controls:` relation to that control's id.
+- Where a regulation is clearly satisfied by an existing control, record the
+  link on the **control**: patch that control's `regulatedBy` to add this
+  regulation's id (`patch_element.py --list`). A regulation has no `controls`
+  field — its control list is the derived reverse of `control.regulatedBy`.
 - Write each with `next_id.py` → `write_element.py` (`status: draft`,
   `confidence: medium`; `low` if thinly evidenced) → `check_conformance.py`. If
   conformance flags an element, fix the draft and re-write before moving on.

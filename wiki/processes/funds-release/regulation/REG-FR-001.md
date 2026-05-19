@@ -8,7 +8,6 @@ confidence: medium
 source: Regulation (EU) 2023/1113 (Funds Transfer Regulation)
 domain: Financial Crime
 sourceUrl: https://eur-lex.europa.eu/eli/reg/2023/1113/oj/eng
-controls: [CP-FR-002]
 asOf: 2026-05-18
 ---
 ## What it requires
