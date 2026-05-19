@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
-"""Reconcile exception `affects` against process-step `transitions` — deterministic.
+"""Check exception wiring against process-step `transitions` — deterministic.
 
-An exception's `affects` (the process-steps it deviates from) is authored on
-the exception. A process-step's `transitions` independently record where its
-flow exits — including out to an exception. The two are separate authored
-sources and must agree. This check flags every exception where the stored
-`affects` and the set of steps whose `transitions` flow into it disagree.
+The single source of truth for what a process-step deviates to is that step's
+own `transitions` (each entry `to|kind|when`). An exception is reached only
+through a step's `transitions` — it stores no back-link of its own. This check
+flags two defects:
+
+  * orphan exception — no process-step `transitions` flow into it;
+  * a process-step `exception`-kind transition whose target id is not a real
+    exception element in the process.
 
 run-lint folds the findings into the lint pass — they are deterministic
 `discrepancy` findings, computed by set arithmetic, not judgement.
@@ -49,51 +52,55 @@ def main(argv: list[str]) -> None:
         elif meta.get("type") == "exception":
             exceptions[eid] = meta
 
-    # transitions-implied affects: step ids whose `transitions` flow into an
-    # exception id (the transition target — `to` of `to|kind|when`).
-    implied: dict[str, set[str]] = {eid: set() for eid in exceptions}
+    # Step ids whose `transitions` flow into each exception id.
+    into: dict[str, set[str]] = {eid: set() for eid in exceptions}
+    # `exception`-kind transitions whose target is not a real exception.
+    broken: list[tuple[str, str]] = []  # (step id, bad target)
     for sid, meta in steps.items():
         for entry in as_list(meta.get("transitions")):
-            to = entry.split("|")[0].strip()
+            parts = entry.split("|")
+            to = parts[0].strip()
+            kind = parts[1].strip() if len(parts) > 1 else "normal"
+            if not to:
+                continue
             if to in exceptions:
-                implied[to].add(sid)
+                into[to].add(sid)
+            elif kind == "exception" and to not in steps:
+                broken.append((sid, to))
 
     findings: list[dict] = []
-    for eid, meta in sorted(exceptions.items()):
-        stored = {s for s in as_list(meta.get("affects")) if s in steps}
-        imp = implied[eid]
-        only_affects = stored - imp        # affects names it, no transition flows in
-        only_transition = imp - stored     # a transition flows in, affects omits it
-        if not (only_affects or only_transition):
-            continue
-        parts = []
-        if only_transition:
-            parts.append(
-                f"process-step(s) {', '.join(sorted(only_transition))} "
-                f"transition into it, but its `affects` omits them"
-            )
-        if only_affects:
-            parts.append(
-                f"its `affects` lists {', '.join(sorted(only_affects))}, "
-                f"but no process-step transitions into it"
-            )
+    for eid in sorted(exceptions):
+        if not into[eid]:
+            findings.append({
+                "kind": "discrepancy",
+                "title": f"Orphan exception: {eid}",
+                "detail": (
+                    f"No process-step `transitions` flow into {eid} — nothing "
+                    f"in the documented flow reaches this exception."
+                ),
+                "elements": [eid],
+            })
+    for sid, to in sorted(broken):
         findings.append({
             "kind": "discrepancy",
-            "title": f"Flow mismatch: {eid} `affects` vs process-step transitions",
-            "detail": "; ".join(parts) + ".",
-            "elements": sorted({eid} | only_affects | only_transition),
+            "title": f"Broken exception transition: {sid} → {to}",
+            "detail": (
+                f"Process-step {sid} has an `exception` transition to {to}, "
+                f"which is not an exception element in this process."
+            ),
+            "elements": sorted({sid, to}),
         })
 
     if as_json:
         print(json.dumps(findings, indent=2, ensure_ascii=False))
         return
     if not findings:
-        print(f"{slug}: exception `affects` and process-step transitions agree.")
+        print(f"{slug}: every exception is reached by a process-step transition.")
         return
     for f in findings:
         print(f"✗ {f['title']}")
         print(f"    {f['detail']}")
-    print(f"\n{len(findings)} flow mismatch(es)")
+    print(f"\n{len(findings)} exception-wiring issue(s)")
 
 
 if __name__ == "__main__":

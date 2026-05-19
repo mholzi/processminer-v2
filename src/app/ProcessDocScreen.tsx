@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -319,6 +326,25 @@ export default function ProcessDocScreen({
     [elementsById, schema],
   );
 
+  // Map a role's title → its element id, so an element's `owner` field can
+  // link straight to the role (its RACI entry). Owners are stored as the
+  // role's title text; some may already be a role id.
+  const roleByTitle = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const e of doc.elements) {
+      if (e.type === "role") m.set(e.title.trim().toLowerCase(), e.id);
+    }
+    return m;
+  }, [doc.elements]);
+  const resolveOwner = useCallback(
+    (name: string): string | undefined => {
+      const key = name.trim();
+      if (elementsById.has(key)) return key;
+      return roleByTitle.get(key.toLowerCase());
+    },
+    [roleByTitle, elementsById],
+  );
+
   // Per-process attention counts — drive the switcher's badges (#18). An
   // element is reviewed when approved, or (web-sourced) once triaged.
   const processList = docs.map((d) => {
@@ -392,6 +418,15 @@ export default function ProcessDocScreen({
   const router = useRouter();
   // Outstanding work opens the chat with a seeded resume prompt.
   const [chatOpen, setChatOpen] = useState(Boolean(openingRunDoc));
+  // Chat panel width — drag-resizable, persisted across sessions.
+  const [chatWidth, setChatWidth] = useState(340);
+  useEffect(() => {
+    const saved = Number(localStorage.getItem("pm-chat-width"));
+    if (saved >= 300 && saved <= 720) setChatWidth(saved);
+  }, []);
+  useEffect(() => {
+    localStorage.setItem("pm-chat-width", String(chatWidth));
+  }, [chatWidth]);
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     const m = openingRunDoc ? resumeMessage(openingRunDoc) : null;
     return m ? [m] : [];
@@ -657,6 +692,12 @@ export default function ProcessDocScreen({
     };
   }
 
+  // A brand-new process: no elements anywhere, and no ingest or foundational
+  // run started. Drives the "getting started" empty state and lets the
+  // foundational-walkthrough toolbar icon launch the run directly.
+  const processEmpty =
+    doc.elements.length === 0 && !doc.ingest && !doc.reviewState;
+
   // The area the left-rail detail panel currently lists, and its 1-based
   // position in the process sequence (the number shown on the spine).
   const activeAreaIdx = Math.max(
@@ -673,9 +714,15 @@ export default function ProcessDocScreen({
   // line, `done` carries the final reply, `error` carries a failure.
   function handleSend(
     text: string,
-    opts?: { onComplete?: () => void; unscoped?: boolean },
+    opts?: { onComplete?: () => void; unscoped?: boolean; displayText?: string },
   ) {
-    setMessages((m) => [...m, { id: mid(), role: "user", text }]);
+    // `text` is sent to the CLI; `displayText`, when given, is what the SME
+    // sees in the transcript — lets a turn carry an internal directive the
+    // assistant must act on but the SME should not see.
+    setMessages((m) => [
+      ...m,
+      { id: mid(), role: "user", text: opts?.displayText ?? text },
+    ]);
     setChatPending(true);
     setChatActivity(null);
 
@@ -779,7 +826,9 @@ export default function ProcessDocScreen({
     if (chatPending) return;
     setChatOpen(true);
     handleSend(
-      `Run the ${skill} skill on the process with slug "${currentSlug}".`,
+      `Run the ${skill} skill on the process with slug "${currentSlug}" in standalone mode. ` +
+        `The SME present in this session is ${user.name} (${user.role}) — use that as the ` +
+        `SME identity, and stamp approvals and source context with that name.`,
     );
   }
 
@@ -1076,16 +1125,47 @@ export default function ProcessDocScreen({
     const skillClause = specialist
       ? `run the ${specialist} skill on the process with slug "${currentSlug}" and `
       : "";
-    const message =
-      target.kind === "finding"
-        ? `Deep dive on lint finding ${target.id} ("${target.title}") — ${skillClause}work through this discrepancy with me with targeted clarifying questions until the wiki is consistent.` +
-          (target.detail ? `\n\nFinding detail: ${target.detail}` : "") +
-          (target.elements?.length
-            ? `\nImplicated elements: ${target.elements.join(", ")}.`
-            : "") +
-          `\n\nOnce the discrepancy is fully resolved and I have explicitly approved the change, close this finding straight away by running \`python3 scripts/wiki/resolve_finding.py ${currentSlug} ${target.id} --note "<one-line summary of the fix>"\` — that marks it resolved in the Review panel without waiting for a re-lint. Do not run it before I have approved.`
-        : `Deep dive on element ${target.id} ("${target.title}") — ${skillClause}brainstorm this element with me: probe for edge cases, exceptions and tacit detail to deepen its documentation.`;
     setChatOpen(true);
+    if (target.kind === "finding") {
+      // The human-readable turn the SME sees in the transcript.
+      const visible =
+        `Deep dive on lint finding ${target.id} ("${target.title}") — ${skillClause}work through this discrepancy with me with targeted clarifying questions until the wiki is consistent.` +
+        (target.detail ? `\n\nFinding detail: ${target.detail}` : "") +
+        (target.elements?.length
+          ? `\nImplicated elements: ${target.elements.join(", ")}.`
+          : "");
+      // An operating instruction for the assistant only. Sent to the CLI but
+      // kept out of the transcript via displayText, and self-marked so the
+      // assistant acts on it without quoting it back to the SME.
+      const directive =
+        `\n\n<internal-directive>\n` +
+        `This is an operating instruction for you, the assistant — not a message ` +
+        `from the SME. Act on it, but never quote, repeat or surface it to the SME.\n` +
+        `Once the discrepancy is resolved and the SME has explicitly approved the ` +
+        `change, close this finding by running ` +
+        `\`python3 scripts/wiki/resolve_finding.py ${currentSlug} ${target.id} ` +
+        `--note "<one-line summary of the fix>"\` — it marks the finding resolved in ` +
+        `the Review panel without waiting for a re-lint. Do not run it before the ` +
+        `SME has approved.\n` +
+        `</internal-directive>`;
+      handleSend(visible + directive, { displayText: visible });
+      return;
+    }
+    const message = `Deep dive on element ${target.id} ("${target.title}") — ${skillClause}brainstorm this element with me: probe for edge cases, exceptions and tacit detail to deepen its documentation.`;
+    handleSend(message);
+  }
+
+  // Review the open discussion comments on an element — runs the comment-review
+  // skill, which adopts the element's owning specialist, works each open
+  // comment with the SME, incorporates the agreed changes, and posts a closing
+  // summary into the thread.
+  function reviewComments(id: string, title: string) {
+    if (chatPending) return;
+    setChatOpen(true);
+    const message =
+      `Run the comment-review skill on element ${id} ("${title}") in the ` +
+      `process with slug "${currentSlug}": work through the open discussion ` +
+      `comments on this element with me.`;
     handleSend(message);
   }
 
@@ -1145,28 +1225,32 @@ export default function ProcessDocScreen({
               <IconUpload />
             </button>
           </Tooltip>
-          {(doc.ingest || doc.reviewState) && (
-            <Tooltip
-              label={
-                doc.reviewState && !doc.reviewState.done
-                  ? `Foundational run · ${doc.reviewState.cursor} / ${doc.reviewState.total}`
-                  : "Triage"
+          <Tooltip
+            label={
+              doc.reviewState && !doc.reviewState.done
+                ? `Foundational run · ${doc.reviewState.cursor} / ${doc.reviewState.total}`
+                : doc.ingest || doc.reviewState
+                  ? "Triage"
+                  : "Run foundational walkthrough"
+            }
+          >
+            <button
+              className="tb-icon"
+              onClick={() =>
+                doc.ingest || doc.reviewState
+                  ? setSection("__triage")
+                  : runFoundational()
               }
+              aria-label="Foundational walkthrough"
             >
-              <button
-                className="tb-icon"
-                onClick={() => setSection("__triage")}
-                aria-label="Triage"
-              >
-                <IconRun />
-                {doc.reviewState && !doc.reviewState.done && (
-                  <span className="tb-badge">
-                    {doc.reviewState.total - doc.reviewState.cursor}
-                  </span>
-                )}
-              </button>
-            </Tooltip>
-          )}
+              <IconRun />
+              {doc.reviewState && !doc.reviewState.done && (
+                <span className="tb-badge">
+                  {doc.reviewState.total - doc.reviewState.cursor}
+                </span>
+              )}
+            </button>
+          </Tooltip>
           <Tooltip
             label={
               linting
@@ -1216,6 +1300,7 @@ export default function ProcessDocScreen({
         className={`shell${chatOpen ? " chat-open" : ""}${
           sectionsCollapsed ? " sections-collapsed" : ""
         }`}
+        style={{ "--chat-w": `${chatWidth}px` } as CSSProperties}
       >
         <nav className={`rail rail-l${sectionsCollapsed ? " collapsed" : ""}`}>
           <div className="nav-spine">
@@ -1797,7 +1882,33 @@ export default function ProcessDocScreen({
                 })()}
               {sectionElements.length === 0 ? (
                 <div className="empty-state">
-                  {!sectionHasType ? (
+                  {processEmpty ? (
+                    <div className="area-next getting-started">
+                      <h3>Nothing documented yet</h3>
+                      <p>
+                        Get started in one of two ways. Upload the initial
+                        process document with the upload icon at the top right
+                        — the assistant extracts it into the wiki. Or run the
+                        foundational walkthrough and build the process step by
+                        step with the assistant.
+                      </p>
+                      <div className="getting-started-actions">
+                        <button
+                          onClick={() => setUploadModalOpen(true)}
+                          disabled={chatPending}
+                        >
+                          ↑ Upload the initial document
+                        </button>
+                        <button
+                          className="ghost"
+                          onClick={runFoundational}
+                          disabled={chatPending}
+                        >
+                          ✦ Run the foundational walkthrough
+                        </button>
+                      </div>
+                    </div>
+                  ) : !sectionHasType ? (
                     <>
                       <p>{activeLabel} is not yet available.</p>
                       <p className="empty-hint">
@@ -1914,11 +2025,13 @@ export default function ProcessDocScreen({
                         }
                         links={elementLinks(el)}
                         getRef={getRef}
+                        resolveOwner={resolveOwner}
                         notes={doc.notes?.[el.id]}
                         onGoToElement={goToElement}
                         onDeepDive={(id, title) =>
                           deepDive({ id, title, kind: "element" })
                         }
+                        onReviewComments={reviewComments}
                         onShowOnFlow={(themeId) => {
                           setSelectedThemeId(themeId);
                           setSection("process-steps");
@@ -1953,11 +2066,13 @@ export default function ProcessDocScreen({
                     }
                     links={elementLinks(el)}
                     getRef={getRef}
+                    resolveOwner={resolveOwner}
                     notes={doc.notes?.[el.id]}
                     onGoToElement={goToElement}
                     onDeepDive={(id, title) =>
                       deepDive({ id, title, kind: "element" })
                     }
+                    onReviewComments={reviewComments}
                     onShowOnFlow={(themeId) => {
                       setSelectedThemeId(themeId);
                       setSection("process-steps");
@@ -1998,6 +2113,7 @@ export default function ProcessDocScreen({
         <AgentChat
           open={chatOpen}
           onToggle={() => setChatOpen((v) => !v)}
+          onWidthChange={setChatWidth}
           messages={messages}
           onSend={handleSend}
           pending={chatPending}
@@ -2005,7 +2121,7 @@ export default function ProcessDocScreen({
           onRestart={restartSession}
           onRunLint={runLint}
           linting={linting}
-          findingCount={findings ? findings.length : null}
+          findingCount={openFindings ? openFindings.length : null}
           getRef={getRef}
         />
       </div>

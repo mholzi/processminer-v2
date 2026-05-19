@@ -151,11 +151,17 @@ Never skip a section silently; let the SME say "none".
 
 ## The session — phases
 
-Run these in order. **If you were invoked by the `qer-session` orchestrator**,
-the process is already selected — skip Phase 0, and the orchestrator runs
-validation at the end so skip Phase 4; start at Phase 1. You always read the
-As-Is and the sourced trends and ideas (Phase 1), orchestrated or not. Invoked
-directly (standalone), run every phase.
+Run these in order.
+
+**Run mode.** Your invocation states a mode — `standalone` or `orchestrated`.
+- **`orchestrated`** — the `qer-session` orchestrator has already selected the
+  process and runs validation across all perspectives at the end. Skip Phase 0
+  and Phase 4. **Phase 1 still runs** — you always read the As-Is and the
+  sourced trends and ideas, orchestrated or not — so start at Phase 1.
+- **`standalone`** — run every phase.
+
+If the invocation states no mode, default to `standalone`. Do not infer the
+mode from anything else in the invocation wording.
 
 **Phase 0 — Setup.** Ask the SME's name and role. Identify the process: list
 the slugs under `wiki/processes/`, let them pick; read its `index.md`.
@@ -195,9 +201,12 @@ and no downside named is incomplete.
 
 **Phase 4 — Validation.** Before closing, sweep what you wrote: ideas that
 address no documented problem, ideas with no risk named, trends nothing links
-to. Surface each as a short clarifying question, then summarise: every element
-written, counts per type, and tell the SME to review and approve them in the
-web app. If any element was written with `sourceUrl: pending`, list those
+to. Surface each as a short clarifying question, then close with the canonical
+close-out: run `python3 scripts/wiki/verbatim.py specialist-closeout` and
+present what it prints, with `{Perspective}` = **Innovation** and the `{n}` /
+`{type}` placeholders filled from the counts — reproduce every other character
+exactly; `verbatim.py` is the single source of truth, never write it from
+memory. If any element was written with `sourceUrl: pending`, list those
 separately by id and title under a clear heading — "Needs a source-innovation
 pass to attach the citation" — so the handoff is an explicit, actionable list,
 not a buried sentence. When the SME is ready to turn this innovation work into
@@ -221,8 +230,8 @@ id only once it has been written.
    a. **ID** — `python3 scripts/wiki/next_id.py <slug> <type>`.
    b. **Write** — assemble a JSON spec (`slug`, `type`, `id`, `title`,
       `confidence`, `source`, `fields` for scalar frontmatter, `relations` for
-      id-lists, `blocks`), save to a temp file, then
-      `python3 scripts/wiki/write_element.py <spec.json>`.
+      id-lists, `blocks`), save it to `/tmp/<id>.json`, then
+      `python3 scripts/wiki/write_element.py /tmp/<id>.json`.
    c. **Verify** — `python3 scripts/wiki/check_conformance.py <slug> <id>`. If
       flagged, fix the draft and re-write before moving on.
 5. One confirmed element = one file on disk.

@@ -74,6 +74,7 @@ These skills are built; the Wiki Assistant is planned.
 | **run-lint** | automated | lint pass — conformance + five-lens sweep; writes `lint.json`, re-opens implicated approvals (§9) |
 | **foundational-run** | guided | post-ingest narrated walk: challenge every current-state element with the SME, resumable (§7) |
 | **add-entry** | interactive | add one AI-drafted element to a section — asks the SME, researches (wiki / web), refines Y/E/R, writes on approval |
+| **comment-review** | interactive | work the open discussion comments on an element with the SME — evaluate impact, incorporate agreed changes, post a closing analyst summary into the thread |
 | **area-summary** | automated | generate an area's executive summary as an Amazon-style narrative memo; silent, writes summaries.json |
 | **conflict-resolution** | interactive | walk each doc-vs-wiki conflict from a re-ingest with the SME — D/W/E per conflict, clears them when done (§5) |
 | **Wiki Assistant** | *planned* | grounded Q&A over the wiki for SME / transformation team |
@@ -320,6 +321,7 @@ buttons that post a fixed message to `/api/session`:
 | `source-regulation` | the "✦ Source from the web" empty-state CTA / "✦ Refresh from the web" toolbar button on the Regulation section |
 | `source-target` | the empty-state CTA on the Target Process area, when the whole area is still empty |
 | `run-lint` | the "⊛ Run lint" top-bar button |
+| `comment-review` | the "✦ Review with analyst" button on an element's Discussion panel, shown when the element has open (unresolved) comments |
 | `qer-session`, the specialists | free chat; `qer-session` dispatches them; or the **Deep Dive** button — routes the owning specialist by the element's section (§4/§9) |
 
 ---

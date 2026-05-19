@@ -32,14 +32,21 @@ The sequence is fixed. You follow it in order; you never reorder or skip steps.
 Within a step the work is judgement — but the sequence is not yours to change.
 This is what makes the session auditable.
 
+**The cursor.** `qer_cursor.py` owns `wiki/processes/<slug>/qer-state.json` —
+the resumable record of which step the session is on. A QER session is long
+and easily interrupted; the cursor is what lets a stopped session resume at the
+right step rather than you re-deriving it by eye. You read it at the start
+(Step 1) and advance it at the end of every step.
+
 ## How you dispatch a specialist
 
 Each perspective is owned by a specialist skill (registry below). To run a
 perspective: **read that skill's `SKILL.md` and follow it, here, in this same
 session.** The SME is interactive, so the elicitation happens in this
-conversation — not in a subagent. Tell the specialist that `qer-session` has
-already selected the process and captured its overview, so it skips its own
-setup and runs only its perspective phases.
+conversation — not in a subagent. Dispatch the specialist in **`orchestrated`
+mode** — state that mode explicitly when you invoke it. `qer-session` has
+already selected the process and captured its overview, so in `orchestrated`
+mode the specialist skips its own setup and runs only its perspective phases.
 
 If a perspective's specialist skill does not exist yet, say so plainly and move
 on. A session covers whatever specialists are built — it does not stall waiting
@@ -47,16 +54,18 @@ for the rest.
 
 ## Specialist registry
 
-Dispatch in this order. Skip any not-built specialist.
+Dispatch in this order — it is the order the cursor steps through.
+`qer_cursor.py status` reports, per perspective, whether its specialist skill
+is built (`skillBuilt`); skip any that is not.
 
-| Perspective | Skill | Status | Owns |
-|---|---|---|---|
-| Process | `process-specialist` | built | process-step, exception, pain-point, process-gap, role, metric |
-| Control & Compliance | `control-compliance-specialist` | built | control, regulation, compliance-gap, audit-finding |
-| Client Journey | `client-journey-specialist` | built | cx-channel, cx-touchpoint, moment, friction-point, competitor-cx, cx-benchmark |
-| Innovation | `innovation-analyst` | built | market-trend, competitor moves, innovation-idea, innovation-risk |
-| IT Architecture | `it-architect` | built | system, integration |
-| Target Process | `transformation-agent` | built | target-state, transformation-decision, gap |
+| Perspective | Skill | Owns |
+|---|---|---|
+| Process | `process-specialist` | process-step, exception, pain-point, process-gap, role, metric, stakeholder |
+| Control & Compliance | `control-compliance-specialist` | control, regulation, compliance-gap, audit-finding |
+| Client Journey | `client-journey-specialist` | cx-channel, cx-touchpoint, moment, friction-point, competitor-cx, cx-benchmark |
+| Innovation | `innovation-analyst` | market-trend, competitor-innovation, innovation-idea, innovation-risk |
+| IT Architecture | `it-architect` | system, integration |
+| Target Process | `transformation-agent` | target-state, transformation-decision, gap |
 
 ## Principles
 
@@ -73,29 +82,43 @@ Dispatch in this order. Skip any not-built specialist.
 
 ## Step 1 — SELECT
 
-Greet the SME. Ask their **name** and **role** — it is the human-in-the-loop
-record and `source` context the specialists use.
+Identify the process, then read the cursor.
 
-Identify the process:
+**Identify the process.** If the invocation already names one, use it.
+Otherwise greet the SME and either:
 - **Existing** — list the slugs under `wiki/processes/`, let the SME pick. Read
   the current `index.md` so the session extends rather than duplicates.
 - **New** — run the `new-process` skill (read `.claude/skills/new-process/
   SKILL.md` and follow it) to scaffold the process folder, the section folders
-  and a skeleton `index.md`. Then continue to Step 2, which fills the overview.
+  and a skeleton `index.md`.
+
+**Read the cursor** — `python3 scripts/wiki/qer_cursor.py status <slug>`:
+- **`exists: false`, or `done: true`** — a fresh session. Run `python3
+  scripts/wiki/qer_cursor.py start <slug>`, ask the SME their **name** and
+  **role** (the human-in-the-loop record and `source` context the specialists
+  use), then `python3 scripts/wiki/qer_cursor.py advance <slug>` and go to
+  Step 2.
+- **`exists: true`, `done: false`** — a session is already in flight. Tell the
+  SME: "Resuming the QER session for **{process}** — at step {current}." Jump
+  straight to the step the cursor names; do not re-run the completed steps.
+
+Every step below ends by advancing the cursor — that is what moves the session
+forward and lands a resume in the right place.
 
 ## Step 2 — OVERVIEW
 
 Capture the process-level frame with the SME: **purpose, trigger, frequency,
 volume, what is in scope and out of scope.** Draft it — never make the SME
-write prose — then confirm with the **Y / E / R** loop:
+write prose — then confirm with the **Y / E / R** loop. Offer the SME exactly
+these three choices, verbatim, never just two:
 
 - **[Y] Yes** — accurate, accept it.
 - **[E] Edit** — apply the SME's corrections, show the result, ask again.
 - **[R] Rewrite** — the draft missed; redraft together, then re-present.
 
 On **[Y]**, write the overview with the script — never hand-edit `index.md`.
-Assemble a JSON spec and run `python3 scripts/wiki/write_overview.py
-<spec.json>`:
+Assemble a JSON spec, save it to `/tmp/<slug>-overview.json`, and run
+`python3 scripts/wiki/write_overview.py /tmp/<slug>-overview.json`:
 ```json
 {
   "slug": "<slug>",
@@ -114,25 +137,32 @@ The script preserves the process identity (`id`, `type`, `title`, `status`)
 from the scaffolded `index.md` and owns the frontmatter format — the overview
 cannot come out malformed.
 
+When the overview is written, run `python3 scripts/wiki/qer_cursor.py advance
+<slug>` to move to Step 3.
+
 ## Step 3 — PERSPECTIVE PASSES
 
-For each **built** specialist in registry order:
+This step is six cursor positions — one per perspective, in registry order.
+Loop, driven by the cursor:
 
-1. Tell the SME which perspective is starting and why ("Next we document the
+1. Run `python3 scripts/wiki/qer_cursor.py status <slug>`. While `currentKey`
+   names a perspective (the `skill` field is set):
+2. If `skillBuilt` is `false`, tell the SME that specialist is not built yet,
+   run `qer_cursor.py advance <slug>`, and continue the loop.
+3. Tell the SME which perspective is starting and why ("Next we document the
    Process perspective — the steps, who does them, where it breaks").
-2. Dispatch it: read the specialist's `SKILL.md` and run its perspective
-   phases for this process. The process is already selected and its overview
-   captured — the specialist skips its own setup/overview/validation.
-3. When the specialist's perspective is done, **checkpoint with the SME**:
-   "Process perspective done — N elements drafted. Continue to the next
-   perspective, or pause here?" The SME may stop at any point; a session need
-   not cover every perspective in one sitting.
+4. Dispatch the `skill` in **`orchestrated` mode**: read its `SKILL.md` and run
+   its perspective phases for this process. `orchestrated` mode tells the
+   specialist to skip its own setup, overview and validation.
+5. When the perspective is done, run `qer_cursor.py advance <slug>`, then
+   **checkpoint with the SME**: "{Perspective} done — N elements drafted.
+   Continue to the next perspective, or pause here?" The SME may stop at any
+   point — the cursor holds the place for a later session.
 
-All six specialists are built, so a full session documents every perspective
-in registry order — Process, then Control & Compliance, Client Journey,
-Innovation, IT Architecture and Target Process — checkpointing with the SME
-between each. The Target Process pass runs last: it synthesises the documented
-perspectives, so they must exist first.
+The Target Process pass runs last (registry order): it synthesises the other
+documented perspectives, so they must exist first. When the cursor's
+`currentKey` reaches `cross-review`, the perspective passes are complete — go
+to Step 4.
 
 ## Step 4 — CROSS-PERSPECTIVE REVIEW
 
@@ -144,6 +174,9 @@ flag as clarifying questions for the SME.
 
 With only one perspective documented, state "cross-perspective review needs at
 least two perspectives — skipping" and move on.
+
+When the review pass is done, run `python3 scripts/wiki/qer_cursor.py advance
+<slug>`.
 
 ## Step 5 — VALIDATION
 
@@ -157,9 +190,15 @@ elements, anything that reads thin. Surface each finding — and each conformanc
 issue from the script — as a short clarifying question the SME can answer now,
 defer, or skip. Apply any answers through the owning specialist.
 
+When validation is done, run `python3 scripts/wiki/qer_cursor.py advance
+<slug>`.
+
 ## Step 6 — DONE
 
-Summarise the session: every element written, with counts per type and per
-perspective, and the process slug. Tell the SME to **review and approve the
-elements in the web app** — everything is `status: draft`; approval is their
-decision there, not yours here.
+Run `python3 scripts/wiki/qer_cursor.py advance <slug>` — that marks the
+session `done`. Then close with the canonical close-out: run `python3
+scripts/wiki/verbatim.py qer-closeout` and present what it prints, filling the
+`{process}` / `{n}` / `{type}` placeholders from the counts. Reproduce every
+other character — the bullet labels, the `status: draft` line, the closing
+sentence — exactly; `verbatim.py` is the single source of truth, never write
+it from memory. You never set `approved` — that is the SME's call, in the app.

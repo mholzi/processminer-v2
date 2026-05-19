@@ -101,16 +101,10 @@ Run `python3 scripts/wiki/source_report.py <slug>` — it reads the run manifest
 and prints how many elements were written, per type. Read the `regulation`
 count from it; do not recount from memory.
 
-Report with this **exact template**, substituting the counts:
-
-> Regulatory scan complete for **{process}** from the web:
->
-> - **Regulations:** {n} drafted
->
-> Sources: {comma-separated list of the regulations / publications used}
->
-> All are `status: draft` — review and approve them in the app, or run the
-> control & compliance specialist to refine them and map them to controls.
+Report with the canonical template: run `python3 scripts/wiki/verbatim.py
+source-regulation-report` and present what it prints, substituting the
+counts. Reproduce every other character exactly; `verbatim.py` is the single
+source of truth, never write the report from memory.
 
 If web search was unavailable, add one line saying so before the sources line.
 

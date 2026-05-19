@@ -9,7 +9,6 @@ source: funds-release-dtp-mockup.md
 category: Financial crime
 impact: HIGH
 handlingOwner: Compliance / Financial Crime
-affects: [PS-FR-003]
 approval: approved
 approvalBy: M. Berger
 approvalDate: 2026-05-17

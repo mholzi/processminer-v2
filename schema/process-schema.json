@@ -245,7 +245,12 @@
             "target": "control"
           }
         ],
-        "required": []
+        "required": [],
+        "raci": {
+          "format": "step:level",
+          "levels": ["R", "A", "C", "I"],
+          "note": "How this role participates in each process step — the RACI assignment that drives the RACI matrix. Frontmatter key `raci` — a list, each entry `<stepId>:<level>`: the process-step id and the level (R responsible, A accountable, C consulted, I informed). A role carries an entry only for the steps it participates in. Across all roles, every step needs at least one R and exactly one A."
+        }
       },
       "template": [
         {
@@ -361,8 +366,7 @@
         "relations": [],
         "required": [
           "category",
-          "impact",
-          "affects"
+          "impact"
         ]
       },
       "template": [

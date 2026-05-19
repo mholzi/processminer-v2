@@ -27,6 +27,11 @@ export const maxDuration = 1800;
 
 const TURN_TIMEOUT_MS = Number(process.env.SESSION_TURN_TIMEOUT_MS) || 1_800_000;
 
+// Skill turns run on Sonnet — fast and cost-effective for these long,
+// tool-heavy elicitation runs. Override with SESSION_MODEL if a turn
+// needs a stronger model.
+const TURN_MODEL = process.env.SESSION_MODEL || "claude-sonnet-4-6";
+
 // Turn a CLI tool call into a short, human-readable activity line.
 function describeTool(name: string, input: Record<string, unknown>): string {
   const base = (p: unknown) => String(p ?? "").split("/").pop() || "";
@@ -68,6 +73,8 @@ export async function POST(req: NextRequest) {
   const args = [
     "-p",
     message,
+    "--model",
+    TURN_MODEL,
     "--output-format",
     "stream-json",
     "--verbose",

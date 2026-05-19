@@ -31,7 +31,7 @@ Six element types, plus the process overview:
 | exception | `exceptions` | a deviation from the standard flow |
 | pain-point | `pain-points` | staff/process pain — friction in *running* the process |
 | process-gap | `process-gaps` | something missing in how the process is run or measured |
-| role | `roles` | a role and what it does in this process |
+| role | `roles` | a role, what it does, and its RACI across the process steps |
 | metric | `metrics` | how the process is measured |
 
 The **overview** (purpose, trigger, frequency, scope) goes in the process
@@ -82,14 +82,16 @@ systems: [SYS-COB-001, SYS-COB-002]
   you never assemble an id yourself.
 - **status** — always `draft`. You never set `approved`; the SME does that
   later, in the web app.
-- **Relations** are id lists in `[ ]` — e.g. an exception's `affects: [PS-…]`.
+- **Relations** are id lists in `[ ]` — e.g. a pain-point's `affects: [PS-…]`
+  or a process-step's `systems: [SYS-…]`.
 - **Blocks** — exactly the headings the schema `template` lists for this type,
   in order, each within its format and word range.
 
-When unsure of an element type's exact shape, run
-`python3 scripts/wiki/show_template.py <type>` — it prints the section, the id
-prefix and every `## ` block with its format and length, straight from the
-schema.
+You read the whole schema once, up front (above). As a fallback — if you need
+to re-check one type's shape without re-reading the file — `python3
+scripts/wiki/show_template.py <type>` prints just that type's section, id
+prefix and `## ` blocks with their format and length. That is the fallback,
+not the primary path.
 
 ## Your role
 
@@ -173,14 +175,20 @@ record it as you go.
 Run these in order. The SME picks the process and decides when each phase and
 the session are done; you drive the elicitation in between.
 
-**If you were invoked by the `qer-session` orchestrator:** the process is
-already selected and its overview already captured, and the orchestrator runs
-validation across all perspectives at the end. Skip Phase 0, Phase 1 and
-Phase 8 — start at Phase 2. If you were invoked directly (standalone), run
-every phase.
+**Run mode.** Your invocation states a mode — `standalone` or `orchestrated`.
+- **`orchestrated`** — the `qer-session` orchestrator has already selected the
+  process and captured its overview, and runs validation across all
+  perspectives at the end. Skip Phase 0, Phase 1 and Phase 8 — start at
+  Phase 2.
+- **`standalone`** — run every phase.
 
-**Phase 0 — Setup.** Ask the SME's name and role (it becomes `source` context
-and the human-in-the-loop record). Identify the process:
+If the invocation states no mode, default to `standalone`. Do not infer the
+mode from anything else in the invocation wording.
+
+**Phase 0 — Setup.** The invocation supplies the SME's name and role — use
+that as the `source` context and the human-in-the-loop record; do not re-ask
+it. Only if the invocation supplies no SME identity, ask for it. Identify the
+process:
 - *Existing* — list the slugs under `wiki/processes/`, let them pick; read the
   current `index.md` and elements so you extend rather than duplicate.
 - *New* — agree a name with the SME, then run the `new-process` skill (read
@@ -190,8 +198,8 @@ and the human-in-the-loop record). Identify the process:
 
 **Phase 1 — Overview.** Elicit purpose, trigger, frequency, volume, and what is
 in / out of scope. Draft the overview, run Y/E/R, and on **[Y]** write it with
-`python3 scripts/wiki/write_overview.py <spec.json>` — never hand-edit
-`index.md`. The spec carries the overview fields (`processOwner`, `trigger`,
+`python3 scripts/wiki/write_overview.py /tmp/<slug>-overview.json` — never
+hand-edit `index.md`. The spec carries the overview fields (`processOwner`, `trigger`,
 `frequency`, `scopeIn`, `scopeOut`, `processInput`, `processOutput`,
 `docStatus`) and a 2-paragraph `purpose` body; the script owns the format and
 preserves the process identity. See "Writing an element" for the script idiom.
@@ -207,9 +215,13 @@ transitions are what render the process as a flow rather than a flat list —
 do not skip them. Draft each as a `process-step`, Y/E/R, write it. Number
 them in sequence.
 
-**Phase 3 — Exceptions.** `[A]/[E]/[N]`. Narrative-first. Each exception links
-(`affects`) the steps it deviates from, and records frequency and how it's
-handled today.
+**Phase 3 — Exceptions.** `[A]/[E]/[N]`. Narrative-first. An exception records
+frequency and how it's handled today. The link to the process is **not stored
+on the exception** — a step reaches an exception through its own
+`transitions`. So for each exception, patch the affecting process-step: add an
+`exception`-kind transition `<EX-id>|exception|<when>` to that step's
+`transitions` (`patch_element.py <slug> <step-id> --list transitions …`). The
+step's outgoing flow is the single source of truth for what it deviates to.
 
 **Phase 4 — Pain points.** `[A]/[E]/[N]`. Staff/process pain — friction in
 *running* the process (re-keying, chasing, waiting). Capture severity, impact,
@@ -219,9 +231,21 @@ it for the Client Journey Specialist.
 **Phase 5 — Process gaps.** `[A]/[E]/[N]`. Things missing in how the process is
 run or measured — no owner for a step, no SLA tracking, an unclear handoff.
 
-**Phase 6 — Roles.** The roles that appear in the steps. For each: its
-responsibility in one line, and what it does in this process. Link the steps
-it owns.
+**Phase 6 — Roles & RACI.** The roles that appear in the steps. For each role,
+capture its responsibility in one line and what it does in this process — then
+its **RACI**: walk the process steps and assign the role's level on each step
+it touches — **R** (responsible — does the work), **A** (accountable — answers
+for it; exactly one A per step across all roles), **C** (consulted), **I**
+(informed). A role carries an entry only for the steps it participates in.
+Build the assignments with the SME — do not guess R/A/C/I.
+
+Write the RACI as the `raci` relation in the `write_element.py` spec:
+`"relations": { "raci": ["<stepId>:<level>", …] }` — e.g.
+`["PS-COB-001:R", "PS-COB-002:A", "PS-COB-004:C"]`. To revise a role already
+written, `python3 scripts/wiki/patch_element.py <slug> <id> --list "raci"
+"<stepId>:<level>,…"`. This `raci` list is what the app's RACI matrix (top of
+the Roles & Organisation section) pivots — a role written without it leaves the
+matrix empty.
 
 **Phase 6b — Stakeholders.** `[A]/[E]/[N]`. The people and parties with an
 interest in the process beyond those who run it — the sponsor, the process
@@ -236,10 +260,17 @@ If the SME says a thing isn't measured, that's a Phase 5 gap, not a metric.
 
 **Phase 8 — Validation.** Before closing, do a gap-analysis pass over what you
 wrote: steps with no owner or no rationale, exceptions or pain points not
-linked to any step, a step count below 5 or above 15, blocks that read thin
-against their template. Surface each as a short clarifying question — the SME
-can answer, defer, or skip. Then summarise: list every element written, with
-counts per type, and tell the SME to review and approve them in the web app.
+linked to any step, a step count below 5 or above 15, **a process step the
+RACI leaves with no role responsible (R) or with no — or more than one — role
+accountable (A)** (every step needs at least one R and exactly one A across all
+roles), blocks that read thin against their template. Surface each as a short
+clarifying question — the SME can answer, defer, or skip. Then close the
+session with the canonical close-out: run `python3 scripts/wiki/verbatim.py
+specialist-closeout` and present what it prints, with `{Perspective}` =
+**Process** and the `{n}` / `{type}` placeholders filled from the counts.
+Reproduce every other character — the bullet labels, the `status: draft`
+line, the closing sentence — exactly. `verbatim.py` is the single source of
+truth for this wording; never write the close-out from memory.
 
 ## Writing an element — the procedure
 
@@ -253,8 +284,9 @@ is often wrong, because the real id depends on creation order. Refer to a
 not-yet-written element by description ("a new process step"); state its id
 only once it has been written.
 
-1. Read the schema `template` for the type — the named blocks, their format
-   and word/item range.
+1. Recall the schema `template` for the type — the named blocks, their format
+   and word/item range — from the schema you read up front. Do not re-read the
+   schema file per element.
 2. **Draft** every block within its template spec. This is your work.
 3. Present the draft to the SME; run **Y / E / R** until they accept.
 4. On **[Y]**, write it with the scripts:
@@ -262,8 +294,8 @@ only once it has been written.
       id (e.g. `PS-CRD-003`). Never count ids yourself.
    b. **Write** — assemble a JSON spec (`slug`, `type`, `id`, `title`,
       `confidence`, `source`, `fields` for scalar frontmatter, `relations` for
-      id-lists, `blocks`), save it to a temp file, then
-      `python3 scripts/wiki/write_element.py <spec.json>`. For a
+      id-lists, `blocks`), save it to `/tmp/<id>.json`, then
+      `python3 scripts/wiki/write_element.py /tmp/<id>.json`. For a
       **process-step**, put its transitions in `relations` under the key
       `transitions` — a list of `<targetId>|<kind>|<when>` strings (`kind` one
       of normal / branch / loopback / exception); run

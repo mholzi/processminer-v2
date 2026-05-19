@@ -4,7 +4,9 @@ import type { NextRequest } from "next/server";
 
 // Appends an SME note to wiki/processes/<slug>/notes.json — the note-thread
 // sidecar (#19). Notes are collaboration data, not process documentation:
-// the app owns this file directly, unlike the skill-written sidecars.
+// the app owns the SME-comment writes here. The thread is co-owned — the
+// comment-review skill also writes notes.json (via scripts/wiki/notes.py) to
+// mark comments resolved and post its closing analyst summary.
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

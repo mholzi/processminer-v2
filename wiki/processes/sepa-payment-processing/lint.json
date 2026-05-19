@@ -1,10 +1,83 @@
 {
-  "generatedAt": "2026-05-18T15:42:26.481597+00:00",
+  "generatedAt": "2026-05-18T20:53:16.274261+00:00",
   "slug": "sepa-payment-processing",
   "summary": {
     "conformance": 0,
-    "discrepancy": 0,
+    "discrepancy": 6,
     "question": 0
   },
-  "findings": []
+  "findings": [
+    {
+      "id": "F-001",
+      "kind": "discrepancy",
+      "title": "Debit-booking step has no linked control",
+      "detail": "PS-SPP-007 (Debit booking) posts the customer debit before clearing submission and its own text calls this 'the point of financial exposure', yet no control element links to it. Cover is checked beforehand by CP-SPP-003 at PS-SPP-003 and a failed settlement is caught afterwards by CP-SPP-007 at PS-SPP-010, but the act of booking the debit itself carries no preventive or detective control.",
+      "elements": [
+        "PS-SPP-007",
+        "CP-SPP-003",
+        "CP-SPP-007"
+      ]
+    },
+    {
+      "id": "F-002",
+      "kind": "discrepancy",
+      "title": "Beneficiary name check performed at validation but covered by no control",
+      "detail": "PS-SPP-002 performs a beneficiary name check (Verification of Payee) as a validation activity, and CP-SPP-001 explicitly states that catching 'a valid IBAN pointing to the wrong account' is 'the beneficiary name check's role' — yet no control element documents that check. The only controls linked to PS-SPP-002 are CP-SPP-001 (IBAN/BIC validation) and CP-SPP-002 (duplicate-payment detection).",
+      "elements": [
+        "PS-SPP-002",
+        "CP-SPP-001",
+        "CP-SPP-002"
+      ]
+    },
+    {
+      "id": "F-003",
+      "kind": "discrepancy",
+      "title": "4-eyes bulk-file release control not reflected in its linked step",
+      "detail": "CP-SPP-006 (4-eyes release of bulk payment files) is a manual control linked to PS-SPP-008 and performed once per bulk file before submission, but PS-SPP-008 (Submit to clearing) describes only automated pacs.008 generation and submission to the CSM — it makes no mention of bulk files or the independent release approval. The step text and the control linked to it disagree on what happens at PS-SPP-008.",
+      "elements": [
+        "CP-SPP-006",
+        "PS-SPP-008"
+      ]
+    },
+    {
+      "id": "F-004",
+      "kind": "discrepancy",
+      "title": "R-transaction handling is in scope and measured but not documented as process",
+      "detail": "The process scope (index.md scopeIn) includes 'handling of R-transactions (returns, rejects, recalls, refunds)', ROLE-SPP-002 is accountable and responsible for R-transaction handling, and M-SPP-005 measures recall/return action time against the EPC 10-business-day deadline — yet no process-step or exception documents R-transaction handling. PG-SPP-006 captures only the outbound-recall slice as an open gap; returns, rejects and refunds against originated payments remain undocumented.",
+      "elements": [
+        "M-SPP-005",
+        "ROLE-SPP-002",
+        "PG-SPP-006"
+      ]
+    },
+    {
+      "id": "F-005",
+      "kind": "discrepancy",
+      "title": "Exception 'affects' field populated inconsistently",
+      "detail": "EX-SPP-002, EX-SPP-003 and EX-SPP-005 carry an 'affects' frontmatter field naming their originating step, but EX-SPP-001, EX-SPP-004 and EX-SPP-007 omit it — even though all three are wired by process-step transitions (PS-SPP-002 to EX-SPP-001, PS-SPP-005 to EX-SPP-004, PS-SPP-006 to EX-SPP-007). The scope link should be present on every exception or on none of them.",
+      "elements": [
+        "EX-SPP-001",
+        "EX-SPP-004",
+        "EX-SPP-007",
+        "EX-SPP-002",
+        "EX-SPP-003",
+        "EX-SPP-005"
+      ]
+    },
+    {
+      "id": "F-006",
+      "kind": "discrepancy",
+      "title": "Branch-capture channel has no system element",
+      "detail": "PS-SPP-001 receives branch-captured payment instructions, and ROLE-SPP-001 and the index trigger both name branch capture as one of the submission paths, but the only channel system, SYS-SPP-001, is titled and described as covering online banking, mobile banking and the corporate host-to-host file channel only. Branch capture is not represented by any system element.",
+      "elements": [
+        "SYS-SPP-001",
+        "PS-SPP-001",
+        "ROLE-SPP-001"
+      ],
+      "status": "resolved",
+      "resolvedBy": "deep-dive",
+      "resolvedAt": "2026-05-18",
+      "resolutionNote": "Broadened SYS-SPP-001 (title, Purpose, Role) to include branch capture as a fourth front-end channel of the channel platform"
+    }
+  ]
 }

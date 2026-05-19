@@ -9,6 +9,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type MouseEvent as ReactMouseEvent,
   type ReactNode,
 } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
@@ -97,6 +98,7 @@ function buildComponents(getRef: GetRef): Components {
 export default function AgentChat({
   open,
   onToggle,
+  onWidthChange,
   messages,
   onSend,
   pending,
@@ -109,6 +111,8 @@ export default function AgentChat({
 }: {
   open: boolean;
   onToggle: () => void;
+  /** Drag-resize callback — receives the new panel width in px. */
+  onWidthChange: (w: number) => void;
   messages: ChatMessage[];
   onSend: (text: string) => void;
   pending: boolean;
@@ -150,8 +154,34 @@ export default function AgentChat({
     setDraft("");
   }
 
+  // Drag the left-edge handle to widen / narrow the panel. The panel is
+  // flush-right, so its width is the distance from the cursor to the
+  // viewport's right edge; clamped to keep the document canvas usable.
+  function onResizeStart(e: ReactMouseEvent) {
+    e.preventDefault();
+    document.body.style.userSelect = "none";
+    document.body.style.cursor = "col-resize";
+    function onMove(ev: MouseEvent) {
+      const w = window.innerWidth - ev.clientX;
+      onWidthChange(Math.min(720, Math.max(300, w)));
+    }
+    function onUp() {
+      document.body.style.userSelect = "";
+      document.body.style.cursor = "";
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    }
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+  }
+
   return (
     <aside className="rail rail-r chat">
+      <div
+        className="chat-resize"
+        title="Drag to resize the panel"
+        onMouseDown={onResizeStart}
+      />
       <div className="chat-head">
         <span className="chat-title">ProcessMiner</span>
         <button

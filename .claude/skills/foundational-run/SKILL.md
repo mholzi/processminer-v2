@@ -68,7 +68,11 @@ Run `python3 scripts/wiki/review_cursor.py status <slug>`.
 - **State exists, done** — go to Step 4.
 
 The script's output is JSON: `position`, `total`, `done`, `current` (the id of
-the element to work now).
+the element to work now), and — printed straight from `scripts/wiki/verbatim.py`,
+the single source of truth so they never drift between turns — `outcomes_line`
+(present while the run is not done) and `closeout_template` (present once it is
+done). Both are SME-facing fixed wording: relay them to the SME exactly as the
+script prints them, never re-typed from memory.
 
 ## Step 3 — The challenged walk
 
@@ -90,17 +94,20 @@ For the `current` item, one element at a time:
    - the overview → purpose, trigger, scope — is the frame right and complete?
    Use the whole-process picture from Step 1: name the elements this one
    relates to. Prime questions with banking-domain knowledge.
-3. **Offer the outcomes** — exactly:
-
-   > **[Y] Approve** · **[E] Rework** · **[D] Deep dive** · or tell me to **move on**
+3. **Offer the outcomes.** Present the `outcomes_line` string from the
+   `review_cursor.py` output — reproduce it **character-for-character** on its
+   own line. It is printed by `scripts/wiki/verbatim.py`; do not retype it
+   from memory, re-letter the options, drop the **[D] Deep dive** option, or
+   change its punctuation. The four outcomes it offers:
 
    - **[Y]** — the SME is satisfied. Run `python3 scripts/wiki/set_approval.py
      <slug> <id> approved "<SME name>"` — the SME name from the invocation.
    - **[E]** — the challenge found rework. Redraft with the SME, then write:
      for a fix to one block or field, `python3 scripts/wiki/patch_element.py
-     <slug> <id> --block "<heading>" <file>` (or `--field` / `--list`); for a
-     genuine multi-block redraft, `python3 scripts/wiki/write_element.py
-     <spec.json>` (same id). Then approve it as in [Y] — but first echo one
+     <slug> <id> --block "<heading>" /tmp/<id>-block.md` (or `--field` /
+     `--list`); for a genuine multi-block redraft, `python3
+     scripts/wiki/write_element.py /tmp/<id>.json` (same id). Then approve it
+     as in [Y] — but first echo one
      line of **what changed** so the SME approves with eyes open, e.g.
      "Reworked PS-FR-002 — validation is now automated-first, analyst-on-
      exception; the STP branch is named. Approved." Never approve a rework
@@ -117,42 +124,43 @@ Work one element per exchange. Never batch — the challenge is the value.
 
 **New elements you create mid-run.** A challenge often surfaces something
 missing — an unnamed role, an undocumented exception, a pain point, a gap.
-Create it, but **reserve the id before you name it**: never tell the SME the
-new element's id until `next_id.py` has assigned it — a guessed id
-("this will be PG-FR-005") is often wrong, because the real id depends on
-creation order. Refer to it by description until it is written. It is **not**
-in the cursor queue:
-it is never challenged in this run and stays `in-progress`. Keep a running
-list of everything you create during the walk, split two ways — *current-state
-elements* (role, exception, pain-point, system, control, metric …) and *gaps*
-(process-gap, control-gap). The close-out reports both.
+Create it — but the mid-run draft is **thin by design**. You are not running a
+full elicitation here; you are recording only what the challenge just exposed.
+
+1. **Reserve the id before you name it.** Never tell the SME the new element's
+   id until `next_id.py` has assigned it — a guessed id ("this will be
+   PG-FR-005") is often wrong, because the real id depends on creation order.
+   Refer to it by description until it is written.
+2. **Draft only what the SME actually said.** Do not inflate a passing remark
+   into a confident, fully-detailed element — that is the hallucination the
+   Provenance block guards against. Every heading the SME did not state stays
+   `proposed`; mark a heading `elicited` only for what they explicitly
+   confirmed.
+3. **One-line read-back, then write.** State plainly what you drafted beyond
+   the SME's words, then write the element with `write_element.py` and verify
+   it with `check_conformance.py` — the same write path every element uses.
+
+The new element is **not** in the cursor queue: it is never challenged in this
+run and stays `in-progress`. Keep a running list of everything you create
+during the walk, split two ways — *current-state elements* (role, exception,
+pain-point, system, control, metric …) and *gaps* (process-gap, control-gap).
+The close-out reports both.
 
 ## Step 4 — Close-out
 
-When the cursor is done, count the current-state elements that are `approved`
-and those still `in-progress` (deferred), and close with this **exact template**:
+When the cursor is done, `review_cursor.py status` reports `done: true` and a
+`closeout_template` field — the canonical close-out, printed straight from
+`scripts/wiki/verbatim.py`. Count the current-state elements that are
+`approved` and those still `in-progress` (deferred), then present the
+`closeout_template` **exactly as the script prints it**: fill in every `{…}`
+placeholder, but reproduce every fixed word, bullet and the closing sentence
+character-for-character. Do not author the close-out from memory.
 
-> Foundational run complete — **{process}**:
->
-> - **Approved:** {n} current-state element(s)
-> - **Deferred:** {n} — visited but left in-progress; pick them off on the cards any time
->
-> {if any current-state elements were created mid-run:}
-> **Created during the run — still need review:** {n} current-state element(s)
-> the queue could not cover — challenge these next:
-> - **{element id} · {title}** — {type}
->
-> {if any gaps were created mid-run:}
-> The run also recorded {n} gap(s) — {ids} — these are open by design.
->
-> The As-Is baseline is now documented and reviewed. From here, when you ingest
-> further documents into this process, content that contradicts this baseline
-> is a **conflict** — run the **conflict-resolution** skill to work through those.
-
-Name the mid-run current-state elements explicitly — a generic "pick them off
-the cards" hides a role or exception that genuinely was never challenged. If no
-current-state element was created mid-run, omit that block; likewise the gap
-line if no gaps were created.
+The template carries two `{if …}` blocks — keep a block when its condition
+holds, omit the whole block when it does not. Name the mid-run current-state
+elements explicitly — a generic "pick them off the cards" hides a role or
+exception that genuinely was never challenged. If no current-state element was
+created mid-run, omit that block; likewise the gap line if no gaps were created.
 
 ## Scope
 

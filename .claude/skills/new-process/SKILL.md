@@ -47,8 +47,8 @@ you ask for.
    an existing process and ask for a different name, then return to Step 1.
 2. Draft a **one-line description** — one plain sentence on what the process
    does. This is the one judgement item; the slug and abbreviation are not.
-3. Present all three to the user as a **bulleted list — never a table** — each
-   label in bold:
+3. Present all three to the user **in exactly this format** — a bulleted list,
+   never a table, each label in bold:
 
    ```
    - **Description:** <the one-line description>
@@ -56,9 +56,18 @@ you ask for.
    - **Abbreviation:** `<PROC>`
    ```
 
-   Then offer **[Y] Yes — accept** / **[E] Edit — I have corrections**. On [E],
-   apply the corrections and show the bullets again; loop until the user
-   accepts. Create nothing until they confirm.
+   Then offer exactly these three choices — never just two. Run `python3
+   scripts/wiki/verbatim.py newprocess-choices` and present its output on its
+   own line, character-for-character; `verbatim.py` is the single source of
+   truth, never retype the choices from memory.
+
+   - **[Y]** — confirmed; go to Step 3.
+   - **[E]** — the SME gives specific corrections; apply them, show the bullets
+     again, ask again.
+   - **[R]** — the description missed the mark; redraft it from scratch with
+     one or two sharper questions, then re-present.
+
+   Loop until the user accepts. Create nothing until they confirm.
 
 **Step 3 — Scaffold.** Once the user confirms, run the scaffolder. It is a
 Python script that does the file creation deterministically — do **not** create
@@ -76,18 +85,10 @@ script's printed output** — it is a technical record, not for the user. If it
 exits with an error, relay that error to the user and stop.
 
 **Step 4 — Done.** On success, say nothing about section folders or paths —
-close with **only** this **exact template**, substituting `{process}`:
-
-> **{process}** has been successfully created, and the app has switched to it.
->
-> The process is empty — every section is ready to be filled. The fastest way
-> to start is to **upload a process document**: click **⬆ Upload document** in
-> the top bar and drag in a PDF, Word or Markdown file. I'll review it,
-> summarise it, and extract its content into the wiki.
->
-> Prefer a guided interview? Just ask me to run a documentation session instead.
-
-Use this wording verbatim — do not improvise the closing.
+close with **only** the canonical closing: run `python3
+scripts/wiki/verbatim.py newprocess-closeout` and present what it prints,
+substituting `{process}`. Reproduce every other character exactly and do not
+improvise the closing — `verbatim.py` is the single source of truth.
 
 ## Scope
 

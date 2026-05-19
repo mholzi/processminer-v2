@@ -154,12 +154,9 @@ competitor or a move. A handful of material moves per tier, not a dump.
 ## Step 5 — Write innovation ideas
 
 Derive `innovation-idea` elements from the trends, the competitor moves and the
-documented problems. Before you finish, **cross-check every documented problem
-for an idea** — walk the pain-points, friction-points, process-gaps *and the
-control-gaps*; a control gap with no idea against it is exactly the omission to
-catch. Every idea must `addresses` at least one real documented problem id — an
-idea that solves no documented problem is not written. Each element's
-frontmatter carries:
+documented problems. Every idea must `addresses` at least one real documented
+problem id — an idea that solves no documented problem is not written. Each
+element's frontmatter carries:
 - `addresses:` **every** pain-point, friction-point, process-gap or
   control-gap the idea genuinely relieves — not just one. A unified-workspace
   idea that removes re-keying *and* slow handovers links both; an automated-
@@ -171,6 +168,18 @@ frontmatter carries:
 Draft per template, write with the same three scripts (`status: draft`,
 `confidence: low`–`medium` — these are unvalidated proposals). Run conformance.
 
+**Completeness check — every documented problem gets an idea.** Once the ideas
+are written, run `python3 scripts/wiki/idea_coverage.py <slug>`. It enumerates
+every pain-point, friction-point, process-gap and control-gap in the process
+and checks each is named by some idea's `addresses` list, printing `covered`
+and `uncovered` ids as JSON — set arithmetic, not your recollection. While it
+reports `"complete": false`, work the `uncovered` ids: a control gap with no
+idea against it is exactly the omission to catch. For each, either write an
+idea that `addresses` it, or — if no improvement genuinely applies — leave it
+and note the deliberate gap in the Step 6 report. Do not leave Step 5 until
+`idea_coverage.py` reports `"complete": true`, or every still-`uncovered` id is
+a conscious decision.
+
 ## Step 6 — Report
 
 Run `python3 scripts/wiki/source_report.py <slug>` — it reads the run manifest
@@ -179,22 +188,12 @@ template: `market-trend` → Market trends; `competitor-eu` / `-global` /
 `-fintech` → the Competitor moves total and its European / global / fintech
 split; `innovation-idea` → Innovation ideas. Do not recount from memory.
 
-Report with this **exact template**, substituting the counts:
-
-> Innovation sourced for **{process}** from the web:
->
-> - **Market trends:** {n} drafted
-> - **Competitor moves:** {n} drafted — {e} European, {g} global, {f} fintech
-> - **Innovation ideas:** {n} drafted — each linked to the pain or friction it addresses
->
-> Sources: {comma-separated list of the studies / reports used}
->
-> All are `status: draft` — review and approve them in the app, or run the
-> innovation-analyst for the deeper forward-looking work.
-
-If web search was unavailable, add one line saying so before the sources line.
-If you filled any `sourceUrl: pending` elements (or left some still pending
-because the web did not support them), add one line saying which.
+Report with the canonical template: run `python3 scripts/wiki/verbatim.py
+source-innovation-report` and present what it prints, substituting the
+counts. The two `{if …}` blocks are conditional — keep a block (its fixed
+wording exactly as printed) when its condition holds, omit the whole block
+when it does not. Reproduce every other character exactly; `verbatim.py` is
+the single source of truth, never write the report from memory.
 
 ## Scope
 

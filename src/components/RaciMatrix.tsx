@@ -1,3 +1,4 @@
+import { orderSteps } from "@/lib/stepOrder";
 import type { WikiPage } from "@/lib/wiki";
 
 // RACI matrix — rows = process steps, columns = roles, cells = R/A/C/I.
@@ -47,9 +48,9 @@ export default function RaciMatrix({
     }
   }
 
-  const sortedSteps = [...steps].sort(
-    (a, b) => Number(a.meta.sequence ?? 0) - Number(b.meta.sequence ?? 0),
-  );
+  // Rows follow the process spine — the same transition-graph order the
+  // ProcessFlow strip uses.
+  const sortedSteps = orderSteps(steps);
 
   // Per-step RACI rule violations — surfaced so the matrix exposes gaps
   // instead of rendering them as silent blank cells.

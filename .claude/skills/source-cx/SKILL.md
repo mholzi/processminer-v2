@@ -105,17 +105,10 @@ template: `competitor-cx-eu` / `-global` / `-fintech` → the Competitor CX tota
 and its European / global / fintech split; `cx-benchmark` → CX benchmarks. Do
 not recount from memory.
 
-Report with this **exact template**, substituting the counts:
-
-> Client-experience scan complete for **{process}** from the web:
->
-> - **Competitor CX:** {n} drafted — {e} European, {g} global, {f} fintech
-> - **CX benchmarks:** {n} drafted
->
-> Sources: {comma-separated list of the studies / reports used}
->
-> All are `status: draft` — review and approve them in the app, or run the
-> client-journey-specialist to refine them and document the journey itself.
+Report with the canonical template: run `python3 scripts/wiki/verbatim.py
+source-cx-report` and present what it prints, substituting the counts.
+Reproduce every other character exactly; `verbatim.py` is the single source
+of truth, never write the report from memory.
 
 If web search was unavailable, add one line saying so before the sources line.
 

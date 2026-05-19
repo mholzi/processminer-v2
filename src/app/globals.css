@@ -681,7 +681,6 @@ body {
 .el.is-current {
   border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent);
 }
-.tag.current-tag { background: var(--accent-soft); color: var(--accent); }
 .el.collapsed { padding-bottom: 12px; }
 .el.collapsed .el-title { margin-bottom: 0; }
 .el-top { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
@@ -1066,10 +1065,17 @@ body {
 }
 
 /* ---- Right rail: agent chat panel ---- */
-.shell.chat-open { grid-template-columns: 292px 1fr 340px; }
+/* --chat-w is set inline on .shell from the drag-resizable chat width. */
+.shell.chat-open { grid-template-columns: 292px 1fr var(--chat-w, 340px); }
 .shell.sections-collapsed { grid-template-columns: 80px 1fr 56px; }
-.shell.sections-collapsed.chat-open { grid-template-columns: 80px 1fr 340px; }
-.rail-r.chat { padding: 0; align-items: stretch; display: flex; flex-direction: column; }
+.shell.sections-collapsed.chat-open { grid-template-columns: 80px 1fr var(--chat-w, 340px); }
+.rail-r.chat { padding: 0; align-items: stretch; display: flex; flex-direction: column; position: relative; }
+/* Drag handle on the chat panel's left edge — widen / narrow the panel. */
+.chat-resize {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
+  cursor: col-resize; z-index: 10;
+}
+.chat-resize:hover { background: var(--accent-soft); }
 .chat-head {
   display: flex; align-items: center; gap: 8px;
   padding: 12px 16px 8px; border-bottom: 1px solid var(--line);
@@ -1732,6 +1738,18 @@ body {
 }
 .el-note-row button:disabled { opacity: .5; cursor: not-allowed; }
 
+/* ---- Comment review — the analyst pass over a discussion thread ---- */
+.el-thread-head-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.el-thread-review { font-size: var(--text-xs); padding: 3px 9px; }
+.el-note.resolved { opacity: .72; }
+.el-note-resolved {
+  font-family: var(--mono); font-size: var(--text-xs); font-weight: 600;
+  color: var(--hi); background: var(--hi-bg);
+  padding: 0 6px; border-radius: var(--r-sm);
+}
+
 /* ---- Element confidence marker in the card header (#9) ---- */
 .el-conf-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
 .el-conf-dot.conf-low { background: var(--lo); }
@@ -1753,6 +1771,10 @@ body {
 }
 .area-next button:hover { opacity: .9; }
 .area-next button:disabled { opacity: .5; cursor: not-allowed; }
+.getting-started-actions { display: flex; flex-direction: column; gap: 8px; }
+.getting-started-actions button { width: 100%; }
+.area-next button.ghost { background: transparent; color: var(--accent); }
+.area-next button.ghost:hover { background: var(--accent-soft); opacity: 1; }
 
 /* ---- Target-state coverage (Validation section + area overview) ---- */
 .cov-rollup { display: flex; flex-direction: column; gap: 4px; }

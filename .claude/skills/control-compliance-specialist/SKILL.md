@@ -132,10 +132,17 @@ Never skip a section silently; let the SME say "none".
 
 ## The session — phases
 
-Run these in order. **If you were invoked by the `qer-session` orchestrator**,
-the process is already selected and its overview captured, and the orchestrator
-runs validation at the end — skip Phases 0, 1 and 6, start at Phase 2. Invoked
-directly (standalone), run every phase.
+Run these in order.
+
+**Run mode.** Your invocation states a mode — `standalone` or `orchestrated`.
+- **`orchestrated`** — the `qer-session` orchestrator has already selected the
+  process and captured its overview, and runs validation across all
+  perspectives at the end. Skip Phase 0, Phase 1 and Phase 6 — start at
+  Phase 2.
+- **`standalone`** — run every phase.
+
+If the invocation states no mode, default to `standalone`. Do not infer the
+mode from anything else in the invocation wording.
 
 **Phase 0 — Setup.** Ask the SME's name and role. Identify the process: list
 the slugs under `wiki/processes/`, let them pick; read its `index.md` and the
@@ -166,8 +173,12 @@ status, and what it implicates.
 **Phase 6 — Validation.** Before closing, sweep what you wrote: controls with
 no regulation, regulations with no control, risk-bearing steps with no control,
 gaps not linked to a control. Surface each as a short clarifying question, then
-summarise: every element written, counts per type, and tell the SME to review
-and approve them in the web app.
+close with the canonical close-out: run `python3 scripts/wiki/verbatim.py
+specialist-closeout` and present what it prints, with `{Perspective}` =
+**Risk & Compliance** and the `{n}` / `{type}` placeholders filled from the
+counts. Reproduce every other character — the bullet labels, the `status:
+draft` line, the closing sentence — exactly; `verbatim.py` is the single
+source of truth, never write the close-out from memory.
 
 ## Writing an element — the procedure
 
@@ -187,8 +198,8 @@ only once it has been written.
    a. **ID** — `python3 scripts/wiki/next_id.py <slug> <type>`.
    b. **Write** — assemble a JSON spec (`slug`, `type`, `id`, `title`,
       `confidence`, `source`, `fields` for scalar frontmatter, `relations` for
-      id-lists, `blocks`), save to a temp file, then
-      `python3 scripts/wiki/write_element.py <spec.json>`.
+      id-lists, `blocks`), save it to `/tmp/<id>.json`, then
+      `python3 scripts/wiki/write_element.py /tmp/<id>.json`.
    c. **Verify** — `python3 scripts/wiki/check_conformance.py <slug> <id>`. If
       flagged, fix the draft and re-write before moving on.
 5. One confirmed element = one file on disk.

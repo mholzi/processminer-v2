@@ -9,7 +9,6 @@ source: funds-release-dtp-mockup.md
 category: Validation
 impact: LOW
 handlingOwner: Originator
-affects: [PS-FR-002]
 approval: approved
 approvalBy: M. Berger
 approvalDate: 2026-05-17

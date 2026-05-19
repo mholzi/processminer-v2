@@ -33,10 +33,11 @@ frontmatter**, and prints a **JSON array of conformance findings** — one
 object per non-conforming element, each already shaped
 `{kind: "conformance", title, detail, elements}`.
 
-Then run `python3 scripts/wiki/check_transitions.py <slug> --json`. It
-reconciles each exception's `affects` against the process-steps whose
-`transitions` flow into it, and prints a **JSON array of `discrepancy`
-findings** — one per exception where the two disagree.
+Then run `python3 scripts/wiki/check_transitions.py <slug> --json`. It checks
+exception wiring — the single source of truth is each process-step's
+`transitions`. It prints a **JSON array of `discrepancy` findings**: one per
+orphan exception (no process-step `transitions` into it) and one per
+process-step transition pointing at an exception id that does not exist.
 
 Keep both arrays exactly as printed. You do not author, reshape or re-type
 these findings — they are fully deterministic; a clean process prints `[]`.
@@ -96,22 +97,15 @@ all-clear `lint.json`. Relay any warning it prints about unknown element ids.
 
 ## Step 5 — Summarise
 
-Report with this **exact template**, substituting the process title and the
-counts from `apply_lint.py`'s output:
+Report with the canonical template: run `python3 scripts/wiki/verbatim.py
+lint-report` and present what it prints, substituting the process title and
+the counts from `apply_lint.py`'s output. Reproduce every other character
+exactly.
 
-> Lint pass complete — **{process}**:
->
-> - **Discrepancies:** {n}
-> - **Structure issues:** {n}
-> - **Clarifying questions:** {n}
-> - **Approvals re-opened:** {n}
->
-> The findings are in the Review panel — click any element ID to jump to it.
-
-If there were no findings at all, replace the body with exactly:
-
-> Lint pass complete — **{process}**: no findings. Every element conforms to
-> its template and the wiki is consistent across all five perspectives.
+If there were no findings at all, use the clean variant instead — run
+`python3 scripts/wiki/verbatim.py lint-report-clean` and present that,
+substituting `{process}`. `verbatim.py` is the single source of truth for
+both; never write either from memory.
 
 ## Scope
 

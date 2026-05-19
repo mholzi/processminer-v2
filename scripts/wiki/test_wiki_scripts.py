@@ -144,14 +144,14 @@ def run() -> None:
          "provenance": prov_elicited(STEP_BLOCKS), "blocks": STEP_BLOCKS}))
     r = script("check_conformance.py", SLUG, "PS-SELF-001")
     chk("check_conformance: a conformant element passes", "conforms" in r.stdout, r.stdout)
-    # an exception missing the required `affects` relation
+    # an exception missing a required frontmatter field (impact)
     script("write_element.py", spec_file(
         {"slug": SLUG, "type": "exception", "id": "EX-SELF-001", "title": "Incomplete Docs",
-         "confidence": "high", "source": "SME", "fields": {"category": "Data", "impact": "MEDIUM"},
+         "confidence": "high", "source": "SME", "fields": {"category": "Data"},
          "blocks": EXC_BLOCKS}))
     r = script("check_conformance.py", SLUG, "EX-SELF-001")
     chk("check_conformance: flags missing required frontmatter",
-        "required frontmatter" in r.stdout and "affects" in r.stdout, r.stdout)
+        "required frontmatter" in r.stdout and "impact" in r.stdout, r.stdout)
 
     print("\n— write_element: rewrite carries unspecced keys, re-opens approval (S1) —")
     script("set_approval.py", SLUG, "PS-SELF-002", "approved", "M. Berger")
@@ -180,15 +180,22 @@ def run() -> None:
         chk("check_conformance --json is a valid array", False, r.stdout[:120])
         findings = []
 
-    print("\n— check_transitions (affects ↔ transitions, S3) —")
-    # PS-SELF-001 transitions into EX-SELF-001; EX-SELF-001 has no `affects` → mismatch
+    print("\n— check_transitions (orphan exception / broken transition, S3) —")
+    # EX-SELF-001 is reached by PS-SELF-001's transitions → not orphan.
+    # EX-SELF-002 has no process-step transition into it → orphan.
+    script("write_element.py", spec_file(
+        {"slug": SLUG, "type": "exception", "id": "EX-SELF-002", "title": "Stranded",
+         "confidence": "high", "source": "SME", "fields": {"category": "Data", "impact": "LOW"},
+         "blocks": EXC_BLOCKS}))
     r = script("check_transitions.py", SLUG, "--json")
     tfind = json.loads(r.stdout)
-    chk("check_transitions flags the affects/transition mismatch",
-        any("EX-SELF-001" in f["elements"] for f in tfind), r.stdout)
-    script("patch_element.py", SLUG, "EX-SELF-001", "--list", "affects", "PS-SELF-001")
+    chk("check_transitions flags an orphan exception",
+        any("EX-SELF-002" in f["elements"] for f in tfind), r.stdout)
+    script("patch_element.py", SLUG, "PS-SELF-002", "--list", "transitions",
+           "EX-SELF-002|exception|stranded case")
     r = script("check_transitions.py", SLUG, "--json")
-    chk("check_transitions reconciles once affects matches", json.loads(r.stdout) == [])
+    chk("check_transitions clears once a step transitions into it",
+        json.loads(r.stdout) == [])
 
     print("\n— apply_lint —")
     r = script("apply_lint.py", SLUG, spec_file(findings))
@@ -351,6 +358,57 @@ def run() -> None:
     r = script("source_report.py", SLUG)
     chk("source_report counts per type", "market-trend: 1" in r.stdout, r.stdout)
 
+    print("\n— source-innovation: idea_coverage completeness check —")
+    for pid, ptype in (("PP-SELF-001", "pain-point"), ("FP-SELF-001", "friction-point")):
+        script("write_element.py", spec_file(
+            {"slug": SLUG, "type": ptype, "id": pid, "title": f"A {ptype}",
+             "blocks": [{"heading": "Description", "text": "A documented problem."}]}))
+    cov = json.loads(script("idea_coverage.py", SLUG).stdout)
+    chk("idea_coverage flags every problem uncovered before any idea",
+        cov["total"] == 2 and cov["complete"] is False
+        and cov["uncoveredCount"] == 2, cov)
+    chk("idea_coverage derives problemTypes from the schema",
+        set(cov["problemTypes"]) == {"pain-point", "friction-point",
+                                     "process-gap", "compliance-gap"}, cov)
+    script("write_element.py", spec_file(
+        {"slug": SLUG, "type": "innovation-idea", "id": "II-SELF-001", "title": "An idea",
+         "relations": {"addresses": ["pp-self-001"]},
+         "blocks": [{"heading": "The idea", "text": "A proposed change."}]}))
+    cov = json.loads(script("idea_coverage.py", SLUG).stdout)
+    chk("idea_coverage matches an addresses id case-insensitively",
+        cov["covered"] == ["PP-SELF-001"] and cov["complete"] is False, cov)
+    chk("idea_coverage still flags the unaddressed problem",
+        cov["uncovered"]["friction-point"] == ["FP-SELF-001"]
+        and cov["uncoveredCount"] == 1, cov)
+
+    print("\n— comment-review: notes.py resolve / summary —")
+    notes_path = PROC_DIR / "notes.json"
+    notes_path.write_text(json.dumps({
+        "PS-SELF-001": [
+            {"id": "n-1", "author": "SME", "text": "Is the SLA right?",
+             "ts": "2026-05-19T10:00:00.000Z"},
+            {"id": "n-2", "author": "SME", "text": "Add a step.",
+             "ts": "2026-05-19T10:01:00.000Z"},
+        ],
+    }))
+    r = script("notes.py", "resolve", SLUG, "PS-SELF-001", "n-1")
+    nt = json.loads(notes_path.read_text())
+    chk("notes.py resolve marks only the named comment",
+        r.returncode == 0 and nt["PS-SELF-001"][0].get("resolved") is True
+        and "resolved" not in nt["PS-SELF-001"][1], (r.returncode, nt))
+    r = script("notes.py", "resolve", SLUG, "PS-SELF-001", "n-missing")
+    chk("notes.py resolve rejects an unknown note id", r.returncode != 0)
+    sf = tempfile.NamedTemporaryFile("w", suffix=".md", delete=False)
+    sf.write("Reviewed both comments — SLA confirmed, a new step was added.")
+    sf.close()
+    r = script("notes.py", "summary", SLUG, "PS-SELF-001", "Process Specialist", sf.name)
+    nt = json.loads(notes_path.read_text())
+    summ = nt["PS-SELF-001"][-1]
+    chk("notes.py summary appends a resolved analyst note",
+        summ["author"] == "Process Specialist" and summ["resolved"] is True
+        and summ["id"] == r.stdout.strip() and len(nt["PS-SELF-001"]) == 3,
+        (r.stdout, summ))
+
     print("\n— area-summary: write_summary heading validation —")
     good = tempfile.NamedTemporaryFile("w", suffix=".md", delete=False)
     good.write("## Introduction\nA.\n\n## Current state\nB.\n\n## What stands out\nC.\n\n## Recommendation\nD.\n")
@@ -439,6 +497,23 @@ def run() -> None:
            "Straight-through processing — clean items, no manual touch.")
     gloss = json.loads((PROC_DIR / "glossary.json").read_text())
     chk("write_glossary upserts a term case-insensitively", len(gloss) == 2, gloss)
+
+    print("\n— qer_cursor (qer-session state cursor) —")
+    r = script("qer_cursor.py", "status", SLUG)
+    chk("qer_cursor status before start reports not-exists",
+        json.loads(r.stdout) == {"exists": False}, r.stdout)
+    st = json.loads(script("qer_cursor.py", "start", SLUG).stdout)
+    chk("qer_cursor start puts the cursor at SELECT",
+        st["currentKey"] == "select" and st["position"] == 1, st)
+    script("qer_cursor.py", "advance", SLUG)
+    st = json.loads(script("qer_cursor.py", "advance", SLUG).stdout)
+    chk("qer_cursor advances to the first perspective with built-skill info",
+        st["currentKey"] == "process" and st.get("skillBuilt") is True, st)
+    for _ in range(20):
+        st = json.loads(script("qer_cursor.py", "advance", SLUG).stdout)
+        if st.get("done"):
+            break
+    chk("qer_cursor advance terminates at done", st.get("done") is True, st)
 
     print("\n— skills: PROVENANCE-BLOCK drift check —")
     r = subprocess.run(

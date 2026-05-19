@@ -172,6 +172,9 @@ export interface Note {
   ts: string;
   /** Set when this note replies to another note (that note's id). */
   replyTo?: string;
+  /** Set true once the comment-review skill has triaged this comment with
+   *  the SME — incorporated, declined or otherwise handled. */
+  resolved?: boolean;
 }
 
 /** One glossary term — an entry in glossary.json (CONTENT-MODEL-PLAN.md D1).

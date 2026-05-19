@@ -113,7 +113,9 @@ export default function ElementCard({
   defaultCollapsed,
   isCurrent,
   getRef,
+  resolveOwner,
   notes,
+  onReviewComments,
 }: {
   page: WikiPage;
   slug: string;
@@ -139,8 +141,13 @@ export default function ElementCard({
   isCurrent?: boolean;
   /** Resolve a referenced element id to its page + type label, for hovercards. */
   getRef?: (id: string) => { page: WikiPage; typeLabel: string } | undefined;
+  /** Resolve an `owner` field value (a role title or id) to its role element
+   *  id, so the owner links to the role — its RACI entry. */
+  resolveOwner?: (name: string) => string | undefined;
   /** SME note thread for this element (#19). */
   notes?: Note[];
+  /** Run the comment-review skill on this element's discussion thread. */
+  onReviewComments?: (id: string, title: string) => void;
 }) {
   const [showTemplate, setShowTemplate] = useState(false);
   // Collapsed cards show only their header row, so a long section is a
@@ -397,9 +404,6 @@ export default function ElementCard({
           </label>
         )}
         {editing && <span className="tag editing-tag">Editing</span>}
-        {isCurrent && !editing && (
-          <span className="tag current-tag">Under review</span>
-        )}
         {!editing && reviewError && (
           <span className="el-edit-err">{reviewError}</span>
         )}
@@ -608,11 +612,30 @@ export default function ElementCard({
                     if (!val) return null;
                     const text = `${String(val)}${f.suffix ?? ""}`;
                     const url = f.urlKey ? page.meta[f.urlKey] : undefined;
+                    // An `owner` value links to its role element (the RACI
+                    // entry) when it resolves to one.
+                    const roleId =
+                      f.key === "owner" && resolveOwner
+                        ? resolveOwner(String(val))
+                        : undefined;
                     return (
                       <span className="el-field" key={f.key}>
                         {f.label}:{" "}
-                        <b>
-                          {url ? (
+                        {roleId ? (
+                          <ElementHovercard
+                            element={getRef?.(roleId)?.page}
+                            typeLabel={getRef?.(roleId)?.typeLabel}
+                          >
+                            <button
+                              type="button"
+                              className="link-chip link-chip-nav"
+                              onClick={() => onGoToElement?.(roleId)}
+                            >
+                              {String(val)}
+                            </button>
+                          </ElementHovercard>
+                        ) : url ? (
+                          <b>
                             <a
                               className="el-field-link"
                               href={String(url)}
@@ -621,10 +644,10 @@ export default function ElementCard({
                             >
                               {text}
                             </a>
-                          ) : (
-                            text
-                          )}
-                        </b>
+                          </b>
+                        ) : (
+                          <b>{text}</b>
+                        )}
                       </span>
                     );
                   })}
@@ -754,27 +777,43 @@ export default function ElementCard({
 
           {!editing && (
             <div className="el-thread">
-              <button
-                type="button"
-                className="el-thread-head"
-                onClick={() => setNotesOpen((v) => !v)}
-                aria-expanded={notesOpen}
-              >
-                <span className="el-thread-chev">
-                  {notesOpen ? "▾" : "▸"}
-                </span>
-                Discussion
-                {noteList.length > 0 && (
-                  <span className="el-thread-n">· {noteList.length}</span>
-                )}
-              </button>
+              <div className="el-thread-head-row">
+                <button
+                  type="button"
+                  className="el-thread-head"
+                  onClick={() => setNotesOpen((v) => !v)}
+                  aria-expanded={notesOpen}
+                >
+                  <span className="el-thread-chev">
+                    {notesOpen ? "▾" : "▸"}
+                  </span>
+                  Discussion
+                  {noteList.length > 0 && (
+                    <span className="el-thread-n">· {noteList.length}</span>
+                  )}
+                </button>
+                {onReviewComments &&
+                  noteList.some((n) => !n.replyTo && !n.resolved) && (
+                    <Tooltip label="Review the open comments with the section's analyst">
+                      <button
+                        type="button"
+                        className="act ai el-thread-review"
+                        onClick={() => onReviewComments(page.id, page.title)}
+                      >
+                        ✦ Review with analyst
+                      </button>
+                    </Tooltip>
+                  )}
+              </div>
               {notesOpen && (
                 <>
                   {noteList
                     .filter((n) => !n.replyTo)
                     .map((n) => (
                       <Fragment key={n.id}>
-                        <div className="el-note">
+                        <div
+                          className={`el-note${n.resolved ? " resolved" : ""}`}
+                        >
                           <span className="el-note-av">
                             {noteInitials(n.author)}
                           </span>
@@ -784,6 +823,11 @@ export default function ElementCard({
                               <span className="el-note-when">
                                 {noteDate(n.ts)}
                               </span>
+                              {n.resolved && (
+                                <span className="el-note-resolved">
+                                  ✓ Resolved
+                                </span>
+                              )}
                             </div>
                             <div className="el-note-text">{n.text}</div>
                             <button

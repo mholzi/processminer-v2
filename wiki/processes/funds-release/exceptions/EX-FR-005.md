@@ -9,7 +9,6 @@ source: SME interview - M. Berger
 category: Execution
 impact: MEDIUM
 handlingOwner: Operations Analyst
-affects: [PS-FR-007]
 ---
 ## Description
 The posting of an approved release fails at execution — either insufficient funds in the held account because Treasury-confirmed funding was consumed by another release (see PP-FR-001), or a rejection returned by the core banking system.

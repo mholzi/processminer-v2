@@ -22,11 +22,16 @@ Spec shape:
     "docStatus": "As-Is draft",           optional, default "As-Is draft"
     "confidence": "high",                 optional
     "source": "DTP-... v2.3",             optional
+    "description": "<one-line summary>",  optional — see below
     "purpose": "<two-paragraph Purpose body>"
   }
 
-`id`, `type`, `title`, `status` and `description` are preserved from the
-scaffolded index.md — they are the process identity, not the skill's to change.
+`id`, `type`, `title` and `status` are preserved from the scaffolded index.md —
+they are the process identity, not the skill's to change. `description` is
+preserved too *unless* the spec supplies one: a skill working from an
+authoritative source (e.g. document-ingest) may pass a corrected `description`
+to overwrite a scaffolded one the source contradicts. `sources` (owned by
+add_source.py) is always preserved.
 """
 
 from __future__ import annotations
@@ -68,8 +73,14 @@ def main(argv: list[str]) -> None:
         "title": existing.get("title", ""),
         "status": existing.get("status", "draft"),
     }
-    if existing.get("description"):
-        frontmatter["description"] = existing["description"]
+    # `description` is process identity — preserved, unless the spec supplies a
+    # corrected one (document-ingest, working from an authoritative source).
+    description = spec.get("description") or existing.get("description")
+    if description:
+        frontmatter["description"] = description
+    # `sources` is owned by add_source.py — preserve it, never drop it.
+    if existing.get("sources"):
+        frontmatter["sources"] = existing["sources"]
     if spec.get("confidence"):
         frontmatter["confidence"] = spec["confidence"]
     if spec.get("source"):
@@ -80,7 +91,9 @@ def main(argv: list[str]) -> None:
 
     lines = []
     for key, val in frontmatter.items():
-        if val is None or val == "":
+        if isinstance(val, list):
+            lines.append(f"{key}: [{', '.join(str(v) for v in val)}]")
+        elif val is None or val == "":
             lines.append(f"{key}:")
         else:
             lines.append(f"{key}: {val}")

@@ -68,15 +68,10 @@ array in `ingest.json` so the triage screen no longer flags them.
 
 ## Step 4 — Report
 
-Report with this **exact template**, substituting the counts:
-
-> Conflict resolution complete — **{process}**:
->
-> - **Document version taken:** {n}
-> - **Wiki version kept:** {n}
-> - **Merged:** {n}
->
-> The conflicts are cleared. Review any changed elements on the cards.
+Report with the canonical template: run `python3 scripts/wiki/verbatim.py
+conflict-report` and present what it prints, substituting the `{process}` and
+`{n}` counts. Reproduce every other character exactly; `verbatim.py` is the
+single source of truth, never write the report from memory.
 
 ## Scope
 

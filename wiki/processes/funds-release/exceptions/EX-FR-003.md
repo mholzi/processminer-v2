@@ -9,7 +9,6 @@ source: funds-release-dtp-mockup.md
 category: Funding
 impact: MEDIUM
 handlingOwner: Treasury
-affects: [PS-FR-005]
 approval: approved
 approvalBy: M. Berger
 approvalDate: 2026-05-17

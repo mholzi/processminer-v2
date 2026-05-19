@@ -9,7 +9,6 @@ source: funds-release-dtp-mockup.md
 category: Approval
 impact: LOW
 handlingOwner: Operations Team Lead
-affects: [PS-FR-006]
 approval: approved
 approvalBy: M. Berger
 approvalDate: 2026-05-17

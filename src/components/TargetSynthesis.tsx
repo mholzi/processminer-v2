@@ -1,5 +1,6 @@
 "use client";
 
+import { orderSteps } from "@/lib/stepOrder";
 import type { WikiPage } from "@/lib/wiki";
 import ElementHovercard from "./ElementHovercard";
 
@@ -9,10 +10,6 @@ import ElementHovercard from "./ElementHovercard";
 // maps the As-Is process spine (every step, in order) onto the target themes
 // that change it — a derived As-Is → To-Be diff. Steps no theme touches show
 // "Unchanged", so the stable part of the process is visible too.
-
-function seq(p: WikiPage): number {
-  return Number(p.meta.sequence ?? 0);
-}
 
 function asList(v: string | string[] | undefined): string[] {
   if (!v) return [];
@@ -30,7 +27,7 @@ export default function TargetSynthesis({
   themes: WikiPage[];
   onGoToElement: (id: string) => void;
 }) {
-  const sorted = [...steps].sort((a, b) => seq(a) - seq(b));
+  const sorted = orderSteps(steps);
   if (sorted.length === 0) return null;
 
   // As-Is step id → the target themes whose `replaces` names it.

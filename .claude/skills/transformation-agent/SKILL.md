@@ -219,8 +219,12 @@ is not a phase of its own; capture an assumption the moment it surfaces.
 **Phase 5 — Validation.** Before closing, sweep what you wrote: target states
 with no innovation ideas behind them, decisions that resolve nothing, open
 problems no decision covers, gaps not traced to a target state. Surface each as
-a short clarifying question, then summarise: every element written, counts per
-type, and tell the SME to review and approve them in the web app. Point them at
+a short clarifying question, then close with the canonical close-out: run
+`python3 scripts/wiki/verbatim.py specialist-closeout` and present what it
+prints, with `{Perspective}` = **Target Process** and the `{n}` / `{type}`
+placeholders filled from the counts — reproduce every other character exactly;
+`verbatim.py` is the single source of truth, never write it from memory. Point
+them at
 `council-review` — the four other perspective specialists can challenge the
 target before they approve it.
 
@@ -242,8 +246,8 @@ its id only once it has been written.
    a. **ID** — `python3 scripts/wiki/next_id.py <slug> <type>`.
    b. **Write** — assemble a JSON spec (`slug`, `type`, `id`, `title`,
       `confidence`, `source`, `fields` for scalar frontmatter, `relations` for
-      id-lists, `blocks`), save to a temp file, then
-      `python3 scripts/wiki/write_element.py <spec.json>`.
+      id-lists, `blocks`), save it to `/tmp/<id>.json`, then
+      `python3 scripts/wiki/write_element.py /tmp/<id>.json`.
    c. **Verify** — `python3 scripts/wiki/check_conformance.py <slug> <id>`. If
       flagged, fix the draft and re-write before moving on.
 5. One confirmed element = one file on disk.

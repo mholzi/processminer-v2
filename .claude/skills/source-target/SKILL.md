@@ -142,19 +142,10 @@ with the three scripts (`status: draft`, `confidence: low`) →
 Run `python3 scripts/wiki/source_report.py <slug>` — it reads the run manifest
 and prints how many elements were written, per type. Do not recount from memory.
 
-Report with this **exact template**, substituting the counts:
-
-> Target Process stubbed for **{process}** by consolidating the documented work:
->
-> - **Target states:** {n} drafted — each linked to the As-Is steps it replaces
-> - **Transformation decisions:** {n} drafted — each linked to the problems it resolves
-> - **Gaps:** {n} drafted
->
-> Consolidated from: {n} pain/process gaps, {n} compliance gaps / audit findings,
-> {n} friction points, {n} innovation ideas.
->
-> All are `status: draft`, `confidence: low` — a first stub. Run the
-> **transformation-agent** to refine it with the SME, then approve in the app.
+Report with the canonical template: run `python3 scripts/wiki/verbatim.py
+source-target-report` and present what it prints, substituting the counts.
+Reproduce every other character exactly; `verbatim.py` is the single source
+of truth, never write the report from memory.
 
 If a perspective was empty (no innovation ideas, no documented As-Is), add one
 line saying so before the consolidated-from line.

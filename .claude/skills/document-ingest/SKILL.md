@@ -34,17 +34,11 @@ text directly). Take the process `<slug>` from the path
 `wiki/processes/<slug>/index.md`.
 
 Write a clear summary — what the document is, what it covers, what process
-content it holds. Then present this **exact template**, substituting `{file}`,
-`{summary}` and `{process}`:
-
-> I've reviewed **{file}**. Here is a summary:
->
-> {summary}
->
-> ---
-> Shall I extract this document's content into the **{process}** wiki?
->
-> **[Y] Yes, extract it** · **[N] No, keep the upload only**
+content it holds. Then present the canonical prompt: run `python3
+scripts/wiki/verbatim.py ingest-summary` and present what it prints, filling
+the `{file}` / `{summary}` / `{process}` placeholders. Reproduce every other
+character — the `---` rule and the `[Y]` / `[N]` line — exactly; `verbatim.py`
+is the single source of truth, never write it from memory.
 
 ## Step 2 — Wait for the user
 
@@ -104,6 +98,14 @@ On **[Y]** — continue to Step 3.
      to explicit document text; `medium` — some content is reasonable inference
      across passages; `low` — the document was thin and the element is largely
      inferred.
+   - **Mark each block's provenance.** In the `write_element.py` spec include a
+     `provenance` map — one entry per block heading. A heading whose every
+     claim you traced to explicit document text → `source: document`,
+     `evidence` set to the verbatim supporting quote from the document. A
+     heading that survived verification only as inference across passages →
+     `source: proposed`, `evidence` empty. A `document` heading is approvable
+     as it stands; a `proposed` heading is not — it flags, for the app and a
+     later foundational run, exactly which content still needs a human eye.
    - Note every element where verification removed or corrected a claim — these
      go in the Step 4 summary.
 
@@ -111,46 +113,70 @@ On **[Y]** — continue to Step 3.
    `python3 scripts/wiki/reset_manifest.py <slug>` — so a previous run cannot
    inflate the counts. Then for each verified element, write it with the
    scripts: new topics get an id from `python3 scripts/wiki/next_id.py <slug>
-   <type>` (updates keep their id), then
-   `python3 scripts/wiki/write_element.py <spec.json>` (`status: draft`,
-   `source: {file}`, the verified `confidence`). Each write records itself in
-   the manifest as created or updated — you do **not** track those lists
-   yourself.
+   <type>` (updates keep their id), then save the spec to `/tmp/<id>.json` and
+   run `python3 scripts/wiki/write_element.py /tmp/<id>.json` (`status: draft`,
+   `source: {file}`, the verified `confidence`, and the `provenance` map from
+   Step 3). Each write records itself in the manifest as created or updated —
+   you do **not** track those lists yourself.
 
-5. **Check conformance.** Run `python3 scripts/wiki/check_conformance.py <slug>`
+5. **Fill the process overview.** The overview is the process `index.md` — its
+   one-line `description`, plus the body fields: purpose, owner, trigger,
+   frequency, in/out scope, input and output. The body fields are scaffolded
+   blank, so a document that describes the process at a glance should fill
+   them. Read `index.md`, then draft each from what the document explicitly
+   states — its purpose/scope/trigger sections, its RACI or document-control
+   table for the owner, its systems or data section for input and output.
+   Apply the same rules as element extraction:
+   - **A field the document does not state** — leave it blank. Never force a
+     field, and never infer `frequency` from a volume the document does not
+     give.
+   - **A field already filled that the document refines without contradiction**
+     — draft the merged value.
+   - **A body field already filled that the document contradicts** — do **not**
+     overwrite. Leave it and record the conflict, exactly as for an element
+     (use `index` as the element, the field name as the field).
+
+   The `description` is the **one exception** to the no-overwrite rule. It is a
+   provisional one-liner set when the process was scaffolded — not SME-approved
+   content — and a stale one mislabels the process everywhere it is shown. So
+   if the document contradicts it — e.g. the description claims a scope the
+   document marks out of scope — **correct it**: rewrite it as a one-line
+   summary that matches the document, and note the change for the Step 4
+   summary. If the document is consistent with the scaffolded description,
+   leave it untouched.
+
+   Verify the drafted overview against the source the same way as Step 3.3 —
+   strip any claim you cannot trace — then write it with
+   `python3 scripts/wiki/write_overview.py /tmp/<slug>-overview.json` (`docStatus`
+   `As-Is draft`, `source: {file}`, the verified `confidence`; `slug`, the
+   `purpose` body, and — **only when you corrected it** — `description` in the
+   spec; omit `description` to keep the scaffolded one). The overview is the
+   process page, not an element: it takes no id, is not in the run manifest,
+   and is not counted in created / updated.
+
+6. **Check conformance.** Run `python3 scripts/wiki/check_conformance.py <slug>`
    and fix any element you wrote that it flags.
 
-6. **Write the ingest report.** Assemble a JSON object — `file` (the source
-   filename), `conflicts` (each `{element, field, documentSays, wikiSays}`),
-   `corrections` (each `{element, field, removed}` from Step 3's
-   verification). Do **not** include `created` or `updated` — the script
-   derives those from the run manifest. Save the object to a temp file, then
-   run `python3 scripts/wiki/write_ingest_report.py <slug> <report.json>`. It
+7. **Write the ingest report.** Assemble a JSON object — `file` (the source
+   filename), `conflicts` (each `{element, field, documentSays, wikiSays}` —
+   an overview conflict uses `index` as the element), `corrections` (each
+   `{element, field, removed}` from the Step 3 and Step 5 verification). Do
+   **not** include `created` or `updated` — the script derives those from the
+   run manifest. Save the object to `/tmp/<slug>-ingest-report.json`, then run
+   `python3 scripts/wiki/write_ingest_report.py <slug> /tmp/<slug>-ingest-report.json`. It
    writes `ingest.json` (which the app's triage screen reads) and prints the
    canonical created / updated / conflict / correction counts — use those
    printed counts in Step 4.
 
 ## Step 4 — Summarise the extraction
 
-Report what happened with this **exact template**. The created / updated /
-conflict / correction counts are the ones `write_ingest_report.py` just
-printed — do not recount from memory:
-
-> Extraction complete — from **{file}**:
->
-> - **Created:** {n} new element(s)
-> - **Updated:** {n} existing element(s)
-> - **Verified:** every draft checked against the document; {n} corrected
-> - **Conflicts:** {n} — left unchanged for you to resolve
->
-> {one line per verification correction:}
-> - **{element id} · {block or field}** — removed: {the unsupported claim}
->
-> {one line per conflict:}
-> - **{element id} · {block or field}** — the document says: {a}; the wiki says: {b}
->
-> The document is recorded as a source of this process. Review the drafts and
-> approve them in the app.
+Report what happened with the canonical template: run `python3
+scripts/wiki/verbatim.py ingest-report` and present what it prints. Fill the
+`{n}` placeholders with the created / updated / conflict / correction counts
+`write_ingest_report.py` just printed — do not recount from memory — and the
+`{one line per …}` blocks with one bullet per correction / conflict.
+Reproduce every other character exactly; `verbatim.py` is the single source
+of truth, never write the report from memory.
 
 If verification corrected nothing, write "{n} corrected" as "0 corrected" and
 omit the corrections list. If there are no conflicts, write "**Conflicts:** 0"

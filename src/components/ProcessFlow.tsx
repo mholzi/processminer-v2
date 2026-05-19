@@ -1,38 +1,13 @@
 import type { WikiPage } from "@/lib/wiki";
+import { type Kind, type Transition, orderSteps, parseTransitions } from "@/lib/stepOrder";
 import ElementHovercard from "./ElementHovercard";
 
-// The process-step flow — an enhanced horizontal strip. Steps sit in `sequence`
-// order; an SVG overlay draws the real transitions parsed from each step's
-// `transitions` frontmatter (`to|kind|when` entries): normal forward edges,
+// The process-step flow — an enhanced horizontal strip. Steps are ordered by
+// a topological sort of their `transitions` (see lib/stepOrder); an SVG overlay
+// draws those same transitions (`to|kind|when` entries): normal forward edges,
 // conditional branches, loop-backs to an earlier step, and exception exits to
 // EX-* elements. Geometry is fixed-size so every coordinate is arithmetic —
 // no DOM measurement. The strip scrolls horizontally when it overflows.
-
-type Kind = "normal" | "branch" | "loopback" | "exception";
-interface Transition {
-  to: string;
-  kind: Kind;
-  when: string;
-}
-
-const KINDS: Kind[] = ["normal", "branch", "loopback", "exception"];
-
-function parseTransitions(v: string | string[] | undefined): Transition[] {
-  const raw = !v ? [] : Array.isArray(v) ? v : [v];
-  const out: Transition[] = [];
-  for (const entry of raw) {
-    const parts = entry.split("|");
-    const to = (parts[0] ?? "").trim();
-    if (!to) continue;
-    const k = (parts[1] ?? "normal").trim() as Kind;
-    out.push({
-      to,
-      kind: KINDS.includes(k) ? k : "normal",
-      when: parts.slice(2).join("|").trim(),
-    });
-  }
-  return out;
-}
 
 // A step's review state — drives the per-node status dot.
 function stepApproval(s: WikiPage): "approved" | "rejected" | "in-progress" {
@@ -67,10 +42,9 @@ export default function ProcessFlow({
   /** Step ids to highlight — the As-Is steps a selected target theme replaces. */
   highlight?: Set<string>;
 }) {
-  const sorted = [...steps].sort(
-    (a, b) => Number(a.meta.sequence ?? 0) - Number(b.meta.sequence ?? 0),
-  );
-  if (sorted.length === 0) return null;
+  if (steps.length === 0) return null;
+  // Step order comes from the transition graph, not a frontmatter field.
+  const sorted = orderSteps(steps);
 
   const n = sorted.length;
   const indexOf: Record<string, number> = {};
@@ -122,18 +96,11 @@ export default function ProcessFlow({
     hasOutgoing[e.from] = true;
     hasIncoming[e.to] = true;
   }
-  const seqCount: Record<string, number> = {};
-  for (const s of sorted) {
-    const q = String(s.meta.sequence ?? "");
-    seqCount[q] = (seqCount[q] ?? 0) + 1;
-  }
-  const stepIssues: string[][] = sorted.map((s, i) => {
+  const stepIssues: string[][] = sorted.map((_step, i) => {
     const issues: string[] = [];
     if (!hasOutgoing[i] && i !== n - 1) issues.push("Dead end — no onward step");
     if (i !== 0 && !hasIncoming[i])
       issues.push("Unreachable — no step leads here");
-    if (seqCount[String(s.meta.sequence ?? "")] > 1)
-      issues.push(`Duplicate sequence ${s.meta.sequence}`);
     for (const t of parsed[i]) {
       if (indexOf[t.to] === undefined && !knownIds.has(t.to))
         issues.push(`Unknown target “${t.to}”`);

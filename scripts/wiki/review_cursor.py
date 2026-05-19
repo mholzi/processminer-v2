@@ -27,6 +27,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import verbatim  # noqa: E402
 from wiki_lib import WIKI_DIR, iter_elements, parse_frontmatter  # noqa: E402
 
 # As-Is element types, in foundational-dependency order. Forward-looking types
@@ -108,6 +109,13 @@ def report(state: dict) -> None:
         "done": done,
         "current": None if done else queue[cursor],
     }
+    # The canonical SME-facing strings ride along with the cursor data the
+    # foundational-run skill already reads every turn — so the skill relays
+    # them verbatim instead of re-typing (and drifting) them from memory.
+    if done:
+        out["closeout_template"] = verbatim.get("foundational-closeout")
+    else:
+        out["outcomes_line"] = verbatim.get("foundational-outcomes")
     print(json.dumps(out, ensure_ascii=False))
 
 

@@ -79,8 +79,8 @@ On **[Y]**:
 1. `python3 scripts/wiki/next_id.py <slug> <type>` — the id.
 2. Assemble a JSON spec (`slug`, `type`, `id`, `title`, `confidence`,
    `source`, `fields` for scalar frontmatter, `relations` for id-lists,
-   `blocks`), save it to a temp file, then
-   `python3 scripts/wiki/write_element.py <spec.json>` — `status: draft`.
+   `blocks`), save it to `/tmp/<id>.json`, then
+   `python3 scripts/wiki/write_element.py /tmp/<id>.json` — `status: draft`.
 3. `python3 scripts/wiki/check_conformance.py <slug> <id>` — fix any flag.
 
 Then confirm with this **exact** line, substituting the id, title and section:
