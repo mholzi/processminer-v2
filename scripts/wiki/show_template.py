@@ -2,15 +2,15 @@
 """Print the conformant skeleton for an element type — straight from the schema.
 
 A skill drafting an element needs to know its exact shape: the section it
-lives in, the id prefix, and the `## ` blocks it must have with their format
-and length. That used to mean reading a seeded example under
-`wiki/processes/cob-003/`; this script prints it from
-`schema/process-schema.json` instead, so there is no dependency on any
-particular process existing.
+lives in, the id prefix, the frontmatter (fields, their allowed values, which
+are required, the relations) and the `## ` blocks it must have with their
+format and length. This prints all of that from `schema/process-schema.json`,
+so a skill can pull just the types it owns instead of reading the whole schema
+file into its context.
 
 Usage:
-  show_template.py <type>          one element type, e.g. process-step
-  show_template.py --list          list every element type
+  show_template.py <type> [<type> ...]   one or more element types
+  show_template.py --list                list every element type
 """
 
 from __future__ import annotations
@@ -35,27 +35,8 @@ def block_range(block: dict) -> str:
     return ", ".join(parts)
 
 
-def main(argv: list[str]) -> None:
-    if len(argv) != 1:
-        sys.exit("usage: show_template.py <type> | --list")
-
-    schema = load_schema()
-    types = schema["elementTypes"]
-    field_values = schema.get("fieldValues", {})
-
-    if argv[0] == "--list":
-        for key in sorted(types):
-            print(f"{key:28} {types[key].get('label', '')}")
-        return
-
-    etype = argv[0]
-    if etype not in types:
-        sys.exit(
-            f"error: unknown element type '{etype}' — "
-            f"run show_template.py --list to see them all"
-        )
-
-    t = types[etype]
+def print_type(etype: str, t: dict, field_values: dict) -> None:
+    """Print one element type's full conformant contract."""
     print(f"{t.get('label', etype)}  (type: {etype})")
     print(f"  section:  {t['section']}")
     print(f"  idPrefix: {t['idPrefix']}   →  id format {t['idPrefix']}-<PROC>-<NNN>")
@@ -63,6 +44,7 @@ def main(argv: list[str]) -> None:
     fm = t.get("frontmatter", {})
     fields = fm.get("fields", [])
     relations = fm.get("relations", [])
+    required = fm.get("required", [])
     print()
     print("  Frontmatter — type-specific keys, beyond the universal")
     print("  id / type / section / title / status / confidence / source:")
@@ -71,8 +53,27 @@ def main(argv: list[str]) -> None:
         for f in fields:
             # frontmatter.fields is a list of {key, label, ...} objects.
             key = f["key"] if isinstance(f, dict) else f
+            hint = f.get("hint") if isinstance(f, dict) else None
+            suffix = f.get("suffix") if isinstance(f, dict) else None
             vals = field_values.get(key)
-            print(f"      {key}   — one of: {' | '.join(vals)}" if vals else f"      {key}")
+            # Print the key with its schema `hint` — the hint is what
+            # disambiguates a field's expected format (a name vs an id, a
+            # number vs a label), so a skill told this is the full contract
+            # must see it, not just the bare key.
+            print(f"      {key}   — {hint}" if hint else f"      {key}")
+            if vals:
+                print(f"        one of: {' | '.join(vals)}")
+            # A `suffix` means the value is shown with that unit appended —
+            # it signals the field is e.g. a number, not a free-text label.
+            if suffix:
+                print(f'        value carries the suffix "{suffix}" (e.g. "5{suffix}")')
+            # A field may carry a paired URL companion stored under `urlKey`
+            # (e.g. `source` + `sourceUrl`) — itself a real, sometimes
+            # `required`, frontmatter key.
+            if isinstance(f, dict) and f.get("urlKey"):
+                uk = f["urlKey"]
+                tag = " (required)" if uk in required else ""
+                print(f"      {uk}   — URL for `{key}`{tag}")
     else:
         print("    fields:    (none)")
     if relations:
@@ -82,6 +83,7 @@ def main(argv: list[str]) -> None:
             print(f"      {r['key'] if isinstance(r, dict) else r}")
     else:
         print("    relations: (none)")
+    print(f"    required:  {', '.join(required) if required else '(none)'}")
 
     tr = fm.get("transitions")
     if tr:
@@ -94,12 +96,49 @@ def main(argv: list[str]) -> None:
         if tr.get("note"):
             print(f"      {tr['note']}")
 
+    raci = fm.get("raci")
+    if raci:
+        print(
+            f"    raci: a list `raci: [...]`, each entry "
+            f"`{raci.get('format', '')}`"
+        )
+        if raci.get("levels"):
+            print(f"      levels: {' | '.join(raci['levels'])}")
+        if raci.get("note"):
+            print(f"      {raci['note']}")
+
     print()
     print("  Blocks — exactly these ## headings, in this order:")
     for block in t.get("template", []):
         print(f"  ## {block['heading']}   [{block_range(block)}]")
         if block.get("purpose"):
             print(f"      {block['purpose']}")
+
+
+def main(argv: list[str]) -> None:
+    if not argv:
+        sys.exit("usage: show_template.py <type> [<type> ...] | --list")
+
+    schema = load_schema()
+    types = schema["elementTypes"]
+    field_values = schema.get("fieldValues", {})
+
+    if argv == ["--list"]:
+        for key in sorted(types):
+            print(f"{key:28} {types[key].get('label', '')}")
+        return
+
+    unknown = [a for a in argv if a not in types]
+    if unknown:
+        sys.exit(
+            f"error: unknown element type(s) {', '.join(unknown)} — "
+            f"run show_template.py --list to see them all"
+        )
+
+    for i, etype in enumerate(argv):
+        if i:
+            print()
+        print_type(etype, types[etype], field_values)
 
 
 if __name__ == "__main__":

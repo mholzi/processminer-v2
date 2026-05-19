@@ -10,8 +10,10 @@ the current working directory is.
 
 from __future__ import annotations
 
+import datetime
 import json
 import re
+import sys
 import tempfile
 from pathlib import Path
 
@@ -240,3 +242,146 @@ def read_manifest(slug: str) -> list[dict]:
 
 def reset_manifest(slug: str) -> None:
     manifest_path(slug).unlink(missing_ok=True)
+
+
+# ---- Element ids + writing ----------------------------------------------
+# Shared by next_id.py (one id) and write_elements.py (a batch). One scan of
+# the process yields the abbreviation and the highest sequence per type, so a
+# batch can assign ids in memory without re-scanning the disk per element.
+
+
+def id_state(slug: str) -> tuple[str, dict[str, int]]:
+    """`(proc_abbrev, {type: highest-used-sequence})` from one scan. The next
+    id for a type is `f"{prefix}-{proc}-{state.get(type, 0) + 1:03d}"`.
+    Raises FileNotFoundError if the process is missing, ValueError if its
+    abbreviation cannot be determined."""
+    index = WIKI_DIR / slug / "index.md"
+    if not index.is_file():
+        raise FileNotFoundError(f"no process at wiki/processes/{slug}/")
+    index_meta, _ = parse_frontmatter(index.read_text(encoding="utf-8"))
+
+    proc: str | None = None
+    max_n: dict[str, int] = {}
+    for _path, meta, _body in iter_elements(slug):
+        parts = str(meta.get("id", "")).split("-")
+        if len(parts) != 3:
+            continue
+        # The process abbreviation is the middle segment of any element id.
+        if proc is None:
+            proc = parts[1]
+        etype = str(meta.get("type", ""))
+        if etype and parts[2].isdigit():
+            max_n[etype] = max(max_n.get(etype, 0), int(parts[2]))
+
+    # No elements yet — fall back to the process index id (new processes use
+    # the abbreviation as the index id).
+    if proc is None:
+        proc = str(index_meta.get("id", "")).strip()
+    if not proc:
+        raise ValueError(f"cannot determine the process abbreviation for {slug}")
+    return proc, max_n
+
+
+WRITE_REQUIRED = ("slug", "type", "id", "title", "blocks")
+
+
+def write_element_spec(spec: dict) -> tuple[Path, str]:
+    """Write one element file from a JSON spec (see write_element.py for the
+    spec shape). Returns `(path, action)` where action is 'created' or
+    'updated'. Raises ValueError on a malformed spec.
+
+    Shared by write_element.py (one element) and write_elements.py (a batch),
+    so the frontmatter order, relation rules, provenance map and non-lossy
+    rewrite behave identically whichever path wrote the element."""
+    for key in WRITE_REQUIRED:
+        if key not in spec:
+            raise ValueError(f"spec is missing required key '{key}'")
+
+    types = element_types()
+    etype = spec["type"]
+    if etype not in types:
+        raise ValueError(f"unknown element type '{etype}'")
+    section = types[etype]["section"]
+
+    proc_dir = WIKI_DIR / spec["slug"]
+    if not (proc_dir / "index.md").is_file():
+        raise ValueError(f"no process at wiki/processes/{spec['slug']}/")
+
+    # Frontmatter, in a fixed, readable order.
+    frontmatter: dict = {
+        "id": spec["id"],
+        "type": etype,
+        "section": section,
+        "title": spec["title"],
+        "status": spec.get("status") or "draft",
+    }
+    if spec.get("confidence"):
+        frontmatter["confidence"] = spec["confidence"]
+    if spec.get("source"):
+        frontmatter["source"] = spec["source"]
+    for key, val in (spec.get("fields") or {}).items():
+        frontmatter[key] = val
+
+    # A relation key must be one the schema declares for this element type.
+    # The reverse view of a relation is computed by the app, never stored.
+    rel_keys = {
+        r["key"]
+        for r in ((types[etype].get("frontmatter") or {}).get("relations") or [])
+    }
+    # `transitions` / `raci` are id-lists carrying per-edge metadata.
+    rel_keys |= {"transitions", "raci"}
+    for key, val in (spec.get("relations") or {}).items():
+        if key not in rel_keys:
+            print(
+                f"warning: dropped relation '{key}' — not a schema relation "
+                f"for type '{etype}'; its reverse view is derived, not stored",
+                file=sys.stderr,
+            )
+            continue
+        frontmatter[key] = list(val)
+
+    # Provenance map (HALLUCINATION-PLAN.md): one entry per block heading. A
+    # heading the spec did not supply provenance for defaults to `proposed`.
+    spec_prov = spec.get("provenance") or {}
+    prov: dict = {}
+    for block in spec["blocks"]:
+        heading = block["heading"]
+        entry = spec_prov.get(heading)
+        if isinstance(entry, dict) and entry.get("source"):
+            prov[heading] = {
+                "source": entry["source"],
+                "evidence": entry.get("evidence", ""),
+            }
+        else:
+            prov[heading] = {"source": "proposed", "evidence": ""}
+    frontmatter["provenance"] = dump_provenance(prov)
+
+    # Auto-stamp `asOf` when the type declares it and the spec did not supply it.
+    fm = types[etype].get("frontmatter", {}) or {}
+    declared = {
+        (f["key"] if isinstance(f, dict) else f) for f in fm.get("fields", [])
+    } | set(fm.get("required", []))
+    if "asOf" in declared and not frontmatter.get("asOf"):
+        frontmatter["asOf"] = datetime.date.today().isoformat()
+
+    section_dir = proc_dir / section
+    section_dir.mkdir(parents=True, exist_ok=True)
+    path = section_dir / f"{spec['id']}.md"
+    existed = path.is_file()
+
+    # Rewriting an existing element: carry forward every frontmatter key the
+    # spec did not re-supply, so a rewrite is never lossy.
+    if existed:
+        prior, _ = parse_frontmatter(path.read_text(encoding="utf-8"))
+        for key, val in prior.items():
+            frontmatter.setdefault(key, val)
+        # ...but a rewrite supersedes the content the SME approved — re-open it.
+        if str(frontmatter.get("approval", "")).strip() in ("approved", "rejected"):
+            frontmatter["approval"] = "in-progress"
+            frontmatter.pop("approvalBy", None)
+            frontmatter.pop("approvalDate", None)
+
+    action = "updated" if existed else "created"
+    path.write_text(serialize_element(frontmatter, spec["blocks"]), encoding="utf-8")
+    log_write(spec["slug"], spec["id"], etype, action)
+    return path, action

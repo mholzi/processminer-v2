@@ -503,6 +503,54 @@ def run() -> None:
             break
     chk("qer_cursor advance terminates at done", st.get("done") is True, st)
 
+    print("\n— write_elements (batch writer) —")
+    ROLE_BLOCKS = [
+        {"heading": "Responsibility", "text": "Owns the triage of every incoming client request, from intake through to the routing decision."},
+        {"heading": "In this process", "text": "Performs the triage step and hands clean requests onward to processing."},
+    ]
+    r = script("write_elements.py", spec_file({
+        "slug": SLUG, "source": "batch-source.pdf",
+        "elements": [
+            {"tempKey": "s", "type": "process-step", "title": "Batched Step",
+             "confidence": "high", "blocks": STEP_BLOCKS},
+            {"tempKey": "r", "type": "role", "title": "Batched Role",
+             "confidence": "high", "relations": {"raci": ["@s:R"]},
+             "blocks": ROLE_BLOCKS},
+        ],
+    }))
+    chk("write_elements writes a batch", r.returncode == 0, r.stderr)
+    ids = [ln.split()[1] for ln in r.stdout.splitlines() if ln.startswith("wrote ")]
+    chk("write_elements wrote both elements", len(ids) == 2, r.stdout)
+    step_id, role_id = (ids + ["", ""])[:2]
+    chk("write_elements assigns ids across types",
+        step_id.startswith("PS-SELF-") and role_id.startswith("ROLE-SELF-")
+        and (PROC_DIR / "process-steps" / f"{step_id}.md").is_file()
+        and (PROC_DIR / "roles" / f"{role_id}.md").is_file(), r.stdout)
+    role_meta, _ = parse_frontmatter(
+        (PROC_DIR / "roles" / f"{role_id}.md").read_text())
+    chk("write_elements resolves an @tempKey cross-reference",
+        role_meta.get("raci") == [f"{step_id}:R"], role_meta)
+    step_meta, _ = parse_frontmatter(
+        (PROC_DIR / "process-steps" / f"{step_id}.md").read_text())
+    chk("write_elements applies the manifest default source",
+        step_meta.get("source") == "batch-source.pdf", step_meta)
+    r = script("write_elements.py", spec_file({
+        "slug": SLUG, "elements": [
+            {"type": "role", "title": "Dangling", "blocks": ROLE_BLOCKS,
+             "relations": {"raci": ["@ghost:R"]}},
+        ],
+    }))
+    chk("write_elements rejects a dangling @tempKey reference",
+        r.returncode != 0 and "@ghost" in (r.stdout + r.stderr), r.stdout + r.stderr)
+    r = script("write_elements.py", spec_file({
+        "slug": SLUG, "elements": [
+            {"tempKey": "dup", "type": "process-step", "title": "A", "blocks": STEP_BLOCKS},
+            {"tempKey": "dup", "type": "process-step", "title": "B", "blocks": STEP_BLOCKS},
+        ],
+    }))
+    chk("write_elements rejects a duplicate tempKey",
+        r.returncode != 0 and "dup" in (r.stdout + r.stderr), r.stdout + r.stderr)
+
     print("\n— skills: shared SKILL.md block drift check —")
     r = subprocess.run(
         ["python3", str(ROOT / "scripts" / "check_skill_blocks.py")],
