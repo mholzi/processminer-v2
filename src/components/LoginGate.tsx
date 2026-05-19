@@ -27,7 +27,7 @@ export default function LoginGate({
         <div className="login-brand">Processminer v2</div>
         <p className="login-intro">
           Enter your name and role to begin. They are stamped on every
-          approval and edit you make in the process wiki.
+          approval and edit you make in the process documentation.
         </p>
         <label className="login-field">
           <span>Name</span>

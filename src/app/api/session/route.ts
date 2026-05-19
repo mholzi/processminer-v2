@@ -37,19 +37,19 @@ function describeTool(name: string, input: Record<string, unknown>): string {
   const base = (p: unknown) => String(p ?? "").split("/").pop() || "";
   if (name === "Bash") {
     const cmd = String(input?.command ?? "");
-    if (cmd.includes("write_element.py")) return "✏ Writing wiki element …";
+    if (cmd.includes("write_element.py")) return "✏ Writing element …";
     if (cmd.includes("next_id.py")) return "Assigning element ID …";
-    if (cmd.includes("check_conformance.py")) return "Checking conformance …";
+    if (cmd.includes("check_conformance.py")) return "Checking structure …";
     if (cmd.includes("add_source.py")) return "Recording document as a source …";
     if (cmd.includes("scaffold_process.py")) return "Creating process …";
     if (cmd.includes("derive_process_meta.py"))
-      return "Deriving process metadata …";
-    return `Running command: ${cmd.slice(0, 48)}…`;
+      return "Deriving process details …";
+    return "Working …";
   }
   if (name === "Read") return `Reading ${base(input?.file_path)}`;
   if (name === "Write") return `Writing ${base(input?.file_path)}`;
   if (name === "Edit") return `Editing ${base(input?.file_path)}`;
-  if (name === "Skill") return `Starting skill “${String(input?.skill ?? "")}”`;
+  if (name === "Skill") return "Working …";
   if (name === "Grep" || name === "Glob") return "Searching files …";
   if (name === "Task" || name === "Agent") return "Starting sub-agent …";
   return `${name} …`;
@@ -92,6 +92,10 @@ export async function POST(req: NextRequest) {
       let liveSession = sessionId;
       let resultSent = false;
       let closed = false;
+      // Running count of wiki elements written this turn — surfaced in the
+      // activity line so a long extraction (document-ingest writes dozens)
+      // shows visible progress instead of a frozen generic line.
+      let elementsWritten = 0;
 
       const send = (obj: unknown) => {
         if (closed) return;
@@ -134,13 +138,18 @@ export async function POST(req: NextRequest) {
           for (const b of msg?.content ?? []) {
             const block = b as { type?: string; name?: string; input?: unknown };
             if (block.type === "tool_use" && block.name) {
-              send({
-                type: "progress",
-                text: describeTool(
-                  block.name,
-                  (block.input as Record<string, unknown>) ?? {},
-                ),
-              });
+              const input = (block.input as Record<string, unknown>) ?? {};
+              let text = describeTool(block.name, input);
+              // Number each element write so a long extraction visibly
+              // counts up rather than repeating one static line.
+              if (
+                block.name === "Bash" &&
+                String(input?.command ?? "").includes("write_element.py")
+              ) {
+                elementsWritten += 1;
+                text = `✏ Writing wiki element ${elementsWritten} …`;
+              }
+              send({ type: "progress", text });
             }
           }
         } else if (evt.type === "result") {

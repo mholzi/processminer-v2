@@ -20,4 +20,4 @@ Banks must file a Suspicious Activity Report when a confirmed sanctions match ma
 A confirmed sanctions hit in this process may indicate the mandate is being used to facilitate financial crime; the bank carries a statutory SAR obligation and must not disclose the investigation to the creditor.
 
 ## How it is met
-EX-DDMM-002 imposes a silent freeze — no portal disclosure — and engages Financial Crime (STK-DDMM-001) for SAR assessment on confirmed hits.
+EX-DDMM-002 imposes a silent freeze — no portal disclosure — and engages Financial Crime (ROLE-DDMM-004) for SAR assessment on confirmed hits.

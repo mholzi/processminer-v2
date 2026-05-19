@@ -50,6 +50,8 @@ export interface FieldSpec {
   suffix?: string;
   /** When set, the value links to the URL held in this other meta key. */
   urlKey?: string;
+  /** One-line guidance shown under the input in edit mode. */
+  hint?: string;
 }
 /** A relation field — an id list pointing at other elements. */
 export interface RelationSpec {

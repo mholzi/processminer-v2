@@ -6,10 +6,12 @@ across the skills (HALLUCINATION-PLAN.md D8 — keeps SKILLS.md §5's "each
 SKILL.md stands alone" principle). Inline repetition drifts: this check fails
 if the copies of a marked region are not byte-identical.
 
-Two blocks are checked:
-  PROVENANCE-BLOCK      — read-back instructions, in the 6 specialist skills
-                          and `foundational-run` (7 copies)
-  WEB-PROVENANCE-BLOCK  — web-sourced provenance, in the 3 web-sourcing skills
+Four blocks are checked:
+  PROVENANCE-BLOCK         — read-back instructions, in the 6 specialist
+                             skills and `foundational-run` (7 copies)
+  WRITING-PROCEDURE-BLOCK  — the element-writing procedure, in the 6 specialists
+  BATCHING-BLOCK           — the Y/E/R batching rule, in the 6 specialists
+  WEB-PROVENANCE-BLOCK     — web-sourced provenance, in the 3 web-sourcing skills
 
 Usage:
   check_skill_blocks.py            verify; exit non-zero on drift or a missing block
@@ -22,20 +24,20 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
+SPECIALISTS = [
+    "process-specialist",
+    "control-compliance-specialist",
+    "client-journey-specialist",
+    "innovation-analyst",
+    "transformation-agent",
+    "it-architect",
+]
+
 # (marker name, skills that must carry a byte-identical copy)
 SHARED_BLOCKS = [
-    (
-        "PROVENANCE-BLOCK",
-        [
-            "process-specialist",
-            "control-compliance-specialist",
-            "client-journey-specialist",
-            "innovation-analyst",
-            "transformation-agent",
-            "it-architect",
-            "foundational-run",
-        ],
-    ),
+    ("PROVENANCE-BLOCK", SPECIALISTS + ["foundational-run"]),
+    ("WRITING-PROCEDURE-BLOCK", SPECIALISTS),
+    ("BATCHING-BLOCK", SPECIALISTS),
     (
         "WEB-PROVENANCE-BLOCK",
         ["source-innovation", "source-cx", "source-regulation"],

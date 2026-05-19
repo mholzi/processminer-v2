@@ -134,11 +134,13 @@ After you draft an element, present it and offer exactly three choices:
 
 Always offer all three.
 
+<!-- BATCHING-BLOCK:start -->
 **Batching.** Present elements one at a time whenever the per-element
 discussion is the value — anything you genuinely challenge or elicit. A set of
 reference-type elements that needs little per-element judgement (e.g.
 regulations, market trends, competitor moves) may be presented as one labelled
 batch for a single Y/E/R. When unsure, go one at a time.
+<!-- BATCHING-BLOCK:end -->
 
 ### Brainstorm-first capture
 Designing a target is a conversation, not a form. Offer the SME ways in — "let's
@@ -235,16 +237,16 @@ them at
 `council-review` — the four other perspective specialists can challenge the
 target before they approve it.
 
+<!-- WRITING-PROCEDURE-BLOCK:start -->
 ## Writing an element — the procedure
 
 The mechanical parts are Python scripts in `scripts/wiki/`. You do the
 judgement; the scripts own the format. Do **not** hand-write element files.
 
 **Reserve the id before you name it.** Never tell the SME an element's id
-until `next_id.py` has assigned it — a guessed id ("this will be `TD-COB-005`")
-is often wrong, because the real id depends on creation order. Refer to a
-not-yet-written element by description ("a new transformation decision"); state
-its id only once it has been written.
+until `next_id.py` has assigned it — a guessed id is often wrong, because the
+real id depends on creation order. Refer to a not-yet-written element by
+description; state its id only once it has been written.
 
 1. Read the schema `template` for the type — blocks, format, word range.
 2. **Draft** every block within its spec. This is your work.
@@ -265,14 +267,14 @@ element that has already been written — a refine pass, a correction — use
 (or `--field "<key>" "<value>"`, or `--list "<key>" "<id1,id2>"`). It changes
 only that part and leaves the rest byte-identical. Never re-emit a whole
 element to fix one piece of it.
+<!-- WRITING-PROCEDURE-BLOCK:end -->
 
 ## Stay in your lane
 
 You own **target-state, transformation-decision, requirement,
 process-dependency, gap** and the cross-cutting **assumption**. You do **not**
 create or rewrite the As-Is elements — process steps, exceptions, roles,
-stakeholders, metrics,
-process gaps, pain points, controls, regulations, compliance gaps, audit
+metrics, process gaps, pain points, controls, regulations, compliance gaps, audit
 findings, CX touchpoints, moments, channels, friction points, systems or
 integrations — nor the innovation elements: market trends, competitor moves,
 innovation ideas and innovation risks are `innovation-analyst`'s.

@@ -68,9 +68,9 @@ export default function TriagePanel({
       {/* ---- Ingest receipt ---- */}
       <aside className="triage-receipt">
         <div className="triage-receipt-head">
-          <div className="triage-receipt-lbl">Ingest record</div>
+          <div className="triage-receipt-lbl">Import record</div>
           <div className="triage-receipt-file">
-            {ingest?.file ?? "No document ingested"}
+            {ingest?.file ?? "No document imported"}
           </div>
           {ingest && (
             <div className="triage-receipt-when">
@@ -154,12 +154,12 @@ export default function TriagePanel({
           <span className="triage-wl-ct">{worklistCount} items</span>
         </div>
         <p className="triage-wl-sub">
-          Everything the ingest left for you to decide — handled top to bottom.
+          Everything the import left for you to decide — handled top to bottom.
         </p>
 
         {worklistCount === 0 ? (
           <div className="empty-state">
-            <p>Nothing outstanding — the ingest left no open items.</p>
+            <p>Nothing outstanding — the import left no open items.</p>
             <p className="empty-hint">
               No conflicts, no low-confidence drafts, every section covered.
             </p>
@@ -190,8 +190,8 @@ export default function TriagePanel({
                         {titleOf(c.element)}
                       </span>
                       <span className="triage-item-why">
-                        Document says <b>{c.documentSays}</b>; the wiki holds{" "}
-                        <b>{c.wikiSays}</b> for {c.field}.
+                        Document says <b>{c.documentSays}</b>; the
+                        documentation holds <b>{c.wikiSays}</b> for {c.field}.
                       </span>
                     </span>
                     <span className="triage-item-go">Resolve →</span>

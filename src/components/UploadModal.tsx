@@ -69,7 +69,7 @@ export default function UploadModal({
         <div className="modal-title">Upload a document</div>
         <p className="modal-text">
           Add a document relevant to this process. The assistant will review
-          it, summarise it, and extract its content into the wiki.
+          it, summarise it, and extract its content into the documentation.
         </p>
 
         <div className="upload-modes">

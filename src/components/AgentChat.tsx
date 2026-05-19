@@ -103,6 +103,7 @@ export default function AgentChat({
   onSend,
   pending,
   activity,
+  activeSkillLabel,
   onRestart,
   onRunLint,
   linting,
@@ -117,6 +118,8 @@ export default function AgentChat({
   onSend: (text: string) => void;
   pending: boolean;
   activity?: string | null;
+  /** Friendly name of the skill the current turn runs — null for free text. */
+  activeSkillLabel?: string | null;
   onRestart: () => void;
   onRunLint: () => void;
   linting: boolean;
@@ -200,13 +203,13 @@ export default function AgentChat({
           ⟩
         </button>
       </div>
-      <div className="chat-sub">Runs the process skills locally via Claude Code</div>
+      <div className="chat-sub">Documents this process with you</div>
 
       <div className="chat-scroll" ref={scrollRef}>
         {messages.length === 0 && !linting && !pending && (
           <div className="chat-empty">
-            Ask the assistant to document a process or about any element — it
-            runs the process skills. Or run a lint pass over the whole wiki.
+            Ask the assistant to document a process or about any element. Or run
+            a quality check over the whole process.
           </div>
         )}
         {messages.map((m) => (
@@ -216,6 +219,15 @@ export default function AgentChat({
             </ReactMarkdown>
           </div>
         ))}
+        {pending && activeSkillLabel && (
+          <div className="chat-skill-chip">
+            <span className="chat-skill-glyph" aria-hidden="true">
+              ✦
+            </span>
+            {activeSkillLabel}
+            <span className="chat-skill-state">· running</span>
+          </div>
+        )}
         {pending && (
           <div className="chat-msg agent pending">
             <span className="chat-activity-dot" />
@@ -230,10 +242,10 @@ export default function AgentChat({
       <div className="chat-actions">
         <button className="chat-lint" onClick={onRunLint} disabled={linting}>
           {linting
-            ? "Linting…"
+            ? "Running quality check…"
             : findingCount === null
-              ? "⊛ Run lint on the whole wiki"
-              : `⊛ Re-run lint · ${findingCount} open`}
+              ? "⊛ Run a quality check on the whole process"
+              : `⊛ Re-run quality check · ${findingCount} open`}
         </button>
       </div>
 

@@ -44,6 +44,12 @@ STRINGS: dict[str, str] = {
         "{if any gaps were created mid-run:}\n"
         "The run also recorded {n} gap(s) — {ids} — these are open by design.\n"
         "\n"
+        "{if any perspective section is still empty:}\n"
+        "**Still to document.** A document-driven walk cannot reach every "
+        "perspective — these sections are still empty, each filled by its own "
+        "skill:\n"
+        "- **{section}** — {how it gets filled}\n"
+        "\n"
         "The As-Is baseline is now documented and reviewed. From here, when "
         "you ingest further documents into this process, content that "
         "contradicts this baseline is a **conflict** — run the "
@@ -115,8 +121,9 @@ STRINGS: dict[str, str] = {
         "- **Drafted:** {n} element(s)\n"
         "- **By type:** {type} {n} · {type} {n} · …\n"
         "\n"
-        "Everything is `status: draft` — review and approve the elements in "
-        "the web app. Approval is your decision there."
+        "Elements you approved during this session are signed off; any left "
+        "`in-progress` are yours to review and approve on their cards in the "
+        "app. Approval is always your decision there."
     ),
 
     # ── qer-session ─────────────────────────────────────────────────────
@@ -126,8 +133,9 @@ STRINGS: dict[str, str] = {
         "- **Documented:** {n} element(s) across {n} perspective(s)\n"
         "- **By type:** {type} {n} · {type} {n} · …\n"
         "\n"
-        "Everything is `status: draft` — review and approve the elements in "
-        "the web app. Approval is your decision there, not mine here."
+        "Elements you approved during this session are signed off; any left "
+        "`in-progress` are yours to review and approve in the web app. "
+        "Approval is your decision there, not mine here."
     ),
 
     # ── conflict-resolution ─────────────────────────────────────────────

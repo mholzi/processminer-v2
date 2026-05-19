@@ -33,6 +33,9 @@ import ControlsInTarget from "@/components/ControlsInTarget";
 import { COUNCIL_SPECIALISTS } from "@/lib/target-review";
 import UploadModal from "@/components/UploadModal";
 import CommandPalette from "@/components/CommandPalette";
+import HelpCenter from "@/components/HelpCenter";
+import GuidedTour, { TOUR_STEPS } from "@/components/GuidedTour";
+import ExportModal from "@/components/ExportModal";
 import ApprovalBar from "@/components/ApprovalBar";
 import ProcessSwitcher from "@/components/ProcessSwitcher";
 import SourcesPanel from "@/components/SourcesPanel";
@@ -83,6 +86,20 @@ const IconUser = () => (
   <svg viewBox="0 0 24 24">
     <circle cx="12" cy="8" r="3.6" />
     <path d="M5.5 20a6.5 6.5 0 0 1 13 0" />
+  </svg>
+);
+const IconHelp = () => (
+  <svg viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M9.2 9.3a2.8 2.8 0 0 1 5.5.8c0 1.9-2.7 2.4-2.7 4" />
+    <path d="M12 17.3v.01" />
+  </svg>
+);
+const IconExport = () => (
+  <svg viewBox="0 0 24 24">
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+    <path d="M14 3v5h5" />
+    <path d="M9 13h6M9 17h6" />
   </svg>
 );
 
@@ -163,6 +180,26 @@ const SPECIALIST: Record<string, { label: string; blurb: string }> = {
     blurb: "designs the target state with you",
   },
 };
+// Friendly name for each chat-driven skill — shown in the assistant's
+// active-skill chip while a turn runs. Covers the elicitation specialists
+// plus the non-specialist skills the run-* wrappers invoke.
+const SKILL_LABEL: Record<string, string> = {
+  "process-specialist": "Process Specialist",
+  "control-compliance-specialist": "Control & Compliance Specialist",
+  "client-journey-specialist": "Client Journey Specialist",
+  "it-architect": "IT Architect",
+  "innovation-analyst": "Innovation Analyst",
+  "transformation-agent": "Transformation Agent",
+  "run-lint": "Quality Check",
+  "foundational-run": "Foundational Run",
+  "council-review": "Target Council Review",
+  "add-entry": "Add Entry",
+  "comment-review": "Comment Review",
+  "conflict-resolution": "Conflict Resolution",
+  "document-ingest": "Document Import",
+  "new-process": "New Process",
+};
+
 function sectionSourcingKind(
   section: string,
 ): "innovation" | "cx" | "regulation" | null {
@@ -196,7 +233,11 @@ function scopePreamble(d: ProcessDoc, user: User): string {
     "3. If asked to do anything else — work on another process, change",
     "   application code, or anything unrelated to documenting this",
     "   process — decline: briefly say you are scoped to this process and",
-    "   cannot help with that, in the language the SME is using.",
+    "   cannot help with that, in the language the SME is using. If the",
+    "   request was to create or switch to another process, point the SME",
+    "   at the “+ New process” button in the app's top bar (and the process",
+    "   switcher beside it) — never tell them to run a CLI skill or start a",
+    "   new session; they are working in the web app, not a terminal.",
     "4. schema/, scripts/ and .claude/skills/ are shared framework the",
     "   skills need — reading and running those is allowed and expected.",
     "",
@@ -228,6 +269,35 @@ function resumeMessage(d: ProcessDoc): ChatMessage | null {
       `\n\nOpen **Triage** in the top bar and press **Resume** to continue the ` +
       `challenged walk through the As-Is elements.`,
   };
+}
+
+// The chat transcript + claude session id are persisted to sessionStorage
+// per process, so a page reload (or dev hot-reload) restores the conversation
+// instead of dropping it — a foundational run can span hours. sessionStorage
+// is deliberate: it survives a reload but clears when the tab closes, so a
+// transcript never goes stale across days.
+const chatStoreKey = (slug: string) => `pm-chat-${slug}`;
+function loadStoredChat(
+  slug: string,
+): { messages: ChatMessage[]; sessionId: string | null } | null {
+  try {
+    const raw = sessionStorage.getItem(chatStoreKey(slug));
+    if (!raw) return null;
+    const saved = JSON.parse(raw) as {
+      messages?: ChatMessage[];
+      sessionId?: string | null;
+    };
+    if (!Array.isArray(saved.messages) || saved.messages.length === 0) {
+      return null;
+    }
+    return {
+      messages: saved.messages,
+      sessionId:
+        typeof saved.sessionId === "string" ? saved.sessionId : null,
+    };
+  } catch {
+    return null;
+  }
 }
 
 // The one main screen. Left rail is a numbered 1..6 area spine — always
@@ -459,9 +529,39 @@ export default function ProcessDocScreen({
     return m ? [m] : [];
   });
   const [chatSessionId, setChatSessionId] = useState<string | null>(null);
+  // Restore a persisted transcript for the process shown on mount, so a
+  // reload picks the conversation back up (FB-004). Runs once; later process
+  // switches restore via switchProcess().
+  const chatPersistReady = useRef(false);
+  useEffect(() => {
+    const saved = loadStoredChat(currentSlug);
+    if (saved) {
+      setMessages(saved.messages);
+      setChatSessionId(saved.sessionId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    // Skip the mount run so the restore above is not clobbered before it lands.
+    if (!chatPersistReady.current) {
+      chatPersistReady.current = true;
+      return;
+    }
+    try {
+      sessionStorage.setItem(
+        chatStoreKey(currentSlug),
+        JSON.stringify({ messages, sessionId: chatSessionId }),
+      );
+    } catch {
+      /* storage full or unavailable — persistence is best-effort */
+    }
+  }, [messages, chatSessionId, currentSlug]);
   const [chatPending, setChatPending] = useState(false);
   // Live activity line while a turn runs — updated from the SSE stream.
   const [chatActivity, setChatActivity] = useState<string | null>(null);
+  // The named skill a run-* wrapper kicked off — drives the assistant's
+  // active-skill chip. Null for a free-text turn (no named skill).
+  const [activeSkill, setActiveSkill] = useState<string | null>(null);
   const [linting, setLinting] = useState(false);
   // Findings come from the last run-lint pass — wiki/processes/<slug>/lint.json,
   // read server-side into doc.lint. Re-running the skill refreshes it.
@@ -491,6 +591,18 @@ export default function ProcessDocScreen({
   // Whether the web-sourcing result popup is open.
   const [sourceResultOpen, setSourceResultOpen] = useState(false);
 
+  // Live document refresh while work is in flight. A chat turn or a web-
+  // sourcing run writes wiki files element-by-element; without this the
+  // document view only re-reads when the turn *ends*, so a 25-minute ingest
+  // shows a frozen, empty wiki the whole time (FB-003 / FB-008). Polling
+  // router.refresh() re-reads the server component so cards appear and
+  // approvals flip live as the skill produces them.
+  useEffect(() => {
+    if (!chatPending && sourcing?.status !== "running") return;
+    const t = setInterval(() => router.refresh(), 4000);
+    return () => clearInterval(t);
+  }, [chatPending, sourcing, router]);
+
   // Per-area executive summary — viewed from the nav area heading, generated
   // silently by the area-summary skill. `summaryGen` tracks an active run.
   const [summaryGen, setSummaryGen] = useState<{
@@ -500,6 +612,17 @@ export default function ProcessDocScreen({
 
   // ⌘K search palette.
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  // First-run guided tour — opens once, gated on a localStorage flag.
+  const [tourOpen, setTourOpen] = useState(false);
+  useEffect(() => {
+    if (!localStorage.getItem("pm-tour-done")) setTourOpen(true);
+  }, []);
+  function closeTour() {
+    localStorage.setItem("pm-tour-done", "1");
+    setTourOpen(false);
+  }
 
   // Bottom-right toast stack — one home for transient outcomes.
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -763,7 +886,13 @@ export default function ProcessDocScreen({
   // line, `done` carries the final reply, `error` carries a failure.
   function handleSend(
     text: string,
-    opts?: { onComplete?: () => void; unscoped?: boolean; displayText?: string },
+    opts?: {
+      onComplete?: () => void;
+      unscoped?: boolean;
+      displayText?: string;
+      /** Name of the skill this turn invokes — drives the active-skill chip. */
+      skill?: string;
+    },
   ) {
     // `text` is sent to the CLI; `displayText`, when given, is what the SME
     // sees in the transcript — lets a turn carry an internal directive the
@@ -774,6 +903,7 @@ export default function ProcessDocScreen({
     ]);
     setChatPending(true);
     setChatActivity(null);
+    setActiveSkill(opts?.skill ?? null);
 
     // The + New-process flow is inherently cross-process, so it runs in its
     // own fresh, unscoped session — otherwise the scope lock would make the
@@ -854,6 +984,7 @@ export default function ProcessDocScreen({
       .finally(() => {
         setChatPending(false);
         setChatActivity(null);
+        setActiveSkill(null);
         opts?.onComplete?.();
       });
   }
@@ -864,6 +995,12 @@ export default function ProcessDocScreen({
     if (chatPending) return;
     setMessages([]);
     setChatSessionId(null);
+    // Drop the persisted transcript too — a restart is a deliberate clear.
+    try {
+      sessionStorage.removeItem(chatStoreKey(currentSlug));
+    } catch {
+      /* storage unavailable — nothing to clear */
+    }
   }
 
   // Lint — invoke the run-lint skill via the chat. It checks conformance,
@@ -878,6 +1015,12 @@ export default function ProcessDocScreen({
       `Run the ${skill} skill on the process with slug "${currentSlug}" in standalone mode. ` +
         `The SME present in this session is ${user.name} (${user.role}) — use that as the ` +
         `SME identity, and stamp approvals and source context with that name.`,
+      {
+        skill,
+        displayText: `Start a documentation session with the ${
+          SKILL_LABEL[skill] ?? skill
+        }.`,
+      },
     );
   }
 
@@ -889,12 +1032,14 @@ export default function ProcessDocScreen({
     handleSend(
       `Run the run-lint skill on the process with slug "${currentSlug}".`,
       {
+        skill: "run-lint",
+        displayText: "Run a quality check across the whole process.",
         onComplete: () => {
           setLinting(false);
           pushToast(
             "success",
-            "Lint pass complete",
-            "Open Review in the top bar to see the findings.",
+            "Quality check complete",
+            "Open the quality review in the top bar to see the findings.",
           );
         },
       },
@@ -914,6 +1059,10 @@ export default function ProcessDocScreen({
           ? `, with only the ${specialist} specialist.`
           : ", with the full council (all five perspective specialists)."),
       {
+        skill: "council-review",
+        displayText: specialist
+          ? `Review the target state with the ${specialist} specialist.`
+          : "Review the target state with the full council.",
         onComplete: () =>
           pushToast(
             "success",
@@ -935,11 +1084,19 @@ export default function ProcessDocScreen({
     setCurrentSlug(slug);
     // Mirror the selection into the URL so a browser reload restores it.
     window.history.replaceState(null, "", `?p=${slug}`);
-    setChatSessionId(null);
     // A process mid-foundational-run opens on Triage with the resume prompt,
     // exactly as a reload would; otherwise a fresh welcome.
     const resume = next ? resumeMessage(next) : null;
     setSection(resume ? "__triage" : "process-steps");
+    // If this process has a persisted transcript from earlier in the tab
+    // session, restore it (and its claude session) rather than starting over.
+    const saved = loadStoredChat(slug);
+    if (saved) {
+      setChatSessionId(saved.sessionId);
+      setMessages(saved.messages);
+      return;
+    }
+    setChatSessionId(null);
     setMessages(
       resume
         ? [resume]
@@ -948,7 +1105,7 @@ export default function ProcessDocScreen({
               {
                 id: mid(),
                 role: "agent",
-                text: `Loaded **${next.process.title}** (${next.process.id}). I've started a fresh assistant session for this process — ask me to document it, run a lint pass, or work on any element.`,
+                text: `Loaded **${next.process.title}** (${next.process.id}). I've started a fresh assistant session for this process — ask me to document it, run a quality check, or work on any element.`,
               },
             ]
           : [],
@@ -962,7 +1119,10 @@ export default function ProcessDocScreen({
     // (e.g. another process's "welcome back" resume banner) so the
     // conversation starts clean and nothing stale bleeds across.
     setMessages([]);
-    handleSend("I want to create a new process.", { unscoped: true });
+    handleSend("I want to create a new process.", {
+      unscoped: true,
+      skill: "new-process",
+    });
   }
 
   // The App Feedback page — feedback on the tool itself, kept in feedback/.
@@ -984,7 +1144,11 @@ export default function ProcessDocScreen({
     setChatOpen(true);
     handleSend(
       `A document has been uploaded to ${path}. Run the document-ingest skill on it for the "${doc.process.title}" process.`,
-      { onComplete: () => setSection("__triage") },
+      {
+        skill: "document-ingest",
+        displayText: "Import the uploaded document into this process.",
+        onComplete: () => setSection("__triage"),
+      },
     );
   }
 
@@ -996,6 +1160,10 @@ export default function ProcessDocScreen({
     handleSend(
       `Run the foundational-run skill on the process with slug "${currentSlug}". ` +
         `The SME present in this session is ${user.name} — stamp approvals with that name.`,
+      {
+        skill: "foundational-run",
+        displayText: "Start the foundational walkthrough.",
+      },
     );
   }
 
@@ -1007,6 +1175,10 @@ export default function ProcessDocScreen({
     setChatOpen(true);
     handleSend(
       `Run the conflict-resolution skill on the process with slug "${currentSlug}".`,
+      {
+        skill: "conflict-resolution",
+        displayText: "Resolve the open document conflicts with me.",
+      },
     );
   }
 
@@ -1025,6 +1197,12 @@ export default function ProcessDocScreen({
       : "";
     handleSend(
       `Run the add-entry skill for the "${section}" section of the process with slug "${currentSlug}".${typeNote}`,
+      {
+        skill: "add-entry",
+        displayText: typeLabel
+          ? `Add a new ${typeLabel} to this section.`
+          : "Add a new entry to this section.",
+      },
     );
   }
 
@@ -1194,7 +1372,7 @@ export default function ProcessDocScreen({
     if (target.kind === "finding") {
       // The human-readable turn the SME sees in the transcript.
       const visible =
-        `Deep dive on lint finding ${target.id} ("${target.title}") — ${skillClause}work through this discrepancy with me with targeted clarifying questions until the wiki is consistent.` +
+        `Deep dive on quality finding ${target.id} ("${target.title}") — ${skillClause}work through this discrepancy with me with targeted clarifying questions until the documentation is consistent.` +
         (target.detail ? `\n\nFinding detail: ${target.detail}` : "") +
         (target.elements?.length
           ? `\nImplicated elements: ${target.elements.join(", ")}.`
@@ -1213,11 +1391,14 @@ export default function ProcessDocScreen({
         `the Review panel without waiting for a re-lint. Do not run it before the ` +
         `SME has approved.\n` +
         `</internal-directive>`;
-      handleSend(visible + directive, { displayText: visible });
+      handleSend(visible + directive, {
+        displayText: visible,
+        skill: specialist ?? undefined,
+      });
       return;
     }
     const message = `Deep dive on element ${target.id} ("${target.title}") — ${skillClause}brainstorm this element with me: probe for edge cases, exceptions and tacit detail to deepen its documentation.`;
-    handleSend(message);
+    handleSend(message, { skill: specialist ?? undefined });
   }
 
   // Review the open discussion comments on an element — runs the comment-review
@@ -1231,7 +1412,10 @@ export default function ProcessDocScreen({
       `Run the comment-review skill on element ${id} ("${title}") in the ` +
       `process with slug "${currentSlug}": work through the open discussion ` +
       `comments on this element with me.`;
-    handleSend(message);
+    handleSend(message, {
+      skill: "comment-review",
+      displayText: `Review the open comments on ${title}.`,
+    });
   }
 
   function goToElement(id: string) {
@@ -1288,6 +1472,34 @@ export default function ProcessDocScreen({
         </button>
         <span className="spacer" />
         <div className="tb-icons">
+          {sourcing?.status === "running" && (
+            <Tooltip
+              label={`Sourcing ${
+                sourcing.kind === "cx"
+                  ? "Client Experience"
+                  : sourcing.kind === "innovation"
+                    ? "Innovation"
+                    : "Regulation"
+              } from the web — runs in the background; click to jump to it`}
+            >
+              <button
+                className="tb-sourcing"
+                onClick={() => {
+                  const target =
+                    sourcing.kind === "innovation"
+                      ? INNOVATION_SECTIONS[0]
+                      : sourcing.kind === "cx"
+                        ? CX_SECTIONS[0]
+                        : REGULATION_SECTIONS[0];
+                  if (target) setSection(target);
+                }}
+                aria-label="Web sourcing in progress"
+              >
+                <span className="tb-sourcing-dot" />
+                Sourcing…
+              </button>
+            </Tooltip>
+          )}
           <Tooltip label="Search (⌘K)">
             <button
               className="tb-icon"
@@ -1335,22 +1547,31 @@ export default function ProcessDocScreen({
           <Tooltip
             label={
               linting
-                ? "Running lint…"
+                ? "Running quality check…"
                 : openFindings
-                  ? `Lint review · ${openFindings.length} open finding(s)`
-                  : "Run lint"
+                  ? `Quality review · ${openFindings.length} open finding(s)`
+                  : "Run quality check"
             }
           >
             <button
               className="tb-icon"
               onClick={() => (findings ? setSection("__review") : runLint())}
               disabled={linting}
-              aria-label="Run lint"
+              aria-label="Run quality check"
             >
               <IconLint />
               {openFindings && openFindings.length > 0 && (
                 <span className="tb-badge">{openFindings.length}</span>
               )}
+            </button>
+          </Tooltip>
+          <Tooltip label="Export documentation as PDF">
+            <button
+              className="tb-icon"
+              onClick={() => setExportOpen(true)}
+              aria-label="Export documentation"
+            >
+              <IconExport />
             </button>
           </Tooltip>
           <Tooltip label="Toggle light / dark">
@@ -1360,6 +1581,15 @@ export default function ProcessDocScreen({
               aria-label="Toggle theme"
             >
               {dark ? <IconSun /> : <IconMoon />}
+            </button>
+          </Tooltip>
+          <Tooltip label="Help">
+            <button
+              className="tb-icon"
+              onClick={() => setHelpOpen(true)}
+              aria-label="Help"
+            >
+              <IconHelp />
             </button>
           </Tooltip>
           <Tooltip label={`${user.name} · ${user.role}`}>
@@ -1442,7 +1672,7 @@ export default function ProcessDocScreen({
                     ) : hasFindings ? (
                       <span
                         className="spine-dot"
-                        title="Open lint findings in this area"
+                        title="Open quality findings in this area"
                       />
                     ) : null}
                   </button>
@@ -1578,7 +1808,7 @@ export default function ProcessDocScreen({
                     </button>
                     {flag ? (
                       <Tooltip
-                        label={`${flag} lint finding${
+                        label={`${flag} quality finding${
                           flag === 1 ? "" : "s"
                         } — click to filter this section`}
                         placement="right"
@@ -1638,11 +1868,11 @@ export default function ProcessDocScreen({
           ) : section === "__review" ? (
             <>
               <div className="canvas-head">
-                <h1>Lint Review</h1>
+                <h1>Quality Review</h1>
                 <div className="sub">
-                  Consistency findings across the {doc.process.title} wiki —
-                  conformance issues, discrepancies and clarifying questions
-                  for the SME to resolve.
+                  Consistency findings across the {doc.process.title}{" "}
+                  documentation — structure issues, discrepancies and
+                  clarifying questions for you to resolve.
                 </div>
               </div>
               {doc.lint ? (
@@ -1665,17 +1895,17 @@ export default function ProcessDocScreen({
                 />
               ) : linting ? (
                 <div className="empty-state">
-                  <p>Running the lint pass…</p>
+                  <p>Running the quality check…</p>
                   <p className="empty-hint">
-                    The run-lint skill is sweeping the wiki — watch the
+                    The assistant is sweeping the documentation — watch the
                     assistant chat for live progress.
                   </p>
                 </div>
               ) : (
                 <div className="empty-state">
-                  <p>No lint pass has been run for this process yet.</p>
+                  <p>No quality check has been run for this process yet.</p>
                   <p className="empty-hint">
-                    Use “⊛ Run lint” in the top bar to run one.
+                    Use “⊛ Run quality check” in the top bar to run one.
                   </p>
                 </div>
               )}
@@ -1685,7 +1915,7 @@ export default function ProcessDocScreen({
               <div className="canvas-head">
                 <h1>Triage</h1>
                 <div className="sub">
-                  What the last ingest produced for {doc.process.title} — and
+                  What the last import produced for {doc.process.title} — and
                   the launch point for the foundational run.
                 </div>
               </div>
@@ -1699,9 +1929,9 @@ export default function ProcessDocScreen({
                 />
               ) : (
                 <div className="empty-state">
-                  <p>No document has been ingested for this process yet.</p>
+                  <p>No document has been imported for this process yet.</p>
                   <p className="empty-hint">
-                    Use “⬆ Upload document” in the top bar to ingest one.
+                    Use “⬆ Upload document” in the top bar to import one.
                   </p>
                 </div>
               )}
@@ -1771,8 +2001,8 @@ export default function ProcessDocScreen({
                     <div className="canvas-actions">
                       <button
                         className="canvas-act"
-                        onClick={() => window.print()}
-                        title="Export this area as a PDF"
+                        onClick={() => setExportOpen(true)}
+                        title="Export process documentation as a PDF"
                       >
                         ⎙ Export PDF
                       </button>
@@ -1892,8 +2122,8 @@ export default function ProcessDocScreen({
                 <div className="strip-actions">
                   <button
                     className="canvas-act"
-                    onClick={() => window.print()}
-                    title="Export this section as a PDF"
+                    onClick={() => setExportOpen(true)}
+                    title="Export process documentation as a PDF"
                   >
                     ⎙ Export PDF
                   </button>
@@ -1902,7 +2132,7 @@ export default function ProcessDocScreen({
                       className="canvas-act"
                       onClick={() => runSourcing(sectionKind)}
                       disabled={sourcing?.status === "running"}
-                      title="Re-run the web-sourcing skill for this section"
+                      title="Re-source this section from the web"
                     >
                       ✦ Refresh from the web
                     </button>
@@ -2065,9 +2295,9 @@ export default function ProcessDocScreen({
                       <p>
                         Get started in one of two ways. Upload the initial
                         process document with the upload icon at the top right
-                        — the assistant extracts it into the wiki. Or run the
-                        foundational walkthrough and build the process step by
-                        step with the assistant.
+                        — the assistant extracts it into the documentation. Or
+                        run the foundational walkthrough and build the process
+                        step by step with the assistant.
                       </p>
                       <div className="getting-started-actions">
                         <button
@@ -2203,6 +2433,10 @@ export default function ProcessDocScreen({
                           schema.elementTypes[el.type]?.frontmatter?.fields ??
                           []
                         }
+                        requiredFields={
+                          schema.elementTypes[el.type]?.frontmatter
+                            ?.required ?? []
+                        }
                         links={elementLinks(el)}
                         getRef={getRef}
                         resolveOwner={resolveOwner}
@@ -2244,6 +2478,9 @@ export default function ProcessDocScreen({
                     template={schema.elementTypes[el.type]?.template}
                     fieldSpecs={
                       schema.elementTypes[el.type]?.frontmatter?.fields ?? []
+                    }
+                    requiredFields={
+                      schema.elementTypes[el.type]?.frontmatter?.required ?? []
                     }
                     links={elementLinks(el)}
                     getRef={getRef}
@@ -2314,6 +2551,7 @@ export default function ProcessDocScreen({
           onSend={handleSend}
           pending={chatPending}
           activity={chatActivity}
+          activeSkillLabel={activeSkill ? (SKILL_LABEL[activeSkill] ?? null) : null}
           onRestart={restartSession}
           onRunLint={runLint}
           linting={linting}
@@ -2330,6 +2568,27 @@ export default function ProcessDocScreen({
         onPickElement={goToElement}
         onPickSection={setSection}
       />
+
+      <HelpCenter
+        open={helpOpen}
+        onClose={() => setHelpOpen(false)}
+        schema={schema}
+        onReplayTour={() => {
+          setHelpOpen(false);
+          setTourOpen(true);
+        }}
+        onOpenFeedback={openFeedback}
+      />
+
+      <ExportModal
+        open={exportOpen}
+        onClose={() => setExportOpen(false)}
+        schema={schema}
+        slug={currentSlug}
+        userName={user.name}
+      />
+
+      {tourOpen && <GuidedTour steps={TOUR_STEPS} onClose={closeTour} />}
 
       <UploadModal
         open={uploadModalOpen}

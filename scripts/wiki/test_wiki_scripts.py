@@ -85,11 +85,6 @@ DEP_BLOCKS = [
     {"heading": "What crosses the boundary", "text": "An approved facility record flows downstream into this process as the precondition for any release."},
     {"heading": "Why it matters", "text": "Without an approved facility there is nothing to release against and the process cannot start."},
 ]
-STK_BLOCKS = [
-    {"heading": "Who they are", "text": "The Head of Payment Operations, who owns the release process end to end."},
-    {"heading": "Stake in the process", "text": "They are accountable for throughput, control and the audit trail, and answer for any release failure."},
-    {"heading": "Engagement", "text": "Consulted on process changes and informed of exceptions on a weekly cadence."},
-]
 ASM_BLOCKS = [
     {"heading": "The assumption", "text": "The sanctions screening list is refreshed daily before the business day opens."},
     {"heading": "Why it is unconfirmed", "text": "The refresh cadence was stated by the business SME but not verified against the feed."},
@@ -426,7 +421,7 @@ def run() -> None:
     chk("clear_conflicts", r.returncode == 0
         and json.loads((PROC_DIR / "ingest.json").read_text())["conflicts"] == [], r.stderr)
 
-    print("\n— content-model: new element types (requirement/dependency/stakeholder/assumption) —")
+    print("\n— content-model: new element types (requirement/dependency/assumption) —")
     script("write_element.py", spec_file(
         {"slug": SLUG, "type": "requirement", "id": "REQ-SELF-001",
          "title": "Auto-release clean items",
@@ -440,13 +435,6 @@ def run() -> None:
          "relations": {"atStep": ["PS-SELF-001"]}, "blocks": DEP_BLOCKS}))
     r = script("check_conformance.py", SLUG, "DEP-SELF-001")
     chk("process-dependency element conforms", "conforms" in r.stdout, r.stdout)
-    script("write_element.py", spec_file(
-        {"slug": SLUG, "type": "stakeholder", "id": "STK-SELF-001",
-         "title": "Head of Payment Operations",
-         "fields": {"stakeholderType": "PROCESS-OWNER", "influence": "HIGH"},
-         "blocks": STK_BLOCKS}))
-    r = script("check_conformance.py", SLUG, "STK-SELF-001")
-    chk("stakeholder element conforms", "conforms" in r.stdout, r.stdout)
     script("write_element.py", spec_file(
         {"slug": SLUG, "type": "assumption", "id": "ASM-SELF-001",
          "title": "Sanctions list refreshed daily",
@@ -475,18 +463,18 @@ def run() -> None:
         owner2 is None and tgt2 == "NOPE-SELF-999", (owner2, tgt2))
 
     print("\n— content-model: section status + glossary sidecars —")
-    r = script("set_section_status.py", SLUG, "stakeholders", "worked", "M. Berger")
+    r = script("set_section_status.py", SLUG, "dependencies", "worked", "M. Berger")
     chk("set_section_status: worked", r.returncode == 0, r.stderr)
     script("set_section_status.py", SLUG, "pain-points", "confirmed-empty", "M. Berger")
     secs = json.loads((PROC_DIR / "sections.json").read_text())
     chk("section status records confirmed-empty",
         secs.get("pain-points", {}).get("status") == "confirmed-empty", secs)
     chk("section status counts elements on disk",
-        secs.get("stakeholders", {}).get("count") == 1, secs)
-    script("set_section_status.py", SLUG, "stakeholders", "worked")
+        secs.get("dependencies", {}).get("count") == 1, secs)
+    script("set_section_status.py", SLUG, "dependencies", "worked")
     secs2 = json.loads((PROC_DIR / "sections.json").read_text())
     chk("set_section_status is idempotent (count from disk, not accumulated)",
-        secs2.get("stakeholders", {}).get("count") == 1, secs2)
+        secs2.get("dependencies", {}).get("count") == 1, secs2)
     r = script("set_section_status.py", SLUG, "not-a-section", "worked")
     chk("set_section_status rejects an unknown section", r.returncode != 0)
     r = script("write_glossary.py", SLUG, "STP", "ACRONYM", "Straight-through processing.")
@@ -515,11 +503,11 @@ def run() -> None:
             break
     chk("qer_cursor advance terminates at done", st.get("done") is True, st)
 
-    print("\n— skills: PROVENANCE-BLOCK drift check —")
+    print("\n— skills: shared SKILL.md block drift check —")
     r = subprocess.run(
         ["python3", str(ROOT / "scripts" / "check_skill_blocks.py")],
         capture_output=True, text=True, cwd=ROOT)
-    chk("PROVENANCE-BLOCK is byte-identical across the 7 skills",
+    chk("shared SKILL.md blocks are byte-identical across skills",
         r.returncode == 0, r.stdout + r.stderr)
 
 

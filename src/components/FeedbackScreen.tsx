@@ -117,8 +117,8 @@ export default function FeedbackScreen({
           </button>
           <h1>App Feedback</h1>
           <p className="fb-sub">
-            Bugs, ideas and improvements for Processminer itself. Kept in a
-            separate <code>feedback/</code> tree, apart from the process wikis.
+            Bugs, ideas and improvements for Processminer itself — kept
+            separate from the process documentation.
           </p>
         </div>
 
@@ -156,7 +156,7 @@ export default function FeedbackScreen({
             <input
               value={page}
               onChange={(e) => setPage(e.target.value)}
-              placeholder="e.g. Process Steps, the lint panel, the assistant chat"
+              placeholder="e.g. Process Steps, the quality panel, the assistant chat"
               maxLength={120}
             />
           </label>

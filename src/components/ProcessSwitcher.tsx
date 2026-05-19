@@ -22,7 +22,7 @@ function statusLine(s: ProcStatus): string {
   if (s.conflicts)
     parts.push(`${s.conflicts} conflict${s.conflicts === 1 ? "" : "s"}`);
   if (s.lint)
-    parts.push(`${s.lint} lint finding${s.lint === 1 ? "" : "s"}`);
+    parts.push(`${s.lint} quality finding${s.lint === 1 ? "" : "s"}`);
   return parts.length ? parts.join(" · ") : "all reviewed";
 }
 

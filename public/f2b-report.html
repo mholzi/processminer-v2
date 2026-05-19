@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Processminer v2 — Full F2B Dogfooding Run</title>
+<style>
+  :root {
+    --ink: #1c1e26; --muted: #5b6072; --line: #e4e6ee;
+    --bg: #f6f7fb; --card: #fff; --accent: #3b3f8f;
+    --bug: #b4324a; --imp: #b87420; --ok: #2c7a4b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.62 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 48px 24px 96px; }
+  header { border-bottom: 2px solid var(--ink); padding-bottom: 20px; margin-bottom: 32px; }
+  .eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  h1 { font-size: 30px; margin: 8px 0 6px; line-height: 1.2; }
+  .sub { color: var(--muted); font-size: 14px; }
+  h2 { font-size: 19px; margin: 40px 0 14px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+  h3 { font-size: 15px; margin: 0 0 4px; }
+  p { margin: 0 0 12px; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 24px 0; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .stat .n { font-size: 24px; font-weight: 700; color: var(--accent); }
+  .stat .l { font-size: 12px; color: var(--muted); }
+  ol.flow { padding-left: 22px; }
+  ol.flow li { margin: 6px 0; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; margin: 14px 0; }
+  .card.bug { border-left: 4px solid var(--bug); }
+  .card.imp { border-left: 4px solid var(--imp); }
+  .tag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .06em;
+         text-transform: uppercase; padding: 2px 8px; border-radius: 999px; vertical-align: middle; }
+  .tag.bug { background: #fbe7eb; color: var(--bug); }
+  .tag.imp { background: #fbf0e0; color: var(--imp); }
+  .fid { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--muted); }
+  .card p { font-size: 14px; }
+  .card p:last-child { margin-bottom: 0; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px;
+         background: #eef0f6; padding: 1px 5px; border-radius: 4px; }
+  .good { color: var(--ok); font-weight: 600; }
+  footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line);
+           font-size: 12px; color: var(--muted); }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; margin: 8px 0 16px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Processminer v2 · Dogfooding</div>
+  <h1>Full Front-to-Back Documentation Run</h1>
+  <div class="sub">Process: <strong>Corporate Account Closure</strong> (CAC) · driven end-to-end
+  through the Process Assistant chat · 2026-05-19</div>
+</header>
+
+<p>A brand-new banking process was documented from zero to a reviewed Target State
+entirely through the app's chat window, using a mocked-up Detailed Process Document
+for the initial upload. This report summarises what the run produced and the
+issues found along the way.</p>
+
+<div class="stats">
+  <div class="stat"><div class="n">40</div><div class="l">As-Is elements approved</div></div>
+  <div class="stat"><div class="n">38</div><div class="l">Web-sourced drafts</div></div>
+  <div class="stat"><div class="n">15</div><div class="l">Target Process elements</div></div>
+  <div class="stat"><div class="n">7</div><div class="l">Feedback items filed</div></div>
+</div>
+
+<h2>What was run, in order</h2>
+<ol class="flow">
+  <li><strong>new-process</strong> — created the "Corporate Account Closure" process
+  (slug <code>corporate-account-closure</code>, abbreviation CAC) via the chat.</li>
+  <li><strong>document-ingest</strong> — uploaded a mock DTP through the upload modal's
+  paste mode; extracted 38 draft elements (8 steps, 5 roles, 7 controls, 5 systems,
+  4 exceptions, 5 metrics, 4 process-gaps), 2 verification corrections.</li>
+  <li><strong>foundational-run</strong> — challenged and approved all 39 current-state
+  items; caught a planted SLA contradiction and a RACI conflict and reworked them.</li>
+  <li><strong>source-regulation / source-cx / source-innovation</strong> — web-sourced
+  7 regulations, 6 competitor-CX + 2 CX benchmarks, 3 trends + 3 competitors + 4 ideas.</li>
+  <li><strong>source-target + transformation-agent</strong> — consolidated a Target
+  Process stub and refined it: 4 target states, 7 transformation decisions, 4 gaps.</li>
+  <li><strong>run-lint</strong> — 8 findings (3 conformance, 4 discrepancy, 1 question);
+  12 approvals re-opened.</li>
+  <li><strong>comment + comment-review</strong> — posted a comment on PS-CAC-001,
+  ran AI comment resolution; the comment was incorporated and the thread closed.</li>
+  <li><strong>2nd document + conflict-resolution</strong> — uploaded an update memo
+  that lowered a threshold (EUR 250k&nbsp;&rarr;&nbsp;100k); 6 conflicts flagged and
+  all 6 resolved.</li>
+</ol>
+<p>The chat-to-document wiring worked well: <span class="good">after every turn</span>
+element cards flipped to "Approved", nav status dots went green, and area counts
+updated (As-Is Process 0/26 &rarr; 26/26).</p>
+
+<h2>Issues found — 7 feedback items</h2>
+<p class="sub">Filed as <code>FB-002</code>…<code>FB-008</code> in <code>feedback/</code>;
+visible in the in-app App Feedback page.</p>
+
+<div class="card bug">
+  <span class="fid">FB-002</span> <span class="tag bug">Bug</span>
+  <h3>Scope-lock decline points to a CLI skill, not the in-app button</h3>
+  <p>Asked to create a new process from a process-scoped chat, the assistant
+  correctly declined but told the SME to "start a fresh session … and use the
+  <code>/new-process</code> skill" — a CLI instruction. It should point to the
+  <strong>+ New process</strong> button in the top bar.</p>
+</div>
+
+<div class="card bug">
+  <span class="fid">FB-005</span> <span class="tag bug">Bug — significant</span>
+  <h3>comment-review &amp; conflict-resolution edit elements but leave the approval stamped</h3>
+  <p>Both skills patch element blocks (resetting block provenance to
+  <code>proposed</code>) but leave the frontmatter <code>approval: approved</code> /
+  <code>approvalBy</code> in place — even though their own chat replies say the
+  element will need re-confirmation. SKILLS.md §10 requires any edit to revert
+  approval to <code>in-progress</code>. Result: in an audit-facing tool, elements
+  show "Approved by M. Berger" over content changed <em>after</em> that approval.</p>
+</div>
+
+<div class="card bug">
+  <span class="fid">FB-004</span> <span class="tag bug">Bug</span>
+  <h3>Chat transcript and session are lost on a page reload</h3>
+  <p>Mid-foundational-run, a reload reset the chat to a "Welcome back" banner — the
+  whole transcript and the <code>--resume</code> session id were gone. Run state
+  survived on disk (<code>review-state.json</code>), but conversation continuity did
+  not. The transcript is ephemeral React state with no persistence.</p>
+</div>
+
+<div class="card imp">
+  <span class="fid">FB-003</span> <span class="tag imp">Improvement</span>
+  <h3>document-ingest runs as one long turn with no progress signal</h3>
+  <p>Extraction took ~25–30&nbsp;min for 38 elements. For the first ~10&nbsp;min
+  nothing was on disk and the activity line sat on a generic "Searching files …" —
+  indistinguishable from a hang. The longest operation in the app has the least
+  progress visibility.</p>
+</div>
+
+<div class="card imp">
+  <span class="fid">FB-008</span> <span class="tag imp">Improvement</span>
+  <h3>Element/document view only refreshes when a chat turn ends</h3>
+  <p>The view reacts correctly at turn boundaries but never mid-turn. During the
+  25-min ingest, 38 files were written one by one while the document view showed an
+  empty process the whole time. Streaming element-written events would make a long
+  turn visibly progress rather than visibly hang.</p>
+</div>
+
+<div class="card bug">
+  <span class="fid">FB-006</span> <span class="tag bug">Bug — minor</span>
+  <h3>transformation-agent close-out message contradicts itself</h3>
+  <p>The summary said "Everything is status: draft — review and approve the elements
+  in the web app" while the same message's table marked all 15 elements
+  "✓ M. Berger" — and on disk all 15 were already approved. The boilerplate
+  close-out doesn't reflect what the interactive run actually did.</p>
+</div>
+
+<div class="card imp">
+  <span class="fid">FB-007</span> <span class="tag imp">Improvement</span>
+  <h3>Web-sourcing progress is only visible on the launching section</h3>
+  <p>source-* runs show a banner on the section that started them, but nothing
+  global. A multi-minute run is invisible if the SME navigates away. A small
+  top-bar busy indicator would help.</p>
+</div>
+
+<h2>Lint findings on the finished process</h2>
+<table>
+  <tr><th>ID</th><th>Kind</th><th>Finding</th></tr>
+  <tr><td>F-001…003</td><td>conformance</td><td>ROLE-CAC-001/002/004 "In this process" blocks exceed the 50-word template cap (a side-effect of the foundational-run RACI rework)</td></tr>
+  <tr><td>F-004</td><td>discrepancy</td><td>No Accountable role defined for PS-CAC-007 (Execute closure)</td></tr>
+  <tr><td>F-005</td><td>discrepancy</td><td>ROLE-CAC-006 (Financial Crime) has no RACI entry on any step</td></tr>
+  <tr><td>F-006</td><td>discrepancy</td><td>SYS-CAC-002 "Role in this process" omits steps 2 and 3</td></tr>
+  <tr><td>F-007</td><td>discrepancy</td><td>Innovation traceability gap — two signals have no derived idea</td></tr>
+  <tr><td>F-008</td><td>question</td><td>EX-CAC-003 handlingOwner is singular but covers two routing paths</td></tr>
+</table>
+
+<footer>
+  Generated by the F2B dogfooding run · Processminer v2 · 2026-05-19 ·
+  Full feedback in <code>feedback/FB-002…008.md</code>
+</footer>
+
+</div>
+</body>
+</html>

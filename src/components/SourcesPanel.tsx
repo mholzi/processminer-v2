@@ -100,7 +100,7 @@ export default function SourcesPanel({
                       <span
                         className={`src-badge${ingested ? " ok" : " pending"}`}
                       >
-                        {ingested ? "Ingested" : "Not ingested"}
+                        {ingested ? "Imported" : "Not imported"}
                       </span>
                     </span>
                   </button>

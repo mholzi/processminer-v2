@@ -144,11 +144,13 @@ choices:
 Always offer all three. "Yes or edit" without "rewrite" traps the SME into
 accepting a bad draft.
 
+<!-- BATCHING-BLOCK:start -->
 **Batching.** Present elements one at a time whenever the per-element
 discussion is the value — anything you genuinely challenge or elicit. A set of
 reference-type elements that needs little per-element judgement (e.g.
 regulations, market trends, competitor moves) may be presented as one labelled
 batch for a single Y/E/R. When unsure, go one at a time.
+<!-- BATCHING-BLOCK:end -->
 
 ### Narrative-first capture
 For exceptions, pain points and gaps, don't fire a form of questions. Ask the
@@ -158,7 +160,7 @@ fields (a 3-5 word title, the blocks, the severity, the linked steps) from what
 they said, draft the element, and run Y/E/R.
 
 ### Entry idiom for optional sections
-Exceptions, pain points, gaps and stakeholders may legitimately be empty. Open
+Exceptions, pain points and gaps may legitimately be empty. Open
 each with:
 **[A] Add one · [E] Explore — help me find them · [N] None / move on.**
 "Explore" means you probe with prompts ("processes like this often hit X — does
@@ -220,7 +222,10 @@ transitions** — where the flow goes after this step: straight on to the next
 step, a branch on a condition, a loop back, or out to an exception. The
 transitions are what render the process as a flow rather than a flat list —
 do not skip them. Draft each as a `process-step`, Y/E/R, write it. Number
-them in sequence.
+them in sequence. When you write a process-step, put its transitions in the
+`write_element.py` spec under `relations` as a `transitions` list —
+`<targetId>|<kind>|<when>` strings, `kind` one of normal / branch / loopback /
+exception; run `show_template.py process-step` for the grammar.
 
 **Phase 3 — Exceptions.** `[A]/[E]/[N]`. Narrative-first. An exception records
 frequency and how it's handled today. The link to the process is **not stored
@@ -254,13 +259,6 @@ written, `python3 scripts/wiki/patch_element.py <slug> <id> --list "raci"
 the Roles & Organisation section) pivots — a role written without it leaves the
 matrix empty.
 
-**Phase 6b — Stakeholders.** `[A]/[E]/[N]`. The people and parties with an
-interest in the process beyond those who run it — the sponsor, the process
-owner, governance bodies, regulators, the client, key vendors. For each
-`stakeholder`: who they are, their stake in the process, how they are engaged,
-their `stakeholderType` and `influence`. Roles do the work; stakeholders hold
-an interest — do not duplicate a role as a stakeholder.
-
 **Phase 7 — Metrics.** How the process is measured today — cycle time, volume,
 error rates. Capture the definition, the current reading, and why it matters.
 If the SME says a thing isn't measured, that's a Phase 5 gap, not a metric.
@@ -279,44 +277,42 @@ Reproduce every other character — the bullet labels, the `status: draft`
 line, the closing sentence — exactly. `verbatim.py` is the single source of
 truth for this wording; never write the close-out from memory.
 
+<!-- WRITING-PROCEDURE-BLOCK:start -->
 ## Writing an element — the procedure
 
 The mechanical parts are Python scripts in `scripts/wiki/`. You do the
-judgement — draft the content — and run the scripts for everything else. Do
-**not** hand-write element files; the scripts own the format.
+judgement; the scripts own the format. Do **not** hand-write element files.
 
 **Reserve the id before you name it.** Never tell the SME an element's id
-until `next_id.py` has assigned it — a guessed id ("this will be PS-FR-009")
-is often wrong, because the real id depends on creation order. Refer to a
-not-yet-written element by description ("a new process step"); state its id
-only once it has been written.
+until `next_id.py` has assigned it — a guessed id is often wrong, because the
+real id depends on creation order. Refer to a not-yet-written element by
+description; state its id only once it has been written.
 
-1. Recall the schema `template` for the type — the named blocks, their format
-   and word/item range — from the schema you read up front. Do not re-read the
-   schema file per element.
-2. **Draft** every block within its template spec. This is your work.
-3. Present the draft to the SME; run **Y / E / R** until they accept.
-4. On **[Y]**, write it with the scripts:
-   a. **ID** — `python3 scripts/wiki/next_id.py <slug> <type>` returns the next
-      id (e.g. `PS-CRD-003`). Never count ids yourself.
+1. Read the schema `template` for the type — blocks, format, word range.
+2. **Draft** every block within its spec. This is your work.
+3. Present the draft; run **Y / E / R** until the SME accepts.
+4. On **[Y]**:
+   a. **ID** — `python3 scripts/wiki/next_id.py <slug> <type>`.
    b. **Write** — assemble a JSON spec (`slug`, `type`, `id`, `title`,
       `confidence`, `source`, `fields` for scalar frontmatter, `relations` for
       id-lists, `blocks`), save it to `/tmp/<id>.json`, then
-      `python3 scripts/wiki/write_element.py /tmp/<id>.json`. For a
-      **process-step**, put its transitions in `relations` under the key
-      `transitions` — a list of `<targetId>|<kind>|<when>` strings (`kind` one
-      of normal / branch / loopback / exception); run
-      `show_template.py process-step` for the grammar. The script owns the
-      frontmatter, the section folder and the path — the element cannot come
-      out malformed.
+      `python3 scripts/wiki/write_element.py /tmp/<id>.json`.
    c. **Verify** — `python3 scripts/wiki/check_conformance.py <slug> <id>`. If
-      it flags an issue, fix the draft and re-write before moving on.
-5. Move on. One confirmed element = one file on disk.
+      flagged, fix the draft and re-write before moving on.
+5. One confirmed element = one file on disk.
+
+**Editing an element already on disk.** To change one block or field of an
+element that has already been written — a refine pass, a correction — use
+`python3 scripts/wiki/patch_element.py <slug> <id> --block "<heading>" <file>`
+(or `--field "<key>" "<value>"`, or `--list "<key>" "<id1,id2>"`). It changes
+only that part and leaves the rest byte-identical. Never re-emit a whole
+element to fix one piece of it.
+<!-- WRITING-PROCEDURE-BLOCK:end -->
 
 ## Stay in your lane
 
-You own **process-step, exception, pain-point, process-gap, role, metric,
-stakeholder** and the overview, plus the `glossary.json` sidecar. You do **not**
+You own **process-step, exception, pain-point, process-gap, role, metric**
+and the overview, plus the `glossary.json` sidecar. You do **not**
 create controls, regulations, compliance gaps, audit findings, systems,
 integrations, CX touchpoints, moments, channels, friction points, market
 trends, innovation ideas, requirements, dependencies, target-state or

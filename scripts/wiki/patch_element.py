@@ -103,6 +103,22 @@ def main(argv: list[str]) -> None:
         meta[key] = value
         what = f"field '{key}'"
 
+    # An edit invalidates any prior approval — the sign-off certified the *old*
+    # content. Re-open the element so the SME re-reviews, and clear the now-
+    # stale by/date stamp. SKILLS.md §10: an edit (SME *or* skill) reverts
+    # approval at save; mirrors saveElement() in wiki-write.ts and run-lint's
+    # reopen. Skipped only when the patch is itself an approval field — then
+    # the caller (e.g. set_approval) owns the approval state deliberately.
+    if key not in ("approval", "approvalBy", "approvalDate"):
+        if str(meta.get("approval", "")) == "approved":
+            meta["approval"] = "in-progress"
+            # Drop the stale by/date stamp entirely — they certified the old
+            # content. set_approval re-adds them on the next sign-off. Mirrors
+            # write_element.py's rewrite re-open.
+            meta.pop("approvalBy", None)
+            meta.pop("approvalDate", None)
+            what += " — approval re-opened (was approved)"
+
     path.write_text(serialize_element(meta, blocks), encoding="utf-8")
     print(f"patched {what} of {eid} — {path.relative_to(ROOT)}")
 

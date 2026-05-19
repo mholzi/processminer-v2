@@ -3,7 +3,8 @@ name: foundational-run
 description: >-
   Walk a freshly-ingested process end to end as a meticulous process analyst —
   read the whole wiki, then challenge every current-state element in
-  foundational order to tease out rework, approving each with the SME.
+  foundational order to tease out rework, and surface the pain points and
+  missing controls a source document never states, approving each with the SME.
   Resumable: a stopped run picks up where it left off. Use this after a
   document has been ingested into a process, or whenever the user asks to
   start, resume or run the foundational run / foundational review of a process.
@@ -14,7 +15,9 @@ description: >-
 You run the **foundational run** over a process: the first guided pass after a
 document has been ingested. You walk every current-state element in
 foundational order and challenge each one with the SME to tease out rework,
-then they approve it. "Current-state" is every documented element *except* the
+then they approve it. As you walk you also **deepen past the document** — the
+pain points around each step, and any step that should carry a control but has
+none (Step 3). "Current-state" is every documented element *except* the
 forward-looking ones (see Scope) — it is broader than the "As-Is Process"
 nav area: controls, systems and the rest are all in scope, each challenged
 through its owning specialist's lens (Step 3).
@@ -85,7 +88,7 @@ For the `current` item, one element at a time:
    weakness — a missing detail, an unsupported assumption, an edge case, a
    "why" that isn't justified, a number that looks off. Challenge with the
    **owning specialist's lens**:
-   - process-step, role, stakeholder, exception, pain-point, process-gap,
+   - process-step, role, exception, pain-point, process-gap,
      metric → the Process lens
    - control, regulation, compliance-gap, audit-finding → the Control &
      Compliance lens
@@ -94,7 +97,36 @@ For the `current` item, one element at a time:
    - the overview → purpose, trigger, scope — is the frame right and complete?
    Use the whole-process picture from Step 1: name the elements this one
    relates to. Prime questions with banking-domain knowledge.
-3. **Offer the outcomes.** Present the `outcomes_line` string from the
+3. **Deepen past the document.** A source document records what *exists* —
+   steps, controls, systems — and the owning-lens challenge in item 2 tests
+   only that. Two things slip through both: the *lived* layer (where the work
+   hurts) and what is *absent* (a step that should have a control but has
+   none). `document-ingest` cannot reach either, so without this beat those
+   sections stay permanently empty. The SME is walking the process with you
+   now — catch both on each process-step:
+   - **Pain points** — put one focused pain-point probe to the SME *in the
+     same message as the challenge questions* (item 2), so the step takes one
+     exchange, not two: is there staff or process pain around this step? A
+     workaround, a recurring delay, manual re-keying, a hand-off that stalls,
+     a frequent frustration. If they name one, create a `pain-point` element
+     (the mid-run create path below). If the step genuinely runs clean, write
+     nothing — an absent pain point is a valid answer; never invent one.
+   - **Control coverage** — you read the whole process in Step 1, so you know
+     which controls link to this step. If the step has **no control linked**,
+     raise it: SKILLS.md §9 calls a step missing a control the Control
+     Specialist's most valuable finding, and the Process-lens challenge in
+     item 2 never asks it. Tell the SME the step has no control and ask — is
+     that an accepted control gap, or should a control exist here? On a
+     confirmed gap, create a `compliance-gap` element (section `control-gaps`);
+     if a control exists but was never documented, create the missing
+     `control` instead. If the step already has a control, say nothing.
+   This beat is a genuine elicitation, not a challenge: read each drafted
+   pain-point, compliance-gap or control back to the SME and mark only what
+   they confirmed as `elicited` (Provenance block). Hold it to the one probe
+   per step — you are deepening the walk, not turning each step into a full
+   interview. On any other element type (role, control, system, exception,
+   metric, gap) there is no deepening beat; go straight to the outcomes.
+4. **Offer the outcomes.** Present the `outcomes_line` string from the
    `review_cursor.py` output — reproduce it **character-for-character** on its
    own line. It is printed by `scripts/wiki/verbatim.py`; do not retype it
    from memory, re-letter the options, drop the **[D] Deep dive** option, or
@@ -117,7 +149,7 @@ For the `current` item, one element at a time:
      session. Then approve it.
    - **Move on** — the SME wants to advance without approving. Leave the
      element as it is (`in-progress`); do not set approval.
-4. **Advance.** Run `python3 scripts/wiki/review_cursor.py advance <slug>`. If
+5. **Advance.** Run `python3 scripts/wiki/review_cursor.py advance <slug>`. If
    it reports `done`, go to Step 4; otherwise present the next `current` item.
 
 Work one element per exchange. Never batch the challenged walk — the challenge
@@ -127,10 +159,14 @@ may be presented together, since gaps are cross-referential and low-challenge;
 steps, roles, controls, systems and every other current-state element are
 always one per exchange.
 
-**New elements you create mid-run.** A challenge often surfaces something
-missing — an unnamed role, an undocumented exception, a pain point, a gap.
-Create it — but the mid-run draft is **thin by design**. You are not running a
-full elicitation here; you are recording only what the challenge just exposed.
+**New elements you create mid-run.** Two things produce a new element during
+the walk: a **challenge** that surfaces something missing — an unnamed role,
+an undocumented exception, a gap — and the **deepening beat** (item 3), which
+probes each process-step for pain points and for a missing control. Either way
+the mid-run draft stays **focused**: record what the SME actually said in that
+one exchange, not a full multi-session elicitation of the topic — a pain point
+is the SME's account of where this step hurts, a compliance-gap is the missing
+control they just confirmed, neither an exhaustive root-cause study.
 
 1. **Reserve the id before you name it.** Never tell the SME the new element's
    id until `next_id.py` has assigned it — a guessed id ("this will be
@@ -147,8 +183,9 @@ full elicitation here; you are recording only what the challenge just exposed.
 
 The new element is **not** in the cursor queue: it is never challenged in this
 run and stays `in-progress`. Keep a running list of everything you create
-during the walk, split two ways — *current-state elements* (role, exception,
-pain-point, system, control, metric …) and *gaps* (process-gap, control-gap).
+during the walk, split two ways — *current-state elements* (role,
+exception, pain-point, system, control, metric …) and *gaps* (process-gap,
+compliance-gap).
 The close-out reports both.
 
 ## Step 4 — Close-out
@@ -161,20 +198,40 @@ When the cursor is done, `review_cursor.py status` reports `done: true` and a
 placeholder, but reproduce every fixed word, bullet and the closing sentence
 character-for-character. Do not author the close-out from memory.
 
-The template carries two `{if …}` blocks — keep a block when its condition
-holds, omit the whole block when it does not. Name the mid-run current-state
-elements explicitly — a generic "pick them off the cards" hides a role or
-exception that genuinely was never challenged. If no current-state element was
-created mid-run, omit that block; likewise the gap line if no gaps were created.
+The template carries three `{if …}` blocks — keep a block when its condition
+holds, omit the whole block when it does not.
+
+1. **Created mid-run** — name the mid-run current-state elements explicitly; a
+   generic "pick them off the cards" hides a role or exception that genuinely
+   was never challenged. Omit the block if nothing was created mid-run.
+2. **Gaps created mid-run** — omit the gap line if no gaps were created.
+3. **Still to document** — you read the whole process in Step 1, so you know
+   which sections are still empty. List each empty section with the skill that
+   fills it, mapped per §4 / §11 of `SKILLS.md`:
+   - Channels, Touchpoints, Moments of Truth, Friction Points →
+     `client-journey-specialist`; Stakeholders → `process-specialist`;
+     Audit Findings → `control-compliance-specialist`; Innovation Risks →
+     `innovation-analyst`; Integrations → `it-architect` — "run the **{skill}**
+     skill".
+   - Regulation, Competitor CX, CX Benchmarks, Market Trends, Competitor
+     Innovation, Innovation Ideas → "use the **✦ Source from the web** button
+     on the section".
+   - For the Client Experience sections, if the walk passed process-steps that
+     carry an undocumented client interaction (a portal, a callback, a
+     client confirmation), name those step ids in the line — the Client
+     Journey specialist places touchpoints against them.
+   Do **not** list the Target Process sections — that area is built last, from
+   the finished perspectives, and has its own start action in the app. Omit
+   the whole block if every section already has content.
 
 ## Scope
 
 You walk and challenge the **current-state** elements only — forward-looking
 elements (market trends, innovation ideas and risks, requirements,
 dependencies, target state, transformation decisions, gaps) are not in a
-foundational run. "Current-state" spans the As-Is Process — including
-`stakeholder` elements — Risk & Compliance, Client Experience and IT
-Architecture areas, not just the "As-Is Process" nav area. Everything stays the
+foundational run. "Current-state" spans the As-Is Process, Risk & Compliance,
+Client Experience and IT Architecture areas, not just the "As-Is Process" nav
+area. Everything stays the
 SME's call: you challenge and redraft, the SME approves. You never set
 `approved` yourself by judgement — only `set_approval.py` on the SME's explicit
 [Y].

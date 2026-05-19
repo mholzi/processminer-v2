@@ -63,11 +63,11 @@ export default function ReviewPanel({
           </span>
         )}
         <button className="rs-rerun" onClick={onRerun} disabled={linting}>
-          {linting ? "Linting…" : "Re-run lint"}
+          {linting ? "Checking…" : "Re-run quality check"}
         </button>
       </div>
       <div className="review-linted">
-        Last linted{" "}
+        Last checked{" "}
         {linted.toLocaleString("en-GB", {
           dateStyle: "medium",
           timeStyle: "short",
@@ -79,8 +79,8 @@ export default function ReviewPanel({
           <p>No open findings — all clear.</p>
           <p className="empty-hint">
             {resolved.length > 0
-              ? "Every finding has been resolved in a deep-dive. Re-run lint to confirm the wiki is consistent across all five perspectives."
-              : "Every element conforms to its template and the wiki is consistent across all five perspectives."}
+              ? "Every finding has been resolved in a deep-dive. Re-run the quality check to confirm the documentation is consistent across all five perspectives."
+              : "Every element conforms to its template and the documentation is consistent across all five perspectives."}
           </p>
         </div>
       ) : (
@@ -100,7 +100,7 @@ export default function ReviewPanel({
         <details className="review-resolved">
           <summary>
             {resolved.length} resolved finding{resolved.length === 1 ? "" : "s"}{" "}
-            — not yet re-verified by a lint pass
+            — not yet re-verified by a quality check
           </summary>
           {resolved.map((f) => (
             <FindingCard
@@ -119,7 +119,7 @@ export default function ReviewPanel({
         <details className="review-resolved">
           <summary>
             {dismissed.length} dismissed finding
-            {dismissed.length === 1 ? "" : "s"} — set aside by the SME
+            {dismissed.length === 1 ? "" : "s"} — set aside by you
           </summary>
           {dismissed.map((f) => (
             <FindingCard

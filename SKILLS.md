@@ -72,7 +72,7 @@ These skills are built; the Wiki Assistant is planned.
 | **source-regulation** | automated | non-interactive web research → draft `regulation` elements for the Risk & Compliance area |
 | **source-target** | automated | non-interactive — consolidate the documented perspectives into a first-stub Target Process (target states, decisions, gaps) |
 | **run-lint** | automated | lint pass — conformance + five-lens sweep; writes `lint.json`, re-opens implicated approvals (§9) |
-| **foundational-run** | guided | post-ingest narrated walk: challenge every current-state element with the SME, resumable (§7) |
+| **foundational-run** | guided | post-ingest narrated walk: challenge every current-state element with the SME + deepen past the document (pain points, missing-control gaps), resumable (§7) |
 | **add-entry** | interactive | add one AI-drafted element to a section — asks the SME, researches (wiki / web), refines Y/E/R, writes on approval |
 | **comment-review** | interactive | work the open discussion comments on an element with the SME — evaluate impact, incorporate agreed changes, post a closing analyst summary into the thread |
 | **area-summary** | automated | generate an area's executive summary as an Amazon-style narrative memo; silent, writes summaries.json |
@@ -131,7 +131,11 @@ points** are client-facing pain (→ Client Journey, Client Experience).
 
 Every specialist runs the same interaction pattern with its own expertise. It
 is shared *content*, repeated inline in each `SKILL.md` (not a separate module)
-so each skill stands alone.
+so each skill stands alone. The spans that must stay verbatim-identical between
+skills — the provenance block, the element-writing procedure, the batching
+rule — are wrapped in `<!-- …-BLOCK:start/end -->` markers;
+`scripts/check_skill_blocks.py` (run by the wiki test suite) fails if any copy
+drifts.
 
 - **Brainstorm** — interactive extraction: technique-led conversation with the
   SME (BMAD techniques, §13), targeted questions, narrative-first capture, the
@@ -216,8 +220,12 @@ new-process ─▶ document-ingest ─▶ [triage screen] ─▶ foundational-ru
 - The **triage screen** (app) shows what the ingest produced and launches the
   **foundational run** — a narrated, resumable walk where the meticulous
   Process Analyst persona challenges every current-state element (each through
-  its owning specialist's lens) and the SME approves it. Its close-out points
-  to `conflict-resolution` for any later re-ingest.
+  its owning specialist's lens) and the SME approves it. As it walks, it also
+  **deepens past the document** on each process-step — a pain-point probe, and
+  a control-coverage check that raises any step with no linked control as a
+  candidate `compliance-gap` — so the Pain Points and Control Gaps sections
+  are not left structurally empty by the document-driven path. Its close-out
+  points to `conflict-resolution` for any later re-ingest.
 
 **Alongside:**
 - `qer-session` — the interactive multi-perspective session (§8), for

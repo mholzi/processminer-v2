@@ -105,6 +105,7 @@ export default function ElementCard({
   typeLabel,
   template,
   fieldSpecs,
+  requiredFields,
   links,
   onGoToElement,
   onDeepDive,
@@ -126,6 +127,8 @@ export default function ElementCard({
   template?: BlockSpec[];
   /** Type-specific scalar fields to display — from the schema. */
   fieldSpecs: FieldSpec[];
+  /** Keys among `fieldSpecs` the schema marks required — flagged when empty. */
+  requiredFields?: string[];
   /** Forward + reverse relation groups, assembled by the parent. */
   links: LinkGroup[];
   onGoToElement?: (id: string) => void;
@@ -422,8 +425,8 @@ export default function ElementCard({
             aria-expanded={showTemplate}
             title={
               issueCount > 0
-                ? `Structure — ${issueCount} issue${issueCount === 1 ? "" : "s"} vs the schema template`
-                : "Structure — conforms to the schema template"
+                ? `Structure — ${issueCount} issue${issueCount === 1 ? "" : "s"} vs the template`
+                : "Structure — conforms to the template"
             }
           >
             ▤
@@ -466,7 +469,7 @@ export default function ElementCard({
 
       {showTemplate && !isCollapsed && template && template.length > 0 && (
         <div className="el-template">
-          <div className="el-tpl-head">Schema template · {typeLabel}</div>
+          <div className="el-tpl-head">Template · {typeLabel}</div>
           <div className={`el-tpl-status ${issueCount > 0 ? "bad" : "ok"}`}>
             {issueCount > 0
               ? `This element does not match the template — ${issueCount} block${issueCount === 1 ? "" : "s"} need work.`
@@ -511,8 +514,7 @@ export default function ElementCard({
               </div>
             ))}
           <div className="el-tpl-foot">
-            Defined in <code>schema/process-schema.json</code> — Karpathy wiki
-            layer 3.
+            The named sections every {typeLabel} should have.
           </div>
         </div>
       )}
@@ -649,27 +651,60 @@ export default function ElementCard({
           {editing
             ? fieldSpecs.length > 0 && (
                 <div className="el-edit-fields">
-                  {fieldSpecs.map((f) => (
-                    <label className="el-edit-field" key={f.key}>
-                      <span>{f.label}</span>
-                      <input
-                        value={fieldValues[f.key] ?? ""}
-                        onChange={(e) =>
-                          setFieldValues({
-                            ...fieldValues,
-                            [f.key]: e.target.value,
-                          })
-                        }
-                      />
-                    </label>
-                  ))}
+                  {fieldSpecs.map((f) => {
+                    const isRequired = (requiredFields ?? []).includes(f.key);
+                    const empty = !(fieldValues[f.key] ?? "").trim();
+                    return (
+                      <label className="el-edit-field" key={f.key}>
+                        <span>
+                          {f.label}
+                          {isRequired && (
+                            <span className="el-field-req" aria-hidden="true">
+                              {" "}
+                              *
+                            </span>
+                          )}
+                        </span>
+                        <input
+                          className={
+                            isRequired && empty ? "el-field-input-missing" : ""
+                          }
+                          value={fieldValues[f.key] ?? ""}
+                          onChange={(e) =>
+                            setFieldValues({
+                              ...fieldValues,
+                              [f.key]: e.target.value,
+                            })
+                          }
+                        />
+                        {f.hint && (
+                          <span className="el-field-hint">{f.hint}</span>
+                        )}
+                      </label>
+                    );
+                  })}
                 </div>
               )
-            : fieldSpecs.some((f) => page.meta[f.key]) && (
+            : (fieldSpecs.some((f) => page.meta[f.key]) ||
+                fieldSpecs.some((f) =>
+                  (requiredFields ?? []).includes(f.key),
+                )) && (
                 <div className="el-fields">
                   {fieldSpecs.map((f) => {
                     const val = page.meta[f.key];
-                    if (!val) return null;
+                    if (!val) {
+                      // A required field left empty is flagged inline so the
+                      // gap is visible without opening the card (#17).
+                      if (!(requiredFields ?? []).includes(f.key)) return null;
+                      return (
+                        <span className="el-field el-field-flag" key={f.key}>
+                          {f.label}:{" "}
+                          <span className="el-field-flag-txt">
+                            — needs a value
+                          </span>
+                        </span>
+                      );
+                    }
                     const text = `${String(val)}${f.suffix ?? ""}`;
                     const url = f.urlKey ? page.meta[f.urlKey] : undefined;
                     // An `owner` value links to its role element (the RACI
