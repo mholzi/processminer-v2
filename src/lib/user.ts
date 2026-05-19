@@ -1,9 +1,16 @@
 // The signed-in user — a name and a role, captured at the login gate and
-// stamped onto every approval and edit. There is no real auth: Processminer
-// is a local internal tool, so the identity is just persisted in the
-// browser's localStorage and can be changed or cleared any time.
+// stamped onto every approval and edit, plus a few UI preferences set in the
+// profile modal. There is no real auth: Processminer is a local internal
+// tool, so the identity is just persisted in the browser's localStorage and
+// can be changed or cleared any time.
 
-export type User = { name: string; role: string };
+export type User = {
+  name: string;
+  role: string;
+  // Stream the assistant's reply word by word as it is written, instead of
+  // showing it all at once when the turn finishes. Off by default.
+  streamReplies?: boolean;
+};
 
 const KEY = "processminer.user";
 
@@ -16,7 +23,8 @@ export function loadUser(): User | null {
     const parsed = JSON.parse(raw) as Partial<User>;
     const name = typeof parsed.name === "string" ? parsed.name.trim() : "";
     const role = typeof parsed.role === "string" ? parsed.role.trim() : "";
-    return name && role ? { name, role } : null;
+    const streamReplies = parsed.streamReplies === true;
+    return name && role ? { name, role, streamReplies } : null;
   } catch {
     return null;
   }

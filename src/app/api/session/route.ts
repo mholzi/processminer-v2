@@ -1,36 +1,30 @@
-import { spawn } from "node:child_process";
 import type { NextRequest } from "next/server";
+import { sessionPool, type WorkerEvent } from "@/lib/session-worker";
 
-// The Process Assistant chat is backed by the local `claude` CLI in headless
-// mode. Each chat turn spawns `claude -p`, which runs in the repo so it
-// discovers the skills in `.claude/skills/` and reads/writes the wiki files.
-// Auth is the machine's existing Claude Code login — no API key.
+// The Process Assistant chat is backed by the local `claude` CLI. Each chat
+// turn used to spawn a fresh `claude` process — paying a full cold start
+// (Node boot, ~20 SKILL.md discovery, MCP init, auth) before any model work.
 //
-// The CLI runs with `--output-format stream-json`: it emits one JSON event
-// per line as work happens (tool calls, the final result). We forward those
-// to the browser as Server-Sent Events so the chat can show a live activity
-// line during a long skill run — document-ingest can take many minutes.
+// Turns now run on a pool of warm `claude` processes (see
+// src/lib/session-worker.ts): the cold start is paid once per session, then
+// each turn is written to a live worker's stdin. Auth is still the machine's
+// Claude Code login — no API key.
 //
-// One turn per request; multi-turn continuity is the `--resume <sessionId>`
-// the client carries back. `--dangerously-skip-permissions` is required: a
-// headless run has no terminal to approve prompts, and the skills both write
-// wiki files and run the Python helper scripts (Bash) — so all permission
-// checks must be skipped. This is acceptable here: a local, internal tool
+// The worker emits one JSON event per line; we translate those to Server-Sent
+// Events for the browser: `progress` lines drive the live activity line,
+// `delta` carries reply text as it streams (when the caller opted in via the
+// profile setting), `done` carries the final reply, `error` carries a failure.
+//
+// `--dangerously-skip-permissions` (set on the worker) is required: a headless
+// run has no terminal to approve prompts, and the skills both write wiki files
+// and run the Python helper scripts. Acceptable here: a local, internal tool
 // the user runs on their own machine.
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-// A skill turn can be long — document-ingest extracts dozens of elements,
-// each via the next_id → write_element → check_conformance scripts. Allow
-// generous headroom; override with SESSION_TURN_TIMEOUT_MS if needed.
+// A skill turn can be long — document-ingest extracts dozens of elements.
+// Allow generous headroom; the worker enforces its own per-turn timeout.
 export const maxDuration = 1800;
-
-const TURN_TIMEOUT_MS = Number(process.env.SESSION_TURN_TIMEOUT_MS) || 1_800_000;
-
-// Skill turns run on Sonnet — fast and cost-effective for these long,
-// tool-heavy elicitation runs. Override with SESSION_MODEL if a turn
-// needs a stronger model.
-const TURN_MODEL = process.env.SESSION_MODEL || "claude-sonnet-4-6";
 
 // Turn a CLI tool call into a short, human-readable activity line.
 function describeTool(name: string, input: Record<string, unknown>): string {
@@ -56,7 +50,7 @@ function describeTool(name: string, input: Record<string, unknown>): string {
 }
 
 export async function POST(req: NextRequest) {
-  let body: { message?: unknown; sessionId?: unknown };
+  let body: { message?: unknown; sessionId?: unknown; stream?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -69,33 +63,26 @@ export async function POST(req: NextRequest) {
   if (!message) {
     return Response.json({ error: "A message is required." }, { status: 400 });
   }
+  // When true, the caller wants the reply streamed as it is written — we
+  // forward each text delta. The worker always runs with partial messages on,
+  // so this is purely a per-request choice (the profile setting).
+  const wantStream = body.stream === true;
 
-  const args = [
-    "-p",
-    message,
-    "--model",
-    TURN_MODEL,
-    "--output-format",
-    "stream-json",
-    "--verbose",
-    "--dangerously-skip-permissions",
-  ];
-  if (sessionId) args.push("--resume", sessionId);
+  // The warm worker for this session — reused if alive, rehydrated via
+  // --resume if its process was lost, or created fresh for a new session.
+  const worker = sessionPool.acquire(sessionId);
 
   const stream = new ReadableStream<Uint8Array>({
     start(controller) {
       const enc = new TextEncoder();
-      const child = spawn("claude", args, { cwd: process.cwd() });
-
-      let stdoutBuf = "";
-      let stderr = "";
-      let liveSession = sessionId;
-      let resultSent = false;
       let closed = false;
+      let resultSent = false;
       // Running count of wiki elements written this turn — surfaced in the
-      // activity line so a long extraction (document-ingest writes dozens)
-      // shows visible progress instead of a frozen generic line.
+      // activity line so a long extraction shows visible progress.
       let elementsWritten = 0;
+      // Whether any reply text has streamed yet — used to insert a paragraph
+      // break between consecutive assistant text blocks.
+      let streamedText = false;
 
       const send = (obj: unknown) => {
         if (closed) return;
@@ -108,7 +95,6 @@ export async function POST(req: NextRequest) {
       const close = () => {
         if (closed) return;
         closed = true;
-        clearTimeout(timer);
         try {
           controller.close();
         } catch {
@@ -116,23 +102,7 @@ export async function POST(req: NextRequest) {
         }
       };
 
-      const timer = setTimeout(() => {
-        child.kill("SIGKILL");
-        const tail = (stderr || stdoutBuf).trim().slice(-600);
-        const mins = Math.round(TURN_TIMEOUT_MS / 60_000);
-        send({
-          type: "error",
-          error:
-            `The assistant was stopped after ${mins} min.` +
-            (tail ? `\n\nLast output:\n${tail}` : ""),
-          sessionId: liveSession,
-        });
-        close();
-      }, TURN_TIMEOUT_MS);
-
-      const handleEvent = (evt: Record<string, unknown>) => {
-        if (typeof evt.session_id === "string") liveSession = evt.session_id;
-
+      const handleEvent = (evt: WorkerEvent) => {
         if (evt.type === "assistant") {
           const msg = evt.message as { content?: unknown[] } | undefined;
           for (const b of msg?.content ?? []) {
@@ -157,49 +127,59 @@ export async function POST(req: NextRequest) {
           send({
             type: "done",
             reply: typeof evt.result === "string" ? evt.result : "",
-            sessionId: liveSession,
+            sessionId: worker.sessionId,
             isError: Boolean(evt.is_error),
           });
-          close();
+        } else if (evt.type === "stream_event" && wantStream) {
+          // Partial-message chunks — forward each text delta so the reply
+          // appears live; a new text block gets a paragraph break from the
+          // previous one.
+          const inner = evt.event as
+            | {
+                type?: string;
+                content_block?: { type?: string };
+                delta?: { type?: string; text?: string };
+              }
+            | undefined;
+          if (
+            inner?.type === "content_block_start" &&
+            inner.content_block?.type === "text" &&
+            streamedText
+          ) {
+            send({ type: "delta", text: "\n\n" });
+          } else if (
+            inner?.type === "content_block_delta" &&
+            inner.delta?.type === "text_delta" &&
+            typeof inner.delta.text === "string"
+          ) {
+            streamedText = true;
+            send({ type: "delta", text: inner.delta.text });
+          }
         }
       };
 
-      child.stdout.on("data", (d: Buffer) => {
-        stdoutBuf += d.toString();
-        let nl: number;
-        while ((nl = stdoutBuf.indexOf("\n")) !== -1) {
-          const line = stdoutBuf.slice(0, nl).trim();
-          stdoutBuf = stdoutBuf.slice(nl + 1);
-          if (!line) continue;
-          try {
-            handleEvent(JSON.parse(line) as Record<string, unknown>);
-          } catch {
-            /* not a JSON event line — ignore */
+      (async () => {
+        try {
+          for await (const evt of worker.runTurn(message)) {
+            handleEvent(evt);
           }
-        }
-      });
-
-      child.stderr.on("data", (d: Buffer) => (stderr += d.toString()));
-
-      child.on("error", (e: NodeJS.ErrnoException) => {
-        const hint =
-          e.code === "ENOENT"
-            ? "The `claude` CLI is not on the server's PATH."
-            : e.message;
-        send({ type: "error", error: `claude failed to start: ${hint}` });
-        close();
-      });
-
-      child.on("close", (code) => {
-        if (!resultSent) {
+          if (!resultSent) {
+            send({
+              type: "error",
+              error: "The assistant ended without a reply.",
+              sessionId: worker.sessionId,
+            });
+          }
+        } catch (e) {
           send({
             type: "error",
-            error: stderr.trim() || `claude exited with code ${code}.`,
-            sessionId: liveSession,
+            error: e instanceof Error ? e.message : "The assistant failed.",
+            sessionId: worker.sessionId,
           });
+        } finally {
+          close();
         }
-        close();
-      });
+      })();
     },
   });
 

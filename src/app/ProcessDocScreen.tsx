@@ -917,29 +917,68 @@ export default function ProcessDocScreen({
 
     type SessionEvent =
       | { type: "progress"; text: string }
+      | { type: "delta"; text: string }
       | { type: "done"; reply?: string; sessionId?: string; isError?: boolean }
       | { type: "error"; error: string; sessionId?: string };
 
     fetch("/api/session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: wireText, sessionId }),
+      body: JSON.stringify({
+        message: wireText,
+        sessionId,
+        stream: user.streamReplies === true,
+      }),
     })
       .then(async (res) => {
         if (!res.body) throw new Error("Keine Antwort vom Server.");
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let buf = "";
+        // Id of the live agent message while reply text streams in — null
+        // until the first delta (and for the whole turn if not streaming).
+        let streamingId: string | null = null;
 
         const apply = (evt: SessionEvent) => {
           if (evt.type === "progress") {
             setChatActivity(evt.text);
+          } else if (evt.type === "delta") {
+            // Reply text arriving live — append to the streaming message,
+            // creating it on the first delta.
+            if (streamingId === null) {
+              const id = mid();
+              streamingId = id;
+              setMessages((m) => [
+                ...m,
+                { id, role: "agent", text: evt.text },
+              ]);
+            } else {
+              const id = streamingId;
+              setMessages((m) =>
+                m.map((msg) =>
+                  msg.id === id ? { ...msg, text: msg.text + evt.text } : msg,
+                ),
+              );
+            }
           } else if (evt.type === "done") {
             if (evt.sessionId) setChatSessionId(evt.sessionId);
-            setMessages((m) => [
-              ...m,
-              { id: mid(), role: "agent", text: evt.reply || "(no reply)" },
-            ]);
+            if (streamingId !== null) {
+              // The reply already streamed in — keep what was shown; only
+              // fall back to the result text if nothing actually streamed.
+              const id = streamingId;
+              const reply = evt.reply || "";
+              setMessages((m) =>
+                m.map((msg) =>
+                  msg.id === id && !msg.text ? { ...msg, text: reply } : msg,
+                ),
+              );
+              streamingId = null;
+            } else {
+              setMessages((m) => [
+                ...m,
+                { id: mid(), role: "agent", text: evt.reply || "(no reply)" },
+              ]);
+            }
             // a skill may have written wiki files — re-read the doc view
             router.refresh();
           } else if (evt.type === "error") {
@@ -2640,6 +2679,25 @@ export default function ProcessDocScreen({
                 }
               />
             </label>
+            <label className="pref-field">
+              <input
+                type="checkbox"
+                checked={userEdit.streamReplies === true}
+                onChange={(e) =>
+                  setUserEdit((u) => ({
+                    ...u,
+                    streamReplies: e.target.checked,
+                  }))
+                }
+              />
+              <span>
+                Stream replies as they are written
+                <small>
+                  Show the assistant&apos;s answer word by word, instead of
+                  all at once when the turn finishes.
+                </small>
+              </span>
+            </label>
             <div className="modal-actions">
               <button
                 className="act act-signout"
@@ -2663,12 +2721,15 @@ export default function ProcessDocScreen({
                   !userEdit.name.trim() ||
                   !userEdit.role.trim() ||
                   (userEdit.name.trim() === user.name &&
-                    userEdit.role.trim() === user.role)
+                    userEdit.role.trim() === user.role &&
+                    (userEdit.streamReplies === true) ===
+                      (user.streamReplies === true))
                 }
                 onClick={() => {
                   onUpdateUser({
                     name: userEdit.name.trim(),
                     role: userEdit.role.trim(),
+                    streamReplies: userEdit.streamReplies === true,
                   });
                   setUserModalOpen(false);
                 }}

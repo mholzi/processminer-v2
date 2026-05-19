@@ -1784,6 +1784,15 @@ body {
   border-radius: var(--r-sm); padding: 8px 10px; width: 100%;
 }
 .login-field input:focus { outline: none; border-color: var(--accent); }
+.pref-field {
+  display: flex; align-items: flex-start; gap: 8px; cursor: pointer;
+  font-family: var(--font); font-size: var(--text-sm); color: var(--ink);
+}
+.pref-field input { margin-top: 2px; accent-color: var(--accent); }
+.pref-field small {
+  display: block; margin-top: 2px;
+  font-size: var(--text-xs); color: var(--muted);
+}
 .login-preview {
   display: flex; align-items: center; gap: 8px;
   font-size: var(--text-sm); color: var(--ink);
