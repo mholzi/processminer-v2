@@ -2,12 +2,15 @@ import type { WikiPage } from "@/lib/wiki";
 import { type Kind, type Transition, orderSteps, parseTransitions } from "@/lib/stepOrder";
 import ElementHovercard from "./ElementHovercard";
 
-// The process-step flow — an enhanced horizontal strip. Steps are ordered by
-// a topological sort of their `transitions` (see lib/stepOrder); an SVG overlay
-// draws those same transitions (`to|kind|when` entries): normal forward edges,
-// conditional branches, loop-backs to an earlier step, and exception exits to
-// EX-* elements. Geometry is fixed-size so every coordinate is arithmetic —
-// no DOM measurement. The strip scrolls horizontally when it overflows.
+// The process-step flow — a swimlane strip. Steps are ordered left-to-right by
+// a topological sort of their `transitions` (see lib/stepOrder) and stacked
+// into horizontal lanes by the role that owns them (the Responsible role from
+// the RACI data on each role page, falling back to the Accountable role). An
+// SVG overlay draws those same transitions (`to|kind|when` entries): forward
+// edges, conditional branches, loop-backs to an earlier step, and exception
+// exits to EX-* elements. Geometry is fixed-size so every coordinate is
+// arithmetic — no DOM measurement. The strip scrolls horizontally; the lane
+// label column stays pinned.
 
 // A step's review state — drives the per-node status dot.
 function stepApproval(s: WikiPage): "approved" | "rejected" | "in-progress" {
@@ -15,14 +18,26 @@ function stepApproval(s: WikiPage): "approved" | "rejected" | "in-progress" {
   return a === "approved" || a === "rejected" ? a : "in-progress";
 }
 
+function asList(v: string | string[] | undefined): string[] {
+  if (!v) return [];
+  return Array.isArray(v) ? v : [v];
+}
+
+const UNASSIGNED = "__unassigned__";
+
 const NODE_W = 158;
 const NODE_H = 116;
-const GAP = 58;
-const TOP = 58; // band above the nodes for forward-branch arcs
-const BOT = 96; // band below for loop-backs and exception chips
+const GAP_X = 58; // horizontal gap between step columns
+const TOP = 16; // top margin above the first lane
+const LANE_PAD_TOP = 24; // space above a lane's nodes (hosts same-lane arcs)
+const LANE_PAD_BOT = 14; // space below a lane's nodes
+const LANE_H = LANE_PAD_TOP + NODE_H + LANE_PAD_BOT;
+const LANE_LABEL_W = 132; // pinned role-name column
+const EXC_ROW = 40; // height of one stacked exception chip
 
 export default function ProcessFlow({
   steps,
+  roles,
   onGoToElement,
   onDeepDive,
   knownIds,
@@ -31,6 +46,8 @@ export default function ProcessFlow({
   highlight,
 }: {
   steps: WikiPage[];
+  /** Role elements — their RACI frontmatter assigns each step to a lane. */
+  roles: WikiPage[];
   onGoToElement: (id: string) => void;
   onDeepDive: (id: string, title: string) => void;
   /** Every element id in the process — used to validate transition targets. */
@@ -50,12 +67,50 @@ export default function ProcessFlow({
   const indexOf: Record<string, number> = {};
   sorted.forEach((s, i) => (indexOf[s.id] = i));
 
-  const left = (i: number) => i * (NODE_W + GAP);
-  const cx = (i: number) => left(i) + NODE_W / 2;
-  const stripW = n * NODE_W + (n - 1) * GAP;
-  const nodeBottom = TOP + NODE_H;
-  const midY = TOP + NODE_H / 2;
-  const totalH = TOP + NODE_H + BOT;
+  // --- Lane assignment: the role that performs each step. RACI data lives on
+  // role pages (`raci: [STEP:LEVEL]`); the Responsible role owns the lane, with
+  // the Accountable role as fallback when no R is set. ---
+  const roleById = new Map(roles.map((r) => [r.id, r]));
+  const rRole: Record<string, string> = {};
+  const aRole: Record<string, string> = {};
+  for (const role of roles) {
+    for (const entry of asList(role.meta.raci)) {
+      const [sid, lvl] = entry.split(":");
+      if (!sid || !lvl) continue;
+      const id = sid.trim();
+      const level = lvl.trim().toUpperCase();
+      if (level === "R" && !(id in rRole)) rRole[id] = role.id;
+      else if (level === "A" && !(id in aRole)) aRole[id] = role.id;
+    }
+  }
+  const ownerOf = (stepId: string) =>
+    rRole[stepId] ?? aRole[stepId] ?? UNASSIGNED;
+
+  // Lane order follows first appearance along the step spine — so the diagram
+  // reads roughly diagonally. The unassigned lane is always pushed last.
+  const laneOrder: string[] = [];
+  for (const s of sorted) {
+    const k = ownerOf(s.id);
+    if (!laneOrder.includes(k)) laneOrder.push(k);
+  }
+  const ui = laneOrder.indexOf(UNASSIGNED);
+  if (ui >= 0 && ui !== laneOrder.length - 1) {
+    laneOrder.splice(ui, 1);
+    laneOrder.push(UNASSIGNED);
+  }
+  const hasLaneData = laneOrder.some((k) => k !== UNASSIGNED);
+  const laneIndex: Record<string, number> = {};
+  laneOrder.forEach((k, i) => (laneIndex[k] = i));
+  const laneOf = (i: number) => laneIndex[ownerOf(sorted[i].id)];
+
+  // --- Geometry: X by step column, Y by lane. ---
+  const nodeX = (i: number) => i * (NODE_W + GAP_X);
+  const cx = (i: number) => nodeX(i) + NODE_W / 2;
+  const nodeTop = (i: number) => TOP + laneOf(i) * LANE_H + LANE_PAD_TOP;
+  const nodeBottom = (i: number) => nodeTop(i) + NODE_H;
+  const cy = (i: number) => nodeTop(i) + NODE_H / 2;
+  const stripW = n * NODE_W + (n - 1) * GAP_X;
+  const lanesH = laneOrder.length * LANE_H;
 
   const parsed = sorted.map((s) => parseTransitions(s.meta.transitions));
   const hasData = parsed.some((t) => t.length > 0);
@@ -81,12 +136,60 @@ export default function ProcessFlow({
       });
   }
 
+  const hasLoops = stepEdges.some((e) => e.to <= e.from);
+  const excNodes = Object.keys(excByNode).map(Number);
+  const maxExc = excNodes.reduce(
+    (m, i) => Math.max(m, excByNode[i].length),
+    0,
+  );
+  const LOOP_BAND = hasLoops ? 78 : 0;
+  const EXC_BAND = maxExc > 0 ? 12 + maxExc * EXC_ROW : 0;
+  const loopChannelY = TOP + lanesH + LOOP_BAND * 0.55;
+  const excTop = TOP + lanesH + LOOP_BAND + 8;
+  const totalH = TOP + lanesH + LOOP_BAND + EXC_BAND;
+
   // A step is conditional when every edge reaching it is a branch — it is
   // never on the normal forward path.
   const incoming: Record<number, Kind[]> = {};
   for (const e of stepEdges) (incoming[e.to] ??= []).push(e.t.kind);
   const isConditional = (i: number) =>
     (incoming[i]?.length ?? 0) > 0 && !incoming[i].includes("normal");
+
+  // Forward edge — a port-to-port curve. Same-lane skips bow up over the
+  // intervening node; everything else is a smooth S between lanes.
+  const fwdPath = (i: number, j: number) => {
+    const x1 = nodeX(i) + NODE_W;
+    const y1 = cy(i);
+    const x2 = nodeX(j);
+    const y2 = cy(j);
+    const dx = Math.max(34, Math.min(120, (x2 - x1) * 0.5));
+    const bow = laneOf(i) === laneOf(j) && j > i + 1 ? -(NODE_H / 2 + 22) : 0;
+    return `M ${x1} ${y1} C ${x1 + dx} ${y1 + bow} ${x2 - dx} ${
+      y2 + bow
+    } ${x2} ${y2}`;
+  };
+  // Loop-back — routed under every lane through the bottom channel.
+  const loopPath = (i: number, j: number) => {
+    const x1 = cx(i);
+    const x2 = cx(j);
+    return `M ${x1} ${nodeBottom(i)} C ${x1} ${loopChannelY} ${x2} ${loopChannelY} ${x2} ${nodeBottom(j)}`;
+  };
+
+  const edges = stepEdges.map((e) => {
+    const loop = e.to <= e.from;
+    const d = loop ? loopPath(e.from, e.to) : fwdPath(e.from, e.to);
+    const lx = (cx(e.from) + cx(e.to)) / 2;
+    let ly: number;
+    if (loop) ly = loopChannelY;
+    else {
+      const bow =
+        laneOf(e.from) === laneOf(e.to) && e.to > e.from + 1
+          ? -(NODE_H / 2 + 22)
+          : 0;
+      ly = (cy(e.from) + cy(e.to)) / 2 + bow * 0.75;
+    }
+    return { ...e, loop, d, lx, ly };
+  });
 
   // --- Validation: surface a broken or incomplete graph instead of drawing it
   // silently. Mirrors the RACI matrix's rule warnings. ---
@@ -109,6 +212,177 @@ export default function ProcessFlow({
   });
   const flagged = stepIssues.filter((x) => x.length > 0).length;
 
+  const canvas = (
+    <div className="flow-canvas" style={{ width: stripW, height: totalH }}>
+      {/* lane stripes */}
+      {hasLaneData &&
+        laneOrder.map((_k, L) => (
+          <div
+            key={L}
+            className={`flow-lane${L % 2 === 1 ? " is-alt" : ""}`}
+            style={{
+              left: 0,
+              top: TOP + L * LANE_H,
+              width: stripW,
+              height: LANE_H,
+            }}
+          />
+        ))}
+      <svg className="flow-svg" width={stripW} height={totalH}>
+        <defs>
+          <marker
+            id="flow-arrow-a"
+            markerWidth="7"
+            markerHeight="7"
+            refX="5.5"
+            refY="3"
+            orient="auto"
+          >
+            <path d="M0,0 L6,3 L0,6 Z" style={{ fill: "var(--accent)" }} />
+          </marker>
+          <marker
+            id="flow-arrow-m"
+            markerWidth="7"
+            markerHeight="7"
+            refX="5.5"
+            refY="3"
+            orient="auto"
+          >
+            <path d="M0,0 L6,3 L0,6 Z" style={{ fill: "var(--mid)" }} />
+          </marker>
+        </defs>
+        {/* exception connectors — node bottom down to the exception band */}
+        {excNodes.map((i) => (
+          <path
+            key={`exc-${i}`}
+            d={`M ${cx(i)} ${nodeBottom(i)} L ${cx(i)} ${excTop}`}
+            fill="none"
+            style={{ stroke: "var(--lo)" }}
+            strokeWidth={1}
+            strokeDasharray="2 3"
+          />
+        ))}
+        {edges.map((e, idx) => (
+          <path
+            key={idx}
+            d={e.d}
+            fill="none"
+            style={{ stroke: e.loop ? "var(--mid)" : "var(--accent)" }}
+            strokeWidth={1.5}
+            strokeDasharray={e.t.kind === "branch" ? "5 3" : undefined}
+            markerEnd={`url(#flow-arrow-${e.loop ? "m" : "a"})`}
+          />
+        ))}
+      </svg>
+
+      {/* branch / loop-back condition labels */}
+      {edges.map((e, idx) => {
+        if (!e.t.when || e.t.kind === "normal") return null;
+        return (
+          <div
+            key={idx}
+            className={`flow-elabel flow-elabel-${e.loop ? "loop" : "branch"}`}
+            style={{ left: e.lx, top: e.ly }}
+          >
+            {e.t.when}
+          </div>
+        );
+      })}
+
+      {/* step nodes */}
+      {sorted.map((s, i) => {
+        const controls = controlsByStep[s.id] ?? [];
+        return (
+          <div
+            key={s.id}
+            className={`flow-node${isConditional(i) ? " is-conditional" : ""}${
+              stepIssues[i].length > 0 ? " is-warn" : ""
+            }${s.id === currentId ? " is-current" : ""}${
+              highlight?.has(s.id) ? " is-highlighted" : ""
+            }`}
+            style={{
+              left: nodeX(i),
+              top: nodeTop(i),
+              width: NODE_W,
+              height: NODE_H,
+            }}
+          >
+            <button
+              type="button"
+              className="flow-node-main"
+              onClick={() => onGoToElement(s.id)}
+              title={`Go to ${s.id}`}
+            >
+              <span className="flow-node-top">
+                <span className="flow-node-id">{s.id}</span>
+                <span
+                  className={`flow-node-dot flow-node-dot-${stepApproval(s)}`}
+                  title={`Review: ${stepApproval(s)}`}
+                />
+              </span>
+              <ElementHovercard element={s} typeLabel="Process step">
+                <span className="flow-node-title">{s.title}</span>
+              </ElementHovercard>
+              <span
+                className={`flow-node-ctl${controls.length ? "" : " none"}`}
+                title={
+                  controls.length
+                    ? `Controls: ${controls.join(", ")}`
+                    : "No control covers this step"
+                }
+              >
+                {controls.length
+                  ? `⛉ ${controls.length} control${
+                      controls.length === 1 ? "" : "s"
+                    }`
+                  : "no control"}
+              </span>
+            </button>
+            <button
+              type="button"
+              className="flow-node-dive"
+              onClick={() => onDeepDive(s.id, s.title)}
+              title={`Deep dive — ${s.id}`}
+            >
+              ✦ Deep dive
+            </button>
+            {isConditional(i) && (
+              <span className="flow-node-cond">conditional</span>
+            )}
+            {stepIssues[i].length > 0 && (
+              <span
+                className="flow-node-warn"
+                title={stepIssues[i].join(" · ")}
+              >
+                !
+              </span>
+            )}
+          </div>
+        );
+      })}
+
+      {/* exception exits */}
+      {excNodes.flatMap((i) =>
+        excByNode[i].map((t, ci) => {
+          const broken = !knownIds.has(t.to);
+          return (
+            <button
+              key={`${i}-${t.to}`}
+              type="button"
+              className={`flow-exc${broken ? " is-broken" : ""}`}
+              style={{ left: nodeX(i), top: excTop + ci * EXC_ROW, width: NODE_W }}
+              onClick={() => onGoToElement(t.to)}
+              title={broken ? `Unknown target — ${t.to}` : `Go to ${t.to}`}
+            >
+              <span className="flow-exc-id">⤷ {t.to}</span>
+              {t.when && <span className="flow-exc-when">{t.when}</span>}
+            </button>
+          );
+        }),
+      )}
+    </div>
+  );
+
   return (
     <div className="flow">
       <h2 className="type-group-head">
@@ -119,175 +393,38 @@ export default function ProcessFlow({
           </span>
         )}
       </h2>
-      <div className="flow-scroll">
-        <div className="flow-canvas" style={{ width: stripW, height: totalH }}>
-          <svg className="flow-svg" width={stripW} height={totalH}>
-            <defs>
-              <marker
-                id="flow-arrow-a"
-                markerWidth="7"
-                markerHeight="7"
-                refX="5.5"
-                refY="3"
-                orient="auto"
-              >
-                <path d="M0,0 L6,3 L0,6 Z" style={{ fill: "var(--accent)" }} />
-              </marker>
-              <marker
-                id="flow-arrow-m"
-                markerWidth="7"
-                markerHeight="7"
-                refX="5.5"
-                refY="3"
-                orient="auto"
-              >
-                <path d="M0,0 L6,3 L0,6 Z" style={{ fill: "var(--mid)" }} />
-              </marker>
-            </defs>
-            {stepEdges.map((e, idx) => {
-              const loop = e.to <= e.from;
-              const stroke = loop ? "var(--mid)" : "var(--accent)";
-              const dash = e.t.kind === "branch" ? "5 3" : undefined;
-              let d: string;
-              if (e.t.kind === "normal" && e.to === e.from + 1) {
-                d = `M ${left(e.from) + NODE_W} ${midY} L ${left(e.to)} ${midY}`;
-              } else if (!loop) {
-                const ctrlY = e.to === e.from + 1 ? 28 : 4;
-                d = `M ${cx(e.from)} ${TOP} Q ${
-                  (cx(e.from) + cx(e.to)) / 2
-                } ${ctrlY} ${cx(e.to)} ${TOP}`;
-              } else {
-                d = `M ${cx(e.from)} ${nodeBottom} Q ${
-                  (cx(e.from) + cx(e.to)) / 2
-                } ${nodeBottom + 72} ${cx(e.to)} ${nodeBottom}`;
-              }
+      <div className="flow-body">
+        {hasLaneData && (
+          <div
+            className="flow-lane-col"
+            style={{ width: LANE_LABEL_W, height: TOP + lanesH }}
+          >
+            {laneOrder.map((k, L) => {
+              const role = roleById.get(k);
               return (
-                <path
-                  key={idx}
-                  d={d}
-                  fill="none"
-                  style={{ stroke }}
-                  strokeWidth={1.5}
-                  strokeDasharray={dash}
-                  markerEnd={`url(#flow-arrow-${loop ? "m" : "a"})`}
-                />
+                <div
+                  key={k}
+                  className={`flow-lane-label${L % 2 === 1 ? " is-alt" : ""}`}
+                  style={{ top: TOP + L * LANE_H, height: LANE_H }}
+                >
+                  {role ? (
+                    <button
+                      type="button"
+                      className="flow-lane-label-btn"
+                      onClick={() => onGoToElement(role.id)}
+                      title={`Go to ${role.id}`}
+                    >
+                      {role.title}
+                    </button>
+                  ) : (
+                    <span className="flow-lane-label-none">Unassigned</span>
+                  )}
+                </div>
               );
             })}
-          </svg>
-
-          {/* branch / loop-back condition labels */}
-          {stepEdges.map((e, idx) => {
-            if (!e.t.when || e.t.kind === "normal") return null;
-            const loop = e.to <= e.from;
-            const lx = (cx(e.from) + cx(e.to)) / 2;
-            const ly = loop
-              ? nodeBottom + 46
-              : e.to === e.from + 1
-                ? 36
-                : 14;
-            return (
-              <div
-                key={idx}
-                className={`flow-elabel flow-elabel-${loop ? "loop" : "branch"}`}
-                style={{ left: lx, top: ly }}
-              >
-                {e.t.when}
-              </div>
-            );
-          })}
-
-          {/* step nodes */}
-          {sorted.map((s, i) => {
-            const controls = controlsByStep[s.id] ?? [];
-            return (
-            <div
-              key={s.id}
-              className={`flow-node${isConditional(i) ? " is-conditional" : ""}${
-                stepIssues[i].length > 0 ? " is-warn" : ""
-              }${s.id === currentId ? " is-current" : ""}${
-                highlight?.has(s.id) ? " is-highlighted" : ""
-              }`}
-              style={{ left: left(i), top: TOP, width: NODE_W, height: NODE_H }}
-            >
-              <button
-                type="button"
-                className="flow-node-main"
-                onClick={() => onGoToElement(s.id)}
-                title={`Go to ${s.id}`}
-              >
-                <span className="flow-node-top">
-                  <span className="flow-node-id">{s.id}</span>
-                  <span
-                    className={`flow-node-dot flow-node-dot-${stepApproval(s)}`}
-                    title={`Review: ${stepApproval(s)}`}
-                  />
-                </span>
-                <ElementHovercard element={s} typeLabel="Process step">
-                  <span className="flow-node-title">{s.title}</span>
-                </ElementHovercard>
-                <span
-                  className={`flow-node-ctl${controls.length ? "" : " none"}`}
-                  title={
-                    controls.length
-                      ? `Controls: ${controls.join(", ")}`
-                      : "No control covers this step"
-                  }
-                >
-                  {controls.length
-                    ? `⛉ ${controls.length} control${
-                        controls.length === 1 ? "" : "s"
-                      }`
-                    : "no control"}
-                </span>
-              </button>
-              <button
-                type="button"
-                className="flow-node-dive"
-                onClick={() => onDeepDive(s.id, s.title)}
-                title={`Deep dive — ${s.id}`}
-              >
-                ✦ Deep dive
-              </button>
-              {isConditional(i) && (
-                <span className="flow-node-cond">conditional</span>
-              )}
-              {stepIssues[i].length > 0 && (
-                <span
-                  className="flow-node-warn"
-                  title={stepIssues[i].join(" · ")}
-                >
-                  !
-                </span>
-              )}
-            </div>
-            );
-          })}
-
-          {/* exception exits */}
-          {Object.entries(excByNode).flatMap(([k, ts]) =>
-            ts.map((t, ci) => {
-              const i = Number(k);
-              const broken = !knownIds.has(t.to);
-              return (
-                <button
-                  key={`${k}-${t.to}`}
-                  type="button"
-                  className={`flow-exc${broken ? " is-broken" : ""}`}
-                  style={{
-                    left: left(i),
-                    top: nodeBottom + 12 + ci * 40,
-                    width: NODE_W,
-                  }}
-                  onClick={() => onGoToElement(t.to)}
-                  title={broken ? `Unknown target — ${t.to}` : `Go to ${t.to}`}
-                >
-                  <span className="flow-exc-id">⤷ {t.to}</span>
-                  {t.when && <span className="flow-exc-when">{t.when}</span>}
-                </button>
-              );
-            }),
-          )}
-        </div>
+          </div>
+        )}
+        <div className="flow-scroll">{canvas}</div>
       </div>
       <div className="flow-legend">
         <span>
