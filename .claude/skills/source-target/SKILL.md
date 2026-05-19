@@ -46,12 +46,14 @@ perspective specialists. You only consolidate what they wrote into a target.
 
 ## The wiki you write into
 
-**Read `schema/process-schema.json` first** — it defines, per element type, the
-`section`, the `idPrefix` and the `template` (the named `## ` blocks, their
-format and word range). The scripts in `scripts/wiki/` own the file format; you
-do the judgement. When unsure of an element type's exact shape, run
-`python3 scripts/wiki/show_template.py <type>` — it prints the section, id
-prefix and blocks straight from the schema.
+**Get your element templates up front.** Run
+`python3 scripts/wiki/show_template.py <type> …`, passing the `type` of every
+element you draft (the types listed under "What you produce"). For each it
+prints — from `schema/process-schema.json` — the `section`, the `idPrefix`, the
+frontmatter (fields with their allowed values, the required keys, the
+relations) and the `## ` blocks with their format and word range. That is the
+full contract — you do **not** read the whole schema file. The scripts in
+`scripts/wiki/` own the file format; you do the judgement.
 
 ## Step 1 — Read the whole process
 
@@ -98,10 +100,12 @@ innovation-ideas, addressing a cluster of related problems, points to. Group
 the innovation-ideas by the part of the process they reshape; each genuine
 cluster is one `target-state`.
 
-Draft each per its schema template. Capture `replaces` — the As-Is
+Draft each as a `write_element.py` spec (`status: draft`, `confidence: low` —
+consolidated, not yet SME-validated). Capture `replaces` — the As-Is
 `process-step` ids the theme touches; it drives the As-Is↔To-Be overlay in the
-app. Write each: `next_id.py` → `write_element.py` (`status: draft`,
-`confidence: low` — consolidated, not yet SME-validated) → `check_conformance.py`.
+app. Give each target-state a `tempKey` (e.g. `"ts-1"`) so a decision or gap
+can reference it. Hold the drafts — the whole Target Process is written in one
+batch at the end of Step 4.
 
 Aim for the handful of themes that genuinely structure the future process — not
 one target-state per idea.
@@ -119,11 +123,13 @@ For each decision capture two relations:
   `compliance-gap`, `friction-point`, `audit-finding`. Walk **every** open
   problem across all perspectives and make sure at least one decision resolves
   it — an uncovered problem is either a real gap (Step 4) or a missing decision.
-- `realises` — the `target-state` themes it brings about (optional; a
-  governance or sequencing decision may realise none).
+- `realises` — the `target-state` themes it brings about, each as
+  `"@<tempKey>"` from Step 2 (optional; a governance or sequencing decision
+  may realise none).
 
-Draft per template, write with the three scripts (`status: draft`,
-`confidence: low`) → `check_conformance.py`.
+Draft each decision as a `write_element.py` spec (`status: draft`,
+`confidence: low`) and give it a `tempKey`. Hold the drafts for the Step 4
+batch write.
 
 ## Step 4 — Draft the gaps
 
@@ -133,9 +139,14 @@ constraint. After Step 3, any open As-Is problem that no decision resolves, and
 any `target-state` a decision does not realise, is a candidate gap. So is any
 `innovation-risk` that the transformation must actively manage.
 
-Draft each `gap` per its template, linking the `target-state` it serves. Write
-with the three scripts (`status: draft`, `confidence: low`) →
-`check_conformance.py`.
+Draft each `gap` per its template, linking the `target-state` it serves by its
+`"@<tempKey>"` from Step 2. Then write the **whole Target Process in one
+batch** — assemble a manifest `{ "slug": "<slug>", "elements": [ … ] }` of
+every target-state, transformation-decision and gap, each spec omitting `id`,
+each carrying its `tempKey`, every `realises` and target-state link written as
+`"@<tempKey>"` — and run `python3 scripts/wiki/write_elements.py
+/tmp/<slug>-elements.json`, then `python3 scripts/wiki/check_conformance.py
+<slug>`. The batch writer assigns every id and resolves every `@<tempKey>`.
 
 ## Step 5 — Report
 

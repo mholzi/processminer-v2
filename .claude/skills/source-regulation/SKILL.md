@@ -37,11 +37,13 @@ not the web.
 
 ## The wiki you write into
 
-**Read `schema/process-schema.json` first** — it defines, per element type, the
-`section`, the `idPrefix` and the `template`. The scripts in `scripts/wiki/`
-own the file format; you do the judgement. When unsure of the `regulation`
-element's exact shape, run `python3 scripts/wiki/show_template.py regulation` —
-it prints the section, id prefix and blocks straight from the schema.
+**Get your element template up front.** Run
+`python3 scripts/wiki/show_template.py regulation` — it prints, from
+`schema/process-schema.json`, the `section`, the `idPrefix`, the frontmatter
+(fields with their allowed values, the required keys, the relations) and the
+`## ` blocks with their format and word range. That is the full contract — you
+do **not** read the whole schema file. The scripts in `scripts/wiki/` own the
+file format; you do the judgement.
 
 ## Step 1 — Read the process
 
@@ -89,9 +91,12 @@ obligation that genuinely applies to *this* process:
   link on the **control**: patch that control's `regulatedBy` to add this
   regulation's id (`patch_element.py --list`). A regulation has no `controls`
   field — its control list is the derived reverse of `control.regulatedBy`.
-- Write each with `next_id.py` → `write_element.py` (`status: draft`,
-  `confidence: medium`; `low` if thinly evidenced) → `check_conformance.py`. If
-  conformance flags an element, fix the draft and re-write before moving on.
+- Write all the regulations **in one batch** — a manifest
+  `{ "slug": "<slug>", "elements": [ … ] }` of `write_element.py` specs
+  (`status: draft`, `confidence: medium`; `low` if thinly evidenced) — with
+  `python3 scripts/wiki/write_elements.py /tmp/<slug>-regulations.json`, then
+  `python3 scripts/wiki/check_conformance.py <slug>`; fix any flagged element
+  and re-run it.
 
 Name **real** regulations and cite **real** sources — never invent a regulation
 or a citation. If web search is unavailable, write only what you can solidly

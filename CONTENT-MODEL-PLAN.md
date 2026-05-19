@@ -10,6 +10,13 @@ element type. The deterministic scripts are schema-driven, so a new element
 type is mostly a schema change plus specialist-skill phases. New elements
 inherit the provenance model (HALLUCINATION-PLAN.md) automatically.
 
+> **Superseded (2026-05-19):** item 5 — the `stakeholder` element type and the
+> As-Is `stakeholders` section — was added per this plan and then **removed**.
+> Per-step RACI on the Roles section already records who participates in the
+> process, so a separate stakeholder element was redundant. The entries below
+> are kept as the original plan record; the live schema no longer carries
+> them.
+
 ## What is being added
 
 **Four new element types** + **one sidecar** + **one cross-cutting marker**:

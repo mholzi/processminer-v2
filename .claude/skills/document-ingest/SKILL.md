@@ -86,38 +86,69 @@ On **[Y]** — continue to Step 3.
      because the control is automated. Pick the same grain for every
      element of a type; do not mix function, role and individual.
 
-3. **Verify each draft against the source — before you write it.** No SME is
-   in the loop, so the document is the only authority. For every element you
-   drafted, re-read the passage it came from and challenge it claim by claim:
-   - For each statement in every block, find where the document supports it. A
-     claim you cannot trace to the document — an inferred SLA, an invented
-     system or role name, a smoothed-over detail, a number the document does
-     not give — is a hallucination. **Remove it, or rewrite the block down to
-     what the document actually supports.** Never write an unsupported claim.
-   - Set `confidence` honestly from what survived: `high` — every block traces
-     to explicit document text; `medium` — some content is reasonable inference
-     across passages; `low` — the document was thin and the element is largely
-     inferred.
-   - **Mark each block's provenance.** In the `write_element.py` spec include a
-     `provenance` map — one entry per block heading. A heading whose every
-     claim you traced to explicit document text → `source: document`,
-     `evidence` set to the verbatim supporting quote from the document. A
-     heading that survived verification only as inference across passages →
-     `source: proposed`, `evidence` empty. A `document` heading is approvable
-     as it stands; a `proposed` heading is not — it flags, for the app and a
-     later foundational run, exactly which content still needs a human eye.
-   - Note every element where verification removed or corrected a claim — these
-     go in the Step 4 summary.
+3. **Verify each draft against the source — in parallel, before you write.**
+   No SME is in the loop, so the document is the only authority, and an
+   extraction can quietly claim more than the document says. Verifying one
+   draft is independent of every other, so fan it out: split your drafts into
+   a few even groups (aim for ~5–10 drafts each) and **dispatch one sub-agent
+   per group with the Task tool**, in a single message; wait for all of them.
+   Give each this brief:
 
-4. **Write.** First clear the run manifest —
+   > You verify drafted wiki elements against their source document, for an
+   > ingest of process `<slug>`. The source document is at `<path>`. Verify
+   > exactly these draft specs: `<the group's specs as JSON>`. For each, find
+   > the passage it came from and challenge it claim by claim:
+   > - For every statement in every block, find where the document supports
+   >   it. A claim you cannot trace — an inferred SLA, an invented system or
+   >   role name, a smoothed-over detail, a number the document does not give
+   >   — is a hallucination: remove it, or rewrite the block down to what the
+   >   document actually supports. Never keep an unsupported claim.
+   > - Set `confidence` from what survived: `high` — every block traces to
+   >   explicit document text; `medium` — some content is reasonable
+   >   inference across passages; `low` — the document was thin and the
+   >   element is largely inferred.
+   > - Set each block's `provenance`: a heading whose every claim traces to
+   >   explicit document text → `{ "source": "document", "evidence": "<the
+   >   verbatim supporting quote>" }`; a heading that survived only as
+   >   inference across passages → `{ "source": "proposed", "evidence": "" }`.
+   > You are **read-only** — do not write or run any script. Return a JSON
+   > object `{ "elements": [<verified specs>], "corrections": [{ "element",
+   > "field", "removed" }, …] }`: the verified specs with unsupported claims
+   > stripped and `confidence` / `provenance` set, and one `corrections`
+   > entry per claim you removed or rewrote.
+
+   Collect every group's result. The merged `elements` are what Step 3.4
+   writes; the merged `corrections` feed the Step 4 summary and the ingest
+   report. (A `document` heading is approvable as it stands; a `proposed`
+   heading is not — it flags exactly what still needs a human eye.)
+
+4. **Write — one batch.** First clear the run manifest —
    `python3 scripts/wiki/reset_manifest.py <slug>` — so a previous run cannot
-   inflate the counts. Then for each verified element, write it with the
-   scripts: new topics get an id from `python3 scripts/wiki/next_id.py <slug>
-   <type>` (updates keep their id), then save the spec to `/tmp/<id>.json` and
-   run `python3 scripts/wiki/write_element.py /tmp/<id>.json` (`status: draft`,
-   `source: {file}`, the verified `confidence`, and the `provenance` map from
-   Step 3). Each write records itself in the manifest as created or updated —
-   you do **not** track those lists yourself.
+   inflate the counts. Then assemble **one manifest** of every verified
+   element and write them all in a single call — not a script run per element.
+
+   Build `/tmp/<slug>-elements.json`:
+
+   ```
+   { "slug": "<slug>", "source": "{file}", "elements": [ … ] }
+   ```
+
+   Each entry in `elements` is a `write_element.py` spec — `type`, `title`,
+   `status: draft`, the verified `confidence`, `fields`, `relations`, and the
+   `provenance` map from Step 3. The manifest's `source` applies to every
+   element, so omit `source` per entry. Two batch conventions:
+   - **A new topic omits `id`** — the batch writer assigns it. **An element
+     the document refines keeps its `id`** — that is the update path.
+   - To link two elements you are creating in the same run, give the target a
+     `"tempKey"` and reference it as `"@<tempKey>"` in the other's
+     `relations` — e.g. a role's `"raci": ["@step-3:R"]`, a process-step's
+     `"transitions": ["@step-4|normal|done"]`. The writer resolves every
+     `@<tempKey>` to the real id.
+
+   Then run `python3 scripts/wiki/write_elements.py /tmp/<slug>-elements.json`.
+   It assigns ids, resolves the references, writes every element, and records
+   each in the run manifest as created or updated — you do **not** track those
+   lists yourself.
 
 5. **Fill the process overview.** The overview is the process `index.md` — its
    one-line `description`, plus the body fields: purpose, owner, trigger,
@@ -154,8 +185,15 @@ On **[Y]** — continue to Step 3.
    process page, not an element: it takes no id, is not in the run manifest,
    and is not counted in created / updated.
 
-6. **Check conformance.** Run `python3 scripts/wiki/check_conformance.py <slug>`
-   and fix any element you wrote that it flags.
+6. **Check conformance and evidence.** Run `python3
+   scripts/wiki/check_conformance.py <slug>` and fix any element you wrote that
+   it flags. Then run `python3 scripts/wiki/check_evidence.py <slug>` — it
+   verifies every `document` heading's `evidence` is genuinely traceable to a
+   file under `raw-sources/<slug>/`. If it flags an element, the quote is
+   wrong, paraphrased or carried over from another document — re-read the
+   source passage, correct the `evidence` to a verbatim quote from it, and
+   rewrite the element. A `document` claim whose evidence cannot be traced is
+   exactly the hallucination this step exists to catch; never leave it flagged.
 
 7. **Write the ingest report.** Assemble a JSON object — `file` (the source
    filename), `conflicts` (each `{element, field, documentSays, wikiSays}` —

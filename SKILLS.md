@@ -174,6 +174,7 @@ cannot come out malformed and every run reads the same.
 | `next_id.py` | next element id for a type |
 | `show_template.py` | print an element type's conformant skeleton from the schema |
 | `write_element.py` | write a conformant element file from a JSON spec |
+| `write_elements.py` | write a batch of elements from one manifest — assigns ids, resolves `@tempKey` cross-references |
 | `patch_element.py` | change one block or field of an element in place |
 | `check_conformance.py` | check elements against their schema templates + required frontmatter |
 | `check_transitions.py` | reconcile exception `affects` against process-step `transitions` |

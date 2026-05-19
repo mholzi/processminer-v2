@@ -44,12 +44,14 @@ are the `transformation-agent`'s. All need the SME.
 
 ## The wiki you write into
 
-**Read `schema/process-schema.json` first** — it defines, per element type, the
-`section`, the `idPrefix` and the `template` (the named `## ` blocks, their
-format and word range). The scripts in `scripts/wiki/` own the file format; you
-do the judgement. When unsure of an element type's exact shape, run
-`python3 scripts/wiki/show_template.py <type>` — it prints the section, id
-prefix and blocks straight from the schema.
+**Get your element templates up front.** Run
+`python3 scripts/wiki/show_template.py <type> …`, passing the `type` of every
+element you draft (the types listed under "What you produce"). For each it
+prints — from `schema/process-schema.json` — the `section`, the `idPrefix`, the
+frontmatter (fields with their allowed values, the required keys, the
+relations) and the `## ` blocks with their format and word range. That is the
+full contract — you do **not** read the whole schema file. The scripts in
+`scripts/wiki/` own the file format; you do the judgement.
 
 ## Step 1 — Read the process
 
@@ -92,7 +94,7 @@ If web search is unavailable in this environment, write what your own domain
 knowledge solidly supports, at `low` confidence, and say so in the summary —
 **never fabricate a study or a source.**
 
-## Step 3 — Write market trends
+## Step 3 — Draft market trends
 
 Before the first write, clear the run manifest —
 `python3 scripts/wiki/reset_manifest.py <slug>`. Every element you write is
@@ -120,38 +122,48 @@ specific to sourcing:
   controls or agentic AI bears on the STP branch and the control gaps, not
   just the manual steps — link those, not only the happy path.
 
-Then write it: `next_id.py` → `write_element.py` (`status: draft`,
+Draft each material trend as a `write_element.py` spec (`status: draft`,
 `confidence: medium` — web-sourced, not yet SME-validated; `low` if thinly
-supported) → `check_conformance.py`. Aim for the handful of trends that are
-genuinely material — not an exhaustive list.
+supported) and **give it a `tempKey`** (e.g. `"trend-1"`) so an idea can
+reference it later. Hold the drafts — the whole run is written in one batch in
+Step 5. Aim for the handful of trends that are genuinely material — not an
+exhaustive list.
 
-## Step 4 — Scan competitors and write competitor moves
+## Step 4 — Scan competitors and draft competitor moves
 
-Scan what competitors are doing in this process's domain, in **three tiers, in
-this order** — the order reflects how close each set is to the bank:
+The three competitor tiers are independent web-research streams, so scan them
+**concurrently**: in a single message, dispatch **three sub-agents** with the
+Task tool — one per tier — and wait for all three.
 
-1. **European corporate banks** — the closest competitive set. Search named
-   European peers and what they are doing in this domain → `competitor-eu`.
-2. **Global corporate banks** — the major global players → `competitor-global`.
-3. **Fintechs** — the challengers and specialists reshaping this space →
-   `competitor-fintech`.
+| Tier | Type | Who |
+|---|---|---|
+| European corporate banks — the closest competitive set | `competitor-eu` | named European peers |
+| Global corporate banks | `competitor-global` | the major global players |
+| Fintechs | `competitor-fintech` | the challengers and specialists reshaping this space |
 
-For each tier, web-search for **named** competitors' moves in this domain —
-product launches, platform investments, announcements, analyst write-ups — and
-write one element per material move:
-- Blocks: *The move* — what the competitor is doing; *Relevance* — the
-  competitive gap it opens for this process; *Evidence* — the announcement,
-  report or launch.
-- Frontmatter: `competitor:` the named bank or fintech; `source:` /
-  `sourceUrl:` / `asOf:` as for market trends; `bearsOn:` the process elements
-  the move bears on.
-- Write each with `next_id.py` → `write_element.py` (`status: draft`,
-  `confidence: medium`; `low` if thinly evidenced) → `check_conformance.py`.
+Give each sub-agent this brief, filling in its tier:
 
-Name **real** competitors and cite **real** sources — never invent a
-competitor or a move. A handful of material moves per tier, not a dump.
+> You are sourcing competitor moves for process `<slug>`, tier **{tier}**
+> (element type `{type}`). Read `wiki/processes/<slug>/index.md` and the
+> documented As-Is for context, and the existing `{type}` elements so you do
+> not duplicate one. Run `python3 scripts/wiki/show_template.py {type}` for
+> the element's shape. Web-search for **named** {who}'s moves in this
+> process's domain — product launches, platform investments, announcements,
+> analyst write-ups. Draft one `write_element.py` spec per material move:
+> blocks *The move* / *Relevance* / *Evidence*; frontmatter `competitor:`,
+> `source:`, `sourceUrl:`, and `bearsOn:` the process elements it bears on;
+> `status: draft`, `confidence: medium` (`low` if thinly evidenced); a
+> `provenance` map, one entry per block heading, every entry
+> `{ "source": "web", "evidence": "<url> — \"<snippet>\" — fetched <date>" }`.
+> Give each spec a `tempKey` prefixed with the type — `"{type}-1"`,
+> `"{type}-2"`, … — so keys never collide between tiers. Name **real**
+> competitors and cite **real** sources; never invent one. A handful of
+> material moves, not a dump. You are **read-only** — do not write or run any
+> write script. Return **only** a JSON array of the draft specs.
 
-## Step 5 — Write innovation ideas
+Collect the three arrays and hold the drafts for the Step 5 batch write.
+
+## Step 5 — Draft innovation ideas, then write the run
 
 Derive `innovation-idea` elements from the trends, the competitor moves and the
 documented problems. Every idea must `addresses` at least one real documented
@@ -161,12 +173,20 @@ element's frontmatter carries:
   control-gap the idea genuinely relieves — not just one. A unified-workspace
   idea that removes re-keying *and* slow handovers links both; an automated-
   control idea links the control gap it closes.
-- `fromTrend:` the `market-trend` id(s) the idea derives from.
-- `fromCompetitor:` the competitor-move id(s) the idea is inspired by, if any —
-  so an idea traces idea → trend/competitor → source.
+- `fromTrend:` the trend(s) the idea derives from — written as `"@<tempKey>"`,
+  the temp keys you gave them in Step 3.
+- `fromCompetitor:` the competitor move(s) the idea is inspired by, if any, as
+  `"@<tempKey>"` from Step 4 — so an idea traces idea → trend/competitor →
+  source.
 
-Draft per template, write with the same three scripts (`status: draft`,
-`confidence: low`–`medium` — these are unvalidated proposals). Run conformance.
+Draft each idea per template (`status: draft`, `confidence: low`–`medium` —
+these are unvalidated proposals). Then write the **whole run in one batch**:
+assemble a manifest `{ "slug": "<slug>", "elements": [ … ] }` of every trend
+from Step 3, every competitor move from Step 4 and every idea here — each spec
+omitting `id`, each carrying its `tempKey`, ideas referencing trends and moves
+by `"@<tempKey>"` — and run `python3 scripts/wiki/write_elements.py
+/tmp/<slug>-elements.json`, then `python3 scripts/wiki/check_conformance.py
+<slug>`. The batch writer assigns every id and resolves every `@<tempKey>`.
 
 **Completeness check — every documented problem gets an idea.** Once the ideas
 are written, run `python3 scripts/wiki/idea_coverage.py <slug>`. It enumerates

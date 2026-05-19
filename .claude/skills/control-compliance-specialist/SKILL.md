@@ -36,11 +36,18 @@ All four element types live in the **Risk & Compliance** area.
 
 ## The wiki you write into
 
-**Read `schema/process-schema.json` first.** It defines, per element type: the
-`section`, the `idPrefix`, and the `template` — the named
-`## ` prose blocks every element must have, with their format and word range.
-Every element follows its template exactly; a deterministic conformance check
-(`check_conformance.py`) will flag any drift.
+**Get your element templates up front.** Run
+`python3 scripts/wiki/show_template.py <type> …` once at the start of the
+session, passing the `type` of every element you own (the types listed under
+"What you produce"). For each it prints — from `schema/process-schema.json` —
+the `section`, the `idPrefix`, the frontmatter (fields with their allowed
+values, the required keys, the relations) and the `## ` prose blocks the
+element must carry, with their format and word range. That is the full
+contract — you do **not** read the whole schema file. Every element you write
+follows its template exactly; a deterministic conformance check
+(`check_conformance.py`) flags any drift. Keep frontmatter minimal: the
+universal `id / type / section / title / status / confidence / source` keys,
+plus the type's own fields and relations — nothing else.
 
 **Element file format** — frontmatter, then `## ` prose blocks:
 ```
@@ -70,12 +77,6 @@ owner: KYC Analyst
   compliance-gap's `control: [CP-…]`.
 - **Blocks** — exactly the headings the schema `template` lists for this type,
   in order, each within its format and word range.
-
-When unsure of an element type's exact shape, run
-`python3 scripts/wiki/show_template.py <type>` — it prints the section, the id
-prefix and every `## ` block with its format and length, from the schema. Keep
-frontmatter minimal: `id, type, section, title, status, confidence, source`
-plus the relations.
 
 ## Your role
 
@@ -219,6 +220,15 @@ element that has already been written — a refine pass, a correction — use
 (or `--field "<key>" "<value>"`, or `--list "<key>" "<id1,id2>"`). It changes
 only that part and leaves the rest byte-identical. Never re-emit a whole
 element to fix one piece of it.
+
+**Writing a batch.** When you presented several elements for a *single* Y/E/R
+(the Batching idiom under Interaction patterns) and the SME accepted them
+together, write them in one call instead of looping step 4:
+`python3 scripts/wiki/write_elements.py <manifest.json>` — a manifest
+`{ "slug": "<slug>", "elements": [ … ] }` of these same specs, each omitting
+`id` (the script assigns it) and using `"@<tempKey>"` to point at a sibling in
+the batch. An element approved on its own still takes step 4 — write it the
+moment it is confirmed, so an interrupted session loses nothing.
 <!-- WRITING-PROCEDURE-BLOCK:end -->
 
 ## Stay in your lane

@@ -21,9 +21,10 @@ You are invoked with a process `<slug>`. Lint covers that one process only.
 
 ## Step 1 — Load the process
 
-Take the process title from `wiki/processes/<slug>/index.md`. Read every
-element under `wiki/processes/<slug>/` so you have the whole process in view —
-all sections, all element types.
+Take the process title from `wiki/processes/<slug>/index.md`. You orchestrate
+the lint pass — the deterministic scripts (Step 2) and the per-lens sub-agents
+(Step 3) each read the elements they need, so you do not have to read every
+element yourself.
 
 ## Step 2 — Deterministic checks
 
@@ -43,17 +44,28 @@ Keep both arrays exactly as printed. You do not author, reshape or re-type
 these findings — they are fully deterministic; a clean process prints `[]`.
 Together they are the deterministic half of Step 4's input.
 
-## Step 3 — Cross-perspective sweep (judgement)
+## Step 3 — Cross-perspective sweep (five parallel lenses)
 
-Sweep the whole process from all five perspectives. This is the council: each
-lens looks at every element, including elements it has no relation to — "a step
-with no control" is found by *looking at steps that link to nothing*. Record a
-finding for every real issue.
+The council sweeps the whole process from all five perspectives. The lenses
+are independent, so run them **concurrently**: in a single message, dispatch
+**five sub-agents** with the Task tool — one per lens — and wait for all five.
 
-Use `kind: discrepancy` when two elements disagree or a link is missing; use
-`kind: question` when the wiki is ambiguous or under-specified and only the SME
-can resolve it. Every finding needs a `title`, a `detail` that explains it
-concretely, and an `elements` list of the **actual element ids** involved.
+Give each sub-agent this brief, with `{Lens}` and `{what to check}` filled
+from the table below:
+
+> You are the **{Lens}** lens of a lint pass on process `<slug>`. Read every
+> element under `wiki/processes/<slug>/`. Looking only through your lens,
+> check: {what to check}. The council looks at every element, including ones
+> it has no relation to — "a step with no control" is found by looking at
+> steps that link to nothing. Record a finding for every real issue: use
+> `kind: "discrepancy"` when two elements disagree or a link is missing,
+> `kind: "question"` when the wiki is ambiguous and only the SME can resolve
+> it. Each finding is `{ "kind", "title", "detail", "elements" }` — `detail`
+> explains it concretely, `elements` lists the **actual element ids**
+> involved. Be specific and conservative: only a finding you can point to in
+> the elements; never invent one to pad. You are **read-only** — do not write,
+> edit or run any script. Return **only** a JSON array of your findings, `[]`
+> if none.
 
 | Lens | What to check across the process |
 |---|---|
@@ -63,21 +75,22 @@ concretely, and an `elements` list of the **actual element ids** involved.
 | **Innovation** | an innovation-idea not linked to the friction- or pain-point it solves; a pain-point with no innovation-idea addressing it |
 | **IT Architect** | a count stated in prose that disagrees with the documented elements (e.g. "6+ systems" vs 8 systems); an integration referencing no system; a system touched by no step |
 
-Be specific and conservative: only record a finding you can point to in the
-elements. Do not invent issues to pad the list.
+The sub-agents are read-only and each reads the wiki itself — that is what
+lets them run in parallel. Only you write, in Step 4.
 
-**Confirm coverage.** Every run sweeps all five lenses, even when a lens
-yields nothing. After the sweep, state one coverage line naming all five —
-e.g. `Swept: Process · Control & Compliance · Client Journey · Innovation ·
-IT Architecture` — so a thorough run is visibly distinct from one that
-skipped a lens.
+**Confirm coverage.** When all five return you hold five findings arrays —
+one per lens, even when a lens found nothing. State one coverage line naming
+all five, e.g. `Swept: Process · Control & Compliance · Client Journey ·
+Innovation · IT Architecture`, so a thorough run is visibly distinct from one
+that skipped a lens.
 
 ## Step 4 — Apply (deterministic)
 
 Assemble the full findings array: the conformance array and the
 transitions-reconciliation array from Step 2 — **both kept exactly as the
-scripts printed them** — followed by the discrepancy and question findings you
-wrote in Step 3. Each finding is an object:
+scripts printed them** — followed by the discrepancy and question findings
+from the five lens sub-agents in Step 3 (concatenate their five arrays). Each
+finding is an object:
 
 ```json
 { "kind": "discrepancy", "title": "...", "detail": "...", "elements": ["PS-COB-004", "CP-COB-004"] }

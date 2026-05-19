@@ -43,11 +43,14 @@ those are the process's own journey, `client-journey-specialist`'s and
 
 ## The wiki you write into
 
-**Read `schema/process-schema.json` first** — it defines, per element type, the
-`section`, the `idPrefix` and the `template`. The scripts in `scripts/wiki/`
-own the file format; you do the judgement. When unsure of an element type's
-exact shape, run `python3 scripts/wiki/show_template.py <type>` — it prints the
-section, id prefix and blocks straight from the schema.
+**Get your element templates up front.** Run
+`python3 scripts/wiki/show_template.py <type> …`, passing the `type` of every
+element you draft (the types listed under "What you produce"). For each it
+prints — from `schema/process-schema.json` — the `section`, the `idPrefix`, the
+frontmatter (fields with their allowed values, the required keys, the
+relations) and the `## ` blocks with their format and word range. That is the
+full contract — you do **not** read the whole schema file. The scripts in
+`scripts/wiki/` own the file format; you do the judgement.
 
 ## Step 1 — Read the process
 
@@ -64,23 +67,36 @@ Before the first write, clear the run manifest —
 logged to it; Step 4's report counts are read back from the manifest, not
 tallied from memory.
 
-Scan how competitors run *this* client journey, in **three tiers, in this
-order** — the order reflects how close each set is to the bank:
+The three competitor tiers are independent web-research streams, so scan them
+**concurrently**: in a single message, dispatch **three sub-agents** with the
+Task tool — one per tier — and wait for all three.
 
-1. **European corporate banks** — the closest competitive set → `competitor-cx-eu`.
-2. **Global corporate banks** — the major global players → `competitor-cx-global`.
-3. **Fintechs** — the challengers reshaping this experience → `competitor-cx-fintech`.
+| Tier | Type | Who |
+|---|---|---|
+| European corporate banks — the closest competitive set | `competitor-cx-eu` | named European peers |
+| Global corporate banks | `competitor-cx-global` | the major global players |
+| Fintechs | `competitor-cx-fintech` | the challengers reshaping this experience |
 
-For each tier, web-search for **named** competitors' client experience in this
-domain — their onboarding journey, channels, speed, self-service, reviews and
-case studies. Write one element per material example:
-- Blocks: *The journey* — how the competitor runs it; *Relevance* — the
-  experience gap it opens for this process; *Evidence* — the review, case
-  study or announcement.
-- Frontmatter: `competitor:` the named bank or fintech; `source:` and
-  `sourceUrl:`. (`asOf:` is auto-stamped by `write_element.py` — leave it out.)
-- Write each with `next_id.py` → `write_element.py` (`status: draft`,
-  `confidence: medium`; `low` if thinly evidenced) → `check_conformance.py`.
+Give each sub-agent this brief, filling in its tier:
+
+> You are sourcing competitor client experience for process `<slug>`, tier
+> **{tier}** (element type `{type}`). Read `wiki/processes/<slug>/index.md`
+> and the documented client journey (`channels`, `touchpoints`, `moments`,
+> `friction-points`) for context, and the existing `{type}` elements so you
+> do not duplicate one. Run `python3 scripts/wiki/show_template.py {type}`
+> for the element's shape. Web-search for **named** {who}'s client experience
+> in this domain — onboarding journey, channels, speed, self-service, reviews,
+> case studies. Draft one `write_element.py` spec per material example:
+> blocks *The journey* / *Relevance* / *Evidence*; frontmatter `competitor:`,
+> `source:`, `sourceUrl:`; `status: draft`, `confidence: medium` (`low` if
+> thinly evidenced); a `provenance` map, one entry per block heading, every
+> entry `{ "source": "web", "evidence": "<url> — \"<snippet>\" — fetched
+> <date>" }`. Name **real** competitors and cite **real** sources; never
+> invent one. A handful of material examples, not a dump. You are
+> **read-only** — do not write or run any write script. Return **only** a
+> JSON array of the draft specs.
+
+Collect the three arrays and hold the drafts for the Step 3 batch write.
 
 ## Step 3 — Scan CX benchmarks
 
@@ -92,6 +108,14 @@ corporate clients expect (status visibility, digital self-service). Write a
   process measures against it; *Evidence* — the specific figure or survey.
 - Frontmatter: `source:` and `sourceUrl:`. (`asOf:` is auto-stamped — leave
   it out.)
+- Draft each `cx-benchmark` as a `write_element.py` spec (`status: draft`,
+  `confidence: medium`; `low` if thinly evidenced).
+
+Then write the **whole run in one batch** — assemble a manifest
+`{ "slug": "<slug>", "elements": [ … ] }` of every competitor-CX example from
+Step 2 and every benchmark drafted here, each spec omitting `id`, and run
+`python3 scripts/wiki/write_elements.py /tmp/<slug>-elements.json`, then
+`python3 scripts/wiki/check_conformance.py <slug>`.
 
 Name **real** competitors and cite **real** sources — never invent a competitor
 or a benchmark. If web search is unavailable, write only what you can solidly
