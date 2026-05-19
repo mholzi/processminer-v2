@@ -175,13 +175,17 @@ function sectionSourcingKind(
 // open and locks the whole session to it — the CLI has no other way to know.
 // Sent once per session; later turns inherit it via `--resume`. The
 // + New-process flow is cross-process by nature and opts out (unscoped).
-function scopePreamble(d: ProcessDoc): string {
+function scopePreamble(d: ProcessDoc, user: User): string {
   const { id, title } = d.process;
   return [
     "[SESSION SCOPE — applies to this whole conversation]",
     `You are the Process Assistant for exactly one process: ${title} (${id}).`,
     `Its wiki content is wiki/processes/${d.slug}/; its source documents`,
     `are under raw-sources/${d.slug}/.`,
+    "",
+    `The SME present in this session is ${user.name} (${user.role}). Use that`,
+    "name verbatim wherever an approval or edit is stamped — never ask the SME",
+    "for their name.",
     "",
     "Rules, in force for every turn of this session:",
     `1. Only consider, discuss and change content belonging to ${id}.`,
@@ -433,6 +437,16 @@ export default function ProcessDocScreen({
   useEffect(() => {
     localStorage.setItem("pm-chat-width", String(chatWidth));
   }, [chatWidth]);
+  // Element-list filter — persisted so a reload keeps the chosen view.
+  useEffect(() => {
+    const saved = localStorage.getItem("pm-elem-filter");
+    if (saved === "flagged" || saved === "unreviewed" || saved === "all") {
+      setElemFilter(saved);
+    }
+  }, []);
+  useEffect(() => {
+    localStorage.setItem("pm-elem-filter", elemFilter);
+  }, [elemFilter]);
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     const m = openingRunDoc ? resumeMessage(openingRunDoc) : null;
     return m ? [m] : [];
@@ -757,7 +771,7 @@ export default function ProcessDocScreen({
     // First turn of a scoped session: hand the open process to the CLI and
     // lock the session to it. Later turns inherit it via --resume.
     const wireText =
-      !unscoped && sessionId === null ? scopePreamble(doc) + text : text;
+      !unscoped && sessionId === null ? scopePreamble(doc, user) + text : text;
 
     type SessionEvent =
       | { type: "progress"; text: string }
@@ -932,6 +946,10 @@ export default function ProcessDocScreen({
   // New process — opens the chat and triggers the new-process skill.
   function createProcess() {
     setChatOpen(true);
+    // The new-process flow is cross-process — drop any prior transcript
+    // (e.g. another process's "welcome back" resume banner) so the
+    // conversation starts clean and nothing stale bleeds across.
+    setMessages([]);
     handleSend("I want to create a new process.", { unscoped: true });
   }
 
@@ -1230,6 +1248,13 @@ export default function ProcessDocScreen({
           onSelect={switchProcess}
           onCreate={createProcess}
         />
+        <button
+          className="tb-newproc"
+          onClick={createProcess}
+          aria-label="Create a new process"
+        >
+          + New process
+        </button>
         <span className="spacer" />
         <div className="tb-icons">
           <Tooltip label="Search (⌘K)">
@@ -1490,57 +1515,51 @@ export default function ProcessDocScreen({
                 }
                 const flag = findingsBySection[s.id];
                 return (
-                  <button
-                    key={s.id}
-                    className={`nav-item${s.id === section ? " active" : ""}${
-                      state === "empty" ? " nav-empty" : ""
-                    }`}
-                    onClick={() => {
-                      setSection(s.id);
-                      setElemFilter("all");
-                    }}
-                  >
-                    <span className="nav-label">{s.label}</span>
-                    <span className="nav-meta">
-                      {flag ? (
-                        <Tooltip
-                          label={`${flag} lint finding${
+                  <div key={s.id} className="nav-item-wrap">
+                    <button
+                      className={`nav-item${
+                        s.id === section ? " active" : ""
+                      }${state === "empty" ? " nav-empty" : ""}`}
+                      onClick={() => {
+                        setSection(s.id);
+                        setElemFilter("all");
+                      }}
+                    >
+                      <span className="nav-label">{s.label}</span>
+                      <span className="nav-meta">
+                        {state !== "empty" && (
+                          <Tooltip label={dotTitle} placement="right">
+                            <span className={`nav-dot nav-dot-${state}`} />
+                          </Tooltip>
+                        )}
+                        {count !== null && (
+                          <span className="count">{count}</span>
+                        )}
+                      </span>
+                    </button>
+                    {flag ? (
+                      <Tooltip
+                        label={`${flag} lint finding${
+                          flag === 1 ? "" : "s"
+                        } — click to filter this section`}
+                        placement="right"
+                      >
+                        <button
+                          type="button"
+                          className="nav-flag"
+                          aria-label={`Filter ${s.label} to its ${flag} flagged element${
                             flag === 1 ? "" : "s"
-                          } — click to filter this section`}
-                          placement="right"
+                          }`}
+                          onClick={() => {
+                            setSection(s.id);
+                            setElemFilter("flagged");
+                          }}
                         >
-                          <span
-                            className="nav-flag"
-                            role="button"
-                            tabIndex={0}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSection(s.id);
-                              setElemFilter("flagged");
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter" || e.key === " ") {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setSection(s.id);
-                                setElemFilter("flagged");
-                              }
-                            }}
-                          >
-                            !
-                          </span>
-                        </Tooltip>
-                      ) : null}
-                      {state !== "empty" && (
-                        <Tooltip label={dotTitle} placement="right">
-                          <span className={`nav-dot nav-dot-${state}`} />
-                        </Tooltip>
-                      )}
-                      {count !== null && (
-                        <span className="count">{count}</span>
-                      )}
-                    </span>
-                  </button>
+                          !
+                        </button>
+                      </Tooltip>
+                    ) : null}
+                  </div>
                 );
                 })}
               </div>
@@ -1590,6 +1609,8 @@ export default function ProcessDocScreen({
               {doc.lint ? (
                 <ReviewPanel
                   report={doc.lint}
+                  slug={doc.slug}
+                  userName={user.name}
                   onGoToElement={goToElement}
                   onDeepDive={(f) =>
                     deepDive({

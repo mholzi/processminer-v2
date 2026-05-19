@@ -73,6 +73,13 @@ body {
 }
 .topbar .crumb { font-family: var(--mono); font-size: var(--text-xs); color: var(--muted); }
 .topbar .pname { font-weight: 600; font-size: var(--text-md); }
+.tb-newproc {
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  padding: 5px 10px; background: none; cursor: pointer;
+  font-family: var(--font); font-size: var(--text-sm); font-weight: 500;
+  color: var(--accent); white-space: nowrap;
+}
+.tb-newproc:hover { background: var(--accent-soft); }
 
 
 /* ---- Top bar: icon-button action cluster ---- */
@@ -264,8 +271,10 @@ body {
   background: var(--hi); border-radius: var(--r-sm);
   transition: width 250ms ease-in-out;
 }
+.nav-item-wrap { display: flex; align-items: center; }
+.nav-item-wrap > .tip-wrap { flex: none; padding-right: 12px; }
 .nav-item {
-  display: flex; align-items: center; gap: 12px; width: 100%;
+  display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0;
   padding: 8px 16px; font-size: var(--text-sm); cursor: pointer; text-align: left;
   background: none; border: 0; color: var(--ink); font-family: var(--font);
 }
@@ -1062,7 +1071,7 @@ body {
 .nav-meta { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 .nav-flag {
   font-family: var(--mono); font-size: var(--text-xs); font-weight: 700;
-  width: 15px; height: 15px; border-radius: 50%;
+  width: 15px; height: 15px; border-radius: 50%; border: 0; padding: 0;
   display: inline-grid; place-items: center;
   background: var(--mid-bg); color: var(--mid); cursor: pointer;
 }
@@ -1381,6 +1390,16 @@ body {
   margin-left: auto; font-size: var(--text-xs); font-weight: 600;
   color: var(--ok, var(--accent)); white-space: nowrap;
 }
+.finding-restore {
+  flex: none; font-family: var(--font); font-size: var(--text-xs);
+  color: var(--accent); background: none; border: 0; cursor: pointer;
+  padding: 0; white-space: nowrap;
+}
+.finding-restore:hover { text-decoration: underline; }
+.finding-restore:disabled { opacity: .5; cursor: not-allowed; }
+.finding-error {
+  font-size: var(--text-xs); color: var(--lo); margin-top: 4px;
+}
 .finding-resolution {
   display: flex; flex-direction: column; gap: 2px; margin-top: 6px;
   padding: 6px 8px; border-radius: var(--r-sm); background: var(--surface);
@@ -1458,6 +1477,9 @@ body {
 .finding-dismiss-form button.finding-dismiss-cancel {
   border-color: var(--line); background: var(--surface); color: var(--muted);
 }
+.finding-dismiss-error {
+  flex-basis: 100%; font-size: var(--text-xs); color: var(--lo);
+}
 
 /* ---- Document upload modal ---- */
 .modal-overlay {
@@ -1474,6 +1496,32 @@ body {
 .modal-title { font-size: var(--text-md); font-weight: 600; margin-bottom: 8px; }
 .modal-text {
   font-size: var(--text-sm); line-height: 1.6; color: var(--muted); margin-bottom: 16px;
+}
+.upload-modes { display: flex; gap: 4px; margin-bottom: 12px; }
+.upload-mode {
+  flex: 1; padding: 6px 8px; cursor: pointer; font-family: var(--font);
+  font-size: var(--text-xs); font-weight: 500; color: var(--muted);
+  background: none; border: 1px solid var(--line); border-radius: var(--r-sm);
+}
+.upload-mode.active {
+  color: var(--accent); border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.upload-mode:disabled { opacity: .55; cursor: not-allowed; }
+.upload-paste { display: flex; flex-direction: column; gap: 8px; }
+.upload-name {
+  font-family: var(--font); font-size: var(--text-sm);
+  padding: 7px 10px; border: 1px solid var(--line);
+  border-radius: var(--r-sm); background: var(--surface); color: var(--ink);
+}
+.upload-text {
+  font-family: var(--mono); font-size: var(--text-xs); line-height: 1.5;
+  min-height: 170px; resize: vertical;
+  padding: 10px; border: 1px solid var(--line);
+  border-radius: var(--r-sm); background: var(--surface); color: var(--ink);
+}
+.upload-name:focus, .upload-text:focus {
+  outline: none; border-color: var(--accent);
 }
 .upload-drop {
   border: 1px dashed var(--line); border-radius: var(--r-md);
@@ -1766,6 +1814,10 @@ body {
   border-radius: var(--r-sm); padding: 8px 12px; font-size: var(--text-xs); cursor: pointer;
 }
 .el-note-row button:disabled { opacity: .5; cursor: not-allowed; }
+.el-note-error {
+  display: block; font-size: var(--text-xs); color: var(--lo);
+  margin-bottom: 6px;
+}
 .el-note-actions { display: flex; gap: 14px; margin-top: 4px; }
 .el-note-actions .el-note-reply { margin-top: 0; }
 .el-note-actions .el-note-reply:disabled {

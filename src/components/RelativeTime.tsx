@@ -14,7 +14,9 @@ const MONTHS = [
 ];
 
 function absolute(d: Date): string {
-  return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]}`;
+  // Always carries the year — a bare "19 May" is ambiguous for an old note,
+  // and the full date is fully deterministic (no hydration mismatch).
+  return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 }
 
 function relative(d: Date, now: number): string {

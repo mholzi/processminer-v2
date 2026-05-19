@@ -7,7 +7,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run test:lint && npm run test:scripts",
+    "test:lint": "node --test --experimental-strip-types src/lib/lint.test.ts",
     "test:scripts": "python3 scripts/wiki/test_wiki_scripts.py",
     "eval:read-back": "python3 eval/read-back/run.py"
   },

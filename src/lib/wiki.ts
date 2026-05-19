@@ -8,7 +8,7 @@
 // `key: value`, where a value wrapped in [ ] is a comma-separated list.
 import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import { join } from "node:path";
-import type { LintReport } from "./lint";
+import { applyFindingDismissals, type FindingDismissals, type LintReport } from "./lint";
 import type { TargetReview } from "./target-review";
 
 const ROOT = process.cwd();
@@ -173,8 +173,13 @@ export interface Note {
   /** Set when this note replies to another note (that note's id). */
   replyTo?: string;
   /** Set true once the comment-review skill has triaged this comment with
-   *  the SME — incorporated, declined or otherwise handled. */
+   *  the SME — incorporated, declined or otherwise handled — or once it is
+   *  resolved by hand in the app. */
   resolved?: boolean;
+  /** Resolved only — who marked it resolved (set on a manual in-app resolve). */
+  resolvedBy?: string;
+  /** Resolved only — ISO date it was resolved. */
+  resolvedAt?: string;
 }
 
 /** One glossary term — an entry in glossary.json (CONTENT-MODEL-PLAN.md D1).
@@ -330,12 +335,25 @@ export function getProcess(slug: string): ProcessDoc | null {
       return undefined;
     }
   };
+  // The lint report, with the dismissal sidecar re-applied — so a finding the
+  // SME set aside stays dismissed even after run-lint rewrites lint.json.
+  const lint = readJson<LintReport>("lint.json");
+  if (lint) {
+    const dismissals = readJson<FindingDismissals>("finding-dismissals.json");
+    if (dismissals) {
+      applyFindingDismissals(
+        lint.findings,
+        dismissals,
+        new Date().toISOString().slice(0, 10),
+      );
+    }
+  }
   return {
     slug,
     process,
     elements,
     sources: listSources(slug),
-    lint: readJson<LintReport>("lint.json"),
+    lint,
     targetReview: readJson<TargetReview>("target-review.json"),
     ingest: readJson<IngestReport>("ingest.json"),
     reviewState: readJson<ReviewState>("review-state.json"),

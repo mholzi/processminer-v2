@@ -78,6 +78,7 @@ export async function PATCH(req: NextRequest) {
   const elementId = body.elementId;
   const noteId = body.noteId;
   const resolved = body.resolved === true;
+  const by = body.by;
 
   if (typeof slug !== "string" || !/^[A-Za-z0-9._-]+$/.test(slug)) {
     return Response.json({ error: "Bad or missing slug." }, { status: 400 });
@@ -101,8 +102,15 @@ export async function PATCH(req: NextRequest) {
   if (!note) {
     return Response.json({ error: "No such note." }, { status: 404 });
   }
-  if (resolved) note.resolved = true;
-  else delete note.resolved;
+  if (resolved) {
+    note.resolved = true;
+    note.resolvedBy = typeof by === "string" && by ? by : "SME";
+    note.resolvedAt = new Date().toISOString().slice(0, 10);
+  } else {
+    delete note.resolved;
+    delete note.resolvedBy;
+    delete note.resolvedAt;
+  }
 
   try {
     await writeFile(path, `${JSON.stringify(notes, null, 2)}\n`);

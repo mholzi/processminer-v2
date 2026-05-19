@@ -293,22 +293,44 @@ export default function ElementCard({
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [notesOpen, setNotesOpen] = useState(true);
   const [notePending, startNote] = useTransition();
+  const [noteError, setNoteError] = useState<string | null>(null);
+
+  // Read an error message off a failed API response, falling back gracefully.
+  async function errorFrom(res: Response, fallback: string): Promise<string> {
+    try {
+      const j = (await res.json()) as { error?: string };
+      return j.error ?? fallback;
+    } catch {
+      return fallback;
+    }
+  }
 
   function postNote() {
     const text = noteDraft.trim();
     if (!text || notePending) return;
+    setNoteError(null);
     startNote(async () => {
-      await fetch("/api/notes", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          slug,
-          elementId: page.id,
-          author: userName,
-          text,
-          replyTo: replyTo ?? undefined,
-        }),
-      });
+      let res: Response;
+      try {
+        res = await fetch("/api/notes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            slug,
+            elementId: page.id,
+            author: userName,
+            text,
+            replyTo: replyTo ?? undefined,
+          }),
+        });
+      } catch {
+        setNoteError("Could not reach the server — the note was not posted.");
+        return;
+      }
+      if (!res.ok) {
+        setNoteError(await errorFrom(res, "Could not post the note."));
+        return;
+      }
       setNoteDraft("");
       setReplyTo(null);
       router.refresh();
@@ -319,12 +341,29 @@ export default function ElementCard({
   // comment-review skill, which resolves comments after triaging them.
   function resolveNote(noteId: string, resolved: boolean) {
     if (notePending) return;
+    setNoteError(null);
     startNote(async () => {
-      await fetch("/api/notes", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug, elementId: page.id, noteId, resolved }),
-      });
+      let res: Response;
+      try {
+        res = await fetch("/api/notes", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            slug,
+            elementId: page.id,
+            noteId,
+            resolved,
+            by: userName,
+          }),
+        });
+      } catch {
+        setNoteError("Could not reach the server — the comment was unchanged.");
+        return;
+      }
+      if (!res.ok) {
+        setNoteError(await errorFrom(res, "Could not update the comment."));
+        return;
+      }
       router.refresh();
     });
   }
@@ -522,7 +561,7 @@ export default function ElementCard({
                     ⌖ Deep dive
                   </button>
                 )}
-                <FindingDismiss slug={slug} findingId={f.id} by={userName} />
+                <FindingDismiss slug={slug} finding={f} by={userName} />
               </div>
               <div className="el-finding-text">
                 <span className="el-finding-glyph" aria-hidden="true">
@@ -846,8 +885,16 @@ export default function ElementCard({
                                 className="el-note-when"
                               />
                               {n.resolved && (
-                                <span className="el-note-resolved">
+                                <span
+                                  className="el-note-resolved"
+                                  title={
+                                    n.resolvedAt
+                                      ? `Resolved ${n.resolvedAt}`
+                                      : undefined
+                                  }
+                                >
                                   ✓ Resolved
+                                  {n.resolvedBy ? ` · ${n.resolvedBy}` : ""}
                                 </span>
                               )}
                             </div>
@@ -895,6 +942,11 @@ export default function ElementCard({
                       </Fragment>
                     ))}
                   <div className="el-note-input">
+                    {noteError && (
+                      <span className="el-note-error" role="alert">
+                        {noteError}
+                      </span>
+                    )}
                     {replyTo && (
                       <span className="el-note-replying">
                         Replying ·{" "}

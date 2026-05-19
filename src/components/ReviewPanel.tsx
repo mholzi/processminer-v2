@@ -1,27 +1,39 @@
 "use client";
 
-import { isResolved, type LintFinding, type LintReport } from "@/lib/lint";
+import {
+  isDismissed,
+  isOpen,
+  isResolved,
+  type LintFinding,
+  type LintReport,
+} from "@/lib/lint";
 import FindingCard from "./FindingCard";
 
 // Lint review — the last `run-lint` pass for the process. Open findings
 // first (discrepancies, then structure issues, then clarifying questions),
-// then a collapsed group of findings already resolved in a deep-dive.
+// then collapsed groups of findings already resolved in a deep-dive, and of
+// findings the SME has dismissed.
 export default function ReviewPanel({
   report,
+  slug,
+  userName,
   onGoToElement,
   onDeepDive,
   onRerun,
   linting,
 }: {
   report: LintReport;
+  slug: string;
+  userName: string;
   onGoToElement: (id: string) => void;
   onDeepDive: (finding: LintFinding) => void;
   onRerun: () => void;
   linting: boolean;
 }) {
   const { findings } = report;
-  const open = findings.filter((f) => !isResolved(f));
+  const open = findings.filter(isOpen);
   const resolved = findings.filter(isResolved);
+  const dismissed = findings.filter(isDismissed);
   const byKind = (kind: LintFinding["kind"]) =>
     open.filter((f) => f.kind === kind);
   const discrepancies = byKind("discrepancy");
@@ -76,6 +88,8 @@ export default function ReviewPanel({
           <FindingCard
             key={f.id}
             finding={f}
+            slug={slug}
+            by={userName}
             onGoToElement={onGoToElement}
             onDeepDive={onDeepDive}
           />
@@ -92,6 +106,27 @@ export default function ReviewPanel({
             <FindingCard
               key={f.id}
               finding={f}
+              slug={slug}
+              by={userName}
+              onGoToElement={onGoToElement}
+              onDeepDive={onDeepDive}
+            />
+          ))}
+        </details>
+      )}
+
+      {dismissed.length > 0 && (
+        <details className="review-resolved">
+          <summary>
+            {dismissed.length} dismissed finding
+            {dismissed.length === 1 ? "" : "s"} — set aside by the SME
+          </summary>
+          {dismissed.map((f) => (
+            <FindingCard
+              key={f.id}
+              finding={f}
+              slug={slug}
+              by={userName}
               onGoToElement={onGoToElement}
               onDeepDive={onDeepDive}
             />
