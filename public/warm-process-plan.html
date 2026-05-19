@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Accelerating the Process Assistant — Eliminating Per-Turn Cold Start</title>
+<style>
+  :root {
+    --ink: #1c1d22;
+    --muted: #6b6e78;
+    --line: #e3e4e8;
+    --bg: #f6f6f4;
+    --surface: #ffffff;
+    --accent: #2f6f4f;
+    --accent-soft: #e7f1ec;
+    --warn: #b4541a;
+    --warn-soft: #fbeee3;
+    --pro: #2f6f4f;
+    --con: #b23b3b;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: var(--font); line-height: 1.6;
+    font-size: 15px;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 48px 28px 96px; }
+  header { border-bottom: 2px solid var(--ink); padding-bottom: 22px; margin-bottom: 8px; }
+  .kicker {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 8px;
+  }
+  h1 { font-size: 28px; line-height: 1.25; margin: 0 0 10px; }
+  .lede { color: var(--muted); font-size: 16px; margin: 0; }
+  h2 {
+    font-size: 20px; margin: 44px 0 14px; padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+  }
+  h3 { font-size: 16px; margin: 24px 0 8px; }
+  p { margin: 10px 0; }
+  code {
+    font-family: var(--mono); font-size: 12.5px;
+    background: #ecedee; padding: 1.5px 5px; border-radius: 4px;
+  }
+  ul, ol { margin: 10px 0; padding-left: 22px; }
+  li { margin: 5px 0; }
+  .card {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 10px; padding: 20px 22px; margin: 16px 0;
+  }
+  .card h3 { margin-top: 0; }
+  .tag {
+    display: inline-block; font-family: var(--mono); font-size: 11px;
+    text-transform: uppercase; letter-spacing: .05em;
+    padding: 2px 8px; border-radius: 999px; vertical-align: middle;
+  }
+  .tag-a { background: var(--accent-soft); color: var(--accent); }
+  .tag-b { background: var(--warn-soft); color: var(--warn); }
+  .pc { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 14px; }
+  @media (max-width: 620px) { .pc { grid-template-columns: 1fr; } }
+  .pc h4 {
+    margin: 0 0 6px; font-size: 12px; font-family: var(--mono);
+    text-transform: uppercase; letter-spacing: .06em;
+  }
+  .pc .pros h4 { color: var(--pro); }
+  .pc .cons h4 { color: var(--con); }
+  .pc ul { list-style: none; padding-left: 0; margin: 0; }
+  .pc li { padding-left: 20px; position: relative; }
+  .pros li::before {
+    content: "+"; position: absolute; left: 2px; color: var(--pro); font-weight: 700;
+  }
+  .cons li::before {
+    content: "\2212"; position: absolute; left: 2px; color: var(--con); font-weight: 700;
+  }
+  table { border-collapse: collapse; width: 100%; margin: 14px 0; font-size: 14px; }
+  th, td { border: 1px solid var(--line); padding: 9px 11px; text-align: left; vertical-align: top; }
+  th { background: #efefec; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  td.win { background: var(--accent-soft); }
+  .callout {
+    border-left: 3px solid var(--accent); background: var(--accent-soft);
+    padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0;
+  }
+  .callout.warn { border-left-color: var(--warn); background: var(--warn-soft); }
+  .phase {
+    border: 1px solid var(--line); border-radius: 10px; background: var(--surface);
+    margin: 12px 0; overflow: hidden;
+  }
+  .phase-head {
+    display: flex; align-items: baseline; gap: 10px;
+    padding: 12px 18px; background: #efefec; border-bottom: 1px solid var(--line);
+  }
+  .phase-no {
+    font-family: var(--mono); font-weight: 700; color: var(--accent); font-size: 13px;
+  }
+  .phase-title { font-weight: 600; }
+  .phase-effort {
+    margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--muted);
+  }
+  .phase-body { padding: 12px 18px; }
+  .phase-body p { margin: 4px 0 8px; }
+  .seq {
+    font-family: var(--mono); font-size: 12.5px; background: #2a2b30; color: #e8e8e8;
+    border-radius: 8px; padding: 14px 16px; margin: 14px 0; overflow-x: auto;
+  }
+  .seq .hot { color: #ff9d6b; }
+  .seq .cool { color: #7ec9a3; }
+  footer {
+    margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line);
+    color: var(--muted); font-size: 13px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="kicker">Performance · Process Assistant</p>
+  <h1>Eliminating the per-turn cold start</h1>
+  <p class="lede">
+    Every chat turn boots a fresh <code>claude</code> CLI process before the
+    model does any work. This is the largest fixed latency cost in the
+    assistant. Below: the problem, two ways to fix it with pros and cons, a
+    recommendation, and a phased implementation plan.
+  </p>
+</header>
+
+<h2>1 · The problem</h2>
+<p>
+  The Process Assistant chat is backed by the local <code>claude</code> CLI.
+  Each turn, <code>/api/session</code> (<code>src/app/api/session/route.ts</code>,
+  line&nbsp;88) calls <code>spawn("claude", …)</code> — a brand-new process,
+  every single message.
+</p>
+<p>What happens on each turn, in order:</p>
+<div class="seq">
+POST /api/session<br>
+&nbsp;&nbsp;<span class="hot">spawn("claude")</span> ........ new OS process, Node + V8 startup<br>
+&nbsp;&nbsp;<span class="hot">discover skills</span> ......... scan ~20 .claude/skills/*/SKILL.md<br>
+&nbsp;&nbsp;<span class="hot">init MCP servers</span> ........ connect configured MCP servers<br>
+&nbsp;&nbsp;<span class="hot">load config + auth</span> ...... read the Claude Code login<br>
+&nbsp;&nbsp;<span class="hot">--resume &lt;id&gt;</span> ........... reload + replay the prior transcript<br>
+&nbsp;&nbsp;<span class="cool">model turn begins</span> ...... only now does real work start
+</div>
+<p>
+  Everything in <span style="color:var(--warn)">orange</span> is fixed
+  overhead paid <em>before the model produces a single token</em>. An
+  elicitation session is dozens of turns long, so this cost is paid dozens of
+  times — and it is the same whether the turn is a one-word reply or a long
+  extraction. It is also the most likely cause of the "sometimes slow"
+  variability: the work is constant, but a cold start lands on top of it
+  every time.
+</p>
+<div class="callout">
+  <strong>The goal:</strong> pay the skill-discovery / MCP-init / auth cost
+  <em>once</em>, keep a process warm, and feed each turn into it — so a turn
+  starts at "model begins" instead of "spawn".
+</div>
+
+<h2>2 · What the cold start actually costs</h2>
+<p>
+  The overhead is not one thing — it is a stack of independent costs, each
+  small, that compound:
+</p>
+<ul>
+  <li><strong>Process &amp; runtime startup</strong> — a new OS process, Node
+    bootstrap, V8 warm-up, module loading.</li>
+  <li><strong>Skill discovery</strong> — the CLI scans
+    <code>.claude/skills/</code> and parses the frontmatter of ~20
+    <code>SKILL.md</code> files to build the skill registry.</li>
+  <li><strong>MCP initialisation</strong> — any configured MCP servers are
+    launched and handshaked on every boot.</li>
+  <li><strong>Config &amp; auth</strong> — the machine's Claude Code login and
+    settings are read and validated.</li>
+  <li><strong>Transcript replay</strong> — <code>--resume</code> reloads the
+    prior session and re-feeds it; this grows with the conversation.</li>
+</ul>
+<p>
+  Only the last item is intrinsic to "continue this conversation." The first
+  four are pure boot tax that a warm process pays <em>once</em>.
+</p>
+
+<h2>3 · The two approaches</h2>
+
+<div class="card">
+  <h3><span class="tag tag-a">Approach A</span> &nbsp;Agent SDK streaming-input session</h3>
+  <p>
+    Replace the per-turn <code>spawn</code> with the
+    <strong>Claude Agent SDK</strong> running a long-lived
+    <em>streaming-input</em> session: one session object stays alive in the
+    Next.js server process and each turn is pushed into it as a message.
+    Skills are discovered once, MCP connects once, and the session holds
+    conversation context in memory — no <code>--resume</code> replay.
+  </p>
+  <div class="pc">
+    <div class="pros">
+      <h4>Pros</h4>
+      <ul>
+        <li>Removes the entire cold start after turn one.</li>
+        <li>Officially supported, first-class API — not a process trick.</li>
+        <li>Native event streaming — dovetails with the reply-streaming
+          setting just shipped.</li>
+        <li>No <code>--resume</code> transcript replay; the session holds
+          context directly.</li>
+        <li>Cleaner long-term architecture than driving a CLI.</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>Cons</h4>
+      <ul>
+        <li><strong>Auth risk:</strong> must confirm the SDK can use the
+          machine's Claude Code login — the "no API key" rule is a documented
+          design decision (SKILLS.md §2).</li>
+        <li>Larger rewrite of <code>route.ts</code> — it becomes stateful.</li>
+        <li>The server process now holds N live sessions in memory.</li>
+        <li>A new dependency and a shift away from "the CLI runs the skills."</li>
+        <li>Sessions die with the server process — no persistence across
+          restarts.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h3><span class="tag tag-b">Approach B</span> &nbsp;Pooled warm CLI workers</h3>
+  <p>
+    Keep one (or a small pool of) <code>claude</code> CLI processes
+    <strong>warm</strong> — started once with
+    <code>--input-format stream-json --output-format stream-json</code> and
+    left running. Each chat turn is written to a worker's stdin and its
+    events streamed back. A warm worker already has skills, MCP and auth
+    loaded.
+  </p>
+  <div class="pc">
+    <div class="pros">
+      <h4>Pros</h4>
+      <ul>
+        <li>Removes the cold start — paid once at warm-up.</li>
+        <li>Still the same <code>claude</code> CLI — <strong>provably keeps
+          the "no API key" model</strong> (it is literally today's runtime).</li>
+        <li>Smaller conceptual change; the CLI's streaming-input mode is
+          built for exactly this.</li>
+        <li>Can pre-warm a worker on server start so even turn one is fast.</li>
+        <li>No new SDK dependency.</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>Cons</h4>
+      <ul>
+        <li>Long-lived child processes to manage — zombies/leaks if
+          mishandled.</li>
+        <li>One worker handles one conversation at a time — needs a pool +
+          session→worker mapping.</li>
+        <li>Crash/health handling: a worker dying mid-turn must be detected
+          and recycled.</li>
+        <li><code>route.ts</code> still becomes stateful — same as A.</li>
+        <li>A warm process driven over stdin is more fiddly to reason about
+          than discrete spawns.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<h2>4 · Side by side</h2>
+<table>
+  <tr>
+    <th>Dimension</th>
+    <th>A — Agent SDK</th>
+    <th>B — Warm CLI pool</th>
+  </tr>
+  <tr>
+    <td>Removes cold start</td>
+    <td class="win">Yes</td>
+    <td class="win">Yes</td>
+  </tr>
+  <tr>
+    <td>Keeps "no API key" guarantee</td>
+    <td>Needs verification</td>
+    <td class="win">Guaranteed</td>
+  </tr>
+  <tr>
+    <td>Size of change</td>
+    <td>Larger — new dependency + rewrite</td>
+    <td class="win">Moderate — process pool + route rework</td>
+  </tr>
+  <tr>
+    <td>Native streaming events</td>
+    <td class="win">First-class</td>
+    <td>Via <code>stream-json</code> (already used)</td>
+  </tr>
+  <tr>
+    <td>Long-term architecture</td>
+    <td class="win">Cleaner</td>
+    <td>Pragmatic, CLI-bound</td>
+  </tr>
+  <tr>
+    <td>Process-lifecycle burden</td>
+    <td class="win">SDK-managed</td>
+    <td>Hand-managed pool</td>
+  </tr>
+</table>
+
+<h2>5 · Recommendation</h2>
+<div class="callout">
+  <strong>Start with Approach B (warm CLI pool).</strong> It is the only
+  option that <em>provably</em> preserves the "no API key — use the machine's
+  Claude Code login" rule, which SKILLS.md §2/§14 records as a settled
+  decision. It is a moderate, well-contained change and reuses the
+  <code>stream-json</code> protocol the route already speaks.
+</div>
+<p>
+  Approach A is the cleaner destination and worth adopting <em>if</em> a quick
+  spike confirms the Agent SDK can authenticate with the existing Claude Code
+  login (no API key). Treat that spike as Phase&nbsp;0 below: if it passes, A
+  becomes viable; if not, B stands on its own. Either way, the
+  <code>route.ts</code> rework (statefulness, session→worker mapping, idle
+  eviction) is shared, so the work is not wasted.
+</p>
+
+<h2>6 · Proposed implementation plan</h2>
+<p>Phased, for Approach B — each phase is independently shippable.</p>
+
+<div class="phase">
+  <div class="phase-head">
+    <span class="phase-no">Phase 0</span>
+    <span class="phase-title">Measure &amp; de-risk</span>
+    <span class="phase-effort">~½ day</span>
+  </div>
+  <div class="phase-body">
+    <p>Instrument the current route: log the time from <code>spawn</code> to
+      the first model event. This gives a hard baseline and confirms the win
+      is worth the work.</p>
+    <p>In parallel, spike Approach A's open question: can the Agent SDK run on
+      the machine's Claude Code login with no API key? The answer decides
+      whether A stays on the table.</p>
+  </div>
+</div>
+
+<div class="phase">
+  <div class="phase-head">
+    <span class="phase-no">Phase 1</span>
+    <span class="phase-title">A <code>SessionWorker</code> abstraction</span>
+    <span class="phase-effort">~1 day</span>
+  </div>
+  <div class="phase-body">
+    <p>Wrap a single long-lived <code>claude</code> child — started with
+      <code>--input-format stream-json --output-format stream-json</code> —
+      behind a small class exposing <code>send(message): AsyncIterable&lt;event&gt;</code>.
+      It owns one process and one conversation; it parses the stdout event
+      stream and isolates turns.</p>
+  </div>
+</div>
+
+<div class="phase">
+  <div class="phase-head">
+    <span class="phase-no">Phase 2</span>
+    <span class="phase-title">A worker registry / pool</span>
+    <span class="phase-effort">~1 day</span>
+  </div>
+  <div class="phase-body">
+    <p>A module-level map of <code>appSessionId → SessionWorker</code> in the
+      Next.js server. Create a worker on a session's first turn; evict after
+      an idle timeout; cap the pool size. This relies on the app's
+      single-process local deployment (already a given — the app spawns
+      <code>claude</code> on the same machine).</p>
+  </div>
+</div>
+
+<div class="phase">
+  <div class="phase-head">
+    <span class="phase-no">Phase 3</span>
+    <span class="phase-title">Rework <code>/api/session</code></span>
+    <span class="phase-effort">~1 day</span>
+  </div>
+  <div class="phase-body">
+    <p>Replace spawn-per-request with: look up or create the session's
+      worker, write the turn to it, stream its events back as SSE. Keep the
+      existing event protocol unchanged —
+      <code>progress</code> / <code>delta</code> / <code>done</code> /
+      <code>error</code> — so the client needs no changes.
+      <code>restartSession</code> recycles the worker.</p>
+  </div>
+</div>
+
+<div class="phase">
+  <div class="phase-head">
+    <span class="phase-no">Phase 4</span>
+    <span class="phase-title">Lifecycle hardening</span>
+    <span class="phase-effort">~1 day</span>
+  </div>
+  <div class="phase-body">
+    <p>Health checks; restart a worker that crashes; surface a crash
+      mid-turn as a clean <code>error</code> event; kill idle workers; clean
+      up all workers on server shutdown. Pre-warm one worker on server start
+      so even the first turn is fast.</p>
+  </div>
+</div>
+
+<div class="phase">
+  <div class="phase-head">
+    <span class="phase-no">Phase 5</span>
+    <span class="phase-title">Verify</span>
+    <span class="phase-effort">~½ day</span>
+  </div>
+  <div class="phase-body">
+    <p>Re-measure against the Phase&nbsp;0 baseline; confirm turn-start
+      latency dropped. Regression-test a full skill run (document a process,
+      run lint, a foundational-run resume) to be sure a warm process behaves
+      identically to a fresh one.</p>
+  </div>
+</div>
+
+<h2>7 · Risks &amp; open questions</h2>
+<ul>
+  <li><strong>Statefulness.</strong> <code>/api/session</code> becomes
+    stateful — live workers do not survive a server restart. Acceptable for a
+    local internal tool, but it is a real change from today's stateless
+    route.</li>
+  <li><strong>Zombie processes.</strong> Long-lived children must be reliably
+    killed on idle and on shutdown, or they leak.</li>
+  <li><strong>Concurrency.</strong> One worker = one turn at a time. The chat
+    UI already blocks input while a turn is pending, so same-session
+    concurrency cannot happen; different sessions get different workers.
+    The pool cap bounds total processes.</li>
+  <li><strong>Session identity.</strong> Today's <code>--resume &lt;id&gt;</code>
+    is replaced by "this worker <em>is</em> the conversation." The mapping
+    from the app's <code>chatSessionId</code> to a worker must be exact, and
+    the unscoped new-process flow needs its own worker.</li>
+  <li><strong>Approach A auth (if pursued).</strong> The whole case for A
+    hinges on the SDK using the Claude Code login with no API key — verify in
+    Phase&nbsp;0 before committing.</li>
+</ul>
+
+<footer>
+  Analysis artifact · acceleration item #2 (per-turn cold start).
+  Generated for review — not part of the application.
+  Served locally at <code>/warm-process-plan.html</code>.
+</footer>
+
+</div>
+</body>
+</html>
