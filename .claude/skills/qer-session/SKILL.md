@@ -94,10 +94,10 @@ Otherwise greet the SME and either:
 
 **Read the cursor** — `python3 scripts/wiki/qer_cursor.py status <slug>`:
 - **`exists: false`, or `done: true`** — a fresh session. Run `python3
-  scripts/wiki/qer_cursor.py start <slug>`, ask the SME their **name** and
-  **role** (the human-in-the-loop record and `source` context the specialists
-  use), then `python3 scripts/wiki/qer_cursor.py advance <slug>` and go to
-  Step 2.
+  scripts/wiki/qer_cursor.py start <slug>`. The SME's **name** and **role** are
+  already handed over by the session-scope preamble — use those verbatim for
+  the human-in-the-loop record and `source` context; do not ask. Then run
+  `python3 scripts/wiki/qer_cursor.py advance <slug>` and go to Step 2.
 - **`exists: true`, `done: false`** — a session is already in flight. Tell the
   SME: "Resuming the QER session for **{process}** — at step {current}." Jump
   straight to the step the cursor names; do not re-run the completed steps.

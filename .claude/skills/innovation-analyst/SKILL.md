@@ -173,8 +173,11 @@ Run these in order.
 If the invocation states no mode, default to `standalone`. Do not infer the
 mode from anything else in the invocation wording.
 
-**Phase 0 — Setup.** Ask the SME's name and role. Identify the process: list
-the slugs under `wiki/processes/`, let them pick; read its `index.md`.
+**Phase 0 — Setup.** The invocation supplies the SME's name and role — use
+that as the `source` context and the human-in-the-loop record; do not re-ask
+it. Only if the invocation supplies no SME identity, ask for it. Identify the
+process: list the slugs under `wiki/processes/`, let them pick; read its
+`index.md`.
 
 **Phase 1 — Orientation.** Read the documented As-Is — especially the
 pain-points and friction-points — and the existing `market-trend` and

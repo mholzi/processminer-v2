@@ -685,7 +685,8 @@ export default function ProcessDocScreen({
   // scaffolded process appears on disk (or the user bails). While true, the
   // canvas hides the previously-open process so the SME isn't editing one
   // process while the chat is creating another.
-  const [draftingNewProcess, setDraftingNewProcess] = useState(false);
+  const [draftingNewProcess, setDraftingNewProcess] =
+    useState<boolean>(false);
   const [linting, setLinting] = useState(false);
   // Findings come from the last run-lint pass — wiki/processes/<slug>/lint.json,
   // read server-side into doc.lint. Re-running the skill refreshes it.
@@ -1822,7 +1823,9 @@ export default function ProcessDocScreen({
       <div
         className={`shell${chatOpen ? " chat-open" : ""}${
           sectionsCollapsed ? " sections-collapsed" : ""
-        }${appView === "feedback" ? " is-hidden" : ""}`}
+        }${appView === "feedback" ? " is-hidden" : ""}${
+          draftingNewProcess ? " drafting" : ""
+        }`}
         style={{ "--chat-w": `${chatWidth}px` } as CSSProperties}
       >
         {draftingNewProcess ? (

@@ -164,8 +164,11 @@ validation at the end so skip Phase 5; start at Phase 1. You always read the
 documented perspectives and the `source-target` stub (Phase 1), orchestrated or
 not. Invoked directly (standalone), run every phase.
 
-**Phase 0 — Setup.** Ask the SME's name and role. Identify the process: list
-the slugs under `wiki/processes/`, let them pick; read its `index.md`.
+**Phase 0 — Setup.** The invocation supplies the SME's name and role — use
+that as the `source` context and the human-in-the-loop record; do not re-ask
+it. Only if the invocation supplies no SME identity, ask for it. Identify the
+process: list the slugs under `wiki/processes/`, let them pick; read its
+`index.md`.
 
 **Phase 1 — Orientation.** Read the documented perspectives the target builds
 on — the As-Is pain-points, process-gaps and steps; the compliance-gaps and

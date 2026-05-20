@@ -10,6 +10,11 @@ incrementally elaborated by Claude Code skills, and every heading carries
 provenance so the human can see exactly what the SME said vs. what the AI
 added.
 
+> **Reviewing the codebase?** Start with [ARCHITECTURE.md](ARCHITECTURE.md) —
+> it has a cold-start reading guide (2 hours / 2 days / 2 weeks tracks), an
+> end-to-end flow walkthrough, the data model, and the invariants the system
+> depends on.
+
 [karpathy]: https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
 
 ## What it does

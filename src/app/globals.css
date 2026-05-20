@@ -1267,6 +1267,9 @@ body {
 .shell.chat-open { grid-template-columns: 292px 1fr var(--chat-w, 340px); }
 .shell.sections-collapsed { grid-template-columns: 80px 1fr 56px; }
 .shell.sections-collapsed.chat-open { grid-template-columns: 80px 1fr var(--chat-w, 340px); }
+/* New-process drafting: no left rail, just canvas + chat. */
+.shell.drafting { grid-template-columns: 1fr 56px; }
+.shell.drafting.chat-open { grid-template-columns: 1fr var(--chat-w, 340px); }
 .rail-r.chat { padding: 0; align-items: stretch; display: flex; flex-direction: column; position: relative; }
 /* Drag handle on the chat panel's left edge — widen / narrow the panel. */
 .chat-resize {

@@ -140,10 +140,12 @@ the process is already selected and its overview captured, and the orchestrator
 runs validation at the end — skip Phases 0, 1 and 4, start at Phase 2. Invoked
 directly (standalone), run every phase.
 
-**Phase 0 — Setup.** Ask the SME's name and role. Identify the process: list
-the slugs under `wiki/processes/`, let them pick; read its `index.md` and the
-existing elements — especially the `process-step`s — so you can link systems
-to the steps they serve.
+**Phase 0 — Setup.** The invocation supplies the SME's name and role — use
+that as the `source` context and the human-in-the-loop record; do not re-ask
+it. Only if the invocation supplies no SME identity, ask for it. Identify the
+process: list the slugs under `wiki/processes/`, let them pick; read its
+`index.md` and the existing elements — especially the `process-step`s — so you
+can link systems to the steps they serve.
 
 **Phase 1 — Orientation.** Read the documented process steps. You do not
 re-document them; you confirm with the SME which steps are system-supported, so
