@@ -136,6 +136,18 @@ of truth, never write the report from memory.
 
 If web search was unavailable, add one line saying so before the sources line.
 
+**Always close the report with a one-line handoff** to the internal CX
+layer. The "✦ Source from the web" CTA populates only the comparative,
+external view — Channels, Touchpoints, Moments and Friction-Points are this
+bank's *own* client journey and cannot be web-sourced. After the canonical
+report, append one line — verbatim:
+
+> The internal client journey (Channels, Touchpoints, Moments and Friction-Points) was not touched — those sections need the client-journey-specialist with the SME. Start it from any of those sections' empty state when ready.
+
+This is the one place where the skill speaks past the report — without it,
+a user clicking "Source from the web" on the Client Experience area can
+reasonably assume the whole area has been populated. It hasn't.
+
 ## Scope
 
 You source competitor CX and CX benchmarks, nothing else. You never document

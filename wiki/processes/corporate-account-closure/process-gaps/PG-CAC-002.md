@@ -7,7 +7,7 @@ status: draft
 confidence: high
 source: account-closure-dtp-mockup.md
 area: Process Design
-gapStatus: OPEN
+gapStatus: open
 affects: [PS-CAC-001]
 provenance: {"Impact": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "Next step": {"evidence": "What is the dormancy threshold that triggers a closure recommendation?", "source": "document"}, "The gap": {"evidence": "What is the dormancy threshold that triggers a closure recommendation?", "source": "document"}}
 approval: approved

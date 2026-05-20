@@ -221,6 +221,39 @@ export function checkFrontmatter(page: WikiPage, type: ElementType): string[] {
   return issues;
 }
 
+/** A frontmatter field with a fixed value set (schema `fieldValues`) must
+ *  carry one of those values exactly — catches typos and casing drift
+ *  (e.g. `gapStatus: OPEN` where the schema declares `open`).
+ *  The Python twin is check_field_values() in check_conformance.py. */
+export function checkFieldValues(
+  page: WikiPage,
+  type: ElementType,
+  schema: Schema,
+): string[] {
+  const issues: string[] = [];
+  const fields = type.frontmatter?.fields ?? [];
+  const fieldValues = schema.fieldValues ?? {};
+  for (const f of fields) {
+    const allowed = fieldValues[f.key];
+    if (!allowed) continue;
+    const val = page.meta[f.key];
+    if (
+      val === undefined ||
+      val === "" ||
+      (Array.isArray(val) && val.length === 0)
+    )
+      continue;
+    for (const item of Array.isArray(val) ? val : [val]) {
+      if (!allowed.includes(String(item))) {
+        issues.push(
+          `frontmatter “${f.key}” is “${item}” — not one of ${allowed.join(", ")}`,
+        );
+      }
+    }
+  }
+  return issues;
+}
+
 /** Whole-wiki conformance pass — one finding per non-conforming element.
  *  Covers both block-template deviations and missing required frontmatter. */
 export function checkConformance(
@@ -242,11 +275,13 @@ export function checkConformance(
             .map((c) => `“${c.heading}” ${c.issue}`)
         : [];
     const fmIssues = checkFrontmatter(el, type);
+    const fvIssues = checkFieldValues(el, type, schema);
     const provIssues =
       template && template.length ? checkProvenance(el, type) : [];
     if (
       blockIssues.length === 0 &&
       fmIssues.length === 0 &&
+      fvIssues.length === 0 &&
       provIssues.length === 0
     )
       continue;
@@ -259,6 +294,7 @@ export function checkConformance(
       detail: `Does not match the ${type.label} schema — ${[
         ...blockIssues,
         ...fmIssues,
+        ...fvIssues,
         ...provIssues,
       ].join("; ")}.`,
       elements: [el.id],

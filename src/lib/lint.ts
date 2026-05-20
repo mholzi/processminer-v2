@@ -61,6 +61,12 @@ export interface LintReport {
   generatedAt: string;
   slug: string;
   summary: { conformance: number; discrepancy: number; question: number };
+  /**
+   * Element ids the lint pass reverted from `approved` to `in-progress`.
+   * Older lint.json files written before this field existed will be missing
+   * it — treat as the empty list.
+   */
+  reopens?: string[];
   findings: LintFinding[];
 }
 

@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-05-19T23:46:37.641178+00:00",
+  "slug": "bank-guarantee-issuance",
+  "file": "bank-guarantee-issuance-v2.md",
+  "created": [
+    "PS-BGI-007",
+    "CP-BGI-004"
+  ],
+  "updated": [],
+  "conflicts": [],
+  "corrections": [
+    {
+      "element": "PS-BGI-007",
+      "field": "Inputs",
+      "removed": "Collateral blocking confirmation from the bank's collateral records — inferred system detail not stated in document"
+    },
+    {
+      "element": "PS-BGI-007",
+      "field": "Outputs",
+      "removed": "recorded — implied system entry not stated in document"
+    },
+    {
+      "element": "CP-BGI-004",
+      "field": "Risk addressed",
+      "removed": "specific credit risk framing: exposing the bank to uncovered credit risk on the uncollateralised portion — not in document"
+    }
+  ]
+}

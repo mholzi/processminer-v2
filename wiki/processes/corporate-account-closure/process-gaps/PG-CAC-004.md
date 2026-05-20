@@ -7,7 +7,7 @@ status: draft
 confidence: high
 source: account-closure-dtp-mockup.md
 area: Process Design
-gapStatus: OPEN
+gapStatus: open
 affects: [PS-CAC-007]
 provenance: {"Impact": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "Next step": {"evidence": "Can a closure be reversed once executed, and within what window?", "source": "document"}, "The gap": {"evidence": "Can a closure be reversed once executed, and within what window?", "source": "document"}}
 approval: approved

@@ -79,6 +79,20 @@ Any edit re-opens the element's approval — the scripts handle that. Then run
 `python3 scripts/wiki/check_conformance.py <slug> <elementId>` and fix any flag.
 You never set `approved` — the SME re-approves the element on the card.
 
+**Flag the elements the change implicates.** An incorporated change can make a
+*linked* element stale — the same fact, now described differently in two
+places. A control's "Control activity" restates what its process-step does; a
+step's output is an exception's input; a role's responsibilities echo the steps
+it owns. You may not edit those elements (scope: one element per run) — but you
+must not let the drift pass silently. For each **[I]** that changed a fact,
+read the edited element's relations (`step`, `systems`, `controls`, `affects`,
+the steps a control links to) and judge which linked elements now describe the
+same fact at odds with the new text. List every such element — by id — for the
+Step 4 summary; if a linked element is squarely contradicted, also post a short
+discussion comment on *that* element naming the change, so its own
+`comment-review` will pick it up. Naming the implicated elements is the only
+safe substitute for editing them.
+
 ## Step 4 — Close the loop
 
 Once every comment has a decision:
@@ -87,7 +101,9 @@ Once every comment has a decision:
    `python3 scripts/wiki/notes.py resolve <slug> <elementId> <noteId> [<noteId> ...]`.
 2. **Post the summary** — write a short summary note to a temp file: what was
    incorporated and the element edit it produced, what was declined and the SME's
-   reason, and anything left open. Then post it as the owning analyst:
+   reason, anything left open, and — from Step 3 — any **linked elements the
+   change implicates**, named by id, so the SME knows where the wiki may now be
+   inconsistent. Then post it as the owning analyst:
    `python3 scripts/wiki/notes.py summary <slug> <elementId> "<Analyst Name>" <file>`.
 
 Then confirm to the SME with this **exact** line, substituting the counts:

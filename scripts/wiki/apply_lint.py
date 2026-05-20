@@ -115,22 +115,23 @@ def main(argv: list[str]) -> None:
 
     summary = {k: sum(1 for f in findings if f["kind"] == k) for k in KINDS}
 
-    report = {
-        "generatedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "slug": slug,
-        "summary": summary,
-        "findings": findings,
-    }
-    (proc_dir / "lint.json").write_text(
-        json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
-    )
-
     # Re-open every implicated element that is currently approved.
     today = datetime.date.today().isoformat()
     implicated = {e for f in findings for e in f["elements"]}
     reopened = sorted(implicated & approved)
     for eid in reopened:
         reopen(elements[eid], today)
+
+    report = {
+        "generatedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "slug": slug,
+        "summary": summary,
+        "reopens": reopened,
+        "findings": findings,
+    }
+    (proc_dir / "lint.json").write_text(
+        json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
 
     print(
         f"lint.json written for {slug}: {len(findings)} finding(s) "

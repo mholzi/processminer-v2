@@ -1,15 +1,17 @@
-# Processminer v2
+# Processminer
 
-Internes Deutsche-Bank-Tool: KI-Agenten extrahieren im interaktiven
-Brainstorming SME-Prozesswissen, dokumentieren es und entwickeln es in einen
-Target State. From-scratch-Rebuild des BMAD-Modul-v1 (github.com/mholzi/Processminer)
-als echte Web-App.
+AI-native process documentation tool: Claude Code skills elicit a subject-matter
+expert's process knowledge through interactive brainstorming, write it into a
+file-backed wiki, and develop it into a target state. From-scratch rebuild of
+the BMAD-Modul-v1 prototype as a Next.js web app, applying Karpathy's LLM Wiki
+pattern with per-heading provenance and approval gating.
 
-Planungs-Artefakte (aus /office-hours, /plan-ceo-review, /plan-design-review,
-/design-consultation, 2026-05-16):
-- Design-Doc + CEO-Plan + Reviews: `~/.gstack/projects/Processminer2/`
-- TODOS: `TODOS.md`
-- Wireframe + Designsystem-Preview: `~/.gstack/projects/Processminer2/designs/`
+Reference docs in this repo:
+- `DESIGN.md` — design system (typography, colour, spacing, motion)
+- `SKILLS.md` — agent / skill architecture (perspective specialists, orchestration)
+- `CONTENT-MODEL-PLAN.md` — schema decisions D1–D6
+- `HALLUCINATION-PLAN.md` — per-heading provenance contract
+- `TODOS.md` — open work items
 
 ## Design System
 Always read DESIGN.md before making any visual or UI decisions.

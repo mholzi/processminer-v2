@@ -7,7 +7,7 @@ status: draft
 confidence: high
 source: ddmm-transformation-agent
 validationArea: Audit
-gapStatus: OPEN
+gapStatus: open
 provenance: {"Resolution": {"evidence": "SME confirmed: mandatory closure-evidencing procedure within CP-DDMM-004; Internal Audit confirmation required.", "source": "elicited"}, "Status": {"evidence": "SME confirmed: OPEN; requires targeted process decision and audit confirmation.", "source": "elicited"}, "The gap": {"evidence": "SME (M. Vogel) confirmed: OAF-DDMM-001 requires evidencing discrepancies to closure; TD-DDMM-010 shortens the batch interval but does not define the evidencing procedure.", "source": "elicited"}}
 ---
 ## The gap

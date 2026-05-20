@@ -7,7 +7,7 @@ status: draft
 confidence: high
 source: ddmm-transformation-agent
 validationArea: Governance
-gapStatus: OPEN
+gapStatus: open
 provenance: {"Resolution": {"evidence": "SME confirmed: formal approval gate must be designed as part of TS-DDMM-004 delivery plan; Compliance and Risk sign-off required before production routing; periodic calibration review required post-launch.", "source": "elicited"}, "Status": {"evidence": "SME confirmed: OPEN; approval gate must be designed before routing model goes live.", "source": "elicited"}, "The gap": {"evidence": "SME (M. Vogel) confirmed: 'Compliance approves' is stated as a condition in TS-DDMM-004 and TD-DDMM-005 but no element defines the approval gate structure, ownership, or criteria.", "source": "elicited"}}
 ---
 ## The gap

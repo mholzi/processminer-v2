@@ -54,8 +54,9 @@ regulated. Read the existing `controls` — they tell you what risks the process
 already manages, and let you map a regulation to the control that satisfies it.
 Read any existing `regulation` elements: you extend, you never duplicate.
 
-This is a Deutsche Bank process — assume German and EU regulation is in scope,
-plus the international standards (Basel) that flow into it.
+Use the process's `jurisdiction` field in `index.md` as the scope hint — the
+regulation that governs the process's home jurisdiction, plus the international
+standards (e.g. Basel for banking) that flow into it.
 
 ## Step 2 — Scan the regulatory landscape
 

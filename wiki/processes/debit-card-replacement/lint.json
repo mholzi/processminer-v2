@@ -1,0 +1,98 @@
+{
+  "generatedAt": "2026-05-19T18:22:43.073403+00:00",
+  "slug": "debit-card-replacement",
+  "summary": {
+    "conformance": 0,
+    "discrepancy": 4,
+    "question": 2
+  },
+  "findings": [
+    {
+      "id": "F-001",
+      "kind": "discrepancy",
+      "title": "M-DCR-003 delivery target contradicts PS-DCR-006 SLA",
+      "detail": "M-DCR-003 states a target of 'Within 4-6 business days of the order', but PS-DCR-006 carries an SLA of 'Card delivered within 5-7 business days of the order' and M-DCR-003's own provenance records the source as '5-7 business days'. The metric and the step disagree on the committed delivery window.",
+      "elements": [
+        "M-DCR-003",
+        "PS-DCR-006"
+      ],
+      "status": "resolved",
+      "resolvedBy": "S. Krause",
+      "resolvedAt": "2026-05-19",
+      "resolutionNote": "PS-DCR-006 SLA aligned to the 4-6 business day delivery window — the figure the SLA update memo established and conflict-resolution already applied to M-DCR-003."
+    },
+    {
+      "id": "F-002",
+      "kind": "discrepancy",
+      "title": "CP-DCR-002 execution and owner contradict PS-DCR-003 description",
+      "detail": "CP-DCR-002 marks the card block as execution: AUTOMATED with owner: Card Operations, but PS-DCR-003 states 'The agent places an immediate block' and lists owner: Contact Centre Agent. The two elements disagree on both who initiates the block and whether it is automated or manual.",
+      "elements": [
+        "CP-DCR-002",
+        "PS-DCR-003"
+      ],
+      "status": "resolved",
+      "resolvedBy": "S. Krause",
+      "resolvedAt": "2026-05-19",
+      "resolutionNote": "CP-DCR-002 corrected to execution MANUAL, owner Contact Centre — the immediate block is placed by the Contact Centre Agent (PS-DCR-003), not an automated system; the DTP control table's 'automated' label was loose."
+    },
+    {
+      "id": "F-003",
+      "kind": "discrepancy",
+      "title": "PP-DCR-004 and CG-DCR-001 describe the same delivery-visibility gap but are not linked",
+      "detail": "PP-DCR-004 (no delivery tracking once the card leaves for the bureau, affects PS-DCR-006) and CG-DCR-001 (no control confirms the replacement card reached the customer) both document the same untracked-delivery problem from different perspectives. Neither element references the other, making the gap appear twice in the wiki without a cross-link.",
+      "elements": [
+        "PP-DCR-004",
+        "CG-DCR-001"
+      ],
+      "status": "resolved",
+      "resolvedBy": "S. Krause",
+      "resolvedAt": "2026-05-19",
+      "resolutionNote": "By design: PP-DCR-004 (staff/process pain) and CG-DCR-001 (control gap) document the same delivery-visibility issue through two perspectives the content model keeps as separate element types; the schema has no pain-point-to-compliance-gap relation. The client-lens view FP-DCR-003 is linked to PP-DCR-004 via painPoint."
+    },
+    {
+      "id": "F-004",
+      "kind": "discrepancy",
+      "title": "PP-DCR-001 describes a control weakness at intake with no corresponding compliance-gap element",
+      "detail": "PP-DCR-001 documents that manual re-keying of the reported reason at PS-DCR-001 causes mis-routing — a damaged card sent through the fraud check, or a stolen card that skips it. This is a control weakness at the intake step, but no CG-DCR element captures it. CG-DCR-001 covers only the delivery-confirmation gap.",
+      "elements": [
+        "PP-DCR-001",
+        "PS-DCR-001"
+      ],
+      "status": "resolved",
+      "resolvedBy": "S. Krause",
+      "resolvedAt": "2026-05-19",
+      "resolutionNote": "Created CG-DCR-003 — the intake step has no control over the accuracy of the reported reason, which routes the fraud check; the control weakness PP-DCR-001 describes is now captured as a compliance-gap."
+    },
+    {
+      "id": "F-005",
+      "kind": "question",
+      "title": "Innovation-ideas section is empty despite four documented pain points",
+      "detail": "PP-DCR-001 through PP-DCR-004 are all documented, including the P1/HIGH pain point PP-DCR-002 (knowledge-based identity verification slow and failing often). The innovation-ideas section contains no elements at all. Is the innovation section intentionally deferred to a later phase, or should ideas addressing at least the highest-priority pain points be captured now?",
+      "elements": [
+        "PP-DCR-001",
+        "PP-DCR-002",
+        "PP-DCR-003",
+        "PP-DCR-004"
+      ],
+      "status": "resolved",
+      "resolvedBy": "S. Krause",
+      "resolvedAt": "2026-05-19",
+      "resolutionNote": "Innovation is intentionally deferred — the Innovation area is documented in its own phase via source-innovation and innovation-analyst, after the As-Is, Risk and CX perspectives. The four pain points are recorded inputs to that later pass."
+    },
+    {
+      "id": "F-006",
+      "kind": "question",
+      "title": "SYS-DCR-002 and SYS-DCR-003 have no documented integration with SYS-DCR-001",
+      "detail": "Steps PS-DCR-001 and PS-DCR-002 span SYS-DCR-002 (Contact Centre CRM) and SYS-DCR-003 (Mobile Banking App), while PS-DCR-003 onward operates in SYS-DCR-001 (CMS). Neither intake system carries an 'integrates' link to SYS-DCR-001. Is the hand-off between intake channels and the CMS handled by a direct system integration that should be documented, or is it a manual step?",
+      "elements": [
+        "SYS-DCR-001",
+        "SYS-DCR-002",
+        "SYS-DCR-003"
+      ],
+      "status": "resolved",
+      "resolvedBy": "S. Krause",
+      "resolvedAt": "2026-05-19",
+      "resolutionNote": "Deferred to the IT Architect — the Integrations section is not yet documented; whether the intake-to-CMS hand-off is a system integration or a manual step is logged for the it-architect session."
+    }
+  ]
+}

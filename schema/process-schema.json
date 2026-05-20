@@ -408,7 +408,7 @@
           {
             "key": "execution",
             "label": "Execution",
-            "hint": "MANUAL or AUTOMATED — whether a person or the system performs the control."
+            "hint": "MANUAL / AUTOMATED / HYBRID — whether a person performs the control, the system enforces it, or both (a manual trigger plus an automated execution, e.g. an analyst initiating an automated screening tool)."
           },
           {
             "key": "effectiveness",
@@ -2058,7 +2058,8 @@
     ],
     "execution": [
       "MANUAL",
-      "AUTOMATED"
+      "AUTOMATED",
+      "HYBRID"
     ],
     "systemType": [
       "CORE",
@@ -2105,6 +2106,17 @@
       "worked",
       "confirmed-empty",
       "not-visited"
+    ],
+    "gapStatus": [
+      "open",
+      "in-remediation",
+      "closed",
+      "resolved",
+      "addressed",
+      "addressed-in-target",
+      "remediated",
+      "mitigated",
+      "done"
     ]
   },
   "_provenanceComment": "Hallucination countermeasure (HALLUCINATION-PLAN.md). Every template-bearing element carries a `provenance` frontmatter key: a JSON object keyed by template heading title, each value {source, evidence}. `source` is one of fieldValues.provenanceSource — elicited (the SME said it; evidence is the verbatim SME quote), document (from an uploaded source; evidence is the source quote), proposed (AI-added, unconfirmed; evidence empty), web (web-sourced, unconfirmed; evidence is URL + snippet + fetch date), legacy-approved (predates this rule; evidence not required). check_conformance.py requires a provenance entry for every template heading, requires non-empty evidence for elicited/document/web, and cross-checks the map keys against the template headings. set_approval.py blocks `approved` while any heading is proposed or web (unconfirmed)."

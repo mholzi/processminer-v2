@@ -1,0 +1,40 @@
+{
+  "PS-BGI-001": [
+    {
+      "id": "n-1779231505262-pcnxj",
+      "author": "M. Berger",
+      "text": "The exception EX-BGI-004 (incomplete-application hold) needs a maximum hold duration — at the moment an application can sit in this state indefinitely while the RM chases. Suggest 5 business days then auto-escalate to the TFM.",
+      "ts": "2026-05-19T22:58:25.262Z",
+      "resolved": true
+    },
+    {
+      "id": "n-1779231508070-tg380",
+      "author": "M. Berger",
+      "text": "Does the TFO check the beneficiary's country at intake, or is country risk only screened at step 4? If country risk is visible at intake we could fail fast on obvious cases (sanctioned jurisdictions) before queueing for screening.",
+      "ts": "2026-05-19T22:58:28.070Z",
+      "resolved": true
+    },
+    {
+      "id": "n-1779231511073-uvum6",
+      "author": "M. Berger",
+      "text": "Bid-bond carve-out: now that the contract reference is conditional, please flag in the step description that tender reference is the substitute input — otherwise new TFOs will keep mandating the contract reference for bid-bond cases.",
+      "ts": "2026-05-19T22:58:31.073Z",
+      "resolved": true
+    },
+    {
+      "id": "n-1779232313998-vpqo9",
+      "author": "Process Specialist",
+      "text": "Three comments reviewed on PS-BGI-001 (Application Intake) — Process Specialist, 2026-05-20.\n\n**Incorporated (1):** Comment on EX-BGI-004 hold duration. Added a second paragraph to \"What happens\" recording that incomplete applications are held with a recommended 5-business-day chase window before escalating to the Trade Finance Manager. Framed as a recommended target pending sign-off from the Head of Trade Finance — not yet confirmed bank policy.\n\n**Declined (2):**\n- *Beneficiary country check at intake* — the TFO's informal country eyeball is not a formal check or control and is not a substitute for step 4 sanctions screening. Fail-fast intake screening is a worthwhile future enhancement but would need a control framework and TFO training before it belongs in the current-state step. Suggest capturing as an innovation idea.\n- *Bid-bond / tender-reference carve-out* — already addressed in the current text: \"What happens\" and Inputs both carry the conditional tender/solicitation reference for bid-bond cases. Closed as resolved by existing text.\n\n**Implicated elements:** EX-BGI-004 — its Handling block has no hold time limit and no escalation path; it should be updated to match the 5-business-day / TFM-escalation addition now recorded on PS-BGI-001. A flag has been posted to the EX-BGI-004 discussion. Head of Trade Finance sign-off on the time limit is required before EX-BGI-004 can record the policy as confirmed.",
+      "ts": "2026-05-19T23:11:53.000Z",
+      "resolved": true
+    }
+  ],
+  "EX-BGI-004": [
+    {
+      "id": "n-1779232299005-vgbr4",
+      "author": "Process Specialist",
+      "text": "Implicated by PS-BGI-001 comment-review (2026-05-20): the 'What happens' block on PS-BGI-001 now records a recommended 5-business-day chase window before escalating to the TFM for incomplete-application holds (EX-BGI-004). The Handling block on this exception currently has no time limit and no escalation path — it should be updated to match. Note: the 5-business-day target is a recommendation from M. Berger; final policy requires sign-off from the Head of Trade Finance before it can be recorded as confirmed.",
+      "ts": "2026-05-19T23:11:39.000Z"
+    }
+  ]
+}

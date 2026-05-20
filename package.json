@@ -2,7 +2,7 @@
   "name": "processminer2",
   "version": "0.1.0",
   "private": true,
-  "description": "Processminer v2 — AI-native banking process documentation (Deutsche Bank internal)",
+  "description": "Processminer — AI-native process documentation. Claude Code skills elicit SME process knowledge into a file-backed wiki with per-heading provenance.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

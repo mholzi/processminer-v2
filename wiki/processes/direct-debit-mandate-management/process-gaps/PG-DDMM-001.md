@@ -7,7 +7,7 @@ status: draft
 confidence: high
 source: ddmm-dtp-mockup.md
 area: Process Rules
-gapStatus: RESOLVED
+gapStatus: resolved
 affects: [PS-DDMM-004]
 provenance: {"Impact": {"evidence": "SME confirmed: now resolved — the gap was documentation uncertainty, not a live operational risk.", "source": "elicited"}, "Next step": {"evidence": "SME confirmed: no current-state action. Design question (risk-based threshold) is target-state scope.", "source": "elicited"}, "The gap": {"evidence": "SME (M. Vogel) confirmed during CP-DDMM-003 review: 50-mandate threshold is a fixed hard rule today, not risk-based.", "source": "elicited"}}
 approval: approved

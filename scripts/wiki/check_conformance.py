@@ -27,8 +27,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from wiki_lib import (  # noqa: E402
     PROVENANCE_SOURCES,
-    element_types,
     iter_elements,
+    load_schema,
     parse_blocks,
     parse_provenance,
     template_headings,
@@ -65,6 +65,29 @@ def check_frontmatter(meta: dict, info: dict) -> list[str]:
         val = meta.get(key)
         if val is None or val == "" or val == []:
             issues.append(f"required frontmatter “{key}” is missing")
+    return issues
+
+
+def check_field_values(meta: dict, info: dict, field_values: dict) -> list[str]:
+    """A frontmatter field with a fixed value set (schema `fieldValues`) must
+    carry one of those values exactly — catches typos and casing drift
+    (e.g. `gapStatus: OPEN` where the schema declares `open`)."""
+    issues: list[str] = []
+    fields = (info.get("frontmatter") or {}).get("fields") or []
+    for f in fields:
+        key = f["key"] if isinstance(f, dict) else f
+        allowed = field_values.get(key)
+        if not allowed:
+            continue
+        val = meta.get(key)
+        if val is None or val == "" or val == []:
+            continue  # an absent required field is check_frontmatter's concern
+        for item in val if isinstance(val, list) else [val]:
+            if str(item) not in allowed:
+                issues.append(
+                    f"frontmatter “{key}” is “{item}” — not one of "
+                    f"{', '.join(allowed)}"
+                )
     return issues
 
 
@@ -117,7 +140,7 @@ def check_provenance(meta: dict, info: dict) -> list[str]:
     return issues
 
 
-def check_element(meta: dict, body: str, info: dict) -> list[str]:
+def check_element(meta: dict, body: str, info: dict, field_values: dict) -> list[str]:
     issues: list[str] = []
     template = info.get("template") or []
     blocks = {b["heading"]: b for b in parse_blocks(body)}
@@ -163,6 +186,7 @@ def check_element(meta: dict, body: str, info: dict) -> list[str]:
             issues.append(f"“{heading}” block is not in the template")
 
     issues.extend(check_frontmatter(meta, info))
+    issues.extend(check_field_values(meta, info, field_values))
     issues.extend(check_provenance(meta, info))
     return issues
 
@@ -175,7 +199,9 @@ def main(argv: list[str]) -> None:
     slug = argv[0]
     only = argv[1] if len(argv) == 2 else None
 
-    types = element_types()
+    schema = load_schema()
+    types = schema["elementTypes"]
+    field_values = schema.get("fieldValues", {})
     checked = 0
     flagged = 0
     findings: list[dict] = []
@@ -186,7 +212,7 @@ def main(argv: list[str]) -> None:
         if not info or not info.get("template"):
             continue
         checked += 1
-        issues = check_element(meta, body, info)
+        issues = check_element(meta, body, info, field_values)
         eid = meta.get("id")
         etype = meta.get("type")
         if issues:

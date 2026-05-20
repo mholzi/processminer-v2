@@ -39,8 +39,34 @@ approves it in the app.
 | target-state | `to-be-design` | how the process should work in the future |
 | transformation-decision | `transformation-decisions` | a decision taken to reach the target state |
 | gap | `gap-resolution` | a gap between As-Is and target, and how to close it |
+| requirement | `requirements` | a testable statement of what the target must do |
+| process-dependency | `dependencies` | an upstream feeder or downstream consumer the target connects to |
+| assumption | `assumptions` | something the target rests on that still needs confirming |
 
-You do **not** produce As-Is elements, controls, CX elements, market trends,
+The first three are the heart of the consolidation. The last three are
+**section seeds** — at least one low-confidence stub per section so the
+Target Process area is not left structurally empty after the consolidation
+pass (the `transformation-agent` walks each one to elicited content with the
+SME). Derive them mechanically from what you have already drafted:
+
+- Each **transformation-decision** that prescribes a system, data flow or
+  behaviour change yields one or more **requirements** (e.g. TD "deploy an
+  intake validator agent" → REQ "the intake validator agent must flag the
+  same required fields as the manual check, with a false-positive rate
+  measured during shadow run"). Aim for at least one requirement per
+  transformation-decision; group when the decisions are tightly related.
+- Read each `system` and `integration` for upstream/downstream relations
+  (where does the input come from, where does the output go), and draft one
+  **process-dependency** per external feeder or consumer named in the wiki.
+  At least two dependencies.
+- Every transformation-decision implicitly rests on assumptions — pricing
+  unchanged, regulatory stance steady, vendor availability, etc. Draft at
+  least two **assumptions**: the most load-bearing one per transformation-
+  decision cluster.
+
+The `validation` section has no formal element type and is the
+transformation-agent's territory — you write nothing there. You also do
+**not** produce As-Is elements, controls, CX elements, market trends,
 innovation ideas, innovation risks or systems — those belong to the five
 perspective specialists. You only consolidate what they wrote into a target.
 
@@ -140,13 +166,38 @@ any `target-state` a decision does not realise, is a candidate gap. So is any
 `innovation-risk` that the transformation must actively manage.
 
 Draft each `gap` per its template, linking the `target-state` it serves by its
-`"@<tempKey>"` from Step 2. Then write the **whole Target Process in one
-batch** — assemble a manifest `{ "slug": "<slug>", "elements": [ … ] }` of
-every target-state, transformation-decision and gap, each spec omitting `id`,
-each carrying its `tempKey`, every `realises` and target-state link written as
-`"@<tempKey>"` — and run `python3 scripts/wiki/write_elements.py
-/tmp/<slug>-elements.json`, then `python3 scripts/wiki/check_conformance.py
-<slug>`. The batch writer assigns every id and resolves every `@<tempKey>`.
+`"@<tempKey>"` from Step 2.
+
+## Step 4.5 — Section seeds (requirements, dependencies, assumptions)
+
+Before writing the batch, draft the section seeds described in
+"What you produce" so the Requirements, Dependencies and Assumptions sections
+are not left structurally empty:
+
+- **requirement** — for each `transformation-decision`, draft at least one
+  `requirement` (template type `requirement`, section `requirements`) that
+  states what the target must do for the decision to be true. Link it to its
+  parent decision by `"@<tempKey>"`.
+- **process-dependency** — read each `system` and `integration` for the
+  upstream and downstream parties named, and draft one `process-dependency`
+  (template type `process-dependency`, section `dependencies`) per external
+  feeder or consumer. Aim for at least two.
+- **assumption** — draft at least two `assumption` elements (template type
+  `assumption`, section `assumptions`) naming the most load-bearing
+  assumptions behind the transformation-decision cluster.
+
+Every section-seed element is `status: draft`, `confidence: low`, with every
+block marked `proposed` — same convention as the target-states themselves.
+The `transformation-agent` walks each one to elicited content.
+
+Then write the **whole Target Process in one batch** — assemble a manifest
+`{ "slug": "<slug>", "elements": [ … ] }` of every target-state,
+transformation-decision, gap, requirement, process-dependency and assumption,
+each spec omitting `id`, each carrying its `tempKey`, every `realises`,
+target-state link and decision link written as `"@<tempKey>"` — and run
+`python3 scripts/wiki/write_elements.py /tmp/<slug>-elements.json`, then
+`python3 scripts/wiki/check_conformance.py <slug>`. The batch writer assigns
+every id and resolves every `@<tempKey>`.
 
 ## Step 5 — Report
 

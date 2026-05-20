@@ -16,6 +16,7 @@ import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { WikiPage } from "@/lib/wiki";
 import ElementHovercard from "./ElementHovercard";
+import { pickPerspective } from "@/lib/wait-perspective";
 
 export interface ChatMessage {
   id: string;
@@ -75,6 +76,27 @@ function linkify(node: ReactNode, getRef: GetRef): ReactNode {
   return node;
 }
 
+/** Short label for the active-skill chip's ETA — "12 min" / "45 s". */
+function formatEtaShort(ms: number): string {
+  if (ms < 60_000) return `${Math.round(ms / 1000)} s`;
+  return `${Math.round(ms / 60_000)} min`;
+}
+
+/** Don't show the perspective line before the turn has run this long. */
+const PERSPECTIVE_THRESHOLD_MS = 2 * 60 * 1000;
+
+/** "1 minute" / "14 minutes" — perspective copy reads better in whole minutes. */
+function formatElapsedMinutes(ms: number): string {
+  const min = Math.max(1, Math.round(ms / 60_000));
+  return min === 1 ? "1 minute" : `${min} minutes`;
+}
+
+/** Cap the activity-as-placeholder so a long line doesn't wrap awkwardly. */
+function truncateForPlaceholder(text: string): string {
+  const t = text.replace(/\s+/g, " ").trim();
+  return t.length > 64 ? `${t.slice(0, 61)}…` : t;
+}
+
 // Markdown block tags whose text content may carry element-id references.
 const LINKABLE = [
   "p", "li", "td", "th", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote",
@@ -103,7 +125,9 @@ export default function AgentChat({
   onSend,
   pending,
   activity,
+  tasks,
   activeSkillLabel,
+  activeSkillEta,
   onRestart,
   onRunLint,
   linting,
@@ -118,8 +142,12 @@ export default function AgentChat({
   onSend: (text: string) => void;
   pending: boolean;
   activity?: string | null;
+  /** Live sub-agent fan-out for the current turn — one chip per Task. */
+  tasks?: { id: string; label: string; status: "running" | "done" }[];
   /** Friendly name of the skill the current turn runs — null for free text. */
   activeSkillLabel?: string | null;
+  /** Median wall-clock ETA from past runs of the active skill, if any. */
+  activeSkillEta?: { medianMs: number; runs: number } | null;
   onRestart: () => void;
   onRunLint: () => void;
   linting: boolean;
@@ -129,6 +157,29 @@ export default function AgentChat({
   const [draft, setDraft] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const mdComponents = useMemo(() => buildComponents(getRef), [getRef]);
+
+  // Long-wait perspective footer — a dry one-liner shown once the turn has
+  // been running for >2 min. We tick elapsed every 5s (minute-precision is
+  // enough; saves a re-render every second). The line is picked exactly
+  // once per turn — the first time the threshold is crossed — so the user
+  // can read it without it flickering on every refresh.
+  const [elapsedMs, setElapsedMs] = useState(0);
+  const [perspective, setPerspective] = useState<string | null>(null);
+  useEffect(() => {
+    if (!pending) {
+      setElapsedMs(0);
+      setPerspective(null);
+      return;
+    }
+    const start = Date.now();
+    const t = setInterval(() => setElapsedMs(Date.now() - start), 5000);
+    return () => clearInterval(t);
+  }, [pending]);
+  useEffect(() => {
+    if (pending && elapsedMs >= PERSPECTIVE_THRESHOLD_MS && perspective === null) {
+      setPerspective(pickPerspective());
+    }
+  }, [pending, elapsedMs, perspective]);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -226,12 +277,44 @@ export default function AgentChat({
             </span>
             {activeSkillLabel}
             <span className="chat-skill-state">· running</span>
+            {activeSkillEta && (
+              <span
+                className="chat-skill-eta"
+                title={`Median of ${activeSkillEta.runs} past run${
+                  activeSkillEta.runs === 1 ? "" : "s"
+                } on this machine`}
+              >
+                · est ~{formatEtaShort(activeSkillEta.medianMs)}
+              </span>
+            )}
+          </div>
+        )}
+        {pending && tasks && tasks.length > 0 && (
+          <div className="chat-task-strip" aria-label="Sub-agent fan-out">
+            {tasks.map((t) => (
+              <span
+                key={t.id}
+                className={`chat-task-chip chat-task-${t.status}`}
+                title={t.label}
+              >
+                <span className="chat-task-mark" aria-hidden="true">
+                  {t.status === "done" ? "✓" : "⟳"}
+                </span>
+                {t.label}
+              </span>
+            ))}
           </div>
         )}
         {pending && (
           <div className="chat-msg agent pending">
             <span className="chat-activity-dot" />
             {activity || "Working…"}
+          </div>
+        )}
+        {pending && perspective && (
+          <div className="chat-perspective" aria-hidden="true">
+            You&rsquo;ve been waiting {formatElapsedMinutes(elapsedMs)}.{" "}
+            {perspective}
           </div>
         )}
         {linting && (
@@ -252,6 +335,9 @@ export default function AgentChat({
       <div className="chat-input">
         <textarea
           value={draft}
+          // While a turn is in flight, the activity ticker already shows
+          // in the pending bubble above — keep the textarea placeholder
+          // static so it doesn't duplicate that text.
           placeholder={pending ? "Working…" : "Message the assistant…"}
           disabled={pending}
           onChange={(e) => setDraft(e.target.value)}

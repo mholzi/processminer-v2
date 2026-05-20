@@ -4,7 +4,6 @@
 // (Node boot, ~20 SKILL.md discovery, MCP init, auth) before any model work.
 // A SessionWorker instead keeps one `claude` process alive in streaming-input
 // mode: that cost is paid once, then each turn is written to its stdin.
-// See public/warm-process-plan.html for the rationale and plan.
 
 import { spawn, type ChildProcess } from "node:child_process";
 import { randomUUID } from "node:crypto";

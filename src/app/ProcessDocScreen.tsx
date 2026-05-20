@@ -183,6 +183,111 @@ const SPECIALIST: Record<string, { label: string; blurb: string }> = {
 // Friendly name for each chat-driven skill — shown in the assistant's
 // active-skill chip while a turn runs. Covers the elicitation specialists
 // plus the non-specialist skills the run-* wrappers invoke.
+// Long-turn UX helpers — ETA from past runs and a browser notification on
+// completion when the user has tabbed away. Both are best-effort: storage
+// failures and a missing Notification API are silent no-ops.
+
+/** Don't fire a Notification for short turns — they were never painful. */
+const NOTIFY_THRESHOLD_MS = 2 * 60 * 1000;
+/** Cap per-skill history so a runaway log never bloats localStorage. */
+const ETA_HISTORY_CAP = 10;
+const ETA_STORAGE_KEY = "pm.skillDurationsMs.v1";
+const NOTIFY_ASKED_KEY = "pm.notifyPermissionAsked.v1";
+
+function readSkillHistory(): Record<string, number[]> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(ETA_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as unknown;
+    return parsed && typeof parsed === "object"
+      ? (parsed as Record<string, number[]>)
+      : {};
+  } catch {
+    return {};
+  }
+}
+
+function recordSkillDuration(skill: string, ms: number) {
+  if (typeof window === "undefined" || !Number.isFinite(ms) || ms <= 0) return;
+  try {
+    const all = readSkillHistory();
+    const list = Array.isArray(all[skill]) ? all[skill].slice() : [];
+    list.push(Math.round(ms));
+    while (list.length > ETA_HISTORY_CAP) list.shift();
+    all[skill] = list;
+    window.localStorage.setItem(ETA_STORAGE_KEY, JSON.stringify(all));
+  } catch {
+    /* storage full or blocked — silently skip */
+  }
+}
+
+function readSkillEta(skill: string): { medianMs: number; runs: number } | null {
+  const list = readSkillHistory()[skill];
+  if (!list || list.length === 0) return null;
+  const sorted = [...list].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  const medianMs =
+    sorted.length % 2 === 0
+      ? Math.round((sorted[mid - 1] + sorted[mid]) / 2)
+      : sorted[mid];
+  return { medianMs, runs: list.length };
+}
+
+/** Render `ms` as a tight human label like "12 min" or "45 s". */
+function formatEta(ms: number): string {
+  if (ms < 60_000) return `${Math.round(ms / 1000)} s`;
+  const min = Math.round(ms / 60_000);
+  return `${min} min`;
+}
+
+/**
+ * Browser notification on long-turn completion. Best-effort:
+ *   - never asks until the first long turn actually completes (no permission
+ *     prompt on first page load);
+ *   - asks at most once — declines are remembered;
+ *   - silent if the API is unavailable or the tab is currently focused.
+ */
+function notifyTurnComplete(durationMs: number, skill: string | null) {
+  if (typeof window === "undefined") return;
+  if (typeof Notification === "undefined") return;
+  // If the user is looking at the tab right now, they don't need a ping.
+  if (!document.hidden) return;
+  const label = skill ? SKILL_LABEL[skill] || skill : "Assistant";
+  const body = `${label} finished after ${formatEta(durationMs)}.`;
+  const fire = () => {
+    try {
+      new Notification("Processminer — done", { body, tag: "pm-turn-done" });
+    } catch {
+      /* user-agent quirk — drop silently */
+    }
+  };
+  if (Notification.permission === "granted") {
+    fire();
+  } else if (Notification.permission === "default") {
+    // Only ask once per browser. A decline isn't asked again.
+    let asked = false;
+    try {
+      asked = window.localStorage.getItem(NOTIFY_ASKED_KEY) === "1";
+    } catch {
+      /* storage blocked — assume not asked */
+    }
+    if (asked) return;
+    try {
+      window.localStorage.setItem(NOTIFY_ASKED_KEY, "1");
+    } catch {
+      /* storage blocked — proceed without remembering */
+    }
+    Notification.requestPermission()
+      .then((p) => {
+        if (p === "granted") fire();
+      })
+      .catch(() => {
+        /* user dismissed — ignore */
+      });
+  }
+}
+
 const SKILL_LABEL: Record<string, string> = {
   "process-specialist": "Process Specialist",
   "control-compliance-specialist": "Control & Compliance Specialist",
@@ -559,9 +664,28 @@ export default function ProcessDocScreen({
   const [chatPending, setChatPending] = useState(false);
   // Live activity line while a turn runs — updated from the SSE stream.
   const [chatActivity, setChatActivity] = useState<string | null>(null);
+  // Live sub-agent fan-out — when document-ingest / source-cx / source-
+  // innovation dispatch multiple Task tools, each shows as its own chip so
+  // the long-tail (the slow one that holds up the whole turn) is visible.
+  // Ordered by start so the strip is stable; status flips done when the
+  // tool_result comes back. Cleared on turn boundary.
+  const [chatTasks, setChatTasks] = useState<
+    { id: string; label: string; status: "running" | "done" }[]
+  >([]);
   // The named skill a run-* wrapper kicked off — drives the assistant's
   // active-skill chip. Null for a free-text turn (no named skill).
   const [activeSkill, setActiveSkill] = useState<string | null>(null);
+  // Median ETA for the current active skill, taken from past-run history in
+  // localStorage. Null when there's no prior data or no named skill.
+  const [activeSkillEta, setActiveSkillEta] = useState<{
+    medianMs: number;
+    runs: number;
+  } | null>(null);
+  // True from the moment the user kicks off the new-process flow until the
+  // scaffolded process appears on disk (or the user bails). While true, the
+  // canvas hides the previously-open process so the SME isn't editing one
+  // process while the chat is creating another.
+  const [draftingNewProcess, setDraftingNewProcess] = useState(false);
   const [linting, setLinting] = useState(false);
   // Findings come from the last run-lint pass — wiki/processes/<slug>/lint.json,
   // read server-side into doc.lint. Re-running the skill refreshes it.
@@ -660,6 +784,7 @@ export default function ProcessDocScreen({
       // A freshly-scaffolded process gets a fresh, scoped assistant session —
       // drop the session id so the next turn hands the new process over.
       setChatSessionId(null);
+      setDraftingNewProcess(false);
     }
   }, [docs]);
 
@@ -903,7 +1028,15 @@ export default function ProcessDocScreen({
     ]);
     setChatPending(true);
     setChatActivity(null);
+    setChatTasks([]);
     setActiveSkill(opts?.skill ?? null);
+    setActiveSkillEta(opts?.skill ? readSkillEta(opts.skill) : null);
+    // Wall-clock for this turn — used to decide whether to fire a
+    // browser notification on completion (only for runs that lasted more
+    // than `NOTIFY_THRESHOLD_MS`) and to record the duration into the
+    // per-skill ETA history.
+    const turnStartedAt = Date.now();
+    const turnSkill = opts?.skill ?? null;
 
     // The + New-process flow is inherently cross-process, so it runs in its
     // own fresh, unscoped session — otherwise the scope lock would make the
@@ -918,6 +1051,8 @@ export default function ProcessDocScreen({
     type SessionEvent =
       | { type: "progress"; text: string }
       | { type: "delta"; text: string }
+      | { type: "task_start"; id: string; label: string }
+      | { type: "task_end"; id: string }
       | { type: "done"; reply?: string; sessionId?: string; isError?: boolean }
       | { type: "error"; error: string; sessionId?: string };
 
@@ -942,6 +1077,16 @@ export default function ProcessDocScreen({
         const apply = (evt: SessionEvent) => {
           if (evt.type === "progress") {
             setChatActivity(evt.text);
+          } else if (evt.type === "task_start") {
+            setChatTasks((ts) =>
+              ts.some((t) => t.id === evt.id)
+                ? ts
+                : [...ts, { id: evt.id, label: evt.label, status: "running" }],
+            );
+          } else if (evt.type === "task_end") {
+            setChatTasks((ts) =>
+              ts.map((t) => (t.id === evt.id ? { ...t, status: "done" } : t)),
+            );
           } else if (evt.type === "delta") {
             // Reply text arriving live — append to the streaming message,
             // creating it on the first delta.
@@ -1021,9 +1166,21 @@ export default function ProcessDocScreen({
         ]);
       })
       .finally(() => {
+        const durationMs = Date.now() - turnStartedAt;
+        // Record the duration so future invocations of the same skill can
+        // show an honest median ETA up-front.
+        if (turnSkill) recordSkillDuration(turnSkill, durationMs);
+        // If the turn was a long one, ping the user — only meaningful when
+        // they've tabbed away. We ask for permission lazily on the first
+        // long turn so first-load doesn't show a permission prompt.
+        if (durationMs >= NOTIFY_THRESHOLD_MS) {
+          notifyTurnComplete(durationMs, turnSkill);
+        }
         setChatPending(false);
         setChatActivity(null);
+        setChatTasks([]);
         setActiveSkill(null);
+        setActiveSkillEta(null);
         opts?.onComplete?.();
       });
   }
@@ -1034,6 +1191,7 @@ export default function ProcessDocScreen({
     if (chatPending) return;
     setMessages([]);
     setChatSessionId(null);
+    setDraftingNewProcess(false);
     // Drop the persisted transcript too — a restart is a deliberate clear.
     try {
       sessionStorage.removeItem(chatStoreKey(currentSlug));
@@ -1118,8 +1276,10 @@ export default function ProcessDocScreen({
   // while a turn is running, so an in-flight reply can't land in the new
   // process's transcript.
   function switchProcess(slug: string) {
-    if (slug === currentSlug || chatPending) return;
+    if (chatPending) return;
+    if (slug === currentSlug && !draftingNewProcess) return;
     const next = docs.find((d) => d.slug === slug);
+    setDraftingNewProcess(false);
     setCurrentSlug(slug);
     // Mirror the selection into the URL so a browser reload restores it.
     window.history.replaceState(null, "", `?p=${slug}`);
@@ -1158,6 +1318,10 @@ export default function ProcessDocScreen({
     // (e.g. another process's "welcome back" resume banner) so the
     // conversation starts clean and nothing stale bleeds across.
     setMessages([]);
+    // Blank the canvas while the user names + confirms the new process.
+    // The fresh-process effect clears this once scaffold_process.py lands
+    // files on disk and the new doc appears.
+    setDraftingNewProcess(true);
     handleSend("I want to create a new process.", {
       unscoped: true,
       skill: "new-process",
@@ -1492,6 +1656,7 @@ export default function ProcessDocScreen({
         <ProcessSwitcher
           processes={processList}
           currentSlug={currentSlug}
+          draftingNewProcess={draftingNewProcess}
           onSelect={(slug) => {
             setAppView("process");
             switchProcess(slug);
@@ -1660,6 +1825,28 @@ export default function ProcessDocScreen({
         }${appView === "feedback" ? " is-hidden" : ""}`}
         style={{ "--chat-w": `${chatWidth}px` } as CSSProperties}
       >
+        {draftingNewProcess ? (
+          <main className="canvas canvas-drafting">
+            <div className="canvas-head">
+              <h1>New Process</h1>
+              <div className="sub">
+                Naming a new process — continue in the assistant on the right.
+              </div>
+            </div>
+            <div className="empty-state">
+              <p>
+                The assistant will ask for the process name, then propose a
+                slug, abbreviation and one-line description for you to confirm.
+              </p>
+              <p className="empty-hint">
+                Once you approve, the process is scaffolded and this canvas
+                fills in with the new process. Pick another process from the
+                breadcrumb above to bail out.
+              </p>
+            </div>
+          </main>
+        ) : (
+        <>
         <nav className={`rail rail-l${sectionsCollapsed ? " collapsed" : ""}`}>
           <div className="nav-spine">
             <button
@@ -2581,6 +2768,8 @@ export default function ProcessDocScreen({
           )}
 
         </main>
+        </>
+        )}
 
         <AgentChat
           open={chatOpen}
@@ -2590,7 +2779,9 @@ export default function ProcessDocScreen({
           onSend={handleSend}
           pending={chatPending}
           activity={chatActivity}
+          tasks={chatTasks}
           activeSkillLabel={activeSkill ? (SKILL_LABEL[activeSkill] ?? null) : null}
+          activeSkillEta={activeSkillEta}
           onRestart={restartSession}
           onRunLint={runLint}
           linting={linting}

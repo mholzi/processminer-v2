@@ -1,0 +1,276 @@
+{
+  "generatedAt": "2026-05-20T18:48:07.452340+00:00",
+  "slug": "bank-guarantee-issuance-test",
+  "summary": {
+    "conformance": 0,
+    "discrepancy": 18,
+    "question": 5
+  },
+  "reopens": [
+    "EX-BGIT-002",
+    "PP-BGIT-001",
+    "PP-BGIT-002",
+    "ROLE-BGIT-006",
+    "SYS-BGIT-001",
+    "SYS-BGIT-002",
+    "SYS-BGIT-004"
+  ],
+  "findings": [
+    {
+      "id": "F-001",
+      "kind": "discrepancy",
+      "title": "PS-BGIT-007 has no RACI entry — no role is R or A for Collateral Confirmation",
+      "detail": "PS-BGIT-007 (Collateral Confirmation) lists 'owner: Trade Finance Officer' (ROLE-BGIT-001) but ROLE-BGIT-001's raci field does not include PS-BGIT-007. No role in the wiki carries an R or A entry for this step, making it the only step with no RACI coverage at all.",
+      "elements": [
+        "PS-BGIT-007",
+        "ROLE-BGIT-001"
+      ],
+      "status": "resolved",
+      "resolvedBy": "deep-dive",
+      "resolvedAt": "2026-05-20",
+      "resolutionNote": "Added PS-BGIT-007:R and PS-BGIT-007:A to ROLE-BGIT-001 (Trade Finance Officer); TFO confirmed as both responsible and accountable for Collateral Confirmation"
+    },
+    {
+      "id": "F-002",
+      "kind": "discrepancy",
+      "title": "Five steps lack an Accountable (A) RACI entry",
+      "detail": "PS-BGIT-001, PS-BGIT-002, PS-BGIT-003, PS-BGIT-004, and PS-BGIT-006 each have an R assigned but no A across any role. Only PS-BGIT-005 has a complete R+A pairing. Every step requires exactly one A.",
+      "elements": [
+        "PS-BGIT-001",
+        "PS-BGIT-002",
+        "PS-BGIT-003",
+        "PS-BGIT-004",
+        "PS-BGIT-006"
+      ]
+    },
+    {
+      "id": "F-003",
+      "kind": "discrepancy",
+      "title": "Dual sign-off threshold contradicts across PS-BGIT-005, CP-BGIT-001, REG-BGIT-004, and ROLE-BGIT-003",
+      "detail": "CP-BGIT-001 states 'Guarantees above EUR 5 million additionally require sign-off by the Head of Trade Finance.' REG-BGIT-004 (How it is met) repeats 'above EUR 5 million.' PS-BGIT-005 (What happens) and ROLE-BGIT-003 (Responsibility) both state the threshold is EUR 2 million. PS-BGIT-005's own Outputs bullet also reads EUR 5 million, contradicting the step's own body. The actual threshold is undefined across four elements.",
+      "elements": [
+        "PS-BGIT-005",
+        "CP-BGIT-001",
+        "REG-BGIT-004",
+        "ROLE-BGIT-003"
+      ]
+    },
+    {
+      "id": "F-004",
+      "kind": "discrepancy",
+      "title": "PS-BGIT-003 has two R-owners (ROLE-BGIT-001 and ROLE-BGIT-006) but no Accountable",
+      "detail": "Both ROLE-BGIT-001 (Trade Finance Officer) and ROLE-BGIT-006 (Legal team) are assigned R for PS-BGIT-003 (Wording Review). No role is A for this step. The schema requires exactly one A and at least one R per step; accountability for wording sign-off being completed before the application advances is unassigned.",
+      "elements": [
+        "PS-BGIT-003",
+        "ROLE-BGIT-001",
+        "ROLE-BGIT-006"
+      ]
+    },
+    {
+      "id": "F-005",
+      "kind": "discrepancy",
+      "title": "JT-BGIT-001 sets a client turnaround expectation at PS-BGIT-001 but PS-BGIT-001 has no SLA field",
+      "detail": "JT-BGIT-001 (Portal application submission) explicitly notes the portal gives 'no confirmation of expected turnaround time'. PS-BGIT-001 (Application Intake) has no sla entry, so no target — even an informal one — is recorded for the step where the client's first wait begins.",
+      "elements": [
+        "JT-BGIT-001",
+        "PS-BGIT-001"
+      ]
+    },
+    {
+      "id": "F-006",
+      "kind": "discrepancy",
+      "title": "JT-BGIT-004 creates a client delivery expectation at PS-BGIT-006 but PS-BGIT-006 has no SLA field",
+      "detail": "JT-BGIT-004 (SWIFT MT760 delivery) documents that clients face 'uncertainty about whether the beneficiary received the instrument in time for their commercial deadline'. PS-BGIT-006 (Guarantee Generation and Delivery) has no sla field, so no turnaround target is recorded despite the touchpoint making clear one is expected.",
+      "elements": [
+        "JT-BGIT-004",
+        "PS-BGIT-006"
+      ]
+    },
+    {
+      "id": "F-007",
+      "kind": "question",
+      "title": "EX-BGIT-002: no fallback procedure documented when a sanctions investigation concludes with a confirmed hit",
+      "detail": "EX-BGIT-002 (Sanctions screening hit) states only that 'the application is suspended pending Compliance investigation' and 'issuance cannot proceed until the investigation concludes'. There is no documented outcome for a confirmed match: whether the application is formally declined, the client is notified, and whether a regulatory report is filed. The SME needs to confirm the post-investigation handling path.",
+      "elements": [
+        "EX-BGIT-002"
+      ]
+    },
+    {
+      "id": "F-008",
+      "kind": "question",
+      "title": "PS-BGIT-003 SLA for bespoke Legal review is absent despite PG-BGIT-003 documenting the gap",
+      "detail": "JT-BGIT-002 documents clients experiencing opaque waits during Legal wording review. PG-BGIT-003 acknowledges there is no committed SLA for Legal review. PS-BGIT-003 itself has no sla field. It is unclear whether any informal target exists that could be recorded. The SME should confirm.",
+      "elements": [
+        "PS-BGIT-003",
+        "JT-BGIT-002",
+        "PG-BGIT-003"
+      ]
+    },
+    {
+      "id": "F-009",
+      "kind": "discrepancy",
+      "title": "PS-BGIT-007 (Collateral Confirmation) has no control linked",
+      "detail": "PS-BGIT-007 is a mandatory step for all partially-secured guarantees, confirming that cash collateral has been received and blocked before issuance can proceed. No control in the wiki references PS-BGIT-007 in its step field. A step that gates issuance on security receipt with no documented control leaves a material gap.",
+      "elements": [
+        "PS-BGIT-007"
+      ]
+    },
+    {
+      "id": "F-010",
+      "kind": "discrepancy",
+      "title": "REG-BGIT-008 (EBA/GL/2021/02 trade-based ML) only partially addressed — no control covers enhanced trade-ML indicator monitoring",
+      "detail": "REG-BGIT-008 requires enhanced due diligence and monitoring for trade-based money laundering indicators (complex routing, mismatched beneficiary, price discrepancies). The regulation's 'How it is met' section acknowledges 'coverage of trade-based ML indicators … is to be confirmed with Compliance.' CP-BGIT-002 (the only control linked to REG-BGIT-008) covers sanctions screening, which addresses a different risk. No control covers the transaction-pattern monitoring dimension of this regulation.",
+      "elements": [
+        "REG-BGIT-008",
+        "CP-BGIT-002"
+      ]
+    },
+    {
+      "id": "F-011",
+      "kind": "discrepancy",
+      "title": "CG-BGIT-001 body states no control is drafted while CP-BGIT-005 exists and references it",
+      "detail": "CG-BGIT-001's frontmatter carries control: [CP-BGIT-005], and CP-BGIT-005 is a fully drafted control explicitly stating it remediates CG-BGIT-001. However, CG-BGIT-001's Remediation section reads 'no control is being drafted at this time.' The body has not been updated to reflect that CP-BGIT-005 was subsequently created.",
+      "elements": [
+        "CG-BGIT-001",
+        "CP-BGIT-005"
+      ]
+    },
+    {
+      "id": "F-012",
+      "kind": "question",
+      "title": "REG-BGIT-007 (DORA) has no process-level control — is infrastructure-level compliance documented and reviewable?",
+      "detail": "REG-BGIT-007 requires an ICT risk management framework and resilience controls for SYS-BGIT-002 (Trade Finance System) and SYS-BGIT-004 (SWIFT). The regulation's 'How it is met' section defers entirely to infrastructure level with no reference to a specific control, policy document, or owner. The SME should confirm whether a documented DORA-compliant artefact exists for these systems and whether it should be referenced here.",
+      "elements": [
+        "REG-BGIT-007",
+        "SYS-BGIT-002",
+        "SYS-BGIT-004"
+      ]
+    },
+    {
+      "id": "F-013",
+      "kind": "discrepancy",
+      "title": "FP-BGIT-003 and FP-BGIT-004 describe the same client-facing experience without cross-linking",
+      "detail": "Both friction points occur at PS-BGIT-003, both link solely to PP-BGIT-002, and both describe the bespoke-wording Legal review as a client-invisible black box. FP-BGIT-003 states the client 'cannot differentiate between a normal processing delay and a Legal-driven hold'; FP-BGIT-004 states clients 'experience the process as a black box from Step 3 onward.' The root cause cited in both is PG-BGIT-002. Neither element references the other.",
+      "elements": [
+        "FP-BGIT-003",
+        "FP-BGIT-004",
+        "PP-BGIT-002",
+        "PS-BGIT-003"
+      ]
+    },
+    {
+      "id": "F-014",
+      "kind": "discrepancy",
+      "title": "PP-BGIT-003 has no corresponding friction point in the wiki",
+      "detail": "PP-BGIT-003 (No SLA for incomplete application follow-up, affects PS-BGIT-001) identifies a client-facing delay pain point: when a TFO returns an incomplete application, there is no formal chase SLA and the client can stall indefinitely. The four friction points cover credit-stall visibility (FP-BGIT-001, FP-BGIT-002) and legal-review visibility (FP-BGIT-003, FP-BGIT-004), but none captures the incomplete-return experience.",
+      "elements": [
+        "PP-BGIT-003",
+        "PS-BGIT-001"
+      ]
+    },
+    {
+      "id": "F-015",
+      "kind": "discrepancy",
+      "title": "MT-BGIT-002 references JT-BGIT-003 (RM phone call) as its touchpoint but omits JT-BGIT-002 (portal status check) where the stall is first encountered",
+      "detail": "MT-BGIT-002 (Silent credit-check stall) describes the moment the client notices via the portal that days have passed with no progress update. Yet its touchpoint field references only JT-BGIT-003 (RM phone follow-up), which is the escalation taken after the stall is noticed. JT-BGIT-002 (Portal status checks during processing) explicitly covers PS-BGIT-002 and the credit-check stall experience but is not linked from MT-BGIT-002.",
+      "elements": [
+        "MT-BGIT-002",
+        "JT-BGIT-002",
+        "JT-BGIT-003",
+        "PS-BGIT-002"
+      ]
+    },
+    {
+      "id": "F-016",
+      "kind": "discrepancy",
+      "title": "II-BGIT-003 (Real-time credit limit pre-check) addresses PP-BGIT-001 but is not linked from FP-BGIT-001 or FP-BGIT-002",
+      "detail": "II-BGIT-003 proposes surfacing a client's available facility headroom at submission time to reduce credit-stall delays (PP-BGIT-001). FP-BGIT-001 (No real-time SLA countdown) and FP-BGIT-002 (No proactive notification when parked at credit review) document the client-facing friction the same credit stall creates, but neither references II-BGIT-003. The client-journey and innovation layers are disconnected for this issue.",
+      "elements": [
+        "II-BGIT-003",
+        "FP-BGIT-001",
+        "FP-BGIT-002",
+        "PP-BGIT-001"
+      ],
+      "status": "resolved",
+      "resolvedBy": "deep-dive",
+      "resolvedAt": "2026-05-20",
+      "resolutionNote": "Added II-BGIT-005 to address FP-BGIT-001 and FP-BGIT-002; II-BGIT-003 kept as lean pre-check idea"
+    },
+    {
+      "id": "F-017",
+      "kind": "question",
+      "title": "Is the incomplete-application return experience covered by MT-BGIT-001, or is a separate negative moment needed?",
+      "detail": "MT-BGIT-001 (First portal submission confirmation) covers the initial submit and is positive in sentiment. PP-BGIT-003 documents that when the TFO returns an incomplete application the client has no SLA, no escalation path and no follow-up notification — a clearly negative experience at PS-BGIT-001. No moment of truth captures this scenario. The SME should confirm whether a negative moment should be added.",
+      "elements": [
+        "MT-BGIT-001",
+        "PP-BGIT-003",
+        "JT-BGIT-001",
+        "PS-BGIT-001"
+      ]
+    },
+    {
+      "id": "F-018",
+      "kind": "discrepancy",
+      "title": "FP-BGIT-003 and FP-BGIT-004 have no innovation idea addressing them",
+      "detail": "FP-BGIT-003 (no client visibility into legal review progress) and FP-BGIT-004 (bespoke-wording email handoff invisible to client) both stem from PP-BGIT-002. II-BGIT-002 addresses PP-BGIT-002 and PG-BGIT-002 but its addresses field does not include FP-BGIT-003 or FP-BGIT-004. The client-facing friction these elements document is not explicitly targeted by any innovation idea.",
+      "elements": [
+        "FP-BGIT-003",
+        "FP-BGIT-004",
+        "II-BGIT-002"
+      ]
+    },
+    {
+      "id": "F-019",
+      "kind": "question",
+      "title": "II-BGIT-004 addresses only a control gap with no pain point or friction point — is that intentional?",
+      "detail": "II-BGIT-004 (system-enforced post-approval generation gate) lists only CG-BGIT-002 in its addresses field. The narrative does not connect the idea to any documented client or staff pain. It is unclear whether a corresponding pain point or friction point was omitted, or whether this is purely a control-hardening measure.",
+      "elements": [
+        "II-BGIT-004",
+        "CG-BGIT-002"
+      ]
+    },
+    {
+      "id": "F-020",
+      "kind": "discrepancy",
+      "title": "PS-BGIT-002 body describes Corporate Portal use but systems field omits SYS-BGIT-001",
+      "detail": "The step body explicitly states that on Credit team decline 'formal rejection issued to client via Corporate Portal', meaning SYS-BGIT-001 is actively used at this step. The systems field lists only SYS-BGIT-002 (Trade Finance System). SYS-BGIT-001 is a missing system link.",
+      "elements": [
+        "PS-BGIT-002",
+        "SYS-BGIT-001"
+      ]
+    },
+    {
+      "id": "F-021",
+      "kind": "discrepancy",
+      "title": "CP-BGIT-007 timing prose says 'issuance approval at Step 6' but Step 6 is Guarantee Generation, not Issuance Approval",
+      "detail": "CP-BGIT-007 is linked to PS-BGIT-007 (Collateral Confirmation) and its timing reads 'before issuance approval at Step 6.' Issuance Approval is PS-BGIT-005 (Step 5); Step 6 is PS-BGIT-006 (Guarantee Generation and Delivery). The step number referenced in the timing description is wrong.",
+      "elements": [
+        "CP-BGIT-007",
+        "PS-BGIT-005",
+        "PS-BGIT-006",
+        "PS-BGIT-007"
+      ]
+    },
+    {
+      "id": "F-022",
+      "kind": "discrepancy",
+      "title": "TD-BGIT-001 claims to resolve PG-BGIT-002, which is unrelated to its scope",
+      "detail": "TD-BGIT-001 (ICC-SWIFT C2B API for structured corporate intake) lists PG-BGIT-002 in its resolves field. PG-BGIT-002 is 'Bespoke wording handoff to Legal is email-only — no system workflow', a Legal routing gap with no connection to intake channel design. PG-BGIT-002 is legitimately resolved by TD-BGIT-003. The link in TD-BGIT-001 appears to be an erroneous carry-over.",
+      "elements": [
+        "TD-BGIT-001",
+        "TD-BGIT-003",
+        "PG-BGIT-002"
+      ]
+    },
+    {
+      "id": "F-023",
+      "kind": "discrepancy",
+      "title": "REQ-BGIT-001 addresses PG-BGIT-002, which describes a Legal workflow gap unrelated to intake completeness",
+      "detail": "REQ-BGIT-001 specifies an ICC-SWIFT API gateway that validates intake completeness before TFS entry. Its addresses field includes PG-BGIT-002 ('Bespoke wording handoff to Legal is email-only — no system workflow'). Structured API intake at Step 1 does not close the email-based Legal handoff gap at Step 3. The link to PG-BGIT-002 appears incorrect.",
+      "elements": [
+        "REQ-BGIT-001",
+        "PG-BGIT-002"
+      ]
+    }
+  ]
+}

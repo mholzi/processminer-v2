@@ -106,7 +106,12 @@ export async function POST(req: NextRequest) {
         if (evt.type === "assistant") {
           const msg = evt.message as { content?: unknown[] } | undefined;
           for (const b of msg?.content ?? []) {
-            const block = b as { type?: string; name?: string; input?: unknown };
+            const block = b as {
+              type?: string;
+              name?: string;
+              input?: unknown;
+              id?: string;
+            };
             if (block.type === "tool_use" && block.name) {
               const input = (block.input as Record<string, unknown>) ?? {};
               let text = describeTool(block.name, input);
@@ -120,6 +125,34 @@ export async function POST(req: NextRequest) {
                 text = `✏ Writing wiki element ${elementsWritten} …`;
               }
               send({ type: "progress", text });
+              // Task / Agent dispatches are the long-tail in skills that
+              // fan out (document-ingest, source-cx, source-innovation).
+              // Emit a structured event so the client can track each
+              // sub-agent independently and show a fan-out strip.
+              if ((block.name === "Task" || block.name === "Agent") && block.id) {
+                const desc = String(input?.description ?? "").trim();
+                const sub = String(input?.subagent_type ?? "").trim();
+                const promptHead = String(input?.prompt ?? "")
+                  .split("\n")[0]
+                  .slice(0, 60)
+                  .trim();
+                send({
+                  type: "task_start",
+                  id: block.id,
+                  label: desc || promptHead || sub || "sub-agent",
+                });
+              }
+            }
+          }
+        } else if (evt.type === "user") {
+          // The CLI re-emits a user message carrying tool_result blocks once
+          // each tool returns — match them back to the Task tool_use ids so
+          // the client can mark the right sub-agent chip done.
+          const msg = evt.message as { content?: unknown[] } | undefined;
+          for (const b of msg?.content ?? []) {
+            const block = b as { type?: string; tool_use_id?: string };
+            if (block.type === "tool_result" && block.tool_use_id) {
+              send({ type: "task_end", id: block.tool_use_id });
             }
           }
         } else if (evt.type === "result") {

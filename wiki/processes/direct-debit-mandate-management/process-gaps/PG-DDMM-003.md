@@ -7,7 +7,7 @@ status: draft
 confidence: high
 source: ddmm-dtp-mockup.md
 area: Data Management
-gapStatus: OPEN
+gapStatus: open
 affects: [PS-DDMM-005]
 provenance: {"Impact": {"evidence": "SME confirmed accurate as drafted.", "source": "elicited"}, "Next step": {"evidence": "SME confirmed: also needs the dormancy threshold that feeds the quarterly CP-DDMM-005 review (confirmed as undefined during CP-DDMM-005 review).", "source": "elicited"}, "The gap": {"evidence": "SME confirmed: no defined retention or purge period exists today.", "source": "elicited"}}
 approval: approved

@@ -97,6 +97,14 @@ For the `current` item, one element at a time:
    - the overview → purpose, trigger, scope — is the frame right and complete?
    Use the whole-process picture from Step 1: name the elements this one
    relates to. Prime questions with banking-domain knowledge.
+
+   An element from `document-ingest` arrives with its interpretive headings
+   marked `provenance: proposed` — drafted, not yet confirmed (the deterministic
+   blocks are `document`; the "why it matters" / "impact" / "risk" kind are
+   `proposed`). Part of the challenge is to **read each `proposed` heading back
+   to the SME** so they confirm or correct it. This is not optional housekeeping:
+   `set_approval.py` blocks `approved` while any heading is `proposed`, so a
+   `[Y]` is only reachable once every heading has been confirmed (item 4).
 3. **Deepen past the document.** A source document records what *exists* —
    steps, controls, systems — and the owning-lens challenge in item 2 tests
    only that. Two things slip through both: the *lived* layer (where the work
@@ -117,9 +125,17 @@ For the `current` item, one element at a time:
      Specialist's most valuable finding, and the Process-lens challenge in
      item 2 never asks it. Tell the SME the step has no control and ask — is
      that an accepted control gap, or should a control exist here? On a
-     confirmed gap, create a `compliance-gap` element (section `control-gaps`);
-     if a control exists but was never documented, create the missing
-     `control` instead. If the step already has a control, say nothing.
+     confirmed gap, create a `compliance-gap` element (section `control-gaps`)
+     — and in the same exchange ask the SME whether a remediating `control`
+     should be drafted now, or whether this is an **accepted risk** with no
+     control planned. If they want one drafted, create the matching `control`
+     element (low-confidence stub, linked to the same step, `proposed`
+     provenance) — a gap without a paired control or an explicit
+     accepted-risk note is the audit-facing flaw the gap itself documents,
+     and you must not leave it behind. Record the SME's choice in the gap
+     element's `Remediation` block. If a control exists but was never
+     documented, create the missing `control` instead. If the step already
+     has a control, say nothing.
    This beat is a genuine elicitation, not a challenge: read each drafted
    pain-point, compliance-gap or control back to the SME and mark only what
    they confirmed as `elicited` (Provenance block). Hold it to the one probe
@@ -132,8 +148,17 @@ For the `current` item, one element at a time:
    from memory, re-letter the options, drop the **[D] Deep dive** option, or
    change its punctuation. The four outcomes it offers:
 
-   - **[Y]** — the SME is satisfied. Run `python3 scripts/wiki/set_approval.py
-     <slug> <id> approved "<SME name>"` — the SME name from the invocation.
+   - **[Y]** — the SME is satisfied. **First reconcile provenance:** for every
+     heading still marked `proposed` that the SME confirmed during the
+     challenge (item 2), rewrite the element (`write_element.py`, same id) with
+     that heading marked `elicited` and its `evidence` set to the SME's
+     confirming quote. `set_approval.py` **blocks `approved`** while any heading
+     is `proposed`, so a freshly-ingested element cannot be approved until this
+     is done — skip it and the approve call fails. Then run `python3
+     scripts/wiki/set_approval.py <slug> <id> approved "<SME name>"` — the SME
+     name from the invocation. If a `proposed` heading was *not* confirmed, it
+     stays `proposed` and the element cannot be `[Y]` — take it as **[E]**
+     rework or **Move on** instead.
    - **[E]** — the challenge found rework. Redraft with the SME, then write:
      for a fix to one block or field, `python3 scripts/wiki/patch_element.py
      <slug> <id> --block "<heading>" /tmp/<id>-block.md` (or `--field` /
@@ -144,6 +169,14 @@ For the `current` item, one element at a time:
      "Reworked PS-FR-002 — validation is now automated-first, analyst-on-
      exception; the STP branch is named. Approved." Never approve a rework
      silently; the echo is how the SME catches a mis-applied change.
+
+     **Keep frontmatter relation lists in sync with prose.** If your rework
+     names a `SYS-*` (or any element id) in body text that is not already
+     listed in the element's `systems` / `relations` field, patch the
+     frontmatter field in the same write — use `patch_element.py --list
+     systems "<SYS-*>"` to add it. Same for `roles`, `controls` and other
+     relation lists. Lint catches the drift afterwards as a discrepancy
+     finding; better to not create the drift.
    - **[D]** — the element needs a full elicitation. Read the owning
      specialist's `SKILL.md` and run a deep dive on this element, here, in this
      session. Then approve it.

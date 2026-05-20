@@ -7,7 +7,7 @@ status: draft
 confidence: high
 source: ddmm-control-compliance-specialist
 severity: HIGH
-gapStatus: OPEN
+gapStatus: open
 control: [CP-DDMM-005]
 regulation: [REG-DDMM-004]
 provenance: {"Remediation": {"evidence": "SME confirmed: define retention period and use same threshold as dormancy trigger in CP-DDMM-005 and PG-DDMM-003.", "source": "elicited"}, "Risk": {"evidence": "SME confirmed: GDPR Art. 5(1)(e) storage-limitation obligation; absence of threshold also prevents consistent application and audit of CP-DDMM-005.", "source": "elicited"}, "The gap": {"evidence": "SME (M. Vogel) confirmed: no documented retention period exists; dormancy review in CP-DDMM-005 lacks a defined threshold.", "source": "elicited"}}

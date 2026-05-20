@@ -2,9 +2,9 @@
   "generatedAt": "2026-05-19T10:44:00.412944+00:00",
   "slug": "corporate-account-closure",
   "summary": {
-    "conformance": 3,
-    "discrepancy": 4,
-    "question": 1
+    "conformance": 2,
+    "discrepancy": 3,
+    "question": 0
   },
   "findings": [
     {
@@ -23,15 +23,6 @@
       "detail": "“In this process” long at 53 words (template 10–50)",
       "elements": [
         "ROLE-CAC-002"
-      ]
-    },
-    {
-      "id": "F-003",
-      "kind": "conformance",
-      "title": "Structure: ROLE-CAC-004 deviates from its role template",
-      "detail": "“In this process” long at 60 words (template 10–50)",
-      "elements": [
-        "ROLE-CAC-004"
       ]
     },
     {

@@ -32,12 +32,14 @@ export default function ProcessSwitcher({
   onSelect,
   onCreate,
   onOpenFeedback,
+  draftingNewProcess,
 }: {
   processes: { slug: string; id: string; title: string; status: ProcStatus }[];
   currentSlug: string;
   onSelect: (slug: string) => void;
   onCreate: () => void;
   onOpenFeedback: () => void;
+  draftingNewProcess?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const current = processes.find((p) => p.slug === currentSlug);
@@ -60,7 +62,11 @@ export default function ProcessSwitcher({
         )}
       </button>
       <span className="pname">
-        {current ? `${current.id} · ${current.title}` : "—"}
+        {draftingNewProcess
+          ? "New Process"
+          : current
+            ? `${current.id} · ${current.title}`
+            : "—"}
       </span>
 
       {open && (

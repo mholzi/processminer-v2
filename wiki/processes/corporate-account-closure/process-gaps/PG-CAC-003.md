@@ -7,7 +7,7 @@ status: draft
 confidence: high
 source: account-closure-dtp-mockup.md
 area: Compliance
-gapStatus: OPEN
+gapStatus: open
 affects: [PS-CAC-008]
 provenance: {"Impact": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "Next step": {"evidence": "How long are closed-account files retained, and where?", "source": "document"}, "The gap": {"evidence": "How long are closed-account files retained, and where?", "source": "document"}}
 approval: approved

@@ -7,7 +7,7 @@ status: draft
 confidence: high
 source: ddmm-dtp-mockup.md
 area: Scheme Compliance
-gapStatus: OPEN
+gapStatus: open
 affects: [PS-DDMM-002, PS-DDMM-005]
 provenance: {"Impact": {"evidence": "SME confirmed: if in-place treatment is non-compliant, collections risk being presented under an invalid mandate reference.", "source": "elicited"}, "Next step": {"evidence": "SME confirmed: flag for Control and Compliance specialist; update procedures if scheme requires a new mandate.", "source": "elicited"}, "The gap": {"evidence": "SME (M. Vogel) confirmed current-state: IBAN change = in-place versioned amendment. Scheme compliance for this treatment (especially different debtor bank) cannot be confirmed by the ops SME.", "source": "elicited"}}
 approval: approved

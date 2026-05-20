@@ -1,0 +1,102 @@
+{
+  "generatedAt": "2026-05-19T23:20:38.295897+00:00",
+  "slug": "bank-guarantee-issuance",
+  "summary": {
+    "conformance": 0,
+    "discrepancy": 6,
+    "question": 3
+  },
+  "findings": [
+    {
+      "id": "F-001",
+      "kind": "discrepancy",
+      "title": "PS-BGI-001 records unratified policy (5-business-day chase window) in a non-approved element",
+      "detail": "The 'What happens' block on PS-BGI-001 states a 5-business-day chase window as a recommended target pending sign-off from the Head of Trade Finance. The element is currently in-progress (approval re-opened). The policy is not yet confirmed bank policy, yet it is written into an active process step — creating a discrepancy between documented expectation and approval authority.",
+      "elements": [
+        "PS-BGI-001"
+      ]
+    },
+    {
+      "id": "F-002",
+      "kind": "discrepancy",
+      "title": "PS-BGI-006 has no linked control for the documented error-prone manual facility utilisation update",
+      "detail": "PS-BGI-006 explicitly documents that the TFO must manually update facility utilisation after SWIFT transmission and that this step 'can be and occasionally is missed'. No preventive or detective control is linked to PS-BGI-006 for this risk. CG-BGI-003 covers the pre-transmission verification gap; the missed utilisation update is a separate documented risk with no control coverage.",
+      "elements": [
+        "PS-BGI-006"
+      ]
+    },
+    {
+      "id": "F-003",
+      "kind": "question",
+      "title": "SLA treatment of incomplete applications not clarified (PS-BGI-001 vs M-BGI-001 vs EX-BGI-004)",
+      "detail": "M-BGI-001 defines the 3-business-day SLA as covering the 'clean-path subset only: standard wording, no screening hit and no facility shortfall'. PS-BGI-001 now documents a 5-business-day chase window for incomplete applications. The wiki does not clarify whether incomplete applications are excluded from the 3-day SLA, tracked under a separate SLA, or treated as SLA-exempt. Only the SME can resolve this.",
+      "elements": [
+        "PS-BGI-001",
+        "M-BGI-001",
+        "EX-BGI-004"
+      ]
+    },
+    {
+      "id": "F-004",
+      "kind": "discrepancy",
+      "title": "CG-BGI-001 (no system-enforced intake completeness check) has no corresponding control",
+      "detail": "CG-BGI-001 documents the absence of a system-enforced completeness check at PS-BGI-001, but no preventive control (CP-*) is linked to PS-BGI-001. The gap is documented but has no control element addressing it — the wiki records the problem without recording a resolution.",
+      "elements": [
+        "PS-BGI-001",
+        "CG-BGI-001"
+      ]
+    },
+    {
+      "id": "F-005",
+      "kind": "discrepancy",
+      "title": "CG-BGI-002 (no template-conformance control at wording review) has no corresponding control",
+      "detail": "CG-BGI-002 documents the absence of a template-conformance control at PS-BGI-003, but no control element is linked to PS-BGI-003. The gap is acknowledged; the control it calls for does not yet exist in the wiki.",
+      "elements": [
+        "PS-BGI-003",
+        "CG-BGI-002"
+      ]
+    },
+    {
+      "id": "F-006",
+      "kind": "discrepancy",
+      "title": "CG-BGI-003 (no pre-transmission verification) has no corresponding control",
+      "detail": "CG-BGI-003 (severity HIGH) documents the absence of a formal pre-transmission instrument verification at PS-BGI-006, but no control element is linked to PS-BGI-006 for this risk. The gap is documented; the control it calls for does not yet exist.",
+      "elements": [
+        "PS-BGI-006",
+        "CG-BGI-003"
+      ]
+    },
+    {
+      "id": "F-007",
+      "kind": "question",
+      "title": "MaRisk segregation-of-duties (REG-BGI-005) coverage for Credit team and Compliance roles is ambiguous",
+      "detail": "REG-BGI-005 requires Markt/Marktfolge separation up to management board level. CP-BGI-001 implements this for TFO (Markt) vs TFM (Marktfolge). However, the Compliance Analyst (ROLE-BGI-004) at step 4 and the Credit team (ROLE-BGI-005) handling EX-BGI-001 are not mapped to either side of this split. Are Compliance and Credit organisationally separate from Trade Finance in a way that satisfies MaRisk BTO 1.1?",
+      "elements": [
+        "REG-BGI-005",
+        "CP-BGI-001",
+        "ROLE-BGI-004",
+        "ROLE-BGI-005"
+      ]
+    },
+    {
+      "id": "F-008",
+      "kind": "question",
+      "title": "TBML red-flag monitoring at intake (REG-BGI-012) has no documented control and is unconfirmed",
+      "detail": "REG-BGI-012 (FATF TBML guidance) requires red-flag monitoring at intake. Its 'How it is met' block explicitly states 'TBML red-flag monitoring at intake and commercial rationale documentation to be confirmed with the SME.' PS-BGI-001 has no linked control covering this obligation. It is unclear whether this requirement is met at all.",
+      "elements": [
+        "REG-BGI-012",
+        "PS-BGI-001"
+      ]
+    },
+    {
+      "id": "F-009",
+      "kind": "discrepancy",
+      "title": "PS-BGI-003 (Wording Review) references Trade Finance System in prose but has no systems field",
+      "detail": "PS-BGI-003 explicitly describes selecting approved guarantee templates from the template library in SYS-BGI-002 (Trade Finance System) and lists it as an input, but the step's YAML frontmatter has no 'systems' field. Steps PS-BGI-001, PS-BGI-002, PS-BGI-004, PS-BGI-005 and PS-BGI-006 all carry a systems field; PS-BGI-003 is the only step missing it despite clear system dependency.",
+      "elements": [
+        "PS-BGI-003",
+        "SYS-BGI-002"
+      ]
+    }
+  ]
+}
