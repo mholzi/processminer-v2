@@ -162,6 +162,9 @@ disk is faster and more honest than vector search. This is exactly Karpathy's wi
 It does **not**: hold state in a database, do RAG, run a job queue, authenticate users beyond a
 name-and-role gate.
 
+Endpoint reference: [docs/api.md](docs/api.md) — every route, with request/response shapes,
+behaviour and known race conditions.
+
 ---
 
 ## 4. End-to-end: a walkthrough of one flow

@@ -134,9 +134,3 @@ npm run eval:read-back    # graded anti-hallucination eval
 ## License
 
 MIT — see [LICENSE](LICENSE).
-
-## Acknowledgements
-
-- [Andrej Karpathy's LLM Wiki gist][karpathy] for the architectural pattern.
-- [Daniel Agrici's `claude-obsidian`](https://agricidaniel.com/blog/claude-obsidian-ai-second-brain)
-  for the `hot.md` / `log.md` session-cache + audit-log ideas (see [TODOS.md](TODOS.md)).
