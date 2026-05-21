@@ -1,0 +1,249 @@
+{
+  "generatedAt": "2026-05-20T20:33:46.165634+00:00",
+  "slug": "edr-event-driven-review",
+  "file": "event-driven-review.md",
+  "created": [
+    "ROLE-EDR-001",
+    "ROLE-EDR-002",
+    "ROLE-EDR-003",
+    "ROLE-EDR-004",
+    "ROLE-EDR-005",
+    "PS-EDR-001",
+    "PS-EDR-002",
+    "PS-EDR-003",
+    "PS-EDR-004",
+    "PS-EDR-005",
+    "PS-EDR-006",
+    "PS-EDR-007",
+    "EX-EDR-001",
+    "EX-EDR-002",
+    "EX-EDR-003",
+    "EX-EDR-004",
+    "CP-EDR-001",
+    "CP-EDR-002",
+    "CP-EDR-003",
+    "CP-EDR-004",
+    "CP-EDR-005",
+    "SYS-EDR-001",
+    "SYS-EDR-002",
+    "SYS-EDR-003",
+    "SYS-EDR-004",
+    "SYS-EDR-005",
+    "M-EDR-001",
+    "M-EDR-002",
+    "M-EDR-003",
+    "M-EDR-004",
+    "PG-EDR-001",
+    "PG-EDR-002",
+    "PG-EDR-003"
+  ],
+  "updated": [],
+  "conflicts": [],
+  "corrections": [
+    {
+      "element": "ROLE-EDR-001",
+      "field": "Responsibility",
+      "removed": "ensuring all review events are escalated appropriately and regulatory obligations are met"
+    },
+    {
+      "element": "ROLE-EDR-001",
+      "field": "In this process",
+      "removed": "ensures regulatory obligations are fulfilled"
+    },
+    {
+      "element": "ROLE-EDR-002",
+      "field": "Responsibility",
+      "removed": "ensuring CDD refresh and risk-rating activities comply with regulatory standards"
+    },
+    {
+      "element": "ROLE-EDR-002",
+      "field": "In this process",
+      "removed": "oversees that CDD and risk-rating activities meet internal and regulatory standards"
+    },
+    {
+      "element": "ROLE-EDR-003",
+      "field": "Responsibility",
+      "removed": "acting as the escalation point for compliance decisions and approval authority for high-risk ratings and exit recommendations"
+    },
+    {
+      "element": "ROLE-EDR-003",
+      "field": "In this process",
+      "removed": "reviews escalations and compliance decisions; provides formal approval for high-risk ratings and exit recommendations"
+    },
+    {
+      "element": "ROLE-EDR-004",
+      "field": "Responsibility",
+      "removed": "accountable for on-call coverage and final regulatory sign-off on the highest-risk customers"
+    },
+    {
+      "element": "ROLE-EDR-004",
+      "field": "In this process",
+      "removed": "provides final regulatory sign-off on high-risk ratings and exits"
+    },
+    {
+      "element": "ROLE-EDR-005",
+      "field": "Responsibility",
+      "removed": "acting as the client liaison to ensure timely documentation collection"
+    },
+    {
+      "element": "ROLE-EDR-005",
+      "field": "In this process",
+      "removed": "acts as the primary interface with the client for documentation requests and follow-up chasers"
+    },
+    {
+      "element": "PS-EDR-001",
+      "field": "What happens",
+      "removed": "logging details that trigger the downstream review workflow"
+    },
+    {
+      "element": "PS-EDR-001",
+      "field": "Inputs",
+      "removed": "case management system access"
+    },
+    {
+      "element": "PS-EDR-002",
+      "field": "What happens",
+      "removed": "to determine whether immediate escalation is required"
+    },
+    {
+      "element": "PS-EDR-002",
+      "field": "Outputs",
+      "removed": "escalation flag if immediate action is needed"
+    },
+    {
+      "element": "PS-EDR-003",
+      "field": "What happens",
+      "removed": "with a defined response deadline"
+    },
+    {
+      "element": "PS-EDR-003",
+      "field": "Outputs",
+      "removed": "response deadline communicated to RM"
+    },
+    {
+      "element": "PS-EDR-004",
+      "field": "What happens",
+      "removed": "to identify any current sanctions, PEP, or adverse media flags"
+    },
+    {
+      "element": "PS-EDR-004",
+      "field": "Outputs",
+      "removed": "flags for any sanctions, PEP, or adverse media hits"
+    },
+    {
+      "element": "PS-EDR-005",
+      "field": "Why it matters",
+      "removed": "forming the basis for regulatory reporting if required"
+    },
+    {
+      "element": "PS-EDR-006",
+      "field": "What happens",
+      "removed": "subject to availability and quorum requirements"
+    },
+    {
+      "element": "PS-EDR-006",
+      "field": "Why it matters",
+      "removed": "protecting the firm from regulatory and legal exposure"
+    },
+    {
+      "element": "PS-EDR-007",
+      "field": "What happens",
+      "removed": "ensuring a full audit trail is preserved for regulatory review"
+    },
+    {
+      "element": "PS-EDR-007",
+      "field": "Outputs",
+      "removed": "audit trail entry"
+    },
+    {
+      "element": "EX-EDR-001",
+      "field": "Handling",
+      "removed": "ensuring the case is not abandoned while awaiting a decision"
+    },
+    {
+      "element": "EX-EDR-001",
+      "field": "Impact",
+      "removed": "The case is placed in a holding queue pending officer review."
+    },
+    {
+      "element": "EX-EDR-002",
+      "field": "Description",
+      "removed": "raising the risk of a sanctioned counterparty remaining active"
+    },
+    {
+      "element": "EX-EDR-002",
+      "field": "Handling",
+      "removed": "until the sanctions team confirms the status"
+    },
+    {
+      "element": "EX-EDR-003",
+      "field": "Handling",
+      "removed": "as the customer has failed to meet documentary requirements"
+    },
+    {
+      "element": "EX-EDR-004",
+      "field": "Description",
+      "removed": "due to organisational or legal changes"
+    },
+    {
+      "element": "EX-EDR-004",
+      "field": "Handling",
+      "removed": "to reflect the revised risk profile"
+    },
+    {
+      "element": "CP-EDR-001",
+      "field": "Risk addressed",
+      "removed": "and potential regulatory breach for failing to conduct a timely review"
+    },
+    {
+      "element": "CP-EDR-002",
+      "field": "Risk addressed",
+      "removed": "which could expose the firm to regulatory or legal risk"
+    },
+    {
+      "element": "CP-EDR-003",
+      "field": "Risk addressed",
+      "removed": "leaving the firm exposed to sanctions risk"
+    },
+    {
+      "element": "CP-EDR-004",
+      "field": "Control activity",
+      "removed": "cases flagged for escalation are tracked until resolved"
+    },
+    {
+      "element": "CP-EDR-004",
+      "field": "Risk addressed",
+      "removed": "resulting in unresolved escalations that could lead to regulatory or reputational harm"
+    },
+    {
+      "element": "CP-EDR-005",
+      "field": "Risk addressed",
+      "removed": "exposing the firm to regulatory and reputational risk"
+    },
+    {
+      "element": "SYS-EDR-001",
+      "field": "Role in process",
+      "removed": "providing a single source of truth for all EDR activity"
+    },
+    {
+      "element": "SYS-EDR-002",
+      "field": "Role in process",
+      "removed": "ensuring complete and current beneficial owner data is available"
+    },
+    {
+      "element": "SYS-EDR-003",
+      "field": "Role in process",
+      "removed": "ensuring all relevant parties are checked before the risk rating is finalised"
+    },
+    {
+      "element": "SYS-EDR-004",
+      "field": "Role in process",
+      "removed": "enabling analyst-led data retrieval without manual requests"
+    },
+    {
+      "element": "SYS-EDR-005",
+      "field": "Role in process",
+      "removed": "providing a structured workflow for rating calculation and approval"
+    }
+  ]
+}

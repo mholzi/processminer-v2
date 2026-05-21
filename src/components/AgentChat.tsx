@@ -241,8 +241,12 @@ export default function AgentChat({
         <button
           className="chat-restart"
           onClick={onRestart}
-          disabled={pending || (messages.length === 0)}
-          title="Restart the assistant session — clears this conversation"
+          disabled={!pending && messages.length === 0}
+          title={
+            pending
+              ? "Cancel the running turn and restart the session"
+              : "Restart the assistant session — clears this conversation"
+          }
         >
           ↻
         </button>

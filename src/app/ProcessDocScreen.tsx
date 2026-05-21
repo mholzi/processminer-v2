@@ -638,6 +638,11 @@ export default function ProcessDocScreen({
   // reload picks the conversation back up (FB-004). Runs once; later process
   // switches restore via switchProcess().
   const chatPersistReady = useRef(false);
+  // Watchdog: timestamp (ms) of the last SSE event we saw on the active turn.
+  // The watchdog effect uses this to break out of a stuck-pending state if the
+  // chain went silent — e.g. an HMR reload orphaned the fetch's body reader,
+  // or the network connection dropped mid-stream and `.finally` never fired.
+  const lastTurnEventRef = useRef<number>(0);
   useEffect(() => {
     const saved = loadStoredChat(currentSlug);
     if (saved) {
@@ -727,6 +732,40 @@ export default function ProcessDocScreen({
     const t = setInterval(() => router.refresh(), 4000);
     return () => clearInterval(t);
   }, [chatPending, sourcing, router]);
+
+  // Stuck-turn watchdog. A chat turn streams SSE events (progress, delta,
+  // done, error) — the worst-case gap between events during real work is
+  // seconds, not minutes, even on a long extraction. If the gap exceeds
+  // CHAT_WATCHDOG_MS while pending is still true, the promise chain that
+  // would clear pending is almost certainly orphaned — most often an HMR
+  // reload during dev, or a dropped network mid-stream. Self-heal: clear
+  // pending and surface a lost-contact message the SME can act on.
+  useEffect(() => {
+    if (!chatPending) return;
+    const CHAT_WATCHDOG_MS = 5 * 60 * 1000;
+    const t = setInterval(() => {
+      const silent = Date.now() - lastTurnEventRef.current;
+      if (silent < CHAT_WATCHDOG_MS) return;
+      setChatPending(false);
+      setChatActivity(null);
+      setChatTasks([]);
+      setActiveSkill(null);
+      setActiveSkillEta(null);
+      setMessages((m) => [
+        ...m,
+        {
+          id: mid(),
+          role: "agent",
+          text:
+            `⚠ Lost contact with the assistant — no activity for ${Math.round(
+              silent / 60_000,
+            )} min. The turn may have completed on the server; click **↻** to ` +
+            `restart the session and start fresh, or send a new message to retry.`,
+        },
+      ]);
+    }, 30_000);
+    return () => clearInterval(t);
+  }, [chatPending]);
 
   // Per-area executive summary — viewed from the nav area heading, generated
   // silently by the area-summary skill. `summaryGen` tracks an active run.
@@ -1032,6 +1071,8 @@ export default function ProcessDocScreen({
     setChatTasks([]);
     setActiveSkill(opts?.skill ?? null);
     setActiveSkillEta(opts?.skill ? readSkillEta(opts.skill) : null);
+    // Arm the watchdog — bumped on every SSE event below.
+    lastTurnEventRef.current = Date.now();
     // Wall-clock for this turn — used to decide whether to fire a
     // browser notification on completion (only for runs that lasted more
     // than `NOTIFY_THRESHOLD_MS`) and to record the duration into the
@@ -1076,6 +1117,8 @@ export default function ProcessDocScreen({
         let streamingId: string | null = null;
 
         const apply = (evt: SessionEvent) => {
+          // Bump the watchdog every time we see life from the server.
+          lastTurnEventRef.current = Date.now();
           if (evt.type === "progress") {
             setChatActivity(evt.text);
           } else if (evt.type === "task_start") {
@@ -1189,7 +1232,14 @@ export default function ProcessDocScreen({
   // Restart the assistant session — clear the transcript and drop the claude
   // session id, so the next message starts a fresh `claude` session.
   function restartSession() {
-    if (chatPending) return;
+    // Restart is a kill switch — works even while pending. If a turn is in
+    // flight (e.g. a hung worker or an orphaned fetch after HMR), clicking
+    // restart is the SME's explicit "abandon and start over" signal.
+    setChatPending(false);
+    setChatActivity(null);
+    setChatTasks([]);
+    setActiveSkill(null);
+    setActiveSkillEta(null);
     setMessages([]);
     setChatSessionId(null);
     setDraftingNewProcess(false);

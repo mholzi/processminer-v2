@@ -213,10 +213,6 @@ body {
 }
 .spine-toggle:hover { color: var(--ink); background: var(--accent-soft); }
 .spine-nodes { flex: 1; overflow-y: auto; padding: 12px 0; position: relative; }
-.spine-nodes::before {
-  content: ""; position: absolute; left: 40px; top: 26px; bottom: 26px;
-  width: 2px; margin-left: -1px; background: var(--line);
-}
 .spine-node {
   position: relative; z-index: 1;
   display: flex; flex-direction: column; align-items: center; gap: 4px;
