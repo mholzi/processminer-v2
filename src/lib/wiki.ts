@@ -163,6 +163,10 @@ export interface SourceFile {
   size: number;
   /** Last-modified time, ISO-8601 — the upload time in practice. */
   uploadedAt: string;
+  /** Display name of the SME who uploaded the file, read from the sidecar
+   *  raw-sources/<slug>/uploads.json. Optional — pre-manifest uploads have
+   *  no recorded actor. */
+  uploadedBy?: string;
 }
 
 /** An SME note left on an element — a question or comment for a colleague. */
@@ -208,6 +212,9 @@ export interface ProcessDoc {
   slug: string;
   process: WikiPage;
   elements: WikiPage[];
+  /** ISO timestamp of the most recent file mtime under wiki/processes/<slug>/.
+      Drives the "last activity" column in the process switcher. */
+  lastModified?: string;
   /** Imported source documents — raw-sources/<slug>/, newest first. */
   sources: SourceFile[];
   /** Result of the last `run-lint` pass, if one has been run. */
@@ -299,15 +306,35 @@ export function listProcesses(): { slug: string; title: string }[] {
     });
 }
 
-/** List the imported source documents for a process — raw-sources/<slug>/. */
+/** List the imported source documents for a process — raw-sources/<slug>/.
+ *  Merges the uploads.json sidecar (written by /api/upload) so each row
+ *  carries the SME's name and authoritative upload timestamp when known. */
 export function listSources(slug: string): SourceFile[] {
   const dir = join(SOURCES_DIR, slug);
   if (!existsSync(dir)) return [];
+  let manifest: Record<string, { by?: string; at?: string }> = {};
+  const manifestPath = join(dir, "uploads.json");
+  if (existsSync(manifestPath)) {
+    try {
+      manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+    } catch {
+      manifest = {};
+    }
+  }
   return readdirSync(dir, { withFileTypes: true })
-    .filter((d) => d.isFile() && !d.name.startsWith("."))
+    .filter(
+      (d) =>
+        d.isFile() && !d.name.startsWith(".") && d.name !== "uploads.json",
+    )
     .map((d) => {
       const s = statSync(join(dir, d.name));
-      return { name: d.name, size: s.size, uploadedAt: s.mtime.toISOString() };
+      const meta = manifest[d.name];
+      return {
+        name: d.name,
+        size: s.size,
+        uploadedAt: meta?.at ?? s.mtime.toISOString(),
+        uploadedBy: meta?.by,
+      };
     })
     .sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt));
 }
@@ -317,12 +344,16 @@ export function getProcess(slug: string): ProcessDoc | null {
   const dir = join(WIKI_DIR, slug);
   if (!existsSync(join(dir, "index.md"))) return null;
   const process = toPage(readFileSync(join(dir, "index.md"), "utf8"));
+  let mostRecent = statSync(join(dir, "index.md")).mtimeMs;
   const elements: WikiPage[] = [];
   for (const sub of readdirSync(dir, { withFileTypes: true })) {
     if (!sub.isDirectory()) continue;
     for (const file of readdirSync(join(dir, sub.name))) {
       if (file.endsWith(".md")) {
-        elements.push(toPage(readFileSync(join(dir, sub.name, file), "utf8")));
+        const p = join(dir, sub.name, file);
+        elements.push(toPage(readFileSync(p, "utf8")));
+        const m = statSync(p).mtimeMs;
+        if (m > mostRecent) mostRecent = m;
       }
     }
   }
@@ -354,6 +385,7 @@ export function getProcess(slug: string): ProcessDoc | null {
     slug,
     process,
     elements,
+    lastModified: new Date(mostRecent).toISOString(),
     sources: listSources(slug),
     lint,
     targetReview: readJson<TargetReview>("target-review.json"),

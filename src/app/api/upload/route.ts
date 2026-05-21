@@ -1,4 +1,5 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 import type { NextRequest } from "next/server";
 
@@ -20,6 +21,7 @@ export async function POST(req: NextRequest) {
 
   const file = form.get("file");
   const slug = form.get("slug");
+  const uploadedBy = form.get("uploadedBy");
   if (!(file instanceof File)) {
     return Response.json({ error: "No file in the upload." }, { status: 400 });
   }
@@ -39,6 +41,25 @@ export async function POST(req: NextRequest) {
     const dir = join(process.cwd(), "raw-sources", slug);
     await mkdir(dir, { recursive: true });
     await writeFile(join(dir, name), Buffer.from(await file.arrayBuffer()));
+
+    // Sidecar manifest — raw-sources/<slug>/uploads.json. Records who
+    // uploaded each file and when, keyed by filename. Filesystem mtimes
+    // don't carry an actor; this is the lightest way to bring uploader
+    // info into the Source Documents picker.
+    const manifestPath = join(dir, "uploads.json");
+    let manifest: Record<string, { by?: string; at: string }> = {};
+    if (existsSync(manifestPath)) {
+      try {
+        manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+      } catch {
+        manifest = {};
+      }
+    }
+    manifest[name] = {
+      by: typeof uploadedBy === "string" && uploadedBy ? uploadedBy : undefined,
+      at: new Date().toISOString(),
+    };
+    await writeFile(manifestPath, JSON.stringify(manifest, null, 2));
   } catch (e) {
     return Response.json(
       { error: `Could not save the file: ${e instanceof Error ? e.message : e}` },

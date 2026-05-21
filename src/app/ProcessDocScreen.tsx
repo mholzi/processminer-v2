@@ -416,6 +416,8 @@ export default function ProcessDocScreen({
   user,
   onUpdateUser,
   onSignOut,
+  initialSlug,
+  onReturnToSplash,
 }: {
   schema: Schema;
   docs: ProcessDoc[];
@@ -423,10 +425,14 @@ export default function ProcessDocScreen({
   user: User;
   onUpdateUser: (user: User) => void;
   onSignOut: () => void;
+  initialSlug?: string;
+  onReturnToSplash?: () => void;
 }) {
   // If a foundational run is in progress on any process, the app opens on it
   // (most-recently-touched first) so a reload never strands outstanding work —
-  // it lands on Triage, opens the chat and seeds a resume prompt.
+  // it lands on Triage, opens the chat and seeds a resume prompt. An explicit
+  // initialSlug from the splash (user picked a process to continue) wins
+  // over both the run cursor and docs[0].
   const openingRunDoc =
     docs
       .filter((d) => d.reviewState && !d.reviewState.done)
@@ -434,8 +440,9 @@ export default function ProcessDocScreen({
         b.reviewState!.updatedAt.localeCompare(a.reviewState!.updatedAt),
       )[0] ?? null;
 
+  const splashPick = initialSlug && docs.some((d) => d.slug === initialSlug) ? initialSlug : null;
   const [currentSlug, setCurrentSlug] = useState(
-    openingRunDoc ? openingRunDoc.slug : docs[0].slug,
+    splashPick ?? (openingRunDoc ? openingRunDoc.slug : docs[0].slug),
   );
   // The app has two top-level views: the process documentation shell, and the
   // App Feedback page (feedback on the tool itself, kept in feedback/).
@@ -533,15 +540,36 @@ export default function ProcessDocScreen({
 
   // Per-process attention counts — drive the switcher's badges (#18). An
   // element is reviewed when approved, or (web-sourced) once triaged.
+  // Per-area progress is a 6-tuple of approved/total ratios in schema area
+  // order, rendered as the 6-dot progress strip in the palette.
+  const sectionToAreaIdx = useMemo(() => {
+    const m = new Map<string, number>();
+    schema.areas.forEach((a, i) => {
+      for (const s of a.sections) m.set(s.id, i);
+    });
+    return m;
+  }, [schema.areas]);
   const processList = docs.map((d) => {
     const reviewed = (e: WikiPage) =>
       isSourcedType(e.type)
         ? ["relevant", "disregarded"].includes(String(e.meta.relevance ?? ""))
         : String(e.meta.approval ?? "in-progress") === "approved";
+    const areaTotals = [0, 0, 0, 0, 0, 0];
+    const areaApproved = [0, 0, 0, 0, 0, 0];
+    for (const e of d.elements) {
+      const idx = sectionToAreaIdx.get(e.section);
+      if (idx === undefined) continue;
+      areaTotals[idx]++;
+      if (reviewed(e)) areaApproved[idx]++;
+    }
     return {
       slug: d.slug,
       id: d.process.id,
       title: d.process.title,
+      lastModified: d.lastModified,
+      progress: areaTotals.map((t, i) =>
+        t === 0 ? 0 : areaApproved[i] / t,
+      ),
       status: {
         review: d.elements.filter((e) => !reviewed(e)).length,
         conflicts: d.ingest?.conflicts?.length ?? 0,
@@ -1704,6 +1732,25 @@ export default function ProcessDocScreen({
   return (
     <>
       <header className="topbar">
+        {onReturnToSplash && (
+          <Tooltip label="Back to workspace chooser">
+            <button
+              type="button"
+              className="tb-modchip"
+              onClick={onReturnToSplash}
+              aria-label="Back to workspace chooser"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                className="tb-modchip-icon"
+                aria-hidden="true"
+              >
+                <path d="M15 6l-6 6 6 6" />
+              </svg>
+              <span className="tb-modchip-wordmark">PROCESSMINER</span>
+            </button>
+          </Tooltip>
+        )}
         <ProcessSwitcher
           processes={processList}
           currentSlug={currentSlug}
@@ -1718,13 +1765,6 @@ export default function ProcessDocScreen({
           }}
           onOpenFeedback={openFeedback}
         />
-        <button
-          className="tb-newproc"
-          onClick={createProcess}
-          aria-label="Create a new process"
-        >
-          + New process
-        </button>
         <span className="spacer" />
         <div className="tb-icons">
           {sourcing?.status === "running" && (
@@ -1827,15 +1867,6 @@ export default function ProcessDocScreen({
               aria-label="Export documentation"
             >
               <IconExport />
-            </button>
-          </Tooltip>
-          <Tooltip label="Toggle light / dark">
-            <button
-              className="tb-icon"
-              onClick={toggleTheme}
-              aria-label="Toggle theme"
-            >
-              {dark ? <IconSun /> : <IconMoon />}
             </button>
           </Tooltip>
           <Tooltip label="Help">
@@ -2876,6 +2907,7 @@ export default function ProcessDocScreen({
       <UploadModal
         open={uploadModalOpen}
         slug={currentSlug}
+        uploadedBy={user.name}
         onClose={() => setUploadModalOpen(false)}
         onUploaded={onUploaded}
       />
@@ -2939,6 +2971,25 @@ export default function ProcessDocScreen({
                 <small>
                   Show the assistant&apos;s answer word by word, instead of
                   all at once when the turn finishes.
+                </small>
+              </span>
+            </label>
+            <label className="pref-field">
+              <input
+                type="checkbox"
+                checked={dark}
+                onChange={toggleTheme}
+              />
+              <span>
+                <span className="pref-field-row">
+                  Dark mode
+                  <span className="pref-field-ico" aria-hidden>
+                    {dark ? <IconSun /> : <IconMoon />}
+                  </span>
+                </span>
+                <small>
+                  Switch to a darker palette. Applies immediately; no need to
+                  save.
                 </small>
               </span>
             </label>

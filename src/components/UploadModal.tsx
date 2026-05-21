@@ -10,11 +10,13 @@ import { useRef, useState } from "react";
 export default function UploadModal({
   open,
   slug,
+  uploadedBy,
   onClose,
   onUploaded,
 }: {
   open: boolean;
   slug: string;
+  uploadedBy?: string;
   onClose: () => void;
   onUploaded: (path: string, fileName: string) => void;
 }) {
@@ -35,6 +37,7 @@ export default function UploadModal({
       const form = new FormData();
       form.append("file", file);
       form.append("slug", slug);
+      if (uploadedBy) form.append("uploadedBy", uploadedBy);
       const res = await fetch("/api/upload", { method: "POST", body: form });
       const data = (await res.json()) as {
         path?: string;

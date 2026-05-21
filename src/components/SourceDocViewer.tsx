@@ -140,6 +140,19 @@ function renderDoc(text: string) {
   return out;
 }
 
+// File-extension routing — PDFs and images come down the binary endpoint and
+// render in an iframe/img; markdown and plain text use the inline renderer
+// above; anything else gets a download link instead of garbled bytes.
+type Kind = "markdown" | "pdf" | "image" | "binary";
+
+function kindOf(file: string): Kind {
+  const ext = file.toLowerCase().split(".").pop() ?? "";
+  if (ext === "md" || ext === "markdown" || ext === "txt") return "markdown";
+  if (ext === "pdf") return "pdf";
+  if (["png", "jpg", "jpeg", "gif", "svg", "webp"].includes(ext)) return "image";
+  return "binary";
+}
+
 export default function SourceDocViewer({
   slug,
   file,
@@ -147,6 +160,9 @@ export default function SourceDocViewer({
   slug: string;
   file: string;
 }) {
+  const kind = kindOf(file);
+  const rawUrl = `/api/sources?slug=${encodeURIComponent(slug)}&file=${encodeURIComponent(file)}&raw=1`;
+
   const [state, setState] = useState<
     | { status: "loading" }
     | { status: "error"; message: string }
@@ -154,6 +170,12 @@ export default function SourceDocViewer({
   >({ status: "loading" });
 
   useEffect(() => {
+    // Only text kinds need the JSON body; PDFs and images render straight
+    // from the binary endpoint and have no "loading" step here.
+    if (kind !== "markdown") {
+      setState({ status: "ready", content: "" });
+      return;
+    }
     let live = true;
     setState({ status: "loading" });
     fetch(`/api/sources?slug=${encodeURIComponent(slug)}&file=${encodeURIComponent(file)}`)
@@ -172,8 +194,41 @@ export default function SourceDocViewer({
     return () => {
       live = false;
     };
-  }, [slug, file]);
+  }, [slug, file, kind]);
 
+  if (kind === "pdf") {
+    return (
+      <div className="docview-frame">
+        <iframe
+          className="docview-pdf"
+          src={rawUrl}
+          title={file}
+          aria-label={`PDF: ${file}`}
+        />
+      </div>
+    );
+  }
+  if (kind === "image") {
+    return (
+      <div className="docview-frame">
+        <img className="docview-img" src={rawUrl} alt={file} />
+      </div>
+    );
+  }
+  if (kind === "binary") {
+    return (
+      <div className="docview-status">
+        <p>
+          <strong>{file}</strong> can&rsquo;t be previewed inline.
+        </p>
+        <p>
+          <a className="docview-dl" href={rawUrl} download={file}>
+            Download {file}
+          </a>
+        </p>
+      </div>
+    );
+  }
   if (state.status === "loading") {
     return <div className="docview-status">Loading {file}…</div>;
   }

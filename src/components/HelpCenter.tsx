@@ -3,147 +3,159 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Schema } from "@/lib/wiki";
 
-type Tab = "overview" | "concepts" | "glossary" | "workflow" | "shortcuts";
+// Help center — a What's New + Roadmap feed opened from the top-bar "?"
+// button. One chronological list: shipped → in-flight → planned. No tabs,
+// no glossary, no concept explainers — for those the SME asks the assistant.
+// Edit ENTRIES below to update the feed.
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: "overview", label: "Overview" },
-  { id: "concepts", label: "How it works" },
-  { id: "glossary", label: "Glossary" },
-  { id: "workflow", label: "Workflow" },
-  { id: "shortcuts", label: "Shortcuts" },
-];
+type EntryTag = "shipped" | "in-flight" | "planned";
+type Entry = {
+  id: string;
+  title: string;
+  tag: EntryTag;
+  when: string;
+  bucket: string;
+  summary: string;
+  bullets?: string[];
+  votes?: number;
+};
 
-// The core mental models — explained as prose, distinct from the Glossary's
-// term definitions. The concepts an SME needs to use the tool with judgement.
-const CONCEPTS: { heading: string; paragraphs: string[] }[] = [
+const ENTRIES: Entry[] = [
   {
-    heading: "Approval vs. triage",
-    paragraphs: [
-      "Documentation elements — process steps, controls, regulations, systems and the like — capture the truth about the process. You move them from In progress to Approved once they are accurate, or Rejected if they are wrong. Approving one is your sign-off that it documents the process correctly.",
-      "Web-sourced and ideated elements — market trends, competitors, innovation ideas, CX benchmarks — are external signals, not statements about the process. You triage them instead: Relevant, Disregard, or leave them To review. Here you judge whether the signal matters, not whether it is right.",
-      "Two models, because the questions differ: a process step is either accurate or not, but a market trend is never 'wrong' — only relevant or not.",
-    ],
+    id: "palette",
+    title: "Command palette for processes & sources",
+    tag: "shipped",
+    when: "21 May",
+    bucket: "Today",
+    summary:
+      "⌘K opens a search-first picker for every documented process — with attention chips, last-activity, pin / recent groups. The Source Documents widget got the same treatment.",
   },
   {
-    heading: "Provenance & trust",
-    paragraphs: [
-      "Every element heading carries a provenance tag showing where its content came from: SME (you confirmed it), DOC (taken from an imported document), PROPOSED (AI-proposed, unconfirmed), WEB (web-sourced, unconfirmed) or LEGACY (approved before provenance tracking began).",
-      "PROPOSED and WEB are the ones to scrutinise — they are not yet SME-confirmed. When a document is imported, the assistant deliberately strips any detail it cannot ground in the source and flags it, rather than inventing — so an element is only as trustworthy as its tags.",
-      "Once you approve an element, its card drops the 'AI-drafted' note: your sign-off becomes the record.",
-    ],
+    id: "uploader-pdf",
+    title: "Uploader tracking + inline PDF viewer",
+    tag: "shipped",
+    when: "21 May",
+    bucket: "Today",
+    summary:
+      "Every upload now records who uploaded and when. PDFs render straight in the canvas — no more raw bytes.",
   },
   {
-    heading: "Triage & the foundational run",
-    paragraphs: [
-      "After a document is imported, the app opens the triage screen — the draft elements the import produced, with their confidence, before anything is approved. It is your first look at what the assistant extracted.",
-      "The foundational run (the play icon in the top bar) then walks every imported element with you, one at a time: the assistant challenges each element, reworks it on your input, and approves it. This is how a trustworthy As-Is baseline is built.",
-      "The run is resumable — if it is interrupted it picks up where it left off, and the top-bar badge shows how many items remain.",
-    ],
+    id: "triage-receipt",
+    title: "Triage receipt + worklist",
+    tag: "shipped",
+    when: "19 May",
+    bucket: "This week",
+    summary:
+      "The after-import screen reads like a banking statement: ingest record on the left, work-to-do grouped on the right.",
   },
   {
-    heading: "Findings & quality checks",
-    paragraphs: [
-      "A quality check sweeps the whole process for consistency and records what it finds. Findings come in three kinds: Discrepancy (two parts of the documentation disagree), Structure (an element does not match its template) and Question (something the documentation leaves unanswered).",
-      "Findings appear on the element cards they implicate and in the quality review, opened from the checklist icon in the top bar. A quality check can re-open an already-approved element when a finding implicates it.",
-      "To act on a finding, deep-dive it — a focused session that works the issue with you — or dismiss it if it does not apply.",
-    ],
-  },
-];
-
-// Review-state vocabulary — the same for every process, so it lives here
-// rather than in any one process's wiki.
-const STATUS_TERMS: { term: string; def: string }[] = [
-  {
-    term: "Draft",
-    def: "An element the assistant has drafted but the SME has not yet confirmed.",
+    id: "nav-spine",
+    title: "Numbered area spine",
+    tag: "shipped",
+    when: "17 May",
+    bucket: "This week",
+    summary:
+      "The six areas (As-Is, Risk, CX, Innovation, Target, Systems) are always visible on the left rail. Click a number to jump.",
   },
   {
-    term: "In progress",
-    def: "A documentation element being worked — not yet approved.",
+    id: "area-phase-owner",
+    title: "Per-process area, phase & owner",
+    tag: "in-flight",
+    when: "~Jun",
+    bucket: "Soon",
+    summary:
+      "Each process will carry a banking-domain area (Corporate / Retail / Payments / Compliance / KYC), a refinement phase, and a process owner — so the picker can filter and group by them.",
+    votes: 12,
   },
   {
-    term: "Approved",
-    def: "A documentation element the SME has signed off as accurate.",
+    id: "portfolio",
+    title: "Process portfolio dashboard",
+    tag: "planned",
+    when: "~Q3",
+    bucket: "Next",
+    summary:
+      "An all-processes overview with progress per perspective, attention chips, last activity — strategic lens beside the working canvas.",
+    votes: 7,
   },
   {
-    term: "Rejected",
-    def: "A documentation element the SME judged wrong — kept for the record.",
+    id: "sortable-picker",
+    title: "Sortable picker columns",
+    tag: "planned",
+    when: "~Q3",
+    bucket: "Next",
+    summary:
+      "Click a column header in the process or source picker to sort. Pin your preferred sort.",
+    votes: 4,
   },
   {
-    term: "To review / Relevant / Disregard",
-    def: "The triage states for web-sourced and ideated elements (trends, competitors, ideas, benchmarks). The SME judges whether the signal matters, not whether it documents the process.",
-  },
-];
-
-// Per-heading provenance tags — mirror PROV_LABEL in ElementCard.
-const PROVENANCE_TERMS: { term: string; def: string }[] = [
-  { term: "SME", def: "Confirmed by the subject-matter expert." },
-  { term: "DOC", def: "Taken from an imported source document." },
-  { term: "PROPOSED", def: "AI-proposed — not yet confirmed by the SME." },
-  { term: "WEB", def: "Web-sourced — not yet SME-confirmed." },
-  {
-    term: "LEGACY",
-    def: "Approved before per-heading provenance tracking began.",
-  },
-];
-
-const WORKFLOW_STEPS: { title: string; body: string }[] = [
-  {
-    title: "Create or pick a process",
-    body: "Start a new process from the top bar, or switch to an existing one.",
+    id: "multi-sme",
+    title: "Multi-SME concurrency",
+    tag: "planned",
+    when: "~2027",
+    bucket: "Horizon",
+    summary:
+      "Two SMEs in the same process at once, with safe write merges and per-element locks.",
+    votes: 3,
   },
   {
-    title: "Bring in the source material",
-    body: "Upload a process document for the assistant to import, or have a perspective specialist map the As-Is process directly with you.",
-  },
-  {
-    title: "Triage the drafts",
-    body: "After an import the app lands on a triage screen — review what was drafted before the foundational run.",
-  },
-  {
-    title: "Run the foundational walkthrough",
-    body: "The assistant challenges every imported element with you, reworking and approving each in turn.",
-  },
-  {
-    title: "Source the forward-looking view",
-    body: "Have the assistant source regulations, competitor CX and market trends from the web, then refine them with the specialists.",
-  },
-  {
-    title: "Develop the target state",
-    body: "Design the to-be process, the transformation decisions and the gaps to close.",
-  },
-  {
-    title: "Review and quality-check",
-    body: "Run the council review on the target state, and a quality check over the whole process to catch cross-section discrepancies.",
+    id: "auto-diagrams",
+    title: "Auto-rendered process diagrams",
+    tag: "planned",
+    when: "~2027",
+    bucket: "Horizon",
+    summary:
+      "Render the As-Is process as a live flowchart from the documented steps and roles.",
+    votes: 2,
   },
 ];
 
-const SHORTCUTS: { keys: string; what: string }[] = [
-  { keys: "⌘K  /  Ctrl+K", what: "Open search — jump to any element or section." },
-  { keys: "Esc", what: "Close the open panel, modal or palette." },
-  { keys: "Enter", what: "Send the current message in the assistant chat." },
-  { keys: "Shift+Enter", what: "New line in the assistant chat input." },
-];
+type FilterKind = "all" | EntryTag;
 
-// Help center — a tabbed reference modal opened from the top-bar "?" button.
+const TAG_LABEL: Record<EntryTag, string> = {
+  shipped: "Shipped",
+  "in-flight": "In flight",
+  planned: "Planned",
+};
+
+const VOTE_KEY = "pm.help.votes";
+
+function readVotes(): Record<string, true> {
+  try {
+    const raw = localStorage.getItem(VOTE_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, true>) : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeVotes(v: Record<string, true>) {
+  try {
+    localStorage.setItem(VOTE_KEY, JSON.stringify(v));
+  } catch {
+    // localStorage may be unavailable; votes silently become session-only.
+  }
+}
+
 export default function HelpCenter({
   open,
   onClose,
-  schema,
   onReplayTour,
   onOpenFeedback,
 }: {
   open: boolean;
   onClose: () => void;
+  // The schema prop is kept on the signature for callers; the feed doesn't
+  // read it but removing it would force a churn-y call-site edit.
   schema: Schema;
   onReplayTour: () => void;
   onOpenFeedback: () => void;
 }) {
-  const [tab, setTab] = useState<Tab>("overview");
-  const [q, setQ] = useState("");
+  const [filter, setFilter] = useState<FilterKind>("all");
+  const [votes, setVotes] = useState<Record<string, true>>({});
 
   useEffect(() => {
     if (!open) return;
+    setVotes(readVotes());
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
     }
@@ -151,26 +163,45 @@ export default function HelpCenter({
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
-  // The element-type glossary builds itself from the schema, so it never
-  // drifts from the actual types. Each row: ID prefix + label + area.
-  const typeTerms = useMemo(() => {
-    const sectionArea = new Map<string, string>();
-    for (const area of schema.areas)
-      for (const s of area.sections) sectionArea.set(s.id, area.label);
-    return Object.values(schema.elementTypes)
-      .map((t) => ({
-        prefix: t.idPrefix,
-        label: t.label,
-        area: sectionArea.get(t.section) ?? "",
-      }))
-      .sort((a, b) => a.label.localeCompare(b.label));
-  }, [schema]);
+  // Buckets, preserving the order entries appear in (Today → … → Horizon).
+  const buckets = useMemo(() => {
+    const visible = ENTRIES.filter(
+      (e) => filter === "all" || e.tag === filter,
+    );
+    const order: string[] = [];
+    const byBucket = new Map<string, Entry[]>();
+    for (const e of visible) {
+      if (!byBucket.has(e.bucket)) {
+        byBucket.set(e.bucket, []);
+        order.push(e.bucket);
+      }
+      byBucket.get(e.bucket)!.push(e);
+    }
+    return order.map((b) => ({ name: b, items: byBucket.get(b)! }));
+  }, [filter]);
+
+  const counts = useMemo(() => {
+    const c: Record<FilterKind, number> = {
+      all: ENTRIES.length,
+      shipped: 0,
+      "in-flight": 0,
+      planned: 0,
+    };
+    for (const e of ENTRIES) c[e.tag]++;
+    return c;
+  }, []);
+
+  const toggleVote = (id: string) => {
+    setVotes((prev) => {
+      const next = { ...prev };
+      if (next[id]) delete next[id];
+      else next[id] = true;
+      writeVotes(next);
+      return next;
+    });
+  };
 
   if (!open) return null;
-
-  const query = q.trim().toLowerCase();
-  const matchTerm = (...s: string[]) =>
-    !query || s.some((x) => x.toLowerCase().includes(query));
 
   return (
     <div className="help-overlay" onClick={onClose}>
@@ -178,143 +209,105 @@ export default function HelpCenter({
         className="help-modal"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
-        aria-label="Help"
+        aria-label="What's new in ProcessMiner"
       >
         <div className="help-head">
-          <span className="help-title">ProcessMiner — Help</span>
+          <span className="help-title">What&rsquo;s new in ProcessMiner</span>
+          <div className="help-filter" role="tablist" aria-label="Filter">
+            {(["all", "shipped", "in-flight", "planned"] as const).map((f) => (
+              <button
+                key={f}
+                role="tab"
+                aria-selected={filter === f}
+                className={`help-filter-btn${filter === f ? " on" : ""}`}
+                onClick={() => setFilter(f)}
+              >
+                {f === "all" ? "All" : TAG_LABEL[f]}
+                <span className="help-filter-num">{counts[f]}</span>
+              </button>
+            ))}
+          </div>
           <button className="help-close" onClick={onClose} aria-label="Close">
             ✕
           </button>
         </div>
 
-        <div className="help-tabs" role="tablist">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              role="tab"
-              aria-selected={tab === t.id}
-              className={`help-tab${tab === t.id ? " active" : ""}`}
-              onClick={() => setTab(t.id)}
-            >
-              {t.label}
-            </button>
-          ))}
+        <div className="help-feed">
+          {buckets.length === 0 ? (
+            <div className="help-feed-empty">
+              Nothing in that bucket yet.
+            </div>
+          ) : (
+            buckets.map((b) => (
+              <section key={b.name} className="help-feed-bucket">
+                <div className="help-feed-bucket-h">{b.name}</div>
+                {b.items.map((e) => {
+                  const voted = !!votes[e.id];
+                  const liveVotes = (e.votes ?? 0) + (voted ? 1 : 0);
+                  return (
+                    <article key={e.id} className="help-entry">
+                      <div className="help-entry-when">{e.when}</div>
+                      <div className="help-entry-body">
+                        <header className="help-entry-h">
+                          <h3>{e.title}</h3>
+                          <span className={`help-entry-tag tag-${e.tag}`}>
+                            {TAG_LABEL[e.tag]}
+                          </span>
+                        </header>
+                        <p className="help-entry-summary">{e.summary}</p>
+                        {e.bullets ? (
+                          <ul className="help-entry-bullets">
+                            {e.bullets.map((bx, i) => (
+                              <li key={i}>{bx}</li>
+                            ))}
+                          </ul>
+                        ) : null}
+                        {e.tag !== "shipped" && (
+                          <div className="help-entry-actions">
+                            <button
+                              className={`help-vote${voted ? " on" : ""}`}
+                              onClick={() => toggleVote(e.id)}
+                              aria-pressed={voted}
+                            >
+                              <span className="arrow">▲</span>
+                              {liveVotes}
+                              <span className="help-vote-label">
+                                {voted ? " you voted" : " vote"}
+                              </span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </article>
+                  );
+                })}
+              </section>
+            ))
+          )}
         </div>
 
-        <div className="help-body">
-          {tab === "overview" && (
-            <div className="help-prose">
-              <p>
-                ProcessMiner documents a banking process end to end. AI
-                specialists elicit knowledge from you, the subject-matter
-                expert, and develop it into a target state.
-              </p>
-              <p>
-                Each process is a living set of elements organised into six
-                areas: As-Is Process, Risk &amp; Compliance, Client Experience,
-                Innovation, Target Process and IT Architecture.
-              </p>
-              <p>
-                <b>Every element is AI-drafted until you approve it.</b> The
-                assistant proposes; you confirm, correct or reject. Your
-                sign-off is what makes the documentation authoritative.
-              </p>
-              <button className="help-action" onClick={onReplayTour}>
-                ✦ Replay the guided tour
-              </button>
-              <div className="help-gloss-group">Feedback &amp; support</div>
-              <p>
-                Found a bug, or have an idea for the tool itself? Log it on the
-                App Feedback page — that is where feedback on ProcessMiner is
-                collected and tracked.
-              </p>
-              <button
-                className="help-action"
-                onClick={() => {
-                  onClose();
-                  onOpenFeedback();
-                }}
-              >
-                Open the App Feedback page
-              </button>
-            </div>
-          )}
-
-          {tab === "concepts" && (
-            <div className="help-prose">
-              {CONCEPTS.map((c) => (
-                <section className="help-concept" key={c.heading}>
-                  <div className="help-gloss-group">{c.heading}</div>
-                  {c.paragraphs.map((p, i) => (
-                    <p key={i}>{p}</p>
-                  ))}
-                </section>
-              ))}
-            </div>
-          )}
-
-          {tab === "glossary" && (
-            <>
-              <input
-                className="help-search"
-                placeholder="Filter the glossary…"
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-              />
-              <div className="help-gloss-group">Element types</div>
-              {typeTerms
-                .filter((t) => matchTerm(t.prefix, t.label, t.area))
-                .map((t) => (
-                  <div className="help-gloss-row" key={t.prefix + t.label}>
-                    <span className="help-gloss-term">
-                      <span className="help-prefix">{t.prefix}</span>
-                      {t.label}
-                    </span>
-                    <span className="help-gloss-def">{t.area}</span>
-                  </div>
-                ))}
-              <div className="help-gloss-group">Review states</div>
-              {STATUS_TERMS.filter((t) => matchTerm(t.term, t.def)).map((t) => (
-                <div className="help-gloss-row" key={t.term}>
-                  <span className="help-gloss-term">{t.term}</span>
-                  <span className="help-gloss-def">{t.def}</span>
-                </div>
-              ))}
-              <div className="help-gloss-group">Provenance tags</div>
-              {PROVENANCE_TERMS.filter((t) => matchTerm(t.term, t.def)).map(
-                (t) => (
-                  <div className="help-gloss-row" key={t.term}>
-                    <span className="help-gloss-term">
-                      <span className="help-prefix">{t.term}</span>
-                    </span>
-                    <span className="help-gloss-def">{t.def}</span>
-                  </div>
-                ),
-              )}
-            </>
-          )}
-
-          {tab === "workflow" && (
-            <ol className="help-workflow">
-              {WORKFLOW_STEPS.map((s) => (
-                <li key={s.title}>
-                  <span className="help-wf-title">{s.title}</span>
-                  <span className="help-wf-body">{s.body}</span>
-                </li>
-              ))}
-            </ol>
-          )}
-
-          {tab === "shortcuts" && (
-            <div className="help-shortcuts">
-              {SHORTCUTS.map((s) => (
-                <div className="help-gloss-row" key={s.keys}>
-                  <span className="help-keys">{s.keys}</span>
-                  <span className="help-gloss-def">{s.what}</span>
-                </div>
-              ))}
-            </div>
-          )}
+        <div className="help-foot">
+          <button className="help-foot-link" onClick={onReplayTour}>
+            ✦ Replay guided tour
+          </button>
+          <span className="help-foot-sep">·</span>
+          <span className="help-foot-shortcuts">
+            <span className="help-kbd">⌘K</span> search
+            <span className="help-foot-sep">·</span>
+            <span className="help-kbd">esc</span> close
+            <span className="help-foot-sep">·</span>
+            <span className="help-kbd">↵</span> send
+          </span>
+          <span className="help-foot-grow" />
+          <button
+            className="help-foot-link"
+            onClick={() => {
+              onClose();
+              onOpenFeedback();
+            }}
+          >
+            Suggest a feature →
+          </button>
         </div>
       </div>
     </div>
