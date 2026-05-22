@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import type { ProcessDoc } from "@/lib/wiki";
 import type { User } from "@/lib/user";
 import Tooltip from "./Tooltip";
+import Markdown from "./Markdown";
+import AgentChat from "./AgentChat";
 
 // Frame-03 of the ArchitectMiner mockup, stubbed with mock ADR/capability
 // content. Inputs from Processminer (left nav, top group) use REAL counts
@@ -34,7 +36,8 @@ type ArchView =
   | "integrations"
   | "components"
   | "nfrs"
-  | "migration";
+  | "migration"
+  | "inputs";
 
 export default function ArchitectureCanvas({
   doc,
@@ -46,11 +49,58 @@ export default function ArchitectureCanvas({
   onReturnToInbox: () => void;
 }) {
   const [view, setView] = useState<ArchView>("adrs");
+  // When view === "inputs", which upstream section is open. Elements in that
+  // section render vertically as Processminer-style cards — no separate
+  // "selected element" because every card is already expanded.
+  const [inputSection, setInputSection] = useState<string>("to-be-design");
+  const inputElements = useMemo(
+    () => doc.elements.filter((el) => el.section === inputSection),
+    [doc, inputSection],
+  );
+  const inputSectionLabel =
+    UPSTREAM_SECTIONS.find((s) => s.id === inputSection)?.label ?? inputSection;
 
   const upstreamCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const el of doc.elements) counts[el.section] = (counts[el.section] ?? 0) + 1;
     return counts;
+  }, [doc]);
+
+  // Real architect-side data for the open process — read straight from
+  // doc.elements via the 7 target-architecture section ids. Empty arrays
+  // when nothing is authored yet for this process.
+  const archData = useMemo(() => {
+    const caps = doc.elements.filter((el) => el.section === "capabilities");
+    const apps = doc.elements.filter((el) => el.section === "target-applications");
+    const adrsReal = doc.elements.filter((el) => el.section === "architecture-decisions");
+    const integrations = doc.elements.filter((el) => el.section === "target-integrations");
+    const components = doc.elements.filter((el) => el.section === "components");
+    const nfrsReal = doc.elements.filter((el) => el.section === "nfrs");
+    const migrations = doc.elements.filter((el) => el.section === "migration-phases");
+    const upperEq = (v: unknown, target: string) =>
+      typeof v === "string" && v.toUpperCase() === target;
+    return {
+      caps,
+      apps,
+      adrsReal,
+      integrations,
+      components,
+      nfrsReal,
+      migrations,
+      critN: caps.filter((c) => upperEq(c.meta.criticality, "CRITICAL")).length,
+      highN: caps.filter((c) => upperEq(c.meta.criticality, "HIGH")).length,
+      reusedN: caps.filter((c) => upperEq(c.meta.reuse, "REUSED")).length,
+      newN: caps.filter((c) => upperEq(c.meta.reuse, "NEW")).length,
+      confirmedN: caps.filter((c) => c.status === "confirmed").length,
+      draftN: caps.filter((c) => c.status === "draft").length,
+      buildN: apps.filter((a) => upperEq(a.meta.verdict, "BUILD")).length,
+      buyN: apps.filter((a) => upperEq(a.meta.verdict, "BUY")).length,
+      configureN: apps.filter((a) => upperEq(a.meta.verdict, "CONFIGURE")).length,
+      keepN: apps.filter((a) => upperEq(a.meta.verdict, "KEEP")).length,
+      adrAccepted: adrsReal.filter((a) => upperEq(a.meta.adrStatus, "ACCEPTED")).length,
+      adrProposed: adrsReal.filter((a) => upperEq(a.meta.adrStatus, "PROPOSED")).length,
+      adrDraft: adrsReal.filter((a) => upperEq(a.meta.adrStatus, "DRAFT")).length,
+    };
   }, [doc]);
 
   const pid = doc.process.id || "PR";
@@ -72,6 +122,40 @@ export default function ArchitectureCanvas({
     { id: `ADR-${pid}-009`, title: "Risk score recalculated nightly off DWH, not on-read", status: "Draft", trace: `G-${pid}-002` },
   ];
   const openAdr = adrs.find((a) => a.open) ?? adrs[2];
+
+  // The architect canvas reuses Processminer's AgentChat component directly
+  // — same React component, same styles, mock no-op handlers because the
+  // architect-side /api/session is not wired yet. Title / subtitle / empty
+  // state / lint label / placeholder are overridden via props.
+  const chatSidebar = (
+    <div className="am-canvas-chat">
+      <AgentChat
+        open={true}
+        onToggle={() => {}}
+        onWidthChange={() => {}}
+        messages={[]}
+        onSend={() => {}}
+        pending={false}
+        onRestart={() => {}}
+        onRunLint={() => {}}
+        linting={false}
+        findingCount={null}
+        getRef={() => undefined}
+        title="ArchitectMiner"
+        subtitle="Authors the architecture with you"
+        placeholder="Message the architect…"
+        lintLabel="⊛ Cross-check traces across all views"
+        emptyText={
+          <>
+            Ask the architect agent about <b>{doc.process.title}</b>. I can
+            summarise across views, flag inconsistencies with upstream
+            Processminer artifacts, or draft starting points for new ADRs,
+            capabilities, applications, NFRs, or migration phases.
+          </>
+        }
+      />
+    </div>
+  );
 
   return (
     <div className="am">
@@ -155,6 +239,13 @@ export default function ArchitectureCanvas({
               MIG-{pid}-002
             </>
           )}
+          {view === "inputs" && (
+            <>
+              <span className="am-input-ro">FROM PROCESSMINER</span>
+              <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
+              <b>{inputSectionLabel}</b>
+            </>
+          )}
         </span>
         <span className="spacer" style={{ flex: 1 }} />
         <span className="am-user">
@@ -172,12 +263,22 @@ export default function ArchitectureCanvas({
           </div>
 
           <h4 className="am-canvas-grouph">Inputs from Processminer</h4>
-          {UPSTREAM_SECTIONS.map((s) => (
-            <div key={s.id} className="am-canvas-secrow">
-              <span>{s.label}</span>
-              <span className="am-canvas-n">{upstreamCounts[s.id] ?? 0}</span>
-            </div>
-          ))}
+          {UPSTREAM_SECTIONS.map((s) => {
+            const active = view === "inputs" && inputSection === s.id;
+            return (
+              <div
+                key={s.id}
+                className={`am-canvas-secrow${active ? " am-canvas-secrow-on" : ""}`}
+                onClick={() => {
+                  setView("inputs");
+                  setInputSection(s.id);
+                }}
+              >
+                <span>{s.label}</span>
+                <span className="am-canvas-n">{upstreamCounts[s.id] ?? 0}</span>
+              </div>
+            );
+          })}
 
           <h4 className="am-canvas-grouph">Domain Architecture</h4>
           <div
@@ -254,7 +355,7 @@ export default function ArchitectureCanvas({
 
         {view === "adrs" && (
           <>
-        <main className="am-canvas-doc">
+        <main className="am-canvas-doc am-canvas-doc-wide">
           <div className="am-canvas-sechead">
             <h2>Architecture Decisions</h2>
             <span className="am-canvas-secmeta">
@@ -403,63 +504,7 @@ export default function ArchitectureCanvas({
             The data model behind ADRs, Capabilities, NFRs and Migration Phases lands next.
           </div>
         </main>
-
-        <aside className="am-canvas-chat">
-          <header className="am-canvas-chat-head">
-            <div className="am-canvas-chat-avatar">DA</div>
-            <div>
-              <div className="am-canvas-chat-who">Domain Architect</div>
-              <div className="am-canvas-chat-role">/domain-architect · {openAdr.id}</div>
-            </div>
-          </header>
-          <div className="am-canvas-chat-body">
-            <div className="am-canvas-bubble">
-              I have drafted the Alternatives heading from your inputs (3 candidates).
-              Two need your confirmation — the Pega licence scope and the Service-Cloud
-              rejection reason came from the As-Is Systems section and are{" "}
-              <b>machine-drafted</b>.
-              <div className="am-canvas-bubble-ref">
-                <span>{openAdr.trace}</span>
-                <span>G-{pid}-003</span>
-                <span>Sys: Pega</span>
-                <span>Sys: Salesforce</span>
-              </div>
-            </div>
-            <div className="am-canvas-bubble am-canvas-bubble-me">
-              The Pega licence note is correct. For Service Cloud I would phrase
-              the reject differently — review-SLA logic does not fit, but the real
-              reason is data residency.
-            </div>
-            <div className="am-canvas-bubble">
-              Updated <b>Alternatives</b>. I will re-mark that bullet as{" "}
-              <i>human-confirmed</i> once you approve the section. Two follow-ups
-              before you accept this ADR:
-              <ol style={{ paddingLeft: 18, marginTop: 6 }}>
-                <li>Add <b>NFR-{pid}-004</b> for the RTO ≤ 4h consequence. I can draft.</li>
-                <li>
-                  Open <b>ADR-{pid}-003</b> (Keycloak SSO) — currently in{" "}
-                  <i>Proposed</i>, this ADR depends on it.
-                </li>
-              </ol>
-              <div className="am-canvas-bubble-ref">
-                <span>NFR-{pid}-004</span>
-                <span>ADR-{pid}-003</span>
-              </div>
-            </div>
-          </div>
-          <div className="am-canvas-chat-actions">
-            <span className="am-canvas-quick">Draft NFR-{pid}-004</span>
-            <span className="am-canvas-quick">Open ADR-{pid}-003</span>
-            <span className="am-canvas-quick">Suggest next ADR</span>
-            <span className="am-canvas-quick">Cross-check traces</span>
-          </div>
-          <div className="am-canvas-chat-input">
-            <textarea placeholder="Ask the domain architect agent…" disabled />
-            <button type="button" className="am-canvas-btn am-canvas-btn-primary" disabled>
-              Send
-            </button>
-          </div>
-        </aside>
+        {chatSidebar}
           </>
         )}
 
@@ -666,10 +711,12 @@ export default function ArchitectureCanvas({
                 </div>
               </div>
             </aside>
+            {chatSidebar}
           </>
         )}
 
         {view === "traceability" && (
+          <>
           <main className="am-canvas-trace-main">
             <div className="am-canvas-trace-head">
               <h2>Traceability — {doc.process.title}</h2>
@@ -848,6 +895,8 @@ export default function ArchitectureCanvas({
               model lands.
             </div>
           </main>
+          {chatSidebar}
+          </>
         )}
 
         {view === "capabilities" && (
@@ -856,7 +905,8 @@ export default function ArchitectureCanvas({
               <div className="am-canvas-sechead">
                 <h2>Capabilities</h2>
                 <span className="am-canvas-secmeta">
-                  7 elements · 4 accepted · 3 proposed · 0 draft
+                  {archData.caps.length} element{archData.caps.length === 1 ? "" : "s"} ·{" "}
+                  {archData.confirmedN} confirmed · {archData.draftN} draft
                 </span>
                 <span style={{ flex: 1 }} />
                 <button type="button" className="am-canvas-btn">＋ Add Capability</button>
@@ -866,26 +916,81 @@ export default function ArchitectureCanvas({
               </div>
 
               <div className="am-canvas-cap-filterbar">
-                <span className="am-pill am-pill-acc">All (7)</span>
-                <span className="am-pill am-pill-neu">Critical (3)</span>
-                <span className="am-pill am-pill-neu">Reused (4)</span>
-                <span className="am-pill am-pill-neu">New (3)</span>
+                <span className="am-pill am-pill-acc">All ({archData.caps.length})</span>
+                <span className="am-pill am-pill-neu">Critical ({archData.critN})</span>
+                <span className="am-pill am-pill-neu">Reused ({archData.reusedN})</span>
+                <span className="am-pill am-pill-neu">New ({archData.newN})</span>
               </div>
 
-              <div className="am-canvas-cap-grid">
-                <CapCard id={`CAP-${pid}-001`} name="Customer identification" status="Accepted" critical reused host="Customer Master" steps={3} adrs={2} nfrs={1} prov="verified" />
-                <CapCard id={`CAP-${pid}-002`} name="Case capture & validation" status="Accepted" high newCap host="Case Hub (BUILD)" steps={4} adrs={3} nfrs={2} prov="verified" selected />
-                <CapCard id={`CAP-${pid}-003`} name="Risk assessment & scoring" status="Proposed" high reused host="Risk Score Service" steps={5} adrs={2} nfrs={3} prov="machine" provText={`drafted · review NFR-${pid}-008`} />
-                <CapCard id={`CAP-${pid}-004`} name="KYC refresh" status="Accepted" critical reused host="KYC Engine (CONFIGURE)" steps={3} adrs={1} nfrs={1} prov="verified" />
-                <CapCard id={`CAP-${pid}-005`} name="Case lifecycle" status="Proposed" high newCap host="Case Hub (BUILD)" steps={6} adrs={2} nfrs={2} prov="machine" provText="drafted by domain-architect agent" />
-                <CapCard id={`CAP-${pid}-006`} name="Document collection" status="Accepted" medium reused host="Hyland ECM" steps={2} adrs={1} nfrs={2} prov="verified" />
-                <CapCard id={`CAP-${pid}-007`} name="Periodic review reporting" status="Proposed" medium newCap host="DWH (Snowflake)" steps={2} adrs={1} nfrs={2} prov="machine" provText="drafted · awaiting reviewer" />
-              </div>
+              {archData.caps.length === 0 ? (
+                <div className="am-input-empty">
+                  No capabilities authored yet for <b>{doc.process.title}</b>.
+                  Use the chat to elicit them with the domain architect, or
+                  hand-author element files under{" "}
+                  <code>wiki/processes/{doc.slug}/capabilities/</code>.
+                </div>
+              ) : (
+                <div className="am-canvas-cap-grid">
+                  {archData.caps.map((cap, i) => {
+                    const crit = ((cap.meta.criticality as string) ?? "").toUpperCase();
+                    const reuse = ((cap.meta.reuse as string) ?? "").toUpperCase();
+                    const hostedRaw = Array.isArray(cap.meta.hostedIn)
+                      ? cap.meta.hostedIn[0]
+                      : (cap.meta.hostedIn as string | undefined);
+                    const hostedApp = hostedRaw
+                      ? archData.apps.find((a) => a.id === hostedRaw)
+                      : undefined;
+                    const hostName = hostedApp?.title ?? hostedRaw ?? "—";
+                    const verdict = hostedApp?.meta.verdict as string | undefined;
+                    const hostLabel = verdict ? `${hostName} (${verdict})` : hostName;
+                    const status =
+                      cap.status === "confirmed" ? "Accepted"
+                      : cap.status === "draft" ? "Proposed"
+                      : "Draft";
+                    const adrsForCap = archData.adrsReal.filter((a) => {
+                      const r = a.meta.realisesCapability ?? a.meta.realises;
+                      const list = Array.isArray(r) ? r : r ? [r as string] : [];
+                      return list.includes(cap.id);
+                    }).length;
+                    return (
+                      <CapCard
+                        key={cap.id}
+                        id={cap.id}
+                        name={cap.title}
+                        status={status as "Accepted" | "Proposed" | "Draft"}
+                        critical={crit === "CRITICAL"}
+                        high={crit === "HIGH"}
+                        medium={crit === "MEDIUM"}
+                        reused={reuse === "REUSED"}
+                        newCap={reuse === "NEW"}
+                        host={hostLabel}
+                        steps={0}
+                        adrs={adrsForCap}
+                        nfrs={0}
+                        prov={cap.confidence === "high" ? "verified" : "machine"}
+                        provText={
+                          cap.confidence === "high"
+                            ? "human-confirmed"
+                            : "draft · awaiting confirmation"
+                        }
+                        selected={i === 0}
+                      />
+                    );
+                  })}
+                </div>
+              )}
 
-              <div className="am-canvas-banner">
-                Illustrative content — ArchitectMiner authoring is still being built.
-                Capabilities will be authored as real schema-validated elements once
-                the architect data model lands.
+              <div
+                className="am-canvas-banner"
+                style={{
+                  background: "var(--hi-bg)",
+                  color: "var(--hi)",
+                  borderColor: "#c7dccf",
+                }}
+              >
+                Real data — these capabilities are file-backed under{" "}
+                <code>wiki/processes/{doc.slug}/capabilities/</code> and read
+                live through the same path as Processminer elements.
               </div>
             </main>
 
@@ -965,6 +1070,7 @@ export default function ArchitectureCanvas({
                 </div>
               </div>
             </aside>
+            {chatSidebar}
           </>
         )}
 
@@ -974,7 +1080,9 @@ export default function ArchitectureCanvas({
               <div className="am-canvas-sechead">
                 <h2>Target Applications</h2>
                 <span className="am-canvas-secmeta">
-                  6 elements · 4 accepted · 2 proposed · 1 BUILD · 1 BUY · 1 CONFIGURE · 3 KEEP
+                  {archData.apps.length} element{archData.apps.length === 1 ? "" : "s"} ·{" "}
+                  {archData.buildN} BUILD · {archData.buyN} BUY ·{" "}
+                  {archData.configureN} CONFIGURE · {archData.keepN} KEEP
                 </span>
                 <span style={{ flex: 1 }} />
                 <button type="button" className="am-canvas-btn">＋ Add Application</button>
@@ -984,13 +1092,20 @@ export default function ArchitectureCanvas({
               </div>
 
               <div className="am-canvas-cap-filterbar">
-                <span className="am-pill am-pill-acc">All (6)</span>
-                <span className="am-pill am-pill-neu">BUILD (1)</span>
-                <span className="am-pill am-pill-neu">BUY (1)</span>
-                <span className="am-pill am-pill-neu">CONFIGURE (1)</span>
-                <span className="am-pill am-pill-neu">KEEP (3)</span>
+                <span className="am-pill am-pill-acc">All ({archData.apps.length})</span>
+                <span className="am-pill am-pill-neu">BUILD ({archData.buildN})</span>
+                <span className="am-pill am-pill-neu">BUY ({archData.buyN})</span>
+                <span className="am-pill am-pill-neu">CONFIGURE ({archData.configureN})</span>
+                <span className="am-pill am-pill-neu">KEEP ({archData.keepN})</span>
               </div>
 
+              {archData.apps.length === 0 ? (
+                <div className="am-input-empty">
+                  No target applications authored yet for <b>{doc.process.title}</b>.
+                  Use the chat to elicit them, or hand-author element files under{" "}
+                  <code>wiki/processes/{doc.slug}/target-applications/</code>.
+                </div>
+              ) : (
               <table className="am-canvas-app-table">
                 <thead>
                   <tr>
@@ -1002,205 +1117,133 @@ export default function ArchitectureCanvas({
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="am-canvas-app-sel">
-                    <td>
-                      <div className="am-canvas-app-name">Case Hub</div>
-                      <div className="am-canvas-app-id">TGTAPP-{pid}-001</div>
-                      <div className="am-canvas-app-stack">new app · owned by case-mgmt domain</div>
-                    </td>
-                    <td><span className="am-verdict am-verdict-build">BUILD</span></td>
-                    <td>
-                      <div className="am-canvas-app-chips">
-                        <span className="am-canvas-app-chip">CAP-{pid}-002 capture</span>
-                        <span className="am-canvas-app-chip">CAP-{pid}-005 lifecycle</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div>Camunda 8 + Postgres</div>
-                      <div className="am-canvas-app-stack">eu-frankfurt · self-hosted</div>
-                    </td>
-                    <td><span className="am-pill am-pill-hi"><span className="am-dot" />Accepted</span></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div className="am-canvas-app-name">Customer Master</div>
-                      <div className="am-canvas-app-id">TGTAPP-{pid}-002</div>
-                      <div className="am-canvas-app-stack">existing · authoritative party data</div>
-                    </td>
-                    <td><span className="am-verdict am-verdict-keep">KEEP</span></td>
-                    <td>
-                      <div className="am-canvas-app-chips">
-                        <span className="am-canvas-app-chip">CAP-{pid}-001 identification</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div>Oracle Siebel</div>
-                      <div className="am-canvas-app-stack">existing · vendor-supported</div>
-                    </td>
-                    <td><span className="am-pill am-pill-hi"><span className="am-dot" />Accepted</span></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div className="am-canvas-app-name">KYC Engine</div>
-                      <div className="am-canvas-app-id">TGTAPP-{pid}-003</div>
-                      <div className="am-canvas-app-stack">existing · requires periodic-review config</div>
-                    </td>
-                    <td><span className="am-verdict am-verdict-configure">CONFIGURE</span></td>
-                    <td>
-                      <div className="am-canvas-app-chips">
-                        <span className="am-canvas-app-chip">CAP-{pid}-004 KYC refresh</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div>Fenergo</div>
-                      <div className="am-canvas-app-stack">existing · vendor config + 2 dev-weeks</div>
-                    </td>
-                    <td><span className="am-pill am-pill-hi"><span className="am-dot" />Accepted</span></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div className="am-canvas-app-name">Risk Score Service</div>
-                      <div className="am-canvas-app-id">TGTAPP-{pid}-004</div>
-                      <div className="am-canvas-app-stack">no in-house option · evaluated 3 vendors</div>
-                    </td>
-                    <td><span className="am-verdict am-verdict-buy">BUY</span></td>
-                    <td>
-                      <div className="am-canvas-app-chips">
-                        <span className="am-canvas-app-chip">CAP-{pid}-003 risk scoring</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div>Quantexa</div>
-                      <div className="am-canvas-app-stack">SaaS · €240k/yr · 8-week onboarding</div>
-                    </td>
-                    <td><span className="am-pill am-pill-mid"><span className="am-dot" />Proposed</span></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div className="am-canvas-app-name">Hyland ECM</div>
-                      <div className="am-canvas-app-id">TGTAPP-{pid}-005</div>
-                      <div className="am-canvas-app-stack">existing · group-wide document store</div>
-                    </td>
-                    <td><span className="am-verdict am-verdict-keep">KEEP</span></td>
-                    <td>
-                      <div className="am-canvas-app-chips">
-                        <span className="am-canvas-app-chip">CAP-{pid}-006 document collection</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div>OnBase</div>
-                      <div className="am-canvas-app-stack">existing · keep as-is</div>
-                    </td>
-                    <td><span className="am-pill am-pill-hi"><span className="am-dot" />Accepted</span></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div className="am-canvas-app-name">DWH (Snowflake)</div>
-                      <div className="am-canvas-app-id">TGTAPP-{pid}-006</div>
-                      <div className="am-canvas-app-stack">existing · add periodic-review marts</div>
-                    </td>
-                    <td><span className="am-verdict am-verdict-keep">KEEP</span></td>
-                    <td>
-                      <div className="am-canvas-app-chips">
-                        <span className="am-canvas-app-chip">CAP-{pid}-007 reporting</span>
-                      </div>
-                    </td>
-                    <td>
-                      <div>Snowflake</div>
-                      <div className="am-canvas-app-stack">existing · adds ~2TB to footprint</div>
-                    </td>
-                    <td><span className="am-pill am-pill-mid"><span className="am-dot" />Proposed</span></td>
-                  </tr>
+                  {archData.apps.map((app, idx) => {
+                    const verdict = ((app.meta.verdict as string) ?? "").toLowerCase();
+                    const hostedCaps = archData.caps.filter((c) => {
+                      const h = Array.isArray(c.meta.hostedIn) ? c.meta.hostedIn[0] : c.meta.hostedIn;
+                      return h === app.id;
+                    });
+                    return (
+                      <tr key={app.id} className={idx === 0 ? "am-canvas-app-sel" : undefined}>
+                        <td>
+                          <div className="am-canvas-app-name">{app.title}</div>
+                          <div className="am-canvas-app-id">{app.id}</div>
+                          <div className="am-canvas-app-stack">
+                            {(app.meta.owningDomain as string) ?? ""}
+                          </div>
+                        </td>
+                        <td>
+                          {verdict ? (
+                            <span className={`am-verdict am-verdict-${verdict}`}>
+                              {verdict.toUpperCase()}
+                            </span>
+                          ) : (
+                            <span className="am-pill am-pill-neu">—</span>
+                          )}
+                        </td>
+                        <td>
+                          <div className="am-canvas-app-chips">
+                            {hostedCaps.length === 0 ? (
+                              <span className="am-canvas-app-stack">none yet</span>
+                            ) : (
+                              hostedCaps.map((c) => (
+                                <span key={c.id} className="am-canvas-app-chip">
+                                  {c.id} {c.title.split(" ")[0].toLowerCase()}
+                                </span>
+                              ))
+                            )}
+                          </div>
+                        </td>
+                        <td>
+                          <div>{(app.meta.vendor as string) ?? "—"}</div>
+                          {app.meta.costBand && (
+                            <div className="am-canvas-app-stack">
+                              {app.meta.costBand as string}
+                            </div>
+                          )}
+                        </td>
+                        <td>
+                          <span
+                            className={`am-pill am-pill-${
+                              app.status === "confirmed" ? "hi" : "mid"
+                            }`}
+                          >
+                            <span className="am-dot" />
+                            {app.status === "confirmed" ? "Accepted" : "Proposed"}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
+              )}
 
-              <div className="am-canvas-banner">
-                Illustrative content — Target Applications will be authored as real
-                schema-validated elements once the architect data model lands.
+              <div className="am-canvas-banner" style={{ background: "var(--hi-bg)", color: "var(--hi)", borderColor: "#c7dccf" }}>
+                Real data — file-backed under{" "}
+                <code>wiki/processes/{doc.slug}/target-applications/</code>.
               </div>
             </main>
 
             <aside className="am-canvas-details">
-              <h3>Application — Case Hub</h3>
-              <div className="am-canvas-details-id">TGTAPP-{pid}-001</div>
+              {archData.apps.length === 0 ? (
+                <div className="am-input-empty" style={{ marginTop: 0 }}>
+                  No application selected — author one to see its details here.
+                </div>
+              ) : (
+                <>
+                  <h3>Application — {archData.apps[0].title}</h3>
+                  <div className="am-canvas-details-id">{archData.apps[0].id}</div>
 
-              <div className="am-canvas-details-block">
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Verdict</span>
-                  <span><span className="am-verdict am-verdict-build">BUILD</span></span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Owning domain</span>
-                  <span>Case &amp; lifecycle management</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Tech stack</span>
-                  <span>Camunda 8 + Postgres 16</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Hosting</span>
-                  <span>self-hosted · eu-frankfurt</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Cost band</span>
-                  <span>€420k build · €120k/yr run</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Build estimate</span>
-                  <span>14 FTE-weeks</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Status</span>
-                  <span><span className="am-pill am-pill-hi">Accepted</span> · today</span>
-                </div>
-              </div>
+                  <div className="am-canvas-details-block">
+                    <div className="am-canvas-details-row">
+                      <span className="am-canvas-details-k">Verdict</span>
+                      <span>
+                        {archData.apps[0].meta.verdict ? (
+                          <span className={`am-verdict am-verdict-${((archData.apps[0].meta.verdict as string) ?? "").toLowerCase()}`}>
+                            {(archData.apps[0].meta.verdict as string) ?? "—"}
+                          </span>
+                        ) : "—"}
+                      </span>
+                    </div>
+                    {archData.apps[0].meta.owningDomain && (
+                      <div className="am-canvas-details-row">
+                        <span className="am-canvas-details-k">Owning domain</span>
+                        <span>{archData.apps[0].meta.owningDomain as string}</span>
+                      </div>
+                    )}
+                    {archData.apps[0].meta.vendor && (
+                      <div className="am-canvas-details-row">
+                        <span className="am-canvas-details-k">Vendor / tech</span>
+                        <span>{archData.apps[0].meta.vendor as string}</span>
+                      </div>
+                    )}
+                    {archData.apps[0].meta.costBand && (
+                      <div className="am-canvas-details-row">
+                        <span className="am-canvas-details-k">Cost band</span>
+                        <span>{archData.apps[0].meta.costBand as string}</span>
+                      </div>
+                    )}
+                    <div className="am-canvas-details-row">
+                      <span className="am-canvas-details-k">Status</span>
+                      <span>
+                        <span className={`am-pill am-pill-${archData.apps[0].status === "confirmed" ? "hi" : "mid"}`}>
+                          {archData.apps[0].status === "confirmed" ? "Accepted" : "Draft"}
+                        </span>
+                      </span>
+                    </div>
+                  </div>
 
-              <div className="am-canvas-details-block">
-                <h4>Capabilities hosted</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">CAP-{pid}-002 capture &amp; validation</span>
-                  <span className="am-canvas-trace">CAP-{pid}-005 case lifecycle</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Integrations</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">→ Customer Master · sync</span>
-                  <span className="am-canvas-trace">→ Risk Score Service · event</span>
-                  <span className="am-canvas-trace">→ Hyland ECM · async</span>
-                  <span className="am-canvas-trace">→ DWH · nightly</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Driven by ADRs</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">ADR-{pid}-007 orchestration</span>
-                  <span className="am-canvas-trace">ADR-{pid}-002 schema</span>
-                  <span className="am-canvas-trace">ADR-{pid}-013 retry queue</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>NFRs &amp; risks</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">NFR-{pid}-001 p95 &lt; 1.2s</span>
-                  <span className="am-canvas-trace">NFR-{pid}-006 RTO ≤ 4h</span>
-                  <span className="am-canvas-trace am-canvas-trace-bad">RISK SaaS region cap</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Provenance</h4>
-                <div className="am-canvas-details-prov">
-                  <div><span className="am-canvas-verified">✓</span> Verdict — human-confirmed</div>
-                  <div><span className="am-canvas-verified">✓</span> Cost band — derived from RFP-{pid}-001</div>
-                  <div><span className="am-canvas-verified">✓</span> Capabilities hosted — linked to CAP-{pid}-002, CAP-{pid}-005</div>
-                  <div><span className="am-canvas-machine">▲</span> Cost band detail — drafted by procurement-agent · review</div>
-                </div>
-              </div>
+                  {archData.apps[0].blocks.length > 0 && archData.apps[0].blocks.map((b) => (
+                    <div className="am-input-block" key={b.heading}>
+                      <h4>{b.heading}</h4>
+                      <div className="am-input-prose"><Markdown text={b.text} /></div>
+                    </div>
+                  ))}
+                </>
+              )}
             </aside>
+            {chatSidebar}
           </>
         )}
 
@@ -1324,6 +1367,7 @@ export default function ArchitectureCanvas({
                 </div>
               </div>
             </aside>
+            {chatSidebar}
           </>
         )}
 
@@ -1472,6 +1516,7 @@ export default function ArchitectureCanvas({
                 </div>
               </div>
             </aside>
+            {chatSidebar}
           </>
         )}
 
@@ -1594,6 +1639,7 @@ export default function ArchitectureCanvas({
                 </div>
               </div>
             </aside>
+            {chatSidebar}
           </>
         )}
 
@@ -1782,6 +1828,87 @@ export default function ArchitectureCanvas({
                 </div>
               </div>
             </aside>
+            {chatSidebar}
+          </>
+        )}
+
+        {view === "inputs" && (
+          <>
+            <main className="am-canvas-doc am-canvas-doc-wide">
+              <div className="am-canvas-sechead">
+                <h2>{inputSectionLabel}</h2>
+                <span className="am-canvas-secmeta">
+                  {inputElements.length} elements ·{" "}
+                  {inputElements.filter((el) => el.status === "confirmed").length} confirmed ·
+                  read-only · sourced from Processminer
+                </span>
+                <span style={{ flex: 1 }} />
+                <span className="am-input-ro">FROM PROCESSMINER</span>
+              </div>
+
+              {inputElements.length === 0 ? (
+                <div className="am-input-empty">
+                  No elements in this section yet — author them in Processminer first.
+                </div>
+              ) : (
+                <div className="am-input-stack">
+                  {inputElements.map((el) => (
+                    <article
+                      key={el.id}
+                      className={`el${el.status === "draft" ? " draft" : ""}`}
+                      id={el.id}
+                    >
+                      <div className="el-top">
+                        <span className="el-id">{el.id}</span>
+                        {el.confidence && (
+                          <Tooltip label={`${el.confidence} confidence`}>
+                            <span className={`el-conf-dot conf-${el.confidence}`} />
+                          </Tooltip>
+                        )}
+                        <label
+                          className={`approval approval-${
+                            el.status === "confirmed" ? "approved" : "none"
+                          }`}
+                          style={{ pointerEvents: "none" }}
+                          title="Read-only — authored in Processminer"
+                        >
+                          <span className="statusctl-dot" aria-hidden="true" />
+                          <span className="statusctl-label">
+                            {el.status === "confirmed" ? "Confirmed" : "Draft"}
+                          </span>
+                        </label>
+                        <span className="el-id" style={{ marginLeft: "auto" }}>
+                          {el.type}
+                        </span>
+                      </div>
+                      <div className="el-title">{el.title}</div>
+
+                      {el.blocks.length > 0 ? (
+                        <div className="el-blocks">
+                          {el.blocks.map((b) => (
+                            <div className="el-block" key={b.heading}>
+                              <div className="el-block-head">
+                                <span className="el-block-head-name">{b.heading}</span>
+                              </div>
+                              <div className="el-block-text">
+                                <Markdown text={b.text} />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        el.body && (
+                          <div className="el-body">
+                            <Markdown text={el.body} />
+                          </div>
+                        )
+                      )}
+                    </article>
+                  ))}
+                </div>
+              )}
+            </main>
+            {chatSidebar}
           </>
         )}
       </div>

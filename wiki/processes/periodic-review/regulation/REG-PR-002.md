@@ -2,19 +2,22 @@
 id: REG-PR-002
 type: regulation
 section: regulation
-title: AMLO-FINMA — Swiss Anti-Money Laundering Ordinance
+title: AMLO-FINMA §22 and §23
 status: draft
-confidence: medium
-source: FINMA-RS 2016/7, §22, §23
-domain: AML
+confidence: high
+source: FINMA Anti-Money Laundering Ordinance (FINMA-RS 2016/7), §22 and §23
+domain: AML/KYC/CTF
+jurisdiction: CH
+article: §22 and §23
 asOf: 2026-05-21
-provenance: {"How it is met": {"evidence": "§3.2 Step 2: \"Beneficial-owner graph (Entity Resolution Service)\"; §5.2: \"Every control writes to the Audit Ledger with the case ID, the actor (human or system), the policy clause it satisfies, and the timestamp.\"", "source": "document"}, "What it requires": {"evidence": "§5.1 table: \"AMLO-FINMA (FINMA-RS 2016/7) | §22, §23 | Re-verification of identity and beneficial owners\"", "source": "document"}, "Why it applies": {"evidence": "", "source": "proposed"}}
+sourceUrl:
+provenance: {"How it is met": {"evidence": "", "source": "proposed"}, "What it requires": {"evidence": "§5.1 table: \"AMLO-FINMA (FINMA-RS 2016/7) | §22, §23 | Re-verification of identity and beneficial owners\"", "source": "document"}, "Why it applies": {"evidence": "§1.1: \"All natural-person clients of Retail Banking and Private Banking Switzerland, EU and UK booking centres.\"", "source": "document"}}
 ---
 ## What it requires
-§22 and §23 of FINMA-RS 2016/7 require re-verification of client identity and beneficial owners.
+AMLO-FINMA (FINMA-RS 2016/7) §22 and §23 require re-verification of identity and beneficial owners. The document maps these clauses to that obligation.
 
 ## Why it applies
-The bank's Swiss booking centre is regulated by FINMA (group regulator). All natural-person and legal-entity clients up to and including the SME segment (≤ CHF 50 m balance-sheet total) are in scope for Periodic KYC Review, directly engaging the re-verification obligations set out in §22
+The bank operates a Private Banking Switzerland booking centre, bringing Swiss-booked clients within scope of AMLO-FINMA.
 
 ## How it is met
-The target process re-verifies identity and beneficial-owner data at each review cycle. Pre-fill draws on the Entity Resolution Service for beneficial-owner graphs; the case record and Audit Ledger capture full evidence at close-out.
+Case Manager pre-fills identity documents (Document Vault) and the beneficial-owner graph (Entity Resolution Service). STP engine or FCO Analyst confirms re-verification, and the completed case is sealed in the Audit Ledger with case ID, actor, policy clause, and timestamp.

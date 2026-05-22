@@ -8,10 +8,10 @@ confidence: high
 source: periodic-kyc-review-dtp.pdf
 systems: []
 controls: []
-provenance: {"In this process": {"evidence": "", "source": "proposed"}, "Responsibility": {"evidence": "The RM remains the client owner but is no longer the process owner for Periodic KYC Review. (§4 RACI note); Periodic KYC Review is owned by Financial Crime Operations. The RM owns the client relationship but is not accountable for review execution. (§8 D1)", "source": "document"}}
+provenance: {"In this process": {"evidence": "", "source": "proposed"}, "Responsibility": {"evidence": "", "source": "proposed"}}
 ---
 ## Responsibility
-The RM owns the client relationship but is no longer the process owner for Periodic KYC Review; accountability for review execution has moved to Financial Crime Operations.
+The RM owns the client relationship and acts as the client-facing point of contact, but is no longer the process owner or accountable for review execution in the target process.
 
 ## In this process
-Informed throughout the review cycle (Steps 1–3, 5–7). Consulted during targeted outreach (Step 4) when the digital channel fails to reach the client, acting as fall-back for Private Banking. Consulted on client exit drafting (Step 7).
+Consulted on targeted outreach for Private Banking clients where digital channel falls back to RM-mediated channel (Step 4) and on client exit drafting. Informed at all other steps, including an informational notification at close-out (Step 7).

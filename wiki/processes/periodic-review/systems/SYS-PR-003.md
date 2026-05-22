@@ -8,10 +8,10 @@ confidence: high
 source: periodic-kyc-review-dtp.pdf
 systemType: CORE
 integrates: [SYS-PR-001, SYS-PR-006]
-provenance: {"Purpose": {"evidence": "STP Decision Engine … STP eligibility … Build (rules + ML model gate) [§7.2 inventory table]; 'Eligibility. Low or Medium risk and completeness ≥ 92 and no open screening hit and no event-based trigger and product mix unchanged.' [§3.2 Step 3]", "source": "document"}, "Role in this process": {"evidence": "", "source": "proposed"}}
+provenance: {"Purpose": {"evidence": "§7.2 table: System 'STP Decision Engine', Role 'STP eligibility', Build 'Build (rules + ML model gate)', Status 'In design'.", "source": "document"}, "Role in this process": {"evidence": "", "source": "proposed"}}
 ---
 ## Purpose
-Evaluates STP eligibility using a rules layer plus an ML model gate, and auto-approves qualifying Low- and Medium-risk cases.
+Internal-build rules-plus-ML-model gate that evaluates STP eligibility and auto-approves qualifying Low- and Medium-risk cases without human review. Status: In design.
 
 ## Role in this process
-Drives Step 3 (STP Decision). Applies eligibility criteria: risk tier Low/Medium, completeness score ≥ 92, no live screening hit, no event-trigger flag, unchanged product mix. Hard-capped at 70 % STP share of the eligible book (Transformation Decision D3).
+Executes Step 3 (STP Decision). Auto-approves cases meeting five eligibility conditions (Low/Medium risk, completeness >= 92, no screening hit, no event trigger, product unchanged); otherwise routes to Reviewer Triage with a reason. STP share is hard-capped at 70%.

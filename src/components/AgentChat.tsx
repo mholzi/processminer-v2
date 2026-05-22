@@ -133,6 +133,12 @@ export default function AgentChat({
   linting,
   findingCount,
   getRef,
+  title = "ProcessMiner",
+  subtitle = "Documents this process with you",
+  emptyText,
+  lintLabel,
+  placeholder = "Message the assistant…",
+  showLint = true,
 }: {
   open: boolean;
   onToggle: () => void;
@@ -153,6 +159,18 @@ export default function AgentChat({
   linting: boolean;
   findingCount: number | null;
   getRef: GetRef;
+  /** Brand title rendered in the chat header. Default "ProcessMiner". */
+  title?: string;
+  /** One-line subtitle under the title. */
+  subtitle?: string;
+  /** Override the empty-state body shown when there are no messages. */
+  emptyText?: ReactNode;
+  /** Override the lint button's idle label. Defaults to the SME one. */
+  lintLabel?: string;
+  /** Textarea placeholder when no turn is pending. */
+  placeholder?: string;
+  /** Whether to render the lint/quality-check action row. */
+  showLint?: boolean;
 }) {
   const [draft, setDraft] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -237,7 +255,7 @@ export default function AgentChat({
         onMouseDown={onResizeStart}
       />
       <div className="chat-head">
-        <span className="chat-title">ProcessMiner</span>
+        <span className="chat-title">{title}</span>
         <button
           className="chat-restart"
           onClick={onRestart}
@@ -258,13 +276,17 @@ export default function AgentChat({
           ⟩
         </button>
       </div>
-      <div className="chat-sub">Documents this process with you</div>
+      <div className="chat-sub">{subtitle}</div>
 
       <div className="chat-scroll" ref={scrollRef}>
         {messages.length === 0 && !linting && !pending && (
           <div className="chat-empty">
-            Ask the assistant to document a process or about any element. Or run
-            a quality check over the whole process.
+            {emptyText ?? (
+              <>
+                Ask the assistant to document a process or about any element.
+                Or run a quality check over the whole process.
+              </>
+            )}
           </div>
         )}
         {messages.map((m) => (
@@ -326,15 +348,17 @@ export default function AgentChat({
         )}
       </div>
 
-      <div className="chat-actions">
-        <button className="chat-lint" onClick={onRunLint} disabled={linting}>
-          {linting
-            ? "Running quality check…"
-            : findingCount === null
-              ? "⊛ Run a quality check on the whole process"
-              : `⊛ Re-run quality check · ${findingCount} open`}
-        </button>
-      </div>
+      {showLint && (
+        <div className="chat-actions">
+          <button className="chat-lint" onClick={onRunLint} disabled={linting}>
+            {linting
+              ? "Running quality check…"
+              : findingCount === null
+                ? lintLabel ?? "⊛ Run a quality check on the whole process"
+                : `⊛ Re-run quality check · ${findingCount} open`}
+          </button>
+        </div>
+      )}
 
       <div className="chat-input">
         <textarea
@@ -342,7 +366,7 @@ export default function AgentChat({
           // While a turn is in flight, the activity ticker already shows
           // in the pending bubble above — keep the textarea placeholder
           // static so it doesn't duplicate that text.
-          placeholder={pending ? "Working…" : "Message the assistant…"}
+          placeholder={pending ? "Working…" : placeholder}
           disabled={pending}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {

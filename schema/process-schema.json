@@ -218,6 +218,54 @@
           "specialist": "it-architect"
         }
       ]
+    },
+    {
+      "id": "target-architecture",
+      "label": "Target Architecture",
+      "sections": [
+        {
+          "id": "capabilities",
+          "label": "Capabilities",
+          "description": "Business capabilities the target process needs — the 'what', not the 'how'.",
+          "specialist": "domain-architect"
+        },
+        {
+          "id": "target-applications",
+          "label": "Target Applications",
+          "description": "Applications hosting the target capabilities, with build / buy / configure / keep verdicts.",
+          "specialist": "domain-architect"
+        },
+        {
+          "id": "architecture-decisions",
+          "label": "Architecture Decisions",
+          "description": "ADRs — locked-in technical decisions with their alternatives and consequences.",
+          "specialist": "domain-architect"
+        },
+        {
+          "id": "target-integrations",
+          "label": "Target Integrations",
+          "description": "Interfaces between target applications, with patterns (sync / async / event / batch).",
+          "specialist": "solution-architect"
+        },
+        {
+          "id": "components",
+          "label": "Components",
+          "description": "Sub-elements of target applications — services, gateways, workers.",
+          "specialist": "solution-architect"
+        },
+        {
+          "id": "nfrs",
+          "label": "NFRs",
+          "description": "Non-functional requirements with category, target value and traces back to controls and regulation.",
+          "specialist": "solution-architect"
+        },
+        {
+          "id": "migration-phases",
+          "label": "Migration Phases",
+          "description": "Staged sequence from today's systems landscape to the target architecture.",
+          "specialist": "solution-architect"
+        }
+      ]
     }
   ],
   "elementTypes": {
@@ -1996,6 +2044,509 @@
           "paragraphs": "1",
           "words": "6–40",
           "purpose": "What breaks if the assumption does not hold."
+        }
+      ]
+    },
+    "capability": {
+      "label": "Capability",
+      "section": "capabilities",
+      "idPrefix": "CAP",
+      "frontmatter": {
+        "fields": [
+          {
+            "key": "criticality",
+            "label": "Criticality",
+            "hint": "CRITICAL / HIGH / MEDIUM / LOW — how essential this capability is to the target process."
+          },
+          {
+            "key": "reuse",
+            "label": "Reuse",
+            "hint": "NEW / REUSED — whether this is a fresh capability or one already in the catalog."
+          },
+          {
+            "key": "owningDomain",
+            "label": "Owning domain",
+            "hint": "The business domain that owns this capability (e.g. 'Case management', 'Payments')."
+          }
+        ],
+        "relations": [
+          {
+            "key": "hostedIn",
+            "label": "Hosted in",
+            "target": "target-application",
+            "reverseLabel": "Hosts"
+          },
+          {
+            "key": "realisesStep",
+            "label": "Realises step",
+            "target": "target-state",
+            "reverseLabel": "Realised by capability"
+          },
+          {
+            "key": "resolvesGap",
+            "label": "Resolves gap",
+            "target": "gap",
+            "reverseLabel": "Resolved by capability"
+          }
+        ],
+        "required": ["criticality", "reuse"]
+      },
+      "template": [
+        {
+          "heading": "Description",
+          "format": "paragraph",
+          "paragraphs": "1–2",
+          "words": "20–80",
+          "purpose": "What the capability does — the function from the consumer's perspective."
+        },
+        {
+          "heading": "Inputs and outputs",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "15–60",
+          "purpose": "What the capability needs to operate, and what it produces."
+        },
+        {
+          "heading": "Boundaries",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "10–40",
+          "purpose": "What this capability is NOT responsible for — adjacent capabilities it relies on."
+        }
+      ]
+    },
+    "target-application": {
+      "label": "Target Application",
+      "section": "target-applications",
+      "idPrefix": "TGTAPP",
+      "frontmatter": {
+        "fields": [
+          {
+            "key": "verdict",
+            "label": "Verdict",
+            "hint": "BUILD / BUY / CONFIGURE / KEEP — the disposition of this app in the target state."
+          },
+          {
+            "key": "vendor",
+            "label": "Vendor",
+            "hint": "Vendor name for BUY apps; tech stack for BUILD; vendor + 'configured' for CONFIGURE."
+          },
+          {
+            "key": "owningDomain",
+            "label": "Owning domain",
+            "hint": "The business domain that owns this app."
+          },
+          {
+            "key": "costBand",
+            "label": "Cost band",
+            "hint": "Build / run / annual licence cost band (rough budgeting estimate)."
+          }
+        ],
+        "relations": [
+          {
+            "key": "drivenByADR",
+            "label": "Driven by ADR",
+            "target": "adr",
+            "reverseLabel": "Drives"
+          }
+        ],
+        "required": ["verdict"]
+      },
+      "template": [
+        {
+          "heading": "Rationale",
+          "format": "paragraph",
+          "paragraphs": "1–2",
+          "words": "20–80",
+          "purpose": "Why this app, and why this verdict — what the alternatives were."
+        },
+        {
+          "heading": "Tech stack",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "10–60",
+          "purpose": "Concrete technologies, hosting region, deployment model."
+        },
+        {
+          "heading": "Risks",
+          "format": "bullets",
+          "items": "1–5",
+          "purpose": "Risks introduced or carried by this disposition (vendor lock-in, residency, capacity, etc.)."
+        }
+      ]
+    },
+    "adr": {
+      "label": "Architecture Decision",
+      "section": "architecture-decisions",
+      "idPrefix": "ADR",
+      "frontmatter": {
+        "fields": [
+          {
+            "key": "adrStatus",
+            "label": "Status",
+            "hint": "DRAFT / PROPOSED / ACCEPTED / REJECTED / SUPERSEDED — the ADR lifecycle state."
+          },
+          {
+            "key": "owner",
+            "label": "Owner",
+            "hint": "The accountable architect (a role, not a named person)."
+          },
+          {
+            "key": "domain",
+            "label": "Domain",
+            "hint": "The architectural domain this decision belongs to (e.g. 'Case management', 'Payments')."
+          }
+        ],
+        "relations": [
+          {
+            "key": "decision",
+            "label": "Drives",
+            "target": "transformation-decision",
+            "reverseLabel": "Realised by ADR"
+          },
+          {
+            "key": "resolvesGap",
+            "label": "Resolves gap",
+            "target": "gap",
+            "reverseLabel": "Resolved by ADR"
+          },
+          {
+            "key": "satisfiesControl",
+            "label": "Satisfies control",
+            "target": "control",
+            "reverseLabel": "Satisfied by ADR"
+          },
+          {
+            "key": "supersededBy",
+            "label": "Superseded by",
+            "target": "adr",
+            "reverseLabel": "Supersedes"
+          },
+          {
+            "key": "dependsOn",
+            "label": "Depends on",
+            "target": "adr",
+            "reverseLabel": "Blocks"
+          }
+        ],
+        "required": ["adrStatus", "owner"]
+      },
+      "template": [
+        {
+          "heading": "Context",
+          "format": "paragraph",
+          "paragraphs": "1–2",
+          "words": "30–120",
+          "purpose": "Why the decision is needed — the situation, constraints and forces in play."
+        },
+        {
+          "heading": "Decision",
+          "format": "paragraph",
+          "paragraphs": "1–2",
+          "words": "15–80",
+          "purpose": "What we decided to do."
+        },
+        {
+          "heading": "Alternatives considered",
+          "format": "bullets",
+          "items": "2–6",
+          "purpose": "The options we weighed and why each was not chosen."
+        },
+        {
+          "heading": "Consequences",
+          "format": "bullets",
+          "items": "2–8",
+          "purpose": "What follows from the decision — new dependencies, NFRs, risks, technical debt."
+        }
+      ]
+    },
+    "target-integration": {
+      "label": "Target Integration",
+      "section": "target-integrations",
+      "idPrefix": "INT",
+      "frontmatter": {
+        "fields": [
+          {
+            "key": "pattern",
+            "label": "Pattern",
+            "hint": "SYNC / ASYNC / EVENT / BATCH — the interaction style."
+          },
+          {
+            "key": "direction",
+            "label": "Direction",
+            "hint": "ONE-WAY / TWO-WAY / PUB-SUB — the data-flow direction."
+          },
+          {
+            "key": "contract",
+            "label": "Contract",
+            "hint": "Interface contract reference — OpenAPI 3.1, AsyncAPI 2.6, CMIS, Snowflake stage, etc."
+          },
+          {
+            "key": "volume",
+            "label": "Volume",
+            "hint": "Approximate volume + latency target (e.g. '~12k req/day · p95 380ms')."
+          }
+        ],
+        "relations": [
+          {
+            "key": "from",
+            "label": "From",
+            "target": "target-application",
+            "reverseLabel": "Outbound integrations"
+          },
+          {
+            "key": "to",
+            "label": "To",
+            "target": "target-application",
+            "reverseLabel": "Inbound integrations"
+          },
+          {
+            "key": "realises",
+            "label": "Realises",
+            "target": "capability",
+            "reverseLabel": "Realised by integration"
+          },
+          {
+            "key": "drivenByADR",
+            "label": "Driven by ADR",
+            "target": "adr",
+            "reverseLabel": "Drives integration"
+          }
+        ],
+        "required": ["pattern", "direction"]
+      },
+      "template": [
+        {
+          "heading": "Purpose",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "15–60",
+          "purpose": "Why the two apps need to talk, and what data flows."
+        },
+        {
+          "heading": "Contract details",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "15–80",
+          "purpose": "Auth, schema, idempotency, versioning — the contract specifics."
+        },
+        {
+          "heading": "Failure mode",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "10–50",
+          "purpose": "Behaviour when the downstream is unavailable or returns an error."
+        }
+      ]
+    },
+    "component": {
+      "label": "Component",
+      "section": "components",
+      "idPrefix": "COMP",
+      "frontmatter": {
+        "fields": [
+          {
+            "key": "tech",
+            "label": "Tech",
+            "hint": "The technology / framework (e.g. 'Spring Boot 3', 'Camunda Zeebe', 'Quarkus')."
+          },
+          {
+            "key": "dataStore",
+            "label": "Data store",
+            "hint": "The persistence layer this component owns, if any (e.g. 'Postgres 16')."
+          },
+          {
+            "key": "hosting",
+            "label": "Hosting",
+            "hint": "Runtime environment (e.g. 'EKS · eu-frankfurt', 'AWS Lambda', 'on-prem')."
+          },
+          {
+            "key": "scaling",
+            "label": "Scaling",
+            "hint": "Replica / scaling profile (e.g. 'HPA · 3 → 12 replicas')."
+          }
+        ],
+        "relations": [
+          {
+            "key": "inApp",
+            "label": "In application",
+            "target": "target-application",
+            "reverseLabel": "Contains components"
+          },
+          {
+            "key": "dependsOn",
+            "label": "Depends on",
+            "target": "component",
+            "reverseLabel": "Used by"
+          },
+          {
+            "key": "realisesCapability",
+            "label": "Realises capability",
+            "target": "capability",
+            "reverseLabel": "Realised by component"
+          }
+        ],
+        "required": ["tech", "inApp"]
+      },
+      "template": [
+        {
+          "heading": "Responsibility",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "15–60",
+          "purpose": "What this component owns within its application."
+        },
+        {
+          "heading": "Technical detail",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "15–80",
+          "purpose": "Tech choices, data ownership, scaling profile."
+        }
+      ]
+    },
+    "nfr": {
+      "label": "Non-Functional Requirement",
+      "section": "nfrs",
+      "idPrefix": "NFR",
+      "frontmatter": {
+        "fields": [
+          {
+            "key": "category",
+            "label": "Category",
+            "hint": "PERFORMANCE / AVAILABILITY / SECURITY / COMPLIANCE / SCALABILITY — the NFR family."
+          },
+          {
+            "key": "target",
+            "label": "Target",
+            "hint": "The concrete, testable target (e.g. 'p95 < 1.2s', 'RTO ≤ 4h', '10 years immutable')."
+          },
+          {
+            "key": "owner",
+            "label": "Owner",
+            "hint": "The team accountable for meeting the NFR (a role, not a person)."
+          }
+        ],
+        "relations": [
+          {
+            "key": "satisfiesControl",
+            "label": "Satisfies control",
+            "target": "control",
+            "reverseLabel": "Satisfied by NFR"
+          },
+          {
+            "key": "regulatedBy",
+            "label": "Regulated by",
+            "target": "regulation",
+            "reverseLabel": "Drives NFR"
+          },
+          {
+            "key": "appliesTo",
+            "label": "Applies to",
+            "target": ["capability", "component", "target-application", "target-integration"],
+            "reverseLabel": "Constrained by NFR"
+          },
+          {
+            "key": "drivenByADR",
+            "label": "Driven by ADR",
+            "target": "adr",
+            "reverseLabel": "Drives NFR"
+          }
+        ],
+        "required": ["category", "target"]
+      },
+      "template": [
+        {
+          "heading": "Definition",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "15–60",
+          "purpose": "What is being measured and at what threshold."
+        },
+        {
+          "heading": "Measurement",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "10–50",
+          "purpose": "How the target is observed in production — instrumentation and method."
+        },
+        {
+          "heading": "Verification",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "10–60",
+          "purpose": "How the NFR is tested before go-live — load test, audit, etc."
+        }
+      ]
+    },
+    "migration-phase": {
+      "label": "Migration Phase",
+      "section": "migration-phases",
+      "idPrefix": "MIG",
+      "frontmatter": {
+        "fields": [
+          {
+            "key": "phaseStatus",
+            "label": "Status",
+            "hint": "PLANNED / IN-FLIGHT / DONE — current execution state."
+          },
+          {
+            "key": "startQuarter",
+            "label": "Start",
+            "hint": "Calendar quarter the phase begins (e.g. '2026 Q3')."
+          },
+          {
+            "key": "endQuarter",
+            "label": "End",
+            "hint": "Calendar quarter the phase completes."
+          },
+          {
+            "key": "owner",
+            "label": "Owner",
+            "hint": "The accountable delivery owner (a role)."
+          }
+        ],
+        "relations": [
+          {
+            "key": "dependsOn",
+            "label": "Depends on",
+            "target": "migration-phase",
+            "reverseLabel": "Blocks"
+          },
+          {
+            "key": "delivers",
+            "label": "Delivers",
+            "target": ["capability", "component", "target-application"],
+            "reverseLabel": "Delivered by phase"
+          },
+          {
+            "key": "resolvesGap",
+            "label": "Resolves gap",
+            "target": "gap",
+            "reverseLabel": "Resolved by phase"
+          }
+        ],
+        "required": ["phaseStatus", "startQuarter", "endQuarter"]
+      },
+      "template": [
+        {
+          "heading": "Scope",
+          "format": "paragraph",
+          "paragraphs": "1–2",
+          "words": "20–100",
+          "purpose": "What this phase delivers and what it explicitly does not."
+        },
+        {
+          "heading": "Acceptance criteria",
+          "format": "bullets",
+          "items": "2–6",
+          "purpose": "What must be true for the phase to be called done."
+        },
+        {
+          "heading": "Risks",
+          "format": "bullets",
+          "items": "1–5",
+          "purpose": "Risks that could push the phase late or break dependent phases."
         }
       ]
     }

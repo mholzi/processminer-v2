@@ -2,19 +2,23 @@
 id: PG-PR-004
 type: process-gap
 section: process-gaps
-title: Client cannot see their KYC review status
+title: Beneficial-owner graphs incomplete for pre-2018 clients
 status: draft
 confidence: high
 source: periodic-kyc-review-dtp.pdf
-area: Client Experience
+area: As-Is Process
 gapStatus: open
-provenance: {"Impact": {"evidence": "§6.2 friction column: 'No visibility; clients found out at the next outreach.' §6.1 principle 5: 'No silence. The client sees their KYC status and next review date in the app at all times.' Client-trust and proactive-preparation claims are inferences not stated explicitly; removed. Severity/Owner/Target from G-09.", "source": "document"}, "Next step": {"evidence": "§6.1 principle 5: 'The client sees their KYC status and next review date in the app at all times.' Roadmap §11: '2027 Q3 | Client KYC-status visible in app.' G-09 Owner Digital, Target close Q3 2027.", "source": "document"}, "The gap": {"evidence": "G-09: 'Client visibility of KYC status absent' — Severity Low, Owner Digital, Target close Q3 2027. §6.2 client journey: 'No visibility; clients found out at the next outreach.'", "source": "document"}}
+severity: Medium
+owner: Data
+targetClose: Q4 2027 (remediation programme)
+affects: [PS-PR-002, PS-PR-003]
+provenance: {"Impact": {"evidence": "When the case opens it is pre-populated with Beneficial-owner graph (Entity Resolution Service). (Section 3 Step 2); STP eligibility requires completeness >= 92. (Section 3 Step 3); cases not meeting completeness are routed to Reviewer Triage. (Section 3 Step 3)", "source": "document"}, "Next step": {"evidence": "Mitigation: remediation programme PRJ-ENT-BO (separate plan). (Section 5.3); G-06: Owner: Data. Target close: Q4 2027 (remediation programme). (Section 9 Gap Log)", "source": "document"}, "The gap": {"evidence": "Data quality in legacy entity records. Beneficial-owner graphs for entities onboarded pre-2018 are incomplete. Mitigation: remediation programme PRJ-ENT-BO (separate plan). (Section 5.3 Residual risks accepted); G-06: Beneficial-owner graphs incomplete pre-2018. Owner: Data. Target close: Q4 2027 (remediation programme). (Section 9 Gap Log)", "source": "document"}}
 ---
 ## The gap
-Clients have no visibility of their KYC status or next review date in any bank channel; they find out only when outreach arrives.
+Beneficial-owner (BO) graphs held in the Entity Resolution Service are incomplete for legal-entity clients onboarded before 2018. The structured BO data required to pre-fill cases and support STP eligibility is absent or unreliable for this legacy cohort.
 
 ## Impact
-Contradicts CX principle 5 ('No silence — the client sees their KYC status and next review date in the app at all times'). Severity: Low. Owner: Digital. Target close: Q3 2027.
+Cases without complete BO graphs cannot reach the completeness score (>= 92) required for STP eligibility and are routed to manual Reviewer Triage regardless of the client's current risk rating.
 
 ## Next step
-Expose KYC review status and next review date in the mobile app. Owner: Digital. Target close: Q3 2027.
+Execute a BO data remediation programme (PRJ-ENT-BO) to back-populate the Entity Resolution Service for pre-2018 clients. Owner: Data. Target close: Q4 2027 (remediation programme).

@@ -2,21 +2,21 @@
 id: PP-PR-001
 type: pain-point
 section: pain-points
-title: No system of record — evidence in four places
+title: No system of record
 status: draft
 confidence: medium
 source: periodic-kyc-review-dtp.pdf
-category: data-quality
+category: data fragmentation
 severity: HIGH
 priority: P1
-affects: []
-provenance: {"Description": {"evidence": "No system of record. Evidence lives in four places (shared drive, email, SharePoint, core banking). Reconciliation is manual.", "source": "document"}, "Impact": {"evidence": "Evidence lives in four places (shared drive, email, SharePoint, core banking). Reconciliation is manual.", "source": "document"}, "Root cause": {"evidence": "", "source": "proposed"}}
+affects: [PS-PR-002, PS-PR-003, PS-PR-005]
+provenance: {"Description": {"evidence": "No system of record. Evidence lives in four places (shared drive, email, SharePoint, core banking). Reconciliation is manual. (§2 Why it hurts, p.7)", "source": "document"}, "Impact": {"evidence": "", "source": "proposed"}, "Root cause": {"evidence": "", "source": "proposed"}}
 ---
 ## Description
-Evidence for a completed KYC review lives in four separate systems — shared drive, email, SharePoint, and core banking. Reconciliation between these systems is manual.
+Evidence for a periodic review lives in four separate systems — shared drive, email, SharePoint, and core banking. There is no single authoritative case record; analysts must manually pull and reconcile artefacts from each system before they can assess or sign off a review.
 
 ## Impact
-Evidence is fragmented across four systems with no single consolidated record, making reconciliation a manual effort for every inquiry.
+Manual reconciliation across four systems consumes analyst time and makes the completeness of any evidence pack impossible to verify automatically. This is recorded as G-02 (Evidence scattered across 4 systems — Critical, target close Q1 2027).
 
 ## Root cause
-No dedicated case management system; the process was built on general-purpose infrastructure (file shares, email, SharePoint) rather than purpose-built KYC tooling.
+The four systems serve different owners: RMs use a shared drive and email (As-Is Step 3), Compliance Ops records outcomes in a SharePoint log (Step 5), and next-review dates are held in core banking (Step 5). No purpose-built case management layer consolidates them.

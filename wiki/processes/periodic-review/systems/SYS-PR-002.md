@@ -8,10 +8,10 @@ confidence: high
 source: periodic-kyc-review-dtp.pdf
 systemType: CORE
 integrates: [SYS-PR-001]
-provenance: {"Purpose": {"evidence": "Trigger Engine … Deterministic triggering … Build … In design [§7.2 inventory table]; 'Triggers are deterministic and logged. A review fires when any of: The client's review cadence expires … An event-based trigger fires …' [§3.2 Step 1]", "source": "document"}, "Role in this process": {"evidence": "", "source": "proposed"}}
+provenance: {"Purpose": {"evidence": "§7.2 table: System 'Trigger Engine', Role 'Deterministic triggering', Build 'Build', Status 'In design'. §3.2 Step 1: 'Triggers are deterministic and logged.' Output 'ReviewDue event with reason code'.", "source": "document"}, "Role in this process": {"evidence": "", "source": "proposed"}}
 ---
 ## Purpose
-Deterministic rule-and-event engine that fires ReviewDue events on risk-rated cadence and on qualifying event triggers.
+Internal-build deterministic triggering service that detects when a client's KYC review is due and emits a ReviewDue event to the Case Manager. Status: In design.
 
 ## Role in this process
-Drives Step 1 (Trigger). Publishes event-driven, idempotent ReviewDue messages to the KYC Case Manager, with nightly reconciliation against the client master. Consumes risk ratings, the sanctions/adverse-media event bus, TM alerts, and beneficial-owner change notifications.
+Sole trigger source for Step 1. Evaluates cadence expiry (Low 5y, Medium 3y, High 1y), event-based triggers (sanctions hit, adverse media, BO change), and regulatory mandates. Triggers are deterministic and logged; unactioned events auto-open a case after 72 hours.

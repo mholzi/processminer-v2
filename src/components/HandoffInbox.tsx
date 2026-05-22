@@ -5,6 +5,23 @@ import type { ProcessDoc } from "@/lib/wiki";
 import type { User } from "@/lib/user";
 import Tooltip from "./Tooltip";
 import RelativeTime from "./RelativeTime";
+import {
+  CapabilityCatalog,
+  ApplicationRegister,
+  NfrTemplates,
+  PatternLibrary,
+} from "./LibraryViews";
+import { AllProcesses, MyAdrs, MigrationPlans } from "./PersonalViews";
+
+// Sidebar sections beyond the default Handoff inbox view. null = inbox.
+type SidebarSection =
+  | "all-processes"
+  | "my-adrs"
+  | "migration-plans"
+  | "capabilities"
+  | "applications"
+  | "nfrs"
+  | "patterns";
 
 // ArchitectMiner's first surface — the handoff inbox. Lists every process
 // from Processminer with a derived "ready for architecture" status. The
@@ -116,6 +133,7 @@ export default function HandoffInbox({
 }) {
   const [filter, setFilter] = useState<Filter>("all");
   const [query, setQuery] = useState("");
+  const [sidebarSection, setSidebarSection] = useState<SidebarSection | null>(null);
 
   const rows = useMemo(
     () =>
@@ -192,36 +210,76 @@ export default function HandoffInbox({
       <div className="am-shell">
         <aside className="am-side">
           <div className="am-side-group">Work</div>
-          <div className="am-navitem am-navitem-on">
+          <div
+            className={`am-navitem${sidebarSection === null ? " am-navitem-on" : ""}`}
+            onClick={() => setSidebarSection(null)}
+          >
             Handoff inbox
             <span className="am-navitem-n">{counts.all}</span>
           </div>
-          <div className="am-navitem am-navitem-mute" title="Coming soon">
+          <div
+            className={`am-navitem${sidebarSection === "all-processes" ? " am-navitem-on" : ""}`}
+            onClick={() => setSidebarSection("all-processes")}
+          >
             All processes
+            <span className="am-navitem-n">9</span>
           </div>
-          <div className="am-navitem am-navitem-mute" title="Coming soon">
+          <div
+            className={`am-navitem${sidebarSection === "my-adrs" ? " am-navitem-on" : ""}`}
+            onClick={() => setSidebarSection("my-adrs")}
+          >
             My ADRs
+            <span className="am-navitem-n">23</span>
           </div>
-          <div className="am-navitem am-navitem-mute" title="Coming soon">
+          <div
+            className={`am-navitem${sidebarSection === "migration-plans" ? " am-navitem-on" : ""}`}
+            onClick={() => setSidebarSection("migration-plans")}
+          >
             Migration plans
+            <span className="am-navitem-n">3</span>
           </div>
 
           <div className="am-side-group">Library</div>
-          <div className="am-navitem am-navitem-mute" title="Coming soon">
+          <div
+            className={`am-navitem${sidebarSection === "capabilities" ? " am-navitem-on" : ""}`}
+            onClick={() => setSidebarSection("capabilities")}
+          >
             Capability catalog
+            <span className="am-navitem-n">47</span>
           </div>
-          <div className="am-navitem am-navitem-mute" title="Coming soon">
+          <div
+            className={`am-navitem${sidebarSection === "applications" ? " am-navitem-on" : ""}`}
+            onClick={() => setSidebarSection("applications")}
+          >
             Application register
+            <span className="am-navitem-n">28</span>
           </div>
-          <div className="am-navitem am-navitem-mute" title="Coming soon">
+          <div
+            className={`am-navitem${sidebarSection === "nfrs" ? " am-navitem-on" : ""}`}
+            onClick={() => setSidebarSection("nfrs")}
+          >
             NFR templates
+            <span className="am-navitem-n">22</span>
           </div>
-          <div className="am-navitem am-navitem-mute" title="Coming soon">
+          <div
+            className={`am-navitem${sidebarSection === "patterns" ? " am-navitem-on" : ""}`}
+            onClick={() => setSidebarSection("patterns")}
+          >
             Pattern library
+            <span className="am-navitem-n">14</span>
           </div>
         </aside>
 
         <main className="am-main">
+        {sidebarSection === "all-processes" && <AllProcesses />}
+        {sidebarSection === "my-adrs" && <MyAdrs user={user} />}
+        {sidebarSection === "migration-plans" && <MigrationPlans />}
+        {sidebarSection === "capabilities" && <CapabilityCatalog />}
+        {sidebarSection === "applications" && <ApplicationRegister />}
+        {sidebarSection === "nfrs" && <NfrTemplates />}
+        {sidebarSection === "patterns" && <PatternLibrary />}
+        {sidebarSection === null && (
+          <>
           <div className="am-head">
             <h1>Handoff inbox</h1>
             <p className="am-sub">
@@ -358,6 +416,8 @@ export default function HandoffInbox({
               })}
             </tbody>
           </table>
+          </>
+        )}
         </main>
       </div>
     </div>

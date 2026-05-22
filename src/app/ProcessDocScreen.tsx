@@ -3022,6 +3022,7 @@ export default function ProcessDocScreen({
                 }
                 onClick={() => {
                   onUpdateUser({
+                    ...user,
                     name: userEdit.name.trim(),
                     role: userEdit.role.trim(),
                     streamReplies: userEdit.streamReplies === true,

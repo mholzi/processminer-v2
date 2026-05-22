@@ -7,11 +7,11 @@ status: draft
 confidence: high
 source: periodic-kyc-review-dtp.pdf
 systemType: CORE
-integrates: [SYS-PR-002, SYS-PR-003, SYS-PR-004, SYS-PR-005, SYS-PR-006, SYS-PR-007, SYS-PR-008]
-provenance: {"Purpose": {"evidence": "KYC CASE MANAGER (new) (orchestration + system of record) [§7.1 diagram]; Buy (Fenergo / ComplyAdvantage) … RFP Q3 2026 [§7.2 inventory table]", "source": "document"}, "Role in this process": {"evidence": "", "source": "proposed"}}
+integrates: [SYS-PR-002, SYS-PR-003, SYS-PR-004, SYS-PR-005, SYS-PR-006, SYS-PR-007, SYS-PR-008, SYS-PR-009, SYS-PR-010]
+provenance: {"Purpose": {"evidence": "§7.2 table: System 'KYC Case Manager', Role 'Orchestration + SoR', Build/Buy 'Buy (Fenergo / ComplyAdvantage)', Status 'RFP Q3 2026'. §7.1 diagram: 'KYC CASE MANAGER (new) (orchestration + system of record)'. §8 D2: 'Buy a vendor case-management platform (Fenergo or ComplyAdvantage Mesh).'", "source": "document"}, "Role in this process": {"evidence": "", "source": "proposed"}}
 ---
 ## Purpose
-Orchestration layer and system of record for all KYC review cases. Procured as a vendor buy (Fenergo or ComplyAdvantage Mesh); RFP Q3 2026.
+Vendor case-management platform serving as the central orchestration hub and system of record for all Periodic KYC Review cases. Procurement approach: Buy (Fenergo / ComplyAdvantage); RFP Q3 2026.
 
 ## Role in this process
-Central hub in the target landscape (Section 7.1). Opens cases on ReviewDue events from the Trigger Engine (Step 2 — Case Open & Pre-Fill), orchestrates STP routing through the STP Decision Engine (Step 3), drives targeted outreach via the Outreach
+Orchestration hub and system of record. Opens a case within 5 minutes of a ReviewDue event, pre-fills data from five source systems, routes to STP or Reviewer Triage, records 4-eyes sign-off, and writes risk rating to Core Banking on close-out.

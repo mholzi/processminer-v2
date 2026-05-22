@@ -36,3 +36,7 @@ public/test-report-assets/
 
 # scratch dir for skill element-spec JSON (write_element.py inputs)
 tmp/
+
+# Local user store: bcrypt-hashed passwords, session secrets, audit log.
+# Server-only, never committed.
+/data/

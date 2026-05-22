@@ -8,10 +8,10 @@ confidence: high
 source: periodic-kyc-review-dtp.pdf
 systemType: SUPPORTING
 integrates: [SYS-PR-001]
-provenance: {"Purpose": {"evidence": "§7.2 table: Role = 'Client-facing digital outreach'; Build/Buy = 'Existing mobile platform'; Status = 'Extend'. §7.3: 'Outreach Service → Mobile App: uses the same secure-message rail as transactional approvals; supports step-up auth'.", "source": "document"}, "Role in this process": {"evidence": "", "source": "proposed"}}
+provenance: {"Purpose": {"evidence": "§7.2: 'Outreach Service | Client-facing digital outreach | Existing mobile platform | Extend'; §3.2 Step 4: 'Owner. Client Outreach Service. Channel. Mobile app (primary), secure message (secondary), RM-mediated for Private Banking.'", "source": "document"}, "Role in this process": {"evidence": "", "source": "proposed"}}
 ---
 ## Purpose
-Delivers targeted client-facing outreach via the mobile app and secure-message channel.
+Delivers targeted, data-minimised client-facing outreach via the bank's mobile app (primary), secure message (secondary), or RM-mediated contact for Private Banking.
 
 ## Role in this process
-Drives Step 4 (Targeted Outreach): computes the minimal data delta required from the client and pushes the request via the mobile app secure-message rail. Supports step-up authentication. Uses the existing mobile platform (Status: Extend).
+Owns Step 4 (Targeted Outreach). Computes the minimal data delta and requests only missing or stale items. Enforces a single thread with a 30-day timeout before falling back to RM-mediated contact. Uses the bank's secure-message rail with step-up authentication.

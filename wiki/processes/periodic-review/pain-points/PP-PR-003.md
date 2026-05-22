@@ -2,21 +2,21 @@
 id: PP-PR-003
 type: pain-point
 section: pain-points
-title: Over-collection of documents from clients
+title: Over-collection of client data
 status: draft
 confidence: medium
 source: periodic-kyc-review-dtp.pdf
-category: manual effort
-severity: HIGH
-priority: P1
-affects: []
-provenance: {"Description": {"evidence": "Over-collection. Clients are asked for documents the bank already has in onboarding, transactions, or the customer master.", "source": "document"}, "Impact": {"evidence": "Client outreach rate As-Is (Q1 2026): 91 % [Executive Summary headline targets table]. GDPR Art. 5(1)(c), Art. 25: Data minimisation in outreach; privacy-by-design pre-fill [§5.1 Regulations addressed].", "source": "document"}, "Root cause": {"evidence": "", "source": "proposed"}}
+category: data collection
+severity: MEDIUM
+priority: P2
+affects: [PS-PR-004]
+provenance: {"Description": {"evidence": "Over-collection. Clients are asked for documents the bank already has in onboarding, transactions, or the customer master. (§2 Why it hurts, p.7); RM contacts the client (email, phone, in person) and asks for refreshed ID, proof of address, source-of-wealth attestation and an updated client profile questionnaire. (§2 Step 2, p.7)", "source": "document"}, "Impact": {"evidence": "", "source": "proposed"}, "Root cause": {"evidence": "", "source": "proposed"}}
 ---
 ## Description
-Clients are asked for documents and data the bank already holds from onboarding, transactions, or the customer master. There is no pre-fill step to eliminate unnecessary requests.
+During outreach the RM asks clients to supply refreshed identity documents, proof of address, source-of-wealth attestation, and an updated client profile questionnaire — including items the bank already holds from onboarding, ongoing transactions, or the customer master.
 
 ## Impact
-91% of reviews require client outreach, creating client friction and delays. The over-collection pattern implicates GDPR data-minimisation obligations (Art. 5(1)(c), Art. 25).
+Asking clients to re-provide data the bank already holds creates unnecessary friction and extends the outreach cycle. The As-Is outreach rate is 91% (Q1 2026). GDPR Art. 5(1)(c) and Art. 25 (data minimisation) are obligations the target process must satisfy.
 
 ## Root cause
-No data-aggregation capability before outreach; the RM requests the same set of documents regardless of what data the bank already holds.
+No pre-fill mechanism exists to compute the minimal data delta before generating the client request, so the default outreach asks for all items regardless of what the bank already holds.

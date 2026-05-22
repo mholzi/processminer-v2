@@ -780,6 +780,242 @@
     font-family: var(--mono); font-size: 10px; color: var(--muted);
   }
   .phase-card-deps b { color: var(--ink); font-weight: 500; }
+
+  /* ---------------------------------------------------------------- */
+  /* Frame 12 — Capability catalog (library tier)                      */
+  /* ---------------------------------------------------------------- */
+  .lib-shell { display: grid; grid-template-columns: 220px 1fr; min-height: 720px; }
+  .lib-shell aside {
+    border-right: 1px solid var(--line); background: var(--bg);
+    padding: 14px 10px;
+  }
+  .lib-shell main { padding: 24px 32px; overflow: auto; background: var(--surface); }
+  .lib-head h2 { font-size: var(--text-lg); font-weight: 600; }
+  .lib-head .sub { color: var(--muted); font-size: var(--text-sm); margin-top: 2px; }
+
+  .reuse-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    border-radius: var(--r-pill); padding: 1px 8px;
+    font-family: var(--mono); font-size: 11px; font-weight: 600;
+    background: var(--accent-soft); color: var(--accent);
+    border: 1px solid #cdd3ec;
+  }
+  .reuse-pill.high  { background: var(--hi-bg); color: var(--hi); border-color: #c7dccf; }
+  .reuse-pill.solo  { background: var(--bg); color: var(--muted); border-color: var(--line); }
+
+  .cat-card-extra {
+    font-family: var(--mono); font-size: 10px; color: var(--muted);
+    display: flex; gap: 8px; flex-wrap: wrap;
+    border-top: 1px dashed var(--line); padding-top: 6px;
+  }
+  .cat-card-extra b { color: var(--ink); font-weight: 600; font-size: 11px; }
+  .cat-card-procs {
+    display: flex; flex-wrap: wrap; gap: 4px;
+  }
+  .cat-card-procs .pchip {
+    font-family: var(--mono); font-size: 10px;
+    background: var(--bg); border: 1px solid var(--line);
+    color: var(--muted); border-radius: var(--r-sm); padding: 0 5px;
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Frame 13 — Application register (library tier)                     */
+  /* ---------------------------------------------------------------- */
+  .app-domain {
+    font-family: var(--mono); font-size: 10px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .reg-row-meta {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px;
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Frame 14 — NFR templates (library tier)                            */
+  /* ---------------------------------------------------------------- */
+  .nfr-tmpl-group {
+    margin-top: 14px;
+    border: 1px solid var(--line); border-radius: var(--r-md);
+    background: var(--surface); overflow: hidden;
+  }
+  .nfr-tmpl-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 14px; background: var(--bg); border-bottom: 1px solid var(--line);
+  }
+  .nfr-tmpl-head h3 { font-size: var(--text-sm); font-weight: 600; flex: 1; }
+  .nfr-tmpl-count { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+  .nfr-tmpl-cards {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
+    background: var(--line);
+  }
+  .nfr-tmpl-card {
+    background: var(--surface); padding: 12px 14px;
+    display: flex; flex-direction: column; gap: 6px; cursor: pointer;
+  }
+  .nfr-tmpl-card:hover { background: var(--bg); }
+  .nfr-tmpl-card.sel { background: var(--accent-soft); }
+  .nfr-tmpl-card-head {
+    display: flex; align-items: baseline; gap: 8px;
+  }
+  .nfr-tmpl-card-id {
+    font-family: var(--mono); font-size: 10px; color: var(--muted); flex: 1;
+  }
+  .nfr-tmpl-card-name { font-size: var(--text-sm); font-weight: 600; }
+  .nfr-tmpl-card-target {
+    font-family: var(--mono); font-size: var(--text-xs);
+    background: var(--bg); border: 1px solid var(--line);
+    border-radius: var(--r-sm); padding: 1px 6px; color: var(--ink);
+    align-self: flex-start;
+  }
+  .nfr-tmpl-card-traces {
+    font-family: var(--mono); font-size: 10px; color: var(--muted);
+    display: flex; gap: 4px; flex-wrap: wrap;
+  }
+  .nfr-tmpl-card-traces .lbl { color: var(--ink); font-weight: 600; }
+
+  /* ---------------------------------------------------------------- */
+  /* Frame 15 — Pattern library (library tier)                          */
+  /* ---------------------------------------------------------------- */
+  .pattern-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+    margin-top: 4px;
+  }
+  .pattern-card {
+    border: 1px solid var(--line); border-radius: var(--r-md);
+    background: var(--surface); padding: 16px 18px;
+    display: flex; flex-direction: column; gap: 10px;
+    cursor: pointer;
+    transition: border-color 120ms ease-out, box-shadow 150ms ease-out;
+  }
+  .pattern-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(30,64,175,0.05);
+  }
+  .pattern-card.sel { border-color: var(--accent); background: var(--accent-soft); }
+  .pattern-card-head { display: flex; align-items: baseline; gap: 8px; }
+  .pattern-card-name {
+    font-size: var(--text-md); font-weight: 600; letter-spacing: -0.005em;
+  }
+  .pattern-cat {
+    display: inline-flex; align-items: center; gap: 4px;
+    border-radius: var(--r-sm); padding: 2px 8px;
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    white-space: nowrap; border: 1px solid transparent;
+  }
+  .pattern-cat.data  { background: var(--accent-soft); color: var(--accent); border-color: #cdd3ec; }
+  .pattern-cat.int   { background: var(--mid-bg); color: var(--mid); border-color: #e3d6a8; }
+  .pattern-cat.msg   { background: #e7ecf7; color: var(--bright); border-color: #cdd6e9; }
+  .pattern-cat.sec   { background: var(--lo-bg); color: var(--lo); border-color: #e6c4bf; }
+  .pattern-cat.ops   { background: var(--hi-bg); color: var(--hi); border-color: #c7dccf; }
+
+  .pattern-summary { font-size: var(--text-sm); color: var(--ink); line-height: 1.5; }
+
+  .pattern-pros, .pattern-cons {
+    font-size: var(--text-xs);
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .pattern-pros .lbl, .pattern-cons .lbl {
+    font-family: var(--mono); font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);
+    margin-bottom: 2px;
+  }
+  .pattern-pros ul, .pattern-cons ul { padding-left: 16px; }
+
+  .pattern-foot {
+    display: flex; gap: 10px; align-items: baseline;
+    border-top: 1px dashed var(--line); padding-top: 8px;
+    font-family: var(--mono); font-size: 10px; color: var(--muted);
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Frame 16 — All processes (Personal Work tier)                     */
+  /* ---------------------------------------------------------------- */
+  /* Stage chip — shows where each process is in the lifecycle */
+  .stage {
+    display: inline-flex; align-items: center; gap: 4px;
+    border-radius: var(--r-sm); padding: 2px 8px;
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    white-space: nowrap; border: 1px solid transparent;
+  }
+  .stage.upstream  { background: var(--bg);          color: var(--muted);  border-color: var(--line); }
+  .stage.ready     { background: var(--accent-soft); color: var(--accent); border-color: #cdd3ec; }
+  .stage.domain    { background: var(--mid-bg);      color: var(--mid);    border-color: #e3d6a8; }
+  .stage.solution  { background: #e7ecf7;            color: var(--bright); border-color: #cdd6e9; }
+  .stage.build     { background: var(--hi-bg);       color: var(--hi);     border-color: #c7dccf; }
+  .stage.complete  { background: var(--hi-bg);       color: var(--hi);     border-color: #c7dccf; }
+
+  /* Mini-progress bar — slimmer than the .progress in inbox */
+  .micro-bar {
+    height: 4px; background: var(--bg); border-radius: 2px;
+    overflow: hidden; width: 100px; border: 1px solid var(--line);
+    margin-top: 4px;
+  }
+  .micro-bar > i { display: block; height: 100%; background: var(--accent); }
+  .micro-bar.mid > i  { background: var(--mid); }
+  .micro-bar.hi  > i  { background: var(--hi); }
+
+  /* ---------------------------------------------------------------- */
+  /* Frame 17 — My ADRs (Personal Work tier)                            */
+  /* ---------------------------------------------------------------- */
+  .adr-status {
+    display: inline-flex; align-items: center; gap: 4px;
+    border-radius: var(--r-pill); padding: 1px 8px;
+    font-size: var(--text-xs); font-family: var(--mono); font-weight: 500;
+    border: 1px solid transparent; white-space: nowrap;
+  }
+  .adr-status.draft     { background: var(--mid-bg);      color: var(--mid);    border-color: #e3d6a8; }
+  .adr-status.proposed  { background: var(--accent-soft); color: var(--accent); border-color: #cdd3ec; }
+  .adr-status.accepted  { background: var(--hi-bg);       color: var(--hi);     border-color: #c7dccf; }
+  .adr-status.rejected  { background: var(--lo-bg);       color: var(--lo);     border-color: #e6c4bf; }
+  .adr-status.superseded{ background: var(--bg);          color: var(--muted);  border-color: var(--line); }
+
+  .role-chip {
+    font-family: var(--mono); font-size: 10px;
+    color: var(--muted); border: 1px solid var(--line); background: var(--bg);
+    border-radius: var(--r-sm); padding: 0 5px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .role-chip.author { color: var(--accent); border-color: #cdd3ec; background: var(--accent-soft); }
+  .role-chip.review { color: var(--mid);    border-color: #e3d6a8; background: var(--mid-bg); }
+
+  /* ---------------------------------------------------------------- */
+  /* Frame 18 — Migration plans (multi-process Gantt)                   */
+  /* ---------------------------------------------------------------- */
+  .gantt-multi-wrap {
+    background: var(--bg); border: 1px solid var(--line);
+    border-radius: var(--r-md); padding: 18px; margin-top: 4px;
+  }
+  .gantt-process-lbl {
+    font-family: var(--font); font-size: 12px; font-weight: 600; fill: var(--ink);
+  }
+  .gantt-process-sub {
+    font-family: var(--mono); font-size: 10px; fill: var(--muted);
+  }
+  .gantt-divider {
+    stroke: var(--line); stroke-width: 1;
+  }
+
+  .migration-summary {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    margin-top: 14px;
+  }
+  .mig-stat {
+    border: 1px solid var(--line); border-radius: var(--r-md);
+    padding: 12px 14px; background: var(--surface);
+  }
+  .mig-stat .v {
+    font-size: var(--text-xl); font-weight: 600; letter-spacing: -0.01em;
+    font-family: var(--mono);
+  }
+  .mig-stat .v.hi   { color: var(--hi); }
+  .mig-stat .v.mid  { color: var(--mid); }
+  .mig-stat .v.lo   { color: var(--lo); }
+  .mig-stat .lbl    {
+    font-size: 11px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px;
+  }
 </style>
 </head>
 <body>
@@ -3328,6 +3564,1727 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+
+<!-- =====================================================================
+     FRAME 12 — Capability catalog (Library tier)
+     ===================================================================== -->
+<div class="frame-label">
+  <span class="num">12</span>
+  <h2>Capability catalog</h2>
+  <span class="desc">Cross-process library — every capability authored across the workspace, with reuse counts. Architects pull from here before declaring "new".</span>
+</div>
+
+<div class="frame">
+  <div class="topbar">
+    <div class="modswitch">
+      <button>Processminer</button>
+      <button class="on">ArchitectMiner</button>
+    </div>
+    <span class="crumb">Library · <b>Capability catalog</b></span>
+    <span class="spacer"></span>
+    <div class="tb-icons">
+      <button class="tb-icon" title="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+      <button class="tb-icon" title="Export"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/></svg></button>
+    </div>
+    <div class="avatar">MH</div>
+  </div>
+
+  <div class="lib-shell">
+    <aside>
+      <div class="group">Work</div>
+      <div class="navitem">Handoff inbox <span class="count">4</span></div>
+      <div class="navitem">All processes <span class="count">12</span></div>
+      <div class="navitem">My ADRs <span class="count">23</span></div>
+      <div class="navitem">Migration plans <span class="count">3</span></div>
+
+      <div class="group">Library</div>
+      <div class="navitem on">Capability catalog <span class="count">47</span></div>
+      <div class="navitem">Application register <span class="count">28</span></div>
+      <div class="navitem">NFR templates <span class="count">22</span></div>
+      <div class="navitem">Pattern library <span class="count">14</span></div>
+
+      <div class="group">Recent</div>
+      <div class="navitem"><span style="color:var(--muted)">Periodic Review</span></div>
+      <div class="navitem"><span style="color:var(--muted)">Direct Debit Mandate</span></div>
+    </aside>
+
+    <main>
+      <div class="lib-head">
+        <h2>Capability catalog</h2>
+        <p class="sub">47 capabilities authored across 12 processes · 18 used in 2+ processes · check before declaring "new"</p>
+      </div>
+
+      <div class="filters">
+        <span class="chip on">All (47)</span>
+        <span class="chip">Reused (18)</span>
+        <span class="chip">Critical (12)</span>
+        <span class="chip">Customer-facing (9)</span>
+        <span class="chip">Risk &amp; KYC (7)</span>
+        <span class="chip">Payments (11)</span>
+        <span class="grow"></span>
+        <input class="search" placeholder="Search by name, ID or hosted-in app…" />
+      </div>
+
+      <div class="cap-grid" style="margin-top:14px">
+        <div class="cap-card">
+          <div class="cap-card-head">
+            <span class="cap-card-id">CAP-CAT-001</span>
+            <span class="reuse-pill high">★ used in 8</span>
+          </div>
+          <div class="cap-card-name">Customer identification</div>
+          <div class="cap-card-meta">
+            <span class="pill neu">Critical</span>
+          </div>
+          <div class="cap-card-host">hosted in: <b>Customer Master</b> (KEEP)</div>
+          <div class="cat-card-procs">
+            <span class="pchip">Periodic Review</span>
+            <span class="pchip">DDM</span>
+            <span class="pchip">SEPA</span>
+            <span class="pchip">+5 more</span>
+          </div>
+          <div class="cap-card-prov verified">✓ stable · owned by customer-master team</div>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-card-head">
+            <span class="cap-card-id">CAP-CAT-005</span>
+            <span class="reuse-pill high">★ used in 6</span>
+          </div>
+          <div class="cap-card-name">KYC refresh</div>
+          <div class="cap-card-meta">
+            <span class="pill neu">Critical</span>
+          </div>
+          <div class="cap-card-host">hosted in: <b>KYC Engine</b> (CONFIGURE)</div>
+          <div class="cat-card-procs">
+            <span class="pchip">Periodic Review</span>
+            <span class="pchip">Account Opening</span>
+            <span class="pchip">EDR</span>
+            <span class="pchip">+3 more</span>
+          </div>
+          <div class="cap-card-prov verified">✓ stable · group standard</div>
+        </div>
+
+        <div class="cap-card sel">
+          <div class="cap-card-head">
+            <span class="cap-card-id">CAP-CAT-012</span>
+            <span class="reuse-pill high">★ used in 5</span>
+          </div>
+          <div class="cap-card-name">Case orchestration</div>
+          <div class="cap-card-meta">
+            <span class="pill mid">High</span>
+          </div>
+          <div class="cap-card-host">hosted in: <b>Case Hub</b> (BUILD)</div>
+          <div class="cat-card-procs">
+            <span class="pchip">Periodic Review</span>
+            <span class="pchip">DDM</span>
+            <span class="pchip">Funds Release</span>
+            <span class="pchip">+2 more</span>
+          </div>
+          <div class="cap-card-prov machine">▲ proposed for reuse · pending architect council</div>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-card-head">
+            <span class="cap-card-id">CAP-CAT-017</span>
+            <span class="reuse-pill">used in 4</span>
+          </div>
+          <div class="cap-card-name">Document collection</div>
+          <div class="cap-card-meta">
+            <span class="pill neu">Medium</span>
+          </div>
+          <div class="cap-card-host">hosted in: <b>Hyland ECM</b> (KEEP)</div>
+          <div class="cat-card-procs">
+            <span class="pchip">Periodic Review</span>
+            <span class="pchip">Account Opening</span>
+            <span class="pchip">+2 more</span>
+          </div>
+          <div class="cap-card-prov verified">✓ stable</div>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-card-head">
+            <span class="cap-card-id">CAP-CAT-023</span>
+            <span class="reuse-pill">used in 4</span>
+          </div>
+          <div class="cap-card-name">Risk scoring</div>
+          <div class="cap-card-meta">
+            <span class="pill mid">High</span>
+          </div>
+          <div class="cap-card-host">hosted in: <b>Risk Score Service</b> (BUY)</div>
+          <div class="cat-card-procs">
+            <span class="pchip">Periodic Review</span>
+            <span class="pchip">EDR</span>
+            <span class="pchip">Funds Release</span>
+            <span class="pchip">SEPA</span>
+          </div>
+          <div class="cap-card-prov verified">✓ vendor-supported</div>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-card-head">
+            <span class="cap-card-id">CAP-CAT-031</span>
+            <span class="reuse-pill">used in 3</span>
+          </div>
+          <div class="cap-card-name">Audit reporting</div>
+          <div class="cap-card-meta">
+            <span class="pill neu">Medium</span>
+          </div>
+          <div class="cap-card-host">hosted in: <b>DWH (Snowflake)</b> (KEEP)</div>
+          <div class="cat-card-procs">
+            <span class="pchip">Periodic Review</span>
+            <span class="pchip">DDM</span>
+            <span class="pchip">SEPA</span>
+          </div>
+          <div class="cap-card-prov verified">✓ regulatory baseline</div>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-card-head">
+            <span class="cap-card-id">CAP-CAT-038</span>
+            <span class="reuse-pill solo">solo · DDM</span>
+          </div>
+          <div class="cap-card-name">Mandate capture &amp; validation</div>
+          <div class="cap-card-meta">
+            <span class="pill mid">High</span>
+          </div>
+          <div class="cap-card-host">hosted in: <b>Mandate Hub</b> (BUILD)</div>
+          <div class="cat-card-procs">
+            <span class="pchip">DDM</span>
+          </div>
+          <div class="cap-card-prov machine">▲ new · DDM-specific</div>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-card-head">
+            <span class="cap-card-id">CAP-CAT-042</span>
+            <span class="reuse-pill solo">solo · BGI</span>
+          </div>
+          <div class="cap-card-name">Guarantee issuance</div>
+          <div class="cap-card-meta">
+            <span class="pill mid">High</span>
+          </div>
+          <div class="cap-card-host">hosted in: <b>Trade Finance Platform</b> (KEEP)</div>
+          <div class="cat-card-procs">
+            <span class="pchip">Bank Guarantee Issuance</span>
+          </div>
+          <div class="cap-card-prov verified">✓ trade-specific</div>
+        </div>
+
+        <div class="cap-card">
+          <div class="cap-card-head">
+            <span class="cap-card-id">CAP-CAT-044</span>
+            <span class="reuse-pill solo">solo · SEPA</span>
+          </div>
+          <div class="cap-card-name">SEPA outbound</div>
+          <div class="cap-card-meta">
+            <span class="pill neu">Critical</span>
+          </div>
+          <div class="cap-card-host">hosted in: <b>SEPA Gateway</b> (KEEP)</div>
+          <div class="cat-card-procs">
+            <span class="pchip">SEPA Payment</span>
+          </div>
+          <div class="cap-card-prov verified">✓ payments-specific</div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+
+<!-- =====================================================================
+     FRAME 13 — Application register (Library tier)
+     ===================================================================== -->
+<div class="frame-label">
+  <span class="num">13</span>
+  <h2>Application register</h2>
+  <span class="desc">Cross-process app catalog. Verdict, vendor / tech, capabilities hosted, which processes use the app. Source of truth for "do we already have an app for this".</span>
+</div>
+
+<div class="frame">
+  <div class="topbar">
+    <div class="modswitch">
+      <button>Processminer</button>
+      <button class="on">ArchitectMiner</button>
+    </div>
+    <span class="crumb">Library · <b>Application register</b></span>
+    <span class="spacer"></span>
+    <div class="tb-icons">
+      <button class="tb-icon" title="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+      <button class="tb-icon" title="Export"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/></svg></button>
+    </div>
+    <div class="avatar">MH</div>
+  </div>
+
+  <div class="lib-shell">
+    <aside>
+      <div class="group">Work</div>
+      <div class="navitem">Handoff inbox <span class="count">4</span></div>
+      <div class="navitem">All processes <span class="count">12</span></div>
+      <div class="navitem">My ADRs <span class="count">23</span></div>
+      <div class="navitem">Migration plans <span class="count">3</span></div>
+
+      <div class="group">Library</div>
+      <div class="navitem">Capability catalog <span class="count">47</span></div>
+      <div class="navitem on">Application register <span class="count">28</span></div>
+      <div class="navitem">NFR templates <span class="count">22</span></div>
+      <div class="navitem">Pattern library <span class="count">14</span></div>
+    </aside>
+
+    <main>
+      <div class="lib-head">
+        <h2>Application register</h2>
+        <p class="sub">28 applications across the bank · 19 KEEP / 4 BUILD / 3 BUY / 2 CONFIGURE · governed by EA council</p>
+      </div>
+
+      <div class="filters">
+        <span class="chip on">All (28)</span>
+        <span class="chip">BUILD (4)</span>
+        <span class="chip">BUY (3)</span>
+        <span class="chip">CONFIGURE (2)</span>
+        <span class="chip">KEEP (19)</span>
+        <span class="grow"></span>
+        <input class="search" placeholder="Search by name, vendor or capability…" />
+      </div>
+
+      <table class="app-table" style="margin-top:14px">
+        <thead>
+          <tr>
+            <th style="width:22%">Application</th>
+            <th>Verdict</th>
+            <th>Vendor / tech</th>
+            <th>Capabilities hosted</th>
+            <th>Used by</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="sel">
+            <td>
+              <div class="app-name">Customer Master</div>
+              <div class="app-id">APP-REG-001</div>
+              <div class="app-domain">customer · core data</div>
+            </td>
+            <td><span class="verdict keep">KEEP</span></td>
+            <td>
+              <div>Oracle Siebel</div>
+              <div class="app-stack">vendor-supported · group-wide</div>
+            </td>
+            <td>
+              <div class="app-cap-chips">
+                <span class="app-cap-chip">customer identification</span>
+                <span class="app-cap-chip">party data</span>
+              </div>
+            </td>
+            <td>
+              <div class="cat-card-procs">
+                <span class="pchip">+ 8 processes</span>
+              </div>
+            </td>
+            <td><span class="pill hi"><span class="dot"></span>Active</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="app-name">Case Hub</div>
+              <div class="app-id">APP-REG-014</div>
+              <div class="app-domain">case &amp; lifecycle</div>
+            </td>
+            <td><span class="verdict build">BUILD</span></td>
+            <td>
+              <div>Camunda 8 + Postgres</div>
+              <div class="app-stack">self-hosted · eu-frankfurt</div>
+            </td>
+            <td>
+              <div class="app-cap-chips">
+                <span class="app-cap-chip">case orchestration</span>
+                <span class="app-cap-chip">case lifecycle</span>
+              </div>
+            </td>
+            <td>
+              <div class="cat-card-procs">
+                <span class="pchip">PR</span>
+                <span class="pchip">DDM</span>
+                <span class="pchip">+3 more</span>
+              </div>
+            </td>
+            <td><span class="pill mid"><span class="dot"></span>In flight</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="app-name">KYC Engine</div>
+              <div class="app-id">APP-REG-007</div>
+              <div class="app-domain">risk &amp; KYC</div>
+            </td>
+            <td><span class="verdict configure">CONFIGURE</span></td>
+            <td>
+              <div>Fenergo</div>
+              <div class="app-stack">vendor · 2-week config window</div>
+            </td>
+            <td>
+              <div class="app-cap-chips">
+                <span class="app-cap-chip">KYC refresh</span>
+                <span class="app-cap-chip">KYC onboarding</span>
+              </div>
+            </td>
+            <td>
+              <div class="cat-card-procs">
+                <span class="pchip">+ 6 processes</span>
+              </div>
+            </td>
+            <td><span class="pill hi"><span class="dot"></span>Active</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="app-name">Risk Score Service</div>
+              <div class="app-id">APP-REG-021</div>
+              <div class="app-domain">risk &amp; KYC</div>
+            </td>
+            <td><span class="verdict buy">BUY</span></td>
+            <td>
+              <div>Quantexa</div>
+              <div class="app-stack">SaaS · €240k/yr · 8-week onboarding</div>
+            </td>
+            <td>
+              <div class="app-cap-chips">
+                <span class="app-cap-chip">risk scoring</span>
+              </div>
+            </td>
+            <td>
+              <div class="cat-card-procs">
+                <span class="pchip">+ 4 processes</span>
+              </div>
+            </td>
+            <td><span class="pill mid"><span class="dot"></span>Onboarding</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="app-name">Hyland ECM</div>
+              <div class="app-id">APP-REG-009</div>
+              <div class="app-domain">document store</div>
+            </td>
+            <td><span class="verdict keep">KEEP</span></td>
+            <td>
+              <div>OnBase</div>
+              <div class="app-stack">existing · keep as-is</div>
+            </td>
+            <td>
+              <div class="app-cap-chips">
+                <span class="app-cap-chip">document collection</span>
+              </div>
+            </td>
+            <td>
+              <div class="cat-card-procs">
+                <span class="pchip">+ 4 processes</span>
+              </div>
+            </td>
+            <td><span class="pill hi"><span class="dot"></span>Active</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="app-name">DWH (Snowflake)</div>
+              <div class="app-id">APP-REG-002</div>
+              <div class="app-domain">reporting &amp; analytics</div>
+            </td>
+            <td><span class="verdict keep">KEEP</span></td>
+            <td>
+              <div>Snowflake</div>
+              <div class="app-stack">SaaS · multi-tenant marts</div>
+            </td>
+            <td>
+              <div class="app-cap-chips">
+                <span class="app-cap-chip">audit reporting</span>
+                <span class="app-cap-chip">regulatory feeds</span>
+              </div>
+            </td>
+            <td>
+              <div class="cat-card-procs">
+                <span class="pchip">+ 12 processes</span>
+              </div>
+            </td>
+            <td><span class="pill hi"><span class="dot"></span>Active</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="app-name">Mandate Hub</div>
+              <div class="app-id">APP-REG-018</div>
+              <div class="app-domain">payments · mandates</div>
+            </td>
+            <td><span class="verdict build">BUILD</span></td>
+            <td>
+              <div>Camunda 8 + Postgres</div>
+              <div class="app-stack">self-hosted · in-flight</div>
+            </td>
+            <td>
+              <div class="app-cap-chips">
+                <span class="app-cap-chip">mandate capture</span>
+                <span class="app-cap-chip">mandate lifecycle</span>
+              </div>
+            </td>
+            <td>
+              <div class="cat-card-procs">
+                <span class="pchip">DDM</span>
+              </div>
+            </td>
+            <td><span class="pill mid"><span class="dot"></span>In flight</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="app-name">SEPA Gateway</div>
+              <div class="app-id">APP-REG-024</div>
+              <div class="app-domain">payments</div>
+            </td>
+            <td><span class="verdict keep">KEEP</span></td>
+            <td>
+              <div>in-house · Java 21</div>
+              <div class="app-stack">existing · STEP2/T2</div>
+            </td>
+            <td>
+              <div class="app-cap-chips">
+                <span class="app-cap-chip">SEPA outbound</span>
+              </div>
+            </td>
+            <td>
+              <div class="cat-card-procs">
+                <span class="pchip">SEPA Payment</span>
+              </div>
+            </td>
+            <td><span class="pill hi"><span class="dot"></span>Active</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="app-name">Keycloak</div>
+              <div class="app-id">APP-REG-005</div>
+              <div class="app-domain">identity &amp; access</div>
+            </td>
+            <td><span class="verdict keep">KEEP</span></td>
+            <td>
+              <div>Red Hat SSO</div>
+              <div class="app-stack">existing · OIDC + SAML</div>
+            </td>
+            <td>
+              <div class="app-cap-chips">
+                <span class="app-cap-chip">SSO</span>
+                <span class="app-cap-chip">authz</span>
+              </div>
+            </td>
+            <td>
+              <div class="cat-card-procs">
+                <span class="pchip">+ 12 processes</span>
+              </div>
+            </td>
+            <td><span class="pill hi"><span class="dot"></span>Active</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+  </div>
+</div>
+
+
+<!-- =====================================================================
+     FRAME 14 — NFR templates (Library tier)
+     ===================================================================== -->
+<div class="frame-label">
+  <span class="num">14</span>
+  <h2>NFR templates</h2>
+  <span class="desc">Reusable NFR patterns grouped by category. Each carries a default target plus the controls / regs it typically satisfies — so architects don't reinvent them.</span>
+</div>
+
+<div class="frame">
+  <div class="topbar">
+    <div class="modswitch">
+      <button>Processminer</button>
+      <button class="on">ArchitectMiner</button>
+    </div>
+    <span class="crumb">Library · <b>NFR templates</b></span>
+    <span class="spacer"></span>
+    <div class="tb-icons">
+      <button class="tb-icon" title="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+    </div>
+    <div class="avatar">MH</div>
+  </div>
+
+  <div class="lib-shell">
+    <aside>
+      <div class="group">Work</div>
+      <div class="navitem">Handoff inbox <span class="count">4</span></div>
+      <div class="navitem">All processes <span class="count">12</span></div>
+      <div class="navitem">My ADRs <span class="count">23</span></div>
+      <div class="navitem">Migration plans <span class="count">3</span></div>
+
+      <div class="group">Library</div>
+      <div class="navitem">Capability catalog <span class="count">47</span></div>
+      <div class="navitem">Application register <span class="count">28</span></div>
+      <div class="navitem on">NFR templates <span class="count">22</span></div>
+      <div class="navitem">Pattern library <span class="count">14</span></div>
+    </aside>
+
+    <main>
+      <div class="lib-head">
+        <h2>NFR templates</h2>
+        <p class="sub">22 reusable NFR patterns · derive from group standards · 5 perf / 4 avail / 6 sec / 4 comp / 3 scale</p>
+      </div>
+
+      <div class="filters">
+        <span class="chip on">All (22)</span>
+        <span class="chip">Performance (5)</span>
+        <span class="chip">Availability (4)</span>
+        <span class="chip">Security (6)</span>
+        <span class="chip">Compliance (4)</span>
+        <span class="chip">Scalability (3)</span>
+        <span class="grow"></span>
+        <input class="search" placeholder="Search templates…" />
+      </div>
+
+      <div class="nfr-tmpl-group">
+        <div class="nfr-tmpl-head">
+          <h3>Performance</h3>
+          <span class="nfr-tmpl-count">5 templates</span>
+        </div>
+        <div class="nfr-tmpl-cards">
+          <div class="nfr-tmpl-card">
+            <div class="nfr-tmpl-card-head">
+              <span class="nfr-tmpl-card-id">TPL-NFR-001</span>
+              <span class="nfr-cat perf">PERF</span>
+              <span class="reuse-pill" style="margin-left:auto">used in 8</span>
+            </div>
+            <div class="nfr-tmpl-card-name">Customer-facing API latency</div>
+            <div class="nfr-tmpl-card-target">p95 &lt; 1.2s · p99 &lt; 2.5s</div>
+            <div class="nfr-tmpl-card-traces"><span class="lbl">satisfies</span> <span>CP-LAT-001</span> <span>CP-LAT-002</span></div>
+          </div>
+          <div class="nfr-tmpl-card sel">
+            <div class="nfr-tmpl-card-head">
+              <span class="nfr-tmpl-card-id">TPL-NFR-002</span>
+              <span class="nfr-cat perf">PERF</span>
+              <span class="reuse-pill high" style="margin-left:auto">used in 11</span>
+            </div>
+            <div class="nfr-tmpl-card-name">Bulk batch throughput</div>
+            <div class="nfr-tmpl-card-target">≥ 1k records / min</div>
+            <div class="nfr-tmpl-card-traces"><span class="lbl">satisfies</span> <span>CP-BATCH-002</span></div>
+          </div>
+          <div class="nfr-tmpl-card">
+            <div class="nfr-tmpl-card-head">
+              <span class="nfr-tmpl-card-id">TPL-NFR-003</span>
+              <span class="nfr-cat perf">PERF</span>
+              <span class="reuse-pill" style="margin-left:auto">used in 4</span>
+            </div>
+            <div class="nfr-tmpl-card-name">Internal API latency</div>
+            <div class="nfr-tmpl-card-target">p95 &lt; 800ms</div>
+            <div class="nfr-tmpl-card-traces"><span class="lbl">satisfies</span> <span>CP-LAT-001</span></div>
+          </div>
+          <div class="nfr-tmpl-card">
+            <div class="nfr-tmpl-card-head">
+              <span class="nfr-tmpl-card-id">TPL-NFR-004</span>
+              <span class="nfr-cat perf">PERF</span>
+              <span class="reuse-pill solo" style="margin-left:auto">used in 2</span>
+            </div>
+            <div class="nfr-tmpl-card-name">Cold-start budget</div>
+            <div class="nfr-tmpl-card-target">&lt; 5s on container boot</div>
+            <div class="nfr-tmpl-card-traces"><span class="lbl">satisfies</span> <span>CP-PERF-007</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nfr-tmpl-group">
+        <div class="nfr-tmpl-head">
+          <h3>Availability</h3>
+          <span class="nfr-tmpl-count">4 templates</span>
+        </div>
+        <div class="nfr-tmpl-cards">
+          <div class="nfr-tmpl-card">
+            <div class="nfr-tmpl-card-head">
+              <span class="nfr-tmpl-card-id">TPL-NFR-006</span>
+              <span class="nfr-cat avail">AVAIL</span>
+              <span class="reuse-pill high" style="margin-left:auto">used in 14</span>
+            </div>
+            <div class="nfr-tmpl-card-name">Critical-system RTO</div>
+            <div class="nfr-tmpl-card-target">RTO ≤ 4h</div>
+            <div class="nfr-tmpl-card-traces"><span class="lbl">satisfies</span> <span>CP-BCP-001</span> <span>DORA art. 12</span></div>
+          </div>
+          <div class="nfr-tmpl-card">
+            <div class="nfr-tmpl-card-head">
+              <span class="nfr-tmpl-card-id">TPL-NFR-007</span>
+              <span class="nfr-cat avail">AVAIL</span>
+              <span class="reuse-pill high" style="margin-left:auto">used in 12</span>
+            </div>
+            <div class="nfr-tmpl-card-name">Critical-system RPO</div>
+            <div class="nfr-tmpl-card-target">RPO ≤ 15 min</div>
+            <div class="nfr-tmpl-card-traces"><span class="lbl">satisfies</span> <span>CP-BCP-001</span></div>
+          </div>
+          <div class="nfr-tmpl-card">
+            <div class="nfr-tmpl-card-head">
+              <span class="nfr-tmpl-card-id">TPL-NFR-008</span>
+              <span class="nfr-cat avail">AVAIL</span>
+              <span class="reuse-pill" style="margin-left:auto">used in 6</span>
+            </div>
+            <div class="nfr-tmpl-card-name">SLA target</div>
+            <div class="nfr-tmpl-card-target">99.9% · monthly</div>
+            <div class="nfr-tmpl-card-traces"><span class="lbl">satisfies</span> <span>CP-SLA-001</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nfr-tmpl-group">
+        <div class="nfr-tmpl-head">
+          <h3>Security</h3>
+          <span class="nfr-tmpl-count">6 templates</span>
+        </div>
+        <div class="nfr-tmpl-cards">
+          <div class="nfr-tmpl-card">
+            <div class="nfr-tmpl-card-head">
+              <span class="nfr-tmpl-card-id">TPL-NFR-011</span>
+              <span class="nfr-cat sec">SEC</span>
+              <span class="reuse-pill high" style="margin-left:auto">used in 18</span>
+            </div>
+            <div class="nfr-tmpl-card-name">Encryption in transit</div>
+            <div class="nfr-tmpl-card-target">TLS 1.3 · mTLS</div>
+            <div class="nfr-tmpl-card-traces"><span class="lbl">satisfies</span> <span>CP-SEC-001</span> <span>DORA art. 9</span></div>
+          </div>
+          <div class="nfr-tmpl-card">
+            <div class="nfr-tmpl-card-head">
+              <span class="nfr-tmpl-card-id">TPL-NFR-012</span>
+              <span class="nfr-cat sec">SEC</span>
+              <span class="reuse-pill high" style="margin-left:auto">used in 16</span>
+            </div>
+            <div class="nfr-tmpl-card-name">Encryption at rest</div>
+            <div class="nfr-tmpl-card-target">AES-256 · KMS-rotated</div>
+            <div class="nfr-tmpl-card-traces"><span class="lbl">satisfies</span> <span>CP-SEC-002</span></div>
+          </div>
+          <div class="nfr-tmpl-card">
+            <div class="nfr-tmpl-card-head">
+              <span class="nfr-tmpl-card-id">TPL-NFR-013</span>
+              <span class="nfr-cat sec">SEC</span>
+              <span class="reuse-pill" style="margin-left:auto">used in 9</span>
+            </div>
+            <div class="nfr-tmpl-card-name">Segregation of duties</div>
+            <div class="nfr-tmpl-card-target">reviewer ≠ approver</div>
+            <div class="nfr-tmpl-card-traces"><span class="lbl">satisfies</span> <span>CP-SoD-001</span> <span>CP-SoD-002</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nfr-tmpl-group">
+        <div class="nfr-tmpl-head">
+          <h3>Compliance</h3>
+          <span class="nfr-tmpl-count">4 templates</span>
+        </div>
+        <div class="nfr-tmpl-cards">
+          <div class="nfr-tmpl-card">
+            <div class="nfr-tmpl-card-head">
+              <span class="nfr-tmpl-card-id">TPL-NFR-017</span>
+              <span class="nfr-cat comp">COMP</span>
+              <span class="reuse-pill high" style="margin-left:auto">used in 13</span>
+            </div>
+            <div class="nfr-tmpl-card-name">Audit-log retention</div>
+            <div class="nfr-tmpl-card-target">10 years · immutable</div>
+            <div class="nfr-tmpl-card-traces"><span class="lbl">satisfies</span> <span>PSD2 §95</span> <span>MaRisk</span></div>
+          </div>
+          <div class="nfr-tmpl-card">
+            <div class="nfr-tmpl-card-head">
+              <span class="nfr-tmpl-card-id">TPL-NFR-018</span>
+              <span class="nfr-cat comp">COMP</span>
+              <span class="reuse-pill high" style="margin-left:auto">used in 11</span>
+            </div>
+            <div class="nfr-tmpl-card-name">PII data residency</div>
+            <div class="nfr-tmpl-card-target">EU-only</div>
+            <div class="nfr-tmpl-card-traces"><span class="lbl">satisfies</span> <span>GDPR</span> <span>BAFIN MaRisk</span></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+
+<!-- =====================================================================
+     FRAME 15 — Pattern library (Library tier)
+     ===================================================================== -->
+<div class="frame-label">
+  <span class="num">15</span>
+  <h2>Pattern library</h2>
+  <span class="desc">Reusable architecture patterns. Each carries a summary, when-to-use, when-not, and which ADRs across the workspace already apply it.</span>
+</div>
+
+<div class="frame">
+  <div class="topbar">
+    <div class="modswitch">
+      <button>Processminer</button>
+      <button class="on">ArchitectMiner</button>
+    </div>
+    <span class="crumb">Library · <b>Pattern library</b></span>
+    <span class="spacer"></span>
+    <div class="tb-icons">
+      <button class="tb-icon" title="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+    </div>
+    <div class="avatar">MH</div>
+  </div>
+
+  <div class="lib-shell">
+    <aside>
+      <div class="group">Work</div>
+      <div class="navitem">Handoff inbox <span class="count">4</span></div>
+      <div class="navitem">All processes <span class="count">12</span></div>
+      <div class="navitem">My ADRs <span class="count">23</span></div>
+      <div class="navitem">Migration plans <span class="count">3</span></div>
+
+      <div class="group">Library</div>
+      <div class="navitem">Capability catalog <span class="count">47</span></div>
+      <div class="navitem">Application register <span class="count">28</span></div>
+      <div class="navitem">NFR templates <span class="count">22</span></div>
+      <div class="navitem on">Pattern library <span class="count">14</span></div>
+    </aside>
+
+    <main>
+      <div class="lib-head">
+        <h2>Pattern library</h2>
+        <p class="sub">14 architecture patterns · grouped by concern · cite from ADRs to make decisions reviewable</p>
+      </div>
+
+      <div class="filters">
+        <span class="chip on">All (14)</span>
+        <span class="chip">Data (3)</span>
+        <span class="chip">Integration (4)</span>
+        <span class="chip">Messaging (3)</span>
+        <span class="chip">Security (2)</span>
+        <span class="chip">Operations (2)</span>
+        <span class="grow"></span>
+        <input class="search" placeholder="Search patterns…" />
+      </div>
+
+      <div class="pattern-grid">
+        <div class="pattern-card sel">
+          <div class="pattern-card-head">
+            <span class="pattern-card-name">Outbox + CDC</span>
+            <span class="pattern-cat msg">MESSAGING</span>
+            <span class="reuse-pill high" style="margin-left:auto">used in 7 ADRs</span>
+          </div>
+          <div class="pattern-summary">
+            Write domain events to a Postgres outbox table inside the same transaction
+            as the business write, then publish via Debezium / Kafka. Guarantees
+            at-least-once delivery without distributed transactions.
+          </div>
+          <div class="pattern-pros">
+            <div class="lbl">When to use</div>
+            <ul>
+              <li>Need atomicity between DB write and event publish</li>
+              <li>Existing Postgres infrastructure</li>
+              <li>Cross-system state replication</li>
+            </ul>
+          </div>
+          <div class="pattern-cons">
+            <div class="lbl">When not</div>
+            <ul>
+              <li>NoSQL primary store</li>
+              <li>Sub-100ms latency requirement</li>
+            </ul>
+          </div>
+          <div class="pattern-foot">
+            <span>Used by: ADR-PR-008 · ADR-DDM-004 · +5</span>
+          </div>
+        </div>
+
+        <div class="pattern-card">
+          <div class="pattern-card-head">
+            <span class="pattern-card-name">Saga (choreography)</span>
+            <span class="pattern-cat msg">MESSAGING</span>
+            <span class="reuse-pill" style="margin-left:auto">used in 4 ADRs</span>
+          </div>
+          <div class="pattern-summary">
+            Long-running business transaction implemented as a chain of local
+            transactions, each publishing an event that triggers the next.
+            Compensating events on failure.
+          </div>
+          <div class="pattern-pros">
+            <div class="lbl">When to use</div>
+            <ul>
+              <li>Multi-system workflow with rollback needs</li>
+              <li>No central orchestrator available</li>
+            </ul>
+          </div>
+          <div class="pattern-cons">
+            <div class="lbl">When not</div>
+            <ul>
+              <li>Cycle detection / tracing is critical (use orchestration)</li>
+              <li>Single-system flow</li>
+            </ul>
+          </div>
+          <div class="pattern-foot">
+            <span>Used by: ADR-DDM-007 · ADR-FR-003 · +2</span>
+          </div>
+        </div>
+
+        <div class="pattern-card">
+          <div class="pattern-card-head">
+            <span class="pattern-card-name">CQRS</span>
+            <span class="pattern-cat data">DATA</span>
+            <span class="reuse-pill" style="margin-left:auto">used in 3 ADRs</span>
+          </div>
+          <div class="pattern-summary">
+            Separate read and write models. Write side publishes events; read
+            side projects them into denormalised stores tuned for query
+            patterns.
+          </div>
+          <div class="pattern-pros">
+            <div class="lbl">When to use</div>
+            <ul>
+              <li>Read load &gt;&gt; write load</li>
+              <li>Multiple distinct read shapes</li>
+            </ul>
+          </div>
+          <div class="pattern-cons">
+            <div class="lbl">When not</div>
+            <ul>
+              <li>Eventual consistency unacceptable</li>
+              <li>Simple CRUD workload</li>
+            </ul>
+          </div>
+          <div class="pattern-foot">
+            <span>Used by: ADR-PR-009 · ADR-SPP-002 · ADR-DDM-006</span>
+          </div>
+        </div>
+
+        <div class="pattern-card">
+          <div class="pattern-card-head">
+            <span class="pattern-card-name">API Gateway + BFF</span>
+            <span class="pattern-cat int">INTEGRATION</span>
+            <span class="reuse-pill high" style="margin-left:auto">used in 9 ADRs</span>
+          </div>
+          <div class="pattern-summary">
+            Single entry point (Kong / Apigee) handles auth, rate-limit, routing;
+            per-channel BFF (backend-for-frontend) handles channel-specific
+            composition.
+          </div>
+          <div class="pattern-pros">
+            <div class="lbl">When to use</div>
+            <ul>
+              <li>Multiple channels (web, mobile, branch)</li>
+              <li>Need uniform auth / observability</li>
+            </ul>
+          </div>
+          <div class="pattern-cons">
+            <div class="lbl">When not</div>
+            <ul>
+              <li>Single internal consumer</li>
+            </ul>
+          </div>
+          <div class="pattern-foot">
+            <span>Used by: ADR-PR-001 · ADR-DDM-001 · +7</span>
+          </div>
+        </div>
+
+        <div class="pattern-card">
+          <div class="pattern-card-head">
+            <span class="pattern-card-name">Idempotency key</span>
+            <span class="pattern-cat int">INTEGRATION</span>
+            <span class="reuse-pill" style="margin-left:auto">used in 5 ADRs</span>
+          </div>
+          <div class="pattern-summary">
+            Client supplies a stable key on every retryable write; server
+            de-duplicates on that key with a TTL.
+          </div>
+          <div class="pattern-pros">
+            <div class="lbl">When to use</div>
+            <ul>
+              <li>Retryable operations (payments, mandate ops)</li>
+              <li>Network-unreliable clients</li>
+            </ul>
+          </div>
+          <div class="pattern-cons">
+            <div class="lbl">When not</div>
+            <ul>
+              <li>Naturally idempotent reads</li>
+            </ul>
+          </div>
+          <div class="pattern-foot">
+            <span>Used by: ADR-SPP-001 · ADR-DDM-005 · +3</span>
+          </div>
+        </div>
+
+        <div class="pattern-card">
+          <div class="pattern-card-head">
+            <span class="pattern-card-name">Zero-trust mTLS</span>
+            <span class="pattern-cat sec">SECURITY</span>
+            <span class="reuse-pill high" style="margin-left:auto">used in 8 ADRs</span>
+          </div>
+          <div class="pattern-summary">
+            Every service-to-service call authenticated with mutual TLS;
+            certificates issued by a short-lived workload identity provider
+            (SPIRE / Istio).
+          </div>
+          <div class="pattern-pros">
+            <div class="lbl">When to use</div>
+            <ul>
+              <li>Multi-tenant cluster</li>
+              <li>Regulatory pressure on internal traffic (DORA)</li>
+            </ul>
+          </div>
+          <div class="pattern-cons">
+            <div class="lbl">When not</div>
+            <ul>
+              <li>Single-process monolith</li>
+            </ul>
+          </div>
+          <div class="pattern-foot">
+            <span>Used by: ADR-PR-010 · ADR-DDM-009 · +6</span>
+          </div>
+        </div>
+
+        <div class="pattern-card">
+          <div class="pattern-card-head">
+            <span class="pattern-card-name">Circuit breaker</span>
+            <span class="pattern-cat ops">OPS</span>
+            <span class="reuse-pill" style="margin-left:auto">used in 4 ADRs</span>
+          </div>
+          <div class="pattern-summary">
+            Wrap calls to a flaky downstream in a breaker that opens after N
+            failures, returns a fallback for a cool-off period, then half-opens
+            to probe recovery.
+          </div>
+          <div class="pattern-pros">
+            <div class="lbl">When to use</div>
+            <ul>
+              <li>Downstream is vendor or external</li>
+              <li>Cascading failures observed</li>
+            </ul>
+          </div>
+          <div class="pattern-cons">
+            <div class="lbl">When not</div>
+            <ul>
+              <li>Hard consistency required (no fallback safe)</li>
+            </ul>
+          </div>
+          <div class="pattern-foot">
+            <span>Used by: ADR-PR-012 · ADR-FR-004 · +2</span>
+          </div>
+        </div>
+
+        <div class="pattern-card">
+          <div class="pattern-card-head">
+            <span class="pattern-card-name">Strangler fig</span>
+            <span class="pattern-cat ops">OPS</span>
+            <span class="reuse-pill" style="margin-left:auto">used in 3 ADRs</span>
+          </div>
+          <div class="pattern-summary">
+            Route increasing percentages of traffic from a legacy system to its
+            replacement while both run side-by-side; decommission once 100%
+            cuts over.
+          </div>
+          <div class="pattern-pros">
+            <div class="lbl">When to use</div>
+            <ul>
+              <li>Risk-averse legacy migration</li>
+              <li>Independent rollback per traffic slice</li>
+            </ul>
+          </div>
+          <div class="pattern-cons">
+            <div class="lbl">When not</div>
+            <ul>
+              <li>Hard cutover required by regulator</li>
+            </ul>
+          </div>
+          <div class="pattern-foot">
+            <span>Used by: ADR-PR-007 · MIG-PR-002 · MIG-DDM-001</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+
+<!-- =====================================================================
+     FRAME 16 — All processes (Personal Work tier)
+     ===================================================================== -->
+<div class="frame-label">
+  <span class="num">16</span>
+  <h2>All processes</h2>
+  <span class="desc">Cross-process list — every process the architect can touch, with its current stage. Different from Handoff inbox (which filters to "ready"); this is the whole portfolio.</span>
+</div>
+
+<div class="frame">
+  <div class="topbar">
+    <div class="modswitch">
+      <button>Processminer</button>
+      <button class="on">ArchitectMiner</button>
+    </div>
+    <span class="crumb">Work · <b>All processes</b></span>
+    <span class="spacer"></span>
+    <div class="tb-icons">
+      <button class="tb-icon" title="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+      <button class="tb-icon" title="Export"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/></svg></button>
+    </div>
+    <div class="avatar">MH</div>
+  </div>
+
+  <div class="lib-shell">
+    <aside>
+      <div class="group">Work</div>
+      <div class="navitem">Handoff inbox <span class="count">4</span></div>
+      <div class="navitem on">All processes <span class="count">9</span></div>
+      <div class="navitem">My ADRs <span class="count">23</span></div>
+      <div class="navitem">Migration plans <span class="count">3</span></div>
+      <div class="group">Library</div>
+      <div class="navitem">Capability catalog <span class="count">47</span></div>
+      <div class="navitem">Application register <span class="count">28</span></div>
+      <div class="navitem">NFR templates <span class="count">22</span></div>
+      <div class="navitem">Pattern library <span class="count">14</span></div>
+    </aside>
+
+    <main>
+      <div class="lib-head">
+        <h2>All processes</h2>
+        <p class="sub">9 processes · 2 upstream · 1 ready · 3 in domain · 1 in solution · 2 in build · all driven from Processminer</p>
+      </div>
+
+      <div class="filters">
+        <span class="chip on">All (9)</span>
+        <span class="chip">Upstream (2)</span>
+        <span class="chip">Ready (1)</span>
+        <span class="chip">In domain (3)</span>
+        <span class="chip">In solution (1)</span>
+        <span class="chip">In build (2)</span>
+        <span class="grow"></span>
+        <input class="search" placeholder="Search process or ID…" />
+      </div>
+
+      <table class="app-table" style="margin-top:14px">
+        <thead>
+          <tr>
+            <th style="width:24%">Process</th>
+            <th>Stage</th>
+            <th>Target Process</th>
+            <th>Architecture progress</th>
+            <th>Last activity</th>
+            <th>Owner</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="sel">
+            <td>
+              <div class="app-name">SEPA Payment Processing</div>
+              <div class="app-id">SPP</div>
+              <div class="app-domain">payments · corporate</div>
+            </td>
+            <td><span class="stage build">IN BUILD</span></td>
+            <td>
+              <div>locked 2026-03-12</div>
+              <div class="app-stack">14/14 elements approved</div>
+            </td>
+            <td>
+              <div>14 ADRs · 9 caps · 6 apps · 4 NFRs</div>
+              <div class="micro-bar hi"><i style="width:100%"></i></div>
+              <div class="app-stack">handed off to delivery</div>
+            </td>
+            <td>
+              <div>5d ago</div>
+              <div class="app-stack">Sara L.</div>
+            </td>
+            <td><span class="avatar" style="display:inline-grid">SL</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="app-name">Direct Debit Mandate Management</div>
+              <div class="app-id">DDMM</div>
+              <div class="app-domain">payments · retail</div>
+            </td>
+            <td><span class="stage build">IN BUILD</span></td>
+            <td>
+              <div>locked 2026-04-30</div>
+              <div class="app-stack">17/17 elements approved</div>
+            </td>
+            <td>
+              <div>20 ADRs · 9 caps · 6 apps · 8 NFRs</div>
+              <div class="micro-bar hi"><i style="width:88%"></i></div>
+              <div class="app-stack">migration phase 2 · 60%</div>
+            </td>
+            <td>
+              <div>1h ago</div>
+              <div class="app-stack">Theo R.</div>
+            </td>
+            <td><span class="avatar" style="display:inline-grid">TR</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="app-name">Funds Release</div>
+              <div class="app-id">FR</div>
+              <div class="app-domain">treasury</div>
+            </td>
+            <td><span class="stage solution">IN SOLUTION</span></td>
+            <td>
+              <div>locked 2026-05-08</div>
+              <div class="app-stack">9/9 elements approved</div>
+            </td>
+            <td>
+              <div>11 ADRs · 5 caps · 4 apps · 5 NFRs</div>
+              <div class="micro-bar"><i style="width:55%"></i></div>
+              <div class="app-stack">NFRs &amp; migration in flight</div>
+            </td>
+            <td>
+              <div>4h ago</div>
+              <div class="app-stack">M. Holzhauser</div>
+            </td>
+            <td><span class="avatar" style="display:inline-grid">MH</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="app-name">Corporate Account Closure</div>
+              <div class="app-id">CAC</div>
+              <div class="app-domain">corporate · ops</div>
+            </td>
+            <td><span class="stage domain">IN DOMAIN</span></td>
+            <td>
+              <div>locked 2026-05-14</div>
+              <div class="app-stack">12/12 elements approved</div>
+            </td>
+            <td>
+              <div>8 ADRs · 5 caps · 4 apps</div>
+              <div class="micro-bar mid"><i style="width:42%"></i></div>
+              <div class="app-stack">capabilities done · ADRs ongoing</div>
+            </td>
+            <td>
+              <div>yesterday</div>
+              <div class="app-stack">M. Holzhauser</div>
+            </td>
+            <td><span class="avatar" style="display:inline-grid">MH</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="app-name">EDR — Event-Driven Review</div>
+              <div class="app-id">EDR</div>
+              <div class="app-domain">risk &amp; compliance</div>
+            </td>
+            <td><span class="stage domain">IN DOMAIN</span></td>
+            <td>
+              <div>locked 2026-05-16</div>
+              <div class="app-stack">10/10 elements approved</div>
+            </td>
+            <td>
+              <div>6 ADRs · 4 caps · 3 apps</div>
+              <div class="micro-bar mid"><i style="width:38%"></i></div>
+              <div class="app-stack">capabilities done · 2 ADRs draft</div>
+            </td>
+            <td>
+              <div>17h ago</div>
+              <div class="app-stack">Anna K.</div>
+            </td>
+            <td><span class="avatar" style="display:inline-grid">AK</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="app-name">Bank Guarantee Issuance</div>
+              <div class="app-id">BGI</div>
+              <div class="app-domain">trade finance · corporate</div>
+            </td>
+            <td><span class="stage domain">IN DOMAIN</span></td>
+            <td>
+              <div>locked 2026-05-18</div>
+              <div class="app-stack">11/11 elements approved</div>
+            </td>
+            <td>
+              <div>5 ADRs · 4 caps · 3 apps</div>
+              <div class="micro-bar mid"><i style="width:28%"></i></div>
+              <div class="app-stack">just started · 1 ADR accepted</div>
+            </td>
+            <td>
+              <div>yesterday</div>
+              <div class="app-stack">Theo R.</div>
+            </td>
+            <td><span class="avatar" style="display:inline-grid">TR</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="app-name">Debit Card Replacement</div>
+              <div class="app-id">DCR</div>
+              <div class="app-domain">cards · retail</div>
+            </td>
+            <td><span class="stage ready">READY</span></td>
+            <td>
+              <div>locked 2026-05-20</div>
+              <div class="app-stack">8/8 elements approved</div>
+            </td>
+            <td>
+              <div>—</div>
+              <div class="micro-bar"><i style="width:0%"></i></div>
+              <div class="app-stack">awaits domain architect</div>
+            </td>
+            <td>
+              <div>2d ago</div>
+              <div class="app-stack">Sara L.</div>
+            </td>
+            <td><span class="avatar" style="display:inline-grid">SL</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="app-name">Bank Guarantee Issuance Test</div>
+              <div class="app-id">BGIT</div>
+              <div class="app-domain">sandbox · trade finance</div>
+            </td>
+            <td><span class="stage upstream">UPSTREAM</span></td>
+            <td>
+              <div>not yet locked</div>
+              <div class="app-stack">5/12 elements approved · still drafting</div>
+            </td>
+            <td>
+              <div>—</div>
+              <div class="micro-bar"><i style="width:0%"></i></div>
+              <div class="app-stack">unlocks when target process is locked</div>
+            </td>
+            <td>
+              <div>3d ago</div>
+              <div class="app-stack">Theo R.</div>
+            </td>
+            <td><span class="avatar" style="display:inline-grid">TR</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="app-name">COB-003 (Cash Operations Batch)</div>
+              <div class="app-id">COB-003</div>
+              <div class="app-domain">treasury · ops</div>
+            </td>
+            <td><span class="stage upstream">UPSTREAM</span></td>
+            <td>
+              <div>not yet locked</div>
+              <div class="app-stack">2/9 elements approved · early stages</div>
+            </td>
+            <td>
+              <div>—</div>
+              <div class="micro-bar"><i style="width:0%"></i></div>
+              <div class="app-stack">SME interviews in progress</div>
+            </td>
+            <td>
+              <div>1w ago</div>
+              <div class="app-stack">Anna K.</div>
+            </td>
+            <td><span class="avatar" style="display:inline-grid">AK</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+  </div>
+</div>
+
+
+<!-- =====================================================================
+     FRAME 17 — My ADRs (Personal Work tier)
+     ===================================================================== -->
+<div class="frame-label">
+  <span class="num">17</span>
+  <h2>My ADRs</h2>
+  <span class="desc">Architecture decisions authored by — or awaiting review from — the current architect, across every process. Personal queue.</span>
+</div>
+
+<div class="frame">
+  <div class="topbar">
+    <div class="modswitch">
+      <button>Processminer</button>
+      <button class="on">ArchitectMiner</button>
+    </div>
+    <span class="crumb">Work · <b>My ADRs</b> · M. Holzhauser</span>
+    <span class="spacer"></span>
+    <div class="tb-icons">
+      <button class="tb-icon" title="Search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+    </div>
+    <div class="avatar">MH</div>
+  </div>
+
+  <div class="lib-shell">
+    <aside>
+      <div class="group">Work</div>
+      <div class="navitem">Handoff inbox <span class="count">4</span></div>
+      <div class="navitem">All processes <span class="count">9</span></div>
+      <div class="navitem on">My ADRs <span class="count">23</span></div>
+      <div class="navitem">Migration plans <span class="count">3</span></div>
+      <div class="group">Library</div>
+      <div class="navitem">Capability catalog <span class="count">47</span></div>
+      <div class="navitem">Application register <span class="count">28</span></div>
+      <div class="navitem">NFR templates <span class="count">22</span></div>
+      <div class="navitem">Pattern library <span class="count">14</span></div>
+    </aside>
+
+    <main>
+      <div class="lib-head">
+        <h2>My ADRs</h2>
+        <p class="sub">23 total · 8 accepted · 9 proposed · 3 draft · 3 awaiting my review · spans 4 processes</p>
+      </div>
+
+      <div class="filters">
+        <span class="chip on">All (23)</span>
+        <span class="chip">My drafts (3)</span>
+        <span class="chip">Awaiting me (3)</span>
+        <span class="chip">Proposed (9)</span>
+        <span class="chip">Accepted (8)</span>
+        <span class="chip">Rejected / superseded (3)</span>
+        <span class="grow"></span>
+        <input class="search" placeholder="Search ADR title or ID…" />
+      </div>
+
+      <table class="app-table" style="margin-top:14px">
+        <thead>
+          <tr>
+            <th style="width:120px">ADR</th>
+            <th>Title</th>
+            <th>Process</th>
+            <th>My role</th>
+            <th>Status</th>
+            <th>Last activity</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="sel">
+            <td class="app-id">ADR-DDMM-007</td>
+            <td>
+              <div class="app-name">Mandate revocation via Kafka event topic</div>
+              <div class="app-stack">draft · 2/4 headings confirmed · NFR-DDMM-006 missing</div>
+            </td>
+            <td>
+              <div>Direct Debit Mandate</div>
+              <div class="app-stack">DDMM</div>
+            </td>
+            <td><span class="role-chip author">author</span></td>
+            <td><span class="adr-status draft">DRAFT</span></td>
+            <td>
+              <div>1h ago</div>
+              <div class="app-stack">just edited Consequences</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="app-id">ADR-FR-003</td>
+            <td>
+              <div class="app-name">Saga choreography for funds-release reversal</div>
+              <div class="app-stack">awaiting your review — 3 days open</div>
+            </td>
+            <td>
+              <div>Funds Release</div>
+              <div class="app-stack">FR</div>
+            </td>
+            <td><span class="role-chip review">reviewer</span></td>
+            <td><span class="adr-status proposed">PROPOSED</span></td>
+            <td>
+              <div>3d ago</div>
+              <div class="app-stack">by Sara L.</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="app-id">ADR-CAC-004</td>
+            <td>
+              <div class="app-name">Account close — single-source SoR via Customer Master</div>
+              <div class="app-stack">3/4 headings confirmed · awaiting your sign-off</div>
+            </td>
+            <td>
+              <div>Corporate Account Closure</div>
+              <div class="app-stack">CAC</div>
+            </td>
+            <td><span class="role-chip author">author</span></td>
+            <td><span class="adr-status proposed">PROPOSED</span></td>
+            <td>
+              <div>6h ago</div>
+              <div class="app-stack">2 reviewers approved</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="app-id">ADR-DDMM-004</td>
+            <td>
+              <div class="app-name">Outbox + CDC for mandate state changes</div>
+              <div class="app-stack">accepted · cites pattern PTN-OUTBOX-CDC</div>
+            </td>
+            <td>
+              <div>Direct Debit Mandate</div>
+              <div class="app-stack">DDMM</div>
+            </td>
+            <td><span class="role-chip author">author</span></td>
+            <td><span class="adr-status accepted">ACCEPTED</span></td>
+            <td>
+              <div>yesterday</div>
+              <div class="app-stack">approved by 3/3</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="app-id">ADR-FR-004</td>
+            <td>
+              <div class="app-name">Circuit breaker on settlement gateway</div>
+              <div class="app-stack">accepted last week</div>
+            </td>
+            <td>
+              <div>Funds Release</div>
+              <div class="app-stack">FR</div>
+            </td>
+            <td><span class="role-chip review">reviewer</span></td>
+            <td><span class="adr-status accepted">ACCEPTED</span></td>
+            <td>
+              <div>5d ago</div>
+              <div class="app-stack">by M. Holzhauser</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="app-id">ADR-DDMM-001</td>
+            <td>
+              <div class="app-name">API Gateway + per-channel BFF</div>
+              <div class="app-stack">accepted · cites pattern PTN-APIGW-BFF</div>
+            </td>
+            <td>
+              <div>Direct Debit Mandate</div>
+              <div class="app-stack">DDMM</div>
+            </td>
+            <td><span class="role-chip author">author</span></td>
+            <td><span class="adr-status accepted">ACCEPTED</span></td>
+            <td>
+              <div>2w ago</div>
+              <div class="app-stack">approved by 3/3</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="app-id">ADR-DDMM-009</td>
+            <td>
+              <div class="app-name">Zero-trust mTLS between Mandate Hub services</div>
+              <div class="app-stack">proposed · 2 reviewers</div>
+            </td>
+            <td>
+              <div>Direct Debit Mandate</div>
+              <div class="app-stack">DDMM</div>
+            </td>
+            <td><span class="role-chip author">author</span></td>
+            <td><span class="adr-status proposed">PROPOSED</span></td>
+            <td>
+              <div>3d ago</div>
+              <div class="app-stack">awaiting Anna K.</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="app-id">ADR-CAC-002</td>
+            <td>
+              <div class="app-name">Reversal flow via existing Saga orchestrator</div>
+              <div class="app-stack">superseded by ADR-CAC-004 — historical</div>
+            </td>
+            <td>
+              <div>Corporate Account Closure</div>
+              <div class="app-stack">CAC</div>
+            </td>
+            <td><span class="role-chip author">author</span></td>
+            <td><span class="adr-status superseded">SUPERSEDED</span></td>
+            <td>
+              <div>1w ago</div>
+              <div class="app-stack">superseded yesterday</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="app-id">ADR-EDR-002</td>
+            <td>
+              <div class="app-name">Event-stream replay window — 30 days</div>
+              <div class="app-stack">awaiting your review — late by 2 days</div>
+            </td>
+            <td>
+              <div>EDR — Event-Driven Review</div>
+              <div class="app-stack">EDR</div>
+            </td>
+            <td><span class="role-chip review">reviewer</span></td>
+            <td><span class="adr-status proposed">PROPOSED</span></td>
+            <td>
+              <div>4d ago</div>
+              <div class="app-stack">by Anna K.</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="app-id">ADR-FR-006</td>
+            <td>
+              <div class="app-name">Snowflake DWH for FR reporting marts</div>
+              <div class="app-stack">draft — outline only</div>
+            </td>
+            <td>
+              <div>Funds Release</div>
+              <div class="app-stack">FR</div>
+            </td>
+            <td><span class="role-chip author">author</span></td>
+            <td><span class="adr-status draft">DRAFT</span></td>
+            <td>
+              <div>5h ago</div>
+              <div class="app-stack">just outlined</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+  </div>
+</div>
+
+
+<!-- =====================================================================
+     FRAME 18 — Migration plans (cross-process Gantt)
+     ===================================================================== -->
+<div class="frame-label">
+  <span class="num">18</span>
+  <h2>Migration plans</h2>
+  <span class="desc">Portfolio-wide Gantt — every active migration on one timeline so the architect can spot resource conflicts and cross-process dependencies.</span>
+</div>
+
+<div class="frame">
+  <div class="topbar">
+    <div class="modswitch">
+      <button>Processminer</button>
+      <button class="on">ArchitectMiner</button>
+    </div>
+    <span class="crumb">Work · <b>Migration plans</b></span>
+    <span class="spacer"></span>
+    <div class="tb-icons">
+      <button class="tb-icon" title="Export"><svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/></svg></button>
+    </div>
+    <div class="avatar">MH</div>
+  </div>
+
+  <div class="lib-shell">
+    <aside>
+      <div class="group">Work</div>
+      <div class="navitem">Handoff inbox <span class="count">4</span></div>
+      <div class="navitem">All processes <span class="count">9</span></div>
+      <div class="navitem">My ADRs <span class="count">23</span></div>
+      <div class="navitem on">Migration plans <span class="count">3</span></div>
+      <div class="group">Library</div>
+      <div class="navitem">Capability catalog <span class="count">47</span></div>
+      <div class="navitem">Application register <span class="count">28</span></div>
+      <div class="navitem">NFR templates <span class="count">22</span></div>
+      <div class="navitem">Pattern library <span class="count">14</span></div>
+    </aside>
+
+    <main>
+      <div class="lib-head">
+        <h2>Migration plans</h2>
+        <p class="sub">3 processes in flight across 11 phases · 1 done · 4 in flight · 6 planned · earliest go-live SEPA 2026 Q4 · latest DDMM 2027 Q2</p>
+      </div>
+
+      <div class="filters">
+        <span class="chip on">All (3 processes · 11 phases)</span>
+        <span class="chip">SEPA (3 phases)</span>
+        <span class="chip">DDMM (4 phases)</span>
+        <span class="chip">FR (4 phases)</span>
+        <span class="grow"></span>
+        <span class="pill neu" style="font-family:var(--font); font-weight:500">Range: 2026 Q2 → 2027 Q3</span>
+      </div>
+
+      <div class="gantt-multi-wrap">
+        <div class="gantt-legend">
+          <span><i class="sw done"></i>done</span>
+          <span><i class="sw flight"></i>in flight</span>
+          <span><i class="sw planned"></i>planned</span>
+        </div>
+
+        <svg viewBox="0 0 880 540" style="width:100%; height:520px; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-sm)">
+          <!-- Quarter grid -->
+          <g>
+            <line class="gantt-grid-line" x1="200" y1="40" x2="200" y2="520"/>
+            <line class="gantt-grid-line" x1="320" y1="40" x2="320" y2="520"/>
+            <line class="gantt-grid-line" x1="440" y1="40" x2="440" y2="520"/>
+            <line class="gantt-grid-line" x1="560" y1="40" x2="560" y2="520"/>
+            <line class="gantt-grid-line" x1="680" y1="40" x2="680" y2="520"/>
+            <line class="gantt-grid-line" x1="800" y1="40" x2="800" y2="520"/>
+
+            <text class="gantt-axis-lbl" x="200" y="30" text-anchor="middle">2026 Q2</text>
+            <text class="gantt-axis-lbl" x="320" y="30" text-anchor="middle">2026 Q3</text>
+            <text class="gantt-axis-lbl" x="440" y="30" text-anchor="middle">2026 Q4</text>
+            <text class="gantt-axis-lbl" x="560" y="30" text-anchor="middle">2027 Q1</text>
+            <text class="gantt-axis-lbl" x="680" y="30" text-anchor="middle">2027 Q2</text>
+            <text class="gantt-axis-lbl" x="800" y="30" text-anchor="middle">2027 Q3</text>
+          </g>
+
+          <!-- TODAY marker -->
+          <line class="gantt-today" x1="240" y1="40" x2="240" y2="520"/>
+          <text class="gantt-today-lbl" x="244" y="50">TODAY</text>
+
+          <!-- ---------- Process 1: SEPA — top of chart (rows 0-2) ---------- -->
+          <text class="gantt-process-lbl" x="14" y="72">SEPA Payment Processing</text>
+          <text class="gantt-process-sub" x="14" y="86">SPP · Sara L.</text>
+
+          <text class="gantt-row-id"  x="14" y="120">MIG-SPP-001</text>
+          <text class="gantt-row-lbl" x="14" y="134">Gateway + onboarding</text>
+          <rect class="gantt-bar-done" x="200" y="110" width="120" height="28"/>
+          <text class="gantt-bar-lbl" x="210" y="128">Gateway · done</text>
+
+          <text class="gantt-row-id"  x="14" y="168">MIG-SPP-002</text>
+          <text class="gantt-row-lbl" x="14" y="182">Dual-write to legacy</text>
+          <rect class="gantt-bar-done" x="200" y="158" width="240" height="28"/>
+          <text class="gantt-bar-lbl" x="210" y="176">Dual-write · done</text>
+
+          <text class="gantt-row-id"  x="14" y="216">MIG-SPP-003</text>
+          <text class="gantt-row-lbl" x="14" y="230">Legacy cutover · go-live</text>
+          <rect class="gantt-bar-flight" x="320" y="206" width="120" height="28"/>
+          <text class="gantt-bar-lbl" x="330" y="224">Cutover · in flight</text>
+
+          <line class="gantt-divider" x1="0" y1="250" x2="880" y2="250"/>
+
+          <!-- ---------- Process 2: DDMM ---------- -->
+          <text class="gantt-process-lbl" x="14" y="276">Direct Debit Mandate Management</text>
+          <text class="gantt-process-sub" x="14" y="290">DDMM · Theo R.</text>
+
+          <text class="gantt-row-id"  x="14" y="318">MIG-DDMM-001</text>
+          <text class="gantt-row-lbl" x="14" y="332">Foundations &amp; SSO</text>
+          <rect class="gantt-bar-done" x="200" y="308" width="120" height="28"/>
+          <text class="gantt-bar-lbl" x="210" y="326">Foundations · done</text>
+
+          <text class="gantt-row-id"  x="14" y="356">MIG-DDMM-002</text>
+          <text class="gantt-row-lbl" x="14" y="370">Mandate Hub · dual-write</text>
+          <rect class="gantt-bar-flight" x="200" y="346" width="360" height="28"/>
+          <text class="gantt-bar-lbl" x="210" y="364">Mandate Hub · in flight · 60%</text>
+
+          <text class="gantt-row-id"  x="14" y="394">MIG-DDMM-003</text>
+          <text class="gantt-row-lbl" x="14" y="408">Outbound SEPA integration</text>
+          <rect class="gantt-bar-planned" x="440" y="384" width="240" height="28"/>
+          <text class="gantt-bar-lbl" x="450" y="402" style="fill:var(--accent)">Planned · 8-week window</text>
+
+          <text class="gantt-row-id"  x="14" y="432">MIG-DDMM-004</text>
+          <text class="gantt-row-lbl" x="14" y="446">Legacy decommission</text>
+          <rect class="gantt-bar-planned" x="560" y="422" width="240" height="28"/>
+          <text class="gantt-bar-lbl" x="570" y="440" style="fill:var(--accent)">Cutover · go-live 2027 Q2</text>
+
+          <line class="gantt-divider" x1="0" y1="466" x2="880" y2="466"/>
+
+          <!-- ---------- Process 3: Funds Release ---------- -->
+          <text class="gantt-process-lbl" x="14" y="490">Funds Release</text>
+          <text class="gantt-process-sub" x="14" y="504">FR · M. Holzhauser</text>
+
+          <text class="gantt-row-id"  x="14" y="528">MIG-FR-001</text>
+          <text class="gantt-row-lbl" x="14" y="540">Scoring vendor onboarding (Quantexa)</text>
+          <rect class="gantt-bar-flight" x="320" y="518" width="240" height="28"/>
+          <text class="gantt-bar-lbl" x="330" y="536">Onboarding · in flight</text>
+
+          <!-- Cross-process dependency arrows -->
+          <!-- DDMM-003 depends on DDMM-002 -->
+          <path class="gantt-dep" d="M560 360 C 580 360, 580 398, 600 398"/>
+          <polygon class="gantt-dep-arrow" points="600,398 594,394 594,402"/>
+
+          <!-- DDMM-004 depends on DDMM-003 -->
+          <path class="gantt-dep" d="M680 398 C 700 398, 700 436, 720 436"/>
+          <polygon class="gantt-dep-arrow" points="720,436 714,432 714,440"/>
+
+          <!-- FR-001 depends on SEPA-002 finishing (cross-process) -->
+          <path class="gantt-dep" d="M440 172 C 460 172, 460 410, 380 410"
+                style="opacity:0.35"/>
+          <text class="gantt-axis-lbl" x="450" y="290" style="opacity:0.55">cross-process dep</text>
+        </svg>
+      </div>
+
+      <div class="migration-summary">
+        <div class="mig-stat">
+          <div class="v">11</div>
+          <div class="lbl">total phases</div>
+        </div>
+        <div class="mig-stat">
+          <div class="v hi">3</div>
+          <div class="lbl">done</div>
+        </div>
+        <div class="mig-stat">
+          <div class="v mid">3</div>
+          <div class="lbl">in flight</div>
+        </div>
+        <div class="mig-stat">
+          <div class="v">5</div>
+          <div class="lbl">planned</div>
+        </div>
+      </div>
+
+      <div style="margin-top:24px; padding:12px 16px; border:1px solid var(--mid); background:var(--mid-bg); border-radius:var(--r-sm); color:var(--mid); font-family:var(--mono); font-size:var(--text-xs); text-align:center;">
+        ⚠ resource alert — solution-architect bandwidth overlaps in 2026 Q4: SEPA cutover (MIG-SPP-003) and Mandate Hub mid-flight (MIG-DDMM-002) both need the same solution architect
+      </div>
+    </main>
   </div>
 </div>
 

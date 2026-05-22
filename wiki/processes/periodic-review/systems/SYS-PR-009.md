@@ -4,14 +4,14 @@ type: system
 section: systems
 title: Entity Resolution
 status: draft
-confidence: high
+confidence: medium
 source: periodic-kyc-review-dtp.pdf
 systemType: SUPPORTING
 integrates: [SYS-PR-001]
-provenance: {"Purpose": {"evidence": "§7.2: Role = 'Beneficial-owner graph'; Build/Buy = 'Existing (Bvd Orbis + internal)'; Status = 'Connect'.", "source": "document"}, "Role in this process": {"evidence": "", "source": "proposed"}}
+provenance: {"Purpose": {"evidence": "§7.2: 'Entity Resolution | Beneficial-owner graph | Existing (Bvd Orbis + internal) | Connect'", "source": "document"}, "Role in this process": {"evidence": "", "source": "proposed"}}
 ---
 ## Purpose
-Maintains the beneficial-owner graph for legal entities.
+Resolves and maintains the beneficial-owner graph, drawing on Bureau van Dijk Orbis data combined with internal ownership records.
 
 ## Role in this process
-Feeds beneficial-owner graph data into the pre-fill step (Step 2), enabling the KYC Case Manager to present complete ownership structures without manual data gathering. Existing system (Bureau van Dijk Orbis combined with internal records). Status: Connect.
+Consulted at Step 2 pre-fill: the beneficial-owner graph is loaded into the case evidence pack automatically. Pre-2018 entities have incomplete graphs, tracked as gap G-06 with remediation programme PRJ-ENT-BO targeting Q4 2027.
