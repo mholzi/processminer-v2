@@ -1,12 +1,47 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import type { ProcessDoc } from "@/lib/wiki";
+import { useCallback, useMemo, useState } from "react";
+import type { ProcessDoc, Schema } from "@/lib/wiki";
 import type { User } from "@/lib/user";
 import Tooltip from "./Tooltip";
 import Markdown from "./Markdown";
 import AgentChat from "./AgentChat";
 import UserMenu from "./UserMenu";
+import { useAgentChat } from "@/hooks/useAgentChat";
+import { SKILL_LABEL } from "@/lib/agent-chat-utils";
+
+// Architect-side scope preamble — same shape as the Processminer one but
+// tells the CLI the user is now an architect authoring the target / solution
+// side of the wiki. Sent once per session; later turns inherit via --resume.
+function archScopePreamble(d: ProcessDoc, user: User): string {
+  const { id, title } = d.process;
+  return [
+    "[SESSION SCOPE — applies to this whole conversation]",
+    `You are the Architecture Assistant for exactly one process: ${title} (${id}).`,
+    `Its wiki content is wiki/processes/${d.slug}/; its source documents`,
+    `are under raw-sources/${d.slug}/.`,
+    "",
+    `The architect present in this session is ${user.name} (${user.role}). Use`,
+    "that name verbatim wherever an approval or edit is stamped — never ask",
+    "the architect for their name.",
+    "",
+    "Rules, in force for every turn of this session:",
+    `1. Only consider, discuss and change content belonging to ${id}.`,
+    "2. Focus on the architect-side sections: capabilities, target-",
+    "   applications, architecture-decisions, target-integrations, components,",
+    "   nfrs, migration-phases. Upstream sections (the SME side) are read-only",
+    "   reference — refer to them but do not edit them.",
+    "3. Never read or modify another process under wiki/processes/ or",
+    "   raw-sources/, and never change anything else in the repository.",
+    "4. schema/, scripts/ and .claude/skills/ are shared framework the",
+    "   skills need — reading and running those is allowed and expected.",
+    "",
+    "The architect's request follows below.",
+    "",
+    "---",
+    "",
+  ].join("\n");
+}
 
 // Frame-03 of the ArchitectMiner mockup, stubbed with mock ADR/capability
 // content. Inputs from Processminer (left nav, top group) use REAL counts
@@ -41,6 +76,7 @@ type ArchView =
   | "inputs";
 
 export default function ArchitectureCanvas({
+  schema,
   doc,
   user,
   onUserUpdated,
@@ -48,6 +84,7 @@ export default function ArchitectureCanvas({
   onSignOut,
   onReturnToInbox,
 }: {
+  schema: Schema;
   doc: ProcessDoc;
   user: User;
   onUserUpdated: (u: User) => void;
@@ -130,24 +167,69 @@ export default function ArchitectureCanvas({
   ];
   const openAdr = adrs.find((a) => a.open) ?? adrs[2];
 
-  // The architect canvas reuses Processminer's AgentChat component directly
-  // — same React component, same styles, mock no-op handlers because the
-  // architect-side /api/session is not wired yet. Title / subtitle / empty
-  // state / lint label / placeholder are overridden via props.
+  // Real chat pipeline via the shared useAgentChat hook. Same SSE / activity
+  // / skill chip / watchdog as Processminer; sessionStorage prefix "am-chat"
+  // keeps the architect's transcript separate from the SME's.
+  const {
+    messages,
+    chatPending,
+    chatActivity,
+    chatTasks,
+    activeSkill,
+    activeSkillEta,
+    handleSend,
+    restartSession,
+  } = useAgentChat({
+    doc,
+    user,
+    scopePreamble: archScopePreamble,
+    storePrefix: "am-chat",
+    productName: "ArchitectMiner",
+  });
+
+  // Element-id hovercards in chat replies — resolve any "<PREFIX>-<SLUG>-<NN>"
+  // back to its page and human-readable type label, the same way the
+  // Processminer chat does it.
+  const elementsById = useMemo(
+    () => new Map(doc.elements.map((el) => [el.id, el])),
+    [doc.elements],
+  );
+  const getRef = useCallback(
+    (id: string) => {
+      const page = elementsById.get(id);
+      return page
+        ? { page, typeLabel: schema.elementTypes[page.type]?.label ?? page.type }
+        : undefined;
+    },
+    [elementsById, schema],
+  );
+
   const chatSidebar = (
     <div className="am-canvas-chat">
       <AgentChat
         open={true}
         onToggle={() => {}}
         onWidthChange={() => {}}
-        messages={[]}
-        onSend={() => {}}
-        pending={false}
-        onRestart={() => {}}
-        onRunLint={() => {}}
+        messages={messages}
+        onSend={(t) => handleSend(t)}
+        pending={chatPending}
+        activity={chatActivity}
+        tasks={chatTasks}
+        activeSkillLabel={activeSkill ? (SKILL_LABEL[activeSkill] ?? null) : null}
+        activeSkillEta={activeSkillEta}
+        onRestart={restartSession}
+        onRunLint={() =>
+          handleSend(
+            `Run the run-lint skill on the process with slug "${doc.slug}" — cross-check traces across all architect views.`,
+            {
+              skill: "run-lint",
+              displayText: "Cross-check traces across all views.",
+            },
+          )
+        }
         linting={false}
         findingCount={null}
-        getRef={() => undefined}
+        getRef={getRef}
         title="ArchitectMiner"
         subtitle="Authors the architecture with you"
         placeholder="Message the architect…"
@@ -163,6 +245,35 @@ export default function ArchitectureCanvas({
       />
     </div>
   );
+
+  // "+ Add X" header buttons fan out into a single skill call — add-entry,
+  // scoped to the section the button lives on. The architect sees a friendly
+  // line in the transcript ("Add a new ADR to this section.") while the CLI
+  // gets the precise directive ("Run the add-entry skill ... section X").
+  const addElement = (section: string, typeLabel: string) => {
+    if (chatPending) return;
+    handleSend(
+      `Run the add-entry skill for the "${section}" section of the process with slug "${doc.slug}". The architect wants to add a new "${typeLabel}".`,
+      {
+        skill: "add-entry",
+        displayText: `Add a new ${typeLabel} to this section.`,
+      },
+    );
+  };
+
+  // "Elicit with X architect" header buttons run the matching specialist
+  // skill — capability + target-application + ADR routes use the IT
+  // Architect; integration / component / NFR / migration use the same.
+  const elicitWith = (specialist: "it-architect", forSection: string) => {
+    if (chatPending) return;
+    handleSend(
+      `Run the ${specialist} skill on the "${forSection}" section of the process with slug "${doc.slug}" — work with the architect to develop this section interactively.`,
+      {
+        skill: specialist,
+        displayText: `Elicit ${forSection.replace(/-/g, " ")} with the architect.`,
+      },
+    );
+  };
 
   return (
     <div className="am">
@@ -374,8 +485,20 @@ export default function ArchitectureCanvas({
                   {archData.adrDraft} draft
                 </span>
                 <span style={{ flex: 1 }} />
-                <button type="button" className="am-canvas-btn">＋ Add ADR</button>
-                <button type="button" className="am-canvas-btn am-canvas-btn-primary">
+                <button
+                  type="button"
+                  className="am-canvas-btn"
+                  onClick={() => addElement("architecture-decisions", "ADR")}
+                  disabled={chatPending}
+                >
+                  ＋ Add ADR
+                </button>
+                <button
+                  type="button"
+                  className="am-canvas-btn am-canvas-btn-primary"
+                  onClick={() => elicitWith("it-architect", "architecture-decisions")}
+                  disabled={chatPending}
+                >
                   ／ Elicit with domain architect
                 </button>
               </div>
@@ -1015,8 +1138,20 @@ export default function ArchitectureCanvas({
                   {archData.confirmedN} confirmed · {archData.draftN} draft
                 </span>
                 <span style={{ flex: 1 }} />
-                <button type="button" className="am-canvas-btn">＋ Add Capability</button>
-                <button type="button" className="am-canvas-btn am-canvas-btn-primary">
+                <button
+                  type="button"
+                  className="am-canvas-btn"
+                  onClick={() => addElement("capabilities", "capability")}
+                  disabled={chatPending}
+                >
+                  ＋ Add Capability
+                </button>
+                <button
+                  type="button"
+                  className="am-canvas-btn am-canvas-btn-primary"
+                  onClick={() => elicitWith("it-architect", "capabilities")}
+                  disabled={chatPending}
+                >
                   ／ Elicit with domain architect
                 </button>
               </div>
@@ -1191,8 +1326,20 @@ export default function ArchitectureCanvas({
                   {archData.configureN} CONFIGURE · {archData.keepN} KEEP
                 </span>
                 <span style={{ flex: 1 }} />
-                <button type="button" className="am-canvas-btn">＋ Add Application</button>
-                <button type="button" className="am-canvas-btn am-canvas-btn-primary">
+                <button
+                  type="button"
+                  className="am-canvas-btn"
+                  onClick={() => addElement("target-applications", "target application")}
+                  disabled={chatPending}
+                >
+                  ＋ Add Application
+                </button>
+                <button
+                  type="button"
+                  className="am-canvas-btn am-canvas-btn-primary"
+                  onClick={() => elicitWith("it-architect", "target-applications")}
+                  disabled={chatPending}
+                >
                   ／ Elicit with domain architect
                 </button>
               </div>
@@ -1362,8 +1509,20 @@ export default function ArchitectureCanvas({
                   {archData.integrations.length} element{archData.integrations.length === 1 ? "" : "s"}
                 </span>
                 <span style={{ flex: 1 }} />
-                <button type="button" className="am-canvas-btn">＋ Add Integration</button>
-                <button type="button" className="am-canvas-btn am-canvas-btn-primary">
+                <button
+                  type="button"
+                  className="am-canvas-btn"
+                  onClick={() => addElement("target-integrations", "target integration")}
+                  disabled={chatPending}
+                >
+                  ＋ Add Integration
+                </button>
+                <button
+                  type="button"
+                  className="am-canvas-btn am-canvas-btn-primary"
+                  onClick={() => elicitWith("it-architect", "target-integrations")}
+                  disabled={chatPending}
+                >
                   ／ Elicit with solution architect
                 </button>
               </div>
@@ -1436,8 +1595,20 @@ export default function ArchitectureCanvas({
                   across {archData.apps.length} app{archData.apps.length === 1 ? "" : "s"}
                 </span>
                 <span style={{ flex: 1 }} />
-                <button type="button" className="am-canvas-btn">＋ Add Component</button>
-                <button type="button" className="am-canvas-btn am-canvas-btn-primary">
+                <button
+                  type="button"
+                  className="am-canvas-btn"
+                  onClick={() => addElement("components", "component")}
+                  disabled={chatPending}
+                >
+                  ＋ Add Component
+                </button>
+                <button
+                  type="button"
+                  className="am-canvas-btn am-canvas-btn-primary"
+                  onClick={() => elicitWith("it-architect", "components")}
+                  disabled={chatPending}
+                >
                   ／ Elicit with solution architect
                 </button>
               </div>
@@ -1516,8 +1687,20 @@ export default function ArchitectureCanvas({
                   {archData.nfrsReal.length} element{archData.nfrsReal.length === 1 ? "" : "s"}
                 </span>
                 <span style={{ flex: 1 }} />
-                <button type="button" className="am-canvas-btn">＋ Add NFR</button>
-                <button type="button" className="am-canvas-btn am-canvas-btn-primary">
+                <button
+                  type="button"
+                  className="am-canvas-btn"
+                  onClick={() => addElement("nfrs", "NFR")}
+                  disabled={chatPending}
+                >
+                  ＋ Add NFR
+                </button>
+                <button
+                  type="button"
+                  className="am-canvas-btn am-canvas-btn-primary"
+                  onClick={() => elicitWith("it-architect", "nfrs")}
+                  disabled={chatPending}
+                >
                   ／ Elicit with solution architect
                 </button>
               </div>
@@ -1596,8 +1779,20 @@ export default function ArchitectureCanvas({
                   {archData.migrations.length} phase{archData.migrations.length === 1 ? "" : "s"}
                 </span>
                 <span style={{ flex: 1 }} />
-                <button type="button" className="am-canvas-btn">＋ Add Phase</button>
-                <button type="button" className="am-canvas-btn am-canvas-btn-primary">
+                <button
+                  type="button"
+                  className="am-canvas-btn"
+                  onClick={() => addElement("migration-phases", "migration phase")}
+                  disabled={chatPending}
+                >
+                  ＋ Add Phase
+                </button>
+                <button
+                  type="button"
+                  className="am-canvas-btn am-canvas-btn-primary"
+                  onClick={() => elicitWith("it-architect", "migration-phases")}
+                  disabled={chatPending}
+                >
                   ／ Elicit with solution architect
                 </button>
               </div>

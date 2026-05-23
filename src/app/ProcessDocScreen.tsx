@@ -46,8 +46,13 @@ import Tooltip from "@/components/Tooltip";
 import ToastStack, { type Toast } from "@/components/ToastStack";
 import FeedbackScreen from "@/components/FeedbackScreen";
 import type { FeedbackItem } from "@/lib/feedback";
-
-const mid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+import { useAgentChat } from "@/hooks/useAgentChat";
+import {
+  SKILL_LABEL,
+  chatStoreKey,
+  loadStoredChat,
+  mid,
+} from "@/lib/agent-chat-utils";
 
 // Top-bar action icons — stroked line glyphs, sized + coloured via CSS.
 const IconSearch = () => (
@@ -185,127 +190,9 @@ const SPECIALIST: Record<string, { label: string; blurb: string }> = {
 // Friendly name for each chat-driven skill — shown in the assistant's
 // active-skill chip while a turn runs. Covers the elicitation specialists
 // plus the non-specialist skills the run-* wrappers invoke.
-// Long-turn UX helpers — ETA from past runs and a browser notification on
-// completion when the user has tabbed away. Both are best-effort: storage
-// failures and a missing Notification API are silent no-ops.
-
-/** Don't fire a Notification for short turns — they were never painful. */
-const NOTIFY_THRESHOLD_MS = 2 * 60 * 1000;
-/** Cap per-skill history so a runaway log never bloats localStorage. */
-const ETA_HISTORY_CAP = 10;
-const ETA_STORAGE_KEY = "pm.skillDurationsMs.v1";
-const NOTIFY_ASKED_KEY = "pm.notifyPermissionAsked.v1";
-
-function readSkillHistory(): Record<string, number[]> {
-  if (typeof window === "undefined") return {};
-  try {
-    const raw = window.localStorage.getItem(ETA_STORAGE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw) as unknown;
-    return parsed && typeof parsed === "object"
-      ? (parsed as Record<string, number[]>)
-      : {};
-  } catch {
-    return {};
-  }
-}
-
-function recordSkillDuration(skill: string, ms: number) {
-  if (typeof window === "undefined" || !Number.isFinite(ms) || ms <= 0) return;
-  try {
-    const all = readSkillHistory();
-    const list = Array.isArray(all[skill]) ? all[skill].slice() : [];
-    list.push(Math.round(ms));
-    while (list.length > ETA_HISTORY_CAP) list.shift();
-    all[skill] = list;
-    window.localStorage.setItem(ETA_STORAGE_KEY, JSON.stringify(all));
-  } catch {
-    /* storage full or blocked — silently skip */
-  }
-}
-
-function readSkillEta(skill: string): { medianMs: number; runs: number } | null {
-  const list = readSkillHistory()[skill];
-  if (!list || list.length === 0) return null;
-  const sorted = [...list].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  const medianMs =
-    sorted.length % 2 === 0
-      ? Math.round((sorted[mid - 1] + sorted[mid]) / 2)
-      : sorted[mid];
-  return { medianMs, runs: list.length };
-}
-
-/** Render `ms` as a tight human label like "12 min" or "45 s". */
-function formatEta(ms: number): string {
-  if (ms < 60_000) return `${Math.round(ms / 1000)} s`;
-  const min = Math.round(ms / 60_000);
-  return `${min} min`;
-}
-
-/**
- * Browser notification on long-turn completion. Best-effort:
- *   - never asks until the first long turn actually completes (no permission
- *     prompt on first page load);
- *   - asks at most once — declines are remembered;
- *   - silent if the API is unavailable or the tab is currently focused.
- */
-function notifyTurnComplete(durationMs: number, skill: string | null) {
-  if (typeof window === "undefined") return;
-  if (typeof Notification === "undefined") return;
-  // If the user is looking at the tab right now, they don't need a ping.
-  if (!document.hidden) return;
-  const label = skill ? SKILL_LABEL[skill] || skill : "Assistant";
-  const body = `${label} finished after ${formatEta(durationMs)}.`;
-  const fire = () => {
-    try {
-      new Notification("Processminer — done", { body, tag: "pm-turn-done" });
-    } catch {
-      /* user-agent quirk — drop silently */
-    }
-  };
-  if (Notification.permission === "granted") {
-    fire();
-  } else if (Notification.permission === "default") {
-    // Only ask once per browser. A decline isn't asked again.
-    let asked = false;
-    try {
-      asked = window.localStorage.getItem(NOTIFY_ASKED_KEY) === "1";
-    } catch {
-      /* storage blocked — assume not asked */
-    }
-    if (asked) return;
-    try {
-      window.localStorage.setItem(NOTIFY_ASKED_KEY, "1");
-    } catch {
-      /* storage blocked — proceed without remembering */
-    }
-    Notification.requestPermission()
-      .then((p) => {
-        if (p === "granted") fire();
-      })
-      .catch(() => {
-        /* user dismissed — ignore */
-      });
-  }
-}
-
-const SKILL_LABEL: Record<string, string> = {
-  "process-specialist": "Process Specialist",
-  "control-compliance-specialist": "Control & Compliance Specialist",
-  "client-journey-specialist": "Client Journey Specialist",
-  "it-architect": "IT Architect",
-  "innovation-analyst": "Innovation Analyst",
-  "transformation-agent": "Transformation Agent",
-  "run-lint": "Quality Check",
-  "foundational-run": "Foundational Run",
-  "council-review": "Target Council Review",
-  "add-entry": "Add Entry",
-  "comment-review": "Comment Review",
-  "conflict-resolution": "Conflict Resolution",
-  "document-ingest": "Document Import",
-  "new-process": "New Process",
-};
+// The long-turn UX helpers (ETA + notifications + SKILL_LABEL) and the chat
+// session-storage helpers live in @/lib/agent-chat-utils; the chat state +
+// SSE pipeline live in @/hooks/useAgentChat.
 
 function sectionSourcingKind(
   section: string,
@@ -378,34 +265,11 @@ function resumeMessage(d: ProcessDoc): ChatMessage | null {
   };
 }
 
-// The chat transcript + claude session id are persisted to sessionStorage
-// per process, so a page reload (or dev hot-reload) restores the conversation
-// instead of dropping it — a foundational run can span hours. sessionStorage
-// is deliberate: it survives a reload but clears when the tab closes, so a
-// transcript never goes stale across days.
-const chatStoreKey = (slug: string) => `pm-chat-${slug}`;
-function loadStoredChat(
-  slug: string,
-): { messages: ChatMessage[]; sessionId: string | null } | null {
-  try {
-    const raw = sessionStorage.getItem(chatStoreKey(slug));
-    if (!raw) return null;
-    const saved = JSON.parse(raw) as {
-      messages?: ChatMessage[];
-      sessionId?: string | null;
-    };
-    if (!Array.isArray(saved.messages) || saved.messages.length === 0) {
-      return null;
-    }
-    return {
-      messages: saved.messages,
-      sessionId:
-        typeof saved.sessionId === "string" ? saved.sessionId : null,
-    };
-  } catch {
-    return null;
-  }
-}
+// The Processminer chat transcript is keyed under "pm-chat-<slug>" by
+// chatStoreKey + loadStoredChat from @/lib/agent-chat-utils, so a page
+// reload (or dev hot-reload) restores the conversation instead of dropping
+// it — a foundational run can span hours.
+const PM_CHAT_STORE_PREFIX = "pm-chat";
 
 // The one main screen. Left rail is a numbered 1..6 area spine — always
 // visible so the process sequence never scrolls away — plus a collapsible
@@ -661,63 +525,32 @@ export default function ProcessDocScreen({
   useEffect(() => {
     localStorage.setItem("pm-elem-filter", elemFilter);
   }, [elemFilter]);
-  const [messages, setMessages] = useState<ChatMessage[]>(() => {
-    const m = openingRunDoc ? resumeMessage(openingRunDoc) : null;
-    return m ? [m] : [];
+  // All chat state + the SSE pipeline + transcript persistence + the
+  // stuck-turn watchdog live in the useAgentChat hook. ProcessDocScreen only
+  // needs the values + the handleSend / restartSession callbacks to drive
+  // the right rail and the run-* wrappers further down.
+  const chat = useAgentChat({
+    doc,
+    user,
+    scopePreamble,
+    storePrefix: PM_CHAT_STORE_PREFIX,
+    productName: "Processminer",
+    initialMessage: () => (openingRunDoc ? resumeMessage(openingRunDoc) : null),
   });
-  const [chatSessionId, setChatSessionId] = useState<string | null>(null);
-  // Restore a persisted transcript for the process shown on mount, so a
-  // reload picks the conversation back up (FB-004). Runs once; later process
-  // switches restore via switchProcess().
-  const chatPersistReady = useRef(false);
-  // Watchdog: timestamp (ms) of the last SSE event we saw on the active turn.
-  // The watchdog effect uses this to break out of a stuck-pending state if the
-  // chain went silent — e.g. an HMR reload orphaned the fetch's body reader,
-  // or the network connection dropped mid-stream and `.finally` never fired.
-  const lastTurnEventRef = useRef<number>(0);
-  useEffect(() => {
-    const saved = loadStoredChat(currentSlug);
-    if (saved) {
-      setMessages(saved.messages);
-      setChatSessionId(saved.sessionId);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  useEffect(() => {
-    // Skip the mount run so the restore above is not clobbered before it lands.
-    if (!chatPersistReady.current) {
-      chatPersistReady.current = true;
-      return;
-    }
-    try {
-      sessionStorage.setItem(
-        chatStoreKey(currentSlug),
-        JSON.stringify({ messages, sessionId: chatSessionId }),
-      );
-    } catch {
-      /* storage full or unavailable — persistence is best-effort */
-    }
-  }, [messages, chatSessionId, currentSlug]);
-  const [chatPending, setChatPending] = useState(false);
-  // Live activity line while a turn runs — updated from the SSE stream.
-  const [chatActivity, setChatActivity] = useState<string | null>(null);
-  // Live sub-agent fan-out — when document-ingest / source-cx / source-
-  // innovation dispatch multiple Task tools, each shows as its own chip so
-  // the long-tail (the slow one that holds up the whole turn) is visible.
-  // Ordered by start so the strip is stable; status flips done when the
-  // tool_result comes back. Cleared on turn boundary.
-  const [chatTasks, setChatTasks] = useState<
-    { id: string; label: string; status: "running" | "done" }[]
-  >([]);
-  // The named skill a run-* wrapper kicked off — drives the assistant's
-  // active-skill chip. Null for a free-text turn (no named skill).
-  const [activeSkill, setActiveSkill] = useState<string | null>(null);
-  // Median ETA for the current active skill, taken from past-run history in
-  // localStorage. Null when there's no prior data or no named skill.
-  const [activeSkillEta, setActiveSkillEta] = useState<{
-    medianMs: number;
-    runs: number;
-  } | null>(null);
+  const {
+    messages,
+    setMessages,
+    chatPending,
+    setChatPending,
+    chatActivity,
+    chatTasks,
+    activeSkill,
+    activeSkillEta,
+    chatSessionId,
+    setChatSessionId,
+    handleSend,
+    restartSession: baseRestartSession,
+  } = chat;
   // True from the moment the user kicks off the new-process flow until the
   // scaffolded process appears on disk (or the user bails). While true, the
   // canvas hides the previously-open process so the SME isn't editing one
@@ -753,51 +586,15 @@ export default function ProcessDocScreen({
   // Whether the web-sourcing result popup is open.
   const [sourceResultOpen, setSourceResultOpen] = useState(false);
 
-  // Live document refresh while work is in flight. A chat turn or a web-
-  // sourcing run writes wiki files element-by-element; without this the
-  // document view only re-reads when the turn *ends*, so a 25-minute ingest
-  // shows a frozen, empty wiki the whole time (FB-003 / FB-008). Polling
-  // router.refresh() re-reads the server component so cards appear and
-  // approvals flip live as the skill produces them.
+  // Live document refresh while a sourcing run is in flight. The chat-turn
+  // case is handled by useAgentChat (which already polls router.refresh on
+  // its own state); this effect covers source-* runs, which run outside the
+  // chat and would otherwise leave the document frozen while files land.
   useEffect(() => {
-    if (!chatPending && sourcing?.status !== "running") return;
+    if (sourcing?.status !== "running") return;
     const t = setInterval(() => router.refresh(), 4000);
     return () => clearInterval(t);
-  }, [chatPending, sourcing, router]);
-
-  // Stuck-turn watchdog. A chat turn streams SSE events (progress, delta,
-  // done, error) — the worst-case gap between events during real work is
-  // seconds, not minutes, even on a long extraction. If the gap exceeds
-  // CHAT_WATCHDOG_MS while pending is still true, the promise chain that
-  // would clear pending is almost certainly orphaned — most often an HMR
-  // reload during dev, or a dropped network mid-stream. Self-heal: clear
-  // pending and surface a lost-contact message the SME can act on.
-  useEffect(() => {
-    if (!chatPending) return;
-    const CHAT_WATCHDOG_MS = 5 * 60 * 1000;
-    const t = setInterval(() => {
-      const silent = Date.now() - lastTurnEventRef.current;
-      if (silent < CHAT_WATCHDOG_MS) return;
-      setChatPending(false);
-      setChatActivity(null);
-      setChatTasks([]);
-      setActiveSkill(null);
-      setActiveSkillEta(null);
-      setMessages((m) => [
-        ...m,
-        {
-          id: mid(),
-          role: "agent",
-          text:
-            `⚠ Lost contact with the assistant — no activity for ${Math.round(
-              silent / 60_000,
-            )} min. The turn may have completed on the server; click **↻** to ` +
-            `restart the session and start fresh, or send a new message to retry.`,
-        },
-      ]);
-    }, 30_000);
-    return () => clearInterval(t);
-  }, [chatPending]);
+  }, [sourcing, router]);
 
   // Per-area executive summary — viewed from the nav area heading, generated
   // silently by the area-summary skill. `summaryGen` tracks an active run.
@@ -1076,212 +873,17 @@ export default function ProcessDocScreen({
   const activeArea = schema.areas[activeAreaIdx];
   const activeAreaNo = activeAreaIdx + 1;
 
-  // The Process Assistant chat — backed by the local `claude` CLI via
-  // /api/session. Each turn runs claude headless in the repo, so it can
-  // invoke the skills in .claude/skills/ and read/write the wiki. The route
-  // streams Server-Sent Events: `progress` lines drive the live activity
-  // line, `done` carries the final reply, `error` carries a failure.
-  function handleSend(
-    text: string,
-    opts?: {
-      onComplete?: () => void;
-      unscoped?: boolean;
-      displayText?: string;
-      /** Name of the skill this turn invokes — drives the active-skill chip. */
-      skill?: string;
-    },
-  ) {
-    // `text` is sent to the CLI; `displayText`, when given, is what the SME
-    // sees in the transcript — lets a turn carry an internal directive the
-    // assistant must act on but the SME should not see.
-    setMessages((m) => [
-      ...m,
-      { id: mid(), role: "user", text: opts?.displayText ?? text },
-    ]);
-    setChatPending(true);
-    setChatActivity(null);
-    setChatTasks([]);
-    setActiveSkill(opts?.skill ?? null);
-    setActiveSkillEta(opts?.skill ? readSkillEta(opts.skill) : null);
-    // Arm the watchdog — bumped on every SSE event below.
-    lastTurnEventRef.current = Date.now();
-    // Wall-clock for this turn — used to decide whether to fire a
-    // browser notification on completion (only for runs that lasted more
-    // than `NOTIFY_THRESHOLD_MS`) and to record the duration into the
-    // per-skill ETA history.
-    const turnStartedAt = Date.now();
-    const turnSkill = opts?.skill ?? null;
-
-    // The + New-process flow is inherently cross-process, so it runs in its
-    // own fresh, unscoped session — otherwise the scope lock would make the
-    // assistant decline its own scaffolding request.
-    const unscoped = opts?.unscoped === true;
-    const sessionId = unscoped ? null : chatSessionId;
-    // First turn of a scoped session: hand the open process to the CLI and
-    // lock the session to it. Later turns inherit it via --resume.
-    const wireText =
-      !unscoped && sessionId === null ? scopePreamble(doc, user) + text : text;
-
-    type SessionEvent =
-      | { type: "progress"; text: string }
-      | { type: "delta"; text: string }
-      | { type: "task_start"; id: string; label: string }
-      | { type: "task_end"; id: string }
-      | { type: "done"; reply?: string; sessionId?: string; isError?: boolean }
-      | { type: "error"; error: string; sessionId?: string };
-
-    fetch("/api/session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message: wireText,
-        sessionId,
-        stream: user.streamReplies === true,
-      }),
-    })
-      .then(async (res) => {
-        if (!res.body) throw new Error("Keine Antwort vom Server.");
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-        let buf = "";
-        // Id of the live agent message while reply text streams in — null
-        // until the first delta (and for the whole turn if not streaming).
-        let streamingId: string | null = null;
-
-        const apply = (evt: SessionEvent) => {
-          // Bump the watchdog every time we see life from the server.
-          lastTurnEventRef.current = Date.now();
-          if (evt.type === "progress") {
-            setChatActivity(evt.text);
-          } else if (evt.type === "task_start") {
-            setChatTasks((ts) =>
-              ts.some((t) => t.id === evt.id)
-                ? ts
-                : [...ts, { id: evt.id, label: evt.label, status: "running" }],
-            );
-          } else if (evt.type === "task_end") {
-            setChatTasks((ts) =>
-              ts.map((t) => (t.id === evt.id ? { ...t, status: "done" } : t)),
-            );
-          } else if (evt.type === "delta") {
-            // Reply text arriving live — append to the streaming message,
-            // creating it on the first delta.
-            if (streamingId === null) {
-              const id = mid();
-              streamingId = id;
-              setMessages((m) => [
-                ...m,
-                { id, role: "agent", text: evt.text },
-              ]);
-            } else {
-              const id = streamingId;
-              setMessages((m) =>
-                m.map((msg) =>
-                  msg.id === id ? { ...msg, text: msg.text + evt.text } : msg,
-                ),
-              );
-            }
-          } else if (evt.type === "done") {
-            if (evt.sessionId) setChatSessionId(evt.sessionId);
-            if (streamingId !== null) {
-              // The reply already streamed in — keep what was shown; only
-              // fall back to the result text if nothing actually streamed.
-              const id = streamingId;
-              const reply = evt.reply || "";
-              setMessages((m) =>
-                m.map((msg) =>
-                  msg.id === id && !msg.text ? { ...msg, text: reply } : msg,
-                ),
-              );
-              streamingId = null;
-            } else {
-              setMessages((m) => [
-                ...m,
-                { id: mid(), role: "agent", text: evt.reply || "(no reply)" },
-              ]);
-            }
-            // a skill may have written wiki files — re-read the doc view
-            router.refresh();
-          } else if (evt.type === "error") {
-            if (evt.sessionId) setChatSessionId(evt.sessionId);
-            setMessages((m) => [
-              ...m,
-              { id: mid(), role: "agent", text: `⚠ ${evt.error}` },
-            ]);
-          }
-        };
-
-        for (;;) {
-          const { value, done } = await reader.read();
-          if (done) break;
-          buf += decoder.decode(value, { stream: true });
-          let sep: number;
-          while ((sep = buf.indexOf("\n\n")) !== -1) {
-            const frame = buf.slice(0, sep);
-            buf = buf.slice(sep + 2);
-            const line = frame.startsWith("data:")
-              ? frame.slice(5).trim()
-              : frame.trim();
-            if (!line) continue;
-            try {
-              apply(JSON.parse(line) as SessionEvent);
-            } catch {
-              /* partial / non-JSON frame — ignore */
-            }
-          }
-        }
-      })
-      .catch((e: unknown) => {
-        setMessages((m) => [
-          ...m,
-          {
-            id: mid(),
-            role: "agent",
-            text: `⚠ ${e instanceof Error ? e.message : "Request failed"}`,
-          },
-        ]);
-      })
-      .finally(() => {
-        const durationMs = Date.now() - turnStartedAt;
-        // Record the duration so future invocations of the same skill can
-        // show an honest median ETA up-front.
-        if (turnSkill) recordSkillDuration(turnSkill, durationMs);
-        // If the turn was a long one, ping the user — only meaningful when
-        // they've tabbed away. We ask for permission lazily on the first
-        // long turn so first-load doesn't show a permission prompt.
-        if (durationMs >= NOTIFY_THRESHOLD_MS) {
-          notifyTurnComplete(durationMs, turnSkill);
-        }
-        setChatPending(false);
-        setChatActivity(null);
-        setChatTasks([]);
-        setActiveSkill(null);
-        setActiveSkillEta(null);
-        opts?.onComplete?.();
-      });
-  }
-
-  // Restart the assistant session — clear the transcript and drop the claude
-  // session id, so the next message starts a fresh `claude` session.
-  function restartSession() {
-    // Restart is a kill switch — works even while pending. If a turn is in
-    // flight (e.g. a hung worker or an orphaned fetch after HMR), clicking
-    // restart is the SME's explicit "abandon and start over" signal.
-    setChatPending(false);
-    setChatActivity(null);
-    setChatTasks([]);
-    setActiveSkill(null);
-    setActiveSkillEta(null);
-    setMessages([]);
-    setChatSessionId(null);
+  // The Process Assistant chat is driven by useAgentChat above:
+  //   - handleSend(text, opts) — send a turn (free text or a skill wrapper)
+  //   - restartSession()       — kill switch, clears transcript + claude session
+  // The hook handles SSE streaming, ETA recording, the long-turn notification,
+  // the live activity ticker, sub-agent task fan-out, transcript persistence,
+  // and the stuck-turn watchdog. ProcessDocScreen's only job here is to also
+  // clear `draftingNewProcess` when the SME hits restart — the rest is owned.
+  const restartSession = () => {
+    baseRestartSession();
     setDraftingNewProcess(false);
-    // Drop the persisted transcript too — a restart is a deliberate clear.
-    try {
-      sessionStorage.removeItem(chatStoreKey(currentSlug));
-    } catch {
-      /* storage unavailable — nothing to clear */
-    }
-  }
+  };
 
   // Lint — invoke the run-lint skill via the chat. It checks conformance,
   // sweeps the wiki from all five perspectives, writes lint.json and re-opens
@@ -1372,7 +974,7 @@ export default function ProcessDocScreen({
     setSection(resume ? "__triage" : "process-steps");
     // If this process has a persisted transcript from earlier in the tab
     // session, restore it (and its claude session) rather than starting over.
-    const saved = loadStoredChat(slug);
+    const saved = loadStoredChat(PM_CHAT_STORE_PREFIX, slug);
     if (saved) {
       setChatSessionId(saved.sessionId);
       setMessages(saved.messages);

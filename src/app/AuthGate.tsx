@@ -120,6 +120,7 @@ export default function AuthGate({
     if (openDoc) {
       return (
         <ArchitectureCanvas
+          schema={schema}
           doc={openDoc}
           user={user}
           onUserUpdated={setUser}
