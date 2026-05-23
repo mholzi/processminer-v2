@@ -8,13 +8,14 @@ script reads the element, changes exactly the one block or field given, and
 re-writes it; everything else stays as it was.
 
 Usage:
-  patch_element.py <slug> <id> --block "<heading>" <textfile>
-  patch_element.py <slug> <id> --field "<key>" "<value>"
-  patch_element.py <slug> <id> --list  "<key>" "<id1,id2,...>"
+  patch_element.py <slug> <id> --block "<heading>" <textfile> [--by <actor>]
+  patch_element.py <slug> <id> --field "<key>" "<value>"       [--by <actor>]
+  patch_element.py <slug> <id> --list  "<key>" "<id1,id2,...>" [--by <actor>]
 
   --block   replace the prose under an existing `## <heading>`
   --field   set a scalar frontmatter field (created if absent)
   --list    set an id-list frontmatter field, e.g. relations
+  --by      stamp `updatedBy` on the element (default: "the assistant")
 """
 
 from __future__ import annotations
@@ -31,6 +32,7 @@ from wiki_lib import (  # noqa: E402
     parse_blocks,
     parse_provenance,
     serialize_element,
+    stamp_edit,
 )
 
 # List frontmatter keys that are not schema relations but are legitimately
@@ -39,13 +41,23 @@ NON_RELATION_LISTS = {"transitions", "raci"}
 
 
 def main(argv: list[str]) -> None:
-    if len(argv) != 5 or argv[2] not in ("--block", "--field", "--list"):
+    by: str | None = None
+    rest: list[str] = []
+    i = 0
+    while i < len(argv):
+        if argv[i] == "--by" and i + 1 < len(argv):
+            by = argv[i + 1]
+            i += 2
+        else:
+            rest.append(argv[i])
+            i += 1
+    if len(rest) != 5 or rest[2] not in ("--block", "--field", "--list"):
         sys.exit(
             "usage: patch_element.py <slug> <id> "
             "(--block <heading> <textfile> | --field <key> <value> | "
-            "--list <key> <id1,id2,...>)"
+            "--list <key> <id1,id2,...>) [--by <actor>]"
         )
-    slug, eid, mode, key, value = argv
+    slug, eid, mode, key, value = rest
 
     found = None
     for path, meta, body in iter_elements(slug):
@@ -109,7 +121,8 @@ def main(argv: list[str]) -> None:
     # approval at save; mirrors saveElement() in wiki-write.ts and run-lint's
     # reopen. Skipped only when the patch is itself an approval field — then
     # the caller (e.g. set_approval) owns the approval state deliberately.
-    if key not in ("approval", "approvalBy", "approvalDate"):
+    is_approval_patch = key in ("approval", "approvalBy", "approvalDate")
+    if not is_approval_patch:
         if str(meta.get("approval", "")) == "approved":
             meta["approval"] = "in-progress"
             # Drop the stale by/date stamp entirely — they certified the old
@@ -118,6 +131,13 @@ def main(argv: list[str]) -> None:
             meta.pop("approvalBy", None)
             meta.pop("approvalDate", None)
             what += " — approval re-opened (was approved)"
+
+    # Stamp edit attribution — every content patch counts as an edit event.
+    # An approval-field patch goes through set_approval (which owns its own
+    # approvalBy/approvalDate stamp), so skip the edit stamp there to avoid
+    # masking the approval row in the contributors feed.
+    if not is_approval_patch:
+        stamp_edit(meta, by)
 
     path.write_text(serialize_element(meta, blocks), encoding="utf-8")
     print(f"patched {what} of {eid} — {path.relative_to(ROOT)}")

@@ -8,7 +8,14 @@ import { initials } from "@/lib/user";
 // people filter. Data comes from /api/processes/<slug>/contributors and
 // degrades gracefully on processes that lack notes/ingest/uploads.
 
-type EventKind = "comment" | "upload" | "ingest" | "approval" | "draft";
+type EventKind =
+  | "comment"
+  | "upload"
+  | "ingest"
+  | "approval"
+  | "draft"
+  | "lint"
+  | "section-status";
 
 type ContributorEvent = {
   id: string;
@@ -43,6 +50,8 @@ const KIND_LABEL: Record<EventKind, string> = {
   ingest: "extracted",
   approval: "approved",
   draft: "drafted",
+  lint: "audited",
+  "section-status": "marked",
 };
 
 function avatarTone(by: string): string {

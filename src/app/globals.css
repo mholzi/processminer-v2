@@ -2402,6 +2402,8 @@ body {
 .contrib-kind.kind-ingest   { background: var(--mid-bg);      color: var(--mid); }
 .contrib-kind.kind-approval { background: var(--hi-bg);       color: var(--hi); }
 .contrib-kind.kind-draft    { background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+.contrib-kind.kind-lint           { background: var(--warn-bg);    color: var(--warn); }
+.contrib-kind.kind-section-status { background: var(--accent-soft); color: var(--accent); }
 
 /* ---- Approval / review-progress bar ---- */
 .apbar-wrap { margin-top: 8px; }

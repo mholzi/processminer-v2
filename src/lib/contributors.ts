@@ -25,7 +25,9 @@ export type EventKind =
   | "upload"
   | "ingest"
   | "approval"
-  | "draft";
+  | "draft"
+  | "lint"
+  | "section-status";
 
 export type ContributorEvent = {
   id: string;
@@ -107,6 +109,18 @@ type IngestReport = {
 
 type UploadsManifest = Record<string, { by?: string; at?: string }>;
 
+type LintReport = {
+  generatedAt: string;
+  summary?: { conformance?: number; discrepancy?: number; question?: number };
+  findings?: { id: string }[];
+  by?: string;
+};
+
+type SectionsManifest = Record<
+  string,
+  { status: string; count: number; date: string; by?: string }
+>;
+
 export function getContributorsReport(doc: ProcessDoc): ContributorsReport {
   const events: ContributorEvent[] = [];
 
@@ -183,6 +197,52 @@ export function getContributorsReport(doc: ProcessDoc): ContributorsReport {
     }
   }
 
+  // ----- lint runs from wiki/<slug>/lint.json -----
+  // run-lint writes a single report per process (overwrites on each pass).
+  // No `by` field is stamped yet, so attribute to "the assistant" — the
+  // skill that drove the run.
+  const lintPath = join(WIKI_DIR, doc.slug, "lint.json");
+  const lint = readJson<LintReport>(lintPath);
+  if (lint?.generatedAt) {
+    const total = lint.findings?.length ?? 0;
+    const s = lint.summary ?? {};
+    const breakdown = [
+      s.conformance ? `${s.conformance} conformance` : "",
+      s.discrepancy ? `${s.discrepancy} discrepancy` : "",
+      s.question ? `${s.question} question` : "",
+    ]
+      .filter(Boolean)
+      .join(" · ");
+    events.push({
+      id: `l-${lint.generatedAt}`,
+      kind: "lint",
+      by: lint.by || "the assistant",
+      ts: lint.generatedAt,
+      title: `ran a quality check — ${total} finding${total === 1 ? "" : "s"}`,
+      sub: breakdown || undefined,
+    });
+  }
+
+  // ----- section status from wiki/<slug>/sections.json -----
+  // set_section_status.py stamps `by` + `date` per section. A status mark
+  // (worked / confirmed-empty) is the SME's "I've thought about this slice"
+  // signal — credit the person who said so.
+  const sectionsPath = join(WIKI_DIR, doc.slug, "sections.json");
+  const sections = readJson<SectionsManifest>(sectionsPath);
+  if (sections) {
+    for (const [sectionId, meta] of Object.entries(sections)) {
+      if (!meta.by || !meta.date) continue;
+      events.push({
+        id: `s-${sectionId}-${meta.date}`,
+        kind: "section-status",
+        by: meta.by,
+        ts: toIsoTs(meta.date),
+        title: `marked ${sectionId} as ${meta.status}`,
+        sub: meta.count ? `${meta.count} element${meta.count === 1 ? "" : "s"} on disk` : undefined,
+      });
+    }
+  }
+
   // ----- ingest from wiki/<slug>/ingest.json (last extraction run) -----
   const ingestPath = join(WIKI_DIR, doc.slug, "ingest.json");
   const ingest = readJson<IngestReport>(ingestPath);
@@ -241,6 +301,9 @@ export function getContributorsReport(doc: ProcessDoc): ContributorsReport {
     else if (e.kind === "approval") r.approvals++;
     else if (e.kind === "draft") r.drafts++;
     else if (e.kind === "ingest") r.uploads++;
+    // lint + section-status don't get their own rollup column yet — they're
+    // just totals on the event list. Keep them out of the four buckets so
+    // the rail numbers stay readable.
     if (e.ts > r.lastActiveAt) r.lastActiveAt = e.ts;
   }
   const rollups = Object.values(by).sort((a, b) => b.total - a.total);

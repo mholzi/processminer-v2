@@ -6,8 +6,19 @@
 import { readFileSync, writeFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { COOKIE_NAME, verifySession } from "./auth-server";
 
 const WIKI_DIR = join(process.cwd(), "wiki", "processes");
+
+// Who is making this server-side write — read off the signed session cookie.
+// Falls back to "the assistant" when there's no session (skill-driven writes
+// hit the Python toolkit instead, so this only happens in dev / tests).
+async function currentActor(): Promise<string> {
+  const jar = await cookies();
+  const user = verifySession(jar.get(COOKIE_NAME)?.value);
+  return user?.name || user?.username || "the assistant";
+}
 
 /** Locate <id>.md anywhere under the process's section folders. */
 function findElementFile(slug: string, id: string): string | null {
@@ -78,10 +89,14 @@ export async function saveElement(
     lineValue("relevance"),
   );
 
+  const actor = await currentActor();
+  const nowIso = new Date().toISOString();
+
   // Rebuild frontmatter line-by-line — patch title, the exposed fields,
   // re-open a stale review verdict, and promote an AI draft to "confirmed":
   // a human edit is a human confirmation (DESIGN.md — provenance-first).
   const patchedFields = new Set<string>();
+  const stampedKeys = new Set<string>();
   const fmOut = fmLines.map((line) => {
     const idx = line.indexOf(":");
     if (idx === -1) return line;
@@ -95,6 +110,14 @@ export async function saveElement(
     if (reopenRelevance && key === "relevance") return "relevance:";
     if (reopenRelevance && (key === "relevanceBy" || key === "relevanceDate")) {
       return `${key}:`;
+    }
+    if (key === "updatedBy") {
+      stampedKeys.add(key);
+      return `updatedBy: ${actor}`;
+    }
+    if (key === "updatedAt") {
+      stampedKeys.add(key);
+      return `updatedAt: ${nowIso}`;
     }
     if (Object.prototype.hasOwnProperty.call(edit.fields, key)) {
       patchedFields.add(key);
@@ -111,6 +134,8 @@ export async function saveElement(
       fmOut.push(`${key}: ${value.trim()}`);
     }
   }
+  if (!stampedKeys.has("updatedBy")) fmOut.push(`updatedBy: ${actor}`);
+  if (!stampedKeys.has("updatedAt")) fmOut.push(`updatedAt: ${nowIso}`);
   const frontmatter = fmOut.join("\n");
 
   const body =

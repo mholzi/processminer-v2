@@ -284,8 +284,24 @@ def id_state(slug: str) -> tuple[str, dict[str, int]]:
 
 WRITE_REQUIRED = ("slug", "type", "id", "title", "blocks")
 
+# Default actor stamped on `updatedBy` when a caller doesn't pass one. Mirrors
+# the fallback we use for ingest events in src/lib/contributors.ts — AI-driven
+# writes that aren't yet attributed to a specific SME show up as the assistant.
+DEFAULT_ACTOR = "the assistant"
 
-def write_element_spec(spec: dict) -> tuple[Path, str]:
+
+def stamp_edit(frontmatter: dict, by: str | None) -> None:
+    """Stamp `updatedBy` + `updatedAt` on the frontmatter — every write that
+    changes content or fields runs through here so the contributors feed gets
+    a real edit event. `by` falls back to `DEFAULT_ACTOR` when callers don't
+    have a real name to pass (older skills, scripts run by hand)."""
+    frontmatter["updatedBy"] = (by or "").strip() or DEFAULT_ACTOR
+    frontmatter["updatedAt"] = datetime.datetime.now(datetime.timezone.utc).strftime(
+        "%Y-%m-%dT%H:%M:%SZ"
+    )
+
+
+def write_element_spec(spec: dict, by: str | None = None) -> tuple[Path, str]:
     """Write one element file from a JSON spec (see write_element.py for the
     spec shape). Returns `(path, action)` where action is 'created' or
     'updated'. Raises ValueError on a malformed spec.
@@ -380,6 +396,11 @@ def write_element_spec(spec: dict) -> tuple[Path, str]:
             frontmatter["approval"] = "in-progress"
             frontmatter.pop("approvalBy", None)
             frontmatter.pop("approvalDate", None)
+
+    # Stamp updatedBy / updatedAt — every write counts as an edit event for
+    # the contributors feed, even a non-content rewrite that only changes
+    # frontmatter or relations.
+    stamp_edit(frontmatter, by)
 
     action = "updated" if existed else "created"
     path.write_text(serialize_element(frontmatter, spec["blocks"]), encoding="utf-8")

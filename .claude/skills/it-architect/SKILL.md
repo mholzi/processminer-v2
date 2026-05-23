@@ -212,6 +212,13 @@ together, write them in one call instead of looping step 4:
 `id` (the script assigns it) and using `"@<tempKey>"` to point at a sibling in
 the batch. An element approved on its own still takes step 4 — write it the
 moment it is confirmed, so an interrupted session loses nothing.
+
+**Attribute the edit.** Every write/patch script accepts `--by "<SME name>"`.
+Pass the SME's display name when one is present in the session; omit the flag
+when you are working without one (it defaults to "the assistant"). The script
+stamps `updatedBy` / `updatedAt` on the element so the Contributors view shows
+who changed what — guessed or placeholder names land in the wiki as real
+attribution, so use the SME's actual name from the session header.
 <!-- WRITING-PROCEDURE-BLOCK:end -->
 
 ## Stay in your lane

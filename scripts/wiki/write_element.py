@@ -7,7 +7,10 @@ element can never be written malformed or in the wrong place. To write several
 elements at once, use write_elements.py — it shares this same serialisation.
 
 Usage:
-  write_element.py <spec.json>
+  write_element.py <spec.json> [--by "<actor name>"]
+
+`--by` stamps `updatedBy` on the element. Omit to fall back to "the assistant"
+— the contributors feed reads `updatedBy` / `updatedAt` to surface edit events.
 
 Spec shape:
   {
@@ -48,15 +51,25 @@ from wiki_lib import ROOT, write_element_spec  # noqa: E402
 
 
 def main(argv: list[str]) -> None:
-    if len(argv) != 1:
-        sys.exit("usage: write_element.py <spec.json>")
+    by: str | None = None
+    rest: list[str] = []
+    i = 0
+    while i < len(argv):
+        if argv[i] == "--by" and i + 1 < len(argv):
+            by = argv[i + 1]
+            i += 2
+        else:
+            rest.append(argv[i])
+            i += 1
+    if len(rest) != 1:
+        sys.exit("usage: write_element.py <spec.json> [--by <actor>]")
     try:
-        spec = json.loads(Path(argv[0]).read_text(encoding="utf-8"))
+        spec = json.loads(Path(rest[0]).read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as e:
         sys.exit(f"error: could not read spec — {e}")
 
     try:
-        path, action = write_element_spec(spec)
+        path, action = write_element_spec(spec, by=by)
     except ValueError as e:
         sys.exit(f"error: {e}")
 

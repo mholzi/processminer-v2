@@ -9,7 +9,10 @@ created in the same batch, and writes every file with the same serialisation
 write_element.py uses.
 
 Usage:
-  write_elements.py <manifest.json>
+  write_elements.py <manifest.json> [--by "<actor name>"]
+
+`--by` stamps `updatedBy` on every element in the batch. Omit to fall back to
+"the assistant" — the contributors feed reads `updatedBy` / `updatedAt`.
 
 Manifest shape:
   {
@@ -62,10 +65,20 @@ def fail(msg: str) -> None:
 
 
 def main(argv: list[str]) -> None:
-    if len(argv) != 1:
-        sys.exit("usage: write_elements.py <manifest.json>")
+    by: str | None = None
+    rest: list[str] = []
+    i = 0
+    while i < len(argv):
+        if argv[i] == "--by" and i + 1 < len(argv):
+            by = argv[i + 1]
+            i += 2
+        else:
+            rest.append(argv[i])
+            i += 1
+    if len(rest) != 1:
+        sys.exit("usage: write_elements.py <manifest.json> [--by <actor>]")
     try:
-        manifest = json.loads(Path(argv[0]).read_text(encoding="utf-8"))
+        manifest = json.loads(Path(rest[0]).read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as e:
         fail(f"could not read manifest — {e}")
 
@@ -164,7 +177,7 @@ def main(argv: list[str]) -> None:
             "blocks": el["blocks"],
         }
         try:
-            _path, action = write_element_spec(spec)
+            _path, action = write_element_spec(spec, by=by)
         except ValueError as e:
             fail(f"element {el['id']} — {e}")
         written.append((el["id"], action))
