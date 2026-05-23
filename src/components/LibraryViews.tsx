@@ -1,44 +1,136 @@
 "use client";
 
-// Cross-process Library views in the ArchitectMiner shell.
-// Each component renders the <main> column inside HandoffInbox when the user
-// clicks the matching item in the Library sidebar group. All content is
-// mock; the library is a static reference until the architect data model
-// lands. JSX ports from public/architectminer.html frames 12-15.
+// Cross-process Library views in the ArchitectMiner shell. Each view walks
+// every process the architect has access to and aggregates that section's
+// element type into a single bank-wide catalogue. The architect uses these
+// to find existing pieces before declaring something "new" — capabilities
+// reused across 3+ processes are the obvious candidates for promotion to
+// the catalog, applications already KEEP are the obvious targets to host
+// a new capability without inventing one. JSX shape ports from
+// public/architectminer.html frames 12-15. Pattern library stays static
+// until a "pattern" element type is added to the schema.
 
-export function CapabilityCatalog() {
+import { useMemo } from "react";
+import type { ProcessDoc, WikiPage } from "@/lib/wiki";
+
+// Treat unknown fields as strings for downstream comparisons. Returns "" for
+// missing/non-string values, so an undefined meta field doesn't blow up the
+// uppercase comparison.
+function metaStr(meta: Record<string, unknown>, key: string): string {
+  const v = meta[key];
+  return typeof v === "string" ? v : "";
+}
+
+function metaList(meta: Record<string, unknown>, key: string): string[] {
+  const v = meta[key];
+  if (Array.isArray(v)) return v.filter((x) => typeof x === "string");
+  if (typeof v === "string" && v) return [v];
+  return [];
+}
+
+type EnrichedElement = { el: WikiPage; doc: ProcessDoc };
+
+// Cross-process element index — for every element of `section`, return the
+// element plus the process it came from (so the row can show "+ 3 processes"
+// or link back).
+function collect(docs: ProcessDoc[], section: string): EnrichedElement[] {
+  const out: EnrichedElement[] = [];
+  for (const doc of docs) {
+    for (const el of doc.elements) {
+      if (el.section === section) out.push({ el, doc });
+    }
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------
+// Capability catalog
+// ---------------------------------------------------------------------
+export function CapabilityCatalog({ docs }: { docs: ProcessDoc[] }) {
+  const stats = useMemo(() => {
+    const caps = collect(docs, "capabilities");
+    // Same capability title appearing across processes counts as reused.
+    const byTitle: Record<string, EnrichedElement[]> = {};
+    for (const e of caps) {
+      const key = e.el.title.trim().toLowerCase();
+      (byTitle[key] ??= []).push(e);
+    }
+    const critN = caps.filter((e) => metaStr(e.el.meta, "criticality").toUpperCase() === "CRITICAL").length;
+    const highN = caps.filter((e) => metaStr(e.el.meta, "criticality").toUpperCase() === "HIGH").length;
+    const reusedN = Object.values(byTitle).filter((g) => g.length >= 2).length;
+    const processCount = new Set(caps.map((e) => e.doc.slug)).size;
+    return { caps, byTitle, critN, highN, reusedN, processCount };
+  }, [docs]);
+
+  // Apps across all processes — needed to resolve hostedIn → app title.
+  const appsById = useMemo(() => {
+    const m = new Map<string, WikiPage>();
+    for (const doc of docs) {
+      for (const el of doc.elements) {
+        if (el.section === "target-applications") m.set(el.id, el);
+      }
+    }
+    return m;
+  }, [docs]);
+
   return (
     <>
       <div className="am-lib-head">
         <h1>Capability catalog</h1>
         <p className="am-sub">
-          47 capabilities authored across 12 processes · 18 used in 2+ processes ·
+          {stats.caps.length} capabilit{stats.caps.length === 1 ? "y" : "ies"} authored across{" "}
+          {stats.processCount} process{stats.processCount === 1 ? "" : "es"} · {stats.reusedN} used in 2+ processes ·
           check before declaring &ldquo;new&rdquo;
         </p>
       </div>
 
       <div className="am-filters">
-        <button type="button" className="am-chip am-chip-on">All <span className="am-chip-n">47</span></button>
-        <button type="button" className="am-chip">Reused <span className="am-chip-n">18</span></button>
-        <button type="button" className="am-chip">Critical <span className="am-chip-n">12</span></button>
-        <button type="button" className="am-chip">Customer-facing <span className="am-chip-n">9</span></button>
-        <button type="button" className="am-chip">Risk &amp; KYC <span className="am-chip-n">7</span></button>
-        <button type="button" className="am-chip">Payments <span className="am-chip-n">11</span></button>
+        <button type="button" className="am-chip am-chip-on">All <span className="am-chip-n">{stats.caps.length}</span></button>
+        <button type="button" className="am-chip">Reused <span className="am-chip-n">{stats.reusedN}</span></button>
+        <button type="button" className="am-chip">Critical <span className="am-chip-n">{stats.critN}</span></button>
+        <button type="button" className="am-chip">High <span className="am-chip-n">{stats.highN}</span></button>
         <span style={{ flex: 1 }} />
         <input className="am-search" placeholder="Search by name, ID or hosted-in app…" />
       </div>
 
-      <div className="am-cat-grid">
-        <CatalogCard id="CAP-CAT-001" name="Customer identification" reuse={8} reuseClass="hi" critical host="Customer Master" hostTag="KEEP" procs={["Periodic Review", "DDM", "SEPA", "+5 more"]} prov="verified" provText="stable · owned by customer-master team" />
-        <CatalogCard id="CAP-CAT-005" name="KYC refresh" reuse={6} reuseClass="hi" critical host="KYC Engine" hostTag="CONFIGURE" procs={["Account Opening", "EDR", "+4 more"]} prov="verified" provText="stable · group standard" />
-        <CatalogCard id="CAP-CAT-012" name="Case orchestration" reuse={5} reuseClass="hi" high host="Case Hub" hostTag="BUILD" procs={["DDM", "Funds Release", "+3 more"]} prov="machine" provText="proposed for reuse · pending architect council" selected />
-        <CatalogCard id="CAP-CAT-017" name="Document collection" reuse={4} host="Hyland ECM" hostTag="KEEP" procs={["Account Opening", "+3 more"]} prov="verified" provText="stable" />
-        <CatalogCard id="CAP-CAT-023" name="Risk scoring" reuse={4} high host="Risk Score Service" hostTag="BUY" procs={["EDR", "Funds Release", "SEPA"]} prov="verified" provText="vendor-supported" />
-        <CatalogCard id="CAP-CAT-031" name="Audit reporting" reuse={3} host="DWH (Snowflake)" hostTag="KEEP" procs={["DDM", "SEPA"]} prov="verified" provText="regulatory baseline" />
-        <CatalogCard id="CAP-CAT-038" name="Mandate capture & validation" reuse={1} reuseClass="solo" high host="Mandate Hub" hostTag="BUILD" procs={["DDM"]} prov="machine" provText="new · DDM-specific" />
-        <CatalogCard id="CAP-CAT-042" name="Guarantee issuance" reuse={1} reuseClass="solo" high host="Trade Finance Platform" hostTag="KEEP" procs={["Bank Guarantee Issuance"]} prov="verified" provText="trade-specific" />
-        <CatalogCard id="CAP-CAT-044" name="SEPA outbound" reuse={1} reuseClass="solo" critical host="SEPA Gateway" hostTag="KEEP" procs={["SEPA Payment"]} prov="verified" provText="payments-specific" />
-      </div>
+      {stats.caps.length === 0 ? (
+        <div className="am-input-empty" style={{ marginTop: 20 }}>
+          No capabilities authored anywhere yet. Open a process, author a
+          capability under <code>Domain Architecture</code>, and it&rsquo;ll
+          appear here.
+        </div>
+      ) : (
+        <div className="am-cat-grid">
+          {stats.caps.map(({ el, doc }) => {
+            const hostId = metaList(el.meta, "hostedIn")[0];
+            const hostApp = hostId ? appsById.get(hostId) : undefined;
+            const titleKey = el.title.trim().toLowerCase();
+            const reuseN = stats.byTitle[titleKey]?.length ?? 1;
+            const verdict = (hostApp ? metaStr(hostApp.meta, "verdict") : "").toUpperCase();
+            const crit = metaStr(el.meta, "criticality").toUpperCase();
+            return (
+              <CatalogCard
+                key={el.id}
+                id={el.id}
+                name={el.title}
+                reuse={reuseN}
+                reuseClass={reuseN >= 3 ? "hi" : reuseN === 1 ? "solo" : undefined}
+                critical={crit === "CRITICAL"}
+                high={crit === "HIGH"}
+                host={hostApp?.title ?? "—"}
+                hostTag={
+                  verdict === "BUILD" || verdict === "BUY" || verdict === "CONFIGURE" || verdict === "KEEP"
+                    ? (verdict as "BUILD" | "BUY" | "CONFIGURE" | "KEEP")
+                    : undefined
+                }
+                procs={[doc.process.title]}
+                prov={el.status === "confirmed" ? "verified" : "machine"}
+                provText={el.status === "confirmed" ? "approved" : "draft · pending review"}
+              />
+            );
+          })}
+        </div>
+      )}
     </>
   );
 }
@@ -53,7 +145,7 @@ function CatalogCard({
   critical?: boolean;
   high?: boolean;
   host: string;
-  hostTag: "BUILD" | "BUY" | "CONFIGURE" | "KEEP";
+  hostTag?: "BUILD" | "BUY" | "CONFIGURE" | "KEEP";
   procs: string[];
   prov: "verified" | "machine";
   provText: string;
@@ -72,7 +164,8 @@ function CatalogCard({
         {high && <span className="am-pill am-pill-mid">High</span>}
       </div>
       <div className="am-canvas-cap-host">
-        hosted in: <b>{host}</b> <span className={`am-verdict am-verdict-${hostTag.toLowerCase()}`}>{hostTag}</span>
+        hosted in: <b>{host}</b>
+        {hostTag && <span className={`am-verdict am-verdict-${hostTag.toLowerCase()}`} style={{ marginLeft: 6 }}>{hostTag}</span>}
       </div>
       <div className="am-cat-procs">
         {procs.map((p, i) => <span key={i} className="am-cat-pchip">{p}</span>)}
@@ -86,50 +179,91 @@ function CatalogCard({
 
 
 // ---------------------------------------------------------------------
-export function ApplicationRegister() {
+// Application register
+// ---------------------------------------------------------------------
+export function ApplicationRegister({ docs }: { docs: ProcessDoc[] }) {
+  const stats = useMemo(() => {
+    const apps = collect(docs, "target-applications");
+    const verdicts = { BUILD: 0, BUY: 0, CONFIGURE: 0, KEEP: 0 };
+    for (const { el } of apps) {
+      const v = metaStr(el.meta, "verdict").toUpperCase();
+      if (v in verdicts) verdicts[v as keyof typeof verdicts]++;
+    }
+    // For each app, find the capabilities that host in it (across all docs).
+    const capsHostedByApp: Record<string, WikiPage[]> = {};
+    for (const doc of docs) {
+      for (const el of doc.elements) {
+        if (el.section !== "capabilities") continue;
+        for (const hid of metaList(el.meta, "hostedIn")) {
+          (capsHostedByApp[hid] ??= []).push(el);
+        }
+      }
+    }
+    return { apps, verdicts, capsHostedByApp };
+  }, [docs]);
+
   return (
     <>
       <div className="am-lib-head">
         <h1>Application register</h1>
         <p className="am-sub">
-          28 applications across the bank · 19 KEEP / 4 BUILD / 3 BUY / 2 CONFIGURE ·
-          governed by EA council
+          {stats.apps.length} application{stats.apps.length === 1 ? "" : "s"} across the bank · {stats.verdicts.KEEP} KEEP /
+          {" "}{stats.verdicts.BUILD} BUILD / {stats.verdicts.BUY} BUY / {stats.verdicts.CONFIGURE} CONFIGURE
         </p>
       </div>
 
       <div className="am-filters">
-        <button type="button" className="am-chip am-chip-on">All <span className="am-chip-n">28</span></button>
-        <button type="button" className="am-chip">BUILD <span className="am-chip-n">4</span></button>
-        <button type="button" className="am-chip">BUY <span className="am-chip-n">3</span></button>
-        <button type="button" className="am-chip">CONFIGURE <span className="am-chip-n">2</span></button>
-        <button type="button" className="am-chip">KEEP <span className="am-chip-n">19</span></button>
+        <button type="button" className="am-chip am-chip-on">All <span className="am-chip-n">{stats.apps.length}</span></button>
+        <button type="button" className="am-chip">BUILD <span className="am-chip-n">{stats.verdicts.BUILD}</span></button>
+        <button type="button" className="am-chip">BUY <span className="am-chip-n">{stats.verdicts.BUY}</span></button>
+        <button type="button" className="am-chip">CONFIGURE <span className="am-chip-n">{stats.verdicts.CONFIGURE}</span></button>
+        <button type="button" className="am-chip">KEEP <span className="am-chip-n">{stats.verdicts.KEEP}</span></button>
         <span style={{ flex: 1 }} />
         <input className="am-search" placeholder="Search by name, vendor or capability…" />
       </div>
 
-      <table className="am-canvas-app-table" style={{ marginTop: 14 }}>
-        <thead>
-          <tr>
-            <th style={{ width: "22%" }}>Application</th>
-            <th>Verdict</th>
-            <th>Vendor / tech</th>
-            <th>Capabilities hosted</th>
-            <th>Used by</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <RegisterRow selected name="Customer Master" id="APP-REG-001" domain="customer · core data" verdict="keep" tech="Oracle Siebel" techSub="vendor-supported · group-wide" caps={["customer identification", "party data"]} usedBy="+ 8 processes" status="Active" statusTone="hi" />
-          <RegisterRow name="Case Hub" id="APP-REG-014" domain="case & lifecycle" verdict="build" tech="Camunda 8 + Postgres" techSub="self-hosted · eu-frankfurt" caps={["case orchestration", "case lifecycle"]} usedBy={["PR", "DDM", "+3 more"]} status="In flight" statusTone="mid" />
-          <RegisterRow name="KYC Engine" id="APP-REG-007" domain="risk & KYC" verdict="configure" tech="Fenergo" techSub="vendor · 2-week config window" caps={["KYC refresh", "KYC onboarding"]} usedBy="+ 6 processes" status="Active" statusTone="hi" />
-          <RegisterRow name="Risk Score Service" id="APP-REG-021" domain="risk & KYC" verdict="buy" tech="Quantexa" techSub="SaaS · €240k/yr · 8-week onboarding" caps={["risk scoring"]} usedBy="+ 4 processes" status="Onboarding" statusTone="mid" />
-          <RegisterRow name="Hyland ECM" id="APP-REG-009" domain="document store" verdict="keep" tech="OnBase" techSub="existing · keep as-is" caps={["document collection"]} usedBy="+ 4 processes" status="Active" statusTone="hi" />
-          <RegisterRow name="DWH (Snowflake)" id="APP-REG-002" domain="reporting & analytics" verdict="keep" tech="Snowflake" techSub="SaaS · multi-tenant marts" caps={["audit reporting", "regulatory feeds"]} usedBy="+ 12 processes" status="Active" statusTone="hi" />
-          <RegisterRow name="Mandate Hub" id="APP-REG-018" domain="payments · mandates" verdict="build" tech="Camunda 8 + Postgres" techSub="self-hosted · in-flight" caps={["mandate capture", "mandate lifecycle"]} usedBy={["DDM"]} status="In flight" statusTone="mid" />
-          <RegisterRow name="SEPA Gateway" id="APP-REG-024" domain="payments" verdict="keep" tech="in-house · Java 21" techSub="existing · STEP2/T2" caps={["SEPA outbound"]} usedBy={["SEPA Payment"]} status="Active" statusTone="hi" />
-          <RegisterRow name="Keycloak" id="APP-REG-005" domain="identity & access" verdict="keep" tech="Red Hat SSO" techSub="existing · OIDC + SAML" caps={["SSO", "authz"]} usedBy="+ 12 processes" status="Active" statusTone="hi" />
-        </tbody>
-      </table>
+      {stats.apps.length === 0 ? (
+        <div className="am-input-empty" style={{ marginTop: 20 }}>
+          No target applications authored anywhere yet.
+        </div>
+      ) : (
+        <table className="am-canvas-app-table" style={{ marginTop: 14 }}>
+          <thead>
+            <tr>
+              <th style={{ width: "22%" }}>Application</th>
+              <th>Verdict</th>
+              <th>Vendor / tech</th>
+              <th>Capabilities hosted</th>
+              <th>Used by</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {stats.apps.map(({ el, doc }) => {
+              const verdict = metaStr(el.meta, "verdict").toLowerCase() as "build" | "buy" | "configure" | "keep";
+              const validVerdict =
+                verdict === "build" || verdict === "buy" || verdict === "configure" || verdict === "keep"
+                  ? verdict
+                  : "keep";
+              return (
+                <RegisterRow
+                  key={el.id}
+                  name={el.title}
+                  id={el.id}
+                  domain={metaStr(el.meta, "domain") || "—"}
+                  verdict={validVerdict}
+                  tech={metaStr(el.meta, "vendor") || metaStr(el.meta, "tech") || "—"}
+                  techSub={metaStr(el.meta, "owner") || ""}
+                  caps={(stats.capsHostedByApp[el.id] ?? []).map((c) => c.title)}
+                  usedBy={[doc.process.title]}
+                  status={el.status === "confirmed" ? "Approved" : "Draft"}
+                  statusTone={el.status === "confirmed" ? "hi" : "mid"}
+                />
+              );
+            })}
+          </tbody>
+        </table>
+      )}
     </>
   );
 }
@@ -159,11 +293,13 @@ function RegisterRow({
       <td><span className={`am-verdict am-verdict-${verdict}`}>{verdict.toUpperCase()}</span></td>
       <td>
         <div>{tech}</div>
-        <div className="am-canvas-app-stack">{techSub}</div>
+        {techSub && <div className="am-canvas-app-stack">{techSub}</div>}
       </td>
       <td>
         <div className="am-canvas-app-chips">
-          {caps.map((c, i) => <span key={i} className="am-canvas-app-chip">{c}</span>)}
+          {caps.length === 0
+            ? <span className="am-canvas-app-stack">— no hosted capabilities yet</span>
+            : caps.map((c, i) => <span key={i} className="am-canvas-app-chip">{c}</span>)}
         </div>
       </td>
       <td>
@@ -180,51 +316,88 @@ function RegisterRow({
 
 
 // ---------------------------------------------------------------------
-export function NfrTemplates() {
+// NFR templates — grouped by category
+// ---------------------------------------------------------------------
+type NfrCat = "perf" | "avail" | "sec" | "comp" | "scale";
+
+const NFR_CAT_LABEL: Record<NfrCat, string> = {
+  perf: "Performance",
+  avail: "Availability",
+  sec: "Security",
+  comp: "Compliance",
+  scale: "Scalability",
+};
+
+function nfrCategoryToShort(raw: string): NfrCat {
+  const v = raw.toUpperCase();
+  if (v.startsWith("PERF")) return "perf";
+  if (v.startsWith("AVAIL")) return "avail";
+  if (v.startsWith("SEC")) return "sec";
+  if (v.startsWith("COMP")) return "comp";
+  if (v.startsWith("SCAL")) return "scale";
+  return "perf";
+}
+
+export function NfrTemplates({ docs }: { docs: ProcessDoc[] }) {
+  const groups = useMemo(() => {
+    const nfrs = collect(docs, "nfrs");
+    const buckets: Record<NfrCat, EnrichedElement[]> = {
+      perf: [], avail: [], sec: [], comp: [], scale: [],
+    };
+    for (const e of nfrs) {
+      buckets[nfrCategoryToShort(metaStr(e.el.meta, "category"))].push(e);
+    }
+    return { all: nfrs, buckets };
+  }, [docs]);
+
   return (
     <>
       <div className="am-lib-head">
         <h1>NFR templates</h1>
         <p className="am-sub">
-          22 reusable NFR patterns · derive from group standards ·
-          5 perf / 4 avail / 6 sec / 4 comp / 3 scale
+          {groups.all.length} authored NFR{groups.all.length === 1 ? "" : "s"} across the bank ·{" "}
+          {groups.buckets.perf.length} perf / {groups.buckets.avail.length} avail / {groups.buckets.sec.length} sec /
+          {" "}{groups.buckets.comp.length} comp / {groups.buckets.scale.length} scale
         </p>
       </div>
 
       <div className="am-filters">
-        <button type="button" className="am-chip am-chip-on">All <span className="am-chip-n">22</span></button>
-        <button type="button" className="am-chip">Performance <span className="am-chip-n">5</span></button>
-        <button type="button" className="am-chip">Availability <span className="am-chip-n">4</span></button>
-        <button type="button" className="am-chip">Security <span className="am-chip-n">6</span></button>
-        <button type="button" className="am-chip">Compliance <span className="am-chip-n">4</span></button>
-        <button type="button" className="am-chip">Scalability <span className="am-chip-n">3</span></button>
+        <button type="button" className="am-chip am-chip-on">All <span className="am-chip-n">{groups.all.length}</span></button>
+        {(Object.keys(NFR_CAT_LABEL) as NfrCat[]).map((cat) => (
+          <button key={cat} type="button" className="am-chip">
+            {NFR_CAT_LABEL[cat]} <span className="am-chip-n">{groups.buckets[cat].length}</span>
+          </button>
+        ))}
         <span style={{ flex: 1 }} />
         <input className="am-search" placeholder="Search templates…" />
       </div>
 
-      <NfrTmplGroup title="Performance" count={5}>
-        <NfrTmplCard id="TPL-NFR-001" cat="perf" name="Customer-facing API latency" target="p95 < 1.2s · p99 < 2.5s" satisfies={["CP-LAT-001", "CP-LAT-002"]} reuse={8} />
-        <NfrTmplCard selected id="TPL-NFR-002" cat="perf" name="Bulk batch throughput" target="≥ 1k records / min" satisfies={["CP-BATCH-002"]} reuse={11} reuseClass="hi" />
-        <NfrTmplCard id="TPL-NFR-003" cat="perf" name="Internal API latency" target="p95 < 800ms" satisfies={["CP-LAT-001"]} reuse={4} />
-        <NfrTmplCard id="TPL-NFR-004" cat="perf" name="Cold-start budget" target="< 5s on container boot" satisfies={["CP-PERF-007"]} reuse={2} reuseClass="solo" />
-      </NfrTmplGroup>
-
-      <NfrTmplGroup title="Availability" count={4}>
-        <NfrTmplCard id="TPL-NFR-006" cat="avail" name="Critical-system RTO" target="RTO ≤ 4h" satisfies={["CP-BCP-001", "DORA art. 12"]} reuse={14} reuseClass="hi" />
-        <NfrTmplCard id="TPL-NFR-007" cat="avail" name="Critical-system RPO" target="RPO ≤ 15 min" satisfies={["CP-BCP-001"]} reuse={12} reuseClass="hi" />
-        <NfrTmplCard id="TPL-NFR-008" cat="avail" name="SLA target" target="99.9% · monthly" satisfies={["CP-SLA-001"]} reuse={6} />
-      </NfrTmplGroup>
-
-      <NfrTmplGroup title="Security" count={6}>
-        <NfrTmplCard id="TPL-NFR-011" cat="sec" name="Encryption in transit" target="TLS 1.3 · mTLS" satisfies={["CP-SEC-001", "DORA art. 9"]} reuse={18} reuseClass="hi" />
-        <NfrTmplCard id="TPL-NFR-012" cat="sec" name="Encryption at rest" target="AES-256 · KMS-rotated" satisfies={["CP-SEC-002"]} reuse={16} reuseClass="hi" />
-        <NfrTmplCard id="TPL-NFR-013" cat="sec" name="Segregation of duties" target="reviewer ≠ approver" satisfies={["CP-SoD-001", "CP-SoD-002"]} reuse={9} />
-      </NfrTmplGroup>
-
-      <NfrTmplGroup title="Compliance" count={4}>
-        <NfrTmplCard id="TPL-NFR-017" cat="comp" name="Audit-log retention" target="10 years · immutable" satisfies={["PSD2 §95", "MaRisk"]} reuse={13} reuseClass="hi" />
-        <NfrTmplCard id="TPL-NFR-018" cat="comp" name="PII data residency" target="EU-only" satisfies={["GDPR", "BAFIN MaRisk"]} reuse={11} reuseClass="hi" />
-      </NfrTmplGroup>
+      {groups.all.length === 0 ? (
+        <div className="am-input-empty" style={{ marginTop: 20 }}>
+          No NFRs authored yet anywhere. NFRs you author on individual processes
+          will collect into this catalogue.
+        </div>
+      ) : (
+        (Object.keys(NFR_CAT_LABEL) as NfrCat[]).map((cat) => {
+          const items = groups.buckets[cat];
+          if (items.length === 0) return null;
+          return (
+            <NfrTmplGroup key={cat} title={NFR_CAT_LABEL[cat]} count={items.length}>
+              {items.map(({ el, doc }) => (
+                <NfrTmplCard
+                  key={el.id}
+                  id={el.id}
+                  cat={cat}
+                  name={el.title}
+                  target={metaStr(el.meta, "target") || "—"}
+                  satisfies={metaList(el.meta, "satisfies")}
+                  process={doc.process.title}
+                />
+              ))}
+            </NfrTmplGroup>
+          );
+        })
+      )}
     </>
   );
 }
@@ -234,7 +407,7 @@ function NfrTmplGroup({ title, count, children }: { title: string; count: number
     <div className="am-nfr-tmpl-group">
       <div className="am-nfr-tmpl-head">
         <h3>{title}</h3>
-        <span className="am-nfr-tmpl-count">{count} templates</span>
+        <span className="am-nfr-tmpl-count">{count} authored</span>
       </div>
       <div className="am-nfr-tmpl-cards">{children}</div>
     </div>
@@ -242,37 +415,39 @@ function NfrTmplGroup({ title, count, children }: { title: string; count: number
 }
 
 function NfrTmplCard({
-  selected, id, cat, name, target, satisfies, reuse, reuseClass,
+  id, cat, name, target, satisfies, process,
 }: {
-  selected?: boolean;
   id: string;
-  cat: "perf" | "avail" | "sec" | "comp" | "scale";
+  cat: NfrCat;
   name: string;
   target: string;
   satisfies: string[];
-  reuse: number;
-  reuseClass?: "hi" | "solo";
+  process: string;
 }) {
   return (
-    <div className={`am-nfr-tmpl-card${selected ? " am-nfr-tmpl-card-sel" : ""}`}>
+    <div className="am-nfr-tmpl-card">
       <div className="am-nfr-tmpl-head-row">
         <span className="am-nfr-tmpl-id">{id}</span>
         <span className={`am-nfr-cat am-nfr-cat-${cat}`}>{cat.toUpperCase()}</span>
-        <span className={`am-reuse-pill${reuseClass ? ` am-reuse-pill-${reuseClass}` : ""}`} style={{ marginLeft: "auto" }}>
-          {reuseClass === "hi" ? "★ " : ""}used in {reuse}
-        </span>
+        <span className="am-reuse-pill" style={{ marginLeft: "auto" }}>{process}</span>
       </div>
       <div className="am-nfr-tmpl-name">{name}</div>
       <div className="am-nfr-tmpl-target">{target}</div>
-      <div className="am-nfr-tmpl-traces">
-        <span className="am-nfr-tmpl-traces-lbl">satisfies</span>
-        {satisfies.map((s, i) => <span key={i}>{s}</span>)}
-      </div>
+      {satisfies.length > 0 && (
+        <div className="am-nfr-tmpl-traces">
+          <span className="am-nfr-tmpl-traces-lbl">satisfies</span>
+          {satisfies.map((s, i) => <span key={i}>{s}</span>)}
+        </div>
+      )}
     </div>
   );
 }
 
 
+// ---------------------------------------------------------------------
+// Pattern library — stays static for now (no `pattern` element type yet).
+// TODO: when a `pattern` type is added to schema/process-schema.json,
+// switch this to aggregate from doc.elements like the views above.
 // ---------------------------------------------------------------------
 export function PatternLibrary() {
   return (
@@ -418,7 +593,7 @@ function PatternCard({
         <div className="am-pattern-list-lbl">When not</div>
         <ul>{cons.map((c, i) => <li key={i}>{c}</li>)}</ul>
       </div>
-      <div className="am-pattern-foot">Used by: {usedBy}</div>
+      <div className="am-pattern-used">{usedBy}</div>
     </div>
   );
 }
