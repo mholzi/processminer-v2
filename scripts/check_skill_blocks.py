@@ -31,6 +31,8 @@ SPECIALISTS = [
     "innovation-analyst",
     "transformation-agent",
     "it-architect",
+    "domain-architect",
+    "solution-architect",
 ]
 
 # (marker name, skills that must carry a byte-identical copy)

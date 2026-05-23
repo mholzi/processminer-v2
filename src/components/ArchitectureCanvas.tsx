@@ -261,16 +261,29 @@ export default function ArchitectureCanvas({
     );
   };
 
-  // "Elicit with X architect" header buttons run the matching specialist
-  // skill — capability + target-application + ADR routes use the IT
-  // Architect; integration / component / NFR / migration use the same.
-  const elicitWith = (specialist: "it-architect", forSection: string) => {
+  // "Elicit with X architect" header buttons run the matching architect-
+  // side specialist skill. Domain Architect owns the upstream layer
+  // (capabilities + target-applications + ADRs); Solution Architect owns
+  // the technical layer (integrations + components + NFRs + migration
+  // phases). The canvas button text already reflects this split.
+  const SECTION_TO_SPECIALIST: Record<string, "domain-architect" | "solution-architect"> = {
+    "capabilities": "domain-architect",
+    "target-applications": "domain-architect",
+    "architecture-decisions": "domain-architect",
+    "target-integrations": "solution-architect",
+    "components": "solution-architect",
+    "nfrs": "solution-architect",
+    "migration-phases": "solution-architect",
+  };
+  const elicitWith = (forSection: string) => {
     if (chatPending) return;
+    const specialist = SECTION_TO_SPECIALIST[forSection] ?? "domain-architect";
+    const role = specialist === "domain-architect" ? "domain" : "solution";
     handleSend(
       `Run the ${specialist} skill on the "${forSection}" section of the process with slug "${doc.slug}" — work with the architect to develop this section interactively.`,
       {
         skill: specialist,
-        displayText: `Elicit ${forSection.replace(/-/g, " ")} with the architect.`,
+        displayText: `Elicit ${forSection.replace(/-/g, " ")} with the ${role} architect.`,
       },
     );
   };
@@ -496,7 +509,7 @@ export default function ArchitectureCanvas({
                 <button
                   type="button"
                   className="am-canvas-btn am-canvas-btn-primary"
-                  onClick={() => elicitWith("it-architect", "architecture-decisions")}
+                  onClick={() => elicitWith("architecture-decisions")}
                   disabled={chatPending}
                 >
                   ／ Elicit with domain architect
@@ -1149,7 +1162,7 @@ export default function ArchitectureCanvas({
                 <button
                   type="button"
                   className="am-canvas-btn am-canvas-btn-primary"
-                  onClick={() => elicitWith("it-architect", "capabilities")}
+                  onClick={() => elicitWith("capabilities")}
                   disabled={chatPending}
                 >
                   ／ Elicit with domain architect
@@ -1337,7 +1350,7 @@ export default function ArchitectureCanvas({
                 <button
                   type="button"
                   className="am-canvas-btn am-canvas-btn-primary"
-                  onClick={() => elicitWith("it-architect", "target-applications")}
+                  onClick={() => elicitWith("target-applications")}
                   disabled={chatPending}
                 >
                   ／ Elicit with domain architect
@@ -1520,7 +1533,7 @@ export default function ArchitectureCanvas({
                 <button
                   type="button"
                   className="am-canvas-btn am-canvas-btn-primary"
-                  onClick={() => elicitWith("it-architect", "target-integrations")}
+                  onClick={() => elicitWith("target-integrations")}
                   disabled={chatPending}
                 >
                   ／ Elicit with solution architect
@@ -1606,7 +1619,7 @@ export default function ArchitectureCanvas({
                 <button
                   type="button"
                   className="am-canvas-btn am-canvas-btn-primary"
-                  onClick={() => elicitWith("it-architect", "components")}
+                  onClick={() => elicitWith("components")}
                   disabled={chatPending}
                 >
                   ／ Elicit with solution architect
@@ -1698,7 +1711,7 @@ export default function ArchitectureCanvas({
                 <button
                   type="button"
                   className="am-canvas-btn am-canvas-btn-primary"
-                  onClick={() => elicitWith("it-architect", "nfrs")}
+                  onClick={() => elicitWith("nfrs")}
                   disabled={chatPending}
                 >
                   ／ Elicit with solution architect
@@ -1790,7 +1803,7 @@ export default function ArchitectureCanvas({
                 <button
                   type="button"
                   className="am-canvas-btn am-canvas-btn-primary"
-                  onClick={() => elicitWith("it-architect", "migration-phases")}
+                  onClick={() => elicitWith("migration-phases")}
                   disabled={chatPending}
                 >
                   ／ Elicit with solution architect

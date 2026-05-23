@@ -75,6 +75,8 @@ export const SKILL_LABEL: Record<string, string> = {
   "control-compliance-specialist": "Control & Compliance Specialist",
   "client-journey-specialist": "Client Journey Specialist",
   "it-architect": "IT Architect",
+  "domain-architect": "Domain Architect",
+  "solution-architect": "Solution Architect",
   "innovation-analyst": "Innovation Analyst",
   "transformation-agent": "Transformation Agent",
   "run-lint": "Quality Check",

@@ -64,7 +64,9 @@ These skills are built; the Wiki Assistant is planned.
 | **client-journey-specialist** | specialist | client experience (§4) |
 | **innovation-analyst** | specialist | forward-looking — refine sourced trends/ideas, weigh risk (§4) |
 | **transformation-agent** | specialist | the Target Process — target state, transformation decisions, gaps (§4) |
-| **it-architect** | specialist | systems landscape (§4) |
+| **it-architect** | specialist | systems landscape — the SME's as-is IT estate (§4) |
+| **domain-architect** | specialist | target architecture: capabilities, target applications, ADRs (§4) |
+| **solution-architect** | specialist | target architecture: integrations, components, NFRs, migration phases (§4) |
 | **new-process** | automated | scaffold a process folder + section folders + blank `index.md` |
 | **document-ingest** | automated | extract an uploaded document into draft elements; verifies each draft against the source (§5) |
 | **source-innovation** | automated | non-interactive web research → draft `market-trend`, competitor-move and `innovation-idea` elements |
@@ -93,7 +95,9 @@ question bank, the functional pattern (§5), and the slice of the schema it owns
 | **Client Journey Specialist** | the customer's experience — effort, emotion, friction | cx-channel, cx-touchpoint, moment, friction-point, competitor-cx-\*, cx-benchmark |
 | **Innovation Analyst** | forward-looking — refine the sourced trends/competitors/ideas, weigh risk | market-trend, competitor-eu/-global/-fintech, innovation-idea, innovation-risk |
 | **Transformation Agent** | the forward synthesis — turn the documented perspectives into a target state, the decisions to reach it and the gaps to close | target-state, transformation-decision, gap |
-| **IT Architect** | the systems landscape | system, integration |
+| **IT Architect** | the SME's as-is systems landscape | system, integration |
+| **Domain Architect** | target architecture — business capabilities, the target apps that host them, the decisions that shaped them | capability, target-application, adr |
+| **Solution Architect** | target architecture — integrations between apps, components inside them, NFRs, migration phases | target-integration, component, nfr, migration-phase |
 
 Mapped to the six schema areas:
 
