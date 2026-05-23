@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { ProcessDoc } from "@/lib/wiki";
 import type { User } from "@/lib/user";
 import Tooltip from "./Tooltip";
+import UserMenu from "./UserMenu";
 import RelativeTime from "./RelativeTime";
 import {
   CapabilityCatalog,
@@ -123,11 +124,17 @@ function statusPill(s: HandoffStatus) {
 export default function HandoffInbox({
   docs,
   user,
+  onUserUpdated,
+  onEnterAdmin,
+  onSignOut,
   onReturnToSplash,
   onOpenProcess,
 }: {
   docs: ProcessDoc[];
   user: User;
+  onUserUpdated: (u: User) => void;
+  onEnterAdmin?: () => void;
+  onSignOut: () => void;
   onReturnToSplash: () => void;
   onOpenProcess: (slug: string) => void;
 }) {
@@ -171,14 +178,6 @@ export default function HandoffInbox({
     return c;
   }, [rows]);
 
-  const initials = user.name
-    .split(/\s+/)
-    .map((n) => n[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-
   return (
     <div className="am">
       <header className="topbar am-topbar">
@@ -202,9 +201,12 @@ export default function HandoffInbox({
         <span className="am-user">
           <b>{user.name}</b> · {user.role}
         </span>
-        <div className="am-avatar" aria-hidden>
-          {initials || "·"}
-        </div>
+        <UserMenu
+          user={user}
+          onUserUpdated={onUserUpdated}
+          onEnterAdmin={onEnterAdmin}
+          onSignOut={onSignOut}
+        />
       </header>
 
       <div className="am-shell">

@@ -7,6 +7,7 @@ import {
   touchLastLogin,
   verifyPassword,
 } from "@/lib/auth-server";
+import { ownedSlugs } from "@/lib/process-access";
 
 // POST /api/auth/login { username, password } → sets the session cookie
 // and returns the redacted user object. Verifies the password with bcrypt;
@@ -45,7 +46,9 @@ export async function POST(req: NextRequest) {
     }
     touchLastLogin(user.username);
     const cookie = signSession(user.username);
-    const res = NextResponse.json({ user: redact(user) });
+    const res = NextResponse.json({
+      user: { ...redact(user), ownsAnyProcess: ownedSlugs(user).length > 0 },
+    });
     res.cookies.set(COOKIE_NAME, cookie, {
       httpOnly: true,
       sameSite: "lax",

@@ -1,5 +1,6 @@
 // Server-side authentication: user store, password hashing, signed session
 // cookies, bootstrap admin. Never import this from a client component.
+// (HMR touch: cache reload)
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -39,9 +40,13 @@ export function redact(u: StoredUser): SafeUser {
   return rest;
 }
 
-// ----- file-backed store, with bootstrap + memoisation -------------------
+// ----- file-backed store, with bootstrap ---------------------------------
+// No in-memory cache: Next.js dev mode loads modules in multiple contexts
+// (server components vs route handlers), and a per-module cache silently
+// drifts between them. Reads are cheap (a small JSON parse) and writes
+// are rare. If real throughput becomes an issue, swap to mtime-based
+// invalidation rather than per-process state.
 
-let cache: StoredUser[] | null = null;
 let bootstrapped = false;
 
 function ensureDir() {
@@ -66,24 +71,21 @@ function loadFromDisk(): StoredUser[] {
 function saveToDisk(users: StoredUser[]): void {
   ensureDir();
   writeFileSync(USERS_PATH, JSON.stringify(users, null, 2) + "\n", "utf8");
-  cache = users;
 }
 
-/** Read all users. Cached in module scope between requests. */
+/** Read all users, fresh from disk every call. */
 export function getUsers(): StoredUser[] {
-  if (cache === null) {
-    cache = loadFromDisk();
-    maybeBootstrap();
-  }
-  return cache;
+  const users = loadFromDisk();
+  maybeBootstrap(users);
+  return users.length === 0 ? loadFromDisk() : users;
 }
 
 /** If the users file is empty AND env provides bootstrap credentials,
  *  seed the first admin. Idempotent — only runs once per process. */
-function maybeBootstrap(): void {
+function maybeBootstrap(currentUsers: StoredUser[]): void {
   if (bootstrapped) return;
   bootstrapped = true;
-  if (cache && cache.length > 0) return;
+  if (currentUsers.length > 0) return;
   const username = process.env.PM_BOOTSTRAP_ADMIN_USER?.trim();
   const password = process.env.PM_BOOTSTRAP_ADMIN_PASS?.trim();
   if (!username || !password) return;

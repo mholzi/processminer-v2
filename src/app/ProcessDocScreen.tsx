@@ -14,6 +14,8 @@ import remarkGfm from "remark-gfm";
 import type { Schema, ProcessDoc, WikiPage } from "@/lib/wiki";
 import { isSourcedType } from "@/lib/element-types";
 import { initials, type User } from "@/lib/user";
+import UserMenu from "@/components/UserMenu";
+import ContributorsView from "@/components/ContributorsView";
 import { buildRelations, type LinkGroup } from "@/lib/relations";
 import { sectionForId } from "@/lib/nav";
 import { isOpen, type LintFinding } from "@/lib/lint";
@@ -415,6 +417,7 @@ export default function ProcessDocScreen({
   feedback,
   user,
   onUpdateUser,
+  onEnterAdmin,
   onSignOut,
   initialSlug,
   onReturnToSplash,
@@ -424,6 +427,7 @@ export default function ProcessDocScreen({
   feedback: FeedbackItem[];
   user: User;
   onUpdateUser: (user: User) => void;
+  onEnterAdmin?: () => void;
   onSignOut: () => void;
   initialSlug?: string;
   onReturnToSplash?: () => void;
@@ -733,9 +737,9 @@ export default function ProcessDocScreen({
   // the document-ingest skill on the saved file.
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   // Signed-in-user popover — the topbar person icon opens it. The name/role
-  // fields are editable; `userEdit` holds the draft while the modal is open.
-  const [userModalOpen, setUserModalOpen] = useState(false);
-  const [userEdit, setUserEdit] = useState<User>(user);
+  // Legacy local user-modal state was removed in favor of the UserMenu
+  // popover (see src/components/UserMenu.tsx). Profile + password edits now
+  // hit /api/auth/profile + /api/auth/password directly.
 
   // A non-interactive web-sourcing run (source-innovation / source-cx /
   // source-regulation). It runs outside the chat — a section banner shows
@@ -1878,18 +1882,12 @@ export default function ProcessDocScreen({
               <IconHelp />
             </button>
           </Tooltip>
-          <Tooltip label={`${user.name} · ${user.role}`}>
-            <button
-              className="tb-icon"
-              onClick={() => {
-                setUserEdit(user);
-                setUserModalOpen(true);
-              }}
-              aria-label="Signed-in user"
-            >
-              <IconUser />
-            </button>
-          </Tooltip>
+          <UserMenu
+            user={user}
+            onUserUpdated={onUpdateUser}
+            onEnterAdmin={user.isAdmin ? onEnterAdmin : undefined}
+            onSignOut={onSignOut}
+          />
         </div>
       </header>
 
@@ -2142,6 +2140,25 @@ export default function ProcessDocScreen({
                 );
                 })}
               </div>
+              <button
+                type="button"
+                className={`contrib-trigger${
+                  section === "__contributors" ? " active" : ""
+                }`}
+                onClick={() => setSection("__contributors")}
+                title="See everyone who has touched this process"
+              >
+                <span className="contrib-trigger-ico" aria-hidden>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                    <circle cx="9" cy="8" r="3.4" />
+                    <circle cx="17" cy="9" r="2.6" />
+                    <path d="M3 19a6 6 0 0 1 12 0" />
+                    <path d="M14 18a5 5 0 0 1 7 1" />
+                  </svg>
+                </span>
+                <span className="contrib-trigger-label">Contributors</span>
+                <span className="contrib-trigger-chevron">›</span>
+              </button>
               <SourcesPanel
                 sources={doc.sources}
                 ingest={doc.ingest}
@@ -2355,6 +2372,11 @@ export default function ProcessDocScreen({
                 </>
               );
             })()
+          ) : section === "__contributors" ? (
+            <ContributorsView
+              slug={currentSlug}
+              processTitle={doc.process.title}
+            />
           ) : section.startsWith("__doc:") ? (
             (() => {
               const file = section.slice("__doc:".length);
@@ -2911,131 +2933,6 @@ export default function ProcessDocScreen({
         onClose={() => setUploadModalOpen(false)}
         onUploaded={onUploaded}
       />
-
-      {userModalOpen && (
-        <div
-          className="modal-overlay"
-          onClick={() => setUserModalOpen(false)}
-        >
-          <div
-            className="modal"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-label="Signed-in user"
-          >
-            <div className="modal-title">Signed-in user</div>
-            <div className="user-card">
-              <span className="user-avatar">
-                {initials(userEdit.name.trim() || user.name)}
-              </span>
-              <div>
-                <div className="user-name">{user.name}</div>
-                <div className="user-role">{user.role}</div>
-              </div>
-            </div>
-            <p className="modal-text">
-              Approvals and edits in this process are stamped with this name.
-              Change it below, or sign out to switch user.
-            </p>
-            <label className="login-field">
-              <span>Name</span>
-              <input
-                value={userEdit.name}
-                onChange={(e) =>
-                  setUserEdit((u) => ({ ...u, name: e.target.value }))
-                }
-              />
-            </label>
-            <label className="login-field">
-              <span>Role</span>
-              <input
-                value={userEdit.role}
-                onChange={(e) =>
-                  setUserEdit((u) => ({ ...u, role: e.target.value }))
-                }
-              />
-            </label>
-            <label className="pref-field">
-              <input
-                type="checkbox"
-                checked={userEdit.streamReplies === true}
-                onChange={(e) =>
-                  setUserEdit((u) => ({
-                    ...u,
-                    streamReplies: e.target.checked,
-                  }))
-                }
-              />
-              <span>
-                Stream replies as they are written
-                <small>
-                  Show the assistant&apos;s answer word by word, instead of
-                  all at once when the turn finishes.
-                </small>
-              </span>
-            </label>
-            <label className="pref-field">
-              <input
-                type="checkbox"
-                checked={dark}
-                onChange={toggleTheme}
-              />
-              <span>
-                <span className="pref-field-row">
-                  Dark mode
-                  <span className="pref-field-ico" aria-hidden>
-                    {dark ? <IconSun /> : <IconMoon />}
-                  </span>
-                </span>
-                <small>
-                  Switch to a darker palette. Applies immediately; no need to
-                  save.
-                </small>
-              </span>
-            </label>
-            <div className="modal-actions">
-              <button
-                className="act act-signout"
-                onClick={() => {
-                  setUserModalOpen(false);
-                  onSignOut();
-                }}
-              >
-                Sign out
-              </button>
-              <span className="modal-actions-gap" />
-              <button
-                className="act"
-                onClick={() => setUserModalOpen(false)}
-              >
-                Close
-              </button>
-              <button
-                className="act ai"
-                disabled={
-                  !userEdit.name.trim() ||
-                  !userEdit.role.trim() ||
-                  (userEdit.name.trim() === user.name &&
-                    userEdit.role.trim() === user.role &&
-                    (userEdit.streamReplies === true) ===
-                      (user.streamReplies === true))
-                }
-                onClick={() => {
-                  onUpdateUser({
-                    ...user,
-                    name: userEdit.name.trim(),
-                    role: userEdit.role.trim(),
-                    streamReplies: userEdit.streamReplies === true,
-                  });
-                  setUserModalOpen(false);
-                }}
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {sourceResultOpen && sourcing?.report && (
         <div

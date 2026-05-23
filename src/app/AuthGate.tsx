@@ -4,6 +4,13 @@ import { useEffect, useState } from "react";
 import type { Schema, ProcessDoc } from "@/lib/wiki";
 import type { FeedbackItem } from "@/lib/feedback";
 import type { User } from "@/lib/user";
+
+// Centralised gate for the admin route entry point: admins always, plus
+// any non-admin user who owns at least one process (so they can manage
+// grantees on the same screen).
+function canManageAccess(u: User): boolean {
+  return u.isAdmin === true || u.ownsAnyProcess === true;
+}
 import LoginGate from "@/components/LoginGate";
 import WelcomeScreen from "@/components/WelcomeScreen";
 import AdminScreen from "@/components/AdminScreen";
@@ -94,7 +101,8 @@ export default function AuthGate({
         user={user}
         onEnterProcessminer={enterProcessminer}
         onEnterArchitectminer={enterArchitectminer}
-        onEnterAdmin={user.isAdmin ? enterAdmin : undefined}
+        onEnterAdmin={canManageAccess(user) ? enterAdmin : undefined}
+        onUserUpdated={setUser}
         onSignOut={handleSignOut}
       />
     );
@@ -114,6 +122,9 @@ export default function AuthGate({
         <ArchitectureCanvas
           doc={openDoc}
           user={user}
+          onUserUpdated={setUser}
+          onEnterAdmin={canManageAccess(user) ? enterAdmin : undefined}
+          onSignOut={handleSignOut}
           onReturnToInbox={() => setArchitectSlug(undefined)}
         />
       );
@@ -122,6 +133,9 @@ export default function AuthGate({
       <HandoffInbox
         docs={docs}
         user={user}
+        onUserUpdated={setUser}
+        onEnterAdmin={canManageAccess(user) ? enterAdmin : undefined}
+        onSignOut={handleSignOut}
         onReturnToSplash={() => setWorkspace("splash")}
         onOpenProcess={(slug) => setArchitectSlug(slug)}
       />
@@ -134,6 +148,7 @@ export default function AuthGate({
       feedback={feedback}
       user={user}
       onUpdateUser={setUser}
+      onEnterAdmin={canManageAccess(user) ? enterAdmin : undefined}
       onSignOut={handleSignOut}
       initialSlug={initialSlug}
       onReturnToSplash={() => setWorkspace("splash")}

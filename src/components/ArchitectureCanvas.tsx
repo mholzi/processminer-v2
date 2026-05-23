@@ -6,6 +6,7 @@ import type { User } from "@/lib/user";
 import Tooltip from "./Tooltip";
 import Markdown from "./Markdown";
 import AgentChat from "./AgentChat";
+import UserMenu from "./UserMenu";
 
 // Frame-03 of the ArchitectMiner mockup, stubbed with mock ADR/capability
 // content. Inputs from Processminer (left nav, top group) use REAL counts
@@ -42,10 +43,16 @@ type ArchView =
 export default function ArchitectureCanvas({
   doc,
   user,
+  onUserUpdated,
+  onEnterAdmin,
+  onSignOut,
   onReturnToInbox,
 }: {
   doc: ProcessDoc;
   user: User;
+  onUserUpdated: (u: User) => void;
+  onEnterAdmin?: () => void;
+  onSignOut: () => void;
   onReturnToInbox: () => void;
 }) {
   const [view, setView] = useState<ArchView>("adrs");
@@ -251,9 +258,12 @@ export default function ArchitectureCanvas({
         <span className="am-user">
           <b>{user.name}</b> · {user.role}
         </span>
-        <div className="am-avatar" aria-hidden>
-          {initials || "·"}
-        </div>
+        <UserMenu
+          user={user}
+          onUserUpdated={onUserUpdated}
+          onEnterAdmin={onEnterAdmin}
+          onSignOut={onSignOut}
+        />
       </header>
 
       <div className="am-canvas-shell">
@@ -355,156 +365,104 @@ export default function ArchitectureCanvas({
 
         {view === "adrs" && (
           <>
-        <main className="am-canvas-doc am-canvas-doc-wide">
-          <div className="am-canvas-sechead">
-            <h2>Architecture Decisions</h2>
-            <span className="am-canvas-secmeta">
-              12 elements · 2 accepted · 2 proposed · 1 draft
-            </span>
-            <span style={{ flex: 1 }} />
-            <button type="button" className="am-canvas-btn">＋ Add ADR</button>
-            <button type="button" className="am-canvas-btn am-canvas-btn-primary">
-              ／ Elicit with domain architect
-            </button>
-          </div>
+            <main className="am-canvas-doc am-canvas-doc-wide">
+              <div className="am-canvas-sechead">
+                <h2>Architecture Decisions</h2>
+                <span className="am-canvas-secmeta">
+                  {archData.adrsReal.length} element{archData.adrsReal.length === 1 ? "" : "s"} ·{" "}
+                  {archData.adrAccepted} accepted · {archData.adrProposed} proposed ·{" "}
+                  {archData.adrDraft} draft
+                </span>
+                <span style={{ flex: 1 }} />
+                <button type="button" className="am-canvas-btn">＋ Add ADR</button>
+                <button type="button" className="am-canvas-btn am-canvas-btn-primary">
+                  ／ Elicit with domain architect
+                </button>
+              </div>
 
-          <div className="am-canvas-elemlist">
-            {adrs.map((adr) => {
-              const tone =
-                adr.status === "Accepted" ? "hi" : adr.status === "Proposed" ? "mid" : "neu";
-              return (
-                <div
-                  key={adr.id}
-                  className={`am-canvas-elem${adr.open ? " am-canvas-elem-open" : ""}`}
-                >
-                  <span className="am-canvas-elem-id">{adr.id}</span>
-                  <span className="am-canvas-elem-title">{adr.title}</span>
-                  <span className={`am-pill am-pill-${tone}`}>{adr.status}</span>
-                  <span className="am-pill am-pill-neu">→ {adr.trace}</span>
+              {archData.adrsReal.length === 0 ? (
+                <div className="am-input-empty">
+                  No architecture decisions authored yet for <b>{doc.process.title}</b>.
+                  Author element files under{" "}
+                  <code>wiki/processes/{doc.slug}/architecture-decisions/</code>.
                 </div>
-              );
-            })}
-          </div>
+              ) : (
+                <>
+                  <div className="am-canvas-elemlist">
+                    {archData.adrsReal.map((adr, i) => {
+                      const stat = ((adr.meta.adrStatus as string) ?? "").toUpperCase();
+                      const tone =
+                        stat === "ACCEPTED" ? "hi" :
+                        stat === "PROPOSED" ? "mid" :
+                        stat === "REJECTED" || stat === "SUPERSEDED" ? "neu" : "neu";
+                      const drives = Array.isArray(adr.meta.decision)
+                        ? adr.meta.decision[0]
+                        : (adr.meta.decision as string | undefined);
+                      return (
+                        <div
+                          key={adr.id}
+                          className={`am-canvas-elem${i === 0 ? " am-canvas-elem-open" : ""}`}
+                        >
+                          <span className="am-canvas-elem-id">{adr.id}</span>
+                          <span className="am-canvas-elem-title">{adr.title}</span>
+                          <span className={`am-pill am-pill-${tone}`}>{stat || "DRAFT"}</span>
+                          {drives && (
+                            <span className="am-pill am-pill-neu">→ {drives}</span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
 
-          <article className="am-canvas-adr">
-            <header className="am-canvas-adr-head">
-              <span className="am-canvas-elem-id">{openAdr.id}</span>
-              <h3>{openAdr.title}</h3>
-              <span className="am-pill am-pill-mid">
-                <span className="am-dot" />
-                {openAdr.status}
-              </span>
-            </header>
-            <div className="am-canvas-adr-meta">
-              <span><b>Domain</b> Case Management</span>
-              <span><b>Owner</b> {user.name} · Domain Architect</span>
-              <span><b>Updated</b> today</span>
-              <span><b>Reviewers</b> 2/3</span>
-            </div>
+                  {(() => {
+                    const openReal = archData.adrsReal[0];
+                    const stat = ((openReal.meta.adrStatus as string) ?? "DRAFT").toUpperCase();
+                    const tone = stat === "ACCEPTED" ? "hi" : stat === "PROPOSED" ? "mid" : "neu";
+                    return (
+                      <article className="am-canvas-adr">
+                        <header className="am-canvas-adr-head">
+                          <span className="am-canvas-elem-id">{openReal.id}</span>
+                          <h3>{openReal.title}</h3>
+                          <span className={`am-pill am-pill-${tone}`}>
+                            <span className="am-dot" />
+                            {stat}
+                          </span>
+                        </header>
+                        <div className="am-canvas-adr-meta">
+                          {openReal.meta.domain && (
+                            <span><b>Domain</b> {openReal.meta.domain as string}</span>
+                          )}
+                          {openReal.meta.owner && (
+                            <span><b>Owner</b> {openReal.meta.owner as string}</span>
+                          )}
+                          <span><b>Status</b> {openReal.status}</span>
+                        </div>
 
-            <div className="am-canvas-heading">
-              <h4>Context</h4>
-              <span className="am-canvas-src">
-                <span className="am-canvas-verified">✓ human-confirmed</span> · traced to{" "}
-                <b>{openAdr.trace}</b>
-              </span>
-            </div>
-            <p className="am-canvas-prose">
-              {doc.process.title} cases today live in mailboxes and shared
-              spreadsheets. The Target Process requires a single, stateful case
-              object whose lifecycle is observable end-to-end and whose SLAs
-              can be enforced by the orchestrator rather than by reviewers.
-              The orchestrator must run BPMN authored by the business and
-              integrate with the existing IAM, DMS and DWH.
-            </p>
+                        {openReal.blocks.map((b) => (
+                          <div key={b.heading}>
+                            <div className="am-canvas-heading">
+                              <h4>{b.heading}</h4>
+                            </div>
+                            <div className="am-canvas-prose">
+                              <Markdown text={b.text} />
+                            </div>
+                          </div>
+                        ))}
+                      </article>
+                    );
+                  })()}
+                </>
+              )}
 
-            <div className="am-canvas-heading">
-              <h4>Decision</h4>
-              <span className="am-canvas-src">
-                <span className="am-canvas-verified">✓ human-confirmed</span>
-              </span>
-            </div>
-            <p className="am-canvas-prose">
-              Adopt Camunda 8 (Zeebe + Operate + Tasklist) as the case-orchestration
-              engine. Deploy the SaaS region (eu-frankfurt) for the corporate-clients
-              tenant. Workflows are authored as BPMN 2.0; case state is held by the
-              engine, not the database. Custom UI for reviewers consumes Tasklist + GraphQL.
-            </p>
-
-            <div className="am-canvas-heading">
-              <h4>Alternatives considered</h4>
-              <span className="am-canvas-src">
-                <span className="am-canvas-machine">▲ drafted by domain-architect agent · awaiting review</span>
-              </span>
-            </div>
-            <ul className="am-canvas-prose am-canvas-prose-list">
-              <li>
-                <b>Build on existing Pega platform</b> — rejected: licence covers
-                Retail only, corporate tenant would need a separate cluster (cost)
-                and Pega's BPMN export is not round-trip safe.
-              </li>
-              <li>
-                <b>Workflow on top of Salesforce Service Cloud</b> — rejected:
-                review SLA logic does not fit Service Cloud's case escalation model.
-              </li>
-              <li>
-                <b>In-house orchestrator on Postgres</b> — rejected: 4–6 FTE-quarter
-                build, no business-readable model.
-              </li>
-            </ul>
-
-            <div className="am-canvas-heading">
-              <h4>Consequences</h4>
-              <span className="am-canvas-src">
-                <span className="am-canvas-verified">✓ human-confirmed</span>
-              </span>
-            </div>
-            <ul className="am-canvas-prose am-canvas-prose-list">
-              <li>New runtime dependency on Camunda SaaS — adds NFR-{pid}-004 (RTO ≤ 4h via active-passive).</li>
-              <li>Reviewers gain a real worklist; manual mailbox triage goes away.</li>
-              <li>IAM integration via OIDC — couples this ADR to ADR-{pid}-003 (single sign-on via Keycloak).</li>
-              <li>BPMN models become a versioned artefact owned jointly by process owner and architect.</li>
-            </ul>
-
-            <div className="am-canvas-heading">
-              <h4>Traces</h4>
-            </div>
-            <div className="am-canvas-traces">
-              <span className="am-canvas-trace">
-                <span className="am-canvas-trace-lbl">decision</span>
-                {openAdr.trace}
-              </span>
-              <span className="am-canvas-trace">
-                <span className="am-canvas-trace-lbl">resolves gap</span>
-                G-{pid}-003
-              </span>
-              <span className="am-canvas-trace">
-                <span className="am-canvas-trace-lbl">supports capability</span>
-                CAP-{pid}-002 Case orchestration
-              </span>
-              <span className="am-canvas-trace">
-                <span className="am-canvas-trace-lbl">depends on</span>
-                ADR-{pid}-003
-              </span>
-            </div>
-
-            <footer className="am-canvas-adr-foot">
-              <span>3/4 headings confirmed · ✓ all traces resolve · 0 lint findings</span>
-              <span style={{ flex: 1 }} />
-              <button type="button" className="am-canvas-btn">Reject</button>
-              <button type="button" className="am-canvas-btn">Edit</button>
-              <button type="button" className="am-canvas-btn am-canvas-btn-primary">
-                Approve as Accepted
-              </button>
-            </footer>
-          </article>
-
-          <div className="am-canvas-banner">
-            Illustrative content — ArchitectMiner authoring is still being built.
-            The data model behind ADRs, Capabilities, NFRs and Migration Phases lands next.
-          </div>
-        </main>
-        {chatSidebar}
+              <div
+                className="am-canvas-banner"
+                style={{ background: "var(--hi-bg)", color: "var(--hi)", borderColor: "#c7dccf" }}
+              >
+                Real data — file-backed under{" "}
+                <code>wiki/processes/{doc.slug}/architecture-decisions/</code>.
+              </div>
+            </main>
+            {chatSidebar}
           </>
         )}
 
@@ -514,16 +472,13 @@ export default function ArchitectureCanvas({
               <div className="am-canvas-diagram-toolbar">
                 <h2>Target architecture</h2>
                 <span className="am-canvas-secmeta">
-                  v3 · auto-generated from approved elements · illustrative
+                  derived live from {archData.apps.length} app{archData.apps.length === 1 ? "" : "s"}
+                  {", "}
+                  {archData.caps.length} capabilit{archData.caps.length === 1 ? "y" : "ies"}
+                  {", "}
+                  {archData.integrations.length} integration{archData.integrations.length === 1 ? "" : "s"}
                 </span>
                 <span style={{ flex: 1 }} />
-                <button type="button" className="am-canvas-toggle am-canvas-toggle-on">
-                  Capabilities
-                </button>
-                <button type="button" className="am-canvas-toggle">Apps only</button>
-                <button type="button" className="am-canvas-toggle">Integrations</button>
-                <button type="button" className="am-canvas-toggle">Data flow</button>
-                <div style={{ width: 16 }} />
                 <div className="am-canvas-legend">
                   <span><i className="am-canvas-legend-sync" />sync</span>
                   <span><i className="am-canvas-legend-async" />async</span>
@@ -531,185 +486,208 @@ export default function ArchitectureCanvas({
                 </div>
               </div>
 
-              <svg viewBox="0 0 880 540" className="am-canvas-diagram-svg">
-                {/* swim-lane separators */}
-                <line x1="0" y1="120" x2="880" y2="120" stroke="#dde0e5" strokeDasharray="2 4" />
-                <line x1="0" y1="310" x2="880" y2="310" stroke="#dde0e5" strokeDasharray="2 4" />
-                <text className="am-svg-swim" x="16" y="32">Channels</text>
-                <text className="am-svg-swim" x="16" y="152">Business capabilities</text>
-                <text className="am-svg-swim" x="16" y="342">Systems &amp; data</text>
+              {archData.apps.length === 0 && archData.caps.length === 0 ? (
+                <div className="am-input-empty">
+                  No architecture elements authored yet for <b>{doc.process.title}</b>.
+                  The diagram populates once capabilities and target applications
+                  are authored.
+                </div>
+              ) : (() => {
+                const W = 880;
+                const H = 380;
+                const capH = 80;
+                const appH = 60;
+                const capRow = 60;
+                const appRow = 240;
+                const capCount = Math.max(1, archData.caps.length);
+                const appCount = Math.max(1, archData.apps.length);
+                const capSlot = (W - 60) / capCount;
+                const appSlot = (W - 60) / appCount;
+                const capW = Math.max(140, Math.min(220, capSlot - 20));
+                const appW = Math.max(140, Math.min(220, appSlot - 20));
+                const capX = (i: number) => 40 + i * capSlot;
+                const appX = (i: number) => 40 + i * appSlot;
+                const capCx = (i: number) => capX(i) + capW / 2;
+                const appCx = (i: number) => appX(i) + appW / 2;
+                const appById = new Map(archData.apps.map((a, i) => [a.id, { idx: i, app: a }]));
+                const capById = new Map(archData.caps.map((c, i) => [c.id, { idx: i, cap: c }]));
+                return (
+                  <svg viewBox={`0 0 ${W} ${H}`} className="am-canvas-diagram-svg">
+                    <line x1="0" y1="40" x2={W} y2="40" stroke="#dde0e5" strokeDasharray="2 4" />
+                    <line x1="0" y1={appRow - 30} x2={W} y2={appRow - 30} stroke="#dde0e5" strokeDasharray="2 4" />
+                    <text className="am-svg-swim" x="16" y="30">Business capabilities</text>
+                    <text className="am-svg-swim" x="16" y={appRow - 10}>Systems &amp; data</text>
 
-                {/* channels */}
-                <g>
-                  <rect className="am-svg-app" x="40" y="50" width="170" height="50" rx="6" />
-                  <text className="am-svg-lbl" x="58" y="76">Online Banking</text>
-                  <text className="am-svg-sub" x="58" y="92">channel · sync</text>
+                    {/* capability boxes */}
+                    {archData.caps.map((cap, i) => {
+                      const hostedRaw = Array.isArray(cap.meta.hostedIn) ? cap.meta.hostedIn[0] : (cap.meta.hostedIn as string | undefined);
+                      const hostedApp = hostedRaw ? archData.apps.find((a) => a.id === hostedRaw) : undefined;
+                      const hostLabel = hostedApp ? hostedApp.title : (hostedRaw ?? "—");
+                      const verdict = (hostedApp?.meta.verdict as string | undefined);
+                      return (
+                        <g key={cap.id}>
+                          <rect
+                            className={`am-svg-cap${i === 0 ? " am-svg-cap-sel" : ""}`}
+                            x={capX(i)}
+                            y={capRow}
+                            width={capW}
+                            height={capH}
+                            rx="6"
+                          />
+                          <text className="am-svg-lbl" x={capX(i) + 12} y={capRow + 22}>{cap.id}</text>
+                          <text className="am-svg-lbl am-svg-lbl-strong" x={capX(i) + 12} y={capRow + 40}>
+                            {cap.title.slice(0, 28)}
+                          </text>
+                          <text className="am-svg-sub" x={capX(i) + 12} y={capRow + 62}>
+                            hosted in: {hostLabel.slice(0, 22)}{verdict ? ` · ${verdict}` : ""}
+                          </text>
+                        </g>
+                      );
+                    })}
 
-                  <rect className="am-svg-app" x="230" y="50" width="170" height="50" rx="6" />
-                  <text className="am-svg-lbl" x="248" y="76">Mobile App</text>
-                  <text className="am-svg-sub" x="248" y="92">channel · sync</text>
+                    {/* app boxes */}
+                    {archData.apps.map((app, i) => {
+                      const verdict = ((app.meta.verdict as string) ?? "").toUpperCase();
+                      return (
+                        <g key={app.id}>
+                          <rect
+                            className="am-svg-app"
+                            x={appX(i)}
+                            y={appRow}
+                            width={appW}
+                            height={appH}
+                            rx="6"
+                          />
+                          <text className="am-svg-lbl am-svg-lbl-strong" x={appX(i) + 12} y={appRow + 22}>
+                            {app.title.slice(0, 24)}
+                          </text>
+                          <text className="am-svg-sub" x={appX(i) + 12} y={appRow + 40}>
+                            {verdict}{app.meta.vendor ? ` · ${(app.meta.vendor as string).slice(0, 26)}` : ""}
+                          </text>
+                          <text className="am-svg-sub" x={appX(i) + 12} y={appRow + 54}>
+                            {app.id}
+                          </text>
+                        </g>
+                      );
+                    })}
 
-                  <rect className="am-svg-app" x="420" y="50" width="170" height="50" rx="6" />
-                  <text className="am-svg-lbl" x="438" y="76">Branch Frontend</text>
-                  <text className="am-svg-sub" x="438" y="92">channel · sync</text>
+                    {/* edges: capability hostedIn → app */}
+                    {archData.caps.map((cap, i) => {
+                      const hostedRaw = Array.isArray(cap.meta.hostedIn) ? cap.meta.hostedIn[0] : (cap.meta.hostedIn as string | undefined);
+                      const target = hostedRaw ? appById.get(hostedRaw) : undefined;
+                      if (!target) return null;
+                      return (
+                        <path
+                          key={`cap-app-${cap.id}`}
+                          className="am-svg-edge-sync"
+                          d={`M${capCx(i)} ${capRow + capH} L${appCx(target.idx)} ${appRow}`}
+                        />
+                      );
+                    })}
 
-                  <rect className="am-svg-app" x="610" y="50" width="220" height="50" rx="6" />
-                  <text className="am-svg-lbl" x="628" y="76">Document upload (PDF)</text>
-                  <text className="am-svg-sub" x="628" y="92">channel · async</text>
-                </g>
+                    {/* edges: target-integration from → to */}
+                    {archData.integrations.map((it) => {
+                      const fromId = Array.isArray(it.meta.from) ? it.meta.from[0] : (it.meta.from as string | undefined);
+                      const toId = Array.isArray(it.meta.to) ? it.meta.to[0] : (it.meta.to as string | undefined);
+                      const from = fromId ? appById.get(fromId) : undefined;
+                      const to = toId ? appById.get(toId) : undefined;
+                      if (!from || !to) return null;
+                      const pattern = ((it.meta.pattern as string) ?? "").toLowerCase();
+                      const cls = pattern === "async" ? "am-svg-edge-async" :
+                                  pattern === "event" ? "am-svg-edge-event" :
+                                  pattern === "batch" ? "am-svg-edge-async" :
+                                  "am-svg-edge-sync";
+                      const y = appRow + appH + 14;
+                      return (
+                        <path
+                          key={it.id}
+                          className={cls}
+                          d={`M${appCx(from.idx)} ${appRow + appH} C ${appCx(from.idx)} ${y + 20}, ${appCx(to.idx)} ${y + 20}, ${appCx(to.idx)} ${appRow + appH}`}
+                        />
+                      );
+                    })}
+                  </svg>
+                );
+              })()}
 
-                {/* capability boxes */}
-                <g>
-                  <rect className="am-svg-cap am-svg-cap-sel" x="40" y="180" width="200" height="80" rx="6" />
-                  <text className="am-svg-lbl" x="58" y="206">CAP-{pid}-002</text>
-                  <text className="am-svg-lbl am-svg-lbl-strong" x="58" y="224">Case capture &amp; validation</text>
-                  <text className="am-svg-sub" x="58" y="244">hosted in: Case Hub (new)</text>
-
-                  <rect className="am-svg-cap" x="260" y="180" width="200" height="80" rx="6" />
-                  <text className="am-svg-lbl" x="278" y="206">CAP-{pid}-005</text>
-                  <text className="am-svg-lbl am-svg-lbl-strong" x="278" y="224">Case lifecycle</text>
-                  <text className="am-svg-sub" x="278" y="244">hosted in: Case Hub</text>
-
-                  <rect className="am-svg-cap" x="480" y="180" width="200" height="80" rx="6" />
-                  <text className="am-svg-lbl" x="498" y="206">CAP-{pid}-008</text>
-                  <text className="am-svg-lbl am-svg-lbl-strong" x="498" y="224">Backend processing</text>
-                  <text className="am-svg-sub" x="498" y="244">hosted in: Core Platform</text>
-
-                  <rect className="am-svg-cap" x="700" y="180" width="140" height="80" rx="6" />
-                  <text className="am-svg-lbl" x="716" y="206">CAP-{pid}-009</text>
-                  <text className="am-svg-lbl am-svg-lbl-strong" x="716" y="224">Outbound</text>
-                  <text className="am-svg-sub" x="716" y="244">Gateway</text>
-                </g>
-
-                {/* systems */}
-                <g>
-                  <rect className="am-svg-app" x="40" y="360" width="200" height="60" rx="6" />
-                  <text className="am-svg-lbl am-svg-lbl-strong" x="58" y="386">Case Hub</text>
-                  <text className="am-svg-sub" x="58" y="402">BUILD · Camunda 8 + Postgres</text>
-
-                  <rect className="am-svg-app" x="260" y="360" width="200" height="60" rx="6" />
-                  <text className="am-svg-lbl am-svg-lbl-strong" x="278" y="386">Customer Master</text>
-                  <text className="am-svg-sub" x="278" y="402">existing · authoritative party</text>
-
-                  <rect className="am-svg-app" x="480" y="360" width="200" height="60" rx="6" />
-                  <text className="am-svg-lbl am-svg-lbl-strong" x="498" y="386">Core Platform</text>
-                  <text className="am-svg-sub" x="498" y="402">existing · keep</text>
-
-                  <rect className="am-svg-ext" x="700" y="360" width="140" height="60" rx="6" />
-                  <text className="am-svg-lbl am-svg-lbl-strong" x="716" y="386">External scheme</text>
-                  <text className="am-svg-sub" x="716" y="402">external</text>
-
-                  <rect className="am-svg-app" x="40" y="450" width="200" height="60" rx="6" />
-                  <text className="am-svg-lbl am-svg-lbl-strong" x="58" y="476">Hyland ECM</text>
-                  <text className="am-svg-sub" x="58" y="492">existing · document store</text>
-
-                  <rect className="am-svg-app" x="480" y="450" width="200" height="60" rx="6" />
-                  <text className="am-svg-lbl am-svg-lbl-strong" x="498" y="476">DWH (Snowflake)</text>
-                  <text className="am-svg-sub" x="498" y="492">reporting · risk score</text>
-                </g>
-
-                {/* edges channels -> capabilities */}
-                <path className="am-svg-edge-sync" d="M125 100 C 125 140, 140 150, 140 180" />
-                <path className="am-svg-edge-sync" d="M315 100 C 315 140, 200 150, 200 180" />
-                <path className="am-svg-edge-sync" d="M505 100 C 505 140, 360 150, 360 180" />
-                <path className="am-svg-edge-async" d="M720 100 C 720 130, 140 150, 140 180" />
-
-                {/* edges capabilities -> systems */}
-                <path className="am-svg-edge-sync" d="M140 260 L 140 360" />
-                <path className="am-svg-edge-sync" d="M360 260 L 360 360" />
-                <path className="am-svg-edge-sync" d="M580 260 L 580 360" />
-                <path className="am-svg-edge-sync" d="M770 260 L 770 360" />
-
-                {/* inter-capability edges */}
-                <path className="am-svg-edge-event" d="M240 220 L 260 220" />
-                <text className="am-svg-edge-lbl" x="244" y="214">event</text>
-                <path className="am-svg-edge-event" d="M460 220 L 480 220" />
-                <text className="am-svg-edge-lbl" x="464" y="214">event</text>
-                <path className="am-svg-edge-sync" d="M680 220 L 700 220" />
-
-                {/* system to system */}
-                <path className="am-svg-edge-async" d="M140 420 L 140 450" />
-                <text className="am-svg-edge-lbl" x="146" y="442">PDF</text>
-                <path className="am-svg-edge-async" d="M360 420 C 360 440, 280 450, 480 470" />
-                <path className="am-svg-edge-async" d="M580 420 L 580 450" />
-                <text className="am-svg-edge-lbl" x="586" y="442">nightly</text>
-              </svg>
-
-              <div className="am-canvas-banner">
-                Illustrative diagram — ArchitectMiner authoring is still being built.
-                Capabilities, target apps and integrations will be derived from
-                approved architecture elements once the data model lands.
+              <div
+                className="am-canvas-banner"
+                style={{ background: "var(--hi-bg)", color: "var(--hi)", borderColor: "#c7dccf" }}
+              >
+                Real data — capabilities, target apps and integrations are
+                positioned from <code>doc.elements</code>. Edges follow{" "}
+                <code>hostedIn</code> + integration <code>from / to</code>.
               </div>
             </main>
 
             <aside className="am-canvas-details">
-              <h3>Capability — Case capture &amp; validation</h3>
-              <div className="am-canvas-details-id">CAP-{pid}-002</div>
+              {archData.caps.length === 0 ? (
+                <div className="am-input-empty" style={{ marginTop: 0 }}>
+                  Author a capability to see its details here.
+                </div>
+              ) : (() => {
+                const cap = archData.caps[0];
+                const hostedRaw = Array.isArray(cap.meta.hostedIn) ? cap.meta.hostedIn[0] : (cap.meta.hostedIn as string | undefined);
+                const hostedApp = hostedRaw ? archData.apps.find((a) => a.id === hostedRaw) : undefined;
+                return (
+                  <>
+                    <h3>Capability — {cap.title}</h3>
+                    <div className="am-canvas-details-id">{cap.id}</div>
 
-              <div className="am-canvas-details-block">
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Hosted in</span>
-                  <span>
-                    Case Hub <span className="am-pill am-pill-acc">BUILD</span>
-                  </span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Criticality</span>
-                  <span><span className="am-pill am-pill-mid">High</span></span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Reuse</span>
-                  <span>new capability — no existing analog in catalog</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Owning domain</span>
-                  <span>Case &amp; lifecycle management</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Status</span>
-                  <span><span className="am-pill am-pill-hi">Accepted</span> · today</span>
-                </div>
-              </div>
+                    <div className="am-canvas-details-block">
+                      {hostedApp && (
+                        <div className="am-canvas-details-row">
+                          <span className="am-canvas-details-k">Hosted in</span>
+                          <span>
+                            {hostedApp.title}
+                            {hostedApp.meta.verdict && (
+                              <span
+                                className={`am-verdict am-verdict-${((hostedApp.meta.verdict as string) ?? "").toLowerCase()}`}
+                                style={{ marginLeft: 6 }}
+                              >
+                                {hostedApp.meta.verdict as string}
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                      )}
+                      {cap.meta.criticality && (
+                        <div className="am-canvas-details-row">
+                          <span className="am-canvas-details-k">Criticality</span>
+                          <span>{cap.meta.criticality as string}</span>
+                        </div>
+                      )}
+                      {cap.meta.reuse && (
+                        <div className="am-canvas-details-row">
+                          <span className="am-canvas-details-k">Reuse</span>
+                          <span>{cap.meta.reuse as string}</span>
+                        </div>
+                      )}
+                      {cap.meta.owningDomain && (
+                        <div className="am-canvas-details-row">
+                          <span className="am-canvas-details-k">Owning domain</span>
+                          <span>{cap.meta.owningDomain as string}</span>
+                        </div>
+                      )}
+                      <div className="am-canvas-details-row">
+                        <span className="am-canvas-details-k">Status</span>
+                        <span>
+                          <span className={`am-pill am-pill-${cap.status === "confirmed" ? "hi" : "mid"}`}>
+                            {cap.status === "confirmed" ? "Accepted" : "Draft"}
+                          </span>
+                        </span>
+                      </div>
+                    </div>
 
-              <div className="am-canvas-details-block">
-                <h4>Realises</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">
-                    <span className="am-canvas-trace-lbl">target step</span>TS-{pid}-002
-                  </span>
-                  <span className="am-canvas-trace">
-                    <span className="am-canvas-trace-lbl">target step</span>TS-{pid}-003
-                  </span>
-                  <span className="am-canvas-trace">
-                    <span className="am-canvas-trace-lbl">resolves gap</span>G-{pid}-004
-                  </span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Realised by ADRs</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">ADR-{pid}-002 schema</span>
-                  <span className="am-canvas-trace">ADR-{pid}-007 orchestration</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>NFRs</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">NFR-{pid}-001 p95 &lt; 1.2s</span>
-                  <span className="am-canvas-trace">NFR-{pid}-003 audit-log 10y</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Provenance</h4>
-                <div className="am-canvas-details-prov">
-                  <div><span className="am-canvas-verified">✓</span> Hosted in — human-confirmed</div>
-                  <div><span className="am-canvas-verified">✓</span> Criticality — derived from transformation decision</div>
-                  <div><span className="am-canvas-machine">▲</span> NFRs — drafted by solution-architect agent · review</div>
-                </div>
-              </div>
+                    {cap.blocks.length > 0 && cap.blocks.map((b) => (
+                      <div className="am-input-block" key={b.heading}>
+                        <h4>{b.heading}</h4>
+                        <div className="am-input-prose"><Markdown text={b.text} /></div>
+                      </div>
+                    ))}
+                  </>
+                );
+              })()}
             </aside>
             {chatSidebar}
           </>
@@ -721,33 +699,157 @@ export default function ArchitectureCanvas({
             <div className="am-canvas-trace-head">
               <h2>Traceability — {doc.process.title}</h2>
               <span className="am-canvas-secmeta">
-                last scanned today · run-lint architecture · illustrative
+                derived live from file-backed elements · resolve check across all sections
               </span>
             </div>
 
-            <div className="am-canvas-stats">
-              <div className="am-canvas-stat">
-                <div className="am-canvas-stat-v">63</div>
-                <div className="am-canvas-stat-l">architecture elements</div>
-              </div>
-              <div className="am-canvas-stat">
-                <div className="am-canvas-stat-v am-canvas-stat-ok">87%</div>
-                <div className="am-canvas-stat-l">fully traced</div>
-              </div>
-              <div className="am-canvas-stat">
-                <div className="am-canvas-stat-v am-canvas-stat-warn">5</div>
-                <div className="am-canvas-stat-l">partial traces</div>
-              </div>
-              <div className="am-canvas-stat">
-                <div className="am-canvas-stat-v am-canvas-stat-bad">3</div>
-                <div className="am-canvas-stat-l">orphans</div>
-              </div>
-              <div className="am-canvas-stat">
-                <div className="am-canvas-stat-v">2</div>
-                <div className="am-canvas-stat-l">stale (upstream changed)</div>
-              </div>
-            </div>
+            {(() => {
+              // Architect element types + the relation keys we expect each to carry.
+              // For each element we collect all declared trace ids, resolve them
+              // against the rest of doc.elements, and bucket the element as
+              // OK / Partial / Orphan.
+              const TYPES: Array<{ type: string; label: string; rels: string[] }> = [
+                { type: "capability", label: "Capability", rels: ["hostedIn", "realisesStep", "resolvesGap"] },
+                { type: "target-application", label: "Target App", rels: ["drivenByADR"] },
+                { type: "adr", label: "ADR", rels: ["decision", "resolvesGap", "satisfiesControl", "supersededBy", "dependsOn"] },
+                { type: "target-integration", label: "Integration", rels: ["from", "to", "realises", "drivenByADR"] },
+                { type: "component", label: "Component", rels: ["inApp", "dependsOn", "realisesCapability"] },
+                { type: "nfr", label: "NFR", rels: ["satisfiesControl", "regulatedBy", "appliesTo", "drivenByADR"] },
+                { type: "migration-phase", label: "Migration Phase", rels: ["dependsOn", "delivers", "resolvesGap"] },
+              ];
+              const byId = new Map(doc.elements.map((e) => [e.id, e]));
+              type Row = {
+                id: string;
+                title: string;
+                label: string;
+                resolved: string[];
+                broken: string[];
+                status: "ok" | "partial" | "orphan";
+              };
+              const rows: Row[] = [];
+              for (const t of TYPES) {
+                const els = doc.elements.filter((e) => e.type === t.type);
+                for (const el of els) {
+                  const resolved: string[] = [];
+                  const broken: string[] = [];
+                  for (const k of t.rels) {
+                    const v = el.meta[k];
+                    if (!v) continue;
+                    const ids = Array.isArray(v) ? v : [v as string];
+                    for (const id of ids) {
+                      if (byId.has(id)) resolved.push(id);
+                      else broken.push(id);
+                    }
+                  }
+                  let status: Row["status"];
+                  if (resolved.length === 0 && broken.length === 0) status = "orphan";
+                  else if (broken.length === 0) status = "ok";
+                  else if (resolved.length === 0) status = "orphan";
+                  else status = "partial";
+                  rows.push({ id: el.id, title: el.title, label: t.label, resolved, broken, status });
+                }
+              }
+              const total = rows.length;
+              const okN = rows.filter((r) => r.status === "ok").length;
+              const partialN = rows.filter((r) => r.status === "partial").length;
+              const orphanN = rows.filter((r) => r.status === "orphan").length;
+              const tracedPct = total === 0 ? 0 : Math.round((okN / total) * 100);
 
+              return (
+                <>
+                  <div className="am-canvas-stats">
+                    <div className="am-canvas-stat">
+                      <div className="am-canvas-stat-v">{total}</div>
+                      <div className="am-canvas-stat-l">architecture elements</div>
+                    </div>
+                    <div className="am-canvas-stat">
+                      <div className="am-canvas-stat-v am-canvas-stat-ok">{tracedPct}%</div>
+                      <div className="am-canvas-stat-l">fully traced</div>
+                    </div>
+                    <div className="am-canvas-stat">
+                      <div className="am-canvas-stat-v am-canvas-stat-warn">{partialN}</div>
+                      <div className="am-canvas-stat-l">partial traces</div>
+                    </div>
+                    <div className="am-canvas-stat">
+                      <div className="am-canvas-stat-v am-canvas-stat-bad">{orphanN}</div>
+                      <div className="am-canvas-stat-l">orphans</div>
+                    </div>
+                    <div className="am-canvas-stat">
+                      <div className="am-canvas-stat-v">{okN}</div>
+                      <div className="am-canvas-stat-l">resolved cleanly</div>
+                    </div>
+                  </div>
+
+                  {total === 0 ? (
+                    <div className="am-input-empty">
+                      No architecture elements authored yet for{" "}
+                      <b>{doc.process.title}</b>. Traceability will populate as
+                      capabilities, applications, ADRs, integrations, components,
+                      NFRs and migration phases are authored.
+                    </div>
+                  ) : (
+                    <table className="am-canvas-trace-table">
+                      <thead>
+                        <tr>
+                          <th style={{ width: 110 }}>ID</th>
+                          <th>Element</th>
+                          <th style={{ width: 130 }}>Type</th>
+                          <th>Traces to upstream</th>
+                          <th style={{ width: 90, textAlign: "right" }}>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {rows.map((r) => (
+                          <tr
+                            key={r.id}
+                            className={
+                              r.status === "partial" ? "am-canvas-trace-row-partial" :
+                              r.status === "orphan" ? "am-canvas-trace-row-orphan" :
+                              undefined
+                            }
+                          >
+                            <td className="am-canvas-trace-id">{r.id}</td>
+                            <td className="am-canvas-trace-title">{r.title}</td>
+                            <td className="am-canvas-trace-type">{r.label}</td>
+                            <td>
+                              {r.resolved.length === 0 && r.broken.length === 0 ? (
+                                <span className="am-canvas-trace am-canvas-trace-bad">
+                                  no upstream link
+                                </span>
+                              ) : (
+                                <>
+                                  {r.resolved.map((id) => (
+                                    <span key={id} className="am-canvas-trace">{id}</span>
+                                  ))}
+                                  {r.broken.map((id) => (
+                                    <span key={id} className="am-canvas-trace am-canvas-trace-warn">
+                                      {id} missing
+                                    </span>
+                                  ))}
+                                </>
+                              )}
+                            </td>
+                            <td style={{ textAlign: "right" }}>
+                              <span
+                                className={`am-pill am-pill-${
+                                  r.status === "ok" ? "hi" :
+                                  r.status === "partial" ? "mid" : "lo"
+                                }`}
+                              >
+                                {r.status === "ok" ? "OK" : r.status === "partial" ? "Partial" : "Orphan"}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </>
+              );
+            })()}
+
+            {/* LEGACY mock table below — gated to never render. */}
+            {false && (
             <table className="am-canvas-trace-table">
               <thead>
                 <tr>
@@ -888,11 +990,15 @@ export default function ArchitectureCanvas({
                 </tr>
               </tbody>
             </table>
+            )}
 
-            <div className="am-canvas-banner">
-              Illustrative matrix — ArchitectMiner authoring is still being built.
-              Traces will be derived from real architecture elements once the data
-              model lands.
+            <div
+              className="am-canvas-banner"
+              style={{ background: "var(--hi-bg)", color: "var(--hi)", borderColor: "#c7dccf" }}
+            >
+              Real data — every row above is an architect element scanned live
+              from <code>wiki/processes/{doc.slug}/</code>. Resolution checks
+              run against the rest of <code>doc.elements</code> on each render.
             </div>
           </main>
           {chatSidebar}
@@ -1249,11 +1355,11 @@ export default function ArchitectureCanvas({
 
         {view === "integrations" && (
           <>
-            <main className="am-canvas-doc">
+            <main className="am-canvas-doc am-canvas-doc-wide">
               <div className="am-canvas-sechead">
                 <h2>Target Integrations</h2>
                 <span className="am-canvas-secmeta">
-                  8 elements · 5 accepted · 3 proposed · 4 sync · 2 async · 1 event · 1 batch
+                  {archData.integrations.length} element{archData.integrations.length === 1 ? "" : "s"}
                 </span>
                 <span style={{ flex: 1 }} />
                 <button type="button" className="am-canvas-btn">＋ Add Integration</button>
@@ -1262,122 +1368,72 @@ export default function ArchitectureCanvas({
                 </button>
               </div>
 
-              <div className="am-canvas-cap-filterbar">
-                <span className="am-pill am-pill-acc">All (8)</span>
-                <span className="am-pill am-pill-neu">SYNC (4)</span>
-                <span className="am-pill am-pill-neu">ASYNC (2)</span>
-                <span className="am-pill am-pill-neu">EVENT (1)</span>
-                <span className="am-pill am-pill-neu">BATCH (1)</span>
-              </div>
+              {archData.integrations.length === 0 ? (
+                <div className="am-input-empty">
+                  No target integrations authored yet for <b>{doc.process.title}</b>.
+                  Author element files under{" "}
+                  <code>wiki/processes/{doc.slug}/target-integrations/</code>.
+                </div>
+              ) : (
+                <table className="am-canvas-app-table">
+                  <thead>
+                    <tr>
+                      <th style={{ width: "22%" }}>From → To</th>
+                      <th>Pattern</th>
+                      <th>Direction</th>
+                      <th>Volume</th>
+                      <th>Contract</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {archData.integrations.map((it, i) => {
+                      const fromId = Array.isArray(it.meta.from) ? it.meta.from[0] : (it.meta.from as string | undefined);
+                      const toId = Array.isArray(it.meta.to) ? it.meta.to[0] : (it.meta.to as string | undefined);
+                      const fromTitle = fromId ? (archData.apps.find((a) => a.id === fromId)?.title ?? fromId) : "—";
+                      const toTitle = toId ? (archData.apps.find((a) => a.id === toId)?.title ?? toId) : "—";
+                      const pattern = ((it.meta.pattern as string) ?? "").toLowerCase();
+                      return (
+                        <IntegrationRow
+                          key={it.id}
+                          selected={i === 0}
+                          from={fromTitle}
+                          to={toTitle}
+                          id={it.id}
+                          sub={it.title}
+                          pattern={(["sync","async","event","batch"].includes(pattern) ? pattern : "sync") as "sync"|"async"|"event"|"batch"}
+                          direction={(it.meta.direction as string) ?? "—"}
+                          volume={(it.meta.volume as string) ?? "—"}
+                          volSub=""
+                          contract={(it.meta.contract as string) ?? "—"}
+                          status={it.status === "confirmed" ? "Accepted" : "Proposed"}
+                        />
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
 
-              <table className="am-canvas-app-table">
-                <thead>
-                  <tr>
-                    <th style={{ width: "22%" }}>From → To</th>
-                    <th>Pattern</th>
-                    <th>Direction</th>
-                    <th>Volume</th>
-                    <th>Contract</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <IntegrationRow selected from="Case Hub" to="Customer Master" id={`INT-${pid}-001`} sub="read party data on case open" pattern="sync" direction="request / response" volume="~12k req/day" volSub="p95 380ms" contract="OpenAPI 3.1 · v2" status="Accepted" />
-                  <IntegrationRow from="Case Hub" to="Risk Score Service" id={`INT-${pid}-002`} sub="subscribe to score updates" pattern="event" direction="pub / sub · at-least-once" volume="~5k events/day" volSub="batched 50ms" contract="AsyncAPI 2.6" status="Proposed" />
-                  <IntegrationRow from="Case Hub" to="KYC Engine" id={`INT-${pid}-003`} sub="trigger KYC refresh task" pattern="sync" direction="request / response" volume="~4k req/day" volSub="p95 900ms" contract="OpenAPI 3.0" status="Accepted" />
-                  <IntegrationRow from="Case Hub" to="Hyland ECM" id={`INT-${pid}-004`} sub="upload supporting documents" pattern="async" direction="fire-and-forget · retry" volume="~8k uploads/day" volSub="avg 1.2 MB" contract="CMIS 1.1" status="Accepted" />
-                  <IntegrationRow from="Case Hub" to="DWH" id={`INT-${pid}-005`} sub="nightly snapshot of closed cases" pattern="batch" direction="nightly · 02:00 UTC" volume="~12 GB/night" volSub="Parquet" contract="Snowflake stage" status="Proposed" />
-                  <IntegrationRow from="Risk Score Service" to="DWH" id={`INT-${pid}-006`} sub="score history append" pattern="async" direction="streaming · Kinesis" volume="~30k events/day" volSub="retention 7d" contract="AsyncAPI 2.6" status="Accepted" />
-                  <IntegrationRow from="Customer Master" to="Case Hub" id={`INT-${pid}-007`} sub="webhook on customer change" pattern="sync" direction="webhook · POST" volume="~200 events/day" volSub="low volume" contract="OpenAPI 3.1" status="Accepted" />
-                  <IntegrationRow from="KYC Engine" to="Case Hub" id={`INT-${pid}-008`} sub="notify on KYC verdict" pattern="sync" direction="callback URL" volume="~4k events/day" volSub="p95 280ms" contract="OpenAPI 3.0" status="Proposed" />
-                </tbody>
-              </table>
-
-              <div className="am-canvas-banner">
-                Illustrative content — Target Integrations will be authored as real
-                schema-validated elements once the architect data model lands.
+              <div
+                className="am-canvas-banner"
+                style={{ background: "var(--hi-bg)", color: "var(--hi)", borderColor: "#c7dccf" }}
+              >
+                Real data — file-backed under{" "}
+                <code>wiki/processes/{doc.slug}/target-integrations/</code>.
               </div>
             </main>
-
-            <aside className="am-canvas-details">
-              <h3>Integration — Case Hub → Customer Master</h3>
-              <div className="am-canvas-details-id">INT-{pid}-001</div>
-
-              <div className="am-canvas-details-block">
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Pattern</span>
-                  <span><span className="am-int-pattern am-int-pattern-sync">SYNC</span></span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Direction</span>
-                  <span>request / response · idempotent reads</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Volume</span>
-                  <span>~12k req/day · p95 380ms</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Contract</span>
-                  <span>OpenAPI 3.1 · <code>/v2/customers/{"{id}"}</code></span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Auth</span>
-                  <span>mTLS + OAuth2 client_credentials</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Failure mode</span>
-                  <span>cached read (5 min TTL) on 5xx</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Status</span>
-                  <span><span className="am-pill am-pill-hi">Accepted</span> · today</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Realises</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">CAP-{pid}-001 identification</span>
-                  <span className="am-canvas-trace">CAP-{pid}-002 capture &amp; validation</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Driven by ADRs</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">ADR-{pid}-002 schema</span>
-                  <span className="am-canvas-trace">ADR-{pid}-005 reuse</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>NFRs</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">NFR-{pid}-001 p95 &lt; 1.2s</span>
-                  <span className="am-canvas-trace">NFR-{pid}-005 encrypt-in-transit</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Provenance</h4>
-                <div className="am-canvas-details-prov">
-                  <div><span className="am-canvas-verified">✓</span> Pattern — human-confirmed</div>
-                  <div><span className="am-canvas-verified">✓</span> Contract — verified against OpenAPI registry</div>
-                  <div><span className="am-canvas-machine">▲</span> Failure mode — drafted by solution-architect agent · review</div>
-                </div>
-              </div>
-            </aside>
             {chatSidebar}
           </>
         )}
 
         {view === "components" && (
           <>
-            <main className="am-canvas-doc">
+            <main className="am-canvas-doc am-canvas-doc-wide">
               <div className="am-canvas-sechead">
                 <h2>Components</h2>
                 <span className="am-canvas-secmeta">
-                  17 elements · across 3 BUILD/BUY apps · 11 accepted · 6 proposed
+                  {archData.components.length} element{archData.components.length === 1 ? "" : "s"} ·{" "}
+                  across {archData.apps.length} app{archData.apps.length === 1 ? "" : "s"}
                 </span>
                 <span style={{ flex: 1 }} />
                 <button type="button" className="am-canvas-btn">＋ Add Component</button>
@@ -1386,147 +1442,78 @@ export default function ArchitectureCanvas({
                 </button>
               </div>
 
-              <div className="am-canvas-cap-filterbar">
-                <span className="am-pill am-pill-acc">All (17)</span>
-                <span className="am-pill am-pill-neu">Case Hub (8)</span>
-                <span className="am-pill am-pill-neu">Risk Score (5)</span>
-                <span className="am-pill am-pill-neu">DWH PR mart (4)</span>
-              </div>
+              {archData.components.length === 0 ? (
+                <div className="am-input-empty">
+                  No components authored yet for <b>{doc.process.title}</b>.
+                  Author element files under{" "}
+                  <code>wiki/processes/{doc.slug}/components/</code>.
+                </div>
+              ) : (
+                archData.apps.map((app) => {
+                  const inApp = archData.components.filter((c) => {
+                    const a = Array.isArray(c.meta.inApp) ? c.meta.inApp[0] : c.meta.inApp;
+                    return a === app.id;
+                  });
+                  if (inApp.length === 0) return null;
+                  const verdict = ((app.meta.verdict as string) ?? "").toLowerCase();
+                  return (
+                    <div key={app.id} className="am-canvas-comp-group">
+                      <div className="am-canvas-comp-group-head">
+                        <h3>
+                          {app.title}
+                          {verdict && (
+                            <span className={`am-verdict am-verdict-${verdict}`} style={{ marginLeft: 6 }}>
+                              {verdict.toUpperCase()}
+                            </span>
+                          )}
+                        </h3>
+                        <span className="am-canvas-comp-count">
+                          {inApp.length} component{inApp.length === 1 ? "" : "s"}
+                        </span>
+                      </div>
+                      <div className="am-canvas-comp-cards">
+                        {inApp.map((c, i) => {
+                          const dependsOn = Array.isArray(c.meta.dependsOn)
+                            ? (c.meta.dependsOn as string[])
+                            : c.meta.dependsOn ? [c.meta.dependsOn as string] : [];
+                          return (
+                            <ComponentCard
+                              key={c.id}
+                              selected={i === 0}
+                              id={c.id}
+                              name={c.title}
+                              tech={(c.meta.tech as string) ?? "—"}
+                              sub={(c.meta.dataStore as string) ?? ""}
+                              deps={dependsOn.map((d) => `→ ${d}`)}
+                              status={c.status === "confirmed" ? "Accepted" : "Proposed"}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
 
-              <div className="am-canvas-comp-group">
-                <div className="am-canvas-comp-group-head">
-                  <h3>
-                    Case Hub <span className="am-verdict am-verdict-build" style={{ marginLeft: 6 }}>BUILD</span>
-                  </h3>
-                  <span className="am-canvas-comp-count">8 components</span>
-                </div>
-                <div className="am-canvas-comp-cards">
-                  <ComponentCard id={`COMP-${pid}-001`} name="API Gateway" tech="Kong + JWT" sub="TLS 1.3" deps={["→ Keycloak"]} status="Accepted" />
-                  <ComponentCard selected id={`COMP-${pid}-002`} name="Case Service" tech="Spring Boot 3" sub="Postgres 16" deps={["→ API Gateway", "→ Workflow Engine"]} status="Accepted" />
-                  <ComponentCard id={`COMP-${pid}-003`} name="Workflow Engine" tech="Camunda 8 / Zeebe" sub="" deps={["→ Postgres"]} status="Accepted" />
-                  <ComponentCard id={`COMP-${pid}-004`} name="Task Service" tech="Camunda Tasklist + GraphQL" sub="" deps={["→ Workflow Engine"]} status="Accepted" />
-                  <ComponentCard id={`COMP-${pid}-005`} name="Notification Worker" tech="Quarkus" sub="SES + Slack adapter" deps={["→ Case Service", "→ SMTP"]} status="Proposed" />
-                  <ComponentCard id={`COMP-${pid}-006`} name="Auth Adapter" tech="Keycloak SDK" sub="" deps={["→ API Gateway"]} status="Accepted" />
-                  <ComponentCard id={`COMP-${pid}-007`} name="Retry Queue" tech="Redis Streams" sub="" deps={["→ Case Service"]} status="Proposed" />
-                  <ComponentCard id={`COMP-${pid}-008`} name="Outbox Publisher" tech="Debezium" sub="Postgres CDC" deps={["→ Case Service", "→ Kinesis"]} status="Proposed" />
-                </div>
-              </div>
-
-              <div className="am-canvas-comp-group">
-                <div className="am-canvas-comp-group-head">
-                  <h3>
-                    Risk Score Service <span className="am-verdict am-verdict-buy" style={{ marginLeft: 6 }}>BUY</span>
-                  </h3>
-                  <span className="am-canvas-comp-count">5 components</span>
-                </div>
-                <div className="am-canvas-comp-cards">
-                  <ComponentCard id={`COMP-${pid}-009`} name="Scoring Engine" tech="Quantexa core" sub="vendor" deps={["vendor-managed"]} status="Accepted" />
-                  <ComponentCard id={`COMP-${pid}-010`} name="Score API" tech="REST" sub="OpenAPI 3" deps={["→ Scoring Engine"]} status="Accepted" />
-                  <ComponentCard id={`COMP-${pid}-011`} name="Event Bridge" tech="Kinesis" sub="producer" deps={["→ Scoring Engine"]} status="Proposed" />
-                </div>
-              </div>
-
-              <div className="am-canvas-comp-group">
-                <div className="am-canvas-comp-group-head">
-                  <h3>
-                    DWH — Periodic Review marts <span className="am-verdict am-verdict-keep" style={{ marginLeft: 6 }}>KEEP</span>
-                  </h3>
-                  <span className="am-canvas-comp-count">4 components</span>
-                </div>
-                <div className="am-canvas-comp-cards">
-                  <ComponentCard id={`COMP-${pid}-014`} name="Case Snapshot Stage" tech="Snowflake stage" sub="S3 backed" deps={[`← INT-${pid}-005`]} status="Accepted" />
-                  <ComponentCard id={`COMP-${pid}-015`} name="Review Cube" tech="Snowflake" sub="dbt models" deps={["← Case Snapshot Stage"]} status="Accepted" />
-                </div>
-              </div>
-
-              <div className="am-canvas-banner">
-                Illustrative content — Components will be authored as real
-                schema-validated elements once the architect data model lands.
+              <div
+                className="am-canvas-banner"
+                style={{ background: "var(--hi-bg)", color: "var(--hi)", borderColor: "#c7dccf" }}
+              >
+                Real data — file-backed under{" "}
+                <code>wiki/processes/{doc.slug}/components/</code>.
               </div>
             </main>
-
-            <aside className="am-canvas-details">
-              <h3>Component — Case Service</h3>
-              <div className="am-canvas-details-id">COMP-{pid}-002 · in TGTAPP-{pid}-001 Case Hub</div>
-
-              <div className="am-canvas-details-block">
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Tech</span>
-                  <span>Spring Boot 3 (Java 21)</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Data store</span>
-                  <span>Postgres 16 · shared cluster</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Hosting</span>
-                  <span>EKS · eu-frankfurt</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Scaling</span>
-                  <span>HPA · 3 → 12 replicas</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Status</span>
-                  <span><span className="am-pill am-pill-hi">Accepted</span> · today</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Internal dependencies</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">→ COMP-{pid}-001 API Gateway</span>
-                  <span className="am-canvas-trace">→ COMP-{pid}-003 Workflow Engine</span>
-                  <span className="am-canvas-trace">→ COMP-{pid}-007 Retry Queue</span>
-                  <span className="am-canvas-trace">→ COMP-{pid}-008 Outbox Publisher</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>External integrations</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">→ INT-{pid}-001 Customer Master</span>
-                  <span className="am-canvas-trace">→ INT-{pid}-003 KYC Engine</span>
-                  <span className="am-canvas-trace">→ INT-{pid}-004 Hyland ECM</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Realises</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">CAP-{pid}-002 capture &amp; validation</span>
-                  <span className="am-canvas-trace">CAP-{pid}-005 case lifecycle</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>NFRs</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">NFR-{pid}-001 p95 &lt; 1.2s</span>
-                  <span className="am-canvas-trace">NFR-{pid}-006 RTO ≤ 4h</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Provenance</h4>
-                <div className="am-canvas-details-prov">
-                  <div><span className="am-canvas-verified">✓</span> Tech stack — human-confirmed</div>
-                  <div><span className="am-canvas-verified">✓</span> Hosting — derived from ADR-{pid}-007</div>
-                  <div><span className="am-canvas-machine">▲</span> Scaling profile — drafted by solution-architect agent</div>
-                </div>
-              </div>
-            </aside>
             {chatSidebar}
           </>
         )}
 
         {view === "nfrs" && (
           <>
-            <main className="am-canvas-doc">
+            <main className="am-canvas-doc am-canvas-doc-wide">
               <div className="am-canvas-sechead">
                 <h2>NFRs</h2>
                 <span className="am-canvas-secmeta">
-                  8 elements · 5 accepted · 3 proposed · 2 perf · 2 avail · 2 sec · 2 compliance
+                  {archData.nfrsReal.length} element{archData.nfrsReal.length === 1 ? "" : "s"}
                 </span>
                 <span style={{ flex: 1 }} />
                 <button type="button" className="am-canvas-btn">＋ Add NFR</button>
@@ -1535,121 +1522,78 @@ export default function ArchitectureCanvas({
                 </button>
               </div>
 
-              <div className="am-canvas-cap-filterbar">
-                <span className="am-pill am-pill-acc">All (8)</span>
-                <span className="am-pill am-pill-neu">Performance (2)</span>
-                <span className="am-pill am-pill-neu">Availability (2)</span>
-                <span className="am-pill am-pill-neu">Security (2)</span>
-                <span className="am-pill am-pill-neu">Compliance (2)</span>
-              </div>
+              {archData.nfrsReal.length === 0 ? (
+                <div className="am-input-empty">
+                  No NFRs authored yet for <b>{doc.process.title}</b>.
+                  Author element files under{" "}
+                  <code>wiki/processes/{doc.slug}/nfrs/</code>.
+                </div>
+              ) : (
+                <table className="am-canvas-app-table">
+                  <thead>
+                    <tr>
+                      <th style={{ width: 90 }}>ID</th>
+                      <th style={{ width: 110 }}>Category</th>
+                      <th>NFR</th>
+                      <th>Target</th>
+                      <th>Traces to</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {archData.nfrsReal.map((n, i) => {
+                      const catRaw = ((n.meta.category as string) ?? "").toUpperCase();
+                      const cat =
+                        catRaw.startsWith("PERF") ? "perf" :
+                        catRaw.startsWith("AVAIL") ? "avail" :
+                        catRaw.startsWith("SEC") ? "sec" :
+                        catRaw.startsWith("COMP") ? "comp" :
+                        catRaw.startsWith("SCAL") ? "scale" : "perf";
+                      const catLabel = catRaw.slice(0, 5) || "PERF";
+                      const satisfies = Array.isArray(n.meta.satisfiesControl)
+                        ? (n.meta.satisfiesControl as string[])
+                        : n.meta.satisfiesControl ? [n.meta.satisfiesControl as string] : [];
+                      const regs = Array.isArray(n.meta.regulatedBy)
+                        ? (n.meta.regulatedBy as string[])
+                        : n.meta.regulatedBy ? [n.meta.regulatedBy as string] : [];
+                      return (
+                        <NfrRow
+                          key={n.id}
+                          selected={i === 0}
+                          id={n.id}
+                          cat={cat as "perf"|"avail"|"sec"|"comp"|"scale"}
+                          catLabel={catLabel}
+                          name={n.title}
+                          sub=""
+                          target={(n.meta.target as string) ?? "—"}
+                          traces={[...satisfies, ...regs]}
+                          status={n.status === "confirmed" ? "Accepted" : "Proposed"}
+                        />
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
 
-              <table className="am-canvas-app-table">
-                <thead>
-                  <tr>
-                    <th style={{ width: 90 }}>ID</th>
-                    <th style={{ width: 110 }}>Category</th>
-                    <th>NFR</th>
-                    <th>Target</th>
-                    <th>Traces to</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <NfrRow selected id={`NFR-${pid}-001`} cat="perf" catLabel="PERF" name="Case opening latency" sub="measured on the case-open API" target="p95 < 1.2s" traces={[`CP-${pid}-004`, `CAP-${pid}-002`]} status="Accepted" />
-                  <NfrRow id={`NFR-${pid}-002`} cat="perf" catLabel="PERF" name="Bulk batch throughput" sub="closing batch for 5k cases overnight" target="≥ 1k cases / min" traces={[`CAP-${pid}-005`]} status="Proposed" />
-                  <NfrRow id={`NFR-${pid}-003`} cat="comp" catLabel="COMP" name="Audit-log retention" sub="every state transition and approval" target="10 years" traces={[`CP-${pid}-001`, `REG-${pid}-002 PSD2 §95`]} status="Accepted" />
-                  <NfrRow id={`NFR-${pid}-004`} cat="avail" catLabel="AVAIL" name="Case Hub recovery time" sub="RTO on regional failover" target="RTO ≤ 4h" traces={[`ADR-${pid}-007`, `CP-${pid}-005`]} status="Accepted" />
-                  <NfrRow id={`NFR-${pid}-005`} cat="sec" catLabel="SEC" name="Encryption in transit" sub="all inter-service traffic" target="TLS 1.3 · mTLS" traces={[`CP-${pid}-006`, `REG-${pid}-001 DORA`]} status="Accepted" />
-                  <NfrRow id={`NFR-${pid}-006`} cat="avail" catLabel="AVAIL" name="Recovery point objective" sub="data loss tolerance after failover" target="RPO ≤ 15 min" traces={[`CP-${pid}-005`]} status="Proposed" />
-                  <NfrRow id={`NFR-${pid}-007`} cat="sec" catLabel="SEC" name="Segregation of duties" sub="reviewer ≠ approver on same case" target="enforced at engine" traces={[`CP-${pid}-002`, `CP-${pid}-003`]} status="Accepted" />
-                  <NfrRow id={`NFR-${pid}-008`} cat="comp" catLabel="COMP" name="PII data residency" sub="EU-only storage and processing" target="eu-frankfurt only" traces={[`REG-${pid}-003 GDPR`, `REG-${pid}-004 BAFIN`]} status="Proposed" />
-                </tbody>
-              </table>
-
-              <div className="am-canvas-banner">
-                Illustrative content — NFRs will be authored as real
-                schema-validated elements once the architect data model lands.
+              <div
+                className="am-canvas-banner"
+                style={{ background: "var(--hi-bg)", color: "var(--hi)", borderColor: "#c7dccf" }}
+              >
+                Real data — file-backed under{" "}
+                <code>wiki/processes/{doc.slug}/nfrs/</code>.
               </div>
             </main>
-
-            <aside className="am-canvas-details">
-              <h3>NFR — Case opening latency</h3>
-              <div className="am-canvas-details-id">
-                NFR-{pid}-001 · <span className="am-nfr-cat am-nfr-cat-perf" style={{ marginLeft: 4 }}>PERFORMANCE</span>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Target</span>
-                  <span><span className="am-nfr-target">p95 &lt; 1.2s</span> · p99 &lt; 2.5s</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Scope</span>
-                  <span>case-open API on Case Hub</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Measurement</span>
-                  <span>Prometheus histogram · 1-min buckets</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Verified by</span>
-                  <span>k6 load test (Phase 1 acceptance)</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Owner</span>
-                  <span>SRE · solution-architect</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Status</span>
-                  <span><span className="am-pill am-pill-hi">Accepted</span> · today</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Traces upstream</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace"><span style={{ color: "var(--muted)" }}>satisfies control</span> CP-{pid}-004</span>
-                  <span className="am-canvas-trace"><span style={{ color: "var(--muted)" }}>required by</span> CAP-{pid}-002</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Applies to</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">COMP-{pid}-002 Case Service</span>
-                  <span className="am-canvas-trace">INT-{pid}-001 → Customer Master</span>
-                  <span className="am-canvas-trace">INT-{pid}-003 → KYC Engine</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Driven by ADRs</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">ADR-{pid}-007 orchestration</span>
-                  <span className="am-canvas-trace">ADR-{pid}-002 schema</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Provenance</h4>
-                <div className="am-canvas-details-prov">
-                  <div><span className="am-canvas-verified">✓</span> Target — human-confirmed</div>
-                  <div><span className="am-canvas-verified">✓</span> Control trace — verified against CP-{pid}-004</div>
-                  <div><span className="am-canvas-machine">▲</span> Verification plan — drafted by SRE agent · review</div>
-                </div>
-              </div>
-            </aside>
             {chatSidebar}
           </>
         )}
 
         {view === "migration" && (
           <>
-            <main className="am-canvas-doc">
+            <main className="am-canvas-doc am-canvas-doc-wide">
               <div className="am-canvas-sechead">
                 <h2>Migration Phases</h2>
                 <span className="am-canvas-secmeta">
-                  4 phases · 1 done · 1 in flight · 2 planned · go-live 2027 Q2
+                  {archData.migrations.length} phase{archData.migrations.length === 1 ? "" : "s"}
                 </span>
                 <span style={{ flex: 1 }} />
                 <button type="button" className="am-canvas-btn">＋ Add Phase</button>
@@ -1657,6 +1601,14 @@ export default function ArchitectureCanvas({
                   ／ Elicit with solution architect
                 </button>
               </div>
+
+              {archData.migrations.length === 0 && (
+                <div className="am-input-empty">
+                  No migration phases authored yet for <b>{doc.process.title}</b>.
+                  The mock Gantt below is illustrative only. Author element files under{" "}
+                  <code>wiki/processes/{doc.slug}/migration-phases/</code>.
+                </div>
+              )}
 
               <div className="am-canvas-gantt-wrap">
                 <div className="am-canvas-gantt-legend">

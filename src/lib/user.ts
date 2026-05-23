@@ -22,6 +22,10 @@ export type User = {
   entitlements?: Entitlement[];
   /** True for users who can manage other users + reset passwords. */
   isAdmin?: boolean;
+  /** Computed server-side and shipped on the redacted client user: true
+   *  if the user owns at least one process. Drives the visibility of the
+   *  "Users & access" link in the avatar menu for non-admins. */
+  ownsAnyProcess?: boolean;
 };
 
 /** Whether the user has a given module entitlement. Treats undefined as

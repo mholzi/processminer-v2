@@ -3,9 +3,13 @@
 import { useEffect, useState } from "react";
 import type { User, Entitlement } from "@/lib/user";
 
-// Admin screen — lists every user and lets an admin create, edit, reset
-// password, or delete. Only reachable when user.isAdmin === true; the
-// /api/admin/* routes also re-check authorization on the server.
+// Admin screen — two tabs:
+//   Users:     admin-only (manage accounts, reset passwords, set
+//              entitlements / admin flag).
+//   Processes: admin sees all; owners see only the processes they own.
+//              Admins reassign ownership; owners + admins manage grantees.
+// Server routes re-check authorization, this UI just keeps things out of
+// view for users who can't perform the action.
 
 type AdminUser = User & {
   createdAt: string;
@@ -14,7 +18,18 @@ type AdminUser = User & {
   createdBy?: string;
 };
 
+type AccessRow = {
+  slug: string;
+  title: string;
+  owner: string;
+  grantees: string[];
+  updatedAt: string;
+  updatedBy: string;
+};
+
 const ALL_ENTS: Entitlement[] = ["pm", "am"];
+
+type Tab = "users" | "processes";
 
 export default function AdminScreen({
   user,
@@ -23,24 +38,44 @@ export default function AdminScreen({
   user: User;
   onReturnToSplash: () => void;
 }) {
+  // Non-admins can't see the Users tab at all — drop straight into Processes.
+  const [tab, setTab] = useState<Tab>(user.isAdmin ? "users" : "processes");
   const [users, setUsers] = useState<AdminUser[]>([]);
+  const [processes, setProcesses] = useState<AccessRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [resetFor, setResetFor] = useState<string | null>(null);
+  const [grantingSlug, setGrantingSlug] = useState<string | null>(null);
 
   async function refresh() {
     setError(null);
+    setLoading(true);
     try {
-      const r = await fetch("/api/admin/users", { credentials: "same-origin" });
-      if (!r.ok) {
-        const data = (await r.json().catch(() => ({}))) as { error?: string };
-        throw new Error(data.error || `HTTP ${r.status}`);
+      // Fetch users only when the caller can see them (admin). Owners
+      // still need the list for grant pickers, but a non-admin gets 403
+      // on /api/admin/users so we use the same /api/processes call
+      // — server returns just the row metadata, and grant pickers can
+      // use a different lightweight endpoint (or be free-text). For now,
+      // admins get full user list, owners get free-text usernames.
+      if (user.isAdmin) {
+        const r = await fetch("/api/admin/users", { credentials: "same-origin" });
+        if (!r.ok) {
+          const data = (await r.json().catch(() => ({}))) as { error?: string };
+          throw new Error(data.error || `HTTP ${r.status}`);
+        }
+        const data = (await r.json()) as { users: AdminUser[] };
+        setUsers(data.users);
       }
-      const data = (await r.json()) as { users: AdminUser[] };
-      setUsers(data.users);
+      const rp = await fetch("/api/processes", { credentials: "same-origin" });
+      if (!rp.ok) {
+        const data = (await rp.json().catch(() => ({}))) as { error?: string };
+        throw new Error(data.error || `HTTP ${rp.status}`);
+      }
+      const dataP = (await rp.json()) as { processes: AccessRow[] };
+      setProcesses(dataP.processes);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to load users.");
+      setError(e instanceof Error ? e.message : "Failed to load.");
     } finally {
       setLoading(false);
     }
@@ -49,6 +84,83 @@ export default function AdminScreen({
   useEffect(() => {
     refresh();
   }, []);
+
+  // ----- process-access mutations -----
+  async function setProcessOwner(slug: string, username: string) {
+    setError(null);
+    try {
+      const r = await fetch(
+        `/api/processes/${encodeURIComponent(slug)}/owner`,
+        {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username }),
+        },
+      );
+      const data = (await r.json()) as { process?: AccessRow; error?: string };
+      if (!r.ok || !data.process) {
+        setError(data.error || `HTTP ${r.status}`);
+        return;
+      }
+      setProcesses((prev) =>
+        prev.map((p) =>
+          p.slug === slug ? { ...p, ...data.process!, title: p.title } : p,
+        ),
+      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to set owner.");
+    }
+  }
+
+  async function grantAccess(slug: string, username: string) {
+    setError(null);
+    try {
+      const r = await fetch(
+        `/api/processes/${encodeURIComponent(slug)}/grant`,
+        {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username }),
+        },
+      );
+      const data = (await r.json()) as { process?: AccessRow; error?: string };
+      if (!r.ok || !data.process) {
+        setError(data.error || `HTTP ${r.status}`);
+        return;
+      }
+      setProcesses((prev) =>
+        prev.map((p) =>
+          p.slug === slug ? { ...p, ...data.process!, title: p.title } : p,
+        ),
+      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to grant access.");
+    }
+  }
+
+  async function revokeAccess(slug: string, username: string) {
+    setError(null);
+    try {
+      const r = await fetch(
+        `/api/processes/${encodeURIComponent(slug)}/grant/${encodeURIComponent(username)}`,
+        { method: "DELETE", credentials: "same-origin" },
+      );
+      const data = (await r.json()) as { process?: AccessRow; error?: string };
+      if (!r.ok || !data.process) {
+        setError(data.error || `HTTP ${r.status}`);
+        return;
+      }
+      setProcesses((prev) =>
+        prev.map((p) =>
+          p.slug === slug ? { ...p, ...data.process!, title: p.title } : p,
+        ),
+      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to revoke.");
+    }
+  }
 
   async function patchUser(username: string, patch: Partial<AdminUser>) {
     setError(null);
@@ -113,27 +225,50 @@ export default function AdminScreen({
       <main className="admin-page">
         <header className="admin-page-head">
           <div>
-            <h1>Users &amp; access</h1>
+            <h1>{user.isAdmin ? "Users & access" : "Process access"}</h1>
             <p>
-              Create accounts, set entitlements, and reset passwords. There is
-              no self-service password reset — this page is how locked-out
-              users get back in.
+              {user.isAdmin
+                ? "Create accounts, set entitlements, reset passwords, and decide who owns or can open each process."
+                : "Manage who else can open processes you own. Owners + admins grant access; there is no self-service request flow yet."}
             </p>
           </div>
-          <button
-            type="button"
-            className="admin-newbtn"
-            onClick={() => setCreating(true)}
-          >
-            + New user
-          </button>
+          {tab === "users" && user.isAdmin && (
+            <button
+              type="button"
+              className="admin-newbtn"
+              onClick={() => setCreating(true)}
+            >
+              + New user
+            </button>
+          )}
         </header>
+
+        {user.isAdmin && (
+          <div className="admin-tabs" role="tablist">
+            <button
+              role="tab"
+              aria-selected={tab === "users"}
+              className={`admin-tab${tab === "users" ? " on" : ""}`}
+              onClick={() => setTab("users")}
+            >
+              Users <span className="admin-tab-num">{users.length}</span>
+            </button>
+            <button
+              role="tab"
+              aria-selected={tab === "processes"}
+              className={`admin-tab${tab === "processes" ? " on" : ""}`}
+              onClick={() => setTab("processes")}
+            >
+              Processes <span className="admin-tab-num">{processes.length}</span>
+            </button>
+          </div>
+        )}
 
         {error && <div className="admin-error">⚠ {error}</div>}
 
         {loading ? (
-          <div className="admin-loading">Loading users…</div>
-        ) : (
+          <div className="admin-loading">Loading…</div>
+        ) : tab === "users" && user.isAdmin ? (
           <table className="admin-table">
             <thead>
               <tr>
@@ -159,6 +294,17 @@ export default function AdminScreen({
               ))}
             </tbody>
           </table>
+        ) : (
+          <ProcessesTab
+            user={user}
+            processes={processes}
+            users={users}
+            onSetOwner={setProcessOwner}
+            onGrant={grantAccess}
+            onRevoke={revokeAccess}
+            grantingSlug={grantingSlug}
+            setGrantingSlug={setGrantingSlug}
+          />
         )}
       </main>
 
@@ -178,6 +324,240 @@ export default function AdminScreen({
           onClose={() => setResetFor(null)}
         />
       )}
+    </div>
+  );
+}
+
+function ProcessesTab({
+  user,
+  processes,
+  users,
+  onSetOwner,
+  onGrant,
+  onRevoke,
+  grantingSlug,
+  setGrantingSlug,
+}: {
+  user: User;
+  processes: AccessRow[];
+  users: AdminUser[]; // empty for non-admins
+  onSetOwner: (slug: string, username: string) => void;
+  onGrant: (slug: string, username: string) => void;
+  onRevoke: (slug: string, username: string) => void;
+  grantingSlug: string | null;
+  setGrantingSlug: (slug: string | null) => void;
+}) {
+  if (processes.length === 0) {
+    return (
+      <div className="admin-empty">
+        {user.isAdmin
+          ? "No processes tracked yet."
+          : "You don't own any processes. An admin can assign one to you."}
+      </div>
+    );
+  }
+  return (
+    <>
+      <table className="admin-table">
+        <thead>
+          <tr>
+            <th>Process</th>
+            <th>Owner</th>
+            <th>Grantees</th>
+            <th />
+          </tr>
+        </thead>
+        <tbody>
+          {processes.map((p) => (
+            <ProcessRow
+              key={p.slug}
+              p={p}
+              isAdmin={user.isAdmin === true}
+              users={users}
+              onSetOwner={(uname) => onSetOwner(p.slug, uname)}
+              onGrant={() => setGrantingSlug(p.slug)}
+              onRevoke={(uname) => onRevoke(p.slug, uname)}
+            />
+          ))}
+        </tbody>
+      </table>
+      {grantingSlug && (
+        <GrantDialog
+          slug={grantingSlug}
+          processTitle={
+            processes.find((p) => p.slug === grantingSlug)?.title ?? grantingSlug
+          }
+          currentGrantees={
+            processes.find((p) => p.slug === grantingSlug)?.grantees ?? []
+          }
+          owner={
+            processes.find((p) => p.slug === grantingSlug)?.owner ?? ""
+          }
+          users={users}
+          onClose={() => setGrantingSlug(null)}
+          onGrant={(uname) => {
+            onGrant(grantingSlug, uname);
+            setGrantingSlug(null);
+          }}
+        />
+      )}
+    </>
+  );
+}
+
+function ProcessRow({
+  p,
+  isAdmin,
+  users,
+  onSetOwner,
+  onGrant,
+  onRevoke,
+}: {
+  p: AccessRow;
+  isAdmin: boolean;
+  users: AdminUser[];
+  onSetOwner: (username: string) => void;
+  onRevoke: (username: string) => void;
+  onGrant: () => void;
+}) {
+  return (
+    <tr>
+      <td>
+        <span className="admin-mono">{p.slug}</span>
+        <div className="admin-cell-role">{p.title}</div>
+      </td>
+      <td>
+        {isAdmin && users.length > 0 ? (
+          <select
+            className="admin-select"
+            value={p.owner}
+            onChange={(e) => onSetOwner(e.target.value)}
+          >
+            {!p.owner && <option value="">— unassigned —</option>}
+            {users.map((u) => (
+              <option key={u.username} value={u.username}>
+                {u.username} · {u.name}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <span className="admin-mono">{p.owner || "—"}</span>
+        )}
+      </td>
+      <td>
+        {p.grantees.length === 0 ? (
+          <span style={{ color: "var(--muted)", fontSize: "var(--text-xs)" }}>
+            none
+          </span>
+        ) : (
+          <span className="admin-grantees">
+            {p.grantees.map((g) => (
+              <span key={g} className="admin-grantee-chip">
+                <span className="admin-mono">{g}</span>
+                <button
+                  type="button"
+                  className="admin-grantee-x"
+                  onClick={() => onRevoke(g)}
+                  aria-label={`Revoke ${g}`}
+                  title={`Revoke ${g}'s access`}
+                >
+                  ✕
+                </button>
+              </span>
+            ))}
+          </span>
+        )}
+      </td>
+      <td className="admin-cell-actions">
+        <button type="button" className="admin-link" onClick={onGrant}>
+          + Grant access
+        </button>
+      </td>
+    </tr>
+  );
+}
+
+function GrantDialog({
+  slug,
+  processTitle,
+  currentGrantees,
+  owner,
+  users,
+  onClose,
+  onGrant,
+}: {
+  slug: string;
+  processTitle: string;
+  currentGrantees: string[];
+  owner: string;
+  users: AdminUser[];
+  onClose: () => void;
+  onGrant: (username: string) => void;
+}) {
+  const [picked, setPicked] = useState("");
+  const [typed, setTyped] = useState("");
+  // For admins we know the user list and offer a picker. For owners we
+  // don't (server returns just the access metadata) — they type a username.
+  const exclude = new Set([owner, ...currentGrantees]);
+  const choices = users.filter((u) => !exclude.has(u.username));
+  const value = picked || typed.trim();
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <form
+        className="modal admin-modal"
+        onClick={(e) => e.stopPropagation()}
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (value) onGrant(value);
+        }}
+      >
+        <div className="modal-title">Grant access · {processTitle}</div>
+        <p className="modal-text">
+          Pick or type a username. The user will see this process the next
+          time they reload — they need to have the <b>PM</b> module
+          entitlement separately.
+        </p>
+        {choices.length > 0 ? (
+          <label className="login-field">
+            <span>User</span>
+            <select
+              className="admin-select"
+              value={picked}
+              onChange={(e) => {
+                setPicked(e.target.value);
+                setTyped("");
+              }}
+            >
+              <option value="">— choose —</option>
+              {choices.map((u) => (
+                <option key={u.username} value={u.username}>
+                  {u.username} · {u.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : (
+          <label className="login-field">
+            <span>Username</span>
+            <input
+              value={typed}
+              onChange={(e) => setTyped(e.target.value)}
+              placeholder="e.g. s.kowalski"
+              autoFocus
+            />
+          </label>
+        )}
+        <div className="modal-actions">
+          <button type="button" className="act" onClick={onClose}>
+            Cancel
+          </button>
+          <span className="modal-actions-gap" />
+          <button type="submit" className="act ai" disabled={!value}>
+            Grant
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

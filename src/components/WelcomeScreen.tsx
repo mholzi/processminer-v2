@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { ProcessDoc } from "@/lib/wiki";
-import { hasEntitlement, initials, type User } from "@/lib/user";
+import { hasEntitlement, type User } from "@/lib/user";
+import UserMenu from "./UserMenu";
 import { isOpen } from "@/lib/lint";
 import RelativeTime from "./RelativeTime";
 
@@ -86,6 +87,7 @@ export default function WelcomeScreen({
   onEnterProcessminer,
   onEnterArchitectminer,
   onEnterAdmin,
+  onUserUpdated,
   onSignOut,
 }: {
   docs: ProcessDoc[];
@@ -94,6 +96,8 @@ export default function WelcomeScreen({
   onEnterArchitectminer: (slug?: string) => void;
   /** Set only for admin users — opens the admin screen. */
   onEnterAdmin?: () => void;
+  /** Called when the user updates their own profile from the avatar menu. */
+  onUserUpdated: (u: User) => void;
   onSignOut: () => void;
 }) {
   const hasPM = hasEntitlement(user, "pm");
@@ -269,28 +273,15 @@ export default function WelcomeScreen({
         )}
 
         <span className="ws-spacer" />
-        {onEnterAdmin && (
-          <button
-            type="button"
-            className="ws-admin-link"
-            onClick={onEnterAdmin}
-            title="User administration"
-          >
-            ⚙ Admin
-          </button>
-        )}
         <span className="ws-user-mini">
           {user.name} · {user.role}
         </span>
-        <button
-          type="button"
-          className="ws-avatar"
-          onClick={onSignOut}
-          title="Sign out"
-          aria-label="Sign out"
-        >
-          {initials(user.name)}
-        </button>
+        <UserMenu
+          user={user}
+          onUserUpdated={onUserUpdated}
+          onEnterAdmin={onEnterAdmin}
+          onSignOut={onSignOut}
+        />
       </header>
 
       <main className="ws-page">

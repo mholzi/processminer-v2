@@ -1,5 +1,8 @@
+import { cookies } from "next/headers";
 import { getSchema, listProcesses, getProcess, type ProcessDoc } from "@/lib/wiki";
 import { listFeedback } from "@/lib/feedback-store";
+import { COOKIE_NAME, verifySession } from "@/lib/auth-server";
+import { accessibleSlugs } from "@/lib/process-access";
 import AuthGate from "./AuthGate";
 
 // The wiki under wiki/ is a live filesystem source of truth: skill Python
@@ -9,16 +12,32 @@ import AuthGate from "./AuthGate";
 // statically prerendered and router.refresh() cannot pick up skill writes.
 export const dynamic = "force-dynamic";
 
-// Server component: reads the file-backed Karpathy wiki and hands every
-// documented process to the client app. AuthGate gates it behind a
-// name + role identity, then renders the process-doc screen.
-export default function Home() {
+// Server component: reads the file-backed Karpathy wiki, filters it by the
+// signed-in user's per-process entitlements, and hands the entitled subset
+// to the client. AuthGate decides whether to render the welcome screen or
+// the login gate. Module entitlements (User.entitlements) gate which
+// modules the user sees at all; process-access.json gates which processes.
+export default async function Home() {
   const schema = getSchema();
-  const docs = listProcesses()
+  const allDocs = listProcesses()
     .map((p) => getProcess(p.slug))
     .filter((d): d is ProcessDoc => d !== null);
 
-  if (docs.length === 0) {
+  // Look up the signed-in user from the session cookie so we can filter
+  // the doc list before it leaves the server. If there is no session
+  // (login gate will appear), pass an empty doc list — there is nothing
+  // a signed-out viewer should be able to enumerate.
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get(COOKIE_NAME)?.value;
+  const sessionUser = verifySession(sessionCookie);
+  const docs = sessionUser
+    ? (() => {
+        const allowed = accessibleSlugs(sessionUser);
+        return allDocs.filter((d) => allowed.has(d.slug));
+      })()
+    : [];
+
+  if (allDocs.length === 0) {
     return (
       <main style={{ padding: 40 }}>
         <h1>No process found</h1>
