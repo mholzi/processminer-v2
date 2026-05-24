@@ -10,7 +10,6 @@ import {
   CapabilityCatalog,
   ApplicationRegister,
   NfrTemplates,
-  PatternLibrary,
 } from "./LibraryViews";
 import { AllProcesses, MyAdrs, MigrationPlans } from "./PersonalViews";
 
@@ -21,8 +20,7 @@ type SidebarSection =
   | "migration-plans"
   | "capabilities"
   | "applications"
-  | "nfrs"
-  | "patterns";
+  | "nfrs";
 
 // ArchitectMiner's first surface — the handoff inbox. Lists every process
 // from Processminer with a derived "ready for architecture" status. The
@@ -211,7 +209,9 @@ export default function HandoffInbox({
           </button>
         </Tooltip>
         <span className="am-crumb">
-          workspace · <b>Retail Banking</b>
+          <b>Handoff inbox</b>
+          <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
+          {docs.length} process{docs.length === 1 ? "" : "es"}
         </span>
         <span className="spacer" style={{ flex: 1 }} />
         <span className="am-user">
@@ -279,13 +279,6 @@ export default function HandoffInbox({
             NFR templates
             <span className="am-navitem-n">{sideCounts.nfrs}</span>
           </div>
-          <div
-            className={`am-navitem${sidebarSection === "patterns" ? " am-navitem-on" : ""}`}
-            onClick={() => setSidebarSection("patterns")}
-          >
-            Pattern library
-            <span className="am-navitem-n">14</span>
-          </div>
         </aside>
 
         <main className="am-main">
@@ -295,7 +288,6 @@ export default function HandoffInbox({
         {sidebarSection === "capabilities" && <CapabilityCatalog docs={docs} />}
         {sidebarSection === "applications" && <ApplicationRegister docs={docs} />}
         {sidebarSection === "nfrs" && <NfrTemplates docs={docs} />}
-        {sidebarSection === "patterns" && <PatternLibrary />}
         {sidebarSection === null && (
           <>
           <div className="am-head">

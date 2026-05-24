@@ -147,7 +147,6 @@ export default function ArchitectureCanvas({
     };
   }, [doc]);
 
-  const pid = doc.process.id || "PR";
   const initials = user.name
     .split(/\s+/)
     .map((n) => n[0])
@@ -324,43 +323,67 @@ export default function ArchitectureCanvas({
           {view === "capabilities" && (
             <>
               <b>Capabilities</b>
-              <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
-              CAP-{pid}-002
+              {archData.caps.length > 0 && (
+                <>
+                  <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
+                  {archData.caps[0].id}
+                </>
+              )}
             </>
           )}
           {view === "applications" && (
             <>
               <b>Target Applications</b>
-              <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
-              TGTAPP-{pid}-001
+              {archData.apps.length > 0 && (
+                <>
+                  <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
+                  {archData.apps[0].id}
+                </>
+              )}
             </>
           )}
           {view === "integrations" && (
             <>
               <b>Target Integrations</b>
-              <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
-              INT-{pid}-001
+              {archData.integrations.length > 0 && (
+                <>
+                  <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
+                  {archData.integrations[0].id}
+                </>
+              )}
             </>
           )}
           {view === "components" && (
             <>
               <b>Components</b>
-              <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
-              COMP-{pid}-002
+              {archData.components.length > 0 && (
+                <>
+                  <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
+                  {archData.components[0].id}
+                </>
+              )}
             </>
           )}
           {view === "nfrs" && (
             <>
               <b>NFRs</b>
-              <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
-              NFR-{pid}-001
+              {archData.nfrsReal.length > 0 && (
+                <>
+                  <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
+                  {archData.nfrsReal[0].id}
+                </>
+              )}
             </>
           )}
           {view === "migration" && (
             <>
               <b>Migration Phases</b>
-              <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
-              MIG-{pid}-002
+              {archData.migrations.length > 0 && (
+                <>
+                  <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
+                  {archData.migrations[0].id}
+                </>
+              )}
             </>
           )}
           {view === "inputs" && (
@@ -1098,80 +1121,129 @@ export default function ArchitectureCanvas({
             </main>
 
             <aside className="am-canvas-details">
-              <h3>Capability — Case capture &amp; validation</h3>
-              <div className="am-canvas-details-id">CAP-{pid}-002</div>
+              {archData.caps.length === 0 ? (
+                <div className="am-input-empty" style={{ marginTop: 0 }}>
+                  No capability selected — author one to see its details here.
+                </div>
+              ) : (() => {
+                const cap = archData.caps[0];
+                const hostedRaw = Array.isArray(cap.meta.hostedIn)
+                  ? cap.meta.hostedIn[0]
+                  : (cap.meta.hostedIn as string | undefined);
+                const hostedApp = hostedRaw ? archData.apps.find((a) => a.id === hostedRaw) : undefined;
+                const realisesStep = Array.isArray(cap.meta.realisesStep) ? cap.meta.realisesStep as string[] : [];
+                const realisesGap = Array.isArray(cap.meta.resolvesGap) ? cap.meta.resolvesGap as string[] : [];
+                const adrsForCap = archData.adrsReal.filter((a) => {
+                  const r = a.meta.realisesCapability ?? a.meta.realises;
+                  const list = Array.isArray(r) ? r : r ? [r as string] : [];
+                  return list.includes(cap.id);
+                });
+                const nfrsForCap = archData.nfrsReal.filter((n) => {
+                  const a = Array.isArray(n.meta.appliesTo) ? n.meta.appliesTo as string[] : [];
+                  return a.includes(cap.id);
+                });
+                return (
+                  <>
+                    <h3>Capability — {cap.title}</h3>
+                    <div className="am-canvas-details-id">{cap.id}</div>
+                    <div className="am-canvas-details-block">
+                      {hostedApp && (
+                        <div className="am-canvas-details-row">
+                          <span className="am-canvas-details-k">Hosted in</span>
+                          <span>
+                            {hostedApp.title}
+                            {hostedApp.meta.verdict && (
+                              <span
+                                className={`am-verdict am-verdict-${((hostedApp.meta.verdict as string) ?? "").toLowerCase()}`}
+                                style={{ marginLeft: 6 }}
+                              >
+                                {hostedApp.meta.verdict as string}
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                      )}
+                      {cap.meta.criticality && (
+                        <div className="am-canvas-details-row">
+                          <span className="am-canvas-details-k">Criticality</span>
+                          <span>{cap.meta.criticality as string}</span>
+                        </div>
+                      )}
+                      {cap.meta.reuse && (
+                        <div className="am-canvas-details-row">
+                          <span className="am-canvas-details-k">Reuse</span>
+                          <span>{cap.meta.reuse as string}</span>
+                        </div>
+                      )}
+                      {cap.meta.owningDomain && (
+                        <div className="am-canvas-details-row">
+                          <span className="am-canvas-details-k">Owning domain</span>
+                          <span>{cap.meta.owningDomain as string}</span>
+                        </div>
+                      )}
+                      <div className="am-canvas-details-row">
+                        <span className="am-canvas-details-k">Status</span>
+                        <span>
+                          <span className={`am-pill am-pill-${cap.status === "confirmed" ? "hi" : "mid"}`}>
+                            {cap.status === "confirmed" ? "Accepted" : "Draft"}
+                          </span>
+                        </span>
+                      </div>
+                    </div>
 
-              <div className="am-canvas-details-block">
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Hosted in</span>
-                  <span>Case Hub <span className="am-verdict am-verdict-build">BUILD</span></span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Criticality</span>
-                  <span><span className="am-pill am-pill-mid">High</span></span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Reuse</span>
-                  <span>new — no existing analog</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Owning domain</span>
-                  <span>Case &amp; lifecycle management</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Owner</span>
-                  <span>{user.name} · Domain Architect</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Status</span>
-                  <span><span className="am-pill am-pill-hi">Accepted</span> · today</span>
-                </div>
-              </div>
+                    {realisesStep.length > 0 && (
+                      <div className="am-canvas-details-block">
+                        <h4>Realises target steps</h4>
+                        <div className="am-canvas-traces">
+                          {realisesStep.map((id) => (
+                            <span key={id} className="am-canvas-trace">{id}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
-              <div className="am-canvas-details-block">
-                <h4>Realises target steps</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">TS-{pid}-002 Capture</span>
-                  <span className="am-canvas-trace">TS-{pid}-003 Validate</span>
-                  <span className="am-canvas-trace">TS-{pid}-004 Enrich</span>
-                  <span className="am-canvas-trace">TS-{pid}-009 Triage</span>
-                </div>
-              </div>
+                    {adrsForCap.length > 0 && (
+                      <div className="am-canvas-details-block">
+                        <h4>Realised by ADRs</h4>
+                        <div className="am-canvas-traces">
+                          {adrsForCap.map((a) => (
+                            <span key={a.id} className="am-canvas-trace">{a.id}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
-              <div className="am-canvas-details-block">
-                <h4>Realised by ADRs</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">ADR-{pid}-002 schema</span>
-                  <span className="am-canvas-trace">ADR-{pid}-007 orchestration</span>
-                  <span className="am-canvas-trace">ADR-{pid}-011 async revocation</span>
-                </div>
-              </div>
+                    {nfrsForCap.length > 0 && (
+                      <div className="am-canvas-details-block">
+                        <h4>NFRs</h4>
+                        <div className="am-canvas-traces">
+                          {nfrsForCap.map((n) => (
+                            <span key={n.id} className="am-canvas-trace">{n.id}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
-              <div className="am-canvas-details-block">
-                <h4>NFRs</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">NFR-{pid}-001 p95 &lt; 1.2s</span>
-                  <span className="am-canvas-trace">NFR-{pid}-003 audit-log 10y</span>
-                </div>
-              </div>
+                    {realisesGap.length > 0 && (
+                      <div className="am-canvas-details-block">
+                        <h4>Resolves gaps</h4>
+                        <div className="am-canvas-traces">
+                          {realisesGap.map((id) => (
+                            <span key={id} className="am-canvas-trace">{id}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
-              <div className="am-canvas-details-block">
-                <h4>Resolves gaps</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">G-{pid}-003 mailbox-only triage</span>
-                  <span className="am-canvas-trace">G-{pid}-004 no audit trail</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Provenance</h4>
-                <div className="am-canvas-details-prov">
-                  <div><span className="am-canvas-verified">✓</span> Hosted in — human-confirmed</div>
-                  <div><span className="am-canvas-verified">✓</span> Criticality — derived from TD-{pid}-001</div>
-                  <div><span className="am-canvas-verified">✓</span> Reuse — verified against catalog (no match)</div>
-                  <div><span className="am-canvas-machine">▲</span> NFRs — drafted by solution-architect agent · review</div>
-                </div>
-              </div>
+                    {cap.blocks.length > 0 && cap.blocks.map((b) => (
+                      <div className="am-input-block" key={b.heading}>
+                        <h4>{b.heading}</h4>
+                        <div className="am-input-prose"><Markdown text={b.text} /></div>
+                      </div>
+                    ))}
+                  </>
+                );
+              })()}
             </aside>
             {chatSidebar}
           </>
@@ -1659,183 +1731,141 @@ export default function ArchitectureCanvas({
                 </button>
               </div>
 
-              {archData.migrations.length === 0 && (
+              {archData.migrations.length === 0 ? (
                 <div className="am-input-empty">
                   No migration phases authored yet for <b>{doc.process.title}</b>.
-                  The mock Gantt below is illustrative only. Author element files under{" "}
+                  Author element files under{" "}
                   <code>wiki/processes/{doc.slug}/migration-phases/</code>.
+                </div>
+              ) : (
+                <div className="am-canvas-phase-cards">
+                  {archData.migrations.map((m, i) => {
+                    const phaseStatus = ((m.meta.phaseStatus as string) ?? "").toLowerCase();
+                    const tone =
+                      phaseStatus === "done" ? "hi"
+                        : phaseStatus === "in_progress" || phaseStatus === "in-progress" ? "mid"
+                        : "neu";
+                    const statusLbl =
+                      phaseStatus === "done" ? "Done"
+                        : phaseStatus === "in_progress" || phaseStatus === "in-progress" ? "In flight"
+                        : "Planned";
+                    const start = (m.meta.startQuarter as string) ?? "";
+                    const end = (m.meta.endQuarter as string) ?? "";
+                    const window = start && end ? `${start} — ${end}` : start || end || "—";
+                    const delivers = Array.isArray(m.meta.delivers) ? m.meta.delivers as string[] : [];
+                    const deps = Array.isArray(m.meta.dependsOn) ? m.meta.dependsOn as string[] : [];
+                    return (
+                      <div key={m.id} className={`am-canvas-phase-card${i === 0 ? " am-canvas-phase-card-sel" : ""}`}>
+                        <div className="am-canvas-phase-head">
+                          <span className="am-canvas-phase-id">{m.id}</span>
+                          <span className={`am-pill am-pill-${tone}`}>
+                            <span className="am-dot" />
+                            {statusLbl}
+                          </span>
+                        </div>
+                        <div className="am-canvas-phase-name">{m.title}</div>
+                        <div className="am-canvas-phase-when">{window}</div>
+                        {delivers.length > 0 && (
+                          <div className="am-canvas-phase-deps">
+                            <b>Delivers</b>: {delivers.join(", ")}
+                          </div>
+                        )}
+                        {deps.length > 0 && (
+                          <div className="am-canvas-phase-deps">
+                            <b>Depends on</b>: {deps.join(", ")}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
 
-              <div className="am-canvas-gantt-wrap">
-                <div className="am-canvas-gantt-legend">
-                  <span><i className="am-canvas-gantt-sw am-canvas-gantt-sw-done" />done</span>
-                  <span><i className="am-canvas-gantt-sw am-canvas-gantt-sw-flight" />in flight</span>
-                  <span><i className="am-canvas-gantt-sw am-canvas-gantt-sw-planned" />planned</span>
-                </div>
-
-                <svg viewBox="0 0 880 320" className="am-canvas-gantt-svg">
-                  <g>
-                    <line className="am-svg-grid-line" x1="160" y1="40" x2="160" y2="290" />
-                    <line className="am-svg-grid-line" x1="280" y1="40" x2="280" y2="290" />
-                    <line className="am-svg-grid-line" x1="400" y1="40" x2="400" y2="290" />
-                    <line className="am-svg-grid-line" x1="520" y1="40" x2="520" y2="290" />
-                    <line className="am-svg-grid-line" x1="640" y1="40" x2="640" y2="290" />
-                    <line className="am-svg-grid-line" x1="760" y1="40" x2="760" y2="290" />
-
-                    <text className="am-svg-axis-lbl" x="160" y="30" textAnchor="middle">2026 Q2</text>
-                    <text className="am-svg-axis-lbl" x="280" y="30" textAnchor="middle">2026 Q3</text>
-                    <text className="am-svg-axis-lbl" x="400" y="30" textAnchor="middle">2026 Q4</text>
-                    <text className="am-svg-axis-lbl" x="520" y="30" textAnchor="middle">2027 Q1</text>
-                    <text className="am-svg-axis-lbl" x="640" y="30" textAnchor="middle">2027 Q2</text>
-                    <text className="am-svg-axis-lbl" x="760" y="30" textAnchor="middle">2027 Q3</text>
-                  </g>
-
-                  <line className="am-svg-today" x1="200" y1="40" x2="200" y2="295" />
-                  <text className="am-svg-today-lbl" x="204" y="50">TODAY</text>
-
-                  <text className="am-svg-row-id" x="14" y="90">MIG-{pid}-001</text>
-                  <text className="am-svg-row-lbl" x="14" y="106">Foundations &amp; SSO</text>
-                  <rect className="am-svg-gantt-bar-done" x="160" y="80" width="120" height="32" rx="4" />
-                  <text className="am-svg-gantt-bar-lbl" x="170" y="100">Foundations · done</text>
-
-                  <text className="am-svg-row-id" x="14" y="150">MIG-{pid}-002</text>
-                  <text className="am-svg-row-lbl" x="14" y="166">Case Hub live · dual-write to legacy</text>
-                  <rect className="am-svg-gantt-bar-flight" x="160" y="140" width="360" height="32" rx="4" />
-                  <text className="am-svg-gantt-bar-lbl" x="170" y="160">Case Hub MVP → migration · in flight</text>
-
-                  <text className="am-svg-row-id" x="14" y="210">MIG-{pid}-003</text>
-                  <text className="am-svg-row-lbl" x="14" y="226">Risk Score Service onboarding</text>
-                  <rect className="am-svg-gantt-bar-planned" x="400" y="200" width="240" height="32" rx="4" />
-                  <text className="am-svg-gantt-bar-lbl am-svg-gantt-bar-lbl-planned" x="410" y="220">Vendor · 8-week onboarding</text>
-
-                  <text className="am-svg-row-id" x="14" y="270">MIG-{pid}-004</text>
-                  <text className="am-svg-row-lbl" x="14" y="286">Legacy decommission &amp; cutover</text>
-                  <rect className="am-svg-gantt-bar-planned" x="520" y="260" width="240" height="32" rx="4" />
-                  <text className="am-svg-gantt-bar-lbl am-svg-gantt-bar-lbl-planned" x="530" y="280">Full cutover · go-live 2027 Q2</text>
-
-                  <path className="am-svg-dep" d="M280 96 C 320 96, 320 156, 360 156" />
-                  <polygon className="am-svg-dep-arrow" points="360,156 354,152 354,160" />
-                  <path className="am-svg-dep" d="M520 156 C 540 156, 540 216, 560 216" />
-                  <polygon className="am-svg-dep-arrow" points="560,216 554,212 554,220" />
-                  <path className="am-svg-dep" d="M640 216 C 660 216, 660 276, 680 276" />
-                  <polygon className="am-svg-dep-arrow" points="680,276 674,272 674,280" />
-                </svg>
-              </div>
-
-              <div className="am-canvas-phase-cards">
-                <div className="am-canvas-phase-card">
-                  <div className="am-canvas-phase-head">
-                    <span className="am-canvas-phase-id">MIG-{pid}-001</span>
-                    <span className="am-pill am-pill-hi"><span className="am-dot" />Done</span>
-                  </div>
-                  <div className="am-canvas-phase-name">Foundations &amp; SSO</div>
-                  <div className="am-canvas-phase-when">2026 Q2 — 2026 Q3</div>
-                  <div className="am-canvas-phase-deps"><b>Delivers</b>: ADR-{pid}-003 Keycloak SSO</div>
-                </div>
-                <div className="am-canvas-phase-card am-canvas-phase-card-sel">
-                  <div className="am-canvas-phase-head">
-                    <span className="am-canvas-phase-id">MIG-{pid}-002</span>
-                    <span className="am-pill am-pill-mid"><span className="am-dot" />In flight</span>
-                  </div>
-                  <div className="am-canvas-phase-name">Case Hub live · dual-write</div>
-                  <div className="am-canvas-phase-when">2026 Q2 — 2027 Q1 · 60% complete</div>
-                  <div className="am-canvas-phase-deps"><b>Delivers</b>: CAP-{pid}-002, COMP-{pid}-002…008</div>
-                </div>
-                <div className="am-canvas-phase-card">
-                  <div className="am-canvas-phase-head">
-                    <span className="am-canvas-phase-id">MIG-{pid}-003</span>
-                    <span className="am-pill am-pill-neu"><span className="am-dot" />Planned</span>
-                  </div>
-                  <div className="am-canvas-phase-name">Risk Score onboarding</div>
-                  <div className="am-canvas-phase-when">2026 Q4 — 2027 Q2</div>
-                  <div className="am-canvas-phase-deps"><b>Depends on</b>: MIG-{pid}-002</div>
-                </div>
-                <div className="am-canvas-phase-card">
-                  <div className="am-canvas-phase-head">
-                    <span className="am-canvas-phase-id">MIG-{pid}-004</span>
-                    <span className="am-pill am-pill-neu"><span className="am-dot" />Planned</span>
-                  </div>
-                  <div className="am-canvas-phase-name">Legacy decommission</div>
-                  <div className="am-canvas-phase-when">2027 Q1 — 2027 Q3</div>
-                  <div className="am-canvas-phase-deps"><b>Depends on</b>: MIG-{pid}-002, MIG-{pid}-003</div>
-                </div>
-              </div>
-
-              <div className="am-canvas-banner">
-                Illustrative content — Migration Phases will be authored as real
-                schema-validated elements once the architect data model lands.
+              <div
+                className="am-canvas-banner"
+                style={{ background: "var(--hi-bg)", color: "var(--hi)", borderColor: "#c7dccf" }}
+              >
+                Real data — file-backed under{" "}
+                <code>wiki/processes/{doc.slug}/migration-phases/</code>.
               </div>
             </main>
 
             <aside className="am-canvas-details">
-              <h3>Phase — Case Hub live · dual-write</h3>
-              <div className="am-canvas-details-id">MIG-{pid}-002</div>
+              {archData.migrations.length === 0 ? (
+                <div className="am-input-empty" style={{ marginTop: 0 }}>
+                  No phase selected — author one to see its details here.
+                </div>
+              ) : (() => {
+                const m = archData.migrations[0];
+                const phaseStatus = ((m.meta.phaseStatus as string) ?? "").toLowerCase();
+                const statusLbl =
+                  phaseStatus === "done" ? "Done"
+                    : phaseStatus === "in_progress" || phaseStatus === "in-progress" ? "In flight"
+                    : "Planned";
+                const start = (m.meta.startQuarter as string) ?? "";
+                const end = (m.meta.endQuarter as string) ?? "";
+                const delivers = Array.isArray(m.meta.delivers) ? m.meta.delivers as string[] : [];
+                const deps = Array.isArray(m.meta.dependsOn) ? m.meta.dependsOn as string[] : [];
+                return (
+                  <>
+                    <h3>Phase — {m.title}</h3>
+                    <div className="am-canvas-details-id">{m.id}</div>
+                    <div className="am-canvas-details-block">
+                      <div className="am-canvas-details-row">
+                        <span className="am-canvas-details-k">Status</span>
+                        <span>
+                          <span className={`am-pill am-pill-${
+                            phaseStatus === "done" ? "hi"
+                              : phaseStatus === "in_progress" || phaseStatus === "in-progress" ? "mid"
+                              : "neu"
+                          }`}>{statusLbl}</span>
+                        </span>
+                      </div>
+                      {(start || end) && (
+                        <div className="am-canvas-details-row">
+                          <span className="am-canvas-details-k">Window</span>
+                          <span>{start && end ? `${start} → ${end}` : start || end}</span>
+                        </div>
+                      )}
+                      {m.meta.owner && (
+                        <div className="am-canvas-details-row">
+                          <span className="am-canvas-details-k">Owner</span>
+                          <span>{m.meta.owner as string}</span>
+                        </div>
+                      )}
+                    </div>
 
-              <div className="am-canvas-details-block">
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Status</span>
-                  <span><span className="am-pill am-pill-mid">In flight</span> · 60% complete</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Window</span>
-                  <span>2026 Q2 → 2027 Q1</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Owner</span>
-                  <span>{user.name} · Domain Architect</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Delivery team</span>
-                  <span>case-ops squad · 6 FTE</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Budget</span>
-                  <span>€420k build · €120k/yr run</span>
-                </div>
-              </div>
+                    {delivers.length > 0 && (
+                      <div className="am-canvas-details-block">
+                        <h4>Delivers</h4>
+                        <div className="am-canvas-traces">
+                          {delivers.map((id) => (
+                            <span key={id} className="am-canvas-trace">{id}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
-              <div className="am-canvas-details-block">
-                <h4>Delivers</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">CAP-{pid}-002 capture &amp; validation</span>
-                  <span className="am-canvas-trace">CAP-{pid}-005 case lifecycle</span>
-                  <span className="am-canvas-trace">COMP-{pid}-002 Case Service</span>
-                  <span className="am-canvas-trace">COMP-{pid}-003 Workflow Engine</span>
-                </div>
-              </div>
+                    {deps.length > 0 && (
+                      <div className="am-canvas-details-block">
+                        <h4>Depends on</h4>
+                        <div className="am-canvas-traces">
+                          {deps.map((id) => (
+                            <span key={id} className="am-canvas-trace">{id}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
-              <div className="am-canvas-details-block">
-                <h4>Depends on</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">MIG-{pid}-001 Foundations &amp; SSO</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Blocks</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">MIG-{pid}-003 Risk Score onboarding</span>
-                  <span className="am-canvas-trace">MIG-{pid}-004 Legacy decommission</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Risks</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace" style={{ color: "var(--mid)" }}>⚠ dual-write reconciliation drift</span>
-                  <span className="am-canvas-trace" style={{ color: "var(--mid)" }}>⚠ Camunda licence renewal Q1</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Provenance</h4>
-                <div className="am-canvas-details-prov">
-                  <div><span className="am-canvas-verified">✓</span> Window — human-confirmed</div>
-                  <div><span className="am-canvas-verified">✓</span> Delivers — linked to approved capabilities</div>
-                  <div><span className="am-canvas-machine">▲</span> Risks — drafted by solution-architect agent · review</div>
-                </div>
-              </div>
+                    {m.blocks.length > 0 && m.blocks.map((b) => (
+                      <div className="am-input-block" key={b.heading}>
+                        <h4>{b.heading}</h4>
+                        <div className="am-input-prose"><Markdown text={b.text} /></div>
+                      </div>
+                    ))}
+                  </>
+                );
+              })()}
             </aside>
             {chatSidebar}
           </>
