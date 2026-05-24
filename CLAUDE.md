@@ -86,6 +86,26 @@ perspective specialists, the shared functional pattern (Brainstorm / Author /
 Verify), the QER step sequence, the approval model, and the verbatim cross-
 skill blocks. Do not deviate without explicit user approval.
 
+## BMAD-Method (parallel agent-builder toolkit)
+
+[`tools/bmad/`](tools/bmad/) holds an installed copy of the **BMAD-Method**
+agent builder ([bmad-code-org/BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD)),
+isolated to its own subdirectory so it cannot collide with the Processminer
+skills under `.claude/skills/`. BMAD is a separate framework for building
+AI agents — its 17 `bmad-*` skills (agent-builder, module-builder, workflow-
+builder, brainstorming, …) live under `tools/bmad/.claude/skills/`. They are
+**not** part of the Processminer QER pipeline; treat them as a parallel
+toolkit for authoring new agents and workflows.
+
+When working *inside* Processminer (any of the SME / architect specialists,
+the wiki write/patch scripts, the canvas), ignore BMAD — the SKILLS.md
+contract is the source of truth. When building a fresh agent from scratch,
+`cd tools/bmad/` and invoke its skills. To re-install or upgrade:
+
+```
+npx -y bmad-method install --directory tools/bmad --modules bmb --tools claude-code --yes
+```
+
 ## Reference docs
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) — cold-start reading guide (2hr/2day/2wk tracks)
@@ -95,3 +115,4 @@ skill blocks. Do not deviate without explicit user approval.
 - [HALLUCINATION-PLAN.md](HALLUCINATION-PLAN.md) — per-heading provenance contract
 - [docs/api.md](docs/api.md) — HTTP endpoint reference
 - [TODOS.md](TODOS.md) — open work items
+- [tools/bmad/](tools/bmad/) — BMAD-Method agent builder (parallel toolkit)

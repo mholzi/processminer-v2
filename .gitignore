@@ -40,3 +40,10 @@ tmp/
 # Local user store: bcrypt-hashed passwords, session secrets, audit log.
 # Server-only, never committed.
 /data/
+
+# BMAD-Method runtime artefacts under tools/bmad/. The committed source
+# (_bmad/, .claude/skills/bmad-*, scripts/) is what makes the agent-builder
+# reproducible; per-user state and generated outputs stay out of git.
+tools/bmad/_bmad/custom/config.user.toml
+tools/bmad/_bmad-output/
+tools/bmad/skills/reports/
