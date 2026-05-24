@@ -128,10 +128,14 @@ export function canAccess(user: StoredUser, slug: string): boolean {
 }
 
 /** Slugs the user is allowed to open. Admins see everything that exists
- *  in the access file. */
+ *  on disk under wiki/processes/ — not just the slugs already tracked in
+ *  the access file. The access file is for ownership + grantee bookkeeping;
+ *  it is not the admin's source of truth. A process that lands on disk
+ *  after server start (re-ingest, new-process skill, restored folder) is
+ *  immediately visible to admins without waiting for a server restart. */
 export function accessibleSlugs(user: StoredUser): Set<string> {
+  if (user.isAdmin) return new Set(existingSlugsOnDisk());
   const all = getAllAccess();
-  if (user.isAdmin) return new Set(all.map((r) => r.slug));
   const mine = new Set<string>();
   for (const r of all) {
     if (r.owner === user.username || r.grantees.includes(user.username)) {
