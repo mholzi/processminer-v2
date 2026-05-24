@@ -43,11 +43,11 @@ function archScopePreamble(d: ProcessDoc, user: User): string {
   ].join("\n");
 }
 
-// Frame-03 of the ArchitectMiner mockup, stubbed with mock ADR/capability
-// content. Inputs from Processminer (left nav, top group) use REAL counts
-// from the open process so the upstream side reads truthfully; the
-// architect-side elements are illustrative until the architect data model
-// lands.
+// The ArchitectMiner canvas — the architect-side counterpart of the
+// Processminer canvas. Every view derives from doc.elements: capabilities,
+// target applications, ADRs, integrations, components, NFRs and migration
+// phases on the architect side; the SME-side sections (left nav, "Inputs
+// from Processminer") are read-only references the architect builds on top.
 
 // Architect-relevant upstream sections — these are what the architect reads
 // before authoring. Order matches the natural flow of architecture work.
@@ -155,17 +155,6 @@ export default function ArchitectureCanvas({
     .slice(0, 2)
     .join("")
     .toUpperCase();
-
-  // Mock ADRs — content is illustrative. The open ADR's heading content is
-  // the long-form mockup body; the others are list-only.
-  const adrs = [
-    { id: `ADR-${pid}-001`, title: "Single case object across review lifecycle", status: "Accepted", trace: `TD-${pid}-001` },
-    { id: `ADR-${pid}-005`, title: "KYC data sourced from Customer Master, not re-entered", status: "Accepted", trace: `TD-${pid}-004` },
-    { id: `ADR-${pid}-007`, title: "Case orchestration via Camunda 8 BPMN engine", status: "Proposed", trace: `TD-${pid}-002`, open: true },
-    { id: `ADR-${pid}-008`, title: "Document ingestion via existing Hyland enterprise ECM", status: "Proposed", trace: `TD-${pid}-005` },
-    { id: `ADR-${pid}-009`, title: "Risk score recalculated nightly off DWH, not on-read", status: "Draft", trace: `G-${pid}-002` },
-  ];
-  const openAdr = adrs.find((a) => a.open) ?? adrs[2];
 
   // Real chat pipeline via the shared useAgentChat hook. Same SSE / activity
   // / skill chip / watchdog as Processminer; sessionStorage prefix "am-chat"
@@ -310,8 +299,12 @@ export default function ArchitectureCanvas({
           {view === "adrs" && (
             <>
               <b>Architecture Decisions</b>
-              <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
-              {openAdr.id}
+              {archData.adrsReal.length > 0 && (
+                <>
+                  <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
+                  {archData.adrsReal[0].id}
+                </>
+              )}
             </>
           )}
           {view === "diagram" && (
@@ -983,150 +976,6 @@ export default function ArchitectureCanvas({
                 </>
               );
             })()}
-
-            {/* LEGACY mock table below — gated to never render. */}
-            {false && (
-            <table className="am-canvas-trace-table">
-              <thead>
-                <tr>
-                  <th style={{ width: 100 }}>ID</th>
-                  <th>Element</th>
-                  <th style={{ width: 130 }}>Type</th>
-                  <th>Traces to upstream</th>
-                  <th style={{ width: 90, textAlign: "right" }}>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="am-canvas-trace-id">CAP-{pid}-002</td>
-                  <td className="am-canvas-trace-title">Case capture &amp; validation</td>
-                  <td className="am-canvas-trace-type">Capability</td>
-                  <td>
-                    <span className="am-canvas-trace">TS-{pid}-002</span>{" "}
-                    <span className="am-canvas-trace">TS-{pid}-003</span>{" "}
-                    <span className="am-canvas-trace">G-{pid}-004</span>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <span className="am-pill am-pill-hi">OK</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="am-canvas-trace-id">CAP-{pid}-005</td>
-                  <td className="am-canvas-trace-title">Case lifecycle</td>
-                  <td className="am-canvas-trace-type">Capability</td>
-                  <td>
-                    <span className="am-canvas-trace">TS-{pid}-005</span>{" "}
-                    <span className="am-canvas-trace">TD-{pid}-003</span>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <span className="am-pill am-pill-hi">OK</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="am-canvas-trace-id">ADR-{pid}-007</td>
-                  <td className="am-canvas-trace-title">Case orchestration via Camunda 8</td>
-                  <td className="am-canvas-trace-type">ADR</td>
-                  <td>
-                    <span className="am-canvas-trace">TD-{pid}-002</span>{" "}
-                    <span className="am-canvas-trace">G-{pid}-003</span>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <span className="am-pill am-pill-hi">OK</span>
-                  </td>
-                </tr>
-                <tr className="am-canvas-trace-row-partial">
-                  <td className="am-canvas-trace-id">ADR-{pid}-011</td>
-                  <td className="am-canvas-trace-title">Async revocation via Kafka topic</td>
-                  <td className="am-canvas-trace-type">ADR</td>
-                  <td>
-                    <span className="am-canvas-trace">TD-{pid}-006</span>{" "}
-                    <span className="am-canvas-trace am-canvas-trace-warn">
-                      G-{pid}-?? missing
-                    </span>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <span className="am-pill am-pill-mid">Partial</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="am-canvas-trace-id">NFR-{pid}-003</td>
-                  <td className="am-canvas-trace-title">Audit-log retention 10y</td>
-                  <td className="am-canvas-trace-type">NFR</td>
-                  <td>
-                    <span className="am-canvas-trace">CP-{pid}-004</span>{" "}
-                    <span className="am-canvas-trace">REG-{pid}-002</span>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <span className="am-pill am-pill-hi">OK</span>
-                  </td>
-                </tr>
-                <tr className="am-canvas-trace-row-partial">
-                  <td className="am-canvas-trace-id">NFR-{pid}-006</td>
-                  <td className="am-canvas-trace-title">RTO ≤ 4h for Case Hub</td>
-                  <td className="am-canvas-trace-type">NFR</td>
-                  <td>
-                    <span className="am-canvas-trace">ADR-{pid}-007</span>{" "}
-                    <span className="am-canvas-trace am-canvas-trace-warn">
-                      no control reference
-                    </span>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <span className="am-pill am-pill-mid">Partial</span>
-                  </td>
-                </tr>
-                <tr className="am-canvas-trace-row-orphan">
-                  <td className="am-canvas-trace-id">ADR-{pid}-013</td>
-                  <td className="am-canvas-trace-title">Custom retry queue in Case Hub</td>
-                  <td className="am-canvas-trace-type">ADR</td>
-                  <td>
-                    <span className="am-canvas-trace am-canvas-trace-bad">no upstream link</span>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <span className="am-pill am-pill-lo">Orphan</span>
-                  </td>
-                </tr>
-                <tr className="am-canvas-trace-row-orphan">
-                  <td className="am-canvas-trace-id">MIG-{pid}-003</td>
-                  <td className="am-canvas-trace-title">Phase 3 — branch network rollout</td>
-                  <td className="am-canvas-trace-type">Migration phase</td>
-                  <td>
-                    <span className="am-canvas-trace am-canvas-trace-bad">
-                      no transformation-decision link
-                    </span>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <span className="am-pill am-pill-lo">Orphan</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="am-canvas-trace-id">MIG-{pid}-001</td>
-                  <td className="am-canvas-trace-title">Phase 1 — case hub live, dual-write to legacy</td>
-                  <td className="am-canvas-trace-type">Migration phase</td>
-                  <td>
-                    <span className="am-canvas-trace">TD-{pid}-007</span>{" "}
-                    <span className="am-canvas-trace">G-{pid}-009</span>{" "}
-                    <span className="am-canvas-trace">ADR-{pid}-002</span>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <span className="am-pill am-pill-hi">OK</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="am-canvas-trace-id">TGTAPP-{pid}-001</td>
-                  <td className="am-canvas-trace-title">Case Hub</td>
-                  <td className="am-canvas-trace-type">Target App</td>
-                  <td>
-                    <span className="am-canvas-trace">CAP-{pid}-002</span>{" "}
-                    <span className="am-canvas-trace">CAP-{pid}-005</span>{" "}
-                    <span className="am-canvas-trace">TD-{pid}-001</span>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <span className="am-pill am-pill-hi">OK</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            )}
 
             <div
               className="am-canvas-banner"
