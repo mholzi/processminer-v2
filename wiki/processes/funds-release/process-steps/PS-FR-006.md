@@ -10,7 +10,7 @@ owner: Operations Approver on non-STP and exception items; the payments workflow
 systems: [SYS-FR-001]
 transitions: [PS-FR-007|normal|when 4-eyes approval is granted, PS-FR-004|loopback|when not granted for a validation or first-line defect, PS-FR-003|loopback|when not granted for a screening concern, PS-FR-005|loopback|when not granted for a funding concern, EX-FR-004|exception|when the approver is unavailable or 4-eyes is breached]
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-17
 ---
 ## What happens

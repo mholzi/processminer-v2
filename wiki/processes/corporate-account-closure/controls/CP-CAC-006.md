@@ -11,7 +11,7 @@ execution: MANUAL
 owner: Finance
 provenance: {"Control activity": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "Risk addressed": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "Timing": {"evidence": "Daily", "source": "document"}, "What it checks": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## What it checks

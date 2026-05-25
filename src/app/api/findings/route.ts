@@ -2,6 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { NextRequest } from "next/server";
 import type { FindingDismissals } from "@/lib/lint";
+import { COOKIE_NAME, verifySession } from "@/lib/auth-server";
 
 // Records a lint-finding dismissal in
 // wiki/processes/<slug>/finding-dismissals.json — an app-owned sidecar keyed
@@ -23,6 +24,11 @@ function isoDate(offsetDays = 0): string {
 }
 
 export async function PATCH(req: NextRequest) {
+  const user = verifySession(req.cookies.get(COOKIE_NAME)?.value);
+  if (!user) {
+    return Response.json({ error: "Not signed in." }, { status: 401 });
+  }
+
   let body: Record<string, unknown>;
   try {
     body = await req.json();
@@ -75,7 +81,7 @@ export async function PATCH(req: NextRequest) {
         : 0;
     dismissals[signature] = {
       reason,
-      by: typeof body.by === "string" && body.by ? body.by : "SME",
+      by: user.username,
       at: isoDate(),
       ...(days > 0 ? { until: isoDate(days) } : {}),
     };

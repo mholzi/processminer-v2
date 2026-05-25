@@ -7,7 +7,7 @@ status: draft
 confidence: high
 source: funds-release-dtp-mockup.md
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-17
 ---
 ## Responsibility

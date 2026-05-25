@@ -11,7 +11,7 @@ gapStatus: open
 affects: [PS-CAC-001]
 provenance: {"Impact": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "Next step": {"evidence": "What is the dormancy threshold that triggers a closure recommendation?", "source": "document"}, "The gap": {"evidence": "What is the dormancy threshold that triggers a closure recommendation?", "source": "document"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## The gap

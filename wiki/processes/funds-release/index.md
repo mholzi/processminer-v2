@@ -16,7 +16,7 @@ processInput: A release request carrying the facility ID, amount, currency, valu
 processOutput: Funds posted from the held account to the beneficiary instruction, a release confirmation sent to the front office, and a closed workflow item with a complete audit trail.
 docStatus: As-Is draft
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-17
 ---
 Funds Release is the process by which the bank releases funds held against an approved corporate credit facility to a client or counterparty once the agreed release conditions have been met. It runs continuously during business hours at a volume of roughly 120 corporate releases per business day, on both a straight-through path for clean items and a manual path for items needing analyst handling.

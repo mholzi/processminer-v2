@@ -10,7 +10,7 @@ domain: AML
 provenance: {"How it is met": {"evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list. A screening hit suspends the application pending Compliance investigation.", "source": "document"}, "What it requires": {"evidence": "The process is subject to anti-money-laundering and sanctions obligations (EU sanctions regulations, AML directives).", "source": "document"}, "Why it applies": {"evidence": "M. Berger: standing approval", "source": "elicited"}}
 asOf: 2026-05-20
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-20
 ---
 ## What it requires

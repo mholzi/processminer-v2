@@ -9,7 +9,7 @@ source: account-closure-dtp-mockup.md
 value: ~30 per week
 provenance: {"Current reading": {"evidence": "The process runs at a volume of roughly 30 corporate closures per week.", "source": "document"}, "Definition": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "Why it matters": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## Definition

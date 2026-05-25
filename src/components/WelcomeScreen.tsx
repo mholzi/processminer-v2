@@ -156,20 +156,21 @@ export default function WelcomeScreen({
     }
   }, []);
 
-  // Build the visible recents — only entitled processes that still exist.
+  // Build the visible recents — most-recently-touched first, regardless of
+  // browser visit order. The localStorage list still drives the ⌘K palette,
+  // but on the splash the user expects chronological order to match the
+  // "X ago" labels on each chip.
   const recents = useMemo(() => {
-    const slugSet = new Set(docs.map((d) => d.slug));
-    const fromStore = recentSlugs.filter((s) => slugSet.has(s));
-    // Pad with most-recently-touched docs if recents are thin.
-    const padding = [...docs]
+    return [...docs]
       .sort((a, b) => (b.lastModified ?? "").localeCompare(a.lastModified ?? ""))
-      .map((d) => d.slug)
-      .filter((s) => !fromStore.includes(s));
-    return [...fromStore, ...padding].slice(0, 6).map((slug) => {
-      const d = docs.find((x) => x.slug === slug)!;
-      return { slug, id: d.process.id, title: d.process.title, lastModified: d.lastModified };
-    });
-  }, [recentSlugs, docs]);
+      .slice(0, 6)
+      .map((d) => ({
+        slug: d.slug,
+        id: d.process.id,
+        title: d.process.title,
+        lastModified: d.lastModified,
+      }));
+  }, [docs]);
 
   // ----- visible queue rows for current view -----
   const visibleAttention = pmAttention.filter(
@@ -314,6 +315,36 @@ export default function WelcomeScreen({
           </button>
         )}
 
+        {/* Recents strip — quick re-entry to the user's last few processes
+            and the "new process" affordance. Sits above the attention queue
+            so it's the first thing in reach after the resume hero. */}
+        <section className="ws-foot ws-foot-top">
+          <div className="ws-foot-label">Recent</div>
+          <div className="ws-recents">
+            {recents.map((r, i) => (
+              <button
+                key={r.slug}
+                type="button"
+                className={`ws-recent-chip${i === 0 ? " current" : ""}`}
+                onClick={() => openProcess(r.slug)}
+              >
+                <span className="ws-recent-id">{r.id}</span>
+                <span className="ws-recent-name">{r.title}</span>
+                {r.lastModified && (
+                  <RelativeTime ts={r.lastModified} className="ws-recent-when" />
+                )}
+              </button>
+            ))}
+            <button
+              type="button"
+              className="ws-recent-chip add"
+              onClick={() => onEnterProcessminer()}
+            >
+              + New process
+            </button>
+          </div>
+        </section>
+
         {/* The queue */}
         <section className="ws-sec">
           <div className="ws-sec-h">
@@ -402,34 +433,6 @@ export default function WelcomeScreen({
             </div>
           )}
         </section>
-
-        {/* Footer: recents strip + new process */}
-        <footer className="ws-foot">
-          <div className="ws-foot-label">Recent</div>
-          <div className="ws-recents">
-            {recents.map((r, i) => (
-              <button
-                key={r.slug}
-                type="button"
-                className={`ws-recent-chip${i === 0 ? " current" : ""}`}
-                onClick={() => openProcess(r.slug)}
-              >
-                <span className="ws-recent-id">{r.id}</span>
-                <span className="ws-recent-name">{r.title}</span>
-                {r.lastModified && (
-                  <RelativeTime ts={r.lastModified} className="ws-recent-when" />
-                )}
-              </button>
-            ))}
-            <button
-              type="button"
-              className="ws-recent-chip add"
-              onClick={() => onEnterProcessminer()}
-            >
-              + New process
-            </button>
-          </div>
-        </footer>
       </main>
     </div>
   );

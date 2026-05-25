@@ -9,7 +9,7 @@ source: bank-guarantee-issuance-v1.md
 systemType: EXTERNAL
 provenance: {"Purpose": {"evidence": "Corporate Portal — client-facing application capture.", "source": "document"}, "Role in this process": {"evidence": "Basic capture fields (client, amount, currency, beneficiary name) flow into the Trade Finance System via an API integration; supporting fields and documents are uploaded separately and the TFO has to attach them manually. Portal enforces mandatory fields only on basic capture — full completeness not validated (CG-BGI-001). Same portal, role-based permissions — clients see only their company's drafts; RMs see all client drafts under their portfolio.", "source": "elicited"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## Purpose

@@ -40,8 +40,11 @@ export class SessionWorker {
   private stderrTail = "";
   private sink: ((e: WorkerEvent) => void) | null = null;
 
-  /** `resumeId` rehydrates a known session whose warm worker was lost. */
-  constructor(resumeId?: string | null) {
+  /** `resumeId` rehydrates a known session whose warm worker was lost.
+   *  `username` is the signed-in user — exported to the child as
+   *  `PROCESSMINER_USER` so skills can attribute writes (e.g. the new-process
+   *  scaffolder stamps `createdBy` on the process index). */
+  constructor(resumeId?: string | null, username?: string | null) {
     const args = [
       "-p",
       "--input-format", "stream-json",
@@ -57,7 +60,9 @@ export class SessionWorker {
       args.push("--resume", resumeId);
       this.sessionId = resumeId;
     }
-    this.child = spawn("claude", args, { cwd: process.cwd() });
+    const env = { ...process.env };
+    if (username) env.PROCESSMINER_USER = username;
+    this.child = spawn("claude", args, { cwd: process.cwd(), env });
     this.child.stdout?.on("data", (d: Buffer) => this.onStdout(d));
     this.child.stderr?.on("data", (d: Buffer) => {
       this.stderrTail = (this.stderrTail + d.toString()).slice(-600);
@@ -207,7 +212,7 @@ class SessionPool {
    * warm worker (server restarted, evicted, or crashed) is rehydrated with
    * `--resume`. A null `sessionId` always starts a fresh session.
    */
-  acquire(sessionId: string | null): SessionWorker {
+  acquire(sessionId: string | null, username?: string | null): SessionWorker {
     for (const [id, w] of this.workers) {
       if (!w.alive) this.workers.delete(id);
     }
@@ -219,13 +224,13 @@ class SessionPool {
           return w;
         }
       }
-      const revived = new SessionWorker(sessionId);
+      const revived = new SessionWorker(sessionId, username);
       this.workers.set(revived.id, revived);
       this.enforceCap();
       return revived;
     }
 
-    const fresh = new SessionWorker();
+    const fresh = new SessionWorker(null, username);
     this.workers.set(fresh.id, fresh);
     this.enforceCap();
     return fresh;

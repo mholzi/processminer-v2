@@ -11,7 +11,7 @@ owner: Operations Officer
 sla: Same business day
 systems: [SYS-COB-001, SYS-COB-002, SYS-COB-007]
 approval: in-progress
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-16
 ---
 ## What happens

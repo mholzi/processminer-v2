@@ -8,7 +8,7 @@ confidence: high
 source: funds-release-dtp-mockup.md
 systemType: CORE
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-18
 ---
 ## Purpose

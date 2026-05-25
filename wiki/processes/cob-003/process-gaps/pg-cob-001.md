@@ -9,7 +9,7 @@ source: DTP-BB-ONB-001 v2.3
 area: Metrics
 gapStatus: open
 approval: rejected
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-17
 ---
 ## The gap

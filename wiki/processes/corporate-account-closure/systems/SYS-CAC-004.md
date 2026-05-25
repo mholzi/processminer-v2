@@ -9,7 +9,7 @@ source: account-closure-dtp-mockup.md
 systemType: SUPPORTING
 provenance: {"Purpose": {"evidence": "Payments Platform | Residual balance disbursement", "source": "document"}, "Role in this process": {"evidence": "Any credit balance is returned to the client's nominated account.", "source": "document"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## Purpose

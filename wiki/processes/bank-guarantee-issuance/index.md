@@ -17,7 +17,7 @@ processInput: Bank Guarantee application submitted via Corporate Portal, includi
 processOutput: Executed guarantee instrument transmitted to the beneficiary's bank via SWIFT; client's guarantee facility utilisation updated.
 docStatus: As-Is draft
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 To issue a Bank Guarantee on behalf of a corporate client in favour of a third-party beneficiary, from application intake through to delivery of the executed guarantee and update of the client's facility utilisation.

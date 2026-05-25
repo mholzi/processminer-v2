@@ -12,7 +12,7 @@ sla: 3 business days
 systems: [SYS-COB-006]
 condition: If overdraft requested
 approval: rejected
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-16
 ---
 ## What happens

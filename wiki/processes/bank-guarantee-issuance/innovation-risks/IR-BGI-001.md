@@ -8,7 +8,7 @@ confidence: medium
 provenance: {"Likelihood & impact": {"evidence": "Not yet formally assessed by Model Risk or Compliance. Administrative-field-validation characterisation is defensible but not opined on. If in-scope: conformity assessment, human oversight documentation, transparency obligations, potential deployment halt.", "source": "elicited"}, "Mitigation": {"evidence": "Formal Model Risk and Compliance opinion before any deployment decision. If high-risk confirmed, run conformity assessment in parallel with shadow pilot to avoid blocking deployment after pilot success.", "source": "elicited"}, "The risk": {"evidence": "The administrative-field-validation argument is defensible (the agent doesn't score creditworthiness, only completeness) but borderline — 'materially influences whether an application proceeds' is the live question. Treat as a regulatory gap that must be opined on by Model Risk before deployment.", "source": "elicited"}}
 severity: MEDIUM
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-20
 ---
 ## The risk

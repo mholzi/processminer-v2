@@ -1693,6 +1693,7 @@ body {
 .ws-resume-sub { font-size: var(--text-xs); color: var(--muted); }
 .ws-resume-sub b { color: var(--ink); }
 .ws-resume-cta {
+  display: inline-flex; align-items: center;
   background: var(--ws-accent); color: #fff;
   height: 36px; padding: 0 var(--space-lg);
   border: 0; border-radius: var(--r-sm);
@@ -1797,6 +1798,16 @@ body {
   padding-top: var(--space-lg);
   border-top: 1px solid var(--line);
   display: flex; flex-direction: column; gap: var(--space-sm);
+}
+/* When the recents strip lives above the queue (its preferred position) the
+   divider should belong to whatever's below it, not above. */
+.ws-foot.ws-foot-top {
+  margin-top: var(--space-lg);
+  margin-bottom: var(--space-lg);
+  padding-top: 0;
+  padding-bottom: var(--space-lg);
+  border-top: 0;
+  border-bottom: 1px solid var(--line);
 }
 .ws-foot-label {
   font-family: var(--mono); font-size: 10px;

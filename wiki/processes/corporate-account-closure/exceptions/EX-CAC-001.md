@@ -11,7 +11,7 @@ impact: MEDIUM
 handlingOwner: Relationship Manager
 provenance: {"Description": {"evidence": "Signatory authority not confirmed | Request returned to Relationship Manager; correct authorisation requested from the client. SLA clock pauses.", "source": "document"}, "Handling": {"evidence": "Request returned to Relationship Manager; correct authorisation requested from the client. SLA clock pauses.", "source": "document"}, "Impact": {"evidence": "SLA clock pauses.", "source": "document"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## Description

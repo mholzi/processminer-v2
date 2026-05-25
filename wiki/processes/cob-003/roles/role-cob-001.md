@@ -11,7 +11,7 @@ controls: [CP-COB-003, CP-COB-004]
 systems: [SYS-COB-001, SYS-COB-002, SYS-COB-005, SYS-COB-007, SYS-COB-008]
 provenance: {"In this process": {"evidence": "", "source": "proposed"}, "Responsibility": {"evidence": "", "source": "legacy-approved"}}
 approval: approved
-approvalBy: S. Kowalski
+approvalBy: s.k
 approvalDate: 2026-05-22
 ---
 ## Responsibility

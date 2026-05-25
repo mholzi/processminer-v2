@@ -17,7 +17,7 @@ processInput: Bank Guarantee application containing: beneficiary details, guaran
 processOutput: Executed guarantee instrument transmitted to the beneficiary's bank via SWIFT; client facility utilisation updated in the Trade Finance System.
 docStatus: As-Is draft
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-20
 ---
 This process covers the issuance of a Bank Guarantee on behalf of a corporate client in favour of a third-party beneficiary. It begins when a client submits a guarantee application and ends when the executed guarantee is delivered to the beneficiary's bank and the client's facility utilisation is updated.

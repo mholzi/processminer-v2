@@ -12,7 +12,7 @@ systems: [SYS-SPP-002, SYS-SPP-006]
 provenance: {"Inputs": {"evidence": "For SCT Inst, settlement and the beneficiary-bank confirmation complete within 10 seconds", "source": "document"}, "Outputs": {"evidence": "Both confirmations are automated — the hub sends them, not Ops; instant goes out immediately, standard goes out when the STEP2 cycle confirms.", "source": "elicited"}, "What happens": {"evidence": "Both confirmations are automated — the hub sends them, not Ops; instant goes out immediately, standard goes out when the STEP2 cycle confirms. The 10 seconds is the scheme clock from when we submit to RT1.", "source": "elicited"}, "Why it matters": {"evidence": "Take this exception out. This is inbound after the process has been completed.", "source": "elicited"}}
 transitions: [PS-SPP-010|normal|when settlement is confirmed, EX-SPP-005|exception|when an SCT Inst attempt times out or is rejected]
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-18
 ---
 ## What happens

@@ -9,7 +9,7 @@ source: account-closure-dtp-mockup.md
 systemType: CORE
 provenance: {"Purpose": {"evidence": "Client Lifecycle Workflow Tool | Request logging, routing, approvals, audit log", "source": "document"}, "Role in this process": {"evidence": "Client Lifecycle Workflow Tool | Request logging, routing, approvals, audit log", "source": "document"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## Purpose

@@ -9,7 +9,7 @@ source: funds-release-dtp-mockup.md
 owner: Payments Workflow Tool (SYS-FR-001) confirms and closes STP items automatically; Operations Analyst confirms and closes non-STP items
 systems: [SYS-FR-001]
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-17
 ---
 ## What happens

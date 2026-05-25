@@ -12,7 +12,7 @@ effectiveness: MEDIUM
 owner: Treasury
 step: [PS-FR-005]
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-18
 regulatedBy: [REG-FR-013]
 ---

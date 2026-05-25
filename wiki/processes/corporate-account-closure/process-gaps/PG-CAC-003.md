@@ -11,7 +11,7 @@ gapStatus: open
 affects: [PS-CAC-008]
 provenance: {"Impact": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "Next step": {"evidence": "How long are closed-account files retained, and where?", "source": "document"}, "The gap": {"evidence": "How long are closed-account files retained, and where?", "source": "document"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## The gap

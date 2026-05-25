@@ -9,7 +9,7 @@ source: M. Berger; source-target synthesis — corporate-account-closure wiki
 replaces: [PS-CAC-001, PS-CAC-005, PS-CAC-007]
 provenance: {"Rationale": {"evidence": "M. Berger batch confirmation: 'firm up coherent, well-founded stubs' — 2026-05-19", "source": "elicited"}, "Target description": {"evidence": "M. Berger batch confirmation: 'firm up coherent, well-founded stubs' — 2026-05-19", "source": "elicited"}, "What changes": {"evidence": "", "source": "proposed"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## Target description

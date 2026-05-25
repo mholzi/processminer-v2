@@ -12,7 +12,7 @@ bearsOn: [PS-BGI-001, PS-BGI-006, CG-BGI-003]
 provenance: {"Evidence": {"evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — 'Standard Chartered completes first ICC-Swift API Standards digital bank guarantee transaction through Komgo, January 15 2026' — fetched 2026-05-20", "source": "web"}, "Relevance": {"evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — 'automates the receipt of instructions and accelerates the issuance of digitally initiated bank guarantees, offering clients greater speed, transparency and reliability' — fetched 2026-05-20", "source": "web"}, "The trend": {"evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — 'The new standard is compatible with Swift's legacy MT798 format and the ISO 20022 standard; API-first solutions are the key enabler to lowering thresholds to digital trade transformation' — fetched 2026-05-20", "source": "web"}}
 asOf: 2026-05-20
 relevance: relevant
-relevanceBy: M. Berger
+relevanceBy: m.berger
 relevanceDate: 2026-05-19
 ---
 ## The trend

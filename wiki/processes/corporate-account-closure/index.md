@@ -17,7 +17,7 @@ processInput: Written closure instruction from an authorised signatory, or bank-
 processOutput: Closed account(s) in the core banking system; closure confirmation sent to the client; account file archived in accordance with the record-retention schedule.
 docStatus: As-Is draft
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 This process governs the controlled offboarding of a corporate client's banking relationship, ending in the closure of all in-scope accounts once outstanding obligations are settled, residual balances are returned, and regulatory record-keeping is in place.

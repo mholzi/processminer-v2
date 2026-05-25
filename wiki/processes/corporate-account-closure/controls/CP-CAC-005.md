@@ -12,7 +12,7 @@ owner: Client Lifecycle Operations
 step: [PS-CAC-006]
 provenance: {"Control activity": {"evidence": "A separate Closure Approver independently reviews the file and authorises the closure. The approver must not be the analyst who performed steps 2-5.", "source": "document"}, "Risk addressed": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "Timing": {"evidence": "Every closure", "source": "document"}, "What it checks": {"evidence": "Segregation of duties (4-eyes closure approval) | Preventive / manual | Every closure", "source": "document"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 regulatedBy: [REG-CAC-005]
 ---

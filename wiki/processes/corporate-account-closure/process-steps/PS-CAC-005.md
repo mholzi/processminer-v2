@@ -12,7 +12,7 @@ systems: [SYS-CAC-004]
 transitions: [PS-CAC-006|normal|always, EX-CAC-004|exception|balance cannot be disbursed]
 provenance: {"Inputs": {"evidence": "Within 3 business days of compliance clearance — Y, update both and approve in one pass. — M. Berger", "source": "elicited"}, "Outputs": {"evidence": "Within 3 business days of compliance clearance — Y, update both and approve in one pass. — M. Berger", "source": "elicited"}, "What happens": {"evidence": "", "source": "proposed"}, "Why it matters": {"evidence": "Within 3 business days of compliance clearance — Y, update both and approve in one pass. — M. Berger", "source": "elicited"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## What happens

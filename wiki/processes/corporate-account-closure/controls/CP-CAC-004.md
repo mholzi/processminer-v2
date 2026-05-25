@@ -12,7 +12,7 @@ owner: Client Lifecycle Operations
 step: [PS-CAC-005]
 provenance: {"Control activity": {"evidence": "", "source": "proposed"}, "Risk addressed": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "Timing": {"evidence": "", "source": "proposed"}, "What it checks": {"evidence": "Callback confirmation for large disbursements | Preventive / manual | Per threshold", "source": "document"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## What it checks

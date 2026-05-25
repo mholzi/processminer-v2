@@ -12,7 +12,7 @@ owner: Client Lifecycle Operations
 step: [PS-CAC-002]
 provenance: {"Control activity": {"evidence": "The Closure Analyst confirms the request comes from an authorised signatory by checking the account mandate.", "source": "document"}, "Risk addressed": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "Timing": {"evidence": "Every closure", "source": "document"}, "What it checks": {"evidence": "Mandate / signatory authority verification | Preventive / manual | Every closure", "source": "document"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## What it checks

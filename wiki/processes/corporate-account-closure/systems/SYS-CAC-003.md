@@ -9,7 +9,7 @@ source: account-closure-dtp-mockup.md
 systemType: SUPPORTING
 provenance: {"Purpose": {"evidence": "Sanctions Screening Engine | Sanctions and compliance-case screening", "source": "document"}, "Role in this process": {"evidence": "The client and account are screened for sanctions exposure and any open compliance case.", "source": "document"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## Purpose

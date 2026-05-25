@@ -12,7 +12,7 @@ owner: Compliance
 step: [PS-CAC-004]
 provenance: {"Control activity": {"evidence": "The client and account are screened for sanctions exposure and any open compliance case. An open case blocks closure until cleared.", "source": "document"}, "Risk addressed": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "Timing": {"evidence": "Every closure", "source": "document"}, "What it checks": {"evidence": "Sanctions & compliance-case screening | Preventive / automated | Every closure", "source": "document"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 regulatedBy: [REG-CAC-001, REG-CAC-003, REG-CAC-004]
 ---

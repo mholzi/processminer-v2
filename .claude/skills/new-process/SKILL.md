@@ -47,8 +47,12 @@ you ask for.
    an existing process and ask for a different name, then return to Step 1.
 2. Draft a **one-line description** — one plain sentence on what the process
    does. This is the one judgement item; the slug and abbreviation are not.
-3. Present all three to the user **in exactly this format** — a bulleted list,
-   never a table, each label in bold:
+3. Send a **single message** to the user containing two parts in this exact
+   order. Never split them. Never send the second part without the first.
+
+   **Part A — the proposal bullets (always first).** A bulleted list, never
+   a table, each label in bold. All three rows are mandatory — printing only
+   one or two is a bug:
 
    ```
    - **Description:** <the one-line description>
@@ -56,10 +60,11 @@ you ask for.
    - **Abbreviation:** `<PROC>`
    ```
 
-   Then offer exactly these three choices — never just two. Run `python3
+   **Part B — the choices (always after the bullets).** Run `python3
    scripts/wiki/verbatim.py newprocess-choices` and present its output on its
    own line, character-for-character; `verbatim.py` is the single source of
-   truth, never retype the choices from memory.
+   truth, never retype the choices from memory. Exactly three choices, never
+   two.
 
    - **[Y]** — confirmed; go to Step 3.
    - **[E]** — the SME gives specific corrections; apply them, show the bullets

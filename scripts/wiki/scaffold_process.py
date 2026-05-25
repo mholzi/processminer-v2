@@ -17,8 +17,10 @@ Usage:
 
 from __future__ import annotations
 
+import os
 import re
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -78,6 +80,13 @@ def main(argv: list[str]) -> None:
         "status": "draft",
         "description": description,
     }
+    # Stamp the creator when the chat session has exported their identity.
+    # The web app sets PROCESSMINER_USER on the `claude` worker; standalone
+    # CLI runs leave it unset and the fields are simply omitted.
+    created_by = os.environ.get("PROCESSMINER_USER", "").strip()
+    if created_by:
+        frontmatter["createdBy"] = created_by
+        frontmatter["createdAt"] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     for field in OVERVIEW_FIELDS:
         frontmatter[field] = ""
     frontmatter["docStatus"] = "empty"

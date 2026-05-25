@@ -10,7 +10,7 @@ category: Financial crime
 impact: HIGH
 handlingOwner: Compliance / Financial Crime
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-17
 ---
 ## Description

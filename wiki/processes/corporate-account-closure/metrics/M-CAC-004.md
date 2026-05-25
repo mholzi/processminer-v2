@@ -10,7 +10,7 @@ target: Within 5 business days of identification
 value: Not measured
 provenance: {"Current reading": {"evidence": "Exception resolution | Within 5 business days of identification", "source": "document"}, "Definition": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "Why it matters": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## Definition

@@ -9,7 +9,7 @@ source: bank-guarantee-issuance-v1.md
 raci: [PS-BGIT-004:R]
 provenance: {"In this process": {"evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list. A screening hit suspends the application pending Compliance investigation.", "source": "document"}, "Responsibility": {"evidence": "Compliance Analyst — sanctions and compliance screening.", "source": "document"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-20
 ---
 ## Responsibility

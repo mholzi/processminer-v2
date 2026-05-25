@@ -12,10 +12,10 @@ asOf: 2026-05-20
 horizon: near-term
 sourceUrl: https://www.prnewswire.com/news-releases/oracle-financial-services-extends-agentic-ai-platform-to-corporate-banking-302738817.html
 relevance: relevant
-relevanceBy: M. Berger
+relevanceBy: m.berger
 relevanceDate: 2026-05-19
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-20
 ---
 ## The trend

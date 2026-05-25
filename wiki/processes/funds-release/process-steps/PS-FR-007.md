@@ -10,7 +10,7 @@ owner: Core Banking System (SYS-FR-002) posts STP items automatically; Operation
 systems: [SYS-FR-001, SYS-FR-002]
 transitions: [PS-FR-008|normal|when the posting succeeds, EX-FR-005|exception|when the posting fails at execution]
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-17
 ---
 ## What happens

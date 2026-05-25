@@ -11,7 +11,7 @@ impact: MEDIUM
 handlingOwner: Closure Analyst
 provenance: {"Description": {"evidence": "Residual balance cannot be disbursed | Balance moved to a suspense account; treated as unclaimed funds per policy.", "source": "document"}, "Handling": {"evidence": "Balance moved to a suspense account; treated as unclaimed funds per policy.", "source": "document"}, "Impact": {"evidence": "Balance moved to a suspense account; treated as unclaimed funds per policy.", "source": "document"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## Description

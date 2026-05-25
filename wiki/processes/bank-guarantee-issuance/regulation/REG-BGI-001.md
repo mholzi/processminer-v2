@@ -10,7 +10,7 @@ domain: AML/Sanctions
 asOf: 2026-05-19
 provenance: {"How it is met": {"evidence": "The Sanctions Screening Tool automatically writes the result; the Analyst initiates but does not manually attach. Serious sanctions/AML matches trigger a suspicious-transaction report from the MLRO to BaFin and the German FIU under GwG.", "source": "elicited"}, "What it requires": {"evidence": "AMLD6 (EU Directive 2018/1673 plus the 2024 AMLR package), the German GwG, EU Council Regulation 833/2014 (Russia/Belarus sanctions), and the EU consolidated sanctions list framework.", "source": "elicited"}, "Why it applies": {"evidence": "AMLD6, GwG, EU Council Regulation 833/2014 and the EU consolidated list framework apply to the bank as a German credit institution issuing trade finance products.", "source": "elicited"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## What it requires

@@ -1,17 +1,28 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { NextRequest } from "next/server";
+import { COOKIE_NAME, verifySession } from "@/lib/auth-server";
 
 // Appends an SME note to wiki/processes/<slug>/notes.json — the note-thread
 // sidecar (#19). Notes are collaboration data, not process documentation:
 // the app owns the SME-comment writes here. The thread is co-owned — the
 // comment-review skill also writes notes.json (via scripts/wiki/notes.py) to
 // mark comments resolved and post its closing analyst summary.
+//
+// Author attribution stores the authenticated `username` (stable user ID),
+// not a display name. Renderers resolve username → display name at read
+// time via src/lib/contributors.ts, so a rename in data/users.json
+// propagates without touching wiki files.
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+  const user = verifySession(req.cookies.get(COOKIE_NAME)?.value);
+  if (!user) {
+    return Response.json({ error: "Not signed in." }, { status: 401 });
+  }
+
   let body: Record<string, unknown>;
   try {
     body = await req.json();
@@ -22,7 +33,6 @@ export async function POST(req: NextRequest) {
   const slug = body.slug;
   const elementId = body.elementId;
   const text = body.text;
-  const author = body.author;
   const replyTo = body.replyTo;
 
   if (typeof slug !== "string" || !/^[A-Za-z0-9._-]+$/.test(slug)) {
@@ -37,7 +47,7 @@ export async function POST(req: NextRequest) {
 
   const note = {
     id: `n-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-    author: typeof author === "string" && author ? author : "SME",
+    author: user.username,
     text: text.trim(),
     ts: new Date().toISOString(),
     ...(typeof replyTo === "string" && replyTo ? { replyTo } : {}),
@@ -67,6 +77,11 @@ export async function POST(req: NextRequest) {
 // (or reopening it). The comment-review skill sets the same flag via
 // scripts/wiki/notes.py; this is the manual, in-app equivalent.
 export async function PATCH(req: NextRequest) {
+  const user = verifySession(req.cookies.get(COOKIE_NAME)?.value);
+  if (!user) {
+    return Response.json({ error: "Not signed in." }, { status: 401 });
+  }
+
   let body: Record<string, unknown>;
   try {
     body = await req.json();
@@ -78,7 +93,6 @@ export async function PATCH(req: NextRequest) {
   const elementId = body.elementId;
   const noteId = body.noteId;
   const resolved = body.resolved === true;
-  const by = body.by;
 
   if (typeof slug !== "string" || !/^[A-Za-z0-9._-]+$/.test(slug)) {
     return Response.json({ error: "Bad or missing slug." }, { status: 400 });
@@ -104,7 +118,7 @@ export async function PATCH(req: NextRequest) {
   }
   if (resolved) {
     note.resolved = true;
-    note.resolvedBy = typeof by === "string" && by ? by : "SME";
+    note.resolvedBy = user.username;
     note.resolvedAt = new Date().toISOString().slice(0, 10);
   } else {
     delete note.resolved;

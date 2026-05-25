@@ -12,7 +12,7 @@ systems: [SYS-CAC-001]
 transitions: [PS-CAC-002|normal|always]
 provenance: {"Inputs": {"evidence": "A written closure instruction is received from an authorised signatory of the corporate client, or the Relationship Manager raises a bank-initiated closure request, or a dormancy review flags an account inactive beyond the dormancy threshold.", "source": "document"}, "Outputs": {"evidence": "Y — both blocks are correct. Approve. — M. Berger", "source": "elicited"}, "What happens": {"evidence": "", "source": "proposed"}, "Why it matters": {"evidence": "Y — both blocks are correct. Approve. — M. Berger", "source": "elicited"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## What happens

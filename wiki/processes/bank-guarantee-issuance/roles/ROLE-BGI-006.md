@@ -9,7 +9,7 @@ source: bank-guarantee-issuance-v1.md
 raci: [PS-BGI-003:R]
 provenance: {"In this process": {"evidence": "Legal also redlines / proposes amendments. The TFO works directly with Legal on technical legal points; client-facing wording changes loop back to the client via the relationship manager. No formal SLA, informal target 2 business days, escalation TFM to Trade Finance Legal desk lead.", "source": "elicited"}, "Responsibility": {"evidence": "Legal also redlines / proposes amendments, not just approves. No formal SLA, informal target is 2 business days. Escalation route is TFM to Trade Finance Legal desk lead when reviews drag.", "source": "elicited"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## Responsibility

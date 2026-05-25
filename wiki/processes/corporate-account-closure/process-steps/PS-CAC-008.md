@@ -10,7 +10,7 @@ owner: Closure Analyst
 systems: [SYS-CAC-001, SYS-CAC-005]
 provenance: {"Inputs": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "Outputs": {"evidence": "A closure confirmation is sent to the client. The account file is archived and retained per the record-retention schedule.", "source": "document"}, "What happens": {"evidence": "A closure confirmation is sent to the client. The account file is archived and retained per the record-retention schedule.", "source": "document"}, "Why it matters": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## What happens

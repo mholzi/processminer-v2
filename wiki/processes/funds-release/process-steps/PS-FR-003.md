@@ -10,7 +10,7 @@ owner: Sanctions Screening Engine (SYS-FR-003) for automated screening; Complian
 systems: [SYS-FR-003]
 transitions: [PS-FR-004|normal|when screening is clear automatically or a potential hit is adjudicated a false positive, EX-FR-002|exception|when a sanctions or AML hit is confirmed]
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-17
 ---
 ## What happens

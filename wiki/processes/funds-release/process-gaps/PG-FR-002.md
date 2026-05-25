@@ -10,7 +10,7 @@ area: Approvals
 gapStatus: open
 affects: [PS-FR-006]
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-18
 ---
 ## The gap

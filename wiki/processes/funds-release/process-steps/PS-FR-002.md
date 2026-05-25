@@ -10,7 +10,7 @@ owner: Operations Analyst — on items that fail an automated check or are not S
 systems: [SYS-FR-001, SYS-FR-005]
 transitions: [PS-FR-003|normal|when the request is valid and complete, EX-FR-001|exception|when validation fails]
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-17
 ---
 ## What happens

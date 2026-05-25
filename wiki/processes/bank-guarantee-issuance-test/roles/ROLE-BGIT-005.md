@@ -9,7 +9,7 @@ source: bank-guarantee-issuance-v1.md
 raci: [PS-BGIT-002:C]
 provenance: {"In this process": {"evidence": "If the limit is insufficient, the application is parked and routed to the Credit team; M. Berger: Credit team can grant a temporary one-off uplift, recommend a permanent facility increase (separate process), or decline; on decline the application is formally rejected to the client through the portal", "source": "elicited"}, "Responsibility": {"evidence": "Credit team — limit increases when the facility is insufficient; M. Berger: can also decline leading to formal rejection", "source": "elicited"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-20
 ---
 ## Responsibility

@@ -11,7 +11,7 @@ systems: [SYS-CAC-001]
 transitions: [PS-CAC-007|normal|closure approved]
 provenance: {"Inputs": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "Outputs": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "What happens": {"evidence": "A separate Closure Approver independently reviews the file and authorises the closure. The approver must not be the analyst who performed steps 2-5.", "source": "document"}, "Why it matters": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## What happens

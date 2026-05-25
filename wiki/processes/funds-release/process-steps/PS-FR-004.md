@@ -10,7 +10,7 @@ owner: Payments workflow tool applies a system first-line approval on STP-eligib
 systems: [SYS-FR-001]
 transitions: [PS-FR-005|branch|when the amount is at or above the EUR 5m threshold, PS-FR-006|branch|when the amount is below the EUR 5m threshold]
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-17
 ---
 ## What happens

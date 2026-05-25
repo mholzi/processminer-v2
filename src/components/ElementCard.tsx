@@ -8,6 +8,7 @@ import type { LintFinding } from "@/lib/lint";
 import { isSourcedType } from "@/lib/element-types";
 import { checkElement, parseProvenance } from "@/lib/conformance";
 import { saveElement, setApproval, setRelevance } from "@/lib/wiki-write";
+import { useDisplayName } from "@/lib/user-roster-client";
 import Markdown from "./Markdown";
 import Tooltip from "./Tooltip";
 import ElementHovercard from "./ElementHovercard";
@@ -87,6 +88,20 @@ function previewLine(blocks: { heading: string; text: string }[]): string {
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, 200);
+}
+// Avatar + name row for a note. Author is stored as the stable `username`
+// (user ID); resolve it to the current display name from data/users.json
+// at render time so a rename propagates without rewriting notes.json.
+function NoteAuthor({ author }: { author: string }) {
+  return (
+    <span className="el-note-av">{noteInitials(useDisplayName(author))}</span>
+  );
+}
+function NoteWho({ author }: { author: string }) {
+  return <span className="el-note-who">{useDisplayName(author)}</span>;
+}
+function ResolvedBy({ by }: { by: string }) {
+  return <> · {useDisplayName(by)}</>;
 }
 function noteInitials(name: string): string {
   return name
@@ -222,8 +237,8 @@ export default function ElementCard({
     setReviewError(null);
     startReview(async () => {
       try {
-        if (sourced) await setRelevance(slug, page.id, value, userName);
-        else await setApproval(slug, page.id, value, userName);
+        if (sourced) await setRelevance(slug, page.id, value);
+        else await setApproval(slug, page.id, value);
         router.refresh();
         onSaved?.();
       } catch (e) {
@@ -909,12 +924,10 @@ export default function ElementCard({
                         <div
                           className={`el-note${n.resolved ? " resolved" : ""}`}
                         >
-                          <span className="el-note-av">
-                            {noteInitials(n.author)}
-                          </span>
+                          <NoteAuthor author={n.author} />
                           <div className="el-note-body">
                             <div className="el-note-top">
-                              <span className="el-note-who">{n.author}</span>
+                              <NoteWho author={n.author} />
                               <RelativeTime
                                 ts={n.ts}
                                 className="el-note-when"
@@ -929,7 +942,7 @@ export default function ElementCard({
                                   }
                                 >
                                   ✓ Resolved
-                                  {n.resolvedBy ? ` · ${n.resolvedBy}` : ""}
+                                  {n.resolvedBy ? <ResolvedBy by={n.resolvedBy} /> : null}
                                 </span>
                               )}
                             </div>
@@ -957,14 +970,10 @@ export default function ElementCard({
                           .filter((r) => r.replyTo === n.id)
                           .map((r) => (
                             <div className="el-note reply" key={r.id}>
-                              <span className="el-note-av">
-                                {noteInitials(r.author)}
-                              </span>
+                              <NoteAuthor author={r.author} />
                               <div className="el-note-body">
                                 <div className="el-note-top">
-                                  <span className="el-note-who">
-                                    {r.author}
-                                  </span>
+                                  <NoteWho author={r.author} />
                                   <RelativeTime
                                     ts={r.ts}
                                     className="el-note-when"

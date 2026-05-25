@@ -216,9 +216,12 @@ function scopePreamble(d: ProcessDoc, user: User): string {
     `Its wiki content is wiki/processes/${d.slug}/; its source documents`,
     `are under raw-sources/${d.slug}/.`,
     "",
-    `The SME present in this session is ${user.name} (${user.role}). Use that`,
-    "name verbatim wherever an approval or edit is stamped — never ask the SME",
-    "for their name.",
+    `The SME present in this session is ${user.name} (${user.role}), stable`,
+    `user ID \`${user.username}\`. When you stamp \`updatedBy\`, \`approvedBy\`,`,
+    "or any other attribution field — and when you pass `--by` to a wiki",
+    `script — use the user ID \`${user.username}\`, not the display name.`,
+    "Display names are resolved at render time. Never ask the SME for their",
+    "name or ID.",
     "",
     "Rules, in force for every turn of this session:",
     `1. Only consider, discuss and change content belonging to ${id}.`,
@@ -895,8 +898,9 @@ export default function ProcessDocScreen({
     setChatOpen(true);
     handleSend(
       `Run the ${skill} skill on the process with slug "${currentSlug}" in standalone mode. ` +
-        `The SME present in this session is ${user.name} (${user.role}) — use that as the ` +
-        `SME identity, and stamp approvals and source context with that name.`,
+        `The SME present in this session is ${user.name} (${user.role}), stable user ID ` +
+        `\`${user.username}\` — stamp approvals and source context with the user ID, ` +
+        `not the display name.`,
       {
         skill,
         displayText: `Start a documentation session with the ${
@@ -1047,7 +1051,8 @@ export default function ProcessDocScreen({
     setChatOpen(true);
     handleSend(
       `Run the foundational-run skill on the process with slug "${currentSlug}". ` +
-        `The SME present in this session is ${user.name} — stamp approvals with that name.`,
+        `The SME present in this session is ${user.name}, stable user ID ` +
+        `\`${user.username}\` — stamp approvals with the user ID, not the display name.`,
       {
         skill: "foundational-run",
         displayText: "Start the foundational walkthrough.",
@@ -1789,7 +1794,6 @@ export default function ProcessDocScreen({
                 process={doc.process}
                 elements={doc.elements}
                 slug={doc.slug}
-                userName={user.name}
                 onNavigate={setSection}
                 resolveSection={resolveSection}
               />

@@ -11,6 +11,28 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSy
 import { join } from "node:path";
 import { getUsers, type StoredUser } from "./auth-server";
 
+/** Read a single frontmatter key from a process index.md. Returns "" if the
+ *  file or key is missing — used to pick up `createdBy` so the scaffolder's
+ *  stamp can drive ownership without an extra writer. */
+function readIndexField(slug: string, key: string): string {
+  const path = join(WIKI_DIR, slug, "index.md");
+  if (!existsSync(path)) return "";
+  let raw: string;
+  try {
+    raw = readFileSync(path, "utf8");
+  } catch {
+    return "";
+  }
+  const match = raw.match(/^---\n([\s\S]*?)\n---/);
+  if (!match) return "";
+  for (const line of match[1].split("\n")) {
+    const idx = line.indexOf(":");
+    if (idx === -1) continue;
+    if (line.slice(0, idx).trim() === key) return line.slice(idx + 1).trim();
+  }
+  return "";
+}
+
 const DATA_DIR = join(process.cwd(), "data");
 const ACCESS_PATH = join(DATA_DIR, "process-access.json");
 const WIKI_DIR = join(process.cwd(), "wiki", "processes");
@@ -77,35 +99,44 @@ function bootstrapOwner(): string {
 }
 
 /** Run once per process: backfill access records for any slug that exists
- *  on disk but isn't yet tracked. New slugs get the bootstrap owner. */
+ *  on disk but isn't yet tracked. A freshly-scaffolded process carries
+ *  `createdBy` in its index.md — that wins, so the creator becomes owner.
+ *  Pre-existing slugs with no creator stamp fall back to the bootstrap
+ *  owner (oldest admin) so they don't become inaccessible. */
 function maybeBootstrap(rows: ProcessAccess[]): ProcessAccess[] {
   if (bootstrapped) return rows;
   bootstrapped = true;
   const known = new Set(rows.map((r) => r.slug));
   const missing = existingSlugsOnDisk().filter((s) => !known.has(s));
   if (missing.length === 0) return rows;
-  const owner = bootstrapOwner();
+  const fallback = bootstrapOwner();
+  const users = getUsers();
+  const userByName = new Map(
+    users.map((u) => [u.username.toLowerCase(), u.username]),
+  );
   const now = new Date().toISOString();
   const next: ProcessAccess[] = [
     ...rows,
-    ...missing.map(
-      (slug): ProcessAccess => ({
+    ...missing.map((slug): ProcessAccess => {
+      const stamped = readIndexField(slug, "createdBy");
+      const creator = stamped
+        ? userByName.get(stamped.toLowerCase()) ?? ""
+        : "";
+      return {
         slug,
-        owner,
+        owner: creator || fallback,
         grantees: [],
         updatedAt: now,
-        updatedBy: "bootstrap",
-      }),
-    ),
+        updatedBy: creator ? "scaffold" : "bootstrap",
+      };
+    }),
   ];
   saveToDisk(next);
-  if (owner) {
-    console.warn(
-      `[access] bootstrap: assigned ${missing.length} process${
-        missing.length === 1 ? "" : "es"
-      } to owner '${owner}': ${missing.join(", ")}`,
-    );
-  }
+  console.warn(
+    `[access] bootstrap: assigned ${missing.length} process${
+      missing.length === 1 ? "" : "es"
+    }: ${missing.join(", ")}`,
+  );
   return next;
 }
 

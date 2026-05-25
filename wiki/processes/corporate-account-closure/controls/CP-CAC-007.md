@@ -12,7 +12,7 @@ owner: Client Lifecycle Operations
 step: [PS-CAC-008]
 provenance: {"Control activity": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "Risk addressed": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "Timing": {"evidence": "Quarterly", "source": "document"}, "What it checks": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 regulatedBy: [REG-CAC-002, REG-CAC-006, REG-CAC-007]
 ---

@@ -11,7 +11,7 @@ execution: AUTOMATED
 owner: Payment Operations is accountable for the control rule; the Facility Management System owner is accountable for the integrity of the limit data the check reads
 step: [PS-FR-002]
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-17
 regulatedBy: [REG-FR-006, REG-FR-015]
 ---

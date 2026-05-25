@@ -12,7 +12,7 @@ effectiveness: LOW
 owner: Payment Operations
 step: [PS-FR-006]
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-17
 regulatedBy: [REG-FR-004]
 ---

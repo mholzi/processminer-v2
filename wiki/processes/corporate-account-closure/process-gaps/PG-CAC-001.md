@@ -11,7 +11,7 @@ gapStatus: open
 affects: [PS-CAC-005]
 provenance: {"Impact": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "Next step": {"evidence": "Is the EUR 250k callback threshold a fixed EUR equivalent or per-currency?", "source": "document"}, "The gap": {"evidence": "", "source": "proposed"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## The gap

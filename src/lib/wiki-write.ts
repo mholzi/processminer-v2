@@ -12,12 +12,15 @@ import { COOKIE_NAME, verifySession } from "./auth-server";
 const WIKI_DIR = join(process.cwd(), "wiki", "processes");
 
 // Who is making this server-side write — read off the signed session cookie.
+// Returns the stable `username` (user ID), not the display name. Renderers
+// resolve username → display name at read time via src/lib/contributors.ts,
+// so a rename in data/users.json propagates without touching wiki files.
 // Falls back to "the assistant" when there's no session (skill-driven writes
 // hit the Python toolkit instead, so this only happens in dev / tests).
 async function currentActor(): Promise<string> {
   const jar = await cookies();
   const user = verifySession(jar.get(COOKIE_NAME)?.value);
-  return user?.name || user?.username || "the assistant";
+  return user?.username || "the assistant";
 }
 
 /** Locate <id>.md anywhere under the process's section folders. */
@@ -151,12 +154,13 @@ export async function saveElement(
 const APPROVAL_VALUES = ["in-progress", "approved", "rejected"];
 
 // Per-element review status. Upserts the approval frontmatter and stamps who
-// set it and when — the wiki is the record of who reviewed what.
+// set it and when — the wiki is the record of who reviewed what. The actor
+// is read off the session cookie, not from a caller-supplied argument: the
+// client cannot impersonate another user.
 export async function setApproval(
   slug: string,
   id: string,
   approval: string,
-  by: string,
 ): Promise<{ ok: true }> {
   if (!APPROVAL_VALUES.includes(approval)) {
     throw new Error(`Invalid approval value: ${approval}`);
@@ -168,6 +172,7 @@ export async function setApproval(
   const match = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
   if (!match) throw new Error(`Malformed wiki page: ${id}`);
 
+  const by = await currentActor();
   const date = new Date().toISOString().slice(0, 10);
   const lines = match[1].split("\n");
   const upsert = (key: string, value: string) => {
@@ -220,7 +225,6 @@ export async function setRelevance(
   slug: string,
   id: string,
   relevance: string,
-  by: string,
 ): Promise<{ ok: true }> {
   if (!RELEVANCE_VALUES.includes(relevance)) {
     throw new Error(`Invalid relevance value: ${relevance}`);
@@ -232,6 +236,7 @@ export async function setRelevance(
   const match = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
   if (!match) throw new Error(`Malformed wiki page: ${id}`);
 
+  const by = await currentActor();
   const date = new Date().toISOString().slice(0, 10);
   const lines = match[1].split("\n");
   const upsert = (key: string, value: string) => {

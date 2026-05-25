@@ -11,7 +11,7 @@ impact: MEDIUM
 handlingOwner: Closure Analyst
 provenance: {"Description": {"evidence": "Outstanding obligations remain | Closure suspended; client notified of items to settle; closure resumes once cleared.", "source": "document"}, "Handling": {"evidence": "Closure suspended; client notified of items to settle; closure resumes once cleared.", "source": "document"}, "Impact": {"evidence": "Closure suspended; client notified of items to settle; closure resumes once cleared.", "source": "document"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## Description

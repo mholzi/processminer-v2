@@ -12,7 +12,7 @@ transitions: [PS-BGI-006|normal|approved, EX-BGI-005|exception|TFM declines or r
 provenance: {"Inputs": {"evidence": "A Trade Finance Manager reviews the assembled package and approves issuance. Guarantees above EUR 5 million additionally require sign-off by the Head of Trade Finance.", "source": "document"}, "Outputs": {"evidence": "No guarantee is issued without a Trade Finance Manager's approval, recorded in the Trade Finance System. Guarantees above EUR 5 million additionally require sign-off by the Head of Trade Finance.", "source": "document"}, "What happens": {"evidence": "The TFM review is a substantive final judgement — confirming all upstream checks cleared, that terms and amount are within delegated authority, and that pricing/fee is correct. The EUR 5m threshold is system-enforced: the Trade Finance System routes amounts above EUR 5m to require the Head of Trade Finance's electronic sign-off; the TFM cannot finalise alone above that.", "source": "elicited"}, "Why it matters": {"evidence": "C1 — Four-eyes issuance approval. No guarantee is issued without a Trade Finance Manager's approval, recorded in the Trade Finance System.", "source": "document"}}
 source: bank-guarantee-issuance-v1.md
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## What happens

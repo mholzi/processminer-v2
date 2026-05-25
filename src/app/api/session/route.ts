@@ -1,4 +1,5 @@
 import type { NextRequest } from "next/server";
+import { COOKIE_NAME, verifySession } from "@/lib/auth-server";
 import { sessionPool, type WorkerEvent } from "@/lib/session-worker";
 
 // The Process Assistant chat is backed by the local `claude` CLI. Each chat
@@ -68,9 +69,15 @@ export async function POST(req: NextRequest) {
   // so this is purely a per-request choice (the profile setting).
   const wantStream = body.stream === true;
 
+  // Identify the signed-in user so the spawned `claude` process can attribute
+  // writes (e.g. `createdBy` on a new process index). Anonymous sessions still
+  // work — they just won't be credited.
+  const cookie = req.cookies.get(COOKIE_NAME)?.value;
+  const user = verifySession(cookie);
+
   // The warm worker for this session — reused if alive, rehydrated via
   // --resume if its process was lost, or created fresh for a new session.
-  const worker = sessionPool.acquire(sessionId);
+  const worker = sessionPool.acquire(sessionId, user?.username ?? null);
 
   const stream = new ReadableStream<Uint8Array>({
     start(controller) {

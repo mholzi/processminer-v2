@@ -10,7 +10,7 @@ category: Validation
 impact: LOW
 handlingOwner: Originator
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-17
 ---
 ## Description

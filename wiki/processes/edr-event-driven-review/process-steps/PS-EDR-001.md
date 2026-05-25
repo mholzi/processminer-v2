@@ -13,7 +13,7 @@ transitions: [PS-EDR-002|normal|always]
 systems: [SYS-EDR-001]
 provenance: {"Inputs": {"evidence": "", "source": "proposed"}, "Outputs": {"evidence": "the Financial Crime Analyst opens an EDR case in the case-management system. Event source, severity, and date are recorded.", "source": "document"}, "What happens": {"evidence": "When a triggering event is identified, the Financial Crime Analyst opens an EDR case in the case-management system. Event source, severity, and date are recorded.", "source": "document"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-21
 ---
 ## What happens

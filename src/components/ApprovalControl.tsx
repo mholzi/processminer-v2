@@ -3,6 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { setApproval } from "@/lib/wiki-write";
+import { useDisplayName } from "@/lib/user-roster-client";
 
 // The review-status control — in-progress / approved / rejected — for an
 // element or the process overview. Optimistic, server-action backed; the wiki
@@ -18,7 +19,6 @@ export default function ApprovalControl({
   approval: serverApproval,
   approvalBy,
   approvalDate,
-  userName,
   onSaved,
 }: {
   slug: string;
@@ -26,7 +26,6 @@ export default function ApprovalControl({
   approval: string;
   approvalBy?: string | null;
   approvalDate?: string | null;
-  userName: string;
   onSaved?: () => void;
 }) {
   const router = useRouter();
@@ -43,7 +42,7 @@ export default function ApprovalControl({
     setError(null);
     start(async () => {
       try {
-        await setApproval(slug, id, value, userName);
+        await setApproval(slug, id, value);
         router.refresh();
         onSaved?.();
       } catch (e) {
@@ -78,11 +77,19 @@ export default function ApprovalControl({
         </select>
       </label>
       {approvalBy && approvalDate && (
-        <span className="approval-meta">
-          {approvalBy} · {approvalDate}
-        </span>
+        <ApprovalMeta by={approvalBy} date={approvalDate} />
       )}
       {error && <span className="el-edit-err">{error}</span>}
+    </span>
+  );
+}
+
+// Renders `<approvalBy> · <approvalDate>` with the username resolved to its
+// current display name (so a rename in data/users.json propagates here).
+function ApprovalMeta({ by, date }: { by: string; date: string }) {
+  return (
+    <span className="approval-meta">
+      {useDisplayName(by)} · {date}
     </span>
   );
 }

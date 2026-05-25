@@ -15,7 +15,19 @@
 
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { getUsers } from "./auth-server";
 import type { ProcessDoc } from "./wiki";
+
+/** Username → display name. `by` fields in this feed are user-facing, so
+ *  resolve any stored username (e.g. `admin`) back to its display name
+ *  (`Markus Holzhauser`). Falls through unchanged when no match. */
+function displayName(by: string): string {
+  if (!by) return by;
+  const u = getUsers().find(
+    (x) => x.username.toLowerCase() === by.toLowerCase(),
+  );
+  return u?.name || by;
+}
 
 const WIKI_DIR = join(process.cwd(), "wiki", "processes");
 const SOURCES_DIR = join(process.cwd(), "raw-sources");
@@ -135,7 +147,7 @@ export function getContributorsReport(doc: ProcessDoc): ContributorsReport {
         events.push({
           id: `c-${n.id}`,
           kind: "comment",
-          by: n.author || "unknown",
+          by: displayName(n.author || "unknown"),
           ts: n.ts,
           title: `commented on ${elementId}`,
           sub: snippet,
@@ -154,11 +166,30 @@ export function getContributorsReport(doc: ProcessDoc): ContributorsReport {
       events.push({
         id: `u-${filename}`,
         kind: "upload",
-        by: meta.by || "unknown",
+        by: displayName(meta.by || "unknown"),
         ts: meta.at,
         title: `uploaded ${filename}`,
       });
     }
+  }
+
+  // ----- process creation from index.md frontmatter -----
+  // scaffold_process.py stamps `createdBy` + `createdAt` when the web chat
+  // exports PROCESSMINER_USER. Surface that as the first contributor event
+  // so the creator shows up immediately, before they've taken any other
+  // tangible action.
+  const createdBy = scalar(doc.process.meta.createdBy);
+  const createdAt = scalar(doc.process.meta.createdAt);
+  if (createdBy && createdAt) {
+    events.push({
+      id: `n-${doc.slug}`,
+      kind: "draft",
+      by: displayName(createdBy),
+      ts: toIsoTs(createdAt),
+      title: `created the process`,
+      sub: doc.process.title,
+      elementIds: [doc.process.id],
+    });
   }
 
   // ----- approvals + edits from element frontmatter -----
@@ -175,7 +206,7 @@ export function getContributorsReport(doc: ProcessDoc): ContributorsReport {
       events.push({
         id: `a-${page.id}-${approvalDate}`,
         kind: "approval",
-        by: approvalBy,
+        by: displayName(approvalBy),
         ts: toIsoTs(approvalDate),
         title: `approved ${page.id}`,
         sub: page.title,
@@ -188,7 +219,7 @@ export function getContributorsReport(doc: ProcessDoc): ContributorsReport {
       events.push({
         id: `e-${page.id}-${updatedAt}`,
         kind: "draft",
-        by: updatedBy,
+        by: displayName(updatedBy),
         ts: toIsoTs(updatedAt),
         title: `edited ${page.id}`,
         sub: page.title,
@@ -216,7 +247,7 @@ export function getContributorsReport(doc: ProcessDoc): ContributorsReport {
     events.push({
       id: `l-${lint.generatedAt}`,
       kind: "lint",
-      by: lint.by || "the assistant",
+      by: displayName(lint.by || "the assistant"),
       ts: lint.generatedAt,
       title: `ran a quality check — ${total} finding${total === 1 ? "" : "s"}`,
       sub: breakdown || undefined,
@@ -235,7 +266,7 @@ export function getContributorsReport(doc: ProcessDoc): ContributorsReport {
       events.push({
         id: `s-${sectionId}-${meta.date}`,
         kind: "section-status",
-        by: meta.by,
+        by: displayName(meta.by),
         ts: toIsoTs(meta.date),
         title: `marked ${sectionId} as ${meta.status}`,
         sub: meta.count ? `${meta.count} element${meta.count === 1 ? "" : "s"} on disk` : undefined,
@@ -252,7 +283,7 @@ export function getContributorsReport(doc: ProcessDoc): ContributorsReport {
     events.push({
       id: `i-${ingest.generatedAt}`,
       kind: "ingest",
-      by: ingest.by || "the assistant",
+      by: displayName(ingest.by || "the assistant"),
       ts: ingest.generatedAt,
       title: `extracted ${created} element${
         created === 1 ? "" : "s"

@@ -12,7 +12,7 @@ owner: Client Lifecycle Operations
 step: [PS-CAC-003]
 provenance: {"Control activity": {"evidence": "The analyst checks for unsettled items: pending payments, uncleared cheques, fees due, and linked products with a balance. Finance confirms there are no open accounting items.", "source": "document"}, "Risk addressed": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "Timing": {"evidence": "Every closure", "source": "document"}, "What it checks": {"evidence": "Outstanding obligations & accounting clearance | Preventive / manual | Every closure", "source": "document"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## What it checks

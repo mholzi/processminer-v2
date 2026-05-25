@@ -9,7 +9,7 @@ source: account-closure-dtp-mockup.md
 systemType: SUPPORTING
 provenance: {"Purpose": {"evidence": "Records Archive | Retention and archiving of the closed account file", "source": "document"}, "Role in this process": {"evidence": "The account file is archived and retained per the record-retention schedule.", "source": "document"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## Purpose

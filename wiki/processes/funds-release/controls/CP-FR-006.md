@@ -11,7 +11,7 @@ execution: MANUAL
 effectiveness: LOW
 owner: Payment Operations
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-17
 regulatedBy: [REG-FR-010]
 ---

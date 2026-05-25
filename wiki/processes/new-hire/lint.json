@@ -1,0 +1,261 @@
+{
+  "generatedAt": "2026-05-25T14:11:28.815552+00:00",
+  "slug": "new-hire",
+  "summary": {
+    "conformance": 0,
+    "discrepancy": 19,
+    "question": 4
+  },
+  "reopens": [],
+  "findings": [
+    {
+      "id": "F-001",
+      "kind": "discrepancy",
+      "title": "Orphan exception: EX-NH-001",
+      "detail": "No process-step `transitions` flow into EX-NH-001 — nothing in the documented flow reaches this exception.",
+      "elements": [
+        "EX-NH-001"
+      ]
+    },
+    {
+      "id": "F-002",
+      "kind": "discrepancy",
+      "title": "Orphan exception: EX-NH-002",
+      "detail": "No process-step `transitions` flow into EX-NH-002 — nothing in the documented flow reaches this exception.",
+      "elements": [
+        "EX-NH-002"
+      ]
+    },
+    {
+      "id": "F-003",
+      "kind": "discrepancy",
+      "title": "Orphan exception: EX-NH-003",
+      "detail": "No process-step `transitions` flow into EX-NH-003 — nothing in the documented flow reaches this exception.",
+      "elements": [
+        "EX-NH-003"
+      ]
+    },
+    {
+      "id": "F-004",
+      "kind": "discrepancy",
+      "title": "Orphan exception: EX-NH-004",
+      "detail": "No process-step `transitions` flow into EX-NH-004 — nothing in the documented flow reaches this exception.",
+      "elements": [
+        "EX-NH-004"
+      ]
+    },
+    {
+      "id": "F-005",
+      "kind": "discrepancy",
+      "title": "Orphan exception: EX-NH-005",
+      "detail": "No process-step `transitions` flow into EX-NH-005 — nothing in the documented flow reaches this exception.",
+      "elements": [
+        "EX-NH-005"
+      ]
+    },
+    {
+      "id": "F-006",
+      "kind": "discrepancy",
+      "title": "Orphan exception: EX-NH-006",
+      "detail": "No process-step `transitions` flow into EX-NH-006 — nothing in the documented flow reaches this exception.",
+      "elements": [
+        "EX-NH-006"
+      ]
+    },
+    {
+      "id": "F-007",
+      "kind": "discrepancy",
+      "title": "Orphan exception: EX-NH-008",
+      "detail": "No process-step `transitions` flow into EX-NH-008 — nothing in the documented flow reaches this exception.",
+      "elements": [
+        "EX-NH-008"
+      ]
+    },
+    {
+      "id": "F-008",
+      "kind": "discrepancy",
+      "title": "Orphan exception: EX-NH-012",
+      "detail": "No process-step `transitions` flow into EX-NH-012 — nothing in the documented flow reaches this exception.",
+      "elements": [
+        "EX-NH-012"
+      ]
+    },
+    {
+      "id": "F-009",
+      "kind": "discrepancy",
+      "title": "Orphan exception: EX-NH-014",
+      "detail": "No process-step `transitions` flow into EX-NH-014 — nothing in the documented flow reaches this exception.",
+      "elements": [
+        "EX-NH-014"
+      ]
+    },
+    {
+      "id": "F-010",
+      "kind": "discrepancy",
+      "title": "Orphan exception: EX-NH-018",
+      "detail": "No process-step `transitions` flow into EX-NH-018 — nothing in the documented flow reaches this exception.",
+      "elements": [
+        "EX-NH-018"
+      ]
+    },
+    {
+      "id": "F-011",
+      "kind": "discrepancy",
+      "title": "Process steps, controls and exceptions each appear in duplicate or triplicate",
+      "detail": "The process-steps folder contains 58 elements where PS-NH-030 through PS-NH-058 are exact duplicates of PS-NH-001 through PS-NH-029 (same titles, owners, SLAs and block content). Controls appear in triplicate: CP-NH-001/007/013, CP-NH-002/008/014, CP-NH-003/009/015, CP-NH-004/010/016, CP-NH-005/011/017, and CP-NH-006/012/018 are each identical sets. Exceptions are likewise tripled. This inflates all downstream counts and leaves ambiguity about which copy is authoritative. The first copy of each is the canonical set (earlier updatedAt, referenced by controls via short IDs ps-1 through ps-29).",
+      "elements": [
+        "PS-NH-001",
+        "PS-NH-030",
+        "CP-NH-001",
+        "CP-NH-007",
+        "CP-NH-013",
+        "EX-NH-001",
+        "EX-NH-007",
+        "EX-NH-013"
+      ]
+    },
+    {
+      "id": "F-012",
+      "kind": "discrepancy",
+      "title": "All control step relations use undeclared short IDs that do not match any element id in the wiki",
+      "detail": "Every control's `step` relation field uses lowercase short IDs such as ps-3, ps-5, ps-7, ps-8, ps-12, ps-13, ps-17, ps-19, ps-22, ps-23, ps-28, ps-29. No process-step element has an id in that format — all canonical IDs are PS-NH-001 through PS-NH-058. As a result every control's step link is unresolvable; no tool can traverse the control-to-step cross-reference.",
+      "elements": [
+        "CP-NH-001",
+        "CP-NH-002",
+        "CP-NH-003",
+        "CP-NH-004",
+        "CP-NH-005",
+        "CP-NH-006"
+      ]
+    },
+    {
+      "id": "F-013",
+      "kind": "discrepancy",
+      "title": "Day-1 phase steps carry no SLA, yet CTL-NHO-03 requires right-to-work completion on or before Day 1",
+      "detail": "PS-NH-013 through PS-NH-018 (and their duplicates PS-NH-042 through PS-NH-047) all lack an sla frontmatter field. CP-NH-003 explicitly states right-to-work must be verified on or before Day 1 and is linked to PS-NH-013. The absence of the sla field means there is no formal timeline commitment recorded against these steps, creating a gap between the control evidence requirement and the step definition.",
+      "elements": [
+        "PS-NH-013",
+        "PS-NH-014",
+        "PS-NH-015",
+        "PS-NH-016",
+        "PS-NH-017",
+        "PS-NH-018"
+      ]
+    },
+    {
+      "id": "F-014",
+      "kind": "discrepancy",
+      "title": "No-show exception unreachable — no step transitions to EX-NH-002/008/014",
+      "detail": "The 'New hire no-show on Day 1' exception (EX-NH-002, EX-NH-008, EX-NH-014) is documented but no process step in the wiki transitions to it. PS-NH-013 (greet new hire and complete right-to-work) is the natural trigger and does carry an exception branch to the right-to-work incomplete exception, but not to the no-show scenario. The no-show handling procedure (contact within 2 hours; access revocation if unresponsive within 24h) is therefore unreachable via the formal flow.",
+      "elements": [
+        "PS-NH-013",
+        "EX-NH-002",
+        "EX-NH-008",
+        "EX-NH-014"
+      ]
+    },
+    {
+      "id": "F-015",
+      "kind": "discrepancy",
+      "title": "Cross-border / visa exception not linked from any process step; no Phase 0 gate documented",
+      "detail": "EX-NH-006 (and its copies EX-NH-012, EX-NH-018) states that a Phase 0 — visa and work-permit verification — must be inserted before Phase 1 for cross-border or visa-sponsored hires. No process step transitions to this exception, and no Phase 0 step or gate control exists in the wiki. PS-NH-001 (trigger onboarding workflow) does not carry an exception branch to this scenario, leaving the Phase 0 path invisible in the formal flow.",
+      "elements": [
+        "PS-NH-001",
+        "EX-NH-006",
+        "EX-NH-012",
+        "EX-NH-018"
+      ]
+    },
+    {
+      "id": "F-016",
+      "kind": "discrepancy",
+      "title": "No control covers physical-access issuance steps owned by Facilities",
+      "detail": "PS-NH-010 (confirm desk, building pass and parking, SLA T-2) and PS-NH-014 (issue building pass and H&S walk-through, Day 1) grant physical building access. ROLE-NH-005 (Facilities) lists no controls. No control element in the wiki governs building-pass issuance — by contrast, IT provisioning (PS-NH-008) is covered by CP-NH-001 and CP-NH-004. This leaves the physical-access provisioning path without a documented preventive control.",
+      "elements": [
+        "PS-NH-010",
+        "PS-NH-014",
+        "ROLE-NH-005"
+      ]
+    },
+    {
+      "id": "F-017",
+      "kind": "discrepancy",
+      "title": "No control covers PS-NH-018 — policy pack acknowledgement in DocuSign",
+      "detail": "PS-NH-018 requires the new hire to acknowledge the policy pack (including Acceptable Use Policy and Data Privacy Policy) in DocuSign. Signed acknowledgements are a standard compliance evidence requirement. No control element asserts this has been completed and filed; CP-NH-002 covers Tier 1 training completion but is silent on policy acknowledgement.",
+      "elements": [
+        "PS-NH-018",
+        "CP-NH-002",
+        "CP-NH-008",
+        "CP-NH-014"
+      ]
+    },
+    {
+      "id": "F-018",
+      "kind": "discrepancy",
+      "title": "No control covers MFA enrolment completion at PS-NH-015",
+      "detail": "PS-NH-015 (first login, MFA enrolment and password reset) activates identity security at Day 1. No control element asserts that MFA enrolment is verified as complete before the new hire accesses corporate systems. CP-NH-001 and CP-NH-004 cover background screening gate and access approval respectively, but neither confirms MFA activation.",
+      "elements": [
+        "PS-NH-015"
+      ]
+    },
+    {
+      "id": "F-019",
+      "kind": "discrepancy",
+      "title": "Pre-boarding portal referenced in steps but absent from the systems register",
+      "detail": "PS-NH-002 and PS-NH-031 send a welcome email with a 'pre-boarding portal link' and the portal is a stated precondition for PS-NH-004. Both steps assign only SYS-NH-001 (Workday), but the source document never identifies the pre-boarding portal as part of Workday, and §5 Systems and tools does not list it. If it is a separate system it is missing from the register.",
+      "elements": [
+        "PS-NH-002",
+        "PS-NH-004",
+        "SYS-NH-001"
+      ]
+    },
+    {
+      "id": "F-020",
+      "kind": "question",
+      "title": "AML awareness assigned on Day 1 but excluded from Tier 1 gating — is completion enforced?",
+      "detail": "PS-NH-017 assigns AML awareness as part of the Day-1 curriculum. PS-NH-019 and CP-NH-002/008/014 explicitly exclude AML from the Tier 1 gated modules (Code of Conduct, InfoSec, Data Privacy only). For a banking process AML training completion is typically a regulatory obligation requiring a dedicated enforcement control. The wiki leaves AML ungated and without a dedicated control. The SME should confirm whether AML is an enforced module or informally tracked.",
+      "elements": [
+        "PS-NH-017",
+        "PS-NH-019",
+        "CP-NH-002",
+        "CP-NH-008",
+        "CP-NH-014"
+      ]
+    },
+    {
+      "id": "F-021",
+      "kind": "question",
+      "title": "SoD control scope unclear — does it cover only payroll setup or also compensation entry at PS-NH-007?",
+      "detail": "CP-NH-005/011/017 assert HR Ops cannot self-approve own compensation entries and link to steps ps-7 and ps-22 (the create-employee-record and confirm-payroll steps). It is ambiguous whether the Payroll verification at PS-NH-022 is the intended second-party approval that satisfies the SoD requirement, or whether a separate HR manager approval step is missing. The SME should confirm whether the two-team separation (HR Ops enters, Payroll verifies) is the documented SoD control or whether an explicit approval step is expected.",
+      "elements": [
+        "CP-NH-005",
+        "CP-NH-011",
+        "CP-NH-017",
+        "PS-NH-007",
+        "PS-NH-022"
+      ]
+    },
+    {
+      "id": "F-022",
+      "kind": "question",
+      "title": "Phase 0 for cross-border hires — is it handled outside this process, or a missing step?",
+      "detail": "EX-NH-006 mandates a Phase 0 visa/work-permit verification before Phase 1 starts for cross-border or visa-sponsored hires. There are no process steps or controls for Phase 0 in the wiki. The SME should confirm whether Phase 0 is handled entirely outside this process (and therefore intentionally absent) or whether it represents a missing set of steps and a gate control.",
+      "elements": [
+        "EX-NH-006",
+        "EX-NH-012",
+        "EX-NH-018"
+      ]
+    },
+    {
+      "id": "F-023",
+      "kind": "question",
+      "title": "Performance system identity — is Workday the system used for Day-60 goal-setting?",
+      "detail": "PS-NH-027 and PS-NH-056 map 'goals set in performance system' (source step 5.1) to SYS-NH-001 (Workday). The §5 systems table lists Workday for 'employee master record, org structure, comp' with no mention of performance management. If the performance system is a separate application it is missing from the systems register. The SME should confirm.",
+      "elements": [
+        "PS-NH-027",
+        "PS-NH-056",
+        "SYS-NH-001"
+      ]
+    }
+  ]
+}

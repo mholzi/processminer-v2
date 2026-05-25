@@ -11,7 +11,7 @@ gapStatus: open
 affects: [PS-CAC-007]
 provenance: {"Impact": {"evidence": "Auto-approve: internally coherent and conformant. — M. Berger", "source": "elicited"}, "Next step": {"evidence": "Can a closure be reversed once executed, and within what window?", "source": "document"}, "The gap": {"evidence": "Can a closure be reversed once executed, and within what window?", "source": "document"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## The gap

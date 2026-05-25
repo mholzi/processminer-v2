@@ -11,7 +11,7 @@ condition: Amount at or above the fixed EUR 5,000,000 threshold — non-EUR amou
 systems: [SYS-FR-004]
 transitions: [PS-FR-006|normal|when funding is available, EX-FR-003|exception|when funding is unavailable]
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-17
 ---
 ## What happens

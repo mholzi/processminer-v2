@@ -12,7 +12,7 @@ complexity: LOW
 addresses: [FP-BGIT-001, FP-BGIT-002, PP-BGIT-001]
 provenance: {"Expected benefit": {"evidence": "", "source": "proposed"}, "Feasibility": {"evidence": "", "source": "proposed"}, "The idea": {"evidence": "", "source": "proposed"}}
 relevance: relevant
-relevanceBy: M. Berger
+relevanceBy: m.berger
 relevanceDate: 2026-05-20
 ---
 ## The idea

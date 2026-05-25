@@ -16,7 +16,6 @@ export default function OverviewPanel({
   process,
   elements,
   slug,
-  userName,
   onNavigate,
   resolveSection,
   onSaved,
@@ -24,7 +23,6 @@ export default function OverviewPanel({
   process: WikiPage;
   elements: WikiPage[];
   slug: string;
-  userName: string;
   onNavigate: (section: string) => void;
   resolveSection: (id: string) => string | null;
   onSaved?: () => void;
@@ -62,7 +60,6 @@ export default function OverviewPanel({
           approvalDate={
             process.meta.approvalDate ? String(process.meta.approvalDate) : null
           }
-          userName={userName}
           onSaved={onSaved}
         />
       </div>

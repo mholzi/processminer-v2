@@ -551,6 +551,24 @@ def run() -> None:
     chk("write_elements rejects a duplicate tempKey",
         r.returncode != 0 and "dup" in (r.stdout + r.stderr), r.stdout + r.stderr)
 
+    print("\n— write_element: --by stamps a stable user ID (not a display name) —")
+    # `--by` writes the value verbatim. Callers pass a username (the stable
+    # user ID), and renderers resolve username → display name at read time
+    # via src/lib/contributors.ts. A rename in data/users.json then
+    # propagates without rewriting any wiki file. The legacy display-name
+    # migration is scripts/migrate_actors_to_userids.py.
+    script("write_element.py", spec_file(
+        {"slug": SLUG, "type": "process-step", "id": "PS-SELF-099",
+         "title": "Username Stamp Probe", "confidence": "high", "source": "SME",
+         "fields": {"owner": "Officer"}, "provenance": prov_elicited(STEP_BLOCKS),
+         "blocks": STEP_BLOCKS}),
+        "--by", "admin")
+    probe = (PROC_DIR / "process-steps" / "PS-SELF-099.md").read_text()
+    probe_fm = probe.split("---", 2)[1]
+    chk("write_element --by stamps the user ID verbatim, never a display name",
+        "updatedBy: admin" in probe and "Markus" not in probe_fm,
+        probe_fm)
+
     print("\n— skills: shared SKILL.md block drift check —")
     r = subprocess.run(
         ["python3", str(ROOT / "scripts" / "check_skill_blocks.py")],

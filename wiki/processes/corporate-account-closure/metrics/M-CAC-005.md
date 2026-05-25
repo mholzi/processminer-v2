@@ -10,7 +10,7 @@ target: Within 3 business days of compliance clearance
 value: Not measured
 provenance: {"Current reading": {"evidence": "Residual balance disbursement | Within 3 business days of closure", "source": "document"}, "Definition": {"evidence": "Within 3 business days of compliance clearance — Y, update both and approve in one pass. — M. Berger", "source": "elicited"}, "Why it matters": {"evidence": "Within 3 business days of compliance clearance — Y, update both and approve in one pass. — M. Berger", "source": "elicited"}}
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-19
 ---
 ## Definition

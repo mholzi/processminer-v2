@@ -10,7 +10,7 @@ owner: Unassigned on the two automated paths — the item lands in the shared Op
 systems: [SYS-FR-001]
 transitions: [PS-FR-002|normal|after the request is received]
 approval: approved
-approvalBy: M. Berger
+approvalBy: m.berger
 approvalDate: 2026-05-17
 ---
 ## What happens
