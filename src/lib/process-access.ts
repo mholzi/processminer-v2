@@ -275,3 +275,12 @@ export function canManageAccess(user: StoredUser, slug: string): boolean {
   const r = getAccess(slug);
   return r?.owner === user.username;
 }
+
+/** Drop the access record for a slug. Used by the process-delete flow;
+ *  the wiki + raw-sources removal happens in the API route. No-op if the
+ *  slug has no access record. */
+export function removeAccess(slug: string): void {
+  const rows = loadFromDisk();
+  const next = rows.filter((r) => r.slug !== slug);
+  if (next.length !== rows.length) saveToDisk(next);
+}

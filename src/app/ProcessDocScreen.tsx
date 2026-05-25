@@ -23,6 +23,7 @@ import ElementCard from "@/components/ElementCard";
 import RaciMatrix from "@/components/RaciMatrix";
 import ProcessFlow from "@/components/ProcessFlow";
 import OverviewPanel from "@/components/OverviewPanel";
+import SettingsPanel from "@/components/SettingsPanel";
 import AgentChat, { type ChatMessage } from "@/components/AgentChat";
 import ReviewPanel from "@/components/ReviewPanel";
 import TriagePanel from "@/components/TriagePanel";
@@ -509,6 +510,10 @@ export default function ProcessDocScreen({
   const router = useRouter();
   // Outstanding work opens the chat with a seeded resume prompt.
   const [chatOpen, setChatOpen] = useState(Boolean(openingRunDoc));
+  // Lights up when a chat turn finishes while the chat isn't visible — the
+  // user closed it, switched to the feedback view, etc. Renders as a dot on
+  // the collapsed assistant rail, clears as soon as the chat is back in view.
+  const [chatUnread, setChatUnread] = useState(false);
   // Chat panel width — drag-resizable, persisted across sessions.
   const [chatWidth, setChatWidth] = useState(340);
   useEffect(() => {
@@ -642,6 +647,23 @@ export default function ProcessDocScreen({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  // Turn-completion badge — set when a pending turn ends and the chat isn't
+  // visible, cleared as soon as the user can see it. We track the previous
+  // value of chatPending so we react to the falling edge, not the steady
+  // state. The chat is "visible" when it's open AND we're on the process
+  // canvas (the feedback / admin overlays hide it).
+  const prevChatPending = useRef(false);
+  useEffect(() => {
+    const wasPending = prevChatPending.current;
+    prevChatPending.current = chatPending;
+    if (!wasPending || chatPending) return;
+    const chatVisible = chatOpen && appView === "process";
+    if (!chatVisible) setChatUnread(true);
+  }, [chatPending, chatOpen, appView]);
+  useEffect(() => {
+    if (chatOpen && appView === "process") setChatUnread(false);
+  }, [chatOpen, appView]);
 
   // When a skill scaffolds a new process, the chat turn's router.refresh()
   // brings it into `docs` — switch the app to it automatically so the user
@@ -1766,6 +1788,23 @@ export default function ProcessDocScreen({
                 <span className="contrib-trigger-label">Contributors</span>
                 <span className="contrib-trigger-chevron">›</span>
               </button>
+              <button
+                type="button"
+                className={`contrib-trigger${
+                  section === "__settings" ? " active" : ""
+                }`}
+                onClick={() => setSection("__settings")}
+                title="Per-process info, access, and danger zone"
+              >
+                <span className="contrib-trigger-ico" aria-hidden>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
+                  </svg>
+                </span>
+                <span className="contrib-trigger-label">Settings</span>
+                <span className="contrib-trigger-chevron">›</span>
+              </button>
               <SourcesPanel
                 sources={doc.sources}
                 ingest={doc.ingest}
@@ -1982,6 +2021,19 @@ export default function ProcessDocScreen({
             <ContributorsView
               slug={currentSlug}
               processTitle={doc.process.title}
+            />
+          ) : section === "__settings" ? (
+            <SettingsPanel
+              slug={currentSlug}
+              title={doc.process.title}
+              idPrefix={String(doc.process.meta.id ?? "")}
+              sources={
+                Array.isArray(doc.process.meta.sources)
+                  ? (doc.process.meta.sources as unknown[]).map(String)
+                  : doc.process.meta.source
+                    ? [String(doc.process.meta.source)]
+                    : []
+              }
             />
           ) : section.startsWith("__doc:") ? (
             (() => {
@@ -2498,6 +2550,7 @@ export default function ProcessDocScreen({
           onRunLint={runLint}
           linting={linting}
           findingCount={openFindings ? openFindings.length : null}
+          unread={chatUnread}
           getRef={getRef}
         />
       </div>
