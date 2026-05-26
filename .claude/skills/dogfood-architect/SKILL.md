@@ -171,7 +171,15 @@ brief, then walk the back-and-forth):
 > Capabilities must list `realisesStep:` linking to the documented
 > `PS-BGID-*` / `TS-BGID-*` they serve. Target-applications must carry a
 > vendor, dataClassification and an `application criticality`. ADRs must
-> name alternatives considered, not just the chosen path.
+> name alternatives considered, not just the chosen path. **ADRs must
+> close their downstream platform choice.** If the decision is "we use
+> an event bus" / "we use a service mesh" but the broker / mesh product
+> hasn't been picked yet, do NOT leave the ADR with "to be specified by
+> the Solution Architect" — either pick the product now and own it in
+> this ADR, or name the ADR explicitly `pending — followed-up by
+> ADR-XX-followup in Stage 4` so the open stub is visible. Silent
+> deferral breaks domain → solution traceability and a TDA panel will
+> push back.
 
 Walk every Y / E / R the chat presents. Aim for at least one `[E]` (a
 substantive correction, e.g. sharpening a capability boundary) and one
@@ -193,12 +201,27 @@ architect`. Brief:
 > direction, the two target-applications it connects, and a contract
 > sketch), 12–20 components (≥ 2 per target-application, each with tech,
 > dataStore, hosting, scaling), 6–10 NFRs (covering at minimum
-> PERFORMANCE, AVAILABILITY, SECURITY, COMPLIANCE — each with a
-> measurable target and an owner), and 3–5 migration-phases sequencing
+> **PERFORMANCE, AVAILABILITY, SECURITY, COMPLIANCE, SCALABILITY,
+> OBSERVABILITY** — each with a measurable target and an owner;
+> OBSERVABILITY must pin log/metric/trace retention, alert thresholds and
+> an SLO error-budget so the package carries the DORA Article 17
+> incident-report evidence trail), and 3–5 migration-phases sequencing
 > the rollout (status, quarter range, scope, acceptance criteria). Every
 > integration links the upstream `INT-*` / `SYS-*` that motivates it. The
 > NFRs must reference at least one `REG-*` regulation for COMPLIANCE.
-> Set provenance: elicited, confidence: high.
+> **Resilience coverage rule**: every target-application must carry at
+> least one NFR setting `availability + RTO + RPO`, OR carry an explicit
+> "KEEP — vendor SLA inherited" note pointing to the vendor SLA URL —
+> never silently omit. DORA criticality mapping requires per-app
+> coverage. Set provenance: elicited, confidence: high.
+>
+> **Close every domain ADR's downstream platform choice.** If an upstream
+> ADR (Stage 3) said "broker to be decided" / "service mesh to be
+> decided" while your components and integrations already commit to
+> specific products (e.g. Apache Kafka, Istio, Kong), write the
+> follow-up ADR(s) in this stage to close the choice — ADR-04-followup,
+> ADR-12-followup, etc. The domain → solution traceability loop must
+> not have open platform stubs by the end of Stage 4.
 
 Walk Y / E / R. Make at least two `[E]` edits (e.g. an NFR target that's
 not measurable; an integration pattern that won't survive the documented

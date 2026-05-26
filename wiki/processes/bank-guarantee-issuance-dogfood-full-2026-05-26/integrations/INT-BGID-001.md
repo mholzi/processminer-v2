@@ -10,8 +10,8 @@ systems: [SYS-BGID-001, SYS-BGID-002]
 provenance: {"What connects": {"evidence": "Elicited: REST API, OAuth2 client-credentials, synchronous, confidential, PS-BGID-001", "source": "elicited"}, "What flows": {"evidence": "Elicited: application payload, acknowledgement, status updates", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T10:09:43Z
-approval: in-progress
-approvalBy: admin
+approval: approved
+approvalBy: Markus Holzhäuser
 approvalDate: 2026-05-26
 ---
 ## What connects

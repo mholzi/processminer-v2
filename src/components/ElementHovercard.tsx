@@ -86,11 +86,7 @@ export default function ElementHovercard({
           </span>
           <span className="hcard-title">{element.title}</span>
           <span className="hcard-tags">
-            {draft ? (
-              <span className="hcard-tag draft">AI draft</span>
-            ) : (
-              <span className="hcard-tag">Confirmed</span>
-            )}
+            {!draft && <span className="hcard-tag">Confirmed</span>}
             {review === "approved" && (
               <span className="hcard-tag ok">Approved</span>
             )}

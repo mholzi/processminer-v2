@@ -22,7 +22,15 @@ import { isOpen, type LintFinding } from "@/lib/lint";
 import ElementCard from "@/components/ElementCard";
 import RaciMatrix from "@/components/RaciMatrix";
 import ProcessFlow from "@/components/ProcessFlow";
+import AuditFindingsSummary from "@/components/AuditFindingsSummary";
+import ControlGapsSummary from "@/components/ControlGapsSummary";
+import ControlsSummary from "@/components/ControlsSummary";
+import CountryVariationsSummary from "@/components/CountryVariationsSummary";
+import ExceptionsSummary from "@/components/ExceptionsSummary";
+import MetricsSummary from "@/components/MetricsSummary";
 import OverviewPanel from "@/components/OverviewPanel";
+import PainPointsSummary from "@/components/PainPointsSummary";
+import RegulationSummary from "@/components/RegulationSummary";
 import SettingsPanel from "@/components/SettingsPanel";
 import AgentChat, { type ChatMessage } from "@/components/AgentChat";
 import ReviewPanel from "@/components/ReviewPanel";
@@ -1861,7 +1869,7 @@ export default function ProcessDocScreen({
         <main className="canvas">
           {section === "overview" ? (
             <>
-              <div className="canvas-head">
+              <div className="canvas-title">
                 <h1>Overview</h1>
                 <div className="sub">
                   {doc.process.id} — {doc.process.title}
@@ -1873,6 +1881,9 @@ export default function ProcessDocScreen({
                 slug={doc.slug}
                 onNavigate={setSection}
                 resolveSection={resolveSection}
+                onDeepDive={(id, title) =>
+                  deepDive({ id, title, kind: "element" })
+                }
               />
             </>
           ) : section === "__review" ? (
@@ -2118,6 +2129,49 @@ export default function ProcessDocScreen({
                   {currentSection?.description ?? activeLabel}
                 </div>
               </div>
+              {section === "pain-points" && sectionElements.length > 0 && (
+                <PainPointsSummary
+                  painPoints={sectionElements}
+                  onPickElement={goToElement}
+                  getRef={getRef}
+                />
+              )}
+              {section === "country-variations" && sectionElements.length > 0 && (
+                <CountryVariationsSummary
+                  variations={sectionElements}
+                  onPickElement={goToElement}
+                  getRef={getRef}
+                />
+              )}
+              {section === "controls" && sectionElements.length > 0 && (
+                <ControlsSummary
+                  controls={sectionElements}
+                  onPickElement={goToElement}
+                  getRef={getRef}
+                />
+              )}
+              {section === "regulation" && sectionElements.length > 0 && (
+                <RegulationSummary
+                  regulations={sectionElements}
+                  allElements={doc.elements}
+                  onPickElement={goToElement}
+                  getRef={getRef}
+                />
+              )}
+              {section === "control-gaps" && sectionElements.length > 0 && (
+                <ControlGapsSummary
+                  gaps={sectionElements}
+                  onPickElement={goToElement}
+                  getRef={getRef}
+                />
+              )}
+              {section === "audit-findings" && sectionElements.length > 0 && (
+                <AuditFindingsSummary
+                  findings={sectionElements}
+                  onPickElement={goToElement}
+                  getRef={getRef}
+                />
+              )}
               <div className="canvas-strip">
                 <span className="strip-name">{activeLabel}</span>
                 {sectionElements.length > 0 && sectionKind === null && (
@@ -2405,33 +2459,37 @@ export default function ProcessDocScreen({
                       const spec = sec?.specialist
                         ? SPECIALIST[sec.specialist]
                         : undefined;
-                      return spec ? (
-                        <>
-                          <p className="empty-hint">
-                            The {spec.label} {spec.blurb} — or add one entry
-                            yourself.
-                          </p>
-                          <button
-                            className="empty-cta"
-                            onClick={() => runAreaSpecialist(sec!.specialist!)}
-                            disabled={chatPending}
-                          >
-                            ✦ Start the {spec.label}
-                          </button>
-                        </>
-                      ) : (
+                      // One section is empty but the area isn't — the primary
+                      // action is "add an entry here", not "start a full
+                      // multi-section walkthrough". The specialist CTA is
+                      // still available as a secondary affordance.
+                      return (
                         <>
                           <p className="empty-hint">
                             Let the assistant draft the first one with you —
                             or capture it yourself.
                           </p>
-                          <button
-                            className="empty-cta"
-                            onClick={() => addEntry()}
-                            disabled={chatPending}
-                          >
-                            ✦ Add the first entry
-                          </button>
+                          <div className="empty-cta-row">
+                            <button
+                              className="empty-cta"
+                              onClick={() => addEntry()}
+                              disabled={chatPending}
+                            >
+                              ✦ Add the first entry
+                            </button>
+                            {spec && (
+                              <button
+                                className="empty-cta empty-cta-secondary"
+                                onClick={() =>
+                                  runAreaSpecialist(sec!.specialist!)
+                                }
+                                disabled={chatPending}
+                                title={`Run the full ${spec.label} across every section in this area`}
+                              >
+                                or run the full {spec.label} →
+                              </button>
+                            )}
+                          </div>
                         </>
                       );
                     })()
@@ -2482,6 +2540,7 @@ export default function ProcessDocScreen({
                           schema.elementTypes[el.type]?.frontmatter?.fields ??
                           []
                         }
+                        fieldValues={schema.fieldValues}
                         requiredFields={
                           schema.elementTypes[el.type]?.frontmatter
                             ?.required ?? []
@@ -2517,17 +2576,33 @@ export default function ProcessDocScreen({
                   );
                 })
               ) : (
-                visibleElements.map((el) => (
-                  <ElementCard
-                    key={el.id}
-                    page={el}
-                    slug={doc.slug}
-                    userName={user.name}
-                    typeLabel={schema.elementTypes[el.type]?.label ?? el.type}
+                <>
+                  {section === "metrics" && (
+                    <MetricsSummary
+                      metrics={sectionElements}
+                      onPickElement={goToElement}
+                      getRef={getRef}
+                    />
+                  )}
+                  {section === "exceptions" && (
+                    <ExceptionsSummary
+                      exceptions={sectionElements}
+                      onPickElement={goToElement}
+                      getRef={getRef}
+                    />
+                  )}
+                  {visibleElements.map((el) => (
+                    <ElementCard
+                      key={el.id}
+                      page={el}
+                      slug={doc.slug}
+                      userName={user.name}
+                      typeLabel={schema.elementTypes[el.type]?.label ?? el.type}
                     template={schema.elementTypes[el.type]?.template}
                     fieldSpecs={
                       schema.elementTypes[el.type]?.frontmatter?.fields ?? []
                     }
+                    fieldValues={schema.fieldValues}
                     requiredFields={
                       schema.elementTypes[el.type]?.frontmatter?.required ?? []
                     }
@@ -2557,7 +2632,8 @@ export default function ProcessDocScreen({
                     defaultCollapsed={sectionElements.length > 3}
                     isCurrent={el.id === currentRunId}
                   />
-                ))
+                  ))}
+                </>
               )}
               {sectionKind === null &&
                 sectionElements.length > 0 &&

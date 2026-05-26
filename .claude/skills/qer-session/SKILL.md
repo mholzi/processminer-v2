@@ -60,7 +60,7 @@ is built (`skillBuilt`); skip any that is not.
 
 | Perspective | Skill | Owns |
 |---|---|---|
-| Process | `process-specialist` | process-step, exception, pain-point, process-gap, role, metric |
+| Process | `process-specialist` | process-step, exception, pain-point, process-gap, role, metric, country-variation |
 | Control & Compliance | `control-compliance-specialist` | control, regulation, compliance-gap, audit-finding |
 | Client Journey | `client-journey-specialist` | cx-channel, cx-touchpoint, moment, friction-point, competitor-cx, cx-benchmark |
 | Innovation | `innovation-analyst` | market-trend, competitor-innovation, innovation-idea, innovation-risk |

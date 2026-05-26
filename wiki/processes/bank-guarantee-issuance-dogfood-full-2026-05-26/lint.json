@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-05-26T10:28:25.768398+00:00",
+  "generatedAt": "2026-05-26T16:06:36.898034+00:00",
   "slug": "bank-guarantee-issuance-dogfood-full-2026-05-26",
   "summary": {
     "conformance": 1,
-    "discrepancy": 24,
-    "question": 7
+    "discrepancy": 19,
+    "question": 2
   },
   "reopens": [
-    "ROLE-BGID-003"
+    "EX-BGID-001"
   ],
   "findings": [
     {
@@ -26,7 +26,11 @@
       "detail": "No process-step `transitions` flow into EX-BGID-001 — nothing in the documented flow reaches this exception.",
       "elements": [
         "EX-BGID-001"
-      ]
+      ],
+      "status": "resolved",
+      "resolvedBy": "deep-dive",
+      "resolvedAt": "2026-05-26",
+      "resolutionNote": "Added exception transition PS-BGID-006 → EX-BGID-001 (SWIFT NAK received on delivery)"
     },
     {
       "id": "F-003",
@@ -76,273 +80,147 @@
     {
       "id": "F-008",
       "kind": "discrepancy",
-      "title": "PS-BGID-006 (Guarantee Generation and Delivery) has no control linked",
-      "detail": "No control element points to PS-BGID-006 via its step field. This is the step that generates the legal guarantee instrument, transmits it via SWIFT MT760, and updates the client facility utilisation — yet it is the only critical issuance step with no preventive or detective control attached.",
+      "title": "PS-BGID-001 (Application Intake) has no control linked",
+      "detail": "PS-BGID-001 has no control element pointing to it. All other steps have at least one control (e.g. CP-BGID-003 → PS-BGID-002, CP-BGID-002 + CP-BGID-005 → PS-BGID-004, CP-BGID-001 → PS-BGID-005, CP-BGID-004 → PS-BGID-007). The intake step accepts applications, sets channel and data-quality expectations, yet has no compensating control.",
       "elements": [
-        "PS-BGID-006",
-        "EX-BGID-001",
-        "EX-BGID-006"
+        "PS-BGID-001"
       ]
     },
     {
       "id": "F-009",
       "kind": "discrepancy",
-      "title": "PS-BGID-003 (Wording Review) has no control linked",
-      "detail": "No control element links to PS-BGID-003. The step handles approval of bespoke legal guarantee wording — a legally consequential activity — against only an informal 2-business-day desk convention that is not tracked in TFS and carries no escalation trigger. All five controls (CP-BGID-001 through CP-BGID-005) point to other steps; none covers the wording review step.",
+      "title": "Approval ceiling role mismatch — Head of Trade Finance is :C not :A for EUR 5M threshold",
+      "detail": "PS-BGID-005 (Issuance Approval) states 'Guarantees above EUR 5 million additionally require sign-off by the Head of Trade Finance; this threshold is system-enforced'. However, ROLE-BGID-003 (Head of Trade Finance) is marked :C (consulted) in the RACI for PS-BGID-005, not :A (accountable). The role that holds the approval-ceiling authority owns the decision and must be :A.",
       "elements": [
-        "PS-BGID-003",
-        "CP-BGID-001",
-        "CP-BGID-002",
-        "CP-BGID-003",
-        "CP-BGID-004",
-        "CP-BGID-005"
+        "PS-BGID-005",
+        "ROLE-BGID-003"
       ]
     },
     {
       "id": "F-010",
-      "kind": "discrepancy",
-      "title": "PS-BGID-002 (Credit and Facility Check) has no Accountable entry in any role RACI",
-      "detail": "ROLE-BGID-001 (Trade Finance Officer) records PS-BGID-002:R but not PS-BGID-002:A. No other role element includes an :A entry for PS-BGID-002. The step owner field says Trade Finance Officer, which implies accountability, but the RACI as written leaves PS-BGID-002 without a formally accountable party.",
+      "kind": "question",
+      "title": "Touchpoint sets undefined client expectation but step claims informal SLA",
+      "detail": "JT-BGID-003 (Legal Wording Feedback) states 'the wait is undefined, no interim status updates are provided, and the client cannot estimate the issuance date'. PS-BGID-003 declares an SLA of '2 business days (bespoke wording — informal desk convention; not tracked in TFS)'. The touchpoint experience and the SLA entry are contradictory. Is the informal SLA only used internally and never communicated to the client, or should the touchpoint record be updated to reflect it?",
       "elements": [
-        "PS-BGID-002",
-        "ROLE-BGID-001"
+        "JT-BGID-003",
+        "PS-BGID-003"
       ]
     },
     {
       "id": "F-011",
       "kind": "discrepancy",
-      "title": "PS-BGID-003 RACI contradicts the step stated accountability",
-      "detail": "PS-BGID-003 declares owner: Trade Finance Officer and its body states the TFO remains accountable throughout with Legal acting as consulted. However, ROLE-BGID-001 records PS-BGID-003:I (Informed only), while ROLE-BGID-006 records PS-BGID-003:R and PS-BGID-003:A. The step body and RACI entries directly contradict each other on which party is accountable.",
+      "title": "REG-BGID-002 (URDG 758) has no control mapped via regulatedBy",
+      "detail": "REG-BGID-002 requires guarantee wording to comply with URDG 758 rules. The 'How it is met' block cites version-controlled templates at PS-BGID-003, but no control element carries regulatedBy: REG-BGID-002. An auditor reviewing regulatory obligations would find no control closing this obligation.",
       "elements": [
-        "PS-BGID-003",
-        "ROLE-BGID-001",
-        "ROLE-BGID-006"
+        "REG-BGID-002"
       ]
     },
     {
       "id": "F-012",
       "kind": "discrepancy",
-      "title": "JT-BGID-003 says wording review wait is undefined, contradicting the 2-BD SLA on PS-BGID-003",
-      "detail": "PS-BGID-003 records sla: '2 business days (bespoke wording — informal desk convention; not tracked in TFS)'. JT-BGID-003, which occurs at the same step, states the wait is undefined and no interim status updates are provided. If a desk SLA exists — even informally — it should be reflected in the touchpoint rather than described as undefined.",
+      "title": "REG-BGID-003 (CRR Capital Treatment) has no control mapped via regulatedBy",
+      "detail": "REG-BGID-003 requires correct CRR Article 111 capital treatment with CCF application for off-balance-sheet exposures. The 'How it is met' block is marked 'to be confirmed with SME' and no control references this regulation. An auditor reviewing capital adequacy would find an uncontrolled regulatory obligation.",
       "elements": [
-        "PS-BGID-003",
-        "JT-BGID-003"
+        "REG-BGID-003"
       ]
     },
     {
       "id": "F-013",
-      "kind": "question",
-      "title": "PS-BGID-006 has no step-level SLA despite a client-facing delivery touchpoint (JT-BGID-005)",
-      "detail": "JT-BGID-005 (MT760 Issuance Confirmation) sets a concrete client expectation. EX-BGID-001 references 'the 3-business-day SLA' as a threshold that SWIFT failure can breach. However, M-BGID-001 defines that as an end-to-end metric, and PS-BGID-006 records an empty sla field. Is there a step-level turnaround target for guarantee generation and delivery?",
+      "kind": "discrepancy",
+      "title": "REG-BGID-009 (DORA ICT Risk Management) has no control mapped via regulatedBy",
+      "detail": "REG-BGID-009 requires documented ICT risk management and resilience testing for systems supporting critical functions. The 'How it is met' block describes external system governance and explicitly notes it is not a process control. No control element references REG-BGID-009.",
       "elements": [
-        "PS-BGID-006",
-        "JT-BGID-005",
-        "EX-BGID-001",
-        "M-BGID-001"
+        "REG-BGID-009"
       ]
     },
     {
       "id": "F-014",
       "kind": "discrepancy",
-      "title": "Head of Trade Finance RACI is C (Consulted) but role and control require mandatory approval above EUR 5M",
-      "detail": "CP-BGID-001 states the Head of Trade Finance must also provide sign-off before issuance proceeds for guarantees above EUR 5M, and PS-BGID-005 confirms this is system-enforced. Yet the RACI entry for ROLE-BGID-003 at PS-BGID-005 is C (Consulted), not A or R. Consulted means the role is asked for input but carries no accountability or execution duty — directly contradicting the stated mandatory approval obligation.",
+      "title": "REG-BGID-010 (GDPR) has no control mapped via regulatedBy",
+      "detail": "REG-BGID-010 governs personal data handling at intake (KYC, application forms). The 'How it is met' block contains policy statements about lawful basis and data minimisation but no control element enforces GDPR-compliant data handling at PS-BGID-001 or elsewhere via regulatedBy.",
       "elements": [
-        "ROLE-BGID-003",
-        "CP-BGID-001",
-        "PS-BGID-005",
-        "REG-BGID-007",
-        "REG-BGID-008"
+        "REG-BGID-010"
       ]
     },
     {
       "id": "F-015",
       "kind": "discrepancy",
-      "title": "No control covers the re-screening obligation cited in EX-BGID-005 (post-rejection wording amendment)",
-      "detail": "EX-BGID-005 states that when a beneficiary bank rejects the MT760 wording and an amended guarantee is re-issued, a second sanctions screening is triggered. Neither CP-BGID-002 nor CP-BGID-005 is linked to this re-issuance path — both are bound only to PS-BGID-004 in the normal flow. No control or step covers sanctions screening of the amended instrument before the replacement MT760 is transmitted.",
+      "title": "REG-BGID-012 (COREP Supervisory Reporting) has no control mapped via regulatedBy",
+      "detail": "REG-BGID-012 mandates COREP C 07.00 reporting of off-balance-sheet guarantee exposures. The 'How it is met' block describes a Finance/Regulatory Reporting feed 'to be confirmed' but no control closes this obligation. An auditor reviewing regulatory reporting would find an uncontrolled obligation.",
       "elements": [
-        "EX-BGID-005",
-        "CP-BGID-002",
-        "CP-BGID-005",
-        "REG-BGID-001",
-        "REG-BGID-004"
+        "REG-BGID-012"
       ]
     },
     {
       "id": "F-016",
       "kind": "discrepancy",
-      "title": "CP-BGID-003 (Facility Limit Check) does not cover the intraday double-issuance exposure in EX-BGID-006",
-      "detail": "EX-BGID-006 documents an intraday window of up to one business day during which a completed issuance is not yet reflected in the facility system. A same-day second application could pass CP-BGID-003 against headroom already consumed. The described mitigation is a manual TFO check, which is not documented as a formal control — it has no owner, no trigger definition and no audit trail requirement.",
+      "title": "PP-BGID-001 has no friction-point linked to it",
+      "detail": "PP-BGID-001 (Facility Limit Shortfall Stalls Applications) is a documented pain-point with no friction-point referencing it via a painPoint link. FP-BGID-001 and FP-BGID-002 both link to PP-BGID-002, establishing the expected pattern. PP-BGID-001 surfaces at PS-BGID-002 but no friction-point articulates the client-journey moment where the shortfall is experienced.",
       "elements": [
-        "EX-BGID-006",
-        "CP-BGID-003",
-        "REG-BGID-005"
+        "PP-BGID-001"
       ]
     },
     {
       "id": "F-017",
-      "kind": "question",
-      "title": "REG-BGID-004 (EBA ML/TF Risk Factors) compliance coverage is unresolved",
-      "detail": "REG-BGID-004's How it is met section states that broader ML/TF risk assessment for individual guarantee applications is to be confirmed with the SME. CP-BGID-002 addresses only the beneficiary sanctions check. EBA GL/2023-03 requires a product-specific risk assessment covering country risk, counterparty risk and product risk. No control covers this broader assessment.",
-      "elements": [
-        "REG-BGID-004",
-        "CP-BGID-002",
-        "PS-BGID-004"
-      ]
-    },
-    {
-      "id": "F-018",
-      "kind": "question",
-      "title": "REG-BGID-011 and REG-BGID-012 have no linked control and contain unresolved to-be-confirmed gaps",
-      "detail": "REG-BGID-011 states machine-readable retention and the 5-year purge schedule are to be confirmed with Compliance and Records Management. REG-BGID-012 states COREP C07.00 population from the TFS feed is to be confirmed with Finance and Regulatory Reporting. Neither regulation is backed by a named control in the wiki.",
-      "elements": [
-        "REG-BGID-011",
-        "REG-BGID-012"
-      ]
-    },
-    {
-      "id": "F-019",
       "kind": "discrepancy",
-      "title": "FP-BGID-001 and FP-BGID-002 describe the same client experience without a link between them",
-      "detail": "Both friction-points occur at PS-BGID-003, both point to PP-BGID-002, and both describe the same root cause: Legal reviews bespoke wording without a committed SLA and without client-facing status updates. FP-BGID-001 frames this as no committed turnaround and FP-BGID-002 as no queue visibility, but the Description, Root cause and Client impact sections substantially overlap. Either one is a duplicate or they are genuinely distinct friction-points that should cross-reference each other.",
-      "elements": [
-        "FP-BGID-001",
-        "FP-BGID-002",
-        "PP-BGID-002"
-      ]
-    },
-    {
-      "id": "F-020",
-      "kind": "discrepancy",
-      "title": "FP-BGID-003 has no painPoint link despite describing a discrete client pain",
-      "detail": "FP-BGID-003 (Collateral Booking Status Opaque to Client) has no painPoint field. There is no pain-point in the wiki covering this issue. II-BGID-005 addresses FP-BGID-003 directly, but the friction to pain-point traceability link is broken.",
-      "elements": [
-        "FP-BGID-003",
-        "II-BGID-005"
-      ]
-    },
-    {
-      "id": "F-021",
-      "kind": "discrepancy",
-      "title": "FP-BGID-004 has no painPoint link despite describing a discrete client pain",
-      "detail": "FP-BGID-004 (MT760 Delivery Not Acknowledged to Client) has no painPoint field. No pain-point in the wiki covers this issue. MT-BGID-003 and JT-BGID-005 both describe the same silent gap, and II-BGID-004 and TD-BGID-001 both claim to resolve FP-BGID-004 — but without a pain-point element, the issue is absent from the pain-points section.",
-      "elements": [
-        "FP-BGID-004",
-        "II-BGID-004",
-        "MT-BGID-003",
-        "JT-BGID-005"
-      ]
-    },
-    {
-      "id": "F-022",
-      "kind": "discrepancy",
-      "title": "MT-BGID-003 and JT-BGID-005 describe the MT760 acknowledgement gap but neither links to FP-BGID-004",
-      "detail": "Both MT-BGID-003 and JT-BGID-005 articulate the same experience as FP-BGID-004 (silent gap after MT760 issuance). However, neither the moment nor the touchpoint carries a reference to FP-BGID-004, and FP-BGID-004 does not reference them. The same client experience is documented independently in three element types with no cross-links.",
-      "elements": [
-        "MT-BGID-003",
-        "JT-BGID-005",
-        "FP-BGID-004"
-      ]
-    },
-    {
-      "id": "F-023",
-      "kind": "question",
-      "title": "JT-BGID-001 and PP-BGID-003 describe the same incomplete-submission loop — are they intentionally unlinked?",
-      "detail": "JT-BGID-001 describes clients discovering missing fields after submission. PP-BGID-003 documents the same issue as the most frequent intake failure. Neither element references the other. It is unclear whether a link from JT-BGID-001 to PP-BGID-003 was omitted by oversight.",
-      "elements": [
-        "JT-BGID-001",
-        "PP-BGID-003"
-      ]
-    },
-    {
-      "id": "F-024",
-      "kind": "discrepancy",
-      "title": "II-BGID-004 claims to address FP-BGID-004 but its body does not support the link",
-      "detail": "II-BGID-004 (ICC-SWIFT API Application Channel for ERP intake) lists FP-BGID-004 (MT760 Delivery Not Acknowledged to Client) in its addresses field, but the idea body is entirely about eliminating incomplete intake submissions. MT760 acknowledgement notification is an issuance-delivery friction unrelated to intake; no part of the idea text explains how it resolves FP-BGID-004.",
-      "elements": [
-        "II-BGID-004",
-        "FP-BGID-004"
-      ]
-    },
-    {
-      "id": "F-025",
-      "kind": "discrepancy",
-      "title": "FP-BGID-004 (MT760 delivery not acknowledged) has no innovation-idea genuinely addressing it",
-      "detail": "The only innovation-idea listing FP-BGID-004 in its addresses field is II-BGID-004, but that idea addresses ERP intake not post-issuance notification. No other innovation-idea addresses the MT760 acknowledgement gap, leaving this friction-point without a credible innovation response.",
-      "elements": [
-        "FP-BGID-004",
-        "II-BGID-004"
-      ]
-    },
-    {
-      "id": "F-026",
-      "kind": "question",
-      "title": "FP-BGID-003 has no linked pain-point — is the collateral-opacity issue a stand-alone friction or should a pain-point exist?",
-      "detail": "FP-BGID-003 (Collateral Booking Status Opaque to Client) has no painPoint frontmatter field, unlike FP-BGID-001 and FP-BGID-002 which link to PP-BGID-002. It is unclear whether the collateral-opacity issue is a manifestation of an existing pain-point or is intentionally stand-alone. If a pain-point is implied, it is not documented.",
+      "title": "FP-BGID-003 missing pain-point link",
+      "detail": "FP-BGID-003 (Collateral Booking Status Opaque to Client) does not link to any pain-point via the painPoint field. II-BGID-005 addresses it, confirming it is a real issue, but the friction-point is disconnected from the pain-point hierarchy. Without a painPoint link, the client journey trace is broken.",
       "elements": [
         "FP-BGID-003"
       ]
     },
     {
-      "id": "F-027",
-      "kind": "question",
-      "title": "FP-BGID-004 has no linked pain-point — is the MT760 acknowledgement gap a stand-alone friction or should a pain-point exist?",
-      "detail": "FP-BGID-004 (MT760 Delivery Not Acknowledged to Client) has no painPoint frontmatter field. It is unclear whether the MT760 acknowledgement gap is a manifestation of a broader pain-point or is intentionally recorded as a stand-alone friction. If a pain-point is implied, it is not documented.",
+      "id": "F-018",
+      "kind": "discrepancy",
+      "title": "FP-BGID-004 missing pain-point link",
+      "detail": "FP-BGID-004 (MT760 Delivery Not Acknowledged to Client) does not link to any pain-point via the painPoint field. II-BGID-004 addresses it, confirming it is a real issue, but the friction-point is disconnected from the pain-point hierarchy.",
       "elements": [
         "FP-BGID-004"
       ]
     },
     {
-      "id": "F-028",
+      "id": "F-019",
       "kind": "discrepancy",
-      "title": "SYS-BGID-005 and INT-BGID-004 cite PS-BGID-007 for post-issuance utilisation update but PS-BGID-007 is Collateral Confirmation",
-      "detail": "SYS-BGID-005 Role in this process states the Facility/Credit System is updated asynchronously post-issuance at PS-BGID-007. INT-BGID-004 likewise records the post-issuance utilisation update at PS-BGID-007. However, PS-BGID-007 is Collateral Confirmation — a pre-issuance step. The actual post-issuance facility utilisation update is described in PS-BGID-006 (Guarantee Generation and Delivery), whose outputs include Client facility utilisation updated. The step ID cited in both elements is wrong.",
+      "title": "II-BGID-001 claims to address FP-BGID-002 (queue visibility) but body only addresses SLA commitment",
+      "detail": "II-BGID-001 (AI Wording Pre-Screener) lists FP-BGID-002 (No Queue Visibility During Legal Wording Review) in its addresses field, but the idea body describes a pre-screening mechanism with a committed SLA — which directly addresses FP-BGID-001 and PP-BGID-002. The body contains no mention of queue visibility, application tracking, or client-facing status updates. The FP-BGID-002 link is a content/relation mismatch.",
       "elements": [
-        "SYS-BGID-005",
-        "INT-BGID-004",
-        "PS-BGID-006",
-        "PS-BGID-007"
+        "II-BGID-001",
+        "FP-BGID-002"
       ]
     },
     {
-      "id": "F-029",
+      "id": "F-020",
       "kind": "discrepancy",
-      "title": "SYS-BGID-005 (Facility/Credit System) missing from PS-BGID-002 systems field despite being consulted at that step",
-      "detail": "SYS-BGID-005 Role in this process and INT-BGID-004 state the Facility/Credit System is consulted synchronously at PS-BGID-002 (Credit and Facility Check). However, PS-BGID-002 frontmatter lists only [SYS-BGID-002] in its systems field. SYS-BGID-005 is absent, creating a gap between what the system and integration elements document and what the process step records.",
+      "title": "II-BGID-004 claims to address FP-BGID-004 (MT760 delivery ack) but body is about application submission",
+      "detail": "II-BGID-004 (ICC-SWIFT API Application Channel) lists FP-BGID-004 (MT760 Delivery Not Acknowledged to Client) in its addresses field, but the body focuses entirely on structured ERP-to-bank application submission and mandatory field completeness. The body does not mention MT760 delivery, SWIFT acknowledgement routing, or client notification of beneficiary bank receipt. The FP-BGID-004 link is a content/relation mismatch.",
       "elements": [
-        "SYS-BGID-005",
-        "INT-BGID-004",
-        "PS-BGID-002"
+        "II-BGID-004",
+        "FP-BGID-004"
       ]
     },
     {
-      "id": "F-030",
+      "id": "F-021",
       "kind": "discrepancy",
-      "title": "SYS-BGID-006 (Document Management System) missing from PS-BGID-006 systems field despite receiving documents at that step",
-      "detail": "SYS-BGID-006 Role in this process and INT-BGID-005 state the DMS receives executed guarantee documents at PS-BGID-006. However, PS-BGID-006 frontmatter lists only [SYS-BGID-002, SYS-BGID-004]. SYS-BGID-006 is absent.",
+      "title": "PS-BGID-007 (Collateral Confirmation) mentions system interactions but has empty systems list",
+      "detail": "PS-BGID-007 body describes confirming cash collateral receipt and recording the blocked-funds confirmation — both are IT system interactions. INT-BGID-004 and INT-BGID-005 explicitly target the Facility/Credit System at this step. The step should list at minimum SYS-BGID-002 (Trade Finance System) and SYS-BGID-005 (Facility & Credit System / Murex).",
       "elements": [
-        "SYS-BGID-006",
-        "INT-BGID-005",
-        "PS-BGID-006"
+        "PS-BGID-007",
+        "SYS-BGID-002",
+        "SYS-BGID-005"
       ]
     },
     {
-      "id": "F-031",
-      "kind": "discrepancy",
-      "title": "PS-BGID-007 (Collateral Confirmation) has no systems linked despite recording a collateral block confirmation",
-      "detail": "PS-BGID-007 has systems: [] in its frontmatter. The step describes confirming that cash collateral has been received and blocked, with an output of Collateral block confirmation recorded. Blocking funds and recording a confirmation would normally be performed in a core banking or trade finance system. No system is associated with this step.",
-      "elements": [
-        "PS-BGID-007"
-      ]
-    },
-    {
-      "id": "F-032",
+      "id": "F-022",
       "kind": "question",
-      "title": "DEP-BGID-001 routes Credit System dependency viaSystem TFS (SYS-BGID-002) rather than SYS-BGID-005 directly",
-      "detail": "DEP-BGID-001 documents the dependency on the Facility/Credit System (SYS-BGID-005), but its frontmatter records viaSystem: [SYS-BGID-002] (Trade Finance System). It is unclear whether the Credit System data flows through TFS as an intermediary (making SYS-BGID-002 correct) or whether SYS-BGID-005 should be listed directly. The architectural routing is unconfirmed.",
+      "title": "All six systems missing structured DORA/ICT-mapping fields in frontmatter",
+      "detail": "SYS-BGID-001 through SYS-BGID-006 all lack structured YAML fields for criticality, vendor, dataClassification, rtoBand and rpoBand. These values appear only in unstructured prose in the Purpose block. DORA Article 28 and ICT-risk mapping tools require machine-readable fields. What are the correct values for each system?",
       "elements": [
-        "DEP-BGID-001",
+        "SYS-BGID-001",
+        "SYS-BGID-002",
+        "SYS-BGID-003",
+        "SYS-BGID-004",
         "SYS-BGID-005",
-        "SYS-BGID-002"
+        "SYS-BGID-006"
       ]
     }
   ]

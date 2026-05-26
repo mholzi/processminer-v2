@@ -3,18 +3,19 @@ id: EX-BGID-001
 type: exception
 section: exceptions
 title: SWIFT Delivery Failure
-status: draft
+status: confirmed
 confidence: high
 source: bank-guarantee-issuance-v1.md
 category: transmission failure
 impact: HIGH
 handlingOwner: Trade Finance Officer
 provenance: {"Description": {"evidence": "SWIFT NAK → TFO investigates and resubmits; record this as an exception (SWIFT delivery failure)", "source": "elicited"}, "Handling": {"evidence": "SWIFT NAK → TFO investigates and resubmits", "source": "elicited"}, "Impact": {"evidence": "", "source": "proposed"}}
-updatedBy: the assistant
-updatedAt: 2026-05-26T06:30:45Z
-approval: approved
-approvalBy: admin
+updatedBy: admin
+updatedAt: 2026-05-26T19:11:43.605Z
+approval: in-progress
+approvalBy: run-lint
 approvalDate: 2026-05-26
+frequencyPct: 2%
 ---
 ## Description
 The SWIFT transmission of the executed guarantee instrument returns a negative acknowledgement (NAK) — the message was rejected or not delivered to the beneficiary's bank. This can occur at the final step of issuance after the guarantee has already been generated and approved.

@@ -67,7 +67,10 @@ export async function saveElement(
     body: string;
   },
 ): Promise<{ ok: true }> {
-  const path = findElementFile(slug, id);
+  // The process-overview's "Edit yourself" passes the process id; that page
+  // lives at index.md, not under a section folder — falling through to
+  // findApprovableFile picks it up.
+  const path = findApprovableFile(slug, id);
   if (!path) throw new Error(`Element not found: ${id}`);
 
   const raw = readFileSync(path, "utf8");

@@ -7,18 +7,19 @@ status: draft
 confidence: high
 source: bank-guarantee-issuance-v1.md
 owner: Trade Finance Officer
-sla:
+sla: same business day (informal)
 condition: Complete application received from step 1
 systems: [SYS-BGID-002]
-provenance: {"Inputs": {"evidence": "[Y] Accept", "source": "elicited"}, "Outputs": {"evidence": "[Y] Accept", "source": "elicited"}, "What happens": {"evidence": "[Y] Accept", "source": "elicited"}, "Why it matters": {"evidence": "[Y] Accept", "source": "elicited"}}
-updatedBy: the assistant
-updatedAt: 2026-05-26T06:25:13Z
+provenance: {"Inputs": {"evidence": "[Y] Accept", "source": "elicited"}, "Outputs": {"evidence": "[Y] Accept", "source": "elicited"}, "What happens": {"evidence": "", "source": "proposed"}, "Why it matters": {"evidence": "[Y] Accept", "source": "elicited"}}
+updatedBy: admin
+updatedAt: 2026-05-26T18:35:12Z
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-26
+transitions: [PS-BGID-003|normal|all four checks pass]
 ---
 ## What happens
-The Trade Finance Officer confirms the client holds an approved guarantee facility in the Trade Finance System and that the available limit is sufficient to cover the requested guarantee amount. If the limit is insufficient, the application is parked and routed to the Credit team for a limit increase; this is identified in the document as the most common cause of delay.
+The Trade Finance Officer checks four criteria against the client's facility record in the Trade Finance System: available limit covers the requested guarantee amount, facility expiry extends past the guarantee tenor, facility currency matches the guarantee, and the facility type permits bank guarantees. A clean pass on all four advances the application to Wording Review. A limit shortfall or expired facility parks the application and triggers a Credit team referral — the most common cause of delay. A currency mismatch or wrong product type returns it to the Relationship Manager for client resolution before resubmission.
 
 ## Inputs
 - Validated application from Application Intake

@@ -47,6 +47,12 @@
           "label": "Process Gaps",
           "description": "Missing or unclear parts of the As-Is picture that need follow-up before it is complete.",
           "specialist": "process-specialist"
+        },
+        {
+          "id": "country-variations",
+          "label": "Country Variations",
+          "description": "How the As-Is process diverges in specific countries — regulatory, operational, cultural or market-driven differences from the canonical flow.",
+          "specialist": "process-specialist"
         }
       ]
     },
@@ -668,6 +674,59 @@
           "paragraphs": "1",
           "words": "10–45",
           "purpose": "The auditor's recommended action."
+        }
+      ]
+    },
+    "country-variation": {
+      "label": "Country Variation",
+      "section": "country-variations",
+      "idPrefix": "CV",
+      "frontmatter": {
+        "fields": [
+          {
+            "key": "countries",
+            "label": "Countries",
+            "hint": "ISO-3166 alpha-2 codes of the countries this variation applies in (e.g. DE, FR, US). Comma-separated."
+          },
+          {
+            "key": "variationType",
+            "label": "Variation type",
+            "hint": "REGULATORY / OPERATIONAL / CULTURAL / MARKET — what kind of divergence this is."
+          }
+        ],
+        "relations": [
+          {
+            "key": "affects",
+            "label": "Affects",
+            "target": "process-step"
+          }
+        ],
+        "required": [
+          "countries",
+          "variationType"
+        ]
+      },
+      "template": [
+        {
+          "heading": "Description",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "12–50",
+          "purpose": "What the variation is, in plain language — what differs from the canonical process."
+        },
+        {
+          "heading": "Variation detail",
+          "format": "paragraph",
+          "paragraphs": "1–2",
+          "words": "20–80",
+          "purpose": "The concrete change — which step, control or hand-off behaves differently, and how."
+        },
+        {
+          "heading": "Reason",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "10–60",
+          "purpose": "Why this variation exists — a regulator's rule, a market expectation, a local system constraint."
         }
       ]
     },

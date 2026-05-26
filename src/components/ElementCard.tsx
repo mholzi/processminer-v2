@@ -120,6 +120,7 @@ export default function ElementCard({
   typeLabel,
   template,
   fieldSpecs,
+  fieldValues: fieldValuesCatalog,
   requiredFields,
   links,
   onGoToElement,
@@ -142,6 +143,10 @@ export default function ElementCard({
   template?: BlockSpec[];
   /** Type-specific scalar fields to display — from the schema. */
   fieldSpecs: FieldSpec[];
+  /** Allowed values for enumerated fields — schema's `fieldValues` catalog,
+   *  keyed by frontmatter key. Renders the field as a `<select>` when the
+   *  field's key is in this map; falls back to a plain text input otherwise. */
+  fieldValues?: Record<string, string[]>;
   /** Keys among `fieldSpecs` the schema marks required — flagged when empty. */
   requiredFields?: string[];
   /** Forward + reverse relation groups, assembled by the parent. */
@@ -253,6 +258,9 @@ export default function ElementCard({
   // Inline edit state — initialised from the page each time editing opens, so
   // a refreshed `page` prop is always the source of truth between edits.
   const [editing, setEditing] = useState(false);
+  const [expandedFindings, setExpandedFindings] = useState<Set<string>>(
+    () => new Set(),
+  );
   const [title, setTitle] = useState(page.title);
   const [blocks, setBlocks] = useState(page.blocks);
   const [body, setBody] = useState(page.body);
@@ -562,32 +570,70 @@ export default function ElementCard({
 
       {!editing && findings && findings.length > 0 && (
         <div className="el-findings">
-          {findings.map((f) => (
-            <div className={`el-finding ${f.kind}`} key={f.id}>
-              <div className="el-finding-head">
-                <span className="el-finding-kind">
-                  {FINDING_KIND_LABEL[f.kind] ?? f.kind}
-                </span>
-                {onFindingDeepDive && (
-                  <button
-                    type="button"
-                    className="el-finding-dd"
-                    onClick={() => onFindingDeepDive(f)}
-                    title="Start a Brainstorm deep-dive session on this finding"
-                  >
-                    ⌖ Deep dive
-                  </button>
+          {findings.map((f) => {
+            const open = expandedFindings.has(f.id);
+            const toggle = () =>
+              setExpandedFindings((prev) => {
+                const next = new Set(prev);
+                if (next.has(f.id)) next.delete(f.id);
+                else next.add(f.id);
+                return next;
+              });
+            return (
+              <div
+                className={`el-finding-pill ${f.kind}${open ? " expanded" : ""}`}
+                key={f.id}
+              >
+                <div
+                  className="el-finding-row"
+                  role="button"
+                  tabIndex={0}
+                  onClick={toggle}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      toggle();
+                    }
+                  }}
+                  aria-expanded={open}
+                  title={open ? "Collapse" : "Expand"}
+                >
+                  <span className="el-finding-glyph" aria-hidden="true">
+                    {FINDING_KIND_GLYPH[f.kind] ?? "•"}
+                  </span>
+                  <span className="el-finding-kind">
+                    {FINDING_KIND_LABEL[f.kind] ?? f.kind}
+                  </span>
+                  <span className="el-finding-summary">{f.title}</span>
+                  <span className="el-finding-icons" onClick={(e) => e.stopPropagation()}>
+                    {onFindingDeepDive && (
+                      <Tooltip label="Deep dive on this finding">
+                        <button
+                          type="button"
+                          className="el-finding-icon primary"
+                          onClick={() => onFindingDeepDive(f)}
+                          aria-label="Deep dive"
+                        >
+                          ⌖
+                        </button>
+                      </Tooltip>
+                    )}
+                    <FindingDismiss
+                      slug={slug}
+                      finding={f}
+                      by={userName}
+                      compact
+                    />
+                  </span>
+                </div>
+                {open && (
+                  <div className="el-finding-detail">
+                    <div className="el-finding-prose">{f.detail}</div>
+                  </div>
                 )}
-                <FindingDismiss slug={slug} finding={f} by={userName} />
               </div>
-              <div className="el-finding-text">
-                <span className="el-finding-glyph" aria-hidden="true">
-                  {FINDING_KIND_GLYPH[f.kind] ?? "•"}
-                </span>
-                <b>{f.title}</b> {f.detail}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -669,6 +715,8 @@ export default function ElementCard({
                   {fieldSpecs.map((f) => {
                     const isRequired = (requiredFields ?? []).includes(f.key);
                     const empty = !(fieldValues[f.key] ?? "").trim();
+                    const allowed = fieldValuesCatalog?.[f.key];
+                    const cls = isRequired && empty ? "el-field-input-missing" : "";
                     return (
                       <label className="el-edit-field" key={f.key}>
                         <span>
@@ -680,18 +728,36 @@ export default function ElementCard({
                             </span>
                           )}
                         </span>
-                        <input
-                          className={
-                            isRequired && empty ? "el-field-input-missing" : ""
-                          }
-                          value={fieldValues[f.key] ?? ""}
-                          onChange={(e) =>
-                            setFieldValues({
-                              ...fieldValues,
-                              [f.key]: e.target.value,
-                            })
-                          }
-                        />
+                        {allowed && allowed.length > 0 ? (
+                          <select
+                            className={cls}
+                            value={fieldValues[f.key] ?? ""}
+                            onChange={(e) =>
+                              setFieldValues({
+                                ...fieldValues,
+                                [f.key]: e.target.value,
+                              })
+                            }
+                          >
+                            <option value="">— select —</option>
+                            {allowed.map((opt) => (
+                              <option key={opt} value={opt}>
+                                {opt}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            className={cls}
+                            value={fieldValues[f.key] ?? ""}
+                            onChange={(e) =>
+                              setFieldValues({
+                                ...fieldValues,
+                                [f.key]: e.target.value,
+                              })
+                            }
+                          />
+                        )}
                         {f.hint && (
                           <span className="el-field-hint">{f.hint}</span>
                         )}

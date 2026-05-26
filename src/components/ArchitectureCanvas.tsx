@@ -6,6 +6,11 @@ import type { User } from "@/lib/user";
 import Tooltip from "./Tooltip";
 import Markdown from "./Markdown";
 import AgentChat from "./AgentChat";
+import ContributorsView from "./ContributorsView";
+import ElementHovercard from "./ElementHovercard";
+import SettingsPanel from "./SettingsPanel";
+import SourceDocViewer from "./SourceDocViewer";
+import SourcesPanel from "./SourcesPanel";
 import UserMenu from "./UserMenu";
 import { useAgentChat } from "@/hooks/useAgentChat";
 import { SKILL_LABEL } from "@/lib/agent-chat-utils";
@@ -73,7 +78,10 @@ type ArchView =
   | "components"
   | "nfrs"
   | "migration"
-  | "inputs";
+  | "inputs"
+  | "contributors"
+  | "settings"
+  | "doc";
 
 export default function ArchitectureCanvas({
   schema,
@@ -93,6 +101,8 @@ export default function ArchitectureCanvas({
   onReturnToInbox: () => void;
 }) {
   const [view, setView] = useState<ArchView>("adrs");
+  // When view === "doc", which source-document file is open.
+  const [docFile, setDocFile] = useState<string | null>(null);
   // Chat panel open/closed — collapsed state mirrors ProcessMiner's shell so
   // the architect can hide the rail and reclaim canvas width for the diagram.
   const [chatOpen, setChatOpen] = useState(true);
@@ -193,6 +203,55 @@ export default function ArchitectureCanvas({
         : undefined;
     },
     [elementsById, schema],
+  );
+
+  // Switch to the architect view that owns this element's section, then
+  // scroll the card into view. Used by inline ID chips inside CapCard so
+  // clicking "TS-BGID-001" jumps to that step under the Target Process
+  // upstream input, and clicking a sibling "CAP-*" focuses that card.
+  const goToArchElement = useCallback(
+    (id: string) => {
+      const el = elementsById.get(id);
+      if (!el) return;
+      const sec = el.section;
+      if (sec === "capabilities") setView("capabilities");
+      else if (sec === "target-applications") setView("applications");
+      else if (sec === "architecture-decisions") setView("adrs");
+      else if (sec === "target-integrations") setView("integrations");
+      else if (sec === "components") setView("components");
+      else if (sec === "nfrs") setView("nfrs");
+      else if (sec === "migration-phases") setView("migration");
+      else if (UPSTREAM_SECTIONS.some((s) => s.id === sec)) {
+        setView("inputs");
+        setInputSection(sec);
+      } else {
+        return; // unknown section — nothing to navigate to
+      }
+      // The target view may not be mounted yet. Retry across frames until
+      // the element is in the DOM, then scroll it into view.
+      let tries = 0;
+      const tryScroll = () => {
+        const node = document.getElementById(id);
+        if (!node) {
+          if (tries++ < 30) requestAnimationFrame(tryScroll);
+          return;
+        }
+        // Unfold any closed <details> ancestors so the scroll target lands
+        // visible content, not a collapsed summary.
+        let p: HTMLElement | null = node;
+        while (p) {
+          if (p.tagName === "DETAILS" && !p.hasAttribute("open")) {
+            p.setAttribute("open", "");
+          }
+          p = p.parentElement;
+        }
+        requestAnimationFrame(() =>
+          node.scrollIntoView({ behavior: "smooth", block: "center" }),
+        );
+      };
+      requestAnimationFrame(tryScroll);
+    },
+    [elementsById],
   );
 
   const chatSidebar = (
@@ -503,6 +562,53 @@ export default function ArchitectureCanvas({
           <div className="am-canvas-secrow am-canvas-secrow-locked">
             <span>Comments</span>
             <span className="am-canvas-n">—</span>
+          </div>
+
+          <div className="am-canvas-rail-foot">
+            <button
+              type="button"
+              className={`contrib-trigger${view === "contributors" ? " active" : ""}`}
+              onClick={() => setView("contributors")}
+              title="See everyone who has touched this process"
+            >
+              <span className="contrib-trigger-ico" aria-hidden>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <circle cx="9" cy="8" r="3.4" />
+                  <circle cx="17" cy="9" r="2.6" />
+                  <path d="M3 19a6 6 0 0 1 12 0" />
+                  <path d="M14 18a5 5 0 0 1 7 1" />
+                </svg>
+              </span>
+              <span className="contrib-trigger-label">Contributors</span>
+              <span className="contrib-trigger-chevron">›</span>
+            </button>
+            <SourcesPanel
+              sources={doc.sources}
+              ingest={doc.ingest}
+              activeFile={view === "doc" ? docFile : null}
+              onOpen={(f) => {
+                setDocFile(f);
+                setView("doc");
+              }}
+              onUpload={() => {
+                /* uploads happen in Processminer — read-only here */
+              }}
+            />
+            <button
+              type="button"
+              className={`contrib-trigger${view === "settings" ? " active" : ""}`}
+              onClick={() => setView("settings")}
+              title="Per-process info, access, and danger zone"
+            >
+              <span className="contrib-trigger-ico" aria-hidden>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
+                </svg>
+              </span>
+              <span className="contrib-trigger-label">Settings</span>
+              <span className="contrib-trigger-chevron">›</span>
+            </button>
           </div>
         </aside>
 
@@ -1060,7 +1166,7 @@ export default function ArchitectureCanvas({
                 </div>
               ) : (
                 <div className="am-canvas-cap-grid">
-                  {archData.caps.map((cap, i) => {
+                  {archData.caps.map((cap) => {
                     const crit = ((cap.meta.criticality as string) ?? "").toUpperCase();
                     const reuse = ((cap.meta.reuse as string) ?? "").toUpperCase();
                     const hostedRaw = Array.isArray(cap.meta.hostedIn)
@@ -1069,9 +1175,6 @@ export default function ArchitectureCanvas({
                     const hostedApp = hostedRaw
                       ? archData.apps.find((a) => a.id === hostedRaw)
                       : undefined;
-                    const hostName = hostedApp?.title ?? hostedRaw ?? "—";
-                    const verdict = hostedApp?.meta.verdict as string | undefined;
-                    const hostLabel = verdict ? `${hostName} (${verdict})` : hostName;
                     const status =
                       cap.status === "confirmed" ? "Accepted"
                       : cap.status === "draft" ? "Proposed"
@@ -1080,7 +1183,19 @@ export default function ArchitectureCanvas({
                       const r = a.meta.realisesCapability ?? a.meta.realises;
                       const list = Array.isArray(r) ? r : r ? [r as string] : [];
                       return list.includes(cap.id);
-                    }).length;
+                    });
+                    const nfrsForCap = archData.nfrsReal.filter((n) => {
+                      const a = Array.isArray(n.meta.appliesTo)
+                        ? (n.meta.appliesTo as string[])
+                        : [];
+                      return a.includes(cap.id);
+                    });
+                    const realisesStep = Array.isArray(cap.meta.realisesStep)
+                      ? (cap.meta.realisesStep as string[])
+                      : [];
+                    const realisesGap = Array.isArray(cap.meta.resolvesGap)
+                      ? (cap.meta.resolvesGap as string[])
+                      : [];
                     return (
                       <CapCard
                         key={cap.id}
@@ -1092,17 +1207,34 @@ export default function ArchitectureCanvas({
                         medium={crit === "MEDIUM"}
                         reused={reuse === "REUSED"}
                         newCap={reuse === "NEW"}
-                        host={hostLabel}
-                        steps={0}
-                        adrs={adrsForCap}
-                        nfrs={0}
+                        hostedApp={
+                          hostedApp
+                            ? {
+                                title: hostedApp.title,
+                                verdict: hostedApp.meta.verdict as
+                                  | string
+                                  | undefined,
+                              }
+                            : hostedRaw
+                              ? { title: hostedRaw }
+                              : null
+                        }
+                        criticality={(cap.meta.criticality as string) ?? null}
+                        reuse={(cap.meta.reuse as string) ?? null}
+                        owningDomain={(cap.meta.owningDomain as string) ?? null}
+                        realisesStep={realisesStep}
+                        realisesGap={realisesGap}
+                        adrIds={adrsForCap.map((a) => a.id)}
+                        nfrIds={nfrsForCap.map((n) => n.id)}
+                        blocks={cap.blocks}
                         prov={cap.confidence === "high" ? "verified" : "machine"}
                         provText={
                           cap.confidence === "high"
                             ? "human-confirmed"
                             : "draft · awaiting confirmation"
                         }
-                        selected={i === 0}
+                        getRef={getRef}
+                        onGoTo={goToArchElement}
                       />
                     );
                   })}
@@ -1123,131 +1255,6 @@ export default function ArchitectureCanvas({
               </div>
             </main>
 
-            <aside className="am-canvas-details">
-              {archData.caps.length === 0 ? (
-                <div className="am-input-empty" style={{ marginTop: 0 }}>
-                  No capability selected — author one to see its details here.
-                </div>
-              ) : (() => {
-                const cap = archData.caps[0];
-                const hostedRaw = Array.isArray(cap.meta.hostedIn)
-                  ? cap.meta.hostedIn[0]
-                  : (cap.meta.hostedIn as string | undefined);
-                const hostedApp = hostedRaw ? archData.apps.find((a) => a.id === hostedRaw) : undefined;
-                const realisesStep = Array.isArray(cap.meta.realisesStep) ? cap.meta.realisesStep as string[] : [];
-                const realisesGap = Array.isArray(cap.meta.resolvesGap) ? cap.meta.resolvesGap as string[] : [];
-                const adrsForCap = archData.adrsReal.filter((a) => {
-                  const r = a.meta.realisesCapability ?? a.meta.realises;
-                  const list = Array.isArray(r) ? r : r ? [r as string] : [];
-                  return list.includes(cap.id);
-                });
-                const nfrsForCap = archData.nfrsReal.filter((n) => {
-                  const a = Array.isArray(n.meta.appliesTo) ? n.meta.appliesTo as string[] : [];
-                  return a.includes(cap.id);
-                });
-                return (
-                  <>
-                    <h3>Capability — {cap.title}</h3>
-                    <div className="am-canvas-details-id">{cap.id}</div>
-                    <div className="am-canvas-details-block">
-                      {hostedApp && (
-                        <div className="am-canvas-details-row">
-                          <span className="am-canvas-details-k">Hosted in</span>
-                          <span>
-                            {hostedApp.title}
-                            {hostedApp.meta.verdict && (
-                              <span
-                                className={`am-verdict am-verdict-${((hostedApp.meta.verdict as string) ?? "").toLowerCase()}`}
-                                style={{ marginLeft: 6 }}
-                              >
-                                {hostedApp.meta.verdict as string}
-                              </span>
-                            )}
-                          </span>
-                        </div>
-                      )}
-                      {cap.meta.criticality && (
-                        <div className="am-canvas-details-row">
-                          <span className="am-canvas-details-k">Criticality</span>
-                          <span>{cap.meta.criticality as string}</span>
-                        </div>
-                      )}
-                      {cap.meta.reuse && (
-                        <div className="am-canvas-details-row">
-                          <span className="am-canvas-details-k">Reuse</span>
-                          <span>{cap.meta.reuse as string}</span>
-                        </div>
-                      )}
-                      {cap.meta.owningDomain && (
-                        <div className="am-canvas-details-row">
-                          <span className="am-canvas-details-k">Owning domain</span>
-                          <span>{cap.meta.owningDomain as string}</span>
-                        </div>
-                      )}
-                      <div className="am-canvas-details-row">
-                        <span className="am-canvas-details-k">Status</span>
-                        <span>
-                          <span className={`am-pill am-pill-${cap.status === "confirmed" ? "hi" : "mid"}`}>
-                            {cap.status === "confirmed" ? "Accepted" : "Draft"}
-                          </span>
-                        </span>
-                      </div>
-                    </div>
-
-                    {realisesStep.length > 0 && (
-                      <div className="am-canvas-details-block">
-                        <h4>Realises target steps</h4>
-                        <div className="am-canvas-traces">
-                          {realisesStep.map((id) => (
-                            <span key={id} className="am-canvas-trace">{id}</span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {adrsForCap.length > 0 && (
-                      <div className="am-canvas-details-block">
-                        <h4>Realised by ADRs</h4>
-                        <div className="am-canvas-traces">
-                          {adrsForCap.map((a) => (
-                            <span key={a.id} className="am-canvas-trace">{a.id}</span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {nfrsForCap.length > 0 && (
-                      <div className="am-canvas-details-block">
-                        <h4>NFRs</h4>
-                        <div className="am-canvas-traces">
-                          {nfrsForCap.map((n) => (
-                            <span key={n.id} className="am-canvas-trace">{n.id}</span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {realisesGap.length > 0 && (
-                      <div className="am-canvas-details-block">
-                        <h4>Resolves gaps</h4>
-                        <div className="am-canvas-traces">
-                          {realisesGap.map((id) => (
-                            <span key={id} className="am-canvas-trace">{id}</span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {cap.blocks.length > 0 && cap.blocks.map((b) => (
-                      <div className="am-input-block" key={b.heading}>
-                        <h4>{b.heading}</h4>
-                        <div className="am-input-prose"><Markdown text={b.text} /></div>
-                      </div>
-                    ))}
-                  </>
-                );
-              })()}
-            </aside>
             {chatSidebar}
           </>
         )}
@@ -1296,77 +1303,42 @@ export default function ArchitectureCanvas({
                   <code>wiki/processes/{doc.slug}/target-applications/</code>.
                 </div>
               ) : (
-              <table className="am-canvas-app-table">
-                <thead>
-                  <tr>
-                    <th style={{ width: "24%" }}>Application</th>
-                    <th>Verdict</th>
-                    <th>Capabilities hosted</th>
-                    <th>Tech / vendor</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {archData.apps.map((app, idx) => {
-                    const verdict = ((app.meta.verdict as string) ?? "").toLowerCase();
-                    const hostedCaps = archData.caps.filter((c) => {
-                      const h = Array.isArray(c.meta.hostedIn) ? c.meta.hostedIn[0] : c.meta.hostedIn;
-                      return h === app.id;
-                    });
+                <div className="am-canvas-cap-grid">
+                  {archData.apps.map((app) => {
+                    const hostedCaps = archData.caps
+                      .filter((c) => {
+                        const h = Array.isArray(c.meta.hostedIn)
+                          ? c.meta.hostedIn[0]
+                          : c.meta.hostedIn;
+                        return h === app.id;
+                      })
+                      .map((c) => c.id);
                     return (
-                      <tr key={app.id} className={idx === 0 ? "am-canvas-app-sel" : undefined}>
-                        <td>
-                          <div className="am-canvas-app-name">{app.title}</div>
-                          <div className="am-canvas-app-id">{app.id}</div>
-                          <div className="am-canvas-app-stack">
-                            {(app.meta.owningDomain as string) ?? ""}
-                          </div>
-                        </td>
-                        <td>
-                          {verdict ? (
-                            <span className={`am-verdict am-verdict-${verdict}`}>
-                              {verdict.toUpperCase()}
-                            </span>
-                          ) : (
-                            <span className="am-pill am-pill-neu">—</span>
-                          )}
-                        </td>
-                        <td>
-                          <div className="am-canvas-app-chips">
-                            {hostedCaps.length === 0 ? (
-                              <span className="am-canvas-app-stack">none yet</span>
-                            ) : (
-                              hostedCaps.map((c) => (
-                                <span key={c.id} className="am-canvas-app-chip">
-                                  {c.id} {c.title.split(" ")[0].toLowerCase()}
-                                </span>
-                              ))
-                            )}
-                          </div>
-                        </td>
-                        <td>
-                          <div>{(app.meta.vendor as string) ?? "—"}</div>
-                          {app.meta.costBand && (
-                            <div className="am-canvas-app-stack">
-                              {app.meta.costBand as string}
-                            </div>
-                          )}
-                        </td>
-                        <td>
-                          <span
-                            className={`am-pill am-pill-${
-                              app.status === "confirmed" ? "hi" : "mid"
-                            }`}
-                          >
-                            <span className="am-dot" />
-                            {app.status === "confirmed" ? "Accepted" : "Proposed"}
-                          </span>
-                        </td>
-                      </tr>
+                      <AppCard
+                        key={app.id}
+                        id={app.id}
+                        name={app.title}
+                        status={
+                          app.status === "confirmed" ? "Accepted" : "Proposed"
+                        }
+                        verdict={(app.meta.verdict as string) ?? null}
+                        owningDomain={(app.meta.owningDomain as string) ?? null}
+                        vendor={(app.meta.vendor as string) ?? null}
+                        costBand={(app.meta.costBand as string) ?? null}
+                        hostedCapIds={hostedCaps}
+                        blocks={app.blocks}
+                        prov={app.confidence === "high" ? "verified" : "machine"}
+                        provText={
+                          app.confidence === "high"
+                            ? "human-confirmed"
+                            : "draft · awaiting confirmation"
+                        }
+                        getRef={getRef}
+                        onGoTo={goToArchElement}
+                      />
                     );
                   })}
-                </tbody>
-              </table>
+                </div>
               )}
 
               <div className="am-canvas-banner" style={{ background: "var(--hi-bg)", color: "var(--hi)", borderColor: "#c7dccf" }}>
@@ -1375,64 +1347,6 @@ export default function ArchitectureCanvas({
               </div>
             </main>
 
-            <aside className="am-canvas-details">
-              {archData.apps.length === 0 ? (
-                <div className="am-input-empty" style={{ marginTop: 0 }}>
-                  No application selected — author one to see its details here.
-                </div>
-              ) : (
-                <>
-                  <h3>Application — {archData.apps[0].title}</h3>
-                  <div className="am-canvas-details-id">{archData.apps[0].id}</div>
-
-                  <div className="am-canvas-details-block">
-                    <div className="am-canvas-details-row">
-                      <span className="am-canvas-details-k">Verdict</span>
-                      <span>
-                        {archData.apps[0].meta.verdict ? (
-                          <span className={`am-verdict am-verdict-${((archData.apps[0].meta.verdict as string) ?? "").toLowerCase()}`}>
-                            {(archData.apps[0].meta.verdict as string) ?? "—"}
-                          </span>
-                        ) : "—"}
-                      </span>
-                    </div>
-                    {archData.apps[0].meta.owningDomain && (
-                      <div className="am-canvas-details-row">
-                        <span className="am-canvas-details-k">Owning domain</span>
-                        <span>{archData.apps[0].meta.owningDomain as string}</span>
-                      </div>
-                    )}
-                    {archData.apps[0].meta.vendor && (
-                      <div className="am-canvas-details-row">
-                        <span className="am-canvas-details-k">Vendor / tech</span>
-                        <span>{archData.apps[0].meta.vendor as string}</span>
-                      </div>
-                    )}
-                    {archData.apps[0].meta.costBand && (
-                      <div className="am-canvas-details-row">
-                        <span className="am-canvas-details-k">Cost band</span>
-                        <span>{archData.apps[0].meta.costBand as string}</span>
-                      </div>
-                    )}
-                    <div className="am-canvas-details-row">
-                      <span className="am-canvas-details-k">Status</span>
-                      <span>
-                        <span className={`am-pill am-pill-${archData.apps[0].status === "confirmed" ? "hi" : "mid"}`}>
-                          {archData.apps[0].status === "confirmed" ? "Accepted" : "Draft"}
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-
-                  {archData.apps[0].blocks.length > 0 && archData.apps[0].blocks.map((b) => (
-                    <div className="am-input-block" key={b.heading}>
-                      <h4>{b.heading}</h4>
-                      <div className="am-input-prose"><Markdown text={b.text} /></div>
-                    </div>
-                  ))}
-                </>
-              )}
-            </aside>
             {chatSidebar}
           </>
         )}
@@ -1953,6 +1867,61 @@ export default function ArchitectureCanvas({
             {chatSidebar}
           </>
         )}
+
+        {view === "contributors" && (
+          <>
+            <main className="am-canvas-doc am-canvas-doc-wide">
+              <ContributorsView
+                slug={doc.slug}
+                processTitle={doc.process.title}
+              />
+            </main>
+            {chatSidebar}
+          </>
+        )}
+
+        {view === "settings" && (
+          <>
+            <main className="am-canvas-doc am-canvas-doc-wide">
+              <SettingsPanel
+                slug={doc.slug}
+                title={doc.process.title}
+                idPrefix={String(doc.process.meta.id ?? "")}
+                sources={
+                  Array.isArray(doc.process.meta.sources)
+                    ? (doc.process.meta.sources as unknown[]).map(String)
+                    : doc.process.meta.source
+                      ? [String(doc.process.meta.source)]
+                      : []
+                }
+                onDeleted={() => {
+                  try {
+                    sessionStorage.removeItem(`am-chat-${doc.slug}`);
+                  } catch {
+                    /* storage unavailable — fine */
+                  }
+                  onReturnToInbox();
+                }}
+              />
+            </main>
+            {chatSidebar}
+          </>
+        )}
+
+        {view === "doc" && docFile && (
+          <>
+            <main className="am-canvas-doc am-canvas-doc-wide">
+              <div className="am-canvas-sechead">
+                <h2>{docFile}</h2>
+                <span className="am-canvas-secmeta">
+                  Imported source document — raw-sources/{doc.slug}/{docFile}
+                </span>
+              </div>
+              <SourceDocViewer slug={doc.slug} file={docFile} />
+            </main>
+            {chatSidebar}
+          </>
+        )}
       </div>
     </div>
   );
@@ -2059,28 +2028,49 @@ function NfrRow({
 
 // Small inline card component to keep the capabilities-view JSX readable.
 function CapCard({
-  id, name, status, selected, critical, high, medium, reused, newCap, host,
-  steps, adrs, nfrs, prov, provText,
+  id, name, status, critical, high, medium, reused, newCap,
+  hostedApp, criticality, reuse, owningDomain,
+  realisesStep, realisesGap, adrIds, nfrIds, blocks,
+  prov, provText, getRef, onGoTo,
 }: {
   id: string;
   name: string;
   status: "Accepted" | "Proposed" | "Draft";
-  selected?: boolean;
   critical?: boolean;
   high?: boolean;
   medium?: boolean;
   reused?: boolean;
   newCap?: boolean;
-  host: string;
-  steps: number;
-  adrs: number;
-  nfrs: number;
+  hostedApp: { title: string; verdict?: string } | null;
+  criticality: string | null;
+  reuse: string | null;
+  owningDomain: string | null;
+  realisesStep: string[];
+  realisesGap: string[];
+  adrIds: string[];
+  nfrIds: string[];
+  blocks: { heading: string; text: string }[];
   prov: "verified" | "machine";
   provText?: string;
+  getRef: (id: string) => { page: import("@/lib/wiki").WikiPage; typeLabel: string } | undefined;
+  onGoTo: (id: string) => void;
 }) {
   const statusTone = status === "Accepted" ? "hi" : status === "Proposed" ? "mid" : "neu";
+  const chip = (cid: string) => {
+    const ref = getRef(cid);
+    return (
+      <ElementHovercard
+        key={cid}
+        element={ref?.page}
+        typeLabel={ref?.typeLabel}
+        onSelect={ref ? onGoTo : undefined}
+      >
+        <span className="am-canvas-trace">{cid}</span>
+      </ElementHovercard>
+    );
+  };
   return (
-    <div className={`am-canvas-cap-card${selected ? " am-canvas-cap-card-sel" : ""}`}>
+    <div id={id} className="am-canvas-cap-card">
       <div className="am-canvas-cap-head">
         <span className="am-canvas-cap-id">{id}</span>
         <span className={`am-pill am-pill-${statusTone}`}>
@@ -2089,21 +2079,210 @@ function CapCard({
         </span>
       </div>
       <div className="am-canvas-cap-name">{name}</div>
-      <div className="am-canvas-cap-meta">
-        {critical && <span className="am-pill am-pill-neu">Critical</span>}
-        {high && <span className="am-pill am-pill-mid">High</span>}
-        {medium && <span className="am-pill am-pill-neu">Medium</span>}
-        {reused && <span className="am-pill am-pill-bright">Reused</span>}
-        {newCap && <span className="am-pill am-pill-acc">New</span>}
+      {(critical || high || medium || reused || newCap) && (
+        <div className="am-canvas-cap-meta">
+          {critical && <span className="am-pill am-pill-neu">Critical</span>}
+          {high && <span className="am-pill am-pill-mid">High</span>}
+          {medium && <span className="am-pill am-pill-neu">Medium</span>}
+          {reused && <span className="am-pill am-pill-bright">Reused</span>}
+          {newCap && <span className="am-pill am-pill-acc">New</span>}
+        </div>
+      )}
+
+      <div className="am-canvas-cap-details">
+        {hostedApp && (
+          <div className="am-canvas-cap-row">
+            <span className="am-canvas-cap-k">Hosted in</span>
+            <span>
+              {hostedApp.title}
+              {hostedApp.verdict && (
+                <span
+                  className={`am-verdict am-verdict-${hostedApp.verdict.toLowerCase()}`}
+                  style={{ marginLeft: 6 }}
+                >
+                  {hostedApp.verdict}
+                </span>
+              )}
+            </span>
+          </div>
+        )}
+        {criticality && (
+          <div className="am-canvas-cap-row">
+            <span className="am-canvas-cap-k">Criticality</span>
+            <span>{criticality}</span>
+          </div>
+        )}
+        {reuse && (
+          <div className="am-canvas-cap-row">
+            <span className="am-canvas-cap-k">Reuse</span>
+            <span>{reuse}</span>
+          </div>
+        )}
+        {owningDomain && (
+          <div className="am-canvas-cap-row">
+            <span className="am-canvas-cap-k">Owning domain</span>
+            <span>{owningDomain}</span>
+          </div>
+        )}
       </div>
-      <div className="am-canvas-cap-host">
-        hosted in: <b>{host}</b>
+
+      {realisesStep.length > 0 && (
+        <details className="am-canvas-cap-fold" open>
+          <summary>
+            Realises target steps
+            <span className="am-canvas-cap-fold-count">{realisesStep.length}</span>
+          </summary>
+          <div className="am-canvas-traces">
+            {realisesStep.map((sid) => chip(sid))}
+          </div>
+        </details>
+      )}
+      {adrIds.length > 0 && (
+        <details className="am-canvas-cap-fold" open>
+          <summary>
+            Realised by ADRs
+            <span className="am-canvas-cap-fold-count">{adrIds.length}</span>
+          </summary>
+          <div className="am-canvas-traces">
+            {adrIds.map((aid) => chip(aid))}
+          </div>
+        </details>
+      )}
+      {nfrIds.length > 0 && (
+        <details className="am-canvas-cap-fold" open>
+          <summary>
+            NFRs
+            <span className="am-canvas-cap-fold-count">{nfrIds.length}</span>
+          </summary>
+          <div className="am-canvas-traces">
+            {nfrIds.map((nid) => chip(nid))}
+          </div>
+        </details>
+      )}
+      {realisesGap.length > 0 && (
+        <details className="am-canvas-cap-fold" open>
+          <summary>
+            Resolves gaps
+            <span className="am-canvas-cap-fold-count">{realisesGap.length}</span>
+          </summary>
+          <div className="am-canvas-traces">
+            {realisesGap.map((gid) => chip(gid))}
+          </div>
+        </details>
+      )}
+
+      {blocks.length > 0 && (
+        <div className="am-canvas-cap-blocks">
+          {blocks.map((b) => (
+            <details className="am-canvas-cap-fold am-canvas-cap-fold-block" open key={b.heading}>
+              <summary>{b.heading}</summary>
+              <div className="am-input-prose"><Markdown text={b.text} /></div>
+            </details>
+          ))}
+        </div>
+      )}
+
+      <div className={`am-canvas-cap-prov am-canvas-cap-prov-${prov}`}>
+        {prov === "verified" ? "✓" : "▲"} {provText ?? (prov === "verified" ? "human-confirmed" : "drafted")}
       </div>
-      <div className="am-canvas-cap-traces">
-        <span><b>{steps}</b> steps</span>
-        <span><b>{adrs}</b> ADRs</span>
-        <span><b>{nfrs}</b> NFRs</span>
+    </div>
+  );
+}
+
+function AppCard({
+  id, name, status, verdict, owningDomain, vendor, costBand,
+  hostedCapIds, blocks, prov, provText, getRef, onGoTo,
+}: {
+  id: string;
+  name: string;
+  status: "Accepted" | "Proposed";
+  verdict: string | null;
+  owningDomain: string | null;
+  vendor: string | null;
+  costBand: string | null;
+  hostedCapIds: string[];
+  blocks: { heading: string; text: string }[];
+  prov: "verified" | "machine";
+  provText?: string;
+  getRef: (id: string) => { page: import("@/lib/wiki").WikiPage; typeLabel: string } | undefined;
+  onGoTo: (id: string) => void;
+}) {
+  const statusTone = status === "Accepted" ? "hi" : "mid";
+  const chip = (cid: string) => {
+    const ref = getRef(cid);
+    return (
+      <ElementHovercard
+        key={cid}
+        element={ref?.page}
+        typeLabel={ref?.typeLabel}
+        onSelect={ref ? onGoTo : undefined}
+      >
+        <span className="am-canvas-trace">{cid}</span>
+      </ElementHovercard>
+    );
+  };
+  return (
+    <div id={id} className="am-canvas-cap-card">
+      <div className="am-canvas-cap-head">
+        <span className="am-canvas-cap-id">{id}</span>
+        <span className={`am-pill am-pill-${statusTone}`}>
+          <span className="am-dot" />
+          {status}
+        </span>
       </div>
+      <div className="am-canvas-cap-name">{name}</div>
+      {verdict && (
+        <div className="am-canvas-cap-meta">
+          <span className={`am-verdict am-verdict-${verdict.toLowerCase()}`}>
+            {verdict.toUpperCase()}
+          </span>
+        </div>
+      )}
+
+      <div className="am-canvas-cap-details">
+        {owningDomain && (
+          <div className="am-canvas-cap-row">
+            <span className="am-canvas-cap-k">Owning domain</span>
+            <span>{owningDomain}</span>
+          </div>
+        )}
+        {vendor && (
+          <div className="am-canvas-cap-row">
+            <span className="am-canvas-cap-k">Vendor / tech</span>
+            <span>{vendor}</span>
+          </div>
+        )}
+        {costBand && (
+          <div className="am-canvas-cap-row">
+            <span className="am-canvas-cap-k">Cost band</span>
+            <span>{costBand}</span>
+          </div>
+        )}
+      </div>
+
+      {hostedCapIds.length > 0 && (
+        <details className="am-canvas-cap-fold" open>
+          <summary>
+            Hosts capabilities
+            <span className="am-canvas-cap-fold-count">{hostedCapIds.length}</span>
+          </summary>
+          <div className="am-canvas-traces">
+            {hostedCapIds.map((cid) => chip(cid))}
+          </div>
+        </details>
+      )}
+
+      {blocks.length > 0 && (
+        <div className="am-canvas-cap-blocks">
+          {blocks.map((b) => (
+            <details className="am-canvas-cap-fold am-canvas-cap-fold-block" open key={b.heading}>
+              <summary>{b.heading}</summary>
+              <div className="am-input-prose"><Markdown text={b.text} /></div>
+            </details>
+          ))}
+        </div>
+      )}
+
       <div className={`am-canvas-cap-prov am-canvas-cap-prov-${prov}`}>
         {prov === "verified" ? "✓" : "▲"} {provText ?? (prov === "verified" ? "human-confirmed" : "drafted")}
       </div>

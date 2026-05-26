@@ -121,7 +121,7 @@ file for the current cursor item, stop and present what you have.
    "why" that isn't justified, a number that looks off. Challenge with the
    **owning specialist's lens**:
    - process-step, role, exception, pain-point, process-gap,
-     metric → the Process lens
+     metric, country-variation → the Process lens
    - control, regulation, compliance-gap, audit-finding → the Control &
      Compliance lens
    - friction-point, cx-channel, cx-touchpoint, moment → the Client Journey lens

@@ -3,7 +3,8 @@ name: process-specialist
 description: >-
   Run an interactive elicitation session with a banking subject-matter expert
   to extract and document the As-Is process perspective — process steps,
-  exceptions, pain points, process gaps, roles and metrics — into the
+  exceptions, pain points, process gaps, roles, metrics and country
+  variations — into the
   file-backed process wiki as draft elements. Use this whenever the user wants
   to document a banking process, capture or map process steps from an SME, run
   a process-extraction or knowledge-elicitation session, or build out As-Is
@@ -33,6 +34,7 @@ Six element types, plus the process overview:
 | process-gap | `process-gaps` | something missing in how the process is run or measured |
 | role | `roles` | a role, what it does, and its RACI across the process steps |
 | metric | `metrics` | how the process is measured |
+| country-variation | `country-variations` | how the process diverges in specific countries (regulatory, operational, cultural, market) |
 
 The **overview** (purpose, trigger, frequency, scope) goes in the process
 `index.md`, not an element file.
@@ -62,6 +64,7 @@ wiki/processes/<slug>/
   process-gaps/PG-<PROC>-001.md
   roles/ROLE-<PROC>-001.md
   metrics/M-<PROC>-001.md
+  country-variations/CV-<PROC>-001.md
 ```
 
 **Element file format** — frontmatter, then `## ` prose blocks:

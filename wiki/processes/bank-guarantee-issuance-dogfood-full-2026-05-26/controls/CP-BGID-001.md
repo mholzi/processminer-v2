@@ -8,12 +8,12 @@ confidence: high
 source: bank-guarantee-issuance-v1.md
 controlType: PREVENTIVE
 execution: HYBRID
-owner: Trade Finance Manager
+owner: Head of Trade Finance
 step: [PS-BGID-005]
 regulatedBy: [REG-BGID-007, REG-BGID-008]
 provenance: {"Control activity": {"evidence": "", "source": "proposed"}, "Risk addressed": {"evidence": "", "source": "proposed"}, "Timing": {"evidence": "", "source": "proposed"}, "What it checks": {"evidence": "", "source": "proposed"}}
-updatedBy: the assistant
-updatedAt: 2026-05-26T08:27:44Z
+updatedBy: admin
+updatedAt: 2026-05-26T17:38:22Z
 ---
 ## What it checks
 Every guarantee issuance requires a Trade Finance Manager's approval before the guarantee is released, with an additional sign-off required for guarantees above EUR 5 million.

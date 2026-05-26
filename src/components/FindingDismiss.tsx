@@ -13,10 +13,13 @@ export default function FindingDismiss({
   slug,
   finding,
   by,
+  compact,
 }: {
   slug: string;
   finding: LintFinding;
   by: string;
+  /** Icon-only trigger — matches the new finding-pill row style. */
+  compact?: boolean;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -74,11 +77,12 @@ export default function FindingDismiss({
     return (
       <button
         type="button"
-        className="el-finding-dismiss"
+        className={compact ? "el-finding-icon" : "el-finding-dismiss"}
         onClick={() => setOpen(true)}
         title="Set this finding aside with a reason"
+        aria-label="Dismiss"
       >
-        ⊘ Dismiss
+        {compact ? "⊘" : "⊘ Dismiss"}
       </button>
     );
   }
