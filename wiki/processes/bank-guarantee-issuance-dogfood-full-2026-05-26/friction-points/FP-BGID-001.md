@@ -10,11 +10,12 @@ severity: HIGH
 occursAt: [PS-BGID-003]
 painPoint: [PP-BGID-002]
 provenance: {"Client impact": {"evidence": "", "source": "proposed"}, "Description": {"evidence": "Legal review with no committed turnaround", "source": "elicited"}, "Root cause": {"evidence": "Legal review with no committed turnaround; PP-BGID-002 confirms no SLA", "source": "elicited"}}
-updatedBy: admin
-updatedAt: 2026-05-26T09:16:54Z
+updatedBy: the assistant
+updatedAt: 2026-05-26T20:27:02Z
 approval: in-progress
 approvalBy: admin
 approvalDate: 2026-05-26
+touchpoint: [JT-BGID-003]
 ---
 ## Description
 At the Wording Review step, clients awaiting approval of bespoke guarantee wording enter a legal review queue with no disclosed turnaround time. The client receives no proactive updates while Legal deliberates.

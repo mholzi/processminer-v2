@@ -237,11 +237,9 @@ listed below in the Stage 9 verdict.
   section. Capture at least 2 process-level gaps (e.g. SLA mismatch, manual
   handoff brittleness, no end-to-end metric). The foundational-run
   deepening produces pain-points but does not produce process-gaps.
-- **5e. Innovation prioritisation + risks** — run the `innovation-analyst`
-  with two tasks: (a) prioritise every `innovation-idea` in the Prioritisation
-  section by value × effort × feasibility; (b) draft an `innovation-risk` for
-  every `innovation-idea` that does not already carry one. A single Deep Dive
-  leaves the other ideas without an articulated risk.
+- **5e. Innovation risks** — run the `innovation-analyst` to draft an
+  `innovation-risk` for every `innovation-idea` that does not already carry
+  one. A single Deep Dive leaves the other ideas without an articulated risk.
 - **5f. Metrics enrichment** — use `add-entry` on the Metrics section with
   the SME to add at least three additional operational metrics beyond what
   the source document names: monthly volume, STP rate, exception escalation
@@ -258,9 +256,9 @@ listed below in the Stage 9 verdict.
   narrative description.
 - **5h. Target Architecture — domain architect** — run the
   `domain-architect` specialist on the Target Architecture area. The
-  Capabilities, Target Applications, Architecture Decisions (ADRs),
-  Prioritisation and Validation sections start empty and stay empty without
-  this sub-pass. Have the SME (a) elicit business capabilities the target
+  Capabilities, Target Applications and Architecture Decisions (ADRs)
+  sections start empty and stay empty without this sub-pass. Have the SME
+  (a) elicit business capabilities the target
   state needs (typical guarantee-issuance capabilities: client portal,
   bespoke-wording AI, sanctions screening, facility headroom, SWIFT
   issuance, archival), (b) propose target applications hosting them
@@ -284,11 +282,10 @@ listed below in the Stage 9 verdict.
 show the SME's changes; triaged elements show the chosen relevance. Each of
 sub-passes 5a–5i either populated its targeted section(s) or left an explicit
 "accepted as empty" note with the SME's reason. **The Target Architecture
-area (5h + 5i) has nine sections — `capabilities`, `target-applications`,
+area (5h + 5i) has seven sections — `capabilities`, `target-applications`,
 `architecture-decisions`, `target-integrations`, `components`, `nfrs`,
-`migration-phases`, `prioritization`, `validation` — and a Stage 9 SME
-assessment that finds all nine empty is exactly what skipping these
-sub-passes produces. Don't.**
+`migration-phases` — and a Stage 9 SME assessment that finds all seven
+empty is exactly what skipping these sub-passes produces. Don't.**
 
 ### Stage 6 — Comments and comment-review
 On two or three elements, open the **Discussion** panel and post comments as the

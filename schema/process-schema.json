@@ -91,15 +91,15 @@
       "label": "Client Experience",
       "sections": [
         {
-          "id": "channels",
-          "label": "Channels",
-          "description": "The channels through which clients reach the process — branch, online, phone, relationship manager.",
-          "specialist": "client-journey-specialist"
-        },
-        {
           "id": "touchpoints",
           "label": "Touchpoints",
           "description": "The individual moments where a client touches the process, step by step.",
+          "specialist": "client-journey-specialist"
+        },
+        {
+          "id": "channels",
+          "label": "Channels",
+          "description": "The channels through which clients reach the process — branch, online, phone, relationship manager.",
           "specialist": "client-journey-specialist"
         },
         {
@@ -144,12 +144,6 @@
           "id": "innovation-ideas",
           "label": "Innovation Ideas",
           "description": "Concrete ideas for improving or reinventing the process.",
-          "specialist": "innovation-analyst"
-        },
-        {
-          "id": "prioritization",
-          "label": "Prioritisation",
-          "description": "How the innovation ideas rank by value, effort and feasibility.",
           "specialist": "innovation-analyst"
         },
         {
@@ -806,6 +800,12 @@
             "target": "process-step"
           },
           {
+            "key": "touchpoint",
+            "label": "Touchpoint",
+            "target": "cx-touchpoint",
+            "reverseLabel": "Friction Points"
+          },
+          {
             "key": "painPoint",
             "label": "Pain point",
             "target": "pain-point"
@@ -915,7 +915,8 @@
           {
             "key": "touchpoint",
             "label": "Touchpoint",
-            "target": "cx-touchpoint"
+            "target": "cx-touchpoint",
+            "reverseLabel": "Moments of Truth"
           }
         ],
         "required": [
@@ -962,7 +963,8 @@
           {
             "key": "touchpoints",
             "label": "Touchpoints",
-            "target": "cx-touchpoint"
+            "target": "cx-touchpoint",
+            "reverseLabel": "Channels"
           }
         ],
         "required": [

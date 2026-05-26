@@ -22,11 +22,14 @@ import { isOpen, type LintFinding } from "@/lib/lint";
 import ElementCard from "@/components/ElementCard";
 import RaciMatrix from "@/components/RaciMatrix";
 import ProcessFlow from "@/components/ProcessFlow";
+import { buildTargetFlowView } from "@/lib/targetFlow";
 import AuditFindingsSummary from "@/components/AuditFindingsSummary";
+import ClientJourneyStrip from "@/components/ClientJourneyStrip";
 import ControlGapsSummary from "@/components/ControlGapsSummary";
 import ControlsSummary from "@/components/ControlsSummary";
 import CountryVariationsSummary from "@/components/CountryVariationsSummary";
 import ExceptionsSummary from "@/components/ExceptionsSummary";
+import InnovationIdeasSummary from "@/components/InnovationIdeasSummary";
 import MetricsSummary from "@/components/MetricsSummary";
 import OverviewPanel from "@/components/OverviewPanel";
 import PainPointsSummary from "@/components/PainPointsSummary";
@@ -2172,6 +2175,25 @@ export default function ProcessDocScreen({
                   getRef={getRef}
                 />
               )}
+              {section === "innovation-ideas" && sectionElements.length > 0 && (
+                <InnovationIdeasSummary
+                  ideas={sectionElements}
+                  onPickElement={goToElement}
+                  getRef={getRef}
+                />
+              )}
+              {section === "touchpoints" && sectionElements.length > 0 && (
+                <ClientJourneyStrip
+                  steps={doc.elements.filter((e) => e.type === "process-step")}
+                  touchpoints={sectionElements}
+                  moments={doc.elements.filter((e) => e.type === "moment")}
+                  frictionPoints={doc.elements.filter(
+                    (e) => e.type === "friction-point",
+                  )}
+                  onPickElement={goToElement}
+                  getRef={getRef}
+                />
+              )}
               <div className="canvas-strip">
                 <span className="strip-name">{activeLabel}</span>
                 {sectionElements.length > 0 && sectionKind === null && (
@@ -2323,13 +2345,38 @@ export default function ProcessDocScreen({
                   onGoToElement={goToElement}
                 />
               )}
-              {section === "to-be-design" && (
-                <TargetSynthesis
-                  steps={doc.elements.filter((e) => e.type === "process-step")}
-                  themes={doc.elements.filter((e) => e.type === "target-state")}
-                  onGoToElement={goToElement}
-                />
-              )}
+              {section === "to-be-design" &&
+                (() => {
+                  const asIs = doc.elements.filter(
+                    (e) => e.type === "process-step",
+                  );
+                  const themes = doc.elements.filter(
+                    (e) => e.type === "target-state",
+                  );
+                  const roles = doc.elements.filter((e) => e.type === "role");
+                  const view = buildTargetFlowView(asIs, themes, roles);
+                  return (
+                    <>
+                      {view.steps.length > 0 && (
+                        <ProcessFlow
+                          steps={view.steps}
+                          roles={view.roles}
+                          onGoToElement={goToElement}
+                          onDeepDive={(id, title) =>
+                            deepDive({ id, title, kind: "element" })
+                          }
+                          knownIds={new Set(doc.elements.map((e) => e.id))}
+                          controlsByStep={controlsByStep}
+                        />
+                      )}
+                      <TargetSynthesis
+                        steps={asIs}
+                        themes={themes}
+                        onGoToElement={goToElement}
+                      />
+                    </>
+                  );
+                })()}
               {section === "process-steps" &&
                 (() => {
                   const themes = doc.elements.filter(

@@ -23,6 +23,8 @@ type Meta = {
   canManage: boolean;
 };
 
+type Roster = Record<string, string>; // username → display name
+
 export default function SettingsPanel({
   slug,
   title,
@@ -42,20 +44,52 @@ export default function SettingsPanel({
   const router = useRouter();
   const [meta, setMeta] = useState<Meta | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [roster, setRoster] = useState<Roster>({});
+  const [granteeError, setGranteeError] = useState<string | null>(null);
+  const [granteeBusy, setGranteeBusy] = useState(false);
 
-  useEffect(() => {
-    let alive = true;
-    fetch(`/api/processes/${encodeURIComponent(slug)}`, {
+  // Pull the access metadata and the user roster in parallel. Roster powers
+  // the "Add user" picker (username → display-name lookup); meta drives the
+  // grantee chip list and the canManage gate.
+  function refreshMeta() {
+    return fetch(`/api/processes/${encodeURIComponent(slug)}`, {
       credentials: "same-origin",
     })
       .then((r) => (r.ok ? r.json() : null))
       .then((j: { owner?: string; grantees?: string[]; canManage?: boolean } | null) => {
-        if (!alive || !j) return;
+        if (!j) return;
         setMeta({
           owner: j.owner ?? "",
           grantees: j.grantees ?? [],
           canManage: j.canManage === true,
         });
+      });
+  }
+
+  useEffect(() => {
+    let alive = true;
+    Promise.all([
+      fetch(`/api/processes/${encodeURIComponent(slug)}`, {
+        credentials: "same-origin",
+      }).then((r) => (r.ok ? r.json() : null)),
+      fetch("/api/users/roster", { credentials: "same-origin" }).then((r) =>
+        r.ok ? r.json() : null,
+      ),
+    ])
+      .then(([m, r]) => {
+        if (!alive) return;
+        const mJson = m as
+          | { owner?: string; grantees?: string[]; canManage?: boolean }
+          | null;
+        if (mJson) {
+          setMeta({
+            owner: mJson.owner ?? "",
+            grantees: mJson.grantees ?? [],
+            canManage: mJson.canManage === true,
+          });
+        }
+        const rJson = r as { roster?: Roster } | null;
+        if (rJson?.roster) setRoster(rJson.roster);
       })
       .catch(() => {
         /* swallow — panel still renders without access metadata */
@@ -64,6 +98,66 @@ export default function SettingsPanel({
       alive = false;
     };
   }, [slug]);
+
+  async function addGrantee(username: string) {
+    const u = username.trim();
+    if (!u || granteeBusy) return;
+    setGranteeError(null);
+    setGranteeBusy(true);
+    try {
+      const res = await fetch(
+        `/api/processes/${encodeURIComponent(slug)}/grant`,
+        {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: u }),
+        },
+      );
+      if (!res.ok) {
+        let msg = "Could not add grantee.";
+        try {
+          const j = (await res.json()) as { error?: string };
+          if (j.error) msg = j.error;
+        } catch {
+          /* fall back */
+        }
+        setGranteeError(msg);
+        return;
+      }
+      await refreshMeta();
+    } finally {
+      setGranteeBusy(false);
+    }
+  }
+
+  async function removeGrantee(username: string) {
+    if (granteeBusy) return;
+    setGranteeError(null);
+    setGranteeBusy(true);
+    try {
+      const res = await fetch(
+        `/api/processes/${encodeURIComponent(slug)}/grant/${encodeURIComponent(
+          username,
+        )}`,
+        { method: "DELETE", credentials: "same-origin" },
+      );
+      if (!res.ok) {
+        let msg = "Could not revoke access.";
+        try {
+          const j = (await res.json()) as { error?: string };
+          if (j.error) msg = j.error;
+        } catch {
+          /* fall back */
+        }
+        setGranteeError(msg);
+        return;
+      }
+      await refreshMeta();
+    } finally {
+      setGranteeBusy(false);
+    }
+  }
 
   return (
     <>
@@ -102,17 +196,44 @@ export default function SettingsPanel({
                 — none —
               </span>
             ) : (
-              <span>
-                {meta.grantees.map((g, i) => (
-                  <span key={g}>
-                    {i > 0 ? ", " : null}
+              <span className="settings-grantee-list">
+                {meta.grantees.map((g) => (
+                  <span key={g} className="settings-grantee-chip">
                     <DisplayUser username={g} />
+                    {meta?.canManage && (
+                      <button
+                        type="button"
+                        className="settings-grantee-x"
+                        onClick={() => removeGrantee(g)}
+                        disabled={granteeBusy}
+                        title={`Revoke access for ${roster[g] ?? g}`}
+                        aria-label={`Revoke access for ${roster[g] ?? g}`}
+                      >
+                        ×
+                      </button>
+                    )}
                   </span>
                 ))}
               </span>
             )
           }
         />
+        {meta?.canManage && (
+          <div className="settings-grantee-add">
+            <AddGranteeRow
+              roster={roster}
+              owner={meta.owner}
+              grantees={meta.grantees}
+              busy={granteeBusy}
+              onAdd={addGrantee}
+            />
+            {granteeError && (
+              <div className="settings-grantee-err" role="alert">
+                {granteeError}
+              </div>
+            )}
+          </div>
+        )}
       </section>
 
       {meta?.canManage && (
@@ -155,6 +276,69 @@ export default function SettingsPanel({
         />
       )}
     </>
+  );
+}
+
+function AddGranteeRow({
+  roster,
+  owner,
+  grantees,
+  busy,
+  onAdd,
+}: {
+  roster: Roster;
+  owner: string;
+  grantees: string[];
+  busy: boolean;
+  onAdd: (username: string) => void;
+}) {
+  const [picked, setPicked] = useState("");
+  // Available = every roster user who isn't the owner and isn't already a
+  // grantee. Sorted by display name for a stable, scannable picker.
+  const taken = new Set([owner, ...grantees]);
+  const available = Object.entries(roster)
+    .filter(([username]) => !taken.has(username))
+    .sort(([, a], [, b]) => a.localeCompare(b));
+
+  function submit() {
+    if (!picked || busy) return;
+    onAdd(picked);
+    setPicked("");
+  }
+
+  if (available.length === 0) {
+    return (
+      <div className="settings-grantee-empty">
+        Every user already has access.
+      </div>
+    );
+  }
+
+  return (
+    <div className="settings-grantee-form">
+      <label htmlFor="settings-grantee-pick">Add user</label>
+      <select
+        id="settings-grantee-pick"
+        value={picked}
+        onChange={(e) => setPicked(e.target.value)}
+        disabled={busy}
+      >
+        <option value="">Pick a user…</option>
+        {available.map(([username, name]) => (
+          <option key={username} value={username}>
+            {name} ({username})
+          </option>
+        ))}
+      </select>
+      <button
+        type="button"
+        className="settings-grantee-add-btn"
+        onClick={submit}
+        disabled={!picked || busy}
+      >
+        {busy ? "…" : "+ Grant access"}
+      </button>
+    </div>
   );
 }
 

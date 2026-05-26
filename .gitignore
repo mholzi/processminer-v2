@@ -47,3 +47,4 @@ tmp/
 tools/bmad/_bmad/custom/config.user.toml
 tools/bmad/_bmad-output/
 tools/bmad/skills/reports/
+.claude/scheduled_tasks.lock

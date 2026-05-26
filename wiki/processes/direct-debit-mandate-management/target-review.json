@@ -1,0 +1,124 @@
+{
+  "generatedAt": "2026-05-26T20:18:13.873935+00:00",
+  "slug": "direct-debit-mandate-management",
+  "ran": [
+    "process-specialist",
+    "control-compliance-specialist",
+    "client-journey-specialist",
+    "innovation-analyst",
+    "it-architect"
+  ],
+  "items": [
+    {
+      "id": "R-001",
+      "specialist": "process-specialist",
+      "title": "CI Deactivation Review Has No Named Role Accountable for Mandate Decisions",
+      "detail": "TS-DDMM-007 closes PG-DDMM-002 by automating a mandate review trigger when a Creditor Identifier is deactivated. The target describes surfacing all active mandates under the deactivated CI for review, with outcomes recorded per mandate (suspend, cancel, or retain). However, the target assigns no role accountable for working these reviews or making the per-mandate decision. In the As-Is, CI deactivation handling was purely reactive and ad hoc — which is precisely why PG-DDMM-002 was flagged. The target replaces ad-hoc handling with a systematic trigger, but leaves the decision-making role unstated. An automated trigger that surfaces mandates for review does not itself close the operability gap: someone still has to make the suspend/cancel/retain call per mandate. Without a named role (Payments Operations, Compliance, or another designated function), the ad-hoc element of the handling persists behind an automated facade. TD-DDMM-009 and TS-DDMM-007 should name the accountable role before PG-DDMM-002 can be considered operationally closed.",
+      "targets": [
+        "TS-DDMM-007",
+        "TD-DDMM-009"
+      ],
+      "triage": "pending"
+    },
+    {
+      "id": "R-002",
+      "specialist": "process-specialist",
+      "title": "Creditor Query Work Type Not Modelled in the Intelligent Work Queue",
+      "detail": "TS-DDMM-001 scopes the intelligent queue to 'all incoming mandate work — new registrations, amendments, cancellations, and R-transactions.' TD-DDMM-004 and TS-DDMM-003 add an in-portal query channel routing creditor queries directly into the Payments Operations MMS work queue. These two target-state elements are inconsistent: the queue scoring model in TS-DDMM-001 does not include creditor queries as a scored work type. Without explicit inclusion, queries entering the MMS work queue have no defined priority score, no SLA slot, and no position in the triage logic — they arrive as an unmodelled work type in a queue designed around mandate transaction work. This directly undermines IR-DDMM-004 (which requires a defined query-response SLA before launch) and the operational integrity of the queue itself, since unscored items cannot be prioritised relative to time-sensitive mandate work. TS-DDMM-001 and TD-DDMM-001 must be updated to include creditor queries as a distinct scored work type with its own SLA and priority rules, consistent with what TD-DDMM-004 routes into the same queue.",
+      "targets": [
+        "TS-DDMM-001",
+        "TS-DDMM-003",
+        "TD-DDMM-001",
+        "TD-DDMM-004"
+      ],
+      "triage": "pending"
+    },
+    {
+      "id": "R-003",
+      "specialist": "control-compliance-specialist",
+      "title": "AI Sanctions Context Pack Does Not Address EU AI Act High-Risk System Obligations",
+      "detail": "TS-DDMM-006 introduces an AI-assembled context pack for sanctions triage as a 'second-wave' component. The target correctly carries IR-DDMM-007 (automation bias) and frames the pack as supplementary to officer judgement. However, an AI system that assembles context to inform sanctions screening decisions is a high-risk AI system under the EU AI Act: it falls under Annex III (AI systems used in the management and operation of critical infrastructure or in processes constituting risk assessment in financial services and enforcement contexts), and financial-crime / sanctions adjudication additionally attracts EBA internal-governance guidelines on model risk. The EU AI Act requires, at minimum: (a) a conformity assessment before deployment, (b) technical documentation of training data governance and accuracy metrics, (c) human oversight measures explicitly documented as system design requirements, and (d) logging of each use sufficient for post-incident supervisory audit. TS-DDMM-006 addresses none of these obligations; it treats the AI pack only as an automation-bias risk managed by human-in-the-loop design. The target must either explicitly address EU AI Act conformity obligations as acceptance criteria for the second-wave component, or the AI context pack must be removed from this target-state and governed as a separately regulated AI initiative.",
+      "targets": [
+        "TS-DDMM-006",
+        "TD-DDMM-007"
+      ],
+      "triage": "pending"
+    },
+    {
+      "id": "R-004",
+      "specialist": "control-compliance-specialist",
+      "title": "Transition from CP-DDMM-003 to Risk-Based Routing Leaves a Formal Control Coverage Gap",
+      "detail": "TD-DDMM-005 and TS-DDMM-004 replace the fixed 50-mandate threshold in CP-DDMM-003 with a Compliance-approved risk-based routing model. The target correctly requires Compliance formal approval of scoring criteria before go-live. However, CP-DDMM-003 is the currently documented, approved preventive control for dual-control on bulk mandate uploads, with the 50-mandate threshold as its operative rule. The transformation proposes to run the new risk-based model instead of CP-DDMM-003, but the target does not specify how CP-DDMM-003 is formally superseded and replaced. Between the moment the new routing model goes live and the moment a replacement control document is formally approved, the bank will operate a process that no longer matches its documented control framework: CP-DDMM-003 in its current form is still the approved control, but operations will no longer follow it. This creates an audit-period inconsistency that an internal or external auditor will flag as a control design deviation. The transformation plan must specify that a replacement or amended CP-DDMM-003 is formally documented and approved as a hard go-live prerequisite — not post-deployment housekeeping — and that the old control version is formally retired.",
+      "targets": [
+        "TS-DDMM-004",
+        "TD-DDMM-005"
+      ],
+      "triage": "pending"
+    },
+    {
+      "id": "R-005",
+      "specialist": "client-journey-specialist",
+      "title": "Target Overstates Experience Improvement for Bulk File Creditors",
+      "detail": "TS-DDMM-002 targets FP-DDMM-002 (bulk file rejections with bare error codes) and includes the bullet: 'Portal edit flow preserves valid fields on partial correction submissions.' This improvement applies exclusively to single-mandate form submissions — where the creditor corrects fields in a browser form and the portal retains already-valid field values. For bulk file creditors, the correction workflow is external to the portal: the creditor must open the source CSV or XML file in their own system, fix each flagged row, and re-upload a corrected file. The portal has no 'edit flow' for uploaded files; it cannot preserve rows from a previously submitted file between correction cycles. The per-row remediation guidance in the rejection report is a genuine improvement for bulk creditors, but the field-preservation claim does not apply to their workflow. Given that 10–15 bulk files per week represent a substantial creditor cohort, and that bulk creditors are typically higher-volume, the target-state should clarify which changes apply to single-mandate form submissions only, and separately describe what the corrected bulk-file experience actually is, so the design does not create a false expectation in both the product specification and the creditor's experience.",
+      "targets": [
+        "TS-DDMM-002",
+        "TD-DDMM-002"
+      ],
+      "triage": "pending"
+    },
+    {
+      "id": "R-006",
+      "specialist": "innovation-analyst",
+      "title": "TD-DDMM-010 Defers Event-Driven Integration Without a Target-State Element or Future On-Ramp",
+      "detail": "TD-DDMM-010 correctly defers II-DDMM-006 (event-driven MMS-to-Payment-Hub integration) based on IR-DDMM-006 (HIGH reliability risk). The interim measure — shortening the batch sync interval — is pragmatic. However, TD-DDMM-010.realises = []: there is no target-state element documenting what the future state looks like after the batch interval is shortened, nor any target state for the eventual event-driven path. PP-DDMM-003 (daily reconciliation rework) remains an open operational cost with only a partial interim fix and no approved target state; the transformation cannot be formally verified or approved for this area. More critically, the deferral decision specifies no trigger condition, review date, or programme entry point for when II-DDMM-006 will be re-evaluated. Without this, the event-driven integration sits in a permanent 'deferred' status with no documented pathway to the structural architectural fix. The innovation work in II-DDMM-006 and the risk analysis in IR-DDMM-006 justify a target-state element documenting the interim batch model as a transitional state, with an explicit re-evaluation condition stated in TD-DDMM-010. Otherwise, CP-DDMM-004 (daily reconciliation) remains a permanent operational control rather than the compensating safety net it was designed to be.",
+      "targets": [
+        "TD-DDMM-010"
+      ],
+      "triage": "pending"
+    },
+    {
+      "id": "R-007",
+      "specialist": "innovation-analyst",
+      "title": "AI Context Pack Bundled into Compliance Target-State Bypasses Its Own Innovation Governance Gate",
+      "detail": "TS-DDMM-006 packages the AI-assisted sanctions triage context pack (II-DDMM-005) as a 'second-wave' addition within the same target-state element as the compliance-mandated first-wave work (extending screening to IBAN amendments and cancellations, periodic re-screening). The first-wave items close live regulatory obligations (CG-DDMM-002, CG-DDMM-004, PG-DDMM-006) and will be driven by compliance urgency through the approval gate. By including the AI component in the same TS element, the AI pack inherits that urgency and co-approves in a single pass alongside work the bank cannot defer. But II-DDMM-005's own feasibility note requires 'Compliance must agree on a standard pack format before build begins' — a distinct inception gate, separate from the compliance-mandated screening extensions. IR-DDMM-007 (automation bias) and the EU AI Act obligations (flagged under the compliance lens) both require a dedicated governance evaluation for the AI component that a bundled TS approval does not provide. The risk is that the AI context pack is built and deployed under the legal and reputational cover of a compliance closure, without the independent scrutiny II-DDMM-005 requires. The AI context pack should be decoupled from TS-DDMM-006 into a separate target-state element with its own approval gate, inception criteria, and governance pathway.",
+      "targets": [
+        "TS-DDMM-006",
+        "TD-DDMM-007"
+      ],
+      "triage": "pending"
+    },
+    {
+      "id": "R-008",
+      "specialist": "it-architect",
+      "title": "MMS Priority-Scoring Capability Assumed but Not Confirmed Against SYS-DDMM-002",
+      "detail": "TS-DDMM-001 requires the Mandate Management System (SYS-DDMM-002) to automatically score queue items by work type, SLA remaining, and creditor risk tier and surface a ranked queue to operators. In the As-Is, MMS provides a flat undifferentiated inbox — no queue scoring capability exists today. The feasibility note underpinning this target (from II-DDMM-001) is explicitly conditional: 'no new core systems needed if MMS supports configurable queue views. Dependency: MMS vendor must expose sortable queue attributes.' This vendor-capability dependency has not been resolved or confirmed in the target-state. SYS-DDMM-002 is described in terms of its current role as a system of record; there is no confirmation that the platform supports configurable priority scoring natively. If it does not, implementing TS-DDMM-001 requires MMS custom development (vendor engagement, commercial negotiation, delivery risk), a platform upgrade (regression risk), or a separate orchestration overlay (new system dependency, new integration point). The target should document whether the MMS vendor capability has been assessed and confirmed for this feature before the decision is treated as a straightforward MMS enhancement. Without this confirmation, the delivery risk and cost of TS-DDMM-001 are materially underestimated.",
+      "targets": [
+        "TS-DDMM-001",
+        "TD-DDMM-001"
+      ],
+      "triage": "pending"
+    },
+    {
+      "id": "R-009",
+      "specialist": "it-architect",
+      "title": "Bulk Periodic Re-Screening Assumes a Batch Capability of SYS-DDMM-004 Not Demonstrated in the As-Is",
+      "detail": "TS-DDMM-006 requires periodic bulk re-screening of the active mandate register: 'Periodic re-screening of active mandate register on Compliance-defined schedule and ownership.' The current integration between MMS (SYS-DDMM-002) and the Sanctions Screening Engine (SYS-DDMM-004) is designed for real-time per-transaction screening — triggered at mandate submission and processed one record at a time. Periodic bulk re-screening of the full active mandate register is a qualitatively different operation: it requires submitting potentially thousands of mandate records as a batch job, receiving batch results, and reconciling hits against the live register. The existing integration does not demonstrate this capability. Whether SYS-DDMM-004 exposes a batch screening API, what throughput it supports, and whether the current vendor contract permits bulk re-screening at register scale are open questions not addressed in the target. Additionally, if SYS-DDMM-004 is priced on a per-transaction basis (common for real-time screening engines), periodic full-register re-screening could represent a material and unbudgeted cost increase. The target must confirm SYS-DDMM-004 batch capability and the commercial model before committing to periodic re-screening as a design-level control obligation.",
+      "targets": [
+        "TS-DDMM-006",
+        "TD-DDMM-007"
+      ],
+      "triage": "pending"
+    },
+    {
+      "id": "R-010",
+      "specialist": "it-architect",
+      "title": "MMS Stage-Event Emission Is an Architectural Change Treated as a Configuration Enhancement",
+      "detail": "TS-DDMM-003 requires MMS (SYS-DDMM-002) to 'emit stage-level events at key processing milestones — receipt, validation, dual-control, and registration.' The current MMS provides only a binary status field (pending / in-progress / complete); it does not maintain an internal stage-event model or event log. Adding stage-level event emission requires MMS to: (a) internally capture and persist processing stage transitions as discrete, time-stamped events — not just update a status field — (b) expose those events via an outbound interface to the Creditor Portal and the notification channel, and (c) maintain an event log auditable per-mandate for the activity trail described in TD-DDMM-004. This is an architectural instrumentation change, not a configuration enhancement. If MMS is a commercial off-the-shelf platform (which is typical for bank mandate systems), this level of internal event instrumentation typically requires a vendor customisation engagement, a new module, or an event-bus overlay architecture. The target-state (TS-DDMM-003) does not distinguish between what is MMS-internal vendor work, what is portal-side work, and what is integration-layer work; it does not identify this as requiring vendor engagement or carry any delivery risk flag. Treating an architectural change as an incremental enhancement systematically underestimates build effort and delivery timelines for TS-DDMM-003.",
+      "targets": [
+        "TS-DDMM-003",
+        "TD-DDMM-003"
+      ],
+      "triage": "pending"
+    }
+  ]
+}
