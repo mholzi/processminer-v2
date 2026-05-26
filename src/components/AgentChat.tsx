@@ -34,7 +34,11 @@ const ELEMENT_ID = /\b[A-Z]{1,4}-[A-Z]{2,4}-\d{3}\b/g;
 
 // Split a plain text run, wrapping every resolvable element id in a hovercard
 // so it previews on hover. Ids that don't resolve are left as plain text.
-function linkifyText(text: string, getRef: GetRef): ReactNode {
+function linkifyText(
+  text: string,
+  getRef: GetRef,
+  onRefClick?: (id: string) => void,
+): ReactNode {
   const out: ReactNode[] = [];
   let last = 0;
   let m: RegExpExecArray | null;
@@ -48,6 +52,7 @@ function linkifyText(text: string, getRef: GetRef): ReactNode {
         key={`${m[0]}-${m.index}`}
         element={ref.page}
         typeLabel={ref.typeLabel}
+        onSelect={onRefClick}
       >
         <span className="chat-ref">{m[0]}</span>
       </ElementHovercard>,
@@ -61,17 +66,21 @@ function linkifyText(text: string, getRef: GetRef): ReactNode {
 
 // Recurse through rendered markdown children, linkifying text runs. Code and
 // pre blocks are left untouched — ids inside literal code aren't references.
-function linkify(node: ReactNode, getRef: GetRef): ReactNode {
-  if (typeof node === "string") return linkifyText(node, getRef);
+function linkify(
+  node: ReactNode,
+  getRef: GetRef,
+  onRefClick?: (id: string) => void,
+): ReactNode {
+  if (typeof node === "string") return linkifyText(node, getRef, onRefClick);
   if (Array.isArray(node))
     return node.map((n, i) => (
-      <Fragment key={i}>{linkify(n, getRef)}</Fragment>
+      <Fragment key={i}>{linkify(n, getRef, onRefClick)}</Fragment>
     ));
   if (isValidElement(node)) {
     if (node.type === "code" || node.type === "pre") return node;
     const children = (node.props as { children?: ReactNode }).children;
     if (children == null) return node;
-    return cloneElement(node, undefined, linkify(children, getRef));
+    return cloneElement(node, undefined, linkify(children, getRef, onRefClick));
   }
   return node;
 }
@@ -102,14 +111,17 @@ const LINKABLE = [
   "p", "li", "td", "th", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote",
 ] as const;
 
-function buildComponents(getRef: GetRef): Components {
+function buildComponents(
+  getRef: GetRef,
+  onRefClick?: (id: string) => void,
+): Components {
   const out: Record<
     string,
     (props: { node?: unknown; children?: ReactNode }) => ReactNode
   > = {};
   for (const tag of LINKABLE) {
     out[tag] = ({ node: _node, children, ...rest }) =>
-      createElement(tag, rest, linkify(children, getRef));
+      createElement(tag, rest, linkify(children, getRef, onRefClick));
   }
   return out as Components;
 }
@@ -133,12 +145,14 @@ export default function AgentChat({
   linting,
   findingCount,
   getRef,
+  onRefClick,
   title = "ProcessMiner",
   subtitle = "Documents this process with you",
   emptyText,
   lintLabel,
   placeholder = "Message the assistant…",
   showLint = true,
+  unread = false,
 }: {
   open: boolean;
   onToggle: () => void;
@@ -159,6 +173,8 @@ export default function AgentChat({
   linting: boolean;
   findingCount: number | null;
   getRef: GetRef;
+  /** Click handler for an element-id reference inside a chat message. */
+  onRefClick?: (id: string) => void;
   /** Brand title rendered in the chat header. Default "ProcessMiner". */
   title?: string;
   /** One-line subtitle under the title. */
@@ -171,10 +187,17 @@ export default function AgentChat({
   placeholder?: string;
   /** Whether to render the lint/quality-check action row. */
   showLint?: boolean;
+  /** Lights up the collapsed assistant rail when a turn finished while the
+   *  user wasn't looking at the chat — the parent tracks this and clears
+   *  it when the chat becomes visible again. */
+  unread?: boolean;
 }) {
   const [draft, setDraft] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
-  const mdComponents = useMemo(() => buildComponents(getRef), [getRef]);
+  const mdComponents = useMemo(
+    () => buildComponents(getRef, onRefClick),
+    [getRef, onRefClick],
+  );
 
   // Long-wait perspective footer — a dry one-liner shown once the turn has
   // been running for >2 min. We tick elapsed every 5s (minute-precision is
@@ -208,13 +231,18 @@ export default function AgentChat({
     return (
       <aside className="rail rail-r">
         <button
-          className="rrail-btn"
-          title="Open the process assistant"
+          className={`rrail-btn${unread ? " unread" : ""}`}
+          title={
+            unread
+              ? "The assistant finished — open to view the reply"
+              : "Open the process assistant"
+          }
           onClick={onToggle}
         >
           ✦
+          {unread && <span className="rrail-dot" aria-hidden="true" />}
         </button>
-        <span className="rrail-lbl">Assistant</span>
+        <span className="rrail-lbl">{unread ? "Done ✓" : "Assistant"}</span>
       </aside>
     );
   }

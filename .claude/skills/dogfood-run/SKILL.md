@@ -121,6 +121,20 @@ The chat textarea placeholder is `Working…` while a turn runs and
    `preview_eval`: `document.querySelector('textarea').placeholder`. Turns can
    take many minutes (an ingest runs for 20+ min); be patient, do not give up
    early.
+
+   **This placeholder is the canonical "turn done" signal. Do not substitute
+   a file-system heuristic for it** — file-mtime-quiet windows look attractive
+   but mis-fire mid-turn: a skill that runs `idea_coverage.py` or
+   `check_conformance.py` for 60–120 s reads files without writing any, the
+   quiet timer expires, and the test harness moves on while the chat is still
+   composing its closing report. File watches are useful as *progress* signals
+   for what was written this turn; they are not a substitute for placeholder
+   polling. When you need to wait on chat-idle from a Bash-only context
+   (Monitor, run_in_background) where `preview_eval` is unavailable, accept
+   that the placeholder is unreachable and either (a) require a much longer
+   file-quiet window (≥ 180 s) and verify with a final `preview_eval` before
+   dispatching the next turn, or (b) call `preview_eval` once per polling
+   cycle from the outer driver loop.
 4. Read the assistant's reply from the DOM via `preview_eval` (the chat
    message list's `innerText`). Decide your SME response.
 
@@ -195,16 +209,20 @@ listed below in the Stage 9 verdict.
   collateral-confirmation journey — these are the slowest paths in real
   guarantee desks and are routinely missed by AI drafts.
 - **5b. Target Process refinement** — run the `transformation-agent` on the
-  Target Process area. Refine each target-state, transformation-decision and
-  gap-resolution from `provenance: proposed` / `confidence: low` to
-  `provenance: elicited` / `confidence: high`, and populate Requirements,
-  Dependencies, Assumptions and Validation sections through the agent's
-  elicitation. `source-target` produces a low-confidence stub only; this is
-  the SME pass that turns it into an agreed target. The SME must require
-  to-be-design coverage of every documented As-Is process step (one TS-* per
-  PS-*, or an explicit "no change in TO-BE" rationale), and must require a
-  gap-resolution element for every open process-gap, control-gap and
-  audit-finding (or an explicit "accepted, no remediation planned" note).
+  Target Process area. Refine each target-state (`to-be-design/` section in
+  the wiki — *not* `target-state/`; the schema folder is `to-be-design`),
+  transformation-decision and gap-resolution from `provenance: proposed` /
+  `confidence: low` to `provenance: elicited` / `confidence: high`. The
+  Requirements / Dependencies / Assumptions / Validation content lives in
+  separate element types (`requirement`, `process-dependency`, `assumption`,
+  plus a `validation`-style block on the target-state itself) — populate
+  each through the agent's elicitation. `source-target` produces a
+  low-confidence stub only; this is the SME pass that turns it into an
+  agreed target. The SME must require to-be-design coverage of every
+  documented As-Is process step (one TS-* per PS-*, or an explicit "no
+  change in TO-BE" rationale), and must require a gap-resolution element
+  for every open process-gap, control-gap and audit-finding (or an explicit
+  "accepted, no remediation planned" note).
 - **5c. Audit findings + gap remediation** — run the
   `control-compliance-specialist` with two tasks: (a) populate Audit-Findings
   (capture at least 3 historical findings on a guarantee desk — assume the
@@ -228,20 +246,49 @@ listed below in the Stage 9 verdict.
   the SME to add at least three additional operational metrics beyond what
   the source document names: monthly volume, STP rate, exception escalation
   rate. The source document typically names only the headline SLA.
-- **5g. IT architecture** — run the `it-architect` specialist with the SME
-  to populate the Integrations section and deepen the Systems entries. At
-  least one `integration` element per major system-to-system data flow the
-  process needs (typical guarantee-issuance flows: Portal → TFS, TFS →
-  Sanctions Screening Tool, TFS → SWIFT, TFS ↔ Facility / Credit). For each
-  documented system, the SME should also supply the missing architectural
-  attributes the source document never names — criticality, vendor (where
-  known), data classification, and an RTO/RPO band — so the systems are
-  usable for a DORA / ICT-mapping audit, not just narrative description.
+- **5g. IT architecture (As-Is)** — run the `it-architect` specialist with
+  the SME to populate the Integrations section and deepen the Systems
+  entries. At least one `integration` element per major system-to-system
+  data flow the process needs (typical guarantee-issuance flows: Portal →
+  TFS, TFS → Sanctions Screening Tool, TFS → SWIFT, TFS ↔ Facility /
+  Credit). For each documented system, the SME should also supply the
+  missing architectural attributes the source document never names —
+  criticality, vendor (where known), data classification, and an RTO/RPO
+  band — so the systems are usable for a DORA / ICT-mapping audit, not just
+  narrative description.
+- **5h. Target Architecture — domain architect** — run the
+  `domain-architect` specialist on the Target Architecture area. The
+  Capabilities, Target Applications, Architecture Decisions (ADRs),
+  Prioritisation and Validation sections start empty and stay empty without
+  this sub-pass. Have the SME (a) elicit business capabilities the target
+  state needs (typical guarantee-issuance capabilities: client portal,
+  bespoke-wording AI, sanctions screening, facility headroom, SWIFT
+  issuance, archival), (b) propose target applications hosting them
+  (consolidating or replacing the As-Is `SYS-*` set), (c) capture the
+  architecture decisions that shape the design (e.g. "buy vs build the AI
+  pre-screener", "extend incumbent TFS vs greenfield", "monolith vs
+  service-decomposed"), and (d) prioritise the capabilities against the
+  innovation ideas / transformation decisions from 5b and 5e.
+- **5i. Target Architecture — solution architect** — run the
+  `solution-architect` specialist on the remaining Target Architecture
+  sections. Capture (a) the target-integrations between the target
+  applications from 5h (the To-Be analogue of the As-Is integrations
+  written in 5g), (b) the components inside each target application that
+  matter to the design, (c) non-functional requirements (NFRs) constraining
+  the target — at least latency / availability / regulatory NFRs, cross-
+  referenced with the `requirement` elements from 5b — and (d) migration
+  phases sequencing the rollout (e.g. phase 1 portal + intake, phase 2 AI
+  wording, phase 3 ICC-SWIFT API).
 
 *Assert:* Deep Dive opens the chat with the right specialist; refined elements
 show the SME's changes; triaged elements show the chosen relevance. Each of
-sub-passes 5a–5g either populated its targeted section(s) or left an explicit
-"accepted as empty" note with the SME's reason.
+sub-passes 5a–5i either populated its targeted section(s) or left an explicit
+"accepted as empty" note with the SME's reason. **The Target Architecture
+area (5h + 5i) has nine sections — `capabilities`, `target-applications`,
+`architecture-decisions`, `target-integrations`, `components`, `nfrs`,
+`migration-phases`, `prioritization`, `validation` — and a Stage 9 SME
+assessment that finds all nine empty is exactly what skipping these
+sub-passes produces. Don't.**
 
 ### Stage 6 — Comments and comment-review
 On two or three elements, open the **Discussion** panel and post comments as the

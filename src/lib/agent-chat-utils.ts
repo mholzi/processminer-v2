@@ -16,8 +16,12 @@ const ETA_STORAGE_KEY = "pm.skillDurationsMs.v1";
 const NOTIFY_ASKED_KEY = "pm.notifyPermissionAsked.v1";
 /** Don't fire a Notification for short turns — they were never painful. */
 export const NOTIFY_THRESHOLD_MS = 2 * 60 * 1000;
-/** Watchdog timeout while a turn is pending — see useAgentChat. */
-export const CHAT_WATCHDOG_MS = 5 * 60 * 1000;
+/** Watchdog timeout while a turn is pending — see useAgentChat. The server
+ *  emits a heartbeat every 60 s, so a healthy turn never goes more than ~70 s
+ *  between events. 8 min leaves comfortable margin for transient network
+ *  hiccups and the rare missed heartbeat without false-alarming long
+ *  fan-out skills (source-innovation, run-lint). */
+export const CHAT_WATCHDOG_MS = 8 * 60 * 1000;
 
 function readSkillHistory(): Record<string, number[]> {
   if (typeof window === "undefined") return {};

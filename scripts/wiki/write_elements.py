@@ -55,9 +55,20 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from wiki_lib import element_types, id_state, write_element_spec  # noqa: E402
+from wiki_lib import (  # noqa: E402
+    WIKI_DIR,
+    element_types,
+    id_state,
+    iter_elements,
+    write_element_spec,
+)
 
 REF_RE = re.compile(r"@([A-Za-z0-9_-]+)")
+
+
+def _norm(title: str) -> str:
+    """Title key for duplicate-detection — case- and whitespace-insensitive."""
+    return " ".join((title or "").lower().split())
 
 
 def fail(msg: str) -> None:
@@ -114,6 +125,61 @@ def main(argv: list[str]) -> None:
             for key, val in rels.items():
                 if not isinstance(val, list):
                     fail(f"element {where} relation '{key}' must be a list")
+
+    # ---- duplicate-title gate -----------------------------------------
+    # Two batches of duplication need to be caught here, deterministically,
+    # because the document-ingest skill's parallel sub-agents have repeatedly
+    # produced duplicate specs in the wild and the prose guard rails in
+    # SKILL.md aren't enforced:
+    #
+    #   1. In-batch — two new specs share the same (type, normalised title).
+    #      One is real, one is a sister sub-agent that re-extracted the same
+    #      content. Reject.
+    #   2. Re-ingest — a new spec (no `id`) collides with an element already
+    #      on disk for this process. The caller intended to refine the
+    #      existing element; emitting a brand-new spec would auto-allocate a
+    #      fresh id and produce a same-titled twin. Reject and tell them to
+    #      use the `id` (refine) path.
+    in_batch: dict[tuple[str, str], int] = {}
+    for i, el in enumerate(elements):
+        if el.get("id"):
+            continue  # an explicit update — same title is intentional
+        key = (el["type"], _norm(el["title"]))
+        if key in in_batch:
+            j = in_batch[key]
+            fail(
+                f"duplicate (type, title) in this batch: '{el['title']}' "
+                f"({el['type']}) appears as specs #{j} and #{i} — the "
+                "document-ingest fan-out produced the same element twice. "
+                "Drop one, or merge them by giving exactly one spec the id."
+            )
+        in_batch[key] = i
+
+    existing: dict[tuple[str, str], str] = {}
+    if (WIKI_DIR / slug).is_dir():
+        for path, meta, _ in iter_elements(slug):
+            t = meta.get("type")
+            title = meta.get("title")
+            if not isinstance(t, str) or not isinstance(title, str):
+                continue
+            existing.setdefault((t, _norm(title)), str(meta.get("id") or path.stem))
+    collisions: list[str] = []
+    for i, el in enumerate(elements):
+        if el.get("id"):
+            continue
+        key = (el["type"], _norm(el["title"]))
+        if key in existing:
+            collisions.append(
+                f"  spec #{i} '{el['title']}' ({el['type']}) → already exists as {existing[key]}"
+            )
+    if collisions:
+        fail(
+            "the batch would create elements that already exist on disk:\n"
+            + "\n".join(collisions)
+            + "\nIf you mean to refine each existing element, set its `id` on "
+            "the spec (refine path). If you meant to add new elements with "
+            "the same title, rename them so the wiki stays unambiguous."
+        )
 
     # ---- pass 1: assign ids, build the tempKey map ---------------------
     try:

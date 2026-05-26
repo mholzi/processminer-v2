@@ -69,11 +69,11 @@ from the table below:
 
 | Lens | What to check across the process |
 |---|---|
-| **Process** | a process-step with no control linked; a step with no SLA where a touchpoint sets a client expectation; a missing or contradictory RACI entry; an exception with no scope or no fallback procedure |
-| **Control & Compliance** | a compliance-gap on a topic that has no control; a control linked to no step; segregation-of-duties not covered by any control |
+| **Process** | a process-step with no control linked; a step with no SLA where a touchpoint sets a client expectation; a missing or contradictory RACI entry; **a step with a stated approval ceiling (e.g. "above EUR Xm") where the role at that ceiling is `:C` (consulted) or `:I` rather than `:A` (accountable) — the role with the ceiling owns the decision**; an exception with no scope or no fallback procedure |
+| **Control & Compliance** | a compliance-gap on a topic that has no control; a control linked to no step; segregation-of-duties not covered by any control; **a regulation with no control referencing it back via `regulatedBy` AND no "no control documented yet" note in its `How it is met` block — an unmapped obligation is what an auditor lands on first** |
 | **Client Journey** | a friction-point and a pain-point describing the same issue but not linked; an innovation or friction item not traced to the pain-point it addresses |
-| **Innovation** | an innovation-idea not linked to the friction- or pain-point it solves; a pain-point with no innovation-idea addressing it |
-| **IT Architect** | a count stated in prose that disagrees with the documented elements (e.g. "6+ systems" vs 8 systems); an integration referencing no system; a system touched by no step |
+| **Innovation** | an innovation-idea not linked to the friction- or pain-point it solves; a pain-point with no innovation-idea addressing it; **an innovation-idea whose body content doesn't mention the keywords from the titles of the elements it `addresses` — flag as a content / relation mismatch (e.g. body about ERP intake but `addresses` a friction-point about MT760 delivery)** |
+| **IT Architect** | a count stated in prose that disagrees with the documented elements (e.g. "6+ systems" vs 8 systems); an integration referencing no system; a system touched by no step; **a process-step whose body mentions automation, a screen or any IT but whose `systems:` list is empty — the system should be linked back on the step**; **a system missing any of `criticality` / `vendor` / `dataClassification` / `rtoBand` / `rpoBand` — these are needed for DORA / ICT-mapping audit, an empty value is a finding**; **an integration whose body cites a `PS-*` whose title doesn't match what the integration describes (naming-drift check)** |
 
 The sub-agents are read-only and each reads the wiki itself — that is what
 lets them run in parallel. Only you write, in Step 4.

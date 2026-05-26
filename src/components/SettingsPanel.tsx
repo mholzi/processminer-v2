@@ -28,11 +28,16 @@ export default function SettingsPanel({
   title,
   idPrefix,
   sources,
+  onDeleted,
 }: {
   slug: string;
   title: string;
   idPrefix: string;
   sources: string[];
+  /** Called after a successful delete. The caller is responsible for moving
+   *  the user off the now-defunct process — without this, the canvas would
+   *  fall back to docs[0] and render a confused mix of slugs and titles. */
+  onDeleted?: () => void;
 }) {
   const router = useRouter();
   const [meta, setMeta] = useState<Meta | null>(null);
@@ -139,8 +144,13 @@ export default function SettingsPanel({
           title={title}
           onCancel={() => setConfirmOpen(false)}
           onDeleted={() => {
-            router.push("/");
-            router.refresh();
+            setConfirmOpen(false);
+            if (onDeleted) {
+              onDeleted();
+            } else {
+              router.push("/");
+              router.refresh();
+            }
           }}
         />
       )}

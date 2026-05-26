@@ -93,6 +93,9 @@ export default function ArchitectureCanvas({
   onReturnToInbox: () => void;
 }) {
   const [view, setView] = useState<ArchView>("adrs");
+  // Chat panel open/closed — collapsed state mirrors ProcessMiner's shell so
+  // the architect can hide the rail and reclaim canvas width for the diagram.
+  const [chatOpen, setChatOpen] = useState(true);
   // When view === "inputs", which upstream section is open. Elements in that
   // section render vertically as Processminer-style cards — no separate
   // "selected element" because every card is already expanded.
@@ -193,10 +196,10 @@ export default function ArchitectureCanvas({
   );
 
   const chatSidebar = (
-    <div className="am-canvas-chat">
+    <div className={`am-canvas-chat${chatOpen ? "" : " am-canvas-chat-collapsed"}`}>
       <AgentChat
-        open={true}
-        onToggle={() => {}}
+        open={chatOpen}
+        onToggle={() => setChatOpen((v) => !v)}
         onWidthChange={() => {}}
         messages={messages}
         onSend={(t) => handleSend(t)}
@@ -436,21 +439,21 @@ export default function ArchitectureCanvas({
             onClick={() => setView("capabilities")}
           >
             <span>Capabilities</span>
-            <span className="am-canvas-n">7</span>
+            <span className="am-canvas-n">{archData.caps.length}</span>
           </div>
           <div
             className={`am-canvas-secrow${view === "applications" ? " am-canvas-secrow-on" : ""}`}
             onClick={() => setView("applications")}
           >
             <span>Target Applications</span>
-            <span className="am-canvas-n">6</span>
+            <span className="am-canvas-n">{archData.apps.length}</span>
           </div>
           <div
             className={`am-canvas-secrow${view === "adrs" ? " am-canvas-secrow-on" : ""}`}
             onClick={() => setView("adrs")}
           >
             <span>Architecture Decisions</span>
-            <span className="am-canvas-n">12</span>
+            <span className="am-canvas-n">{archData.adrsReal.length}</span>
           </div>
 
           <h4 className="am-canvas-grouph">Solution Architecture</h4>
@@ -459,28 +462,28 @@ export default function ArchitectureCanvas({
             onClick={() => setView("integrations")}
           >
             <span>Target Integrations</span>
-            <span className="am-canvas-n">8</span>
+            <span className="am-canvas-n">{archData.integrations.length}</span>
           </div>
           <div
             className={`am-canvas-secrow${view === "components" ? " am-canvas-secrow-on" : ""}`}
             onClick={() => setView("components")}
           >
             <span>Components</span>
-            <span className="am-canvas-n">17</span>
+            <span className="am-canvas-n">{archData.components.length}</span>
           </div>
           <div
             className={`am-canvas-secrow${view === "nfrs" ? " am-canvas-secrow-on" : ""}`}
             onClick={() => setView("nfrs")}
           >
             <span>NFRs</span>
-            <span className="am-canvas-n">8</span>
+            <span className="am-canvas-n">{archData.nfrsReal.length}</span>
           </div>
           <div
             className={`am-canvas-secrow${view === "migration" ? " am-canvas-secrow-on" : ""}`}
             onClick={() => setView("migration")}
           >
             <span>Migration Phases</span>
-            <span className="am-canvas-n">4</span>
+            <span className="am-canvas-n">{archData.migrations.length}</span>
           </div>
 
           <h4 className="am-canvas-grouph">Cross-cutting</h4>
@@ -620,7 +623,9 @@ export default function ArchitectureCanvas({
 
         {view === "diagram" && (
           <>
-            <main className="am-canvas-diagram-main">
+            <main
+              className={`am-canvas-diagram-main${archData.caps.length === 0 ? " am-canvas-doc-wide" : ""}`}
+            >
               <div className="am-canvas-diagram-toolbar">
                 <h2>Target architecture</h2>
                 <span className="am-canvas-secmeta">
@@ -772,12 +777,9 @@ export default function ArchitectureCanvas({
               </div>
             </main>
 
+            {archData.caps.length > 0 ? (
             <aside className="am-canvas-details">
-              {archData.caps.length === 0 ? (
-                <div className="am-input-empty" style={{ marginTop: 0 }}>
-                  Author a capability to see its details here.
-                </div>
-              ) : (() => {
+              {(() => {
                 const cap = archData.caps[0];
                 const hostedRaw = Array.isArray(cap.meta.hostedIn) ? cap.meta.hostedIn[0] : (cap.meta.hostedIn as string | undefined);
                 const hostedApp = hostedRaw ? archData.apps.find((a) => a.id === hostedRaw) : undefined;
@@ -841,6 +843,7 @@ export default function ArchitectureCanvas({
                 );
               })()}
             </aside>
+            ) : null}
             {chatSidebar}
           </>
         )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type ReactNode } from "react";
+import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import type { WikiPage } from "@/lib/wiki";
 
 // A hovercard preview for an element reference. Wrap any trigger — an ID chip
@@ -18,10 +18,13 @@ export default function ElementHovercard({
   element,
   typeLabel,
   children,
+  onSelect,
 }: {
   element?: WikiPage;
   typeLabel?: string;
   children: ReactNode;
+  /** When set, the trigger becomes clickable — invoked with the element id. */
+  onSelect?: (id: string) => void;
 }) {
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -43,15 +46,32 @@ export default function ElementHovercard({
 
   const draft = element.status === "draft";
   const review = String(element.meta.approval ?? element.meta.relevance ?? "");
+  const clickable = typeof onSelect === "function";
+  const activate = () => {
+    if (!onSelect) return;
+    hide();
+    onSelect(element.id);
+  };
 
   return (
     <span
       ref={ref}
-      className="hcard-wrap"
+      className={`hcard-wrap${clickable ? " hcard-wrap-clickable" : ""}`}
       onMouseEnter={show}
       onMouseLeave={hide}
       onFocusCapture={show}
       onBlurCapture={hide}
+      {...(clickable && {
+        role: "button",
+        tabIndex: 0,
+        onClick: activate,
+        onKeyDown: (e: KeyboardEvent<HTMLSpanElement>) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            activate();
+          }
+        },
+      })}
     >
       {children}
       {pos && (

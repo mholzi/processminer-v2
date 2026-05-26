@@ -224,8 +224,15 @@ def run() -> None:
     print("\n— review_cursor / set_approval —")
     r = script("review_cursor.py", "build", SLUG)
     chk("review_cursor build", json.loads(r.stdout).get("total", 0) > 0, r.stdout)
+    # advance now requires --outcome and enforces approval state on Y/E.
     r = script("review_cursor.py", "advance", SLUG)
-    chk("review_cursor advance", json.loads(r.stdout).get("position", 0) >= 1, r.stdout)
+    chk("review_cursor advance requires --outcome", r.returncode != 0)
+    r = script("review_cursor.py", "advance", SLUG, "--outcome", "E")
+    chk("advance --outcome E refuses on un-approved element",
+        r.returncode != 0 and "approval" in (r.stdout + r.stderr).lower())
+    r = script("review_cursor.py", "advance", SLUG, "--outcome", "M")
+    chk("review_cursor advance --outcome M moves the cursor",
+        json.loads(r.stdout).get("position", 0) >= 1, r.stdout)
     r = script("set_approval.py", SLUG, "PS-SELF-001", "approved", "SME")
     chk("set_approval rejects a placeholder name", r.returncode != 0)
 

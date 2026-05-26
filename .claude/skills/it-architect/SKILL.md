@@ -152,21 +152,50 @@ re-document them; you confirm with the SME which steps are system-supported, so
 you know where each system is used.
 
 **Phase 2 — Systems.** Every application or platform the process runs on —
-CRM, core banking, workflow, screening, document management. For each: its
-purpose, its role in this process, its type. To link a system to the steps it
-serves, patch each of those process-steps' `systems` field
-(`patch_element.py --list`) — the link is stored on the step, not the system.
-Walk the process to be sure none is missed.
+CRM, core banking, workflow, screening, document management. For each:
+- its **purpose** and **role in this process** (the two prose blocks);
+- its `systemType` (CORE / SUPPORTING / EXTERNAL);
+- its `criticality` (HIGH / MEDIUM / LOW — operational impact if unavailable);
+- its `vendor` (named vendor, "in-house", or "unknown");
+- its `dataClassification` (confidential / restricted / internal / public);
+- its `rtoBand` (1h / 4h / 8h / 24h) and `rpoBand` (0 / 15min / 1h / 4h).
+
+These last five make the systems usable for a DORA / ICT-mapping audit. If
+the SME cannot land a value, draft your best estimate, mark the heading
+`proposed`, and flag it openly — never silently omit. **To link a system to
+the steps it serves**, patch each of those process-steps' `systems` field
+(`patch_element.py --list <slug> <PS-id> systems --add <SYS-id>`) — the link
+is stored on the step, not the system. **Before adding a SYS-id to a PS-id's
+systems list, read the PS-id's `title` and confirm it is the step you mean.**
+Naming drift is the most common error in this phase — *Collateral Confirmation*
+and *Issuance* sound interchangeable until you read the titles. When in doubt
+read the step's body too.
 
 **Phase 3 — Integrations.** `[A]/[E]/[N]`. The connections between systems —
 what connects, what data flows, in which direction. Link the two `systems`
-each integration joins. A manual hand-off the SME describes is a candidate
-integration — capture the systems and flag the gap.
+each integration joins, and **for each integration, read the PS-id title of
+any step you reference in the body** — the same naming-drift check Phase 2
+demands. A manual hand-off the SME describes is a candidate integration —
+capture the systems and flag the gap.
 
-**Phase 4 — Validation.** Before closing, sweep what you wrote: systems linked
-to no step, steps that touch no system, integrations naming fewer than two
-systems, a re-key described but no integration captured. Surface each as a
-short clarifying question, then close with the canonical close-out: run
+**Phase 4 — Validation.** Before closing, run these as **hard checks**, not
+hints — every one must resolve to either "fixed" or "explicitly accepted with
+a one-line SME rationale", never silently left open:
+
+- **(a) Every system reaches at least one step.** For each `SYS-*`, confirm at
+  least one `process-step` lists it in `systems`. If not, either patch the
+  consuming step or document why this is an out-of-process system.
+- **(b) Every process-step touches at least one system.** For each `PS-*` whose
+  body names automation, a screen, or any IT, confirm a `SYS-*` is in its
+  `systems` list. Manual-only steps may have an empty list — but only if the
+  SME has explicitly said it is fully manual.
+- **(c) Every integration names exactly two distinct systems** and (if the body
+  cites a PS-*) the cited step's title matches what the integration describes.
+- **(d) Every re-key described by the SME has either a captured integration or
+  a process-gap flag.**
+
+Run `python3 scripts/wiki/check_conformance.py <slug>` after the sweep; fix
+anything it flags before closing. Then close with the canonical close-out: run
 `python3 scripts/wiki/verbatim.py specialist-closeout` and present what it
 prints, with `{Perspective}` = **IT Architecture** and the `{n}` / `{type}`
 placeholders filled from the counts. Reproduce every other character — the

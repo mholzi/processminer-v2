@@ -288,6 +288,7 @@ export default function ProcessDocScreen({
   onEnterAdmin,
   onSignOut,
   initialSlug,
+  createNewToken,
   onReturnToSplash,
 }: {
   schema: Schema;
@@ -298,6 +299,9 @@ export default function ProcessDocScreen({
   onEnterAdmin?: () => void;
   onSignOut: () => void;
   initialSlug?: string;
+  /** Monotonically increases each time the splash's "+ New process" chip is
+   *  clicked. When it changes, run the new-process flow. */
+  createNewToken?: number;
   onReturnToSplash?: () => void;
 }) {
   // If a foundational run is in progress on any process, the app opens on it
@@ -543,7 +547,13 @@ export default function ProcessDocScreen({
     scopePreamble,
     storePrefix: PM_CHAT_STORE_PREFIX,
     productName: "Processminer",
-    initialMessage: () => (openingRunDoc ? resumeMessage(openingRunDoc) : null),
+    // Only seed the resume banner when the in-flight run belongs to the
+    // process the user actually opened — otherwise a user picking New Hire
+    // from the splash would see a "Resume SEPA Payment Processing" banner.
+    initialMessage: () =>
+      openingRunDoc && openingRunDoc.slug === currentSlug
+        ? resumeMessage(openingRunDoc)
+        : null,
   });
   const {
     messages,
@@ -1027,8 +1037,17 @@ export default function ProcessDocScreen({
     setChatOpen(true);
     // The new-process flow is cross-process — drop any prior transcript
     // (e.g. another process's "welcome back" resume banner) so the
-    // conversation starts clean and nothing stale bleeds across.
+    // conversation starts clean and nothing stale bleeds across. We clear
+    // both the in-memory messages AND the persisted entry for the slug we
+    // happen to be sitting on, otherwise useAgentChat's mount-restore
+    // effect (in StrictMode or after a remount) will re-load it.
+    try {
+      sessionStorage.removeItem(`${PM_CHAT_STORE_PREFIX}-${currentSlug}`);
+    } catch {
+      /* storage unavailable — best-effort */
+    }
     setMessages([]);
+    setChatSessionId(null);
     // Blank the canvas while the user names + confirms the new process.
     // The fresh-process effect clears this once scaffold_process.py lands
     // files on disk and the new doc appears.
@@ -1038,6 +1057,21 @@ export default function ProcessDocScreen({
       skill: "new-process",
     });
   }
+
+  // The splash's "+ New process" chip enters this workspace with a non-zero
+  // createNewToken — we fire the new-process flow when the token grows past
+  // what we've already handled, so opening a recent chip (which resets the
+  // token to 0) doesn't accidentally re-trigger it on remount.
+  const lastSeenCreateToken = useRef(0);
+  useEffect(() => {
+    if (!createNewToken) return; // 0 / undefined → no create intent
+    if (lastSeenCreateToken.current === createNewToken) return;
+    lastSeenCreateToken.current = createNewToken;
+    createProcess();
+    // createProcess captures handleSend/setMessages/setChatOpen — exhaustive
+    // deps would add it on every render and re-fire the flow.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [createNewToken]);
 
   // The App Feedback page — feedback on the tool itself, kept in feedback/.
   // Opening it leaves the process shell mounted underneath; the URL carries
@@ -1428,80 +1462,84 @@ export default function ProcessDocScreen({
               </button>
             </Tooltip>
           )}
-          <Tooltip label="Search (⌘K)">
-            <button
-              className="tb-icon"
-              onClick={() => setPaletteOpen(true)}
-              aria-label="Search"
-            >
-              <IconSearch />
-            </button>
-          </Tooltip>
-          <Tooltip label="Upload document">
-            <button
-              className="tb-icon"
-              onClick={() => setUploadModalOpen(true)}
-              aria-label="Upload document"
-            >
-              <IconUpload />
-            </button>
-          </Tooltip>
-          <Tooltip
-            label={
-              doc.reviewState && !doc.reviewState.done
-                ? `Foundational run · ${doc.reviewState.cursor} / ${doc.reviewState.total}`
-                : doc.ingest || doc.reviewState
-                  ? "Triage"
-                  : "Run foundational walkthrough"
-            }
-          >
-            <button
-              className="tb-icon"
-              onClick={() =>
-                doc.ingest || doc.reviewState
-                  ? setSection("__triage")
-                  : runFoundational()
-              }
-              aria-label="Foundational walkthrough"
-            >
-              <IconRun />
-              {doc.reviewState && !doc.reviewState.done && (
-                <span className="tb-badge">
-                  {doc.reviewState.total - doc.reviewState.cursor}
-                </span>
-              )}
-            </button>
-          </Tooltip>
-          <Tooltip
-            label={
-              linting
-                ? "Running quality check…"
-                : openFindings
-                  ? `Quality review · ${openFindings.length} open finding(s)`
-                  : "Run quality check"
-            }
-          >
-            <button
-              className="tb-icon"
-              onClick={() => (findings ? setSection("__review") : runLint())}
-              disabled={linting}
-              aria-label="Run quality check"
-            >
-              <IconLint />
-              {openFindings && openFindings.length > 0 && (
-                <span className="tb-badge">{openFindings.length}</span>
-              )}
-            </button>
-          </Tooltip>
-          <Tooltip label="Export documentation as PDF">
-            <button
-              className="tb-icon"
-              onClick={() => setExportOpen(true)}
-              aria-label="Export documentation"
-            >
-              <IconExport />
-            </button>
-          </Tooltip>
+          {!draftingNewProcess && (
+            <>
+              <Tooltip label="Search (⌘K)">
+                <button
+                  className="tb-icon"
+                  onClick={() => setPaletteOpen(true)}
+                  aria-label="Search"
+                >
+                  <IconSearch />
+                </button>
+              </Tooltip>
+              <Tooltip label="Upload document">
+                <button
+                  className="tb-icon"
+                  onClick={() => setUploadModalOpen(true)}
+                  aria-label="Upload document"
+                >
+                  <IconUpload />
+                </button>
+              </Tooltip>
+              <Tooltip
+                label={
+                  doc.reviewState && !doc.reviewState.done
+                    ? `Foundational run · ${doc.reviewState.cursor} / ${doc.reviewState.total}`
+                    : doc.ingest || doc.reviewState
+                      ? "Triage"
+                      : "Run foundational walkthrough"
+                }
+              >
+                <button
+                  className="tb-icon"
+                  onClick={() =>
+                    doc.ingest || doc.reviewState
+                      ? setSection("__triage")
+                      : runFoundational()
+                  }
+                  aria-label="Foundational walkthrough"
+                >
+                  <IconRun />
+                  {doc.reviewState && !doc.reviewState.done && (
+                    <span className="tb-badge">
+                      {doc.reviewState.total - doc.reviewState.cursor}
+                    </span>
+                  )}
+                </button>
+              </Tooltip>
+              <Tooltip
+                label={
+                  linting
+                    ? "Running quality check…"
+                    : openFindings
+                      ? `Quality review · ${openFindings.length} open finding(s)`
+                      : "Run quality check"
+                }
+              >
+                <button
+                  className="tb-icon"
+                  onClick={() => (findings ? setSection("__review") : runLint())}
+                  disabled={linting}
+                  aria-label="Run quality check"
+                >
+                  <IconLint />
+                  {openFindings && openFindings.length > 0 && (
+                    <span className="tb-badge">{openFindings.length}</span>
+                  )}
+                </button>
+              </Tooltip>
+              <Tooltip label="Export documentation as PDF">
+                <button
+                  className="tb-icon"
+                  onClick={() => setExportOpen(true)}
+                  aria-label="Export documentation"
+                >
+                  <IconExport />
+                </button>
+              </Tooltip>
+            </>
+          )}
           <Tooltip label="Help">
             <button
               className="tb-icon"
@@ -1788,6 +1826,17 @@ export default function ProcessDocScreen({
                 <span className="contrib-trigger-label">Contributors</span>
                 <span className="contrib-trigger-chevron">›</span>
               </button>
+              <SourcesPanel
+                sources={doc.sources}
+                ingest={doc.ingest}
+                activeFile={
+                  section.startsWith("__doc:")
+                    ? section.slice("__doc:".length)
+                    : null
+                }
+                onOpen={(f) => setSection(`__doc:${f}`)}
+                onUpload={() => setUploadModalOpen(true)}
+              />
               <button
                 type="button"
                 className={`contrib-trigger${
@@ -1805,17 +1854,6 @@ export default function ProcessDocScreen({
                 <span className="contrib-trigger-label">Settings</span>
                 <span className="contrib-trigger-chevron">›</span>
               </button>
-              <SourcesPanel
-                sources={doc.sources}
-                ingest={doc.ingest}
-                activeFile={
-                  section.startsWith("__doc:")
-                    ? section.slice("__doc:".length)
-                    : null
-                }
-                onOpen={(f) => setSection(`__doc:${f}`)}
-                onUpload={() => setUploadModalOpen(true)}
-              />
             </div>
           )}
         </nav>
@@ -2034,6 +2072,27 @@ export default function ProcessDocScreen({
                     ? [String(doc.process.meta.source)]
                     : []
               }
+              onDeleted={() => {
+                // Drop the deleted slug's transcript so a future process
+                // with the same slug doesn't inherit it, then move the user
+                // off the now-defunct process. The workspace lives in
+                // AuthGate's React state (not the URL), so onReturnToSplash
+                // is what flips the view; router.refresh() then re-fetches
+                // the server-rendered `docs` so the splash drops the slug.
+                try {
+                  sessionStorage.removeItem(
+                    `${PM_CHAT_STORE_PREFIX}-${currentSlug}`,
+                  );
+                } catch {
+                  /* storage unavailable — fine */
+                }
+                if (onReturnToSplash) {
+                  onReturnToSplash();
+                  router.refresh();
+                } else {
+                  window.location.href = "/";
+                }
+              }}
             />
           ) : section.startsWith("__doc:") ? (
             (() => {
@@ -2550,8 +2609,10 @@ export default function ProcessDocScreen({
           onRunLint={runLint}
           linting={linting}
           findingCount={openFindings ? openFindings.length : null}
+          showLint={!draftingNewProcess}
           unread={chatUnread}
           getRef={getRef}
+          onRefClick={goToElement}
         />
       </div>
 

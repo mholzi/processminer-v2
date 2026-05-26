@@ -36,6 +36,11 @@ export default function AuthGate({
   const [loaded, setLoaded] = useState(false);
   const [workspace, setWorkspace] = useState<Workspace>("splash");
   const [initialSlug, setInitialSlug] = useState<string | undefined>(undefined);
+  // Bumped each time the user clicks "+ New process" from the splash. The
+  // value itself doesn't matter — ProcessDocScreen watches the prop for a
+  // change and fires the new-process flow on mount/update. Using a counter
+  // means the same user can do create → bail → create again.
+  const [createNewToken, setCreateNewToken] = useState(0);
   // Inner navigation inside the architect workspace. Undefined = inbox view;
   // a slug means the canvas is open for that process.
   const [architectSlug, setArchitectSlug] = useState<string | undefined>(undefined);
@@ -80,6 +85,15 @@ export default function AuthGate({
 
   function enterProcessminer(slug?: string) {
     setInitialSlug(slug);
+    // Clear any pending create intent so opening a recent process doesn't
+    // accidentally re-trigger the new-process flow on remount.
+    setCreateNewToken(0);
+    setWorkspace("processminer");
+  }
+
+  function createNewProcess() {
+    setInitialSlug(undefined);
+    setCreateNewToken((n) => n + 1);
     setWorkspace("processminer");
   }
 
@@ -101,6 +115,7 @@ export default function AuthGate({
         user={user}
         onEnterProcessminer={enterProcessminer}
         onEnterArchitectminer={enterArchitectminer}
+        onCreateProcess={createNewProcess}
         onEnterAdmin={canManageAccess(user) ? enterAdmin : undefined}
         onUserUpdated={setUser}
         onSignOut={handleSignOut}
@@ -152,6 +167,7 @@ export default function AuthGate({
       onEnterAdmin={canManageAccess(user) ? enterAdmin : undefined}
       onSignOut={handleSignOut}
       initialSlug={initialSlug}
+      createNewToken={createNewToken}
       onReturnToSplash={() => setWorkspace("splash")}
     />
   );

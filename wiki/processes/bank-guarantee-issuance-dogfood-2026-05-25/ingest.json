@@ -1,0 +1,265 @@
+{
+  "generatedAt": "2026-05-25T20:57:48.032500+00:00",
+  "slug": "bank-guarantee-issuance-dogfood-2026-05-25",
+  "file": "bank-guarantee-issuance-v1.md",
+  "created": [],
+  "updated": [],
+  "conflicts": [],
+  "corrections": [
+    {
+      "element": "ch-1",
+      "field": "Usage",
+      "removed": "\"The primary intake channel for\" — the document does not rank the Corporate Portal as primary; it presents both the portal and the RM channel as parallel submission options with no stated primacy."
+    },
+    {
+      "element": "ch-1",
+      "field": "Description",
+      "removed": "\"self-service\" — the document does not use this term; removed to stay within explicit document text (\"directly to the bank\" also removed as not stated verbatim)."
+    },
+    {
+      "element": "ch-2",
+      "field": "Usage",
+      "removed": "\"prefer or require staff assistance for application submission\" — the document gives no reason why a client uses the RM channel; invented motivation removed. \"ensuring completeness before submission\" — the document attributes completeness checking to the Trade Finance Officer (step 1), not the Relationship Manager; inaccurate claim removed."
+    },
+    {
+      "element": "cp-1",
+      "field": "Control activity",
+      "removed": "Enumeration of package contents as 'application, facility confirmation, compliance screening result and wording' — the document says only 'assembled package', the specific list is not in the source. Also removed 'before the approval record is finalised' — not in the document."
+    },
+    {
+      "element": "cp-2",
+      "field": "Control activity",
+      "removed": "Invented internal tool mechanics: 'initiates a beneficiary and country check', 'The tool runs an automated match against current sanctions lists and returns a result', 'the Compliance Analyst reviews any hits'. The document only states the Compliance Analyst screens and attaches the result; the automated-match workflow within the tool is not described."
+    },
+    {
+      "element": "cp-3",
+      "field": "owner (fields)",
+      "removed": "'Trade Finance Operations' — the document's C3 entry lists no control owner. Changed to 'Trade Finance Officer', the role identified in step 2 as responsible for the facility check, which is the closest textual support."
+    },
+    {
+      "element": "cp-3",
+      "field": "Control activity",
+      "removed": "'The Trade Finance System automatically compares the guarantee amount requested against the client's available facility limit' — 'automatically compares' is an inference; the document states only that issuance is blocked in the system. Also removed 'if the limit is adequate, the application proceeds to the next step' — not stated in the document."
+    },
+    {
+      "element": "ex-1",
+      "field": "Handling",
+      "removed": "for limit review and, where appropriate, a limit increase. The issuance process is suspended until the Credit Team resolves the facility shortfall and sufficient limit is confirmed available."
+    },
+    {
+      "element": "ex-1",
+      "field": "Impact",
+      "removed": "potentially delaying underlying commercial contracts."
+    },
+    {
+      "element": "ex-2",
+      "field": "Description",
+      "removed": "The hit may be a true match or a false positive requiring investigation before the process can continue."
+    },
+    {
+      "element": "ex-2",
+      "field": "Handling",
+      "removed": "The analyst assesses whether the hit is a true match or false positive. A true match results in the application being declined; a false positive is cleared and the application resumes."
+    },
+    {
+      "element": "m-1",
+      "field": "Definition",
+      "removed": "Reworded to remove invented framing ('elapsed time in business days' as an explicit metric definition, 'sanctions screening hit' — document says 'screening hit'). Kept only the paraphrase directly traceable to §Standard service level."
+    },
+    {
+      "element": "m-1",
+      "field": "Why it matters",
+      "removed": "Removed unsupported claims: 'primary service-level commitment to clients', 'principal indicator of whether the process is running efficiently', and the invented causal framing 'A gap between target and actual would signal systemic bottlenecks'. Replaced with direct paraphrase of §Known pain points which is the only relevant evidence in the document."
+    },
+    {
+      "element": "pp-1",
+      "field": "Impact",
+      "removed": "Claims that stalls consume 'Trade Finance Officer time on follow-up' and 'degrad[e] the client experience' are not stated in the document. The phrase 'while the Credit team processes a limit increase' was also unsupported (document says the application is routed to Credit, not that Credit processes a limit increase). Block demoted from 'document' to 'proposed' and body trimmed to documented facts only."
+    },
+    {
+      "element": "pp-2",
+      "field": "Root cause",
+      "removed": "Claims that this creates 'an uncontrolled hand-off' and that there is 'no escalation mechanism to drive resolution' are not stated in the document. Block demoted from 'document' to 'proposed'; body rewritten to retain only the document-supported fact (no committed turnaround) plus minimal inference."
+    },
+    {
+      "element": "pp-2",
+      "field": "Impact",
+      "removed": "Claims that applications 'miss the 3-business-day SLA with no reliable estimate available to the client', that this 'reduc[es] trust', and that it increases 'relationship manager effort spent chasing Legal for status updates' are all inferred and not stated in the document. Block was already marked 'proposed'; body rewritten to stay closer to what the document explicitly supports about the SLA scope."
+    },
+    {
+      "element": "ps-1",
+      "field": "Inputs",
+      "removed": "\"(name, country)\" appended to \"Beneficiary details\" — the document lists \"beneficiary details\" without specifying sub-fields at intake"
+    },
+    {
+      "element": "ps-1",
+      "field": "Outputs",
+      "removed": "\"in the Trade Finance System\" from \"Validated and complete application record in the Trade Finance System\" — the document does not state the application is recorded in the TFS at the intake step"
+    },
+    {
+      "element": "ps-2",
+      "field": "provenance.Why it matters",
+      "removed": "source changed from \"document\" to \"proposed\" — the document does not contain the reasoning about unmanaged credit risk or over-limit issuances; it only states the limit check occurs and the most common delay reason"
+    },
+    {
+      "element": "ps-2",
+      "field": "provenance.Inputs",
+      "removed": "source changed from \"document\" to \"proposed\" — document does not explicitly list these as inputs at this step; \"Client's current facility limit and utilisation data in the Trade Finance System\" is inferred from C3 context"
+    },
+    {
+      "element": "ps-2",
+      "field": "Inputs",
+      "removed": "\"Client's current facility limit and utilisation data in the Trade Finance System\" — document does not state the TFS is queried at this step; item retained in simplified form"
+    },
+    {
+      "element": "ps-3",
+      "field": "What happens",
+      "removed": "\"The Trade Finance Officer manages the handover to Legal and tracks the review to completion\" — not stated in the document"
+    },
+    {
+      "element": "ps-3",
+      "field": "provenance.What happens",
+      "removed": "source remains \"document\" but text trimmed to remove the unsupported TFO-tracking sentence"
+    },
+    {
+      "element": "ps-3",
+      "field": "Inputs",
+      "removed": "\"Underlying commercial contract (to verify wording alignment)\" — the document lists the commercial contract reference as an application field but does not state it is used for wording alignment in this step"
+    },
+    {
+      "element": "ps-4",
+      "field": "provenance.Outputs",
+      "removed": "source corrected from \"proposed\" to \"document\" — the screening result being attached is supported by C2; suspension on hit is supported by Step 4"
+    },
+    {
+      "element": "ps-4",
+      "field": "Why it matters",
+      "removed": "\"reputational damage\" — not stated in the document; regulatory penalties are implied by the sanctions/AML obligations but reputational damage is an inference"
+    },
+    {
+      "element": "ps-5",
+      "field": "What happens",
+      "removed": "\"— including the credit check confirmation, approved wording and clear sanctions screening result —\" enumeration of package contents — the document says \"the assembled package\" without enumerating contents at this step"
+    },
+    {
+      "element": "ps-5",
+      "field": "provenance.Inputs",
+      "removed": "source changed from \"document\" to \"proposed\" — the specific inputs listed are inferred; document only references \"the assembled package\""
+    },
+    {
+      "element": "ps-5",
+      "field": "Inputs",
+      "removed": "\"Trade Finance System approval workflow\" — not mentioned in the document as an input; removed"
+    },
+    {
+      "element": "ps-6",
+      "field": "Inputs",
+      "removed": "\"Beneficiary bank SWIFT details\" — document mentions SWIFT transmission but does not list this as an explicit input; removed"
+    },
+    {
+      "element": "ps-6",
+      "field": "Inputs",
+      "removed": "\"Facility utilisation data in the Trade Finance System\" — document does not list this as an input at generation step; removed"
+    },
+    {
+      "element": "ps-6",
+      "field": "provenance.Inputs",
+      "removed": "source changed from \"document\" to \"proposed\" — specific inputs are inferred; only the outputs (generated instrument, SWIFT, facility update) are document-supported"
+    },
+    {
+      "element": "reg-1",
+      "field": "What it requires",
+      "removed": "\"screening parties against applicable sanctions lists\" — document screens only the beneficiary and beneficiary's country, not \"parties\" generically; corrected to match document wording"
+    },
+    {
+      "element": "reg-1",
+      "field": "Why it applies",
+      "removed": "\"including cross-border counterparties\" and \"that apply to financial institutions' trade finance activities\" — neither phrase appears in the document; the block is trimmed to what the document supports and demoted to proposed"
+    },
+    {
+      "element": "reg-2",
+      "field": "What it requires",
+      "removed": "\"governing the form, terms and handling of demand guarantees\" — characterisation of URDG 758 scope not stated in the document"
+    },
+    {
+      "element": "reg-2",
+      "field": "Why it applies",
+      "removed": "\"as the governing international rules for demand guarantees\" — characterisation of URDG 758 not stated in the document"
+    },
+    {
+      "element": "reg-2",
+      "field": "How it is met",
+      "removed": "\"Guarantee wording is reviewed — standard wording is pre-aligned and bespoke wording is reviewed by the Legal team — to ensure conformance with URDG 758 requirements before issuance.\" — document describes Legal review of bespoke wording (step 3) but does not connect this to URDG 758; entire block replaced with a declared gap"
+    },
+    {
+      "element": "role-1",
+      "field": "Responsibility",
+      "removed": "\"Owns\" replaced with \"Responsible for\" — document does not use ownership language; also removed \"triggers SWIFT transmission\" paraphrase in In this process block, replaced with document wording \"the guarantee is transmitted\"."
+    },
+    {
+      "element": "role-1",
+      "field": "In this process",
+      "removed": "\"triggers SWIFT transmission to the beneficiary's bank\" — document says \"transmitted to the beneficiary's bank via SWIFT\" (passive; no \"triggers\"). Rewritten to match source."
+    },
+    {
+      "element": "role-2",
+      "field": "In this process",
+      "removed": "\"Acts as the mandatory four-eyes control owner for all guarantees regardless of amount\" — the phrase \"regardless of amount\" is not stated in the document. Removed \"regardless of amount\"."
+    },
+    {
+      "element": "role-3",
+      "field": "Responsibility",
+      "removed": "\"Provides senior oversight and\" — \"senior oversight\" is not stated in the document; document only states additional approval authority for guarantees above EUR 5 million."
+    },
+    {
+      "element": "role-3",
+      "field": "In this process",
+      "removed": "\"providing a second sign-off before the Trade Finance Manager finalises issuance\" — document does not specify this sequence between HoTF and Manager sign-offs. Replaced with \"providing an additional sign-off alongside the Trade Finance Manager\". Also removed \"For standard-value guarantees this role is not involved\" — not explicitly stated in document (only implied by \"additionally\")."
+    },
+    {
+      "element": "role-4",
+      "field": "Responsibility",
+      "removed": "\"AML compliance screening\" and \"ensuring no guarantee is issued to a sanctioned beneficiary\" — AML is referenced in regulatory context not the roles section; the second phrase is not explicitly stated. Simplified to \"sanctions and compliance screening\" matching document wording."
+    },
+    {
+      "element": "role-5",
+      "field": "Responsibility",
+      "removed": "\"Manages guarantee facility limits\" — document only states Credit team handles limit increases when facility is insufficient; general limit management is not stated."
+    },
+    {
+      "element": "role-5",
+      "field": "In this process",
+      "removed": "\"to assess and action a limit increase before issuance can continue\" — \"assess and action\" is editorial inference. Replaced with document-grounded statement that the application is parked and routed to the Credit Team."
+    },
+    {
+      "element": "role-6",
+      "field": "Responsibility",
+      "removed": "\"to ensure legal sufficiency and compliance with the bank's obligations\" — document says only \"review and sign-off\"; reasons for review are not stated."
+    },
+    {
+      "element": "role-6",
+      "field": "In this process",
+      "removed": "\"reviews it for legal acceptability\" — document says \"review and sign-off\"; \"legal acceptability\" is an inference not present in the source."
+    },
+    {
+      "element": "sys-1",
+      "field": "Purpose",
+      "removed": "\"web application\" — the document does not describe the Corporate Portal as a web application; removed 'web' to stay within what the document supports."
+    },
+    {
+      "element": "sys-2",
+      "field": "Purpose",
+      "removed": "\"issuance\" qualifier before \"approvals\" — the document says 'approvals and facility utilisation'; 'issuance approvals' is a slight overstatement not present verbatim; reverted to document wording."
+    },
+    {
+      "element": "sys-3",
+      "field": "Purpose",
+      "removed": "\"Automated tool\" (document does not say the tool is automated), \"AML watchlists\" (document does not describe the tool as screening against AML watchlists; only the regulatory context mentions AML), \"parties\" broadened the scope beyond what the document says (document specifies 'beneficiary and the beneficiary's country'). Purpose block rewritten to document-supported text; provenance demoted to 'proposed'."
+    },
+    {
+      "element": "sys-4",
+      "field": "Purpose",
+      "removed": "\"Global financial messaging network\", \"secure\", \"interbank\", \"payment and trade finance instruments\" — none of these descriptors appear in the document. The document only states SWIFT is used for transmission of the executed guarantee to the beneficiary's bank. Purpose block rewritten to document-supported text; provenance demoted to 'proposed'."
+    }
+  ]
+}

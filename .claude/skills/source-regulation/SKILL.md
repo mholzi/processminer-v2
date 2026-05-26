@@ -58,52 +58,104 @@ Use the process's `jurisdiction` field in `index.md` as the scope hint — the
 regulation that governs the process's home jurisdiction, plus the international
 standards (e.g. Basel for banking) that flow into it.
 
-## Step 2 — Scan the regulatory landscape
+## Step 2 — Pick in-scope regulatory domains
 
 Before the first write, clear the run manifest —
 `python3 scripts/wiki/reset_manifest.py <slug>`. Every element you write is
-logged to it; Step 3's report counts are read back from the manifest, not
-tallied from memory.
+logged to it; the report counts are read back from the manifest, not tallied
+from memory.
 
-Web-search for the regulation, supervisory rules and guidance that govern this
-process. Work across the regulatory domains that bear on it — for a banking
-process that typically means some of:
+Pick the regulatory domains that bear on *this* process — typically 3–5 of:
 
 - **Prudential** — capital, liquidity, large exposures (CRR/CRD, Basel).
-- **Financial crime** — sanctions, anti-money-laundering, KYC.
-- **Conduct & consumer protection** — disclosure, fair treatment, complaints.
-- **Operational risk & governance** — MaRisk, segregation of duties, outsourcing.
-- **Data, records & reporting** — record-keeping, audit trail, regulatory
+- **Financial Crime** — sanctions, anti-money-laundering, KYC.
+- **Conduct & Consumer Protection** — disclosure, fair treatment, complaints.
+- **Operational Risk & Governance** — MaRisk, segregation of duties, outsourcing.
+- **Data, Records & Reporting** — record-keeping, audit trail, regulatory
   reporting.
 
-Search for **named** regulations and the supervisory body behind them (BaFin,
-ECB, EBA, the EU institutions). Write one `regulation` element per material
-obligation that genuinely applies to *this* process:
+Write the outline to `/tmp/<slug>-regulation-outline.json`:
 
-- Blocks: *What it requires* — the obligation it imposes on the process; *Why
-  it applies* — why it is in scope for this process; *How it is met* — the
-  controls and process steps that satisfy it, naming existing `control` ids
-  where the mapping is clear, or noting that it is to be confirmed with the SME.
-- Frontmatter: `domain:` the regulatory domain (e.g. "Financial Crime",
-  "Operational Risk"); `source:` the regulation's name or the citing
-  publication; `sourceUrl:` the page you drew it from. (`asOf:` is auto-stamped
-  by `write_element.py` — leave it out.)
-- Where a regulation is clearly satisfied by an existing control, record the
-  link on the **control**: patch that control's `regulatedBy` to add this
-  regulation's id (`patch_element.py --list`). A regulation has no `controls`
-  field — its control list is the derived reverse of `control.regulatedBy`.
-- Write all the regulations **in one batch** — a manifest
-  `{ "slug": "<slug>", "elements": [ … ] }` of `write_element.py` specs
-  (`status: draft`, `confidence: medium`; `low` if thinly evidenced) — with
-  `python3 scripts/wiki/write_elements.py /tmp/<slug>-regulations.json`, then
-  `python3 scripts/wiki/check_conformance.py <slug>`; fix any flagged element
-  and re-run it.
+    { "slug": "<slug>",
+      "jurisdiction": "<jurisdiction from index.md>",
+      "domains": ["Prudential", "Financial Crime", …] }
+
+Skip a domain that plainly does not apply (e.g. *Conduct & Consumer Protection*
+for a wholesale-only correspondent-banking process) and say so in the Step 5
+report.
+
+## Step 3 — Fan out per domain
+
+The five domains are independent web-research streams, so scan them
+**concurrently**: in a single message, dispatch **one sub-agent per in-scope
+domain** with the Task tool and wait for all of them.
+
+Give each sub-agent this brief, filling in its domain:
+
+> You are sourcing the **{domain}** regulations that govern process `<slug>`
+> (jurisdiction **{jurisdiction}**). Read
+> `/tmp/<slug>-regulation-outline.json` for context, then
+> `wiki/processes/<slug>/index.md`, the documented As-Is (`process-steps`,
+> `roles`, `exceptions`) and the existing `controls` so you can map a
+> regulation to the control that satisfies it. Read existing `regulation`
+> elements so you do not duplicate one. Run `python3
+> scripts/wiki/show_template.py regulation` for the element's shape.
+> Web-search for **named** {domain} regulations, supervisory rules and
+> guidance that apply to this process — name the supervisory body (BaFin,
+> ECB, EBA, the EU institutions, etc.). Stay within **{domain}** only; the
+> parent dispatched separate sub-agents for the other domains. Draft one
+> `write_element.py` spec per material obligation: blocks *What it requires*
+> / *Why it applies* / *How it is met* (name existing `control` ids where the
+> mapping is clear, or note it is to be confirmed with the SME); frontmatter
+> `domain: "{domain}"`, `source:`, `sourceUrl:`; `status: draft`,
+> `confidence: medium` (`low` if thinly evidenced); a `provenance` map, one
+> entry per block heading, every entry `{ "source": "web", "evidence": "<url>
+> — \"<snippet>\" — fetched <date>" }`. Give each spec a `tempKey` prefixed
+> with the domain slug (e.g. `"prudential-1"`, `"financial-crime-1"`) so keys
+> never collide between domains. Name **real** regulations and cite **real**
+> sources; never invent one. A handful of genuine obligations per domain,
+> not a dump. You are **read-only** — do not write or run any write script.
+> Return **only** a JSON array of the draft specs.
+
+Collect the arrays and hold the drafts for the Step 4 batch write.
+
+## Step 4 — Merge and write the batch
+
+Concatenate every sub-agent's array into one manifest
+`{ "slug": "<slug>", "elements": [ … ] }`, each spec omitting `id`. The
+batch writer's dedup gate blocks `(regulation, lowercase name)` duplicates
+across domains, but skim the merged list yourself and drop the obvious
+overlap (a sub-agent in *Operational Risk* and one in *Data, Records &
+Reporting* will both reach for outsourcing-record obligations) — a duplicate
+caught here is one less correction in Step 5. Write
+`/tmp/<slug>-regulations.json`, run `python3 scripts/wiki/write_elements.py
+/tmp/<slug>-regulations.json`, then `python3
+scripts/wiki/check_conformance.py <slug>`; fix any flagged element and
+re-run.
+
+Where a regulation is clearly satisfied by an existing control, record the
+link on the **control**: patch that control's `regulatedBy` to add this
+regulation's id (`patch_element.py --list`). A regulation has no `controls`
+field — its control list is the derived reverse of `control.regulatedBy`.
+Sequential is fine here — one patch per regulation-to-control link.
+
+**Every regulation must be either mapped to a control or explicitly flagged
+as having none.** Walk the merged manifest a second time after the control
+patches: any `REG-*` that finished Step 4 with zero existing controls
+referencing it back is a coverage gap an auditor lands on first. For each
+such regulation, append a one-line note to the element's `How it is met`
+block — verbatim shape: *"No control currently documented for this
+obligation — coverage gap, to be addressed by the Control & Compliance
+Specialist."* Use `patch_element.py --block "How it is met" …` so it
+auto-flips that heading to `proposed` and the element becomes
+non-approvable until a real control lands. This is the brake on the
+"`status: draft`, link empty, looks fine in the list view" failure mode.
 
 Name **real** regulations and cite **real** sources — never invent a regulation
-or a citation. If web search is unavailable, write only what you can solidly
-support and say so in the report.
+or a citation. If web search is unavailable in a sub-agent's environment, tell
+it to write only what it can solidly support and say so in the report.
 
-## Step 3 — Report
+## Step 5 — Report
 
 Run `python3 scripts/wiki/source_report.py <slug>` — it reads the run manifest
 and prints how many elements were written, per type. Read the `regulation`

@@ -6,9 +6,16 @@ challenging each. This script owns wiki/processes/<slug>/review-state.json —
 the resumable record of the ordered queue and the current position, so a run
 can be stopped and picked up later.
 
-  review_cursor.py build   <slug>   build the As-Is queue, cursor at 0
-  review_cursor.py status  <slug>   report the current item / position
-  review_cursor.py advance <slug>   move the cursor forward one
+  review_cursor.py build   <slug>                        build the As-Is queue, cursor at 0
+  review_cursor.py status  <slug>                        report the current item / position
+  review_cursor.py advance <slug> --outcome {Y|E|D|M}    move the cursor forward one
+
+The `--outcome` flag on `advance` records the SME's decision and enforces the
+contract: a Y or E advance requires the just-walked element to be stamped
+`approval: approved`. Without it, advance fails with a clear error — that's
+the brake that catches an [E] which saved content but never called
+`set_approval.py`. D (deep dive) and M (move on) leave the element as-is
+and are accepted without an approval check.
 
 review-state.json:
   { slug, queue:[ids], cursor, total, done, startedAt, updatedAt }
@@ -119,10 +126,57 @@ def report(state: dict) -> None:
     print(json.dumps(out, ensure_ascii=False))
 
 
+def _approval_of(slug: str, eid: str) -> str:
+    """Read the `approval` frontmatter field of element <eid> in <slug>.
+    Returns "" if the file doesn't exist or has no approval field. Looks at
+    both the process index (when eid is the process id) and the element files.
+    """
+    proc_dir = WIKI_DIR / slug
+    if not proc_dir.is_dir():
+        return ""
+    # The process overview lives at index.md and carries the process id.
+    idx = proc_dir / "index.md"
+    if idx.is_file():
+        meta, _ = parse_frontmatter(idx.read_text(encoding="utf-8"))
+        if str(meta.get("id", "")) == eid:
+            return str(meta.get("approval", "")).strip()
+    for _path, meta, _body in iter_elements(slug):
+        if str(meta.get("id", "")) == eid:
+            return str(meta.get("approval", "")).strip()
+    return ""
+
+
 def main(argv: list[str]) -> None:
-    if len(argv) != 2 or argv[0] not in ("build", "status", "advance"):
-        sys.exit("usage: review_cursor.py <build|status|advance> <slug>")
-    cmd, slug = argv
+    # Parse advance's optional --outcome flag while keeping the simple
+    # positional shape of build / status.
+    outcome: str | None = None
+    rest: list[str] = []
+    i = 0
+    while i < len(argv):
+        if argv[i] == "--outcome" and i + 1 < len(argv):
+            outcome = argv[i + 1].upper().strip()
+            i += 2
+        else:
+            rest.append(argv[i])
+            i += 1
+    if len(rest) != 2 or rest[0] not in ("build", "status", "advance"):
+        sys.exit(
+            "usage: review_cursor.py <build|status|advance> <slug> "
+            "[--outcome {Y|E|D|M}]"
+        )
+    cmd, slug = rest
+
+    if cmd == "advance":
+        if outcome is None:
+            sys.exit(
+                "error: 'advance' requires --outcome {Y|E|D|M}. Y/E mean the "
+                "element was approved and the cursor may move; D/M record "
+                "deep-dive or move-on without an approval check."
+            )
+        if outcome not in {"Y", "E", "D", "M"}:
+            sys.exit(
+                f"error: --outcome must be one of Y, E, D, M (got '{outcome}')"
+            )
 
     if not (WIKI_DIR / slug).is_dir():
         sys.exit(f"error: no process at wiki/processes/{slug}/")
@@ -149,6 +203,21 @@ def main(argv: list[str]) -> None:
         sys.exit(f"error: no review-state.json for {slug} — run 'build' first")
 
     if cmd == "advance":
+        # For Y/E, refuse to advance unless the just-walked element is
+        # actually approved. Catches the "edited but never called
+        # set_approval.py" failure mode that left elements in `draft`
+        # state while the cursor sailed past them.
+        if outcome in {"Y", "E"} and state["cursor"] < len(state["queue"]):
+            current = state["queue"][state["cursor"]]
+            approval = _approval_of(slug, current)
+            if approval != "approved":
+                sys.exit(
+                    f"error: cannot advance after [{outcome}] — element "
+                    f"'{current}' has approval='{approval or '(unset)'}', "
+                    "not 'approved'. Run set_approval.py before advancing, "
+                    "or pick [M] (move-on) if the element legitimately "
+                    "stays in-progress."
+                )
         if state["cursor"] < len(state["queue"]):
             state["cursor"] += 1
         state["done"] = state["cursor"] >= len(state["queue"])

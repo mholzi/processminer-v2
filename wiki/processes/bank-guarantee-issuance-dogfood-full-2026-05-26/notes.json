@@ -1,0 +1,42 @@
+{
+  "PS-BGID-001": [
+    {
+      "id": "n-1779778544956-76t7v",
+      "author": "admin",
+      "text": "Reviewer challenge: the intake step does not name the return-path turnaround. Is the SME-supplied \"usually same day\" formal or aspirational? Worth promoting to a real SLA.",
+      "ts": "2026-05-26T06:55:44.956Z"
+    }
+  ],
+  "PS-BGID-003": [
+    {
+      "id": "n-1779790564976-ujjxy",
+      "author": "admin",
+      "text": "The step says Legal returns wording 'within SLA' but doesn't name what the SLA is. Real desks have a 2-business-day standard for bespoke wording but Legal often misses it without anyone tracking the breach. Either set the SLA here (2 BD) or link to wherever it's owned — leaving it implicit is exactly why FP-BGID-002 (no queue visibility) exists.",
+      "ts": "2026-05-26T10:16:04.000Z",
+      "resolved": true
+    },
+    {
+      "id": "n-1779790665090-nmif1",
+      "author": "Process Specialist",
+      "text": "Process Specialist — comment-review summary.\n\nComment incorporated. The reviewer correctly identified that the sla field was blank and the step body described \"no committed turnaround\" without naming any convention. Agreed change applied:\n\n— sla field set to: \"2 business days (bespoke wording — informal desk convention; not tracked in TFS)\"\n— \"What happens\" block updated: the final sentence now reads \"Legal review operates against an informal 2-business-day desk convention, though this target is not committed to the client, not tracked in TFS, and carries no escalation trigger when breached.\"\n\nThe wording deliberately distinguishes informal convention from a formally committed SLA, preserving the accuracy of FP-BGID-001 (\"no committed turnaround\") and FP-BGID-002 (\"no committed or communicated SLA\") — both friction points remain valid because the 2-BD convention is neither committed nor communicated to clients.\n\nImplicated elements to watch:\n— TD-BGID-002 and ASM-BGID-003: the target-state assumption commits Legal to a 5-business-day formal SLA, which is more conservative than the 2-BD informal As-Is convention. Recommend confirming with Legal whether a 5-BD target is intentional (e.g. to accommodate complex cases) or whether the As-Is 2-BD convention should inform a tighter target-state commitment.\n— PP-BGID-002: root cause references \"no SLA\" — still accurate for the As-Is; no edit needed.\n\nPS-BGID-003 remains in-progress pending SME re-approval on the card.",
+      "ts": "2026-05-26T10:17:45.000Z",
+      "resolved": true
+    }
+  ],
+  "CP-BGID-001": [
+    {
+      "id": "n-1779790564979-i4jrx",
+      "author": "admin",
+      "text": "This control says Trade Finance Manager approves — but in the four guarantee desks I've reviewed across BNP, UniCredit and our own bank, the approval ceiling matters: above EUR 5m (or 2m post-conflict-update) it goes to Head of Trade Finance not the Manager. Does the control document handle that ceiling, or is it relying on TFS routing alone? Audit Finding AF-BGID-002 (BaFin MaRisk gap on four-eyes timestamp) suggests the latter.",
+      "ts": "2026-05-26T10:16:04.000Z"
+    }
+  ],
+  "II-BGID-001": [
+    {
+      "id": "n-1779790564982-qs28e",
+      "author": "admin",
+      "text": "Linking IR-BGID-002 (EU AI Act high-risk classification) — has anyone checked whether a screener that suggests legal-language changes lands in Annex III of the AI Act? If yes, the timeline assumption in TD-BGID-002 needs human-in-the-loop documentation, conformance assessment, and CE marking before go-live. That's 6+ months on top of build.",
+      "ts": "2026-05-26T10:16:04.000Z"
+    }
+  ]
+}

@@ -1,0 +1,459 @@
+{
+  "generatedAt": "2026-05-25T20:11:11.554260+00:00",
+  "slug": "sepa-payments",
+  "file": "sepa-payments-dtp-mockup.md",
+  "created": [
+    "CP-SP-003",
+    "CP-SP-004",
+    "CP-SP-005",
+    "CP-SP-006",
+    "CP-SP-007",
+    "CP-SP-008",
+    "EX-SP-001",
+    "EX-SP-002",
+    "EX-SP-003",
+    "EX-SP-004",
+    "EX-SP-005",
+    "EX-SP-006",
+    "EX-SP-007",
+    "M-SP-001",
+    "M-SP-002",
+    "M-SP-003",
+    "M-SP-004",
+    "M-SP-005",
+    "M-SP-006",
+    "PG-SP-001",
+    "PG-SP-002",
+    "PG-SP-003",
+    "PG-SP-004",
+    "PG-SP-005",
+    "CP-SP-009",
+    "CP-SP-010",
+    "PS-SP-001",
+    "PS-SP-002",
+    "PS-SP-003",
+    "PS-SP-004",
+    "PS-SP-005",
+    "PS-SP-006",
+    "PS-SP-007",
+    "PS-SP-008",
+    "PS-SP-009",
+    "PS-SP-010",
+    "ROLE-SP-001",
+    "ROLE-SP-002",
+    "ROLE-SP-003",
+    "ROLE-SP-004",
+    "ROLE-SP-005",
+    "SYS-SP-001",
+    "SYS-SP-002",
+    "SYS-SP-003",
+    "SYS-SP-004",
+    "SYS-SP-005",
+    "SYS-SP-006",
+    "SYS-SP-007"
+  ],
+  "updated": [],
+  "conflicts": [],
+  "corrections": [
+    {
+      "element": "cp-2",
+      "field": "body.What it checks",
+      "removed": "Enumerated matching fields '(same debtor, creditor IBAN, amount, and remittance reference)' \u2014 the document states only 'duplicate of one seen in the last 24 hours' without specifying which fields define a match."
+    },
+    {
+      "element": "cp-2",
+      "field": "body.Control activity",
+      "removed": "Phrase 'on key identifiers' \u2014 no matching-field criteria are stated in the document."
+    },
+    {
+      "element": "cp-3",
+      "field": "body.Control activity",
+      "removed": "Phrase 'in real time' from the Core Banking System query \u2014 the document does not state the funds check is performed in real time."
+    },
+    {
+      "element": "cp-4",
+      "field": "body.What it checks",
+      "removed": "Phrase 'to identify transactions matching known financial-crime patterns or watchlist entries' \u2014 this elaboration on AML monitoring is not stated in the document."
+    },
+    {
+      "element": "cp-4",
+      "field": "body.Timing",
+      "removed": "Phrase 'in real time per instruction' \u2014 the document does not explicitly state sanctions screening latency; only automated/every-item frequency is stated."
+    },
+    {
+      "element": "cp-5",
+      "field": "body.What it checks",
+      "removed": "Phrases 'behavioural and transactional risk models' and 'characteristics inconsistent with the account's normal payment patterns' \u2014 the document only states the fraud engine scores payments in real time; no model details are given."
+    },
+    {
+      "element": "cp-6",
+      "field": "body.Control activity",
+      "removed": "Sentence 'The initiating Payments Operations staff member cannot be the same person as the approver' \u2014 this is inference from the 4-eyes label and is not stated in the document."
+    },
+    {
+      "element": "ex-1",
+      "field": "blocks.Handling",
+      "removed": "'scheme-standard' qualifier on reason code \u2014 document says 'a reason code' only; 'No funds are held and no booking is made' \u2014 not stated in document, inferred from step ordering"
+    },
+    {
+      "element": "ex-1",
+      "field": "blocks.Impact",
+      "removed": "'for corporate bulk-file submissions a single bad record may block reprocessing of the entire file' \u2014 not stated in document for E-1"
+    },
+    {
+      "element": "ex-2",
+      "field": "blocks.Handling",
+      "removed": "'immediately' timing qualifier on single-payment rejection \u2014 not stated in document; 'rather than rejected outright' \u2014 document does not explicitly contrast the two paths"
+    },
+    {
+      "element": "ex-2",
+      "field": "blocks.Impact",
+      "removed": "'may breach supplier payment terms or incur late-payment penalties' and 'creating a medium financial and reputational risk' \u2014 consequences not stated in document"
+    },
+    {
+      "element": "ex-3",
+      "field": "blocks.Description",
+      "removed": "'against a restricted party or transaction pattern' \u2014 'transaction pattern' framing not stated for confirmed-hit description; 'indicating the payment cannot legally proceed' \u2014 legal characterisation not stated in document"
+    },
+    {
+      "element": "ex-3",
+      "field": "blocks.Handling",
+      "removed": "'the funds hold is maintained' \u2014 not explicitly stated; 'the outcome may be a released payment, a permanent freeze, or a regulatory report (e.g. STR)' \u2014 specific outcomes not stated in document"
+    },
+    {
+      "element": "ex-3",
+      "field": "blocks.Impact",
+      "removed": "'failure to freeze could result in regulatory sanction or criminal liability'; 'Cycle time is indeterminate, potentially weeks'; 'may not be informed of the reason due to tipping-off restrictions' \u2014 none stated in document"
+    },
+    {
+      "element": "ex-4",
+      "field": "blocks.Description",
+      "removed": "'assigns the payment a score above the high-risk threshold' \u2014 threshold language is inference; 'indicating characteristics associated with fraudulent or unauthorised transactions' \u2014 not stated in document"
+    },
+    {
+      "element": "ex-4",
+      "field": "blocks.Handling",
+      "removed": "'(e.g. out-of-band confirmation or additional authentication)' \u2014 verification method examples not stated in document; 'the held funds are returned to the account' \u2014 not explicitly stated for cancellation outcome"
+    },
+    {
+      "element": "ex-4",
+      "field": "blocks.Impact",
+      "removed": "'Prolonged holds without resolution increase operational cost and complaint risk' \u2014 not stated in document"
+    },
+    {
+      "element": "ex-5",
+      "field": "blocks.Handling",
+      "removed": "'automatically' \u2014 not stated; 'with an explanation and reason code' \u2014 'reason code' not stated for E-5 (only stated for E-1)"
+    },
+    {
+      "element": "ex-5",
+      "field": "blocks.Impact",
+      "removed": "'During periods of RT1 instability, fallback volume can surge, increasing STEP2 batch size near cut-off' \u2014 not stated in document"
+    },
+    {
+      "element": "ex-6",
+      "field": "blocks.Description",
+      "removed": "'received from the beneficiary bank or from the CSM' \u2014 originator of R-transaction not stated in document"
+    },
+    {
+      "element": "ex-6",
+      "field": "blocks.Handling",
+      "removed": "'using the end-to-end reference' \u2014 matching mechanism not stated in document; 'Complex or disputed recalls may be referred to Compliance or Legal' \u2014 escalation path not stated in document"
+    },
+    {
+      "element": "ex-6",
+      "field": "blocks.Impact",
+      "removed": "'Unmatched R-transactions create reconciliation breaks requiring manual investigation' \u2014 not stated in document"
+    },
+    {
+      "element": "ex-7",
+      "field": "blocks.Handling",
+      "removed": "'automatically' \u2014 not stated in document; 'No resubmission is required' \u2014 not stated in document"
+    },
+    {
+      "element": "ex-7",
+      "field": "blocks.Impact",
+      "removed": "'increases for corporate customers with end-of-day treasury deadlines or supplier payment terms; late-payment penalties may result' \u2014 not stated in document"
+    },
+    {
+      "element": "m-1",
+      "field": "provenance.Why it matters",
+      "removed": "Source was 'document'; demoted to 'proposed'. Claims 'scheme non-compliance' and 'regulatory standing' are not stated in the source document."
+    },
+    {
+      "element": "m-1",
+      "field": "body.Why it matters",
+      "removed": "Removed 'triggers scheme non-compliance' and 'regulatory standing' as unsupported. Retained only E-5 fallback reference, which is supported by Section 6 Exception E-5."
+    },
+    {
+      "element": "m-2",
+      "field": "provenance.Why it matters",
+      "removed": "Source was 'document'; demoted to 'proposed'. Claims 'SEPA rulebook obligation', 'bottlenecks in validation, screening, or hub throughput', and 'expose the bank to client complaints' are not stated in the source document."
+    },
+    {
+      "element": "m-2",
+      "field": "body.Why it matters",
+      "removed": "Removed 'baseline client expectation and a SEPA rulebook obligation', 'bottlenecks', and 'client complaints' as unsupported. Rewritten to reflect only what the document explicitly states."
+    },
+    {
+      "element": "m-3",
+      "field": "provenance.Why it matters",
+      "removed": "Source was 'document'; demoted to 'proposed'. The document references the SEPA rulebook only as a label in the SLA target; it does not state D+1 is a 'regulatory obligation' nor does it describe 'supervisory scrutiny' as a failure consequence."
+    },
+    {
+      "element": "m-3",
+      "field": "body.Why it matters",
+      "removed": "Removed 'regulatory obligation under the EPC SCT rulebook' and 'potential supervisory scrutiny' as unsupported. Rewritten to accurately describe what the document states."
+    },
+    {
+      "element": "m-4",
+      "field": "provenance.Why it matters",
+      "removed": "Source was 'document'; demoted to 'proposed'. Claims 'interest-bearing delays for clients' and 'leading indicator of operational staffing pressure' are not stated in the source document."
+    },
+    {
+      "element": "m-4",
+      "field": "body.Why it matters",
+      "removed": "Removed 'interest-bearing delays for clients' and 'leading indicator of operational staffing pressure' as unsupported. Retained only the R-transaction scheme-deadline point, traceable to Exception E-6."
+    },
+    {
+      "element": "m-5",
+      "field": "provenance.Why it matters",
+      "removed": "Source was 'document' but had no evidence strings; corrected to 'document' with proper evidence. Claim 'financial penalties and loss of scheme participation rights' removed from body as not stated in source document."
+    },
+    {
+      "element": "m-5",
+      "field": "body.Why it matters",
+      "removed": "Removed 'financial penalties and loss of scheme participation rights' as not stated anywhere in the source document. Rewritten to reference only what the document explicitly states about scheme deadlines."
+    },
+    {
+      "element": "m-5",
+      "field": "body.Definition",
+      "removed": "Removed 'confirming the recall outcome' (elaboration not in document). Rewritten to match document language: 'funds re-credited or recall actioned within scheme deadlines' (Exception E-6)."
+    },
+    {
+      "element": "m-6",
+      "field": "body.Why it matters",
+      "removed": "Removed 'elevated risk due to screening queues' and 'capacity planning' as unsupported inferences. Retained E-7 reference (explicitly in document Section 6) and same-day vs D+1 boundary point."
+    },
+    {
+      "element": "pg-1",
+      "field": "body.The gap",
+      "removed": "Reference to 'EPC' as the specific governing body \u2014 the document does not name EPC in the context of the limit ceiling; rewritten to 'scheme-level maximum' to match the document's own phrasing in \u00a710"
+    },
+    {
+      "element": "pg-1",
+      "field": "body.Next step",
+      "removed": "Reference to 'EPC scheme maximum' \u2014 rewritten to 'scheme maximum' to match document language"
+    },
+    {
+      "element": "pg-1",
+      "field": "provenance.Impact.source",
+      "removed": "Source was 'document' with no evidence; Impact content is inference about design consequences \u2014 corrected to 'proposed' with empty evidence"
+    },
+    {
+      "element": "pg-2",
+      "field": "body.Impact",
+      "removed": "Specific consequence claims 'risk of inconsistent processing, incorrect routing of instant-eligible items, and potential SLA breaches or customer complaints' \u2014 these consequences are not stated in the document; rewritten to the undisputed fact that no documented procedure exists"
+    },
+    {
+      "element": "pg-2",
+      "field": "provenance.Impact.source",
+      "removed": "Source was 'document' with no evidence; Impact content is inference \u2014 corrected to 'proposed' with empty evidence"
+    },
+    {
+      "element": "pg-3",
+      "field": "body.Impact",
+      "removed": "'potential SLA breaches' \u2014 not stated in document; removed from impact block"
+    },
+    {
+      "element": "pg-3",
+      "field": "body.Next step",
+      "removed": "'any system-enforced hard stops' \u2014 not mentioned anywhere in source document; removed from next step"
+    },
+    {
+      "element": "pg-3",
+      "field": "provenance.Impact.source",
+      "removed": "Source was 'document' with no evidence; Impact content is inference \u2014 corrected to 'proposed' with empty evidence"
+    },
+    {
+      "element": "pg-4",
+      "field": "provenance.Impact.source",
+      "removed": "Source was 'document' with no evidence; Impact content is inference about design consequences \u2014 corrected to 'proposed' with empty evidence"
+    },
+    {
+      "element": "pg-4",
+      "field": "provenance.Next step.source",
+      "removed": "Source was 'document' with no evidence; 'CSM gateway team' is not a documented role in the source; corrected to 'proposed' with empty evidence. The next step text was also simplified to remove the 'CSM gateway team' role reference."
+    },
+    {
+      "element": "pg-5",
+      "field": "body.Impact",
+      "removed": "'Beneficiary name verification is increasingly required under European payment fraud-prevention frameworks' \u2014 this is external regulatory knowledge not found anywhere in the source document; sentence removed entirely"
+    },
+    {
+      "element": "pg-5",
+      "field": "provenance.Impact.source",
+      "removed": "Source was 'document' with no evidence; Impact content is inference \u2014 corrected to 'proposed' with empty evidence"
+    },
+    {
+      "element": "ps-1",
+      "field": "blocks.Outputs",
+      "removed": "Both output bullets are reasonable inference \u2014 the document confirms the hub receives instructions and they then proceed to validation, but does not explicitly describe an 'instruction record in the payment hub queue' output artefact. Provenance demoted to proposed."
+    },
+    {
+      "element": "ps-1",
+      "field": "blocks.Why it matters",
+      "removed": "Entire block is editorial inference with no supporting passage. Provenance already marked proposed; block retained as proposed content only."
+    },
+    {
+      "element": "ps-2",
+      "field": "blocks.Why it matters",
+      "removed": "Claim that catching bad instructions 'satisfies the SEPA rulebook requirement' is not stated in the document. Provenance already marked proposed; block retained as proposed content only."
+    },
+    {
+      "element": "ps-3",
+      "field": "blocks.Inputs[2]",
+      "removed": "'Intraday limit parameters for the debtor account' \u2014 the document says 'available balance including intraday limits' but does not name these as a discrete input artefact. Retained as reasonable inference; confidence set to medium."
+    },
+    {
+      "element": "ps-3",
+      "field": "blocks.Why it matters",
+      "removed": "Claim that earmarking 'ensures the debit booking in Step 7 will always succeed' is inferential; the document does not state this guarantee. Provenance already marked proposed; block retained as proposed content only."
+    },
+    {
+      "element": "ps-4",
+      "field": "blocks.Why it matters",
+      "removed": "References to 'EU and national AML/CFT frameworks' and the false-positive/client-service trade-off are not stated in the document. Provenance already marked proposed; block retained as proposed content only."
+    },
+    {
+      "element": "ps-5",
+      "field": "blocks.What happens \u2014 'behavioural and transactional signals'",
+      "removed": "The document says the fraud engine scores payments 'in real time' but does not describe the signals used. 'Behavioural and transactional signals' is unsupported invention \u2014 removed from the What happens block."
+    },
+    {
+      "element": "ps-5",
+      "field": "blocks.What happens \u2014 'The Fraud team is accountable and responsible for the screening and hold decision'",
+      "removed": "The draft's original sentence included this attribution. While the RACI table confirms Fraud is A/R for fraud screening, the sentence was redundant given the owner field and has been dropped to keep the narrative block to what the document says about the step itself."
+    },
+    {
+      "element": "ps-5",
+      "field": "blocks.Inputs",
+      "removed": "Draft listed 'customer behaviour signals' and 'Customer profile and transaction history' as explicit inputs. The document does not specify the inputs to the fraud engine beyond the payment instruction itself. Both unsupported items removed; Inputs block demoted to proposed."
+    },
+    {
+      "element": "ps-5",
+      "field": "blocks.Why it matters",
+      "removed": "Claim about 'irrevocably submitted' and the recall cost/reputational damage framing is not in the document. Provenance already marked proposed; block retained as proposed content only."
+    },
+    {
+      "element": "ps-6",
+      "field": "fields.sla",
+      "removed": "'Real-time' prefix \u2014 no SLA is stated in the document for the routing decision step itself; only the 16:00 CET cut-off is documented."
+    },
+    {
+      "element": "ps-6",
+      "field": "blocks.Outputs",
+      "removed": "'Updated payment record with selected rail annotated' \u2014 not stated in the document; removed as unsupported inference."
+    },
+    {
+      "element": "ps-7",
+      "field": "blocks.What happens",
+      "removed": "'The account is debited irrevocably at this point, committing the bank to settle the payment' \u2014 'irrevocably' and 'committing the bank' are editorial assertions not present in the document."
+    },
+    {
+      "element": "ps-7",
+      "field": "blocks.Why it matters",
+      "removed": "Original text: 'makes the bank's payment obligation firm and irrevocable ... prevents double-spend ... booking reference anchors the subsequent reconciliation' \u2014 'irrevocable', 'double-spend prevention', and the specific framing are not stated in the document. Rewritten to what the document supports."
+    },
+    {
+      "element": "ps-7",
+      "field": "blocks.Outputs",
+      "removed": "'Booking reference for reconciliation' \u2014 a booking reference is implied by step 10 but not explicitly described as an output of step 7 in the document; removed to avoid overstatement."
+    },
+    {
+      "element": "ps-7",
+      "field": "fields.sla",
+      "removed": "'Immediate' \u2014 no SLA is stated in the document for the debit booking step itself; rewritten to 'Executed before CSM submission' which is implied by the step sequence."
+    },
+    {
+      "element": "ps-8",
+      "field": "blocks.Why it matters",
+      "removed": "'The pacs.008 submission is the point at which the bank's obligation enters the SEPA scheme and becomes governed by EPC rulebook deadlines' \u2014 this causal/legal framing is not stated in the document."
+    },
+    {
+      "element": "ps-8",
+      "field": "blocks.Outputs",
+      "removed": "'CSM reference number for the submitted payment' \u2014 not mentioned in the document."
+    },
+    {
+      "element": "ps-9",
+      "field": "blocks.Why it matters",
+      "removed": "'creates the evidence record the bank needs for regulatory reporting' \u2014 regulatory reporting is not mentioned in the document in connection with settlement confirmation."
+    },
+    {
+      "element": "ps-9",
+      "field": "blocks.Why it matters",
+      "removed": "'The 10-second SLA for SCT Inst is an EPC rulebook obligation' \u2014 the document does not label the 10-second rule as an 'EPC rulebook obligation' (EPC scheme deadline is only referenced for recall/return); rewritten to 'scheme obligation'."
+    },
+    {
+      "element": "ps-10",
+      "field": "blocks.What happens",
+      "removed": "'Each payment's booking reference is matched against the CSM settlement confirmation' \u2014 the matching mechanism is not described in the document; simplified to what the document states."
+    },
+    {
+      "element": "ps-10",
+      "field": "blocks.Why it matters",
+      "removed": "'Unresolved breaks can indicate operational errors, system failures or fraud, and must be resolved before the next business day' \u2014 neither the causes nor the resolution deadline are stated in the document."
+    },
+    {
+      "element": "ps-10",
+      "field": "blocks.Outputs",
+      "removed": "'Reconciliation sign-off record for audit trail' \u2014 not mentioned in the document."
+    },
+    {
+      "element": "role-3",
+      "field": "blocks.In this process",
+      "removed": "It has no standing involvement in single-payment flows unless an escalation requires senior sign-off. \u2014 Not stated anywhere in the document. The RACI shows only I for all non-bulk steps; no escalation path to Ops Approver for single payments is documented."
+    },
+    {
+      "element": "role-4",
+      "field": "blocks.In this process",
+      "removed": "where a financial crime dimension may apply \u2014 qualifier on the Consulted role for R-transaction handling. The RACI simply assigns C; no such rationale appears in the document."
+    },
+    {
+      "element": "role-5",
+      "field": "blocks.In this process",
+      "removed": "manual (from 'manual review') \u2014 the document says 'held for review'; it does not specify that the review is manual. The word 'manual' was dropped."
+    },
+    {
+      "element": "sys-1",
+      "field": "blocks.Role in this process",
+      "removed": "Draft phrase 'retail and corporate customers' segmented to specific channels (online/mobile for retail, H2H for corporates) \u2014 the document does not restrict retail customers from using H2H or corporates from using online banking. The document says \u00a72 scope covers 'corporate and retail customers' generally and \u00a73 lists channels independently, not mapped to segments. Segment-to-channel mapping removed."
+    },
+    {
+      "element": "sys-2",
+      "field": "blocks.Role in this process",
+      "removed": "Draft claim that the Payment Hub 'receives settlement confirmations' as an explicit role \u2014 the document does not state that the hub receives confirmations; \u00a75.1 step 9 describes settlement completing and customer notification but does not name the Payment Hub as the receiver of CSM confirmations. Removed from the verified text."
+    },
+    {
+      "element": "sys-3",
+      "field": "blocks.Role in this process",
+      "removed": "Draft sentence 'It is also the source of record used during the end-of-day reconciliation step' was removed. \u00a75.1 step 10 states reconciliation is performed against 'CSM settlement reports'; Core Banking is not identified in the document as the source of record for that reconciliation. Removed as unsupported."
+    },
+    {
+      "element": "sys-4",
+      "field": "blocks.Purpose",
+      "removed": "Draft phrase 'and AML watchlists' \u2014 the document names 'sanctions lists' in step 4. While \u00a78 labels the engine 'Real-time sanctions / AML screening', the document never separately names 'AML watchlists' as a distinct list type screened by this engine in-line. Removed to stay within documented scope."
+    },
+    {
+      "element": "sys-5",
+      "field": "blocks.Role in this process",
+      "removed": "Draft phrase 'to routing and booking' appended to the low-risk pass-through path \u2014 not attested by the document, which only says 'Low-risk items pass'. Removed as embellishment."
+    },
+    {
+      "element": "sys-7",
+      "field": "blocks.Role in this process",
+      "removed": "Draft claims that AML Transaction Monitoring definitively operates only post-event and is 'unlike the Sanctions Screening Engine which operates as an in-line pre-execution gate' stated as fact \u2014 but \u00a75.1 step 4 references 'AML transaction monitoring' during active processing, creating ambiguity. The clear assertion of post-event-only operation was rewritten as a characterisation from \u00a78, with the ambiguity flagged for SME clarification. Confidence set to 'medium' and provenance demoted to 'proposed' accordingly."
+    }
+  ]
+}

@@ -85,6 +85,12 @@ npm run dev
 # → http://localhost:3000
 ```
 
+`npm run dev` runs Next with `--max-old-space-size=4096` (4 GB heap) — the
+default Node heap is too small for long, SSE-streamed skill turns alongside
+the spawned `claude` worker, and the dev server will OOM mid-ingest. If
+you're driving a heavy skill (document-ingest on a large doc, foundational-
+run on a 100+ element wiki), use `npm run dev:long` instead — 8 GB heap.
+
 Open the app, pick the seeded process, and run `/foundational-run` in the chat
 to walk through it.
 

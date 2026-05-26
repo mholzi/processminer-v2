@@ -182,6 +182,18 @@ confusion, repetition the *client* experiences. Capture severity, root cause,
 client impact; link `occursAt` the step, and `painPoint` where it mirrors a
 staff pain point.
 
+**Every friction-point MUST link at least one `painPoint`** — the friction is
+either a client-visible instance of a documented staff pain-point, or
+introduces one. If no `pain-point` element captures the underlying issue, you
+own creating it (an `add-entry` pain-point call), then link to it. Leaving
+`painPoint:` empty is a finding `run-lint` will flag — close it here, not
+later. The same applies in reverse: if a documented pain-point clearly
+affects the client (slow turnaround, opaque status, missing notification),
+the corresponding friction-point should link back to it. Two friction-points
+that describe overlapping client experiences (e.g. "no queue visibility" and
+"long wait") must also cross-reference each other via the schema's friction-
+point relations.
+
 **Phase 6 — Refine competitor CX & benchmarks.** Walk the existing
 `competitor-cx-*` and `cx-benchmark` elements with the SME — the SME is the
 authority; the web-sourced drafts are a starting point. For each, run
@@ -193,11 +205,21 @@ where a competitor or a benchmark exposes a gap, note it as a friction point
 or flag it for the Innovation Analyst. You do not web-search — that is
 `source-cx`'s job. If nothing has been sourced, say so and move on.
 
-**Phase 7 — Validation.** Before closing, sweep what you wrote: touchpoints not
-on any channel or step, friction points not linked to a step, a journey with
-gaps where the client surely interacts. Surface each as a short clarifying
-question, then close with the canonical close-out: run `python3
-scripts/wiki/verbatim.py specialist-closeout` and present what it prints, with
+**Phase 7 — Validation.** Before closing, run these as **hard checks** — every
+one must resolve to either "fixed" or "explicitly accepted with a one-line SME
+rationale", never silently left open:
+
+- **(a)** every `touchpoint` links a `channel` and an `occursAt` step;
+- **(b)** every `friction-point` has a non-empty `painPoint:` relation
+  (create the missing pain-point if needed — see Phase 5);
+- **(c)** every `friction-point` has an `occursAt` step;
+- **(d)** any two friction-points that describe overlapping client
+  experiences cross-reference each other.
+
+Sweep what you wrote against these. Surface anything still open as a short
+clarifying question, fix or document, then close with the canonical close-out:
+run `python3 scripts/wiki/verbatim.py specialist-closeout` and present what
+it prints, with
 `{Perspective}` = **Client Experience** and the `{n}` / `{type}` placeholders
 filled from the counts. Reproduce every other character — the bullet labels,
 the `status: draft` line, the closing sentence — exactly; `verbatim.py` is the

@@ -86,6 +86,7 @@ export default function WelcomeScreen({
   user,
   onEnterProcessminer,
   onEnterArchitectminer,
+  onCreateProcess,
   onEnterAdmin,
   onUserUpdated,
   onSignOut,
@@ -94,6 +95,11 @@ export default function WelcomeScreen({
   user: User;
   onEnterProcessminer: (slug?: string) => void;
   onEnterArchitectminer: (slug?: string) => void;
+  /** Opens the processminer workspace straight into the new-process flow.
+   *  Without this, the splash's "+ New process" chip would just enter with
+   *  no slug and ProcessDocScreen would fall back to whichever process owns
+   *  the most recent foundational run. */
+  onCreateProcess: () => void;
   /** Set only for admin users — opens the admin screen. */
   onEnterAdmin?: () => void;
   /** Called when the user updates their own profile from the avatar menu. */
@@ -338,7 +344,7 @@ export default function WelcomeScreen({
             <button
               type="button"
               className="ws-recent-chip add"
-              onClick={() => onEnterProcessminer()}
+              onClick={onCreateProcess}
             >
               + New process
             </button>

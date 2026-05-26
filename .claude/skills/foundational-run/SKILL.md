@@ -44,14 +44,27 @@ standard is not "documented" but "documented and true."
 **You read the whole process before you challenge a single element.** A
 challenge informed by the whole process — "this step is referenced by an
 exception that contradicts its stated output" — is worth ten challenges made
-blind.
+blind. But "the whole process" means **the spine, the relations and the
+sidecars** — not the body of every element. Step 1 is a fast orientation read,
+not an exhaustive deep read; per-element bodies belong to Step 3, when you
+present the item that actually needs them.
 
-## Step 1 — Read the whole process
+## Step 1 — Orient on the process (≤ 60 s)
 
-On invocation, read `wiki/processes/<slug>/index.md` and **every current-state
-element** in the process. Build the complete picture: the spine of steps, every relation,
-what is thin, what is missing, what does not connect. Then give the SME a
-one-line orientation, e.g.:
+On invocation, read **only**:
+- `wiki/processes/<slug>/index.md` — the overview,
+- `wiki/processes/<slug>/sections.json` — the section/element inventory,
+- `wiki/processes/<slug>/ingest.json` if present — what was just imported,
+- the **frontmatter** of each element in the process (e.g. with `grep -l "^id:"`
+  + a short head/awk) to map the relations across the spine.
+
+Do **not** read element bodies in this step. Bodies are part of the per-item
+work in Step 3; reading them all up-front turns Step 1 into a 5–15 minute
+silent context expansion with the cursor parked at 0 — the SME sees only
+"Reading X.md" repeating and assumes the run is hung. **Hard budget: under 60
+seconds of tool calls and no element-body Reads.**
+
+Then give the SME a one-line orientation, e.g.:
 
 > I've read **{process}** — {n} steps, {n} controls, {n} exceptions. The spine
 > is coherent; a few steps read thin. Starting the foundational run.
@@ -70,6 +83,13 @@ Run `python3 scripts/wiki/review_cursor.py status <slug>`.
   {total}." Continue from the reported `current` item.
 - **State exists, done** — go to Step 4.
 
+After this step, send **one SME-facing message** that names the queue length
+and the first item, e.g. "Queue built — 29 items. First up: **PS-BGID-001 —
+Application intake**. Reading it now." This is the user's first signal that
+the run is alive; without it Stage 3 reads silent for the whole pre-prompt
+window. **Never run more than two `Read` / script tool calls before this
+message lands.**
+
 The script's output is JSON: `position`, `total`, `done`, `current` (the id of
 the element to work now), and — printed straight from `scripts/wiki/verbatim.py`,
 the single source of truth so they never drift between turns — `outcomes_line`
@@ -79,7 +99,19 @@ script prints them, never re-typed from memory.
 
 ## Step 3 — The challenged walk
 
-For the `current` item, one element at a time:
+For the `current` item, **one element at a time**, and **one cursor step per
+exchange**: present → challenge → deepen (where applicable) → outcomes →
+advance, then *yield to the SME and wait for their reply*. Do not pre-read
+the next item, do not draft the next challenge, do not "warm up" the rest of
+the queue. The deepening is the value, and the value is paid for one exchange
+at a time. A turn that silently reads ten elements before prompting is the
+cursor-0 stall the user reports as "stuck".
+
+**Per-item read budget:** Read only the **current** item's body and the
+**direct neighbours** it references (its `roles`, its `controls`, the
+exception it transitions to). Do not re-read the index or the whole spine —
+Step 1 already gave you that picture. If you find yourself reading a fifth
+file for the current cursor item, stop and present what you have.
 
 1. **Present it.** Show the SME the element — the overview, or the element's
    blocks — and what it links to. The app opens that section in the canvas
@@ -159,16 +191,40 @@ For the `current` item, one element at a time:
      name from the invocation. If a `proposed` heading was *not* confirmed, it
      stays `proposed` and the element cannot be `[Y]` — take it as **[E]**
      rework or **Move on** instead.
-   - **[E]** — the challenge found rework. Redraft with the SME, then write:
-     for a fix to one block or field, `python3 scripts/wiki/patch_element.py
-     <slug> <id> --block "<heading>" /tmp/<id>-block.md` (or `--field` /
-     `--list`); for a genuine multi-block redraft, `python3
-     scripts/wiki/write_element.py /tmp/<id>.json` (same id). Then approve it
-     as in [Y] — but first echo one
-     line of **what changed** so the SME approves with eyes open, e.g.
-     "Reworked PS-FR-002 — validation is now automated-first, analyst-on-
-     exception; the STP branch is named. Approved." Never approve a rework
-     silently; the echo is how the SME catches a mis-applied change.
+   - **[E]** — the challenge found rework. The [E] outcome is a **mandatory
+     three-step chain**, in order, every time:
+
+     **(i) Apply the SME's content corrections.** Patch or rewrite the
+     element — for a fix to one block or field, `python3
+     scripts/wiki/patch_element.py <slug> <id> --block "<heading>"
+     /tmp/<id>-block.md` (or `--field` / `--list`); for a genuine multi-block
+     redraft, `python3 scripts/wiki/write_element.py /tmp/<id>.json` (same
+     id).
+
+     **(ii) Honour every side-effect request in the SME's reply.** Real-SME
+     [E] responses routinely bundle "while you're at it, create a pain-point
+     for X" or "record this as a control-gap" or "add a role for Y" alongside
+     the rework. Those side effects are **part of the [E]**, not a separate
+     turn — if you write the rework and skip them, the SME's "I just told you
+     to do this" content silently vanishes. Scan the [E] reply for every
+     imperative that names a new element (pain-point, control-gap, control,
+     role, exception, …) and create each one using the mid-run create path
+     below (Reserve id → write spec → write_element.py) **before** step (iii).
+     If the SME's request is ambiguous ("might be worth noting" vs "record
+     this") — ask once, do not silently skip.
+
+     **(iii) Approve.** Echo a one-line "what changed" summary so the SME
+     approves with eyes open ("Reworked PS-FR-002 — validation is now
+     automated-first, analyst-on-exception; the STP branch is named. Created
+     PP-FR-007 for the rekeying pain. Approved."), then run `python3
+     scripts/wiki/set_approval.py <slug> <id> approved "<SME name>"`. Never
+     approve a rework silently; the echo is how the SME catches a mis-applied
+     change *and* confirms the side-effect creates landed.
+
+     The cursor-advance script enforces this chain: `review_cursor.py
+     advance --outcome E` refuses to move the cursor unless the element is
+     stamped `approval: approved`. If you hit that error you skipped step
+     (iii) — fix it before continuing.
 
      **Keep frontmatter relation lists in sync with prose.** If your rework
      names a `SYS-*` (or any element id) in body text that is not already
@@ -182,8 +238,17 @@ For the `current` item, one element at a time:
      session. Then approve it.
    - **Move on** — the SME wants to advance without approving. Leave the
      element as it is (`in-progress`); do not set approval.
-5. **Advance.** Run `python3 scripts/wiki/review_cursor.py advance <slug>`. If
-   it reports `done`, go to Step 4; otherwise present the next `current` item.
+5. **Advance.** Run `python3 scripts/wiki/review_cursor.py advance <slug>
+   --outcome <Y|E|D|M>` — pass the letter that matches the outcome the SME
+   actually picked. The script enforces the contract: for `Y` and `E` the
+   element must already be stamped `approval: approved` on disk (i.e. you
+   must have called `set_approval.py` first), otherwise advance refuses and
+   nothing moves. That's the brake that catches "[E] saved content but
+   never approved" — if you hit the error, run the approval and try again,
+   or downgrade to `--outcome M` if the element legitimately stays
+   in-progress. `D` (deep dive) and `M` (move on) advance without the
+   approval check. If advance reports `done`, go to Step 4; otherwise
+   present the next `current` item.
 
 Work one element per exchange. Never batch the challenged walk — the challenge
 *is* the value, and a batched challenge earns a batched, shallow answer. The

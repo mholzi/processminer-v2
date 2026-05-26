@@ -135,6 +135,19 @@ type SectionsManifest = Record<
 
 export function getContributorsReport(doc: ProcessDoc): ContributorsReport {
   const events: ContributorEvent[] = [];
+  // Per-contributor set of distinct filenames touched. Used to drive the
+  // "uploads / ingests" rollup column and the totals — counts files, not
+  // events, so a file that's both uploaded via the modal AND extracted by
+  // document-ingest counts once (the rail's Source Documents list shows
+  // files, and the column should match).
+  const filesByContributor = new Map<string, Set<string>>();
+  const allFiles = new Set<string>();
+  const addFile = (by: string, filename: string) => {
+    allFiles.add(filename);
+    const s = filesByContributor.get(by) ?? new Set<string>();
+    s.add(filename);
+    filesByContributor.set(by, s);
+  };
 
   // ----- comments from notes.json -----
   const notesPath = join(WIKI_DIR, doc.slug, "notes.json");
@@ -163,10 +176,12 @@ export function getContributorsReport(doc: ProcessDoc): ContributorsReport {
   if (uploads) {
     for (const [filename, meta] of Object.entries(uploads)) {
       if (!meta.at) continue;
+      const by = displayName(meta.by || "unknown");
+      addFile(by, filename);
       events.push({
         id: `u-${filename}`,
         kind: "upload",
-        by: displayName(meta.by || "unknown"),
+        by,
         ts: meta.at,
         title: `uploaded ${filename}`,
       });
@@ -280,10 +295,12 @@ export function getContributorsReport(doc: ProcessDoc): ContributorsReport {
   if (ingest) {
     const created = ingest.created?.length ?? 0;
     const updated = ingest.updated?.length ?? 0;
+    const by = displayName(ingest.by || "the assistant");
+    if (ingest.file) addFile(by, ingest.file);
     events.push({
       id: `i-${ingest.generatedAt}`,
       kind: "ingest",
-      by: displayName(ingest.by || "the assistant"),
+      by,
       ts: ingest.generatedAt,
       title: `extracted ${created} element${
         created === 1 ? "" : "s"
@@ -328,14 +345,18 @@ export function getContributorsReport(doc: ProcessDoc): ContributorsReport {
     const r = by[key];
     r.total++;
     if (e.kind === "comment") r.comments++;
-    else if (e.kind === "upload") r.uploads++;
     else if (e.kind === "approval") r.approvals++;
     else if (e.kind === "draft") r.drafts++;
-    else if (e.kind === "ingest") r.uploads++;
-    // lint + section-status don't get their own rollup column yet — they're
-    // just totals on the event list. Keep them out of the four buckets so
-    // the rail numbers stay readable.
+    // upload + ingest don't bump a counter here — they're folded into the
+    // unique-files set below so a file isn't double-counted when both the
+    // upload event and the ingest event reference it. lint + section-status
+    // don't get their own rollup column.
     if (e.ts > r.lastActiveAt) r.lastActiveAt = e.ts;
+  }
+  // Replace each contributor's `uploads` with the size of their distinct
+  // filename set — counts files-on-disk, not events.
+  for (const r of Object.values(by)) {
+    r.uploads = filesByContributor.get(r.by)?.size ?? 0;
   }
   const rollups = Object.values(by).sort((a, b) => b.total - a.total);
 
@@ -347,8 +368,7 @@ export function getContributorsReport(doc: ProcessDoc): ContributorsReport {
       events: events.length,
       approvals: events.filter((e) => e.kind === "approval").length,
       comments: events.filter((e) => e.kind === "comment").length,
-      uploads: events.filter((e) => e.kind === "upload" || e.kind === "ingest")
-        .length,
+      uploads: allFiles.size,
     },
   };
 }

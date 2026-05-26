@@ -1821,6 +1821,31 @@
             "key": "systemType",
             "label": "Type",
             "hint": "CORE / SUPPORTING / EXTERNAL — the system's role in this process."
+          },
+          {
+            "key": "criticality",
+            "label": "Criticality",
+            "hint": "HIGH / MEDIUM / LOW — operational impact if the system is unavailable."
+          },
+          {
+            "key": "vendor",
+            "label": "Vendor",
+            "hint": "Vendor or build origin (e.g. Finastra Trade Innovation, SWIFT, in-house). Free text."
+          },
+          {
+            "key": "dataClassification",
+            "label": "Data Classification",
+            "hint": "confidential / restricted / internal / public — sensitivity of the data the system holds for this process."
+          },
+          {
+            "key": "rtoBand",
+            "label": "RTO",
+            "hint": "Recovery Time Objective — 1h / 4h / 8h / 24h. The DORA / ICT-mapping band."
+          },
+          {
+            "key": "rpoBand",
+            "label": "RPO",
+            "hint": "Recovery Point Objective — 0 / 15min / 1h / 4h. The DORA / ICT-mapping band."
           }
         ],
         "relations": [
@@ -2616,6 +2641,29 @@
       "CORE",
       "SUPPORTING",
       "EXTERNAL"
+    ],
+    "criticality": [
+      "HIGH",
+      "MEDIUM",
+      "LOW"
+    ],
+    "dataClassification": [
+      "confidential",
+      "restricted",
+      "internal",
+      "public"
+    ],
+    "rtoBand": [
+      "1h",
+      "4h",
+      "8h",
+      "24h"
+    ],
+    "rpoBand": [
+      "0",
+      "15min",
+      "1h",
+      "4h"
     ],
     "channelType": [
       "DIGITAL",

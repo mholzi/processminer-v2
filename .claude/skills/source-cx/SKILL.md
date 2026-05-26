@@ -60,24 +60,26 @@ industry, its scope) and the documented client journey — the `channels`,
 client journey to benchmark. Also read any existing `competitor-cx-*` and
 `cx-benchmark` elements: you extend, you never duplicate.
 
-## Step 2 — Scan competitor CX
+## Step 2 — Fan out the web scans
 
 Before the first write, clear the run manifest —
 `python3 scripts/wiki/reset_manifest.py <slug>`. Every element you write is
 logged to it; Step 4's report counts are read back from the manifest, not
 tallied from memory.
 
-The three competitor tiers are independent web-research streams, so scan them
-**concurrently**: in a single message, dispatch **three sub-agents** with the
-Task tool — one per tier — and wait for all three.
+The three competitor tiers and the CX-benchmark scan are independent
+web-research streams, so scan them **concurrently**: in a single message,
+dispatch **four sub-agents** with the Task tool — one per tier plus one for
+benchmarks — and wait for all four.
 
-| Tier | Type | Who |
+| Stream | Type | Who / what |
 |---|---|---|
 | European corporate banks — the closest competitive set | `competitor-cx-eu` | named European peers |
 | Global corporate banks | `competitor-cx-global` | the major global players |
 | Fintechs | `competitor-cx-fintech` | the challengers reshaping this experience |
+| Industry CX benchmarks | `cx-benchmark` | onboarding-time standards, NPS / effort benchmarks, client-expectation research |
 
-Give each sub-agent this brief, filling in its tier:
+Give each **competitor** sub-agent this brief, filling in its tier:
 
 > You are sourcing competitor client experience for process `<slug>`, tier
 > **{tier}** (element type `{type}`). Read `wiki/processes/<slug>/index.md`
@@ -91,35 +93,47 @@ Give each sub-agent this brief, filling in its tier:
 > `source:`, `sourceUrl:`; `status: draft`, `confidence: medium` (`low` if
 > thinly evidenced); a `provenance` map, one entry per block heading, every
 > entry `{ "source": "web", "evidence": "<url> — \"<snippet>\" — fetched
-> <date>" }`. Name **real** competitors and cite **real** sources; never
-> invent one. A handful of material examples, not a dump. You are
-> **read-only** — do not write or run any write script. Return **only** a
-> JSON array of the draft specs.
+> <date>" }`. Give each spec a `tempKey` prefixed with the type — e.g.
+> `"competitor-cx-eu-1"` — so keys never collide between streams. Name
+> **real** competitors and cite **real** sources; never invent one. A handful
+> of material examples, not a dump. You are **read-only** — do not write or
+> run any write script. Return **only** a JSON array of the draft specs.
 
-Collect the three arrays and hold the drafts for the Step 3 batch write.
+Give the **benchmark** sub-agent this brief:
 
-## Step 3 — Scan CX benchmarks
+> You are sourcing industry CX benchmarks for process `<slug>` (element type
+> `cx-benchmark`). Read `wiki/processes/<slug>/index.md` and the documented
+> client journey (`channels`, `touchpoints`, `moments`, `friction-points`)
+> for context, and the existing `cx-benchmark` elements so you do not
+> duplicate one. Run `python3 scripts/wiki/show_template.py cx-benchmark`
+> for the element's shape. Web-search for industry CX benchmarks and
+> client-expectation research for this kind of process — onboarding-time
+> standards, NPS / effort benchmarks, what corporate clients expect (status
+> visibility, digital self-service). Draft one `write_element.py` spec per
+> material benchmark: blocks *The benchmark* / *Relevance* / *Evidence*
+> (cite the specific figure or survey); frontmatter `source:`, `sourceUrl:`;
+> `status: draft`, `confidence: medium` (`low` if thinly evidenced); a
+> `provenance` map, one entry per block heading, every entry `{ "source":
+> "web", "evidence": "<url> — \"<snippet>\" — fetched <date>" }`. Give each
+> spec a `tempKey` prefixed `"cx-benchmark-…"`. Cite **real** sources; never
+> invent a benchmark. A handful, not a dump. You are **read-only** — do not
+> write or run any write script. Return **only** a JSON array of the draft
+> specs.
 
-Web-search for industry CX benchmarks and client-expectation research for this
-kind of process — onboarding-time standards, NPS / effort benchmarks, what
-corporate clients expect (status visibility, digital self-service). Write a
-`cx-benchmark` element per material benchmark:
-- Blocks: *The benchmark* — the standard or expectation; *Relevance* — how this
-  process measures against it; *Evidence* — the specific figure or survey.
-- Frontmatter: `source:` and `sourceUrl:`. (`asOf:` is auto-stamped — leave
-  it out.)
-- Draft each `cx-benchmark` as a `write_element.py` spec (`status: draft`,
-  `confidence: medium`; `low` if thinly evidenced).
+Collect the four arrays and hold the drafts for the Step 3 batch write.
 
-Then write the **whole run in one batch** — assemble a manifest
-`{ "slug": "<slug>", "elements": [ … ] }` of every competitor-CX example from
-Step 2 and every benchmark drafted here, each spec omitting `id`, and run
-`python3 scripts/wiki/write_elements.py /tmp/<slug>-elements.json`, then
-`python3 scripts/wiki/check_conformance.py <slug>`.
+## Step 3 — Merge and write the batch
+
+Concatenate every sub-agent's array into one manifest
+`{ "slug": "<slug>", "elements": [ … ] }`, each spec omitting `id`. Skim the
+merged list and drop the obvious overlap before the write. Save to
+`/tmp/<slug>-elements.json`, run `python3 scripts/wiki/write_elements.py
+/tmp/<slug>-elements.json`, then `python3 scripts/wiki/check_conformance.py
+<slug>`; fix any flagged element and re-run.
 
 Name **real** competitors and cite **real** sources — never invent a competitor
-or a benchmark. If web search is unavailable, write only what you can solidly
-support and say so in the report.
+or a benchmark. If web search is unavailable in a sub-agent's environment,
+tell it to write only what it can solidly support and say so in the report.
 
 ## Step 4 — Report
 

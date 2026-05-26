@@ -4,7 +4,8 @@
   "private": true,
   "description": "Processminer — AI-native process documentation. Claude Code skills elicit SME process knowledge into a file-backed wiki with per-heading provenance.",
   "scripts": {
-    "dev": "next dev",
+    "dev": "NODE_OPTIONS='--max-old-space-size=4096' next dev",
+    "dev:long": "NODE_OPTIONS='--max-old-space-size=8192 --no-deprecation' next dev",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",

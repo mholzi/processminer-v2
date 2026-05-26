@@ -102,12 +102,24 @@ export async function POST(req: NextRequest) {
       const close = () => {
         if (closed) return;
         closed = true;
+        if (heartbeat) clearInterval(heartbeat);
         try {
           controller.close();
         } catch {
           /* already closed */
         }
       };
+
+      // Server heartbeat. A long sub-agent fan-out (source-innovation, run-lint)
+      // can go several minutes between client-visible events while every worker
+      // event is internal to the running Task. The chat-side watchdog
+      // (CHAT_WATCHDOG_MS) then false-alarms a healthy turn. A 60 s no-op
+      // heartbeat resets the watchdog without polluting the activity line —
+      // the client's `apply()` resets `lastTurnEventRef` on any parsed event
+      // and ignores types it doesn't switch on.
+      const heartbeat: ReturnType<typeof setInterval> = setInterval(() => {
+        send({ type: "heartbeat" });
+      }, 60_000);
 
       const handleEvent = (evt: WorkerEvent) => {
         if (evt.type === "assistant") {

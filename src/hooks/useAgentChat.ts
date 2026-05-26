@@ -178,7 +178,11 @@ export function useAgentChat(opts: UseAgentChatOptions): AgentChatApi {
         | { type: "task_start"; id: string; label: string }
         | { type: "task_end"; id: string }
         | { type: "done"; reply?: string; sessionId?: string; isError?: boolean }
-        | { type: "error"; error: string; sessionId?: string };
+        | { type: "error"; error: string; sessionId?: string }
+        // 60 s server heartbeat. We don't drive any UI off it — `apply()`
+        // resets `lastTurnEventRef` on any parsed event, which is exactly
+        // what the watchdog needs to stay quiet through a long fan-out turn.
+        | { type: "heartbeat" };
 
       fetch("/api/session", {
         method: "POST",

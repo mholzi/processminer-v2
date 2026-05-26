@@ -1,0 +1,133 @@
+{
+  "generatedAt": "2026-05-26T07:08:58.299996+00:00",
+  "slug": "bank-guarantee-issuance-dogfood-full-2026-05-26",
+  "file": "",
+  "created": [
+    "CP-BGID-004",
+    "PS-BGID-007"
+  ],
+  "updated": [
+    "PP-BGID-001",
+    "ROLE-BGID-001"
+  ],
+  "conflicts": [
+    {
+      "element": "CP-BGID-001",
+      "field": "owner",
+      "documentSays": "Head of Trade Finance",
+      "wikiSays": "Trade Finance Manager"
+    },
+    {
+      "element": "CP-BGID-001",
+      "field": "What it checks",
+      "documentSays": "Guarantees above EUR 2 million additionally require sign-off by the Head of Trade Finance",
+      "wikiSays": "additional sign-off required for guarantees above EUR 5 million"
+    },
+    {
+      "element": "M-BGID-001",
+      "field": "target",
+      "documentSays": "5 business days — The target turnaround is 5 business days from a complete application to guarantee delivery. The previous 3-day target was found to be unrealistic once collateral confirmation is included.",
+      "wikiSays": "3 business days (sourced from bank-guarantee-issuance-v1.md)"
+    },
+    {
+      "element": "M-BGID-001",
+      "field": "Current reading",
+      "documentSays": "SLA target is 5 business days; no measured actual is provided",
+      "wikiSays": "No measured actual is recorded. The SLA target is 3 business days."
+    },
+    {
+      "element": "PS-BGID-005",
+      "field": "What happens",
+      "documentSays": "Guarantees above EUR 2 million additionally require sign-off by the Head of Trade Finance.",
+      "wikiSays": "Guarantees above EUR 5 million additionally require sign-off by the Head of Trade Finance; this threshold is system-enforced."
+    },
+    {
+      "element": "ROLE-BGID-003",
+      "field": "Responsibility",
+      "documentSays": "Additional approval for guarantees above EUR 2 million",
+      "wikiSays": "Additional approval for guarantees above EUR 5 million"
+    }
+  ],
+  "corrections": [
+    {
+      "element": "cp-1",
+      "field": "fields.effectiveness",
+      "removed": "HIGH — effectiveness rating not stated or implied anywhere in the source document; field removed entirely."
+    },
+    {
+      "element": "cp-1",
+      "field": "blocks.Control activity",
+      "removed": "Sentence 'Confirmation is recorded in the Trade Finance System.' — the document does not state that the collateral confirmation step is recorded in the Trade Finance System; only C1 (four-eyes issuance approval) explicitly mentions recording in that system. Hallucination removed."
+    },
+    {
+      "element": "cp-1",
+      "field": "provenance.Control activity",
+      "removed": "Source demoted from 'document' to 'proposed' because (a) the hallucinated recording sentence was removed, and (b) the sequencing claim ('prior to advancing to the issuance approval step') is inference from process order rather than verbatim text."
+    },
+    {
+      "element": "PP-BGID-001",
+      "field": "frontmatter.confidence",
+      "removed": "high → medium: Impact block is 'proposed' (not traceable to explicit document text); confidence must reflect that at least one block is inference-only"
+    },
+    {
+      "element": "PP-BGID-001",
+      "field": "blocks.Description.content",
+      "removed": "Removed trailing meta-sentence 'The document explicitly identifies this as a known pain point in the issuance process.' — not a substantive process claim; replaced Description with the verbatim document sentence only"
+    },
+    {
+      "element": "PP-BGID-001",
+      "field": "blocks.Impact.content",
+      "removed": "Removed unsupported claim 'pushing the process beyond the target turnaround' — the document states the 5-day SLA but never explicitly states a facility shortfall causes a breach of it; retained the Credit-team routing inference (supported by Roles section: 'Credit team — limit increases when the facility is insufficient') but demoted elaboration about SLA breach"
+    },
+    {
+      "element": "PP-BGID-001",
+      "field": "frontmatter.provenance + blocks.*.provenance",
+      "removed": "Added verbatim evidence strings to all provenance entries that cite source=document, per the provenance contract"
+    },
+    {
+      "element": "ps-1",
+      "field": "blocks.What happens",
+      "removed": "\"in the bank's books\" — phrase not present in source document; removed."
+    },
+    {
+      "element": "ps-1",
+      "field": "blocks.Inputs[1]",
+      "removed": "\"from Treasury or Operations\" — no such team is named anywhere in the source document; hallucinated attribution removed. Input retained as generic 'Collateral receipt confirmation'."
+    },
+    {
+      "element": "ps-1",
+      "field": "fields.condition",
+      "removed": "\"Sanctions screening cleared\" — not stated as an explicit gating condition for this step in the source; removed. Only the facility-coverage condition is explicit."
+    },
+    {
+      "element": "ps-1",
+      "field": "provenance.Inputs",
+      "removed": "Demoted from 'document' to 'proposed': the specific input artifacts (flagged package, collateral receipt confirmation, blocked-funds record) are not named in the source document."
+    },
+    {
+      "element": "ps-1",
+      "field": "provenance.Outputs",
+      "removed": "Demoted from 'document' to 'proposed': the output artifacts are not explicitly named in the source document."
+    },
+    {
+      "element": "ps-1",
+      "field": "provenance.Why it matters",
+      "removed": "Demoted from 'document' to 'proposed': the credit-risk rationale is an inference; the document states the procedural requirement but does not articulate the risk reasoning explicitly."
+    },
+    {
+      "element": "ROLE-BGID-001",
+      "field": "frontmatter.confidence",
+      "removed": "Downgraded from 'high' to 'medium': Step 3 does not explicitly name the Trade Finance Officer as the actor (it uses passive voice — 'bespoke wording is sent to the Legal team'), so TFO ownership of Step 3 is inference rather than explicit statement."
+    },
+    {
+      "element": "ROLE-BGID-001",
+      "field": "blocks.In this process.content",
+      "removed": "Phrase 'managing the client throughout' removed — no document support. The source document makes no mention of the Trade Finance Officer managing client communications during the process."
+    },
+    {
+      "element": "ROLE-BGID-001",
+      "field": "frontmatter.provenance.In this process",
+      "removed": "Provenance demoted from { source: 'document' } to { source: 'proposed', evidence: '' } because the block contains an inference (Step 3 ownership without explicit TFO attribution) and contained a corrected step number; evidence field cleared accordingly."
+    }
+  ]
+}

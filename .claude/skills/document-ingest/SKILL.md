@@ -86,6 +86,20 @@ group. The 315k-token main-agent output of the legacy flow becomes ~30k.
    exceed ~10 entries into `<type>-a`, `<type>-b` etc. — drafters run in
    parallel, so balance matters less than keeping each group bounded.
 
+   **Uniqueness — non-negotiable.** Each piece of content gets exactly **one**
+   outline entry. Before you serialise the outline:
+
+   - Walk it and check that no `(type, title)` pair appears twice. If a
+     section's content is so long it must be split into `-a` / `-b`, partition
+     the *distinct* entries between groups — never replay the same entries
+     across both groups.
+   - Every `tempKey` is unique across the whole outline (not just within a
+     group). Two outline entries with the same `tempKey`, or the same
+     `(type, title)` across different `group_id`s, is the duplication bug —
+     stop and re-plan if you spot one.
+   - Existing-element entries (carrying `id`) appear at most once too. Don't
+     mix a `tempKey` entry and an `id` entry for the same logical element.
+
    Write the outline to `/tmp/<slug>-outline.json`:
 
    ```
@@ -109,8 +123,15 @@ group. The 315k-token main-agent output of the legacy flow becomes ~30k.
 
    > You draft wiki elements for an ingest of process `<slug>`. The source
    > document is at `<path>`. Read `/tmp/<slug>-outline.json` — your group_id
-   > is `<group_id>`; draft every outline entry whose `group_id` matches
-   > yours. The full outline is yours to consult for cross-group relations.
+   > is `<group_id>`; draft **every outline entry whose `group_id` matches
+   > yours, and nothing else**. The full outline is yours to consult for
+   > cross-group relations, but entries assigned to a sister `group_id` are
+   > **already being drafted by that sister** — touching them produces
+   > duplicate wiki elements when the writes merge. If the document tempts
+   > you to emit a new element that isn't in your slice of the outline, drop
+   > it: either it's already covered by a sister `group_id`, or it belongs
+   > to a different type the parent will pick up on a re-ingest. Output one
+   > spec per entry on your slice, no more, no fewer.
    >
    > Read `schema/process-schema.json` for your element types' frontmatter,
    > relations and template headings. Read the section folder(s) for your
@@ -219,6 +240,18 @@ group. The 315k-token main-agent output of the legacy flow becomes ~30k.
    `/tmp/<slug>-conflicts.json` and `/tmp/<slug>-corrections.json` for the
    Step 3.8 report.
 
+   **Final dedup gate.** Before invoking the writer, scan
+   `/tmp/<slug>-elements.json` for duplicates one last time — read the file
+   and check that no two specs share the same `(type, lowercase title)`
+   pair. If you find any, the partition contract was violated upstream:
+   stop, identify which group_id over-produced, and drop the redundant
+   specs (keep the one in the earlier group_id alphabetically; rewrite any
+   `@<tempKey>` references pointing at the dropped spec to the kept one).
+   Re-save the file. Never let two specs with the same logical identity
+   reach `write_elements.py` — every spec becomes a new element on disk
+   with its own auto-allocated id, which is the duplication bug this gate
+   exists to catch.
+
    Then write the batch:
 
    `python3 scripts/wiki/write_elements.py /tmp/<slug>-elements.json`
@@ -276,17 +309,25 @@ group. The 315k-token main-agent output of the legacy flow becomes ~30k.
    rewrite the element. A `document` claim whose evidence cannot be traced is
    exactly the hallucination this step exists to catch; never leave it flagged.
 
-8. **Write the ingest report.** Step 3.5's merge already wrote
-   `/tmp/<slug>-conflicts.json` and `/tmp/<slug>-corrections.json` — read
-   those two files (small). Append any overview-level entry from Step 3.6
-   (an overview conflict uses `index` as the element). Assemble a JSON object —
-   `file` (the source filename), `conflicts`, `corrections`. Do **not**
-   include `created` or `updated` — the script derives those from the run
-   manifest. Save the object to `/tmp/<slug>-ingest-report.json`, then run
-   `python3 scripts/wiki/write_ingest_report.py <slug> /tmp/<slug>-ingest-report.json`. It
-   writes `ingest.json` (which the app's triage screen reads) and prints the
-   canonical created / updated / conflict / correction counts — use those
-   printed counts in Step 4.
+8. **Write the ingest report.** The writer reads the merge files
+   (`/tmp/<slug>-conflicts.json`, `/tmp/<slug>-corrections.json`) by itself,
+   so you do **not** need to copy them into a hand-built JSON — that copy
+   step used to silently drop entries to the model's memory.
+
+   - If the overview produced **no** conflict or correction, run the writer
+     with no report argument:
+     `python3 scripts/wiki/write_ingest_report.py <slug>`. The conflicts and
+     corrections are pulled straight from the merge files.
+   - If the overview **did** produce an entry (Step 3.6), pass only those
+     extras in a tiny JSON: `{"file": "<source filename>", "conflicts": […
+     overview entries only …], "corrections": […overview entries only…]}`
+     saved to `/tmp/<slug>-ingest-report.json`, then run
+     `python3 scripts/wiki/write_ingest_report.py <slug> /tmp/<slug>-ingest-report.json`.
+     The writer concatenates them on top of the merge files and dedupes on
+     `(element, field)`.
+
+   Do not include `created` or `updated`: the writer derives them from the
+   run manifest. The script prints the canonical counts — use those in Step 4.
 
 ## Step 4 — Summarise the extraction
 
