@@ -440,7 +440,7 @@ body {
 }
 
 /* ---- 3-column shell ---- */
-.shell { display: grid; grid-template-columns: 292px 1fr 56px; height: calc(100vh - 84px); }
+.shell { display: grid; grid-template-columns: 292px 1fr 56px; height: calc(100vh - 84px); position: relative; }
 .rail { background: var(--surface); overflow-y: auto; }
 .rail-l {
   border-right: 1px solid var(--line);
@@ -2691,13 +2691,25 @@ button.el-relchip {
 .nav-flag:hover { background: var(--mid); color: #fff; }
 
 /* ---- Right rail: agent chat panel ---- */
-/* --chat-w is set inline on .shell from the drag-resizable chat width. */
-.shell.chat-open { grid-template-columns: 292px 1fr var(--chat-w, 340px); }
+/* --chat-w is set inline on .shell from the drag-resizable chat width.
+ * When the chat is open, the panel floats over the canvas instead of taking
+ * a grid column — the canvas keeps its full width and the chat layers on top
+ * anchored to the right edge. The grid stays the same shape as the
+ * chat-closed state so canvas content does not reflow on toggle. */
 .shell.sections-collapsed { grid-template-columns: 80px 1fr 56px; }
-.shell.sections-collapsed.chat-open { grid-template-columns: 80px 1fr var(--chat-w, 340px); }
-/* New-process drafting: no left rail, just canvas + chat. */
+/* New-process drafting: no left rail, just canvas + the 56px collapsed rail. */
 .shell.drafting { grid-template-columns: 1fr 56px; }
-.shell.drafting.chat-open { grid-template-columns: 1fr var(--chat-w, 340px); }
+.shell.chat-open .rail-r.chat {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--chat-w, 340px);
+  z-index: 20;
+  background: var(--surface);
+  border-left: 1px solid var(--line);
+  box-shadow: -8px 0 24px rgba(15, 23, 42, 0.10);
+}
 .rail-r.chat { padding: 0; align-items: stretch; display: flex; flex-direction: column; position: relative; }
 /* Drag handle on the chat panel's left edge — widen / narrow the panel. */
 .chat-resize {
@@ -4505,15 +4517,13 @@ button.el-relchip {
      collapses for views that don't need one (ADRs, Inputs, Traceability):
      those views give their centre `.am-canvas-doc-wide` which spans 2/4,
      while the chat stays in column 4. Nav widened to 280 px so the
-     ported Processminer spine (80) + sections column (200) fits. */
-  display: grid; grid-template-columns: 280px 1fr 280px 320px;
+     ported Processminer spine (80) + sections column (200) fits.
+     The chat column is always 56 px wide; when the chat is open it floats
+     over the canvas as an overlay (see `.am-canvas-chat` rules below) so
+     opening the chat does not reflow the canvas. */
+  display: grid; grid-template-columns: 280px 1fr 280px 56px;
   flex: 1; min-height: 0;
-}
-/* Chat collapsed — the rail shrinks to a thin strip and the canvas reclaims
-   the rest of the column width. Mirrors ProcessMiner's `.shell.chat-open`
-   off-switch. */
-.am-canvas-shell:has(.am-canvas-chat-collapsed) {
-  grid-template-columns: 280px 1fr 280px 56px;
+  position: relative;
 }
 /* No details aside rendered for the current view — collapse the 280 px
    details track to 0 so the wide main (which spans cols 2/4) physically
@@ -4521,23 +4531,14 @@ button.el-relchip {
    placement so a 4-track grid is still required; shrinking track 3 to 0 is
    simpler than re-numbering. */
 .am-canvas-shell:not(:has(aside.am-canvas-details)) {
-  grid-template-columns: 280px 1fr 0 320px;
-}
-.am-canvas-shell:not(:has(aside.am-canvas-details)):has(.am-canvas-chat-collapsed) {
   grid-template-columns: 280px 1fr 0 56px;
 }
 /* Sections column collapsed — only the 80 px spine remains; the canvas
    reclaims the freed 200 px. Mirrors Processminer's spine-only mode. */
 .am-canvas-shell:has(.am-rail.collapsed) {
-  grid-template-columns: 80px 1fr 280px 320px;
-}
-.am-canvas-shell:has(.am-rail.collapsed):has(.am-canvas-chat-collapsed) {
   grid-template-columns: 80px 1fr 280px 56px;
 }
 .am-canvas-shell:has(.am-rail.collapsed):not(:has(aside.am-canvas-details)) {
-  grid-template-columns: 80px 1fr 0 320px;
-}
-.am-canvas-shell:has(.am-rail.collapsed):not(:has(aside.am-canvas-details)):has(.am-canvas-chat-collapsed) {
   grid-template-columns: 80px 1fr 0 56px;
 }
 
@@ -4590,16 +4591,28 @@ button.el-relchip {
   background: var(--surface);
 }
 .am-canvas-doc-wide { grid-column: 2 / 4; }
-/* Flex column so the inner aside (rail rail-r chat) inherits the grid cell's
-   full height and the chat panel fills the column instead of floating at the
-   top with empty space below. min-height:0 lets the chat's own scroll area
-   constrain rather than push the column tall. */
+/* Chat slot: when the chat is collapsed the thin rail sits in grid column 4
+   (56 px). When the chat is open, the panel floats over the canvas anchored
+   to the right edge — column 4 still reserves the 56 px so the collapsed
+   rail's toggle has a permanent home, and the open panel overlays the
+   centre/details columns to its left. */
 .am-canvas-chat {
   grid-column: 4;
   display: flex; flex-direction: column;
   min-height: 0;
 }
 .am-canvas-chat > aside.rail.rail-r.chat { flex: 1; min-height: 0; }
+.am-canvas-shell .am-canvas-chat:not(.am-canvas-chat-collapsed) {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--chat-w, 320px);
+  z-index: 20;
+  background: var(--surface);
+  border-left: 1px solid var(--line);
+  box-shadow: -8px 0 24px rgba(15, 23, 42, 0.10);
+}
 .am-canvas-side {
   border-right: 1px solid var(--line); background: var(--bg);
   padding: 14px 8px; overflow: auto;
