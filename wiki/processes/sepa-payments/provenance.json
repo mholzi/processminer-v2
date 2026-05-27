@@ -1,4 +1,410 @@
 {
+  "ADR-SP-001": {
+    "Context": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Decision": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Alternatives considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Consequences": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ADR-SP-002": {
+    "Context": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Decision": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Alternatives considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Consequences": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ADR-SP-003": {
+    "Context": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Decision": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Alternatives considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Consequences": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ADR-SP-004": {
+    "Context": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Decision": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Alternatives considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Consequences": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ADR-SP-005": {
+    "Context": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Decision": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Alternatives considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Consequences": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ADR-SP-006": {
+    "Context": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Decision": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Alternatives considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Consequences": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ADR-SP-007": {
+    "Context": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Decision": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Alternatives considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Consequences": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ADR-SP-008": {
+    "Context": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Decision": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Alternatives considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Consequences": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ADR-SP-009": {
+    "Context": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Decision": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Alternatives considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Consequences": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ADR-SP-010": {
+    "Context": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Decision": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Alternatives considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Consequences": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CAP-SP-001": {
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Inputs and outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Boundaries": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CAP-SP-002": {
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Inputs and outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Boundaries": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CAP-SP-003": {
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Inputs and outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Boundaries": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CAP-SP-004": {
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Inputs and outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Boundaries": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CAP-SP-005": {
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Inputs and outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Boundaries": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CAP-SP-006": {
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Inputs and outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Boundaries": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CAP-SP-007": {
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Inputs and outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Boundaries": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CAP-SP-008": {
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Inputs and outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Boundaries": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CAP-SP-009": {
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Inputs and outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Boundaries": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "COMP-SP-001": {
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Technical detail": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "COMP-SP-002": {
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Technical detail": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "COMP-SP-003": {
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Technical detail": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "COMP-SP-004": {
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Technical detail": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "COMP-SP-005": {
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Technical detail": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "COMP-SP-006": {
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Technical detail": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "COMP-SP-007": {
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Technical detail": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "COMP-SP-008": {
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Technical detail": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "COMP-SP-009": {
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Technical detail": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "COMP-SP-010": {
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Technical detail": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
   "CP-SP-003": {
     "Control activity": {
       "source": "document",
@@ -241,6 +647,90 @@
       "evidence": ""
     }
   },
+  "INT-SP-001": {
+    "Purpose": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Contract details": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Failure mode": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "INT-SP-002": {
+    "Purpose": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Contract details": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Failure mode": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "INT-SP-003": {
+    "Purpose": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Contract details": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Failure mode": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "INT-SP-004": {
+    "Purpose": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Contract details": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Failure mode": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "INT-SP-005": {
+    "Purpose": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Contract details": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Failure mode": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "INT-SP-006": {
+    "Purpose": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Contract details": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Failure mode": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
   "M-SP-001": {
     "Current reading": {
       "source": "proposed",
@@ -321,6 +811,174 @@
       "evidence": ""
     },
     "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "MIG-SP-001": {
+    "Scope": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Acceptance criteria": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risks": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "MIG-SP-002": {
+    "Scope": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Acceptance criteria": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risks": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "MIG-SP-003": {
+    "Scope": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Acceptance criteria": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risks": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "MIG-SP-004": {
+    "Scope": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Acceptance criteria": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risks": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "NFR-SP-001": {
+    "Definition": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Measurement": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Verification": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "NFR-SP-002": {
+    "Definition": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Measurement": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Verification": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "NFR-SP-003": {
+    "Definition": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Measurement": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Verification": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "NFR-SP-004": {
+    "Definition": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Measurement": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Verification": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "NFR-SP-005": {
+    "Definition": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Measurement": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Verification": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "NFR-SP-006": {
+    "Definition": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Measurement": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Verification": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "NFR-SP-007": {
+    "Definition": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Measurement": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Verification": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "NFR-SP-008": {
+    "Definition": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Measurement": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Verification": {
       "source": "proposed",
       "evidence": ""
     }
@@ -691,6 +1349,90 @@
       "evidence": "§8 Systems & Data: 'AML Transaction Monitoring | Post-event monitoring and alerting'"
     },
     "Role in this process": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TGTAPP-SP-001": {
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Tech stack": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risks": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TGTAPP-SP-002": {
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Tech stack": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risks": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TGTAPP-SP-003": {
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Tech stack": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risks": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TGTAPP-SP-004": {
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Tech stack": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risks": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TGTAPP-SP-005": {
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Tech stack": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risks": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TGTAPP-SP-006": {
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Tech stack": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risks": {
       "source": "proposed",
       "evidence": ""
     }
