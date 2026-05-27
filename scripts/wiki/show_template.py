@@ -99,8 +99,9 @@ def print_type(etype: str, t: dict, field_values: dict) -> None:
     raci = fm.get("raci")
     if raci:
         print(
-            f"    raci: a list `raci: [...]`, each entry "
-            f"`{raci.get('format', '')}`"
+            "    raci: lives in wiki/processes/<slug>/raci.json — pass under "
+            "`relations.raci` on the spec as either `<stepId>:<level>` "
+            "strings or `{step, level}` dicts (the writer normalises)."
         )
         if raci.get("levels"):
             print(f"      levels: {' | '.join(raci['levels'])}")

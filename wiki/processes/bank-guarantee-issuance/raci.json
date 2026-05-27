@@ -1,0 +1,76 @@
+{
+  "ROLE-BGI-001": [
+    {
+      "step": "PS-BGI-001",
+      "level": "R"
+    },
+    {
+      "step": "PS-BGI-002",
+      "level": "R"
+    },
+    {
+      "step": "PS-BGI-003",
+      "level": "R"
+    },
+    {
+      "step": "PS-BGI-006",
+      "level": "R"
+    }
+  ],
+  "ROLE-BGI-002": [
+    {
+      "step": "PS-BGI-001",
+      "level": "A"
+    },
+    {
+      "step": "PS-BGI-002",
+      "level": "A"
+    },
+    {
+      "step": "PS-BGI-003",
+      "level": "A"
+    },
+    {
+      "step": "PS-BGI-005",
+      "level": "R"
+    },
+    {
+      "step": "PS-BGI-005",
+      "level": "A"
+    },
+    {
+      "step": "PS-BGI-006",
+      "level": "A"
+    }
+  ],
+  "ROLE-BGI-003": [
+    {
+      "step": "PS-BGI-005",
+      "level": "R"
+    }
+  ],
+  "ROLE-BGI-004": [
+    {
+      "step": "PS-BGI-004",
+      "level": "R"
+    }
+  ],
+  "ROLE-BGI-005": [
+    {
+      "step": "PS-BGI-002",
+      "level": "R"
+    }
+  ],
+  "ROLE-BGI-006": [
+    {
+      "step": "PS-BGI-003",
+      "level": "R"
+    }
+  ],
+  "ROLE-BGI-007": [
+    {
+      "step": "PS-BGI-004",
+      "level": "A"
+    }
+  ]
+}

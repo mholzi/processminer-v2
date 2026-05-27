@@ -5,7 +5,6 @@ section: roles
 title: Compliance Officer
 status: draft
 confidence: high
-raci: [PS-BGI-004:A]
 ---
 ## Responsibility
 Holds accountability for the sanctions screening control and makes escalation decisions on borderline screening hits referred by the Compliance Analyst.

@@ -6,7 +6,6 @@ title: Trade Finance Officer
 status: draft
 confidence: medium
 source: bank-guarantee-issuance-v1.md
-raci: [PS-BGI-001:R, PS-BGI-002:R, PS-BGI-003:R, PS-BGI-006:R]
 approval: approved
 approvalBy: m.berger
 approvalDate: 2026-05-19

@@ -6,7 +6,6 @@ title: Trade Finance Manager
 status: draft
 confidence: high
 source: bank-guarantee-issuance-v1.md
-raci: [PS-BGIT-005:R]
 approval: approved
 approvalBy: m.berger
 approvalDate: 2026-05-20

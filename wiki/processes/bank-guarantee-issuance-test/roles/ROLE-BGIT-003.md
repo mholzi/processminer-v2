@@ -6,7 +6,6 @@ title: Head of Trade Finance
 status: draft
 confidence: medium
 source: bank-guarantee-issuance-v1.md
-raci: [PS-BGIT-005:A]
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-20

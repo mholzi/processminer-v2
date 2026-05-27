@@ -6,7 +6,6 @@ title: Legal team
 status: draft
 confidence: high
 source: bank-guarantee-issuance-v1.md
-raci: [PS-BGI-003:R]
 approval: approved
 approvalBy: m.berger
 approvalDate: 2026-05-19

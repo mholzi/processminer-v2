@@ -1,0 +1,88 @@
+{
+  "ROLE-DDMM-001": [
+    {
+      "step": "PS-DDMM-001",
+      "level": "R"
+    },
+    {
+      "step": "PS-DDMM-001",
+      "level": "A"
+    },
+    {
+      "step": "PS-DDMM-006",
+      "level": "I"
+    },
+    {
+      "step": "PS-DDMM-007",
+      "level": "I"
+    }
+  ],
+  "ROLE-DDMM-002": [
+    {
+      "step": "PS-DDMM-002",
+      "level": "R"
+    },
+    {
+      "step": "PS-DDMM-003",
+      "level": "C"
+    },
+    {
+      "step": "PS-DDMM-004",
+      "level": "R"
+    },
+    {
+      "step": "PS-DDMM-005",
+      "level": "R"
+    },
+    {
+      "step": "PS-DDMM-007",
+      "level": "R"
+    }
+  ],
+  "ROLE-DDMM-003": [
+    {
+      "step": "PS-DDMM-004",
+      "level": "A"
+    },
+    {
+      "step": "PS-DDMM-007",
+      "level": "C"
+    }
+  ],
+  "ROLE-DDMM-004": [
+    {
+      "step": "PS-DDMM-003",
+      "level": "R"
+    },
+    {
+      "step": "PS-DDMM-003",
+      "level": "A"
+    },
+    {
+      "step": "PS-DDMM-007",
+      "level": "C"
+    }
+  ],
+  "ROLE-DDMM-005": [
+    {
+      "step": "PS-DDMM-002",
+      "level": "A"
+    },
+    {
+      "step": "PS-DDMM-003",
+      "level": "I"
+    },
+    {
+      "step": "PS-DDMM-005",
+      "level": "A"
+    },
+    {
+      "step": "PS-DDMM-006",
+      "level": "A"
+    },
+    {
+      "step": "PS-DDMM-007",
+      "level": "A"
+    }
+  ]
+}

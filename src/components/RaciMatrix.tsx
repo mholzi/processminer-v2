@@ -1,10 +1,10 @@
 import { orderSteps } from "@/lib/stepOrder";
 import type { WikiPage } from "@/lib/wiki";
-import { asList } from "@/lib/meta";
 
 // RACI matrix — rows = process steps, columns = roles, cells = R/A/C/I.
-// The raci data lives on each role page (frontmatter `raci: [STEP:LEVEL]`);
-// this component pivots it. Step row headers link to the Prozessschritte section.
+// The raci data is joined onto each role from wiki/processes/<slug>/raci.json
+// at load time. This component pivots it. Step row headers link to the
+// Prozessschritte section.
 
 const LEVEL_CLASS: Record<string, string> = {
   R: "raci-r",
@@ -37,10 +37,8 @@ export default function RaciMatrix({
   // grid[stepId][roleId] = "R" | "A" | "C" | "I"
   const grid: Record<string, Record<string, string>> = {};
   for (const role of roles) {
-    for (const entry of asList(role.meta.raci)) {
-      const [stepId, level] = entry.split(":");
-      if (!stepId || !level) continue;
-      (grid[stepId] ??= {})[role.id] = level;
+    for (const entry of role.raci ?? []) {
+      (grid[entry.step] ??= {})[role.id] = entry.level;
     }
   }
 

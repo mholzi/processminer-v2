@@ -1,0 +1,58 @@
+{
+  "ROLE-BGID-001": [
+    {
+      "step": "ps-1",
+      "level": "R"
+    },
+    {
+      "step": "ps-2",
+      "level": "R"
+    },
+    {
+      "step": "ps-6",
+      "level": "R"
+    }
+  ],
+  "ROLE-BGID-002": [
+    {
+      "step": "ps-5",
+      "level": "R"
+    },
+    {
+      "step": "ps-5",
+      "level": "A"
+    }
+  ],
+  "ROLE-BGID-003": [
+    {
+      "step": "ps-5",
+      "level": "C"
+    }
+  ],
+  "ROLE-BGID-004": [
+    {
+      "step": "ps-4",
+      "level": "R"
+    },
+    {
+      "step": "ps-4",
+      "level": "A"
+    }
+  ],
+  "ROLE-BGID-005": [
+    {
+      "step": "ps-2",
+      "level": "C"
+    }
+  ],
+  "ROLE-BGID-006": [
+    {
+      "step": "ps-3",
+      "level": "R"
+    },
+    {
+      "step": "ps-3",
+      "level": "A"
+    }
+  ]
+}

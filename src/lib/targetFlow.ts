@@ -12,7 +12,7 @@
 // a TS-id entry at the same level (R/A/C/I), so the existing ownerOf() lookup
 // places the TS in the lane the PS would have been in.
 
-import type { Transition, WikiPage } from "./wiki";
+import type { RaciEntry, Transition, WikiPage } from "./wiki";
 
 function asList(v: string | string[] | undefined): string[] {
   if (!v) return [];
@@ -72,23 +72,19 @@ export function buildTargetFlowView(
     };
   });
 
-  // RACI augmentation: for each role's `raci: [STEP:LEVEL]` entry, when the
-  // STEP is a PS that has a TS replacement, also emit a `TS-id:LEVEL` entry.
+  // RACI augmentation: for each role's RACI entry, when the step is a PS that
+  // has a TS replacement, also emit a TS-id entry at the same level. We do
+  // NOT mutate the role's bundle data on disk; this is a render-time
+  // projection only — the synthesised role overrides .raci in memory.
   const augmentedRoles: WikiPage[] = roles.map((role) => {
-    const existing = asList(role.meta.raci as string | string[] | undefined);
-    const extras: string[] = [];
+    const existing = role.raci ?? [];
+    const extras: RaciEntry[] = [];
     for (const entry of existing) {
-      const [sid, lvl] = entry.split(":");
-      if (!sid || !lvl) continue;
-      const trimmed = sid.trim();
-      const ts = psToTs.get(trimmed);
-      if (ts) extras.push(`${ts.id}:${lvl.trim()}`);
+      const ts = psToTs.get(entry.step);
+      if (ts) extras.push({ step: ts.id, level: entry.level });
     }
     if (extras.length === 0) return role;
-    return {
-      ...role,
-      meta: { ...role.meta, raci: [...existing, ...extras] },
-    };
+    return { ...role, raci: [...existing, ...extras] };
   });
 
   return { steps, roles: augmentedRoles };

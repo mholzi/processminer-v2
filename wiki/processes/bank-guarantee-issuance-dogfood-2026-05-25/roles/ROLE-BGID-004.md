@@ -8,7 +8,6 @@ confidence: high
 source: bank-guarantee-issuance-v1.md
 systems: [SYS-BGID-003]
 controls: [CP-BGID-002]
-raci: [ps-4:R, ps-4:A]
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:56:10Z
 ---

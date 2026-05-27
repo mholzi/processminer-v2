@@ -6,7 +6,6 @@ title: Compliance Analyst
 status: draft
 confidence: high
 source: bank-guarantee-issuance-v1.md
-raci: [PS-BGI-004:R]
 controls: [CP-BGI-002]
 approval: in-progress
 approvalBy: run-lint

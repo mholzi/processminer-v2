@@ -6,7 +6,6 @@ title: Compliance
 status: draft
 confidence: high
 source: ddmm-dtp-mockup.md
-raci: [PS-DDMM-003:R, PS-DDMM-003:A, PS-DDMM-007:C]
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

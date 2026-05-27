@@ -8,7 +8,6 @@ confidence: high
 source: bank-guarantee-issuance-v1.md
 systems: []
 controls: []
-raci: [ps-3:R, ps-3:A]
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:56:10Z
 ---

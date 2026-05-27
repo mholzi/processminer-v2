@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""One-shot: lift `provenance` (JSON-in-YAML) and `transitions` (pipe-DSL)
-out of element frontmatter and into per-process sidecar JSON bundles.
+"""One-shot: lift `provenance` (JSON-in-YAML), `transitions` (pipe-DSL) and
+`raci` (step:level DSL) out of element frontmatter and into per-process
+sidecar JSON bundles.
 
 Before:
   ---
@@ -8,6 +9,7 @@ Before:
   ...
   transitions: [PS-BGI-002|normal|complete, EX-BGI-004|exception|incomplete]
   provenance: {"Inputs": {"evidence": "...", "source": "elicited"}, ...}
+  raci: [PS-BGI-001:R, PS-BGI-002:A]                # only on role elements
   ---
 
 After:
@@ -17,9 +19,10 @@ After:
   ---
   + wiki/processes/<slug>/provenance.json keyed by element id
   + wiki/processes/<slug>/transitions.json keyed by element id
+  + wiki/processes/<slug>/raci.json        keyed by role id
 
-Idempotent: an element with neither key in frontmatter is skipped quietly,
-so the script is safe to re-run after partial success.
+Idempotent: an element with none of those keys is skipped quietly, so the
+script is safe to re-run after partial success.
 
 Usage:
   migrate_to_bundles.py              every process under wiki/processes/
@@ -40,29 +43,33 @@ from wiki_lib import (  # noqa: E402
     iter_elements,
     parse_blocks,
     parse_frontmatter,
+    parse_raci_dsl,
     parse_transition_dsl,
     serialize_element,
     set_provenance,
+    set_raci,
     set_transitions,
 )
 
 
-def migrate_process(slug: str, dry_run: bool) -> tuple[int, int, int]:
-    """Lift provenance + transitions out of every element under one process.
-    Returns (provenance_lifted, transitions_lifted, elements_rewritten)."""
+def migrate_process(slug: str, dry_run: bool) -> tuple[int, int, int, int]:
+    """Lift provenance + transitions + raci out of every element under one
+    process. Returns (prov_lifted, trans_lifted, raci_lifted, rewrites)."""
     proc_dir = WIKI_DIR / slug
     if not (proc_dir / "index.md").is_file():
         print(f"  skip {slug}: no index.md")
-        return (0, 0, 0)
+        return (0, 0, 0, 0)
 
     provenance_lifted = 0
     transitions_lifted = 0
+    raci_lifted = 0
     rewritten = 0
 
     # Build the bundles in memory first, then write each one once at the end —
-    # avoids re-reading provenance.json once per element.
+    # avoids re-reading each bundle once per element.
     prov_bundle: dict[str, dict] = {}
     trans_bundle: dict[str, list[dict]] = {}
+    raci_bundle: dict[str, list[dict]] = {}
     rewrites: list[tuple[Path, dict, list[dict]]] = []
 
     for path, meta, body in iter_elements(slug):
@@ -110,23 +117,39 @@ def migrate_process(slug: str, dry_run: bool) -> tuple[int, int, int]:
                 transitions_lifted += 1
             changed = True
 
+        # --- raci: was a list of `step:level` strings on role elements ---
+        raw_raci = meta.pop("raci", None)
+        if raw_raci:
+            entries = raw_raci if isinstance(raw_raci, list) else [raw_raci]
+            parsed_raci = [
+                r for r in (parse_raci_dsl(entry) for entry in entries)
+                if r is not None
+            ]
+            if parsed_raci:
+                raci_bundle[eid] = parsed_raci
+                raci_lifted += 1
+            changed = True
+
         if changed:
             rewrites.append((path, meta, parse_blocks(body)))
 
     if dry_run:
         print(
             f"  {slug}: would lift {provenance_lifted} provenance + "
-            f"{transitions_lifted} transitions, rewrite {len(rewrites)} files"
+            f"{transitions_lifted} transitions + {raci_lifted} raci, "
+            f"rewrite {len(rewrites)} files"
         )
-        return (provenance_lifted, transitions_lifted, len(rewrites))
+        return (provenance_lifted, transitions_lifted, raci_lifted, len(rewrites))
 
-    # Write bundles first. set_provenance / set_transitions merge with what is
-    # already on disk (some processes may have been partially migrated), so a
-    # re-run never wipes entries the previous run already wrote.
+    # Write bundles first. set_* merges with what is already on disk (some
+    # processes may have been partially migrated), so a re-run never wipes
+    # entries the previous run already wrote.
     for eid, prov in prov_bundle.items():
         set_provenance(slug, eid, prov)
     for eid, trans in trans_bundle.items():
         set_transitions(slug, eid, trans)
+    for eid, raci in raci_bundle.items():
+        set_raci(slug, eid, raci)
 
     for path, meta, blocks in rewrites:
         path.write_text(serialize_element(meta, blocks), encoding="utf-8")
@@ -134,9 +157,10 @@ def migrate_process(slug: str, dry_run: bool) -> tuple[int, int, int]:
 
     print(
         f"  {slug}: lifted {provenance_lifted} provenance + "
-        f"{transitions_lifted} transitions, rewrote {rewritten} files"
+        f"{transitions_lifted} transitions + {raci_lifted} raci, "
+        f"rewrote {rewritten} files"
     )
-    return (provenance_lifted, transitions_lifted, rewritten)
+    return (provenance_lifted, transitions_lifted, raci_lifted, rewritten)
 
 
 def main(argv: list[str]) -> None:
@@ -159,16 +183,22 @@ def main(argv: list[str]) -> None:
     label = "DRY RUN" if dry_run else "MIGRATING"
     print(f"{label} {len(slugs)} process(es)\n")
 
-    totals = (0, 0, 0)
+    totals = (0, 0, 0, 0)
     for slug in slugs:
-        prov_n, trans_n, rewrites_n = migrate_process(slug, dry_run)
-        totals = (totals[0] + prov_n, totals[1] + trans_n, totals[2] + rewrites_n)
+        prov_n, trans_n, raci_n, rewrites_n = migrate_process(slug, dry_run)
+        totals = (
+            totals[0] + prov_n,
+            totals[1] + trans_n,
+            totals[2] + raci_n,
+            totals[3] + rewrites_n,
+        )
 
     verb = "would lift" if dry_run else "lifted"
     rewrite_verb = "would rewrite" if dry_run else "rewrote"
     print(
-        f"\n{verb} {totals[0]} provenance + {totals[1]} transitions; "
-        f"{rewrite_verb} {totals[2]} element file(s) across {len(slugs)} process(es)."
+        f"\n{verb} {totals[0]} provenance + {totals[1]} transitions + "
+        f"{totals[2]} raci; {rewrite_verb} {totals[3]} element file(s) "
+        f"across {len(slugs)} process(es)."
     )
 
 

@@ -6,7 +6,6 @@ title: Trade Finance Manager
 status: draft
 confidence: high
 source: bank-guarantee-issuance-v1.md
-raci: [PS-BGI-001:A, PS-BGI-002:A, PS-BGI-003:A, PS-BGI-005:R, PS-BGI-005:A, PS-BGI-006:A]
 controls: [CP-BGI-001]
 approval: in-progress
 ---

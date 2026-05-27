@@ -6,7 +6,6 @@ title: Credit team
 status: draft
 confidence: medium
 source: bank-guarantee-issuance-v1.md
-raci: [PS-BGIT-002:C]
 approval: approved
 approvalBy: m.berger
 approvalDate: 2026-05-20

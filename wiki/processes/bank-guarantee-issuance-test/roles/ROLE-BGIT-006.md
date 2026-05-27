@@ -6,7 +6,6 @@ title: Legal team
 status: draft
 confidence: medium
 source: bank-guarantee-issuance-v1.md
-raci: [PS-BGIT-003:R]
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-20

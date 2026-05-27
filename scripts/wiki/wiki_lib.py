@@ -254,6 +254,70 @@ def parse_transition_dsl(entry: str | dict) -> dict | None:
     return {"to": to, "kind": kind, "when": when}
 
 
+# ---- RACI bundle ---------------------------------------------------------
+# Role elements declare their RACI participation across process-steps. Once a
+# `step:level` mini-DSL on the role's frontmatter, now lifted to the per-process
+# raci.json bundle (same shape rationale as transitions — structured JSON in a
+# sidecar instead of stringly-typed entries on the frontmatter).
+
+RACI_LEVELS = ("R", "A", "C", "I")
+
+
+def load_raci(slug: str) -> dict[str, list[dict]]:
+    """The whole RACI bundle for a process — {role_id: [{step, level}, ...]}."""
+    bundle = _load_bundle(slug, "raci.json")
+    return {
+        rid: [e for e in entries if isinstance(e, dict)]
+        for rid, entries in bundle.items()
+        if isinstance(entries, list)
+    }
+
+
+def get_raci(slug: str, role_id: str) -> list[dict]:
+    """The RACI list for one role. [] if absent."""
+    return load_raci(slug).get(role_id, [])
+
+
+def set_raci(slug: str, role_id: str, raci: list[dict]) -> None:
+    """Replace one role's RACI entry. Removes the key when empty."""
+    bundle = load_raci(slug)
+    cleaned: list[dict] = []
+    for entry in raci:
+        if not isinstance(entry, dict):
+            continue
+        step = str(entry.get("step", "")).strip()
+        if not step:
+            continue
+        level = str(entry.get("level", "")).strip().upper()
+        if level not in RACI_LEVELS:
+            continue
+        cleaned.append({"step": step, "level": level})
+    if cleaned:
+        bundle[role_id] = cleaned
+    else:
+        bundle.pop(role_id, None)
+    _save_bundle(slug, "raci.json", bundle)
+
+
+def parse_raci_dsl(entry: str | dict) -> dict | None:
+    """Accept a structured {step, level} dict or the legacy `step:level`
+    string. Returns None for an entry with no step id or an invalid level —
+    the same lenience the transitions helper has."""
+    if isinstance(entry, dict):
+        step = str(entry.get("step", "")).strip()
+        level = str(entry.get("level", "")).strip().upper()
+    else:
+        s = str(entry)
+        idx = s.find(":")
+        if idx == -1:
+            return None
+        step = s[:idx].strip()
+        level = s[idx + 1 :].strip().upper()
+    if not step or level not in RACI_LEVELS:
+        return None
+    return {"step": step, "level": level}
+
+
 # ---- Section + ownership resolution -------------------------------------
 # CONTENT-MODEL-PLAN.md D2/D6. The `assumptions` section has no fixed owning
 # specialist; an assumption is challenged through whichever specialist owns
@@ -447,15 +511,18 @@ def write_element_spec(spec: dict, by: str | None = None) -> tuple[Path, str]:
         r["key"]
         for r in ((types[etype].get("frontmatter") or {}).get("relations") or [])
     }
-    # `raci` is an id-list carrying per-edge metadata; it stays on the
-    # frontmatter. `transitions` also carries per-edge metadata, but its
-    # structured shape ({to, kind, when}) lives in the per-process
-    # transitions.json bundle — pulled out of the spec separately, below.
-    rel_keys |= {"raci"}
+    # `transitions` and `raci` carry per-edge metadata that won't survive the
+    # flat-frontmatter list format; both live in their own per-process JSON
+    # bundles. They're pulled out of the spec here, normalised below, and
+    # written to disk only after the element file itself lands.
     transitions_spec = None
+    raci_spec = None
     for key, val in (spec.get("relations") or {}).items():
         if key == "transitions":
             transitions_spec = val
+            continue
+        if key == "raci":
+            raci_spec = val
             continue
         if key not in rel_keys:
             print(
@@ -498,14 +565,14 @@ def write_element_spec(spec: dict, by: str | None = None) -> tuple[Path, str]:
     existed = path.is_file()
 
     # Rewriting an existing element: carry forward every frontmatter key the
-    # spec did not re-supply, so a rewrite is never lossy. `provenance` and
-    # `transitions` are skipped — they used to live in frontmatter but now
-    # live in per-process bundles; a stale frontmatter line from before the
-    # migration must not be resurrected.
+    # spec did not re-supply, so a rewrite is never lossy. `provenance`,
+    # `transitions` and `raci` are skipped — they used to live in frontmatter
+    # but now live in per-process bundles; a stale frontmatter line from
+    # before the migration must not be resurrected.
     if existed:
         prior, _ = parse_frontmatter(path.read_text(encoding="utf-8"))
         for key, val in prior.items():
-            if key in ("provenance", "transitions"):
+            if key in ("provenance", "transitions", "raci"):
                 continue
             frontmatter.setdefault(key, val)
         # ...but a rewrite supersedes the content the SME approved — re-open it.
@@ -523,8 +590,9 @@ def write_element_spec(spec: dict, by: str | None = None) -> tuple[Path, str]:
     path.write_text(serialize_element(frontmatter, spec["blocks"]), encoding="utf-8")
 
     # Sidecar bundles: provenance for any template-bearing element; transitions
-    # for elements that declared one. Write after the element file is in place
-    # so a failed element write doesn't leave a dangling bundle entry.
+    # for elements that declared one; raci for role elements. Written after
+    # the element file is in place so a failed element write doesn't leave a
+    # dangling bundle entry.
     set_provenance(spec["slug"], spec["id"], prov_for_bundle)
     if transitions_spec is not None:
         parsed_transitions = [
@@ -533,6 +601,11 @@ def write_element_spec(spec: dict, by: str | None = None) -> tuple[Path, str]:
             if t is not None
         ]
         set_transitions(spec["slug"], spec["id"], parsed_transitions)
+    if raci_spec is not None:
+        parsed_raci = [
+            r for r in (parse_raci_dsl(entry) for entry in raci_spec) if r is not None
+        ]
+        set_raci(spec["slug"], spec["id"], parsed_raci)
 
     log_write(spec["slug"], spec["id"], etype, action)
     return path, action

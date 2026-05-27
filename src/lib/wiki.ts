@@ -115,6 +115,13 @@ export interface Transition {
   when: string;
 }
 
+/** One RACI assignment on a role: how the role participates in a step.
+ *  R = Responsible, A = Accountable, C = Consulted, I = Informed. */
+export interface RaciEntry {
+  step: string;
+  level: "R" | "A" | "C" | "I";
+}
+
 export interface WikiPage {
   id: string;
   type: string;
@@ -137,6 +144,9 @@ export interface WikiPage {
    *  at load time, keyed by element id. Empty / undefined for elements that
    *  do not declare a flow (anything other than process-step). */
   transitions?: Transition[];
+  /** RACI assignments — read from wiki/processes/<slug>/raci.json at load
+   *  time, keyed by element id. Only role elements declare RACI. */
+  raci?: RaciEntry[];
 }
 
 /** A conflict document-ingest flagged — doc vs wiki, left for the SME. */
@@ -393,19 +403,23 @@ export function getProcess(slug: string): ProcessDoc | null {
     }
   };
 
-  // Lift provenance + transitions out of the per-process bundles and attach
-  // them to each element by id, so consumers see one WikiPage with everything
-  // already joined. Bundles live next to the element folders — see
+  // Lift provenance + transitions + raci out of the per-process bundles and
+  // attach them to each element by id, so consumers see one WikiPage with
+  // everything already joined. Bundles live next to the element folders — see
   // scripts/wiki/migrate_to_bundles.py for the on-disk shape.
   const provenanceBundle =
     readJson<Record<string, Record<string, ProvenanceEntry>>>("provenance.json") ?? {};
   const transitionsBundle =
     readJson<Record<string, Transition[]>>("transitions.json") ?? {};
+  const raciBundle =
+    readJson<Record<string, RaciEntry[]>>("raci.json") ?? {};
   for (const el of elements) {
     const prov = provenanceBundle[el.id];
     if (prov) el.provenance = prov;
     const trans = transitionsBundle[el.id];
     if (trans && trans.length) el.transitions = trans;
+    const raci = raciBundle[el.id];
+    if (raci && raci.length) el.raci = raci;
   }
   // The lint report, with the dismissal sidecar re-applied — so a finding the
   // SME set aside stays dismissed even after run-lint rewrites lint.json.

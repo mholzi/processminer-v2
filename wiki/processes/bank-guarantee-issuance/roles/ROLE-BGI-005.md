@@ -6,7 +6,6 @@ title: Credit team
 status: draft
 confidence: high
 source: bank-guarantee-issuance-v1.md
-raci: [PS-BGI-002:R]
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-20

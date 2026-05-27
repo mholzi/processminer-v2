@@ -289,9 +289,8 @@
         ],
         "required": [],
         "raci": {
-          "format": "step:level",
           "levels": ["R", "A", "C", "I"],
-          "note": "How this role participates in each process step — the RACI assignment that drives the RACI matrix. Frontmatter key `raci` — a list, each entry `<stepId>:<level>`: the process-step id and the level (R responsible, A accountable, C consulted, I informed). A role carries an entry only for the steps it participates in. Across all roles, every step needs at least one R and exactly one A."
+          "note": "How this role participates in each process step — the RACI assignment that drives the RACI matrix. Lives in the per-process sidecar `wiki/processes/<slug>/raci.json`, keyed by role id. Each entry is `{step, level}` — the process-step id and the level (R responsible, A accountable, C consulted, I informed). A role carries an entry only for the steps it participates in. write_element.py / write_elements.py accept entries on the spec under `relations.raci` as either the structured `{step, level}` object or the legacy `<stepId>:<level>` string (the writer normalises). patch_element.py exposes the same field as `--list raci <step:level, ...>`. Across all roles, every step needs at least one R and exactly one A."
         }
       },
       "template": [

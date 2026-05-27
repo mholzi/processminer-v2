@@ -6,7 +6,6 @@ title: Payments Ops Lead
 status: draft
 confidence: high
 source: ddmm-dtp-mockup.md
-raci: [PS-DDMM-002:A, PS-DDMM-003:I, PS-DDMM-005:A, PS-DDMM-006:A, PS-DDMM-007:A]
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-19

@@ -6,7 +6,6 @@ title: Compliance Analyst
 status: draft
 confidence: medium
 source: bank-guarantee-issuance-v1.md
-raci: [PS-BGIT-004:R]
 approval: approved
 approvalBy: m.berger
 approvalDate: 2026-05-20

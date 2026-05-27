@@ -1,7 +1,6 @@
 import type { WikiPage } from "@/lib/wiki";
 import { type Kind, type Transition, orderSteps, transitionsOf } from "@/lib/stepOrder";
 import ElementHovercard from "./ElementHovercard";
-import { asList } from "@/lib/meta";
 
 // The process-step flow — a swimlane strip. Steps are ordered left-to-right by
 // a topological sort of their `transitions` (see lib/stepOrder) and stacked
@@ -63,20 +62,17 @@ export default function ProcessFlow({
   const indexOf: Record<string, number> = {};
   sorted.forEach((s, i) => (indexOf[s.id] = i));
 
-  // --- Lane assignment: the role that performs each step. RACI data lives on
-  // role pages (`raci: [STEP:LEVEL]`); the Responsible role owns the lane, with
-  // the Accountable role as fallback when no R is set. ---
+  // --- Lane assignment: the role that performs each step. RACI data lives
+  // in the per-process raci.json bundle, joined onto each role at load time.
+  // The Responsible role owns the lane; the Accountable role is the fallback
+  // when no R is set. ---
   const roleById = new Map(roles.map((r) => [r.id, r]));
   const rRole: Record<string, string> = {};
   const aRole: Record<string, string> = {};
   for (const role of roles) {
-    for (const entry of asList(role.meta.raci)) {
-      const [sid, lvl] = entry.split(":");
-      if (!sid || !lvl) continue;
-      const id = sid.trim();
-      const level = lvl.trim().toUpperCase();
-      if (level === "R" && !(id in rRole)) rRole[id] = role.id;
-      else if (level === "A" && !(id in aRole)) aRole[id] = role.id;
+    for (const entry of role.raci ?? []) {
+      if (entry.level === "R" && !(entry.step in rRole)) rRole[entry.step] = role.id;
+      else if (entry.level === "A" && !(entry.step in aRole)) aRole[entry.step] = role.id;
     }
   }
   const ownerOf = (stepId: string) =>

@@ -30,18 +30,19 @@ from wiki_lib import (  # noqa: E402
     get_provenance,
     iter_elements,
     parse_blocks,
+    parse_raci_dsl,
     parse_transition_dsl,
     serialize_element,
     set_provenance,
+    set_raci,
     set_transitions,
     stamp_edit,
 )
 
-# List frontmatter keys that are not schema relations but are legitimately
-# id-lists with per-edge metadata. `raci` lives on the frontmatter; transitions
-# live in the per-process transitions.json bundle but are exposed through the
-# same `--list transitions` CLI for the skills' continuity.
-NON_RELATION_LISTS = {"raci"}
+# `transitions` and `raci` carry per-edge metadata and live in per-process
+# JSON bundles, not on the element frontmatter. They're still exposed through
+# the same `--list <key>` CLI for skill continuity — the routing happens below.
+BUNDLE_LISTS = {"transitions", "raci"}
 
 
 def main(argv: list[str]) -> None:
@@ -73,9 +74,10 @@ def main(argv: list[str]) -> None:
     path, meta, body = found
     blocks = parse_blocks(body)
 
-    # The transitions bundle write happens after the body+frontmatter is
+    # Transitions / raci bundle writes happen after the body+frontmatter is
     # rewritten, so a failed file write doesn't leave a stale bundle entry.
     pending_transitions: list[dict] | None = None
+    pending_raci: list[dict] | None = None
 
     if mode == "--block":
         try:
@@ -99,42 +101,47 @@ def main(argv: list[str]) -> None:
         set_provenance(slug, eid, prov)
         what = f"block '## {key}' (provenance reset to proposed)"
     elif mode == "--list":
-        # `transitions` is the per-edge list that lives in the per-process
-        # transitions.json bundle, exposed through `--list` for skill continuity.
-        # Other id-lists must be schema-declared relations for this element's
-        # type. A relation's reverse view (e.g. a system's steps) is derived
-        # from the canonical side, never stored — patching it creates the
-        # one-sided links lint then has to chase. Fail loudly on the misuse.
-        if key == "transitions":
+        # `transitions` and `raci` are per-edge lists that live in their own
+        # per-process JSON bundles, exposed through `--list` for skill
+        # continuity. Other id-lists must be schema-declared relations for this
+        # element's type. A relation's reverse view (e.g. a system's steps) is
+        # derived from the canonical side, never stored — patching it creates
+        # the one-sided links lint then has to chase. Fail loudly on the misuse.
+        if key in BUNDLE_LISTS:
             items = [x.strip() for x in value.split(",") if x.strip()]
-            pending_transitions = [
-                t
-                for t in (parse_transition_dsl(entry) for entry in items)
-                if t is not None
-            ]
-            what = "field 'transitions' (bundle)"
+            if key == "transitions":
+                pending_transitions = [
+                    t
+                    for t in (parse_transition_dsl(entry) for entry in items)
+                    if t is not None
+                ]
+            else:
+                pending_raci = [
+                    r for r in (parse_raci_dsl(entry) for entry in items)
+                    if r is not None
+                ]
+            what = f"field '{key}' (bundle)"
         else:
-            if key not in NON_RELATION_LISTS:
-                etype = str(meta.get("type", ""))
-                info = element_types().get(etype, {})
-                rel_keys = {
-                    r["key"]
-                    for r in ((info.get("frontmatter") or {}).get("relations") or [])
-                }
-                if key not in rel_keys:
-                    sys.exit(
-                        f"error: '{key}' is not a schema relation for type "
-                        f"'{etype}'. Its reverse view is derived from the "
-                        f"canonical side — patch that side instead."
-                    )
+            etype = str(meta.get("type", ""))
+            info = element_types().get(etype, {})
+            rel_keys = {
+                r["key"]
+                for r in ((info.get("frontmatter") or {}).get("relations") or [])
+            }
+            if key not in rel_keys:
+                sys.exit(
+                    f"error: '{key}' is not a schema relation for type "
+                    f"'{etype}'. Its reverse view is derived from the "
+                    f"canonical side — patch that side instead."
+                )
             items = [x.strip() for x in value.split(",") if x.strip()]
             meta[key] = items
             what = f"field '{key}' (list)"
     else:  # --field
-        if key in ("provenance", "transitions"):
+        if key in ("provenance", "transitions", "raci"):
             sys.exit(
                 f"error: '{key}' lives in wiki/processes/{slug}/{key}.json — "
-                f"use `--list transitions ...` for transitions, or "
+                f"use `--list {key} ...` for transitions/raci, or "
                 f"patch_element.py --block to update provenance via a block edit."
             )
         meta[key] = value
@@ -167,6 +174,8 @@ def main(argv: list[str]) -> None:
     path.write_text(serialize_element(meta, blocks), encoding="utf-8")
     if pending_transitions is not None:
         set_transitions(slug, eid, pending_transitions)
+    if pending_raci is not None:
+        set_raci(slug, eid, pending_raci)
     print(f"patched {what} of {eid} — {path.relative_to(ROOT)}")
 
 

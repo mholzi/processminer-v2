@@ -550,10 +550,10 @@ def run() -> None:
         step_id.startswith("PS-SELF-") and role_id.startswith("ROLE-SELF-")
         and (PROC_DIR / "process-steps" / f"{step_id}.md").is_file()
         and (PROC_DIR / "roles" / f"{role_id}.md").is_file(), r.stdout)
-    role_meta, _ = parse_frontmatter(
-        (PROC_DIR / "roles" / f"{role_id}.md").read_text())
+    raci_bundle = json.loads((PROC_DIR / "raci.json").read_text())
     chk("write_elements resolves an @tempKey cross-reference",
-        role_meta.get("raci") == [f"{step_id}:R"], role_meta)
+        raci_bundle.get(role_id) == [{"step": step_id, "level": "R"}],
+        raci_bundle)
     step_meta, _ = parse_frontmatter(
         (PROC_DIR / "process-steps" / f"{step_id}.md").read_text())
     chk("write_elements applies the manifest default source",
