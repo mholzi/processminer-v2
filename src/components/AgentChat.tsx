@@ -1,10 +1,7 @@
 "use client";
 
 import {
-  Fragment,
-  cloneElement,
   createElement,
-  isValidElement,
   useEffect,
   useMemo,
   useRef,
@@ -14,9 +11,8 @@ import {
 } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
-import type { WikiPage } from "@/lib/wiki";
-import ElementHovercard from "./ElementHovercard";
-import { pickPerspective } from "@/lib/wait-perspective";
+import { linkify, type GetRef } from "@/lib/linkify";
+import { usePerspectiveRotation } from "@/hooks/usePerspectiveRotation";
 
 export interface ChatMessage {
   id: string;
@@ -24,75 +20,13 @@ export interface ChatMessage {
   text: string;
 }
 
-// Resolve an element id (e.g. "PS-FR-001") to its page + type label.
-export type GetRef = (
-  id: string,
-) => { page: WikiPage; typeLabel: string } | undefined;
-
-// Element ids look like <PREFIX>-<SLUG>-<NUMBER>, e.g. PS-FR-001, OAF-FR-012.
-const ELEMENT_ID = /\b[A-Z]{1,4}-[A-Z]{2,4}-\d{3}\b/g;
-
-// Split a plain text run, wrapping every resolvable element id in a hovercard
-// so it previews on hover. Ids that don't resolve are left as plain text.
-function linkifyText(
-  text: string,
-  getRef: GetRef,
-  onRefClick?: (id: string) => void,
-): ReactNode {
-  const out: ReactNode[] = [];
-  let last = 0;
-  let m: RegExpExecArray | null;
-  ELEMENT_ID.lastIndex = 0;
-  while ((m = ELEMENT_ID.exec(text))) {
-    const ref = getRef(m[0]);
-    if (!ref) continue;
-    if (m.index > last) out.push(text.slice(last, m.index));
-    out.push(
-      <ElementHovercard
-        key={`${m[0]}-${m.index}`}
-        element={ref.page}
-        typeLabel={ref.typeLabel}
-        onSelect={onRefClick}
-      >
-        <span className="chat-ref">{m[0]}</span>
-      </ElementHovercard>,
-    );
-    last = m.index + m[0].length;
-  }
-  if (out.length === 0) return text;
-  if (last < text.length) out.push(text.slice(last));
-  return out;
-}
-
-// Recurse through rendered markdown children, linkifying text runs. Code and
-// pre blocks are left untouched — ids inside literal code aren't references.
-function linkify(
-  node: ReactNode,
-  getRef: GetRef,
-  onRefClick?: (id: string) => void,
-): ReactNode {
-  if (typeof node === "string") return linkifyText(node, getRef, onRefClick);
-  if (Array.isArray(node))
-    return node.map((n, i) => (
-      <Fragment key={i}>{linkify(n, getRef, onRefClick)}</Fragment>
-    ));
-  if (isValidElement(node)) {
-    if (node.type === "code" || node.type === "pre") return node;
-    const children = (node.props as { children?: ReactNode }).children;
-    if (children == null) return node;
-    return cloneElement(node, undefined, linkify(children, getRef, onRefClick));
-  }
-  return node;
-}
+export type { GetRef };
 
 /** Short label for the active-skill chip's ETA — "12 min" / "45 s". */
 function formatEtaShort(ms: number): string {
   if (ms < 60_000) return `${Math.round(ms / 1000)} s`;
   return `${Math.round(ms / 60_000)} min`;
 }
-
-/** Don't show the perspective line before the turn has run this long. */
-const PERSPECTIVE_THRESHOLD_MS = 2 * 60 * 1000;
 
 /** "1 minute" / "14 minutes" — perspective copy reads better in whole minutes. */
 function formatElapsedMinutes(ms: number): string {
@@ -199,28 +133,7 @@ export default function AgentChat({
     [getRef, onRefClick],
   );
 
-  // Long-wait perspective footer — a dry one-liner shown once the turn has
-  // been running for >2 min. We tick elapsed every 5s (minute-precision is
-  // enough; saves a re-render every second). The line is picked exactly
-  // once per turn — the first time the threshold is crossed — so the user
-  // can read it without it flickering on every refresh.
-  const [elapsedMs, setElapsedMs] = useState(0);
-  const [perspective, setPerspective] = useState<string | null>(null);
-  useEffect(() => {
-    if (!pending) {
-      setElapsedMs(0);
-      setPerspective(null);
-      return;
-    }
-    const start = Date.now();
-    const t = setInterval(() => setElapsedMs(Date.now() - start), 5000);
-    return () => clearInterval(t);
-  }, [pending]);
-  useEffect(() => {
-    if (pending && elapsedMs >= PERSPECTIVE_THRESHOLD_MS && perspective === null) {
-      setPerspective(pickPerspective());
-    }
-  }, [pending, elapsedMs, perspective]);
+  const { elapsedMs, perspective } = usePerspectiveRotation(pending);
 
   useEffect(() => {
     const el = scrollRef.current;

@@ -137,11 +137,30 @@ export default function AuthGate({
         <ArchitectureCanvas
           schema={schema}
           doc={openDoc}
+          docs={docs}
           user={user}
           onUserUpdated={setUser}
           onEnterAdmin={canManageAccess(user) ? enterAdmin : undefined}
           onSignOut={handleSignOut}
           onReturnToInbox={() => setArchitectSlug(undefined)}
+          onSwitchProcess={(slug) => setArchitectSlug(slug)}
+          onOpenInProcessminer={(slug, elementId) => {
+            // Update the URL so ProcessDocScreen's initialSlug reader picks
+            // up the right process on mount, then flip the workspace. The
+            // element id is left in the fragment so the canvas can scroll
+            // to it once the section resolves.
+            try {
+              window.history.replaceState(
+                null,
+                "",
+                `?p=${slug}#${elementId}`,
+              );
+            } catch {
+              /* dom unavailable in tests — fine */
+            }
+            setArchitectSlug(undefined);
+            setWorkspace("processminer");
+          }}
         />
       );
     }

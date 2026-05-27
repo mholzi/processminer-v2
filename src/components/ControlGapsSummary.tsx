@@ -1,6 +1,7 @@
 "use client";
 
 import type { WikiPage } from "@/lib/wiki";
+import type { GetRef } from "@/lib/linkify";
 import ElementHovercard from "./ElementHovercard";
 
 // Coverage matrix for Control Gaps (compliance-gap elements) — severity ×
@@ -48,7 +49,7 @@ export default function ControlGapsSummary({
 }: {
   gaps: WikiPage[];
   onPickElement?: (id: string) => void;
-  getRef?: (id: string) => { page: WikiPage; typeLabel: string } | undefined;
+  getRef?: GetRef;
 }) {
   if (gaps.length === 0) return null;
 
@@ -146,7 +147,7 @@ function RowFragment({
   grid: Record<Bucket, WikiPage[]>;
   highlightOpen: boolean;
   onPickElement?: (id: string) => void;
-  getRef?: (id: string) => { page: WikiPage; typeLabel: string } | undefined;
+  getRef?: GetRef;
 }) {
   return (
     <>

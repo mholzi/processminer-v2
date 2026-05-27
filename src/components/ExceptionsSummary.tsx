@@ -1,7 +1,9 @@
 "use client";
 
 import type { WikiPage } from "@/lib/wiki";
+import type { GetRef } from "@/lib/linkify";
 import ElementHovercard from "./ElementHovercard";
+import { str } from "@/lib/meta";
 
 // At-a-glance risk-matrix heatmap above the exception cards. 3 × 3 grid:
 // frequency (rare/sometimes/often) × impact (high/med/low). Each cell lists
@@ -37,10 +39,6 @@ function cellTier(imp: Impact, freq: FreqBucket): 1 | 2 | 3 {
   return 1;
 }
 
-function str(v: unknown): string {
-  return typeof v === "string" ? v : "";
-}
-
 function parseImpact(raw: string): Impact | null {
   const v = raw.trim().toUpperCase();
   if (v === "HIGH" || v === "MEDIUM" || v === "LOW") return v;
@@ -68,7 +66,7 @@ export default function ExceptionsSummary({
   exceptions: WikiPage[];
   onPickElement?: (id: string) => void;
   /** Resolver for the shared hovercard preview. */
-  getRef?: (id: string) => { page: WikiPage; typeLabel: string } | undefined;
+  getRef?: GetRef;
 }) {
   if (exceptions.length === 0) return null;
 

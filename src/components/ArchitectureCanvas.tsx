@@ -8,12 +8,19 @@ import Markdown from "./Markdown";
 import AgentChat from "./AgentChat";
 import ContributorsView from "./ContributorsView";
 import ElementHovercard from "./ElementHovercard";
+import type { GetRef } from "@/lib/linkify";
+import HelpCenter from "./HelpCenter";
+import ReadOnlyElementCard from "./ReadOnlyElementCard";
+import ProcessSwitcher from "./ProcessSwitcher";
 import SettingsPanel from "./SettingsPanel";
 import SourceDocViewer from "./SourceDocViewer";
 import SourcesPanel from "./SourcesPanel";
+import UploadModal from "./UploadModal";
 import UserMenu from "./UserMenu";
 import { useAgentChat } from "@/hooks/useAgentChat";
 import { SKILL_LABEL } from "@/lib/agent-chat-utils";
+import { isSourcedType } from "@/lib/element-types";
+import type { WikiPage } from "@/lib/wiki";
 
 // Architect-side scope preamble — same shape as the Processminer one but
 // tells the CLI the user is now an architect authoring the target / solution
@@ -68,6 +75,35 @@ const UPSTREAM_SECTIONS: { id: string; label: string }[] = [
   { id: "integrations", label: "As-Is Integrations" },
 ];
 
+// Numbered area spine — same pattern as Processminer's nav-spine.
+// Each area groups views that share a logical phase of the architect's
+// work; clicking a spine node jumps to that area's default view.
+type AmAreaId = "inputs" | "domain" | "solution" | "cross";
+const AM_AREAS: {
+  id: AmAreaId;
+  label: string;
+  defaultView: ArchView;
+}[] = [
+  { id: "inputs", label: "Inputs from Processminer", defaultView: "inputs" },
+  { id: "domain", label: "Domain Architecture", defaultView: "capabilities" },
+  { id: "solution", label: "Solution Architecture", defaultView: "integrations" },
+  { id: "cross", label: "Cross-cutting", defaultView: "diagram" },
+];
+// Reverse map: which area owns a given view. Drives the active-spine-node
+// highlight derived from the current view.
+const VIEW_AREA: Partial<Record<ArchView, AmAreaId>> = {
+  inputs: "inputs",
+  capabilities: "domain",
+  applications: "domain",
+  adrs: "domain",
+  integrations: "solution",
+  components: "solution",
+  nfrs: "solution",
+  migration: "solution",
+  diagram: "cross",
+  traceability: "cross",
+};
+
 type ArchView =
   | "adrs"
   | "diagram"
@@ -86,19 +122,28 @@ type ArchView =
 export default function ArchitectureCanvas({
   schema,
   doc,
+  docs,
   user,
   onUserUpdated,
   onEnterAdmin,
   onSignOut,
   onReturnToInbox,
+  onSwitchProcess,
+  onOpenInProcessminer,
 }: {
   schema: Schema;
   doc: ProcessDoc;
+  docs: ProcessDoc[];
   user: User;
   onUserUpdated: (u: User) => void;
   onEnterAdmin?: () => void;
   onSignOut: () => void;
   onReturnToInbox: () => void;
+  onSwitchProcess: (slug: string) => void;
+  /** Switch to the Processminer workspace on this slug, scrolled to the
+   *  given element id. The inputs view exposes this as "Open in
+   *  Processminer ↗" on every element card. Omit to hide the link. */
+  onOpenInProcessminer?: (slug: string, elementId: string) => void;
 }) {
   const [view, setView] = useState<ArchView>("adrs");
   // When view === "doc", which source-document file is open.
@@ -106,6 +151,12 @@ export default function ArchitectureCanvas({
   // Chat panel open/closed — collapsed state mirrors ProcessMiner's shell so
   // the architect can hide the rail and reclaim canvas width for the diagram.
   const [chatOpen, setChatOpen] = useState(true);
+  // Section-list collapse — mirrors Processminer's `«`/`»` spine-toggle.
+  // When collapsed, only the numbered spine (80 px) is visible; the canvas
+  // reclaims the freed sections-column width.
+  const [sectionsCollapsed, setSectionsCollapsed] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
   // When view === "inputs", which upstream section is open. Elements in that
   // section render vertically as Processminer-style cards — no separate
   // "selected element" because every card is already expanded.
@@ -122,6 +173,51 @@ export default function ArchitectureCanvas({
     for (const el of doc.elements) counts[el.section] = (counts[el.section] ?? 0) + 1;
     return counts;
   }, [doc]);
+
+  // ProcessSwitcher list — same shape ProcessMiner builds in ProcessDocScreen.
+  // Lets the architect hop between processes from the topbar exactly like
+  // ProcessMiner; "+ New process" and feedback are no-ops here because
+  // ArchitectMiner consumes processes rather than authoring new ones.
+  const sectionToAreaIdx = useMemo(() => {
+    const m = new Map<string, number>();
+    schema.areas.forEach((a, i) => {
+      for (const s of a.sections) m.set(s.id, i);
+    });
+    return m;
+  }, [schema.areas]);
+  const isOpen = (f: { status?: string }) => f.status !== "resolved";
+  const processList = useMemo(
+    () =>
+      docs.map((d) => {
+        const reviewed = (e: WikiPage) =>
+          isSourcedType(e.type)
+            ? ["relevant", "disregarded"].includes(String(e.meta.relevance ?? ""))
+            : String(e.meta.approval ?? "in-progress") === "approved";
+        const areaTotals = [0, 0, 0, 0, 0, 0];
+        const areaApproved = [0, 0, 0, 0, 0, 0];
+        for (const e of d.elements) {
+          const idx = sectionToAreaIdx.get(e.section);
+          if (idx === undefined) continue;
+          areaTotals[idx]++;
+          if (reviewed(e)) areaApproved[idx]++;
+        }
+        return {
+          slug: d.slug,
+          id: d.process.id,
+          title: d.process.title,
+          lastModified: d.lastModified,
+          progress: areaTotals.map((t, i) =>
+            t === 0 ? 0 : areaApproved[i] / t,
+          ),
+          status: {
+            review: d.elements.filter((e) => !reviewed(e)).length,
+            conflicts: d.ingest?.conflicts?.length ?? 0,
+            lint: d.lint?.findings?.filter(isOpen).length ?? 0,
+          },
+        };
+      }),
+    [docs, sectionToAreaIdx],
+  );
 
   // Real architect-side data for the open process — read straight from
   // doc.elements via the 7 target-architecture section ids. Empty arrays
@@ -354,112 +450,63 @@ export default function ArchitectureCanvas({
             <span className="tb-modchip-wordmark">ARCHITECTMINER</span>
           </button>
         </Tooltip>
-        <span className="am-crumb">
-          <span style={{ color: "var(--ink)" }}>{doc.process.title}</span>
-          <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
-          {view === "adrs" && (
-            <>
-              <b>Architecture Decisions</b>
-              {archData.adrsReal.length > 0 && (
-                <>
-                  <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
-                  {archData.adrsReal[0].id}
-                </>
-              )}
-            </>
-          )}
-          {view === "diagram" && (
-            <>
-              <b>Diagram</b>
-              <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
-              target state
-            </>
-          )}
-          {view === "traceability" && (
-            <>
-              <b>Traceability</b>
-              <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
-              audit-ready view
-            </>
-          )}
-          {view === "capabilities" && (
-            <>
-              <b>Capabilities</b>
-              {archData.caps.length > 0 && (
-                <>
-                  <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
-                  {archData.caps[0].id}
-                </>
-              )}
-            </>
-          )}
-          {view === "applications" && (
-            <>
-              <b>Target Applications</b>
-              {archData.apps.length > 0 && (
-                <>
-                  <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
-                  {archData.apps[0].id}
-                </>
-              )}
-            </>
-          )}
-          {view === "integrations" && (
-            <>
-              <b>Target Integrations</b>
-              {archData.integrations.length > 0 && (
-                <>
-                  <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
-                  {archData.integrations[0].id}
-                </>
-              )}
-            </>
-          )}
-          {view === "components" && (
-            <>
-              <b>Components</b>
-              {archData.components.length > 0 && (
-                <>
-                  <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
-                  {archData.components[0].id}
-                </>
-              )}
-            </>
-          )}
-          {view === "nfrs" && (
-            <>
-              <b>NFRs</b>
-              {archData.nfrsReal.length > 0 && (
-                <>
-                  <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
-                  {archData.nfrsReal[0].id}
-                </>
-              )}
-            </>
-          )}
-          {view === "migration" && (
-            <>
-              <b>Migration Phases</b>
-              {archData.migrations.length > 0 && (
-                <>
-                  <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
-                  {archData.migrations[0].id}
-                </>
-              )}
-            </>
-          )}
-          {view === "inputs" && (
-            <>
-              <span className="am-input-ro">FROM PROCESSMINER</span>
-              <span style={{ margin: "0 8px", opacity: 0.6 }}>·</span>
-              <b>{inputSectionLabel}</b>
-            </>
-          )}
-        </span>
+        <ProcessSwitcher
+          processes={processList}
+          currentSlug={doc.slug}
+          onSelect={onSwitchProcess}
+          onCreate={() => {}}
+          onOpenFeedback={() => {}}
+        />
         <span className="spacer" style={{ flex: 1 }} />
-        <span className="am-user">
-          <b>{user.name}</b> · {user.role}
-        </span>
+        <div className="tb-icons">
+          <Tooltip label="Upload document">
+            <button
+              className="tb-icon"
+              onClick={() => setUploadModalOpen(true)}
+              aria-label="Upload document"
+            >
+              <svg viewBox="0 0 24 24">
+                <path d="M12 16V4M6 10l6-6 6 6" />
+                <path d="M4 20h16" />
+              </svg>
+            </button>
+          </Tooltip>
+          <Tooltip label="Cross-check traces across all architect views">
+            <button
+              className="tb-icon"
+              onClick={() =>
+                handleSend(
+                  `Run the run-lint skill on the process with slug "${doc.slug}" — cross-check traces across all architect views.`,
+                  { skill: "run-lint", displayText: "Cross-check traces across all views." },
+                )
+              }
+              aria-label="Run cross-cut lint"
+            >
+              <svg viewBox="0 0 24 24">
+                <path d="M9 11l3 3 8-8" />
+                <path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9" />
+              </svg>
+              {doc.lint?.findings && doc.lint.findings.filter((f) => f.status !== "resolved").length > 0 && (
+                <span className="tb-badge">
+                  {doc.lint.findings.filter((f) => f.status !== "resolved").length}
+                </span>
+              )}
+            </button>
+          </Tooltip>
+          <Tooltip label="Help">
+            <button
+              className="tb-icon"
+              onClick={() => setHelpOpen(true)}
+              aria-label="Help"
+            >
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M9.2 9.3a2.8 2.8 0 0 1 5.5.8c0 1.9-2.7 2.4-2.7 4" />
+                <path d="M12 17.3v.01" />
+              </svg>
+            </button>
+          </Tooltip>
+        </div>
         <UserMenu
           user={user}
           onUserUpdated={onUserUpdated}
@@ -469,102 +516,178 @@ export default function ArchitectureCanvas({
       </header>
 
       <div className="am-canvas-shell">
-        <aside className="am-canvas-side">
-          <div className="am-canvas-crumb">
-            PROCESS · <span style={{ color: "var(--ink)", fontWeight: 600 }}>{doc.process.title}</span>
+        <nav
+          className={`rail rail-l am-rail${
+            sectionsCollapsed ? " collapsed" : ""
+          }`}
+        >
+          <div className="nav-spine">
+            <button
+              type="button"
+              className="spine-toggle"
+              onClick={() => setSectionsCollapsed((v) => !v)}
+              aria-expanded={!sectionsCollapsed}
+              aria-label={
+                sectionsCollapsed ? "Show section list" : "Hide section list"
+              }
+              title={
+                sectionsCollapsed ? "Show section list" : "Hide section list"
+              }
+            >
+              {sectionsCollapsed ? "»" : "«"}
+            </button>
+            <div className="spine-nodes">
+              {AM_AREAS.map((area, i) => {
+                const activeAreaId = VIEW_AREA[view];
+                const isActive = activeAreaId === area.id;
+                return (
+                  <button
+                    key={area.id}
+                    type="button"
+                    className={`spine-node${isActive ? " active" : ""}`}
+                    onClick={() => setView(area.defaultView)}
+                    aria-current={isActive ? "true" : undefined}
+                    title={area.label}
+                  >
+                    <span className="spine-num">{i + 1}</span>
+                    <span className="spine-lbl">{area.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          <h4 className="am-canvas-grouph">Inputs from Processminer</h4>
-          {UPSTREAM_SECTIONS.map((s) => {
-            const active = view === "inputs" && inputSection === s.id;
-            return (
-              <div
-                key={s.id}
-                className={`am-canvas-secrow${active ? " am-canvas-secrow-on" : ""}`}
-                onClick={() => {
-                  setView("inputs");
-                  setInputSection(s.id);
-                }}
-              >
-                <span>{s.label}</span>
-                <span className="am-canvas-n">{upstreamCounts[s.id] ?? 0}</span>
-              </div>
-            );
-          })}
+          {!sectionsCollapsed && (
+          <div className="nav-sections">
+            <div className="nav-scroll">
+              {VIEW_AREA[view] === "inputs" && (
+                <>
+                  <div className="nav-sec-head">
+                    <span className="nav-sec-title active">
+                      <span className="nav-sec-n">1</span>
+                      Inputs from Processminer
+                    </span>
+                  </div>
+                  {UPSTREAM_SECTIONS.map((s) => {
+                    const active = view === "inputs" && inputSection === s.id;
+                    return (
+                      <div
+                        key={s.id}
+                        className={`am-canvas-secrow${active ? " am-canvas-secrow-on" : ""}`}
+                        onClick={() => {
+                          setView("inputs");
+                          setInputSection(s.id);
+                        }}
+                      >
+                        <span>{s.label}</span>
+                        <span className="am-canvas-n">{upstreamCounts[s.id] ?? 0}</span>
+                      </div>
+                    );
+                  })}
+                </>
+              )}
 
-          <h4 className="am-canvas-grouph">Domain Architecture</h4>
-          <div
-            className={`am-canvas-secrow${view === "capabilities" ? " am-canvas-secrow-on" : ""}`}
-            onClick={() => setView("capabilities")}
-          >
-            <span>Capabilities</span>
-            <span className="am-canvas-n">{archData.caps.length}</span>
-          </div>
-          <div
-            className={`am-canvas-secrow${view === "applications" ? " am-canvas-secrow-on" : ""}`}
-            onClick={() => setView("applications")}
-          >
-            <span>Target Applications</span>
-            <span className="am-canvas-n">{archData.apps.length}</span>
-          </div>
-          <div
-            className={`am-canvas-secrow${view === "adrs" ? " am-canvas-secrow-on" : ""}`}
-            onClick={() => setView("adrs")}
-          >
-            <span>Architecture Decisions</span>
-            <span className="am-canvas-n">{archData.adrsReal.length}</span>
-          </div>
+              {VIEW_AREA[view] === "domain" && (
+                <>
+                  <div className="nav-sec-head">
+                    <span className="nav-sec-title active">
+                      <span className="nav-sec-n">2</span>
+                      Domain Architecture
+                    </span>
+                  </div>
+                  <div
+                    className={`am-canvas-secrow${view === "capabilities" ? " am-canvas-secrow-on" : ""}`}
+                    onClick={() => setView("capabilities")}
+                  >
+                    <span>Capabilities</span>
+                    <span className="am-canvas-n">{archData.caps.length}</span>
+                  </div>
+                  <div
+                    className={`am-canvas-secrow${view === "applications" ? " am-canvas-secrow-on" : ""}`}
+                    onClick={() => setView("applications")}
+                  >
+                    <span>Target Applications</span>
+                    <span className="am-canvas-n">{archData.apps.length}</span>
+                  </div>
+                  <div
+                    className={`am-canvas-secrow${view === "adrs" ? " am-canvas-secrow-on" : ""}`}
+                    onClick={() => setView("adrs")}
+                  >
+                    <span>Architecture Decisions</span>
+                    <span className="am-canvas-n">{archData.adrsReal.length}</span>
+                  </div>
+                </>
+              )}
 
-          <h4 className="am-canvas-grouph">Solution Architecture</h4>
-          <div
-            className={`am-canvas-secrow${view === "integrations" ? " am-canvas-secrow-on" : ""}`}
-            onClick={() => setView("integrations")}
-          >
-            <span>Target Integrations</span>
-            <span className="am-canvas-n">{archData.integrations.length}</span>
-          </div>
-          <div
-            className={`am-canvas-secrow${view === "components" ? " am-canvas-secrow-on" : ""}`}
-            onClick={() => setView("components")}
-          >
-            <span>Components</span>
-            <span className="am-canvas-n">{archData.components.length}</span>
-          </div>
-          <div
-            className={`am-canvas-secrow${view === "nfrs" ? " am-canvas-secrow-on" : ""}`}
-            onClick={() => setView("nfrs")}
-          >
-            <span>NFRs</span>
-            <span className="am-canvas-n">{archData.nfrsReal.length}</span>
-          </div>
-          <div
-            className={`am-canvas-secrow${view === "migration" ? " am-canvas-secrow-on" : ""}`}
-            onClick={() => setView("migration")}
-          >
-            <span>Migration Phases</span>
-            <span className="am-canvas-n">{archData.migrations.length}</span>
-          </div>
+              {VIEW_AREA[view] === "solution" && (
+                <>
+                  <div className="nav-sec-head">
+                    <span className="nav-sec-title active">
+                      <span className="nav-sec-n">3</span>
+                      Solution Architecture
+                    </span>
+                  </div>
+                  <div
+                    className={`am-canvas-secrow${view === "integrations" ? " am-canvas-secrow-on" : ""}`}
+                    onClick={() => setView("integrations")}
+                  >
+                    <span>Target Integrations</span>
+                    <span className="am-canvas-n">{archData.integrations.length}</span>
+                  </div>
+                  <div
+                    className={`am-canvas-secrow${view === "components" ? " am-canvas-secrow-on" : ""}`}
+                    onClick={() => setView("components")}
+                  >
+                    <span>Components</span>
+                    <span className="am-canvas-n">{archData.components.length}</span>
+                  </div>
+                  <div
+                    className={`am-canvas-secrow${view === "nfrs" ? " am-canvas-secrow-on" : ""}`}
+                    onClick={() => setView("nfrs")}
+                  >
+                    <span>NFRs</span>
+                    <span className="am-canvas-n">{archData.nfrsReal.length}</span>
+                  </div>
+                  <div
+                    className={`am-canvas-secrow${view === "migration" ? " am-canvas-secrow-on" : ""}`}
+                    onClick={() => setView("migration")}
+                  >
+                    <span>Migration Phases</span>
+                    <span className="am-canvas-n">{archData.migrations.length}</span>
+                  </div>
+                </>
+              )}
 
-          <h4 className="am-canvas-grouph">Cross-cutting</h4>
-          <div
-            className={`am-canvas-secrow${view === "diagram" ? " am-canvas-secrow-on" : ""}`}
-            onClick={() => setView("diagram")}
-          >
-            <span>Diagram</span>
-          </div>
-          <div
-            className={`am-canvas-secrow${view === "traceability" ? " am-canvas-secrow-on" : ""}`}
-            onClick={() => setView("traceability")}
-          >
-            <span>Traceability</span>
-            <span className="am-canvas-n">88%</span>
-          </div>
-          <div className="am-canvas-secrow am-canvas-secrow-locked">
-            <span>Comments</span>
-            <span className="am-canvas-n">—</span>
-          </div>
+              {VIEW_AREA[view] === "cross" && (
+                <>
+                  <div className="nav-sec-head">
+                    <span className="nav-sec-title active">
+                      <span className="nav-sec-n">4</span>
+                      Cross-cutting
+                    </span>
+                  </div>
+                  <div
+                    className={`am-canvas-secrow${view === "diagram" ? " am-canvas-secrow-on" : ""}`}
+                    onClick={() => setView("diagram")}
+                  >
+                    <span>Diagram</span>
+                  </div>
+                  <div
+                    className={`am-canvas-secrow${view === "traceability" ? " am-canvas-secrow-on" : ""}`}
+                    onClick={() => setView("traceability")}
+                  >
+                    <span>Traceability</span>
+                    <span className="am-canvas-n">88%</span>
+                  </div>
+                  <div className="am-canvas-secrow am-canvas-secrow-locked">
+                    <span>Comments</span>
+                    <span className="am-canvas-n">—</span>
+                  </div>
+                </>
+              )}
+            </div>
 
-          <div className="am-canvas-rail-foot">
+            <div className="am-canvas-rail-foot">
             <button
               type="button"
               className={`contrib-trigger${view === "contributors" ? " active" : ""}`}
@@ -609,8 +732,10 @@ export default function ArchitectureCanvas({
               <span className="contrib-trigger-label">Settings</span>
               <span className="contrib-trigger-chevron">›</span>
             </button>
+            </div>
           </div>
-        </aside>
+          )}
+        </nav>
 
         {view === "adrs" && (
           <>
@@ -705,7 +830,7 @@ export default function ArchitectureCanvas({
                               <h4>{b.heading}</h4>
                             </div>
                             <div className="am-canvas-prose">
-                              <Markdown text={b.text} />
+                              <Markdown text={b.text} getRef={getRef} />
                             </div>
                           </div>
                         ))}
@@ -942,7 +1067,7 @@ export default function ArchitectureCanvas({
                     {cap.blocks.length > 0 && cap.blocks.map((b) => (
                       <div className="am-input-block" key={b.heading}>
                         <h4>{b.heading}</h4>
-                        <div className="am-input-prose"><Markdown text={b.text} /></div>
+                        <div className="am-input-prose"><Markdown text={b.text} getRef={getRef} /></div>
                       </div>
                     ))}
                   </>
@@ -1777,7 +1902,7 @@ export default function ArchitectureCanvas({
                     {m.blocks.length > 0 && m.blocks.map((b) => (
                       <div className="am-input-block" key={b.heading}>
                         <h4>{b.heading}</h4>
-                        <div className="am-input-prose"><Markdown text={b.text} /></div>
+                        <div className="am-input-prose"><Markdown text={b.text} getRef={getRef} /></div>
                       </div>
                     ))}
                   </>
@@ -1809,57 +1934,14 @@ export default function ArchitectureCanvas({
               ) : (
                 <div className="am-input-stack">
                   {inputElements.map((el) => (
-                    <article
+                    <ReadOnlyElementCard
                       key={el.id}
-                      className={`el${el.status === "draft" ? " draft" : ""}`}
-                      id={el.id}
-                    >
-                      <div className="el-top">
-                        <span className="el-id">{el.id}</span>
-                        {el.confidence && (
-                          <Tooltip label={`${el.confidence} confidence`}>
-                            <span className={`el-conf-dot conf-${el.confidence}`} />
-                          </Tooltip>
-                        )}
-                        <label
-                          className={`approval approval-${
-                            el.status === "confirmed" ? "approved" : "none"
-                          }`}
-                          style={{ pointerEvents: "none" }}
-                          title="Read-only — authored in Processminer"
-                        >
-                          <span className="statusctl-dot" aria-hidden="true" />
-                          <span className="statusctl-label">
-                            {el.status === "confirmed" ? "Confirmed" : "Draft"}
-                          </span>
-                        </label>
-                        <span className="el-id" style={{ marginLeft: "auto" }}>
-                          {el.type}
-                        </span>
-                      </div>
-                      <div className="el-title">{el.title}</div>
-
-                      {el.blocks.length > 0 ? (
-                        <div className="el-blocks">
-                          {el.blocks.map((b) => (
-                            <div className="el-block" key={b.heading}>
-                              <div className="el-block-head">
-                                <span className="el-block-head-name">{b.heading}</span>
-                              </div>
-                              <div className="el-block-text">
-                                <Markdown text={b.text} />
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        el.body && (
-                          <div className="el-body">
-                            <Markdown text={el.body} />
-                          </div>
-                        )
-                      )}
-                    </article>
+                      page={el}
+                      schema={schema}
+                      slug={doc.slug}
+                      onOpenInProcessminer={onOpenInProcessminer}
+                      getRef={getRef}
+                    />
                   ))}
                 </div>
               )}
@@ -1923,6 +2005,33 @@ export default function ArchitectureCanvas({
           </>
         )}
       </div>
+      <HelpCenter
+        open={helpOpen}
+        onClose={() => setHelpOpen(false)}
+        schema={schema}
+        onReplayTour={() => setHelpOpen(false)}
+        onOpenFeedback={() => setHelpOpen(false)}
+      />
+      <UploadModal
+        open={uploadModalOpen}
+        slug={doc.slug}
+        uploadedBy={user.name}
+        onClose={() => setUploadModalOpen(false)}
+        onUploaded={(path, fileName) => {
+          // Architect upload — drop the file into raw-sources/<slug>/ same as
+          // the SME path, then ping the chat so the architect can ask the
+          // agent to read it. Do NOT auto-trigger document-ingest — that's a
+          // process-side flow that would author As-Is elements; architect-
+          // uploaded docs are reference material (vendor data sheets, target
+          // operating models, RFP responses).
+          setUploadModalOpen(false);
+          setChatOpen(true);
+          handleSend(
+            `A reference document has been uploaded to ${path} for the "${doc.process.title}" process. Treat it as architect reference material — read it when I ask about its content, but do not run document-ingest on it.`,
+            { displayText: `Uploaded ${fileName} as reference material.` },
+          );
+        }}
+      />
     </div>
   );
 }
@@ -2052,7 +2161,7 @@ function CapCard({
   blocks: { heading: string; text: string }[];
   prov: "verified" | "machine";
   provText?: string;
-  getRef: (id: string) => { page: import("@/lib/wiki").WikiPage; typeLabel: string } | undefined;
+  getRef: GetRef;
   onGoTo: (id: string) => void;
 }) {
   const statusTone = status === "Accepted" ? "hi" : status === "Proposed" ? "mid" : "neu";
@@ -2176,7 +2285,7 @@ function CapCard({
           {blocks.map((b) => (
             <details className="am-canvas-cap-fold am-canvas-cap-fold-block" open key={b.heading}>
               <summary>{b.heading}</summary>
-              <div className="am-input-prose"><Markdown text={b.text} /></div>
+              <div className="am-input-prose"><Markdown text={b.text} getRef={getRef} /></div>
             </details>
           ))}
         </div>
@@ -2204,7 +2313,7 @@ function AppCard({
   blocks: { heading: string; text: string }[];
   prov: "verified" | "machine";
   provText?: string;
-  getRef: (id: string) => { page: import("@/lib/wiki").WikiPage; typeLabel: string } | undefined;
+  getRef: GetRef;
   onGoTo: (id: string) => void;
 }) {
   const statusTone = status === "Accepted" ? "hi" : "mid";
@@ -2277,7 +2386,7 @@ function AppCard({
           {blocks.map((b) => (
             <details className="am-canvas-cap-fold am-canvas-cap-fold-block" open key={b.heading}>
               <summary>{b.heading}</summary>
-              <div className="am-input-prose"><Markdown text={b.text} /></div>
+              <div className="am-input-prose"><Markdown text={b.text} getRef={getRef} /></div>
             </details>
           ))}
         </div>

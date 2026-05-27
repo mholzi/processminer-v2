@@ -2,6 +2,7 @@
 
 import type { WikiPage } from "@/lib/wiki";
 import ElementHovercard from "./ElementHovercard";
+import { asList } from "@/lib/meta";
 
 // Controls in the target — every As-Is control, and what becomes of it in the
 // target state. A control is anchored to a process-step (`step`); a target
@@ -12,11 +13,6 @@ import ElementHovercard from "./ElementHovercard";
 //   unanchored — the control names no step, so its fate can't be derived —
 //               it needs a manual call.
 // This is a derived diff, like TargetSynthesis — nothing is stored.
-
-function asList(v: string | string[] | undefined): string[] {
-  if (!v) return [];
-  return Array.isArray(v) ? v : [v];
-}
 
 type Disposition = "reworked" | "carried" | "unanchored";
 

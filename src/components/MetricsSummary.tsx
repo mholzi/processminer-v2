@@ -1,7 +1,9 @@
 "use client";
 
 import type { WikiPage } from "@/lib/wiki";
+import type { GetRef } from "@/lib/linkify";
 import ElementHovercard from "./ElementHovercard";
+import { str } from "@/lib/meta";
 
 // At-a-glance summary table above the metric cards. Same column shape as the
 // approved variant-A mockup: ID · Name · Target · Actual · Trend · Status.
@@ -12,10 +14,6 @@ import ElementHovercard from "./ElementHovercard";
 // the most useful signal).
 
 const UNMEASURED = /^\s*(—|-|n\/?a|tbd|unknown|not\s+measured|none)\s*$/i;
-
-function str(v: unknown): string {
-  return typeof v === "string" ? v : "";
-}
 
 function isUnmeasured(value: string): boolean {
   if (!value.trim()) return true;
@@ -49,7 +47,7 @@ export default function MetricsSummary({
   /** Click a row to focus the matching metric card below. */
   onPickElement?: (id: string) => void;
   /** Resolver for the shared hovercard preview. */
-  getRef?: (id: string) => { page: WikiPage; typeLabel: string } | undefined;
+  getRef?: GetRef;
 }) {
   if (metrics.length === 0) return null;
   const measured = metrics.filter((m) => !isUnmeasured(str(m.meta.value))).length;

@@ -3,6 +3,7 @@
 import { orderSteps } from "@/lib/stepOrder";
 import type { WikiPage } from "@/lib/wiki";
 import ElementHovercard from "./ElementHovercard";
+import { asList } from "@/lib/meta";
 
 // Target synthesis — the whole future process at a glance, at the top of the
 // TO-BE Process Design section. The To-Be is authored as overlapping thematic
@@ -10,11 +11,6 @@ import ElementHovercard from "./ElementHovercard";
 // maps the As-Is process spine (every step, in order) onto the target themes
 // that change it — a derived As-Is → To-Be diff. Steps no theme touches show
 // "Unchanged", so the stable part of the process is visible too.
-
-function asList(v: string | string[] | undefined): string[] {
-  if (!v) return [];
-  return Array.isArray(v) ? v : [v];
-}
 
 export default function TargetSynthesis({
   steps,

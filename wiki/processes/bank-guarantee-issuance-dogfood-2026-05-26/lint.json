@@ -1,0 +1,161 @@
+{
+  "generatedAt": "2026-05-27T05:13:37.969963+00:00",
+  "slug": "bank-guarantee-issuance-dogfood-2026-05-26",
+  "summary": {
+    "conformance": 0,
+    "discrepancy": 12,
+    "question": 4
+  },
+  "reopens": [],
+  "findings": [
+    {
+      "id": "F-001",
+      "kind": "discrepancy",
+      "title": "Orphan exception: EX-BGID-001",
+      "detail": "No process-step `transitions` flow into EX-BGID-001 — nothing in the documented flow reaches this exception.",
+      "elements": [
+        "EX-BGID-001"
+      ]
+    },
+    {
+      "id": "F-002",
+      "kind": "discrepancy",
+      "title": "Orphan exception: EX-BGID-002",
+      "detail": "No process-step `transitions` flow into EX-BGID-002 — nothing in the documented flow reaches this exception.",
+      "elements": [
+        "EX-BGID-002"
+      ]
+    },
+    {
+      "id": "F-003",
+      "kind": "discrepancy",
+      "title": "Wording Review step has no linked control",
+      "detail": "PS-BGID-003 (Wording Review) executes a critical decision point where applications are routed to the Legal team for bespoke wording review, but no detective or preventive control is linked to this step. The control-gaps file acknowledges PS-BGID-001 as an accepted risk, but PS-BGID-003 has no documented control or gap acceptance.",
+      "elements": [
+        "PS-BGID-003"
+      ]
+    },
+    {
+      "id": "F-004",
+      "kind": "discrepancy",
+      "title": "Guarantee Generation and Delivery step has no linked control",
+      "detail": "PS-BGID-006 (Guarantee Generation and Delivery) generates the executed guarantee instrument and transmits it to the beneficiary, but no control is linked to verify the accuracy of generation or transmission. No documented gap acceptance exists for this step.",
+      "elements": [
+        "PS-BGID-006"
+      ]
+    },
+    {
+      "id": "F-005",
+      "kind": "discrepancy",
+      "title": "Head of Trade Finance accountability at EUR 5m ceiling not declared",
+      "detail": "PS-BGID-005 states 'Guarantees above EUR 5 million additionally require sign-off by the Head of Trade Finance', establishing an approval ceiling. However, CP-BGID-001 (Four-Eyes Issuance Approval) lists only the Trade Finance Manager's accountability, and ROLE-BGID-003 does not explicitly assign the Head of Trade Finance as :A (Accountable) at the EUR 5m ceiling. The control owner at a stated decision ceiling must be marked as Accountable in the RACI structure.",
+      "elements": [
+        "PS-BGID-005",
+        "CP-BGID-001",
+        "ROLE-BGID-003"
+      ]
+    },
+    {
+      "id": "F-006",
+      "kind": "question",
+      "title": "Insufficient Facility Limit exception lacks defined scope and fallback procedure",
+      "detail": "EX-BGID-001 (Insufficient Facility Limit) states the application is 'parked and routed to the Credit team' but does not define: (1) the scope — under what exact conditions the exception is triggered (e.g., what percentage shortfall?); (2) the fallback procedure — what steps the Credit team must follow, how long they have, and under what conditions the application re-enters the normal flow.",
+      "elements": [
+        "EX-BGID-001"
+      ]
+    },
+    {
+      "id": "F-007",
+      "kind": "question",
+      "title": "Sanctions Screening Hit exception lacks defined fallback procedure",
+      "detail": "EX-BGID-002 (Sanctions Screening Hit) states the application is 'suspended pending Compliance investigation' but does not define: (1) the scope — what constitutes a 'hit' and what conditions trigger investigation vs. immediate rejection?; (2) the fallback procedure — what investigation steps Compliance must execute, how long the investigation takes, what outcomes permit re-entry to normal flow, and what criteria trigger application rejection.",
+      "elements": [
+        "EX-BGID-002"
+      ]
+    },
+    {
+      "id": "F-008",
+      "kind": "discrepancy",
+      "title": "REG-BGID-002 has no control mapping via regulatedBy",
+      "detail": "REG-BGID-002 (URDG 758 — ICC Uniform Rules for Demand Guarantees) is documented but has no control element linking back to it via regulatedBy. The regulation's 'How it is met' block describes a manual legal review process but does not reference a specific control, and no control element in the process has REG-BGID-002 in its regulatedBy array. Per audit standards, every regulation must either have a control referencing it or carry an explicit 'no control documented yet' note.",
+      "elements": [
+        "REG-BGID-002"
+      ]
+    },
+    {
+      "id": "F-009",
+      "kind": "discrepancy",
+      "title": "II-BGID-003 addresses non-existent element PG-BGID-001",
+      "detail": "II-BGID-003 (ISO 20022 guarantee message early migration) has 'addresses: [PG-BGID-001]' but no element with id PG-BGID-001 exists in the wiki. This is a broken reference — possibly a typo (PG vs PP). The innovation describes a regulatory/platform requirement but has no corresponding pain point or client journey justification linked.",
+      "elements": [
+        "II-BGID-003"
+      ]
+    },
+    {
+      "id": "F-010",
+      "kind": "question",
+      "title": "Is SWIFT NAK reduction a client-facing pain point?",
+      "detail": "II-BGID-003 is justified primarily on regulatory compliance (November 2027 SWIFT cut-over) and technical benefit (schema validation reducing NAKs). However, no pain point describes client friction from SWIFT NAKs or delays in guarantee delivery via SWIFT. Is delivery-delay pain actually customer-facing, or is this purely operational? A client-visible pain point should be documented if the innovation is to be justified from the client journey.",
+      "elements": [
+        "II-BGID-003",
+        "PP-BGID-001",
+        "PP-BGID-002"
+      ]
+    },
+    {
+      "id": "F-011",
+      "kind": "discrepancy",
+      "title": "PP-BGID-003 has no innovation-idea addressing it",
+      "detail": "Pain-point PP-BGID-003 (Commercial Contract Reference Frequently Missing or Wrong at Intake) documents a data-quality issue at intake, but no innovation-idea contains content addressing contract-reference validation or intake data quality. All four innovation-ideas address either facility limits, wording delays, SWIFT delivery, or status transparency — none tackle the contract reference problem.",
+      "elements": [
+        "PP-BGID-003"
+      ]
+    },
+    {
+      "id": "F-012",
+      "kind": "question",
+      "title": "II-BGID-004 content addresses opacity, not the root cause of PP-BGID-002",
+      "detail": "II-BGID-004 (Client-facing live status portal with milestone updates) addresses PP-BGID-002 (Bespoke Wording Causes Unpredictable Delay), but the body focuses on transparency and reducing customer calls through status visibility. It does not explain how the portal reduces the underlying unpredictable Legal review delay — only how clients can see the wait. Clarify: does this portal solve the unpredictable delay, or only the opacity about the delay?",
+      "elements": [
+        "II-BGID-004",
+        "PP-BGID-002"
+      ]
+    },
+    {
+      "id": "F-013",
+      "kind": "discrepancy",
+      "title": "SYS-BGID-001 missing DORA audit fields",
+      "detail": "Corporate Portal system is missing required DORA/ICT-mapping audit fields: criticality, vendor, dataClassification, rtoBand, and rpoBand. All five fields are empty, making this system unauditable under DORA.",
+      "elements": [
+        "SYS-BGID-001"
+      ]
+    },
+    {
+      "id": "F-014",
+      "kind": "discrepancy",
+      "title": "SYS-BGID-002 missing DORA audit fields",
+      "detail": "Trade Finance System (core system) is missing required DORA/ICT-mapping audit fields: criticality, vendor, dataClassification, rtoBand, and rpoBand. All five fields are empty, making this system unauditable under DORA.",
+      "elements": [
+        "SYS-BGID-002"
+      ]
+    },
+    {
+      "id": "F-015",
+      "kind": "discrepancy",
+      "title": "SYS-BGID-003 missing DORA audit fields",
+      "detail": "Sanctions Screening Tool is missing required DORA/ICT-mapping audit fields: criticality, vendor, dataClassification, rtoBand, and rpoBand. All five fields are empty, making this system unauditable under DORA.",
+      "elements": [
+        "SYS-BGID-003"
+      ]
+    },
+    {
+      "id": "F-016",
+      "kind": "discrepancy",
+      "title": "SYS-BGID-004 missing DORA audit fields",
+      "detail": "SWIFT system is missing required DORA/ICT-mapping audit fields: criticality, vendor, dataClassification, rtoBand, and rpoBand. All five fields are empty, making this system unauditable under DORA.",
+      "elements": [
+        "SYS-BGID-004"
+      ]
+    }
+  ]
+}

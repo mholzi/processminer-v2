@@ -4,14 +4,12 @@ import { useState, useTransition } from "react";
 import type { TargetReview, TriageState } from "@/lib/target-review";
 import { specialistLabel } from "@/lib/target-review";
 import { triageTargetReview } from "@/lib/wiki-write";
-import type { WikiPage } from "@/lib/wiki";
+import type { GetRef } from "@/lib/linkify";
 import ElementHovercard from "./ElementHovercard";
 
 // The Council Review panel — the five other specialists' feedback on the
 // proposed target, with the SME's accept / reject triage per item. An accepted
 // item re-opens its implicated transformation-decision (server-side).
-
-type GetRef = (id: string) => { page: WikiPage; typeLabel: string } | undefined;
 
 function refChip(
   id: string,

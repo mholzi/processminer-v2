@@ -1,6 +1,7 @@
 "use client";
 
 import type { WikiPage } from "@/lib/wiki";
+import type { GetRef } from "@/lib/linkify";
 import ElementHovercard from "./ElementHovercard";
 
 // Coverage matrix for Audit Findings — severity × findingStatus. Same shape
@@ -41,7 +42,7 @@ export default function AuditFindingsSummary({
 }: {
   findings: WikiPage[];
   onPickElement?: (id: string) => void;
-  getRef?: (id: string) => { page: WikiPage; typeLabel: string } | undefined;
+  getRef?: GetRef;
 }) {
   if (findings.length === 0) return null;
 
@@ -142,7 +143,7 @@ function RowFragment({
   grid: Record<Bucket, WikiPage[]>;
   highlightOpen: boolean;
   onPickElement?: (id: string) => void;
-  getRef?: (id: string) => { page: WikiPage; typeLabel: string } | undefined;
+  getRef?: GetRef;
 }) {
   return (
     <>

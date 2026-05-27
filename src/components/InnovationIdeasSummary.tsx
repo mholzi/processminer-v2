@@ -1,6 +1,7 @@
 "use client";
 
 import type { WikiPage } from "@/lib/wiki";
+import type { GetRef } from "@/lib/linkify";
 import ElementHovercard from "./ElementHovercard";
 
 // 3×3 coverage matrix of strategicFit × complexity — the standard
@@ -30,7 +31,7 @@ export default function InnovationIdeasSummary({
 }: {
   ideas: WikiPage[];
   onPickElement?: (id: string) => void;
-  getRef?: (id: string) => { page: WikiPage; typeLabel: string } | undefined;
+  getRef?: GetRef;
 }) {
   if (ideas.length === 0) return null;
 
@@ -113,7 +114,7 @@ function RowFragment({
   fit: Band;
   grid: Record<Band, WikiPage[]>;
   onPickElement?: (id: string) => void;
-  getRef?: (id: string) => { page: WikiPage; typeLabel: string } | undefined;
+  getRef?: GetRef;
 }) {
   return (
     <>

@@ -2,7 +2,9 @@
 
 import { Fragment } from "react";
 import type { WikiPage } from "@/lib/wiki";
+import type { GetRef } from "@/lib/linkify";
 import ElementHovercard from "./ElementHovercard";
+import { str } from "@/lib/meta";
 
 // Country × process-step matrix above the country-variation cards. Approved
 // variant B from the 2026-05-26 design-shotgun. Rows are the countries that
@@ -27,10 +29,6 @@ const TYPE_TINT: Record<VariationType, string> = {
   OPERATIONAL: "operational",
   MARKET: "market",
 };
-
-function str(v: unknown): string {
-  return typeof v === "string" ? v : "";
-}
 
 function parseCountries(meta: Record<string, unknown>): string[] {
   const raw = meta.countries;
@@ -84,7 +82,7 @@ export default function CountryVariationsSummary({
 }: {
   variations: WikiPage[];
   onPickElement?: (id: string) => void;
-  getRef?: (id: string) => { page: WikiPage; typeLabel: string } | undefined;
+  getRef?: GetRef;
 }) {
   if (variations.length === 0) return null;
 

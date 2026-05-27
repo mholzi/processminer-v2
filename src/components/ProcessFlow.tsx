@@ -1,6 +1,7 @@
 import type { WikiPage } from "@/lib/wiki";
 import { type Kind, type Transition, orderSteps, parseTransitions } from "@/lib/stepOrder";
 import ElementHovercard from "./ElementHovercard";
+import { asList } from "@/lib/meta";
 
 // The process-step flow — a swimlane strip. Steps are ordered left-to-right by
 // a topological sort of their `transitions` (see lib/stepOrder) and stacked
@@ -16,11 +17,6 @@ import ElementHovercard from "./ElementHovercard";
 function stepApproval(s: WikiPage): "approved" | "rejected" | "in-progress" {
   const a = String(s.meta.approval ?? "in-progress");
   return a === "approved" || a === "rejected" ? a : "in-progress";
-}
-
-function asList(v: string | string[] | undefined): string[] {
-  if (!v) return [];
-  return Array.isArray(v) ? v : [v];
 }
 
 const UNASSIGNED = "__unassigned__";

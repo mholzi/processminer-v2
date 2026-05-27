@@ -1,7 +1,9 @@
 "use client";
 
 import type { WikiPage } from "@/lib/wiki";
+import type { GetRef } from "@/lib/linkify";
 import ElementHovercard from "./ElementHovercard";
+import { str } from "@/lib/meta";
 
 // Coverage matrix for Regulation — approved Variant B pattern adapted to the
 // regulation element shape. Rows are the regulatory domains found in the
@@ -14,10 +16,6 @@ import ElementHovercard from "./ElementHovercard";
 function upper(v: unknown): string {
   return typeof v === "string" ? v.trim().toUpperCase() : "";
 }
-function str(v: unknown): string {
-  return typeof v === "string" ? v : "";
-}
-
 function regulatedBys(meta: Record<string, unknown>): string[] {
   const r = meta.regulatedBy;
   if (Array.isArray(r)) return r.map(String).filter(Boolean);
@@ -36,7 +34,7 @@ export default function RegulationSummary({
    *  regulations via `regulatedBy`. */
   allElements: WikiPage[];
   onPickElement?: (id: string) => void;
-  getRef?: (id: string) => { page: WikiPage; typeLabel: string } | undefined;
+  getRef?: GetRef;
 }) {
   if (regulations.length === 0) return null;
 
@@ -150,7 +148,7 @@ function Cell({
   empty: boolean;
   warn: boolean;
   onPickElement?: (id: string) => void;
-  getRef?: (id: string) => { page: WikiPage; typeLabel: string } | undefined;
+  getRef?: GetRef;
 }) {
   const cls = `rcs-cell${empty ? " rcs-cell-empty" : ""}${warn && !empty ? " rcs-cell-warn" : ""}`;
   if (empty) {

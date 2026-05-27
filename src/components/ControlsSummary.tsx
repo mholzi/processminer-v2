@@ -1,6 +1,7 @@
 "use client";
 
 import type { WikiPage } from "@/lib/wiki";
+import type { GetRef } from "@/lib/linkify";
 import ElementHovercard from "./ElementHovercard";
 
 // Approved Variant B (controls-summary-20260526/approved.json) — 3×3 coverage
@@ -34,7 +35,7 @@ export default function ControlsSummary({
 }: {
   controls: WikiPage[];
   onPickElement?: (id: string) => void;
-  getRef?: (id: string) => { page: WikiPage; typeLabel: string } | undefined;
+  getRef?: GetRef;
 }) {
   if (controls.length === 0) return null;
 
@@ -129,7 +130,7 @@ function RowFragment({
   isGap: boolean;
   grid: Record<Execution, WikiPage[]>;
   onPickElement?: (id: string) => void;
-  getRef?: (id: string) => { page: WikiPage; typeLabel: string } | undefined;
+  getRef?: GetRef;
 }) {
   return (
     <>

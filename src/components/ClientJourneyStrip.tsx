@@ -1,7 +1,9 @@
 "use client";
 
+import type { GetRef } from "@/lib/linkify";
 import type { WikiPage } from "@/lib/wiki";
 import ElementHovercard from "./ElementHovercard";
+import { asList, str } from "@/lib/meta";
 
 // Approved Variant A (cx-structures-20260526/approved.json) — step-cards.
 // One card per As-Is process-step, journey reads left-to-right. Each card
@@ -15,22 +17,12 @@ import ElementHovercard from "./ElementHovercard";
 // disappear. Cross-section: takes process-steps + touchpoints + moments +
 // friction-points as separate props because each comes from a different
 // wiki section.
-
-function str(v: unknown): string {
-  return typeof v === "string" ? v : "";
-}
 function lower(v: unknown): string {
   return typeof v === "string" ? v.trim().toLowerCase() : "";
 }
 function upper(v: unknown): string {
   return typeof v === "string" ? v.trim().toUpperCase() : "";
 }
-function asList(v: unknown): string[] {
-  if (Array.isArray(v)) return v.map(String).filter(Boolean);
-  if (typeof v === "string" && v.trim()) return [v.trim()];
-  return [];
-}
-
 type StripeKind = "fric-h" | "fric-m" | "has-pos" | null;
 
 function stripeFor(fps: WikiPage[], mts: WikiPage[]): StripeKind {
@@ -57,7 +49,7 @@ export default function ClientJourneyStrip({
   moments: WikiPage[];
   frictionPoints: WikiPage[];
   onPickElement?: (id: string) => void;
-  getRef?: (id: string) => { page: WikiPage; typeLabel: string } | undefined;
+  getRef?: GetRef;
 }) {
   if (steps.length === 0 || touchpoints.length === 0) return null;
 

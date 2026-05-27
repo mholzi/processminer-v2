@@ -250,7 +250,6 @@ export default function WelcomeScreen({
     <div className="ws-root" data-mod={bodyMod} data-scenario={scenario}>
       <header className="ws-topbar">
         <span className="ws-wordmark">PROCESSMINER</span>
-        <span className="ws-sub">platform</span>
 
         {scenario === "both" && (
           <div className="ws-mod-tabs" role="tablist" aria-label="Module">
@@ -297,148 +296,207 @@ export default function WelcomeScreen({
         </div>
         <h1 className="ws-greet-h">{greetCount}</h1>
 
-        {/* Resume hero — primary in-flight thing. PM only for now. */}
-        {inflightPM && (view === "both" || view === "pm") && (
-          <button
-            type="button"
-            className="ws-resume"
-            onClick={() => openProcess(inflightPM.slug)}
-          >
-            <span className="ws-resume-ico">▶</span>
-            <span className="ws-resume-body">
-              <span className="ws-resume-eyebrow">Resume foundational run</span>
-              <span className="ws-resume-title">
-                {inflightPM.process.id} · {inflightPM.process.title}
-              </span>
-              <span className="ws-resume-sub">
-                Paused at item{" "}
-                <b>
-                  {inflightPM.reviewState!.cursor + 1} of {inflightPM.reviewState!.total}
-                </b>
-              </span>
-            </span>
-            <span className="ws-resume-cta">Resume →</span>
-          </button>
-        )}
-
-        {/* Recents strip — quick re-entry to the user's last few processes
-            and the "new process" affordance. Sits above the attention queue
-            so it's the first thing in reach after the resume hero. */}
-        <section className="ws-foot ws-foot-top">
-          <div className="ws-foot-label">Recent</div>
-          <div className="ws-recents">
-            {recents.map((r, i) => (
+        {/* Three-column dashboard (approved variant B, 2026-05-26):
+            Resume / Inbox · Attention · Open process. Every action one click
+            away. The left column adapts by view: a foundational-run resume
+            hero in PM/Both, an Architect inbox entry in AM. */}
+        <div className="ws-cols">
+          {/* ---- Resume / Inbox column ----
+              PM/Both view → Resume foundational run hero (when one is paused).
+              AM view → Architect inbox card (opens HandoffInbox via the
+              no-slug onEnterArchitectminer call). */}
+          {view === "am" || scenario === "am" ? (
+            <section className="ws-col ws-col-resume">
+              <div className="ws-col-head">
+                <h2>Architect inbox</h2>
+                <span className="ws-col-count">
+                  {handoffDocs.length} ready
+                </span>
+              </div>
               <button
-                key={r.slug}
                 type="button"
-                className={`ws-recent-chip${i === 0 ? " current" : ""}`}
-                onClick={() => openProcess(r.slug)}
+                className="ws-resume"
+                onClick={() => onEnterArchitectminer()}
               >
-                <span className="ws-recent-id">{r.id}</span>
-                <span className="ws-recent-name">{r.title}</span>
-                {r.lastModified && (
-                  <RelativeTime ts={r.lastModified} className="ws-recent-when" />
-                )}
+                <span className="ws-resume-ico">⌖</span>
+                <span className="ws-resume-body">
+                  <span className="ws-resume-eyebrow">Open architect inbox</span>
+                  <span className="ws-resume-title">
+                    {handoffDocs.length > 0
+                      ? `${handoffDocs.length} process${handoffDocs.length === 1 ? "" : "es"} ready for architecture handoff`
+                      : "No handoffs ready yet"}
+                  </span>
+                  <span className="ws-resume-sub">
+                    {handoffDocs.length > 0
+                      ? "Every Target Process element confirmed by the SME team."
+                      : "Browse all processes the architect side has access to."}
+                  </span>
+                </span>
+                <span className="ws-resume-cta">Open inbox →</span>
               </button>
-            ))}
+            </section>
+          ) : (
+            <section className="ws-col ws-col-resume">
+              <div className="ws-col-head">
+                <h2>Resume</h2>
+                <span className="ws-col-count">
+                  {inflightPM ? "1 in-flight" : "nothing paused"}
+                </span>
+              </div>
+              {inflightPM ? (
+                <button
+                  type="button"
+                  className="ws-resume"
+                  onClick={() => openProcess(inflightPM.slug)}
+                >
+                  <span className="ws-resume-ico">▶</span>
+                  <span className="ws-resume-body">
+                    <span className="ws-resume-eyebrow">Resume foundational run</span>
+                    <span className="ws-resume-title">
+                      {inflightPM.process.id} · {inflightPM.process.title}
+                    </span>
+                    <span className="ws-resume-sub">
+                      Paused at item{" "}
+                      <b>
+                        {inflightPM.reviewState!.cursor + 1} of {inflightPM.reviewState!.total}
+                      </b>
+                    </span>
+                  </span>
+                  <span className="ws-resume-cta">Resume →</span>
+                </button>
+              ) : (
+                <div className="ws-col-empty">
+                  Nothing paused right now. Pick a process from{" "}
+                  <b>Open process</b> to start a run.
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* ---- Attention column ---- */}
+          <section className="ws-col ws-col-attn">
+            <div className="ws-col-head">
+              <h2>Attention</h2>
+              <span className="ws-col-count">
+                {queueLength} item{queueLength === 1 ? "" : "s"}
+              </span>
+            </div>
+            {queueLength === 0 ? (
+              <div className="ws-col-empty">
+                Your queue is clear. No conflicts, no open lint findings, no
+                handoffs waiting.
+              </div>
+            ) : (
+              <div className="ws-attn-list">
+                {/* Handoffs first — cross-module rows surface above per-process attention */}
+                {visibleHandoffs.map((d) => (
+                  <button
+                    key={`h-${d.slug}`}
+                    type="button"
+                    className={`ws-attn-item ws-handoff ${
+                      scenario === "pm"
+                        ? "outbound"
+                        : scenario === "am"
+                          ? "inbound"
+                          : "cross"
+                    }`}
+                    onClick={() => openHandoff(d.slug)}
+                  >
+                    <span className="ws-attn-body">
+                      <span className="ws-badges">
+                        <span className="ws-badge handoff">
+                          {scenario === "pm"
+                            ? "Outbound"
+                            : scenario === "am"
+                              ? "PM → AM · Inbox"
+                              : "PM → AM"}
+                        </span>
+                      </span>
+                      <span className="ws-attn-title">
+                        <span className="ws-pm-id">{d.process.id}</span> ·{" "}
+                        <b>{d.process.title}</b>{" "}
+                        {scenario === "pm"
+                          ? "is locked — awaiting architect pickup"
+                          : scenario === "am"
+                            ? "just landed in your inbox"
+                            : "ready for architecture handoff"}
+                      </span>
+                      <span className="ws-attn-sub">
+                        Target Process complete · transformation team signed off
+                      </span>
+                    </span>
+                    <span className="ws-attn-cta">
+                      {scenario === "pm"
+                        ? "View status →"
+                        : scenario === "am"
+                          ? "Open handoff →"
+                          : "Hand off →"}
+                    </span>
+                  </button>
+                ))}
+
+                {/* PM attention rows */}
+                {visibleAttention.map((it) => (
+                  <button
+                    key={`pm-${it.slug}`}
+                    type="button"
+                    className="ws-attn-item"
+                    onClick={() => openProcess(it.slug)}
+                  >
+                    <span className="ws-attn-body">
+                      {scenario === "both" && (
+                        <span className="ws-badges">
+                          <span className="ws-badge pm">PM</span>
+                        </span>
+                      )}
+                      <span className="ws-attn-title">
+                        <span className="ws-pm-id">{it.id}</span> ·{" "}
+                        {it.reasons.join(" · ")}
+                      </span>
+                      <span className="ws-attn-sub">{it.title}</span>
+                    </span>
+                    <span className="ws-attn-cta">Open →</span>
+                  </button>
+                ))}
+
+                {/* AM attention rows would go here — no real AM data yet. */}
+              </div>
+            )}
+          </section>
+
+          {/* ---- Open process column ---- */}
+          <section className="ws-col ws-col-open">
+            <div className="ws-col-head">
+              <h2>Open process</h2>
+              <span className="ws-col-count">
+                {recents.length} process{recents.length === 1 ? "" : "es"}
+              </span>
+            </div>
+            <div className="ws-recents">
+              {recents.map((r, i) => (
+                <button
+                  key={r.slug}
+                  type="button"
+                  className={`ws-recent-chip${i === 0 ? " current" : ""}`}
+                  onClick={() => openProcess(r.slug)}
+                >
+                  <span className="ws-recent-id">{r.id}</span>
+                  <span className="ws-recent-name">{r.title}</span>
+                  {r.lastModified && (
+                    <RelativeTime ts={r.lastModified} className="ws-recent-when" />
+                  )}
+                </button>
+              ))}
+            </div>
             <button
               type="button"
-              className="ws-recent-chip add"
+              className="ws-new-process"
               onClick={onCreateProcess}
             >
               + New process
             </button>
-          </div>
-        </section>
-
-        {/* The queue */}
-        <section className="ws-sec">
-          <div className="ws-sec-h">
-            <h2>Needs your attention</h2>
-            <span className="ws-sec-num">{queueLength} items</span>
-          </div>
-
-          {queueLength === 0 ? (
-            <div className="ws-empty">
-              Nothing in your queue. Pick up a process from <b>recent</b> or
-              create a new one.
-            </div>
-          ) : (
-            <div className="ws-attn-list">
-              {/* Handoffs first — cross-module rows surface above per-process attention */}
-              {visibleHandoffs.map((d) => (
-                <button
-                  key={`h-${d.slug}`}
-                  type="button"
-                  className={`ws-attn-item ws-handoff ${
-                    scenario === "pm"
-                      ? "outbound"
-                      : scenario === "am"
-                        ? "inbound"
-                        : "cross"
-                  }`}
-                  onClick={() => openHandoff(d.slug)}
-                >
-                  <span className="ws-attn-body">
-                    <span className="ws-badges">
-                      <span className="ws-badge handoff">
-                        {scenario === "pm"
-                          ? "Outbound"
-                          : scenario === "am"
-                            ? "PM → AM · Inbox"
-                            : "PM → AM"}
-                      </span>
-                    </span>
-                    <span className="ws-attn-title">
-                      <span className="ws-pm-id">{d.process.id}</span> ·{" "}
-                      <b>{d.process.title}</b>{" "}
-                      {scenario === "pm"
-                        ? "is locked — awaiting architect pickup"
-                        : scenario === "am"
-                          ? "just landed in your inbox"
-                          : "ready for architecture handoff"}
-                    </span>
-                    <span className="ws-attn-sub">
-                      Target Process complete · transformation team signed off
-                    </span>
-                  </span>
-                  <span className="ws-attn-cta">
-                    {scenario === "pm"
-                      ? "View status →"
-                      : scenario === "am"
-                        ? "Open handoff →"
-                        : "Hand off →"}
-                  </span>
-                </button>
-              ))}
-
-              {/* PM attention rows */}
-              {visibleAttention.map((it) => (
-                <button
-                  key={`pm-${it.slug}`}
-                  type="button"
-                  className="ws-attn-item"
-                  onClick={() => openProcess(it.slug)}
-                >
-                  <span className="ws-attn-body">
-                    {scenario === "both" && (
-                      <span className="ws-badges">
-                        <span className="ws-badge pm">PM</span>
-                      </span>
-                    )}
-                    <span className="ws-attn-title">
-                      <span className="ws-pm-id">{it.id}</span> · {it.reasons.join(" · ")}
-                    </span>
-                    <span className="ws-attn-sub">{it.title}</span>
-                  </span>
-                  <span className="ws-attn-cta">Open →</span>
-                </button>
-              ))}
-
-              {/* AM attention rows would go here — no real AM data yet. */}
-            </div>
-          )}
-        </section>
+          </section>
+        </div>
       </main>
     </div>
   );

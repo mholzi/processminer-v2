@@ -225,9 +225,16 @@ export const PERSPECTIVE_LINES: readonly string[] = [
   "Slow, sure — still sooner than the next strategy refresh, and more reproducible.",
 ];
 
-/** Random pick from the perspective pool. Empty string if the pool is empty. */
-export function pickPerspective(): string {
+/** Random pick from the perspective pool. Empty string if the pool is empty.
+ *  Pass `previous` to avoid repeating the line that's currently on screen —
+ *  callers that rotate the line every minute use this so consecutive minutes
+ *  never show the same one. */
+export function pickPerspective(previous?: string | null): string {
   if (PERSPECTIVE_LINES.length === 0) return "";
-  const i = Math.floor(Math.random() * PERSPECTIVE_LINES.length);
+  if (PERSPECTIVE_LINES.length === 1) return PERSPECTIVE_LINES[0] ?? "";
+  let i = Math.floor(Math.random() * PERSPECTIVE_LINES.length);
+  if (previous && PERSPECTIVE_LINES[i] === previous) {
+    i = (i + 1) % PERSPECTIVE_LINES.length;
+  }
   return PERSPECTIVE_LINES[i] ?? "";
 }

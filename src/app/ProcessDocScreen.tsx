@@ -23,17 +23,8 @@ import ElementCard from "@/components/ElementCard";
 import RaciMatrix from "@/components/RaciMatrix";
 import ProcessFlow from "@/components/ProcessFlow";
 import { buildTargetFlowView } from "@/lib/targetFlow";
-import AuditFindingsSummary from "@/components/AuditFindingsSummary";
-import ClientJourneyStrip from "@/components/ClientJourneyStrip";
-import ControlGapsSummary from "@/components/ControlGapsSummary";
-import ControlsSummary from "@/components/ControlsSummary";
-import CountryVariationsSummary from "@/components/CountryVariationsSummary";
-import ExceptionsSummary from "@/components/ExceptionsSummary";
-import InnovationIdeasSummary from "@/components/InnovationIdeasSummary";
-import MetricsSummary from "@/components/MetricsSummary";
+import SectionSummary from "@/components/SectionSummary";
 import OverviewPanel from "@/components/OverviewPanel";
-import PainPointsSummary from "@/components/PainPointsSummary";
-import RegulationSummary from "@/components/RegulationSummary";
 import SettingsPanel from "@/components/SettingsPanel";
 import AgentChat, { type ChatMessage } from "@/components/AgentChat";
 import ReviewPanel from "@/components/ReviewPanel";
@@ -2132,68 +2123,13 @@ export default function ProcessDocScreen({
                   {currentSection?.description ?? activeLabel}
                 </div>
               </div>
-              {section === "pain-points" && sectionElements.length > 0 && (
-                <PainPointsSummary
-                  painPoints={sectionElements}
-                  onPickElement={goToElement}
-                  getRef={getRef}
-                />
-              )}
-              {section === "country-variations" && sectionElements.length > 0 && (
-                <CountryVariationsSummary
-                  variations={sectionElements}
-                  onPickElement={goToElement}
-                  getRef={getRef}
-                />
-              )}
-              {section === "controls" && sectionElements.length > 0 && (
-                <ControlsSummary
-                  controls={sectionElements}
-                  onPickElement={goToElement}
-                  getRef={getRef}
-                />
-              )}
-              {section === "regulation" && sectionElements.length > 0 && (
-                <RegulationSummary
-                  regulations={sectionElements}
-                  allElements={doc.elements}
-                  onPickElement={goToElement}
-                  getRef={getRef}
-                />
-              )}
-              {section === "control-gaps" && sectionElements.length > 0 && (
-                <ControlGapsSummary
-                  gaps={sectionElements}
-                  onPickElement={goToElement}
-                  getRef={getRef}
-                />
-              )}
-              {section === "audit-findings" && sectionElements.length > 0 && (
-                <AuditFindingsSummary
-                  findings={sectionElements}
-                  onPickElement={goToElement}
-                  getRef={getRef}
-                />
-              )}
-              {section === "innovation-ideas" && sectionElements.length > 0 && (
-                <InnovationIdeasSummary
-                  ideas={sectionElements}
-                  onPickElement={goToElement}
-                  getRef={getRef}
-                />
-              )}
-              {section === "touchpoints" && sectionElements.length > 0 && (
-                <ClientJourneyStrip
-                  steps={doc.elements.filter((e) => e.type === "process-step")}
-                  touchpoints={sectionElements}
-                  moments={doc.elements.filter((e) => e.type === "moment")}
-                  frictionPoints={doc.elements.filter(
-                    (e) => e.type === "friction-point",
-                  )}
-                  onPickElement={goToElement}
-                  getRef={getRef}
-                />
-              )}
+              <SectionSummary
+                section={section}
+                elements={sectionElements}
+                allElements={doc.elements}
+                onPickElement={goToElement}
+                getRef={getRef}
+              />
               <div className="canvas-strip">
                 <span className="strip-name">{activeLabel}</span>
                 {sectionElements.length > 0 && sectionKind === null && (
@@ -2624,20 +2560,13 @@ export default function ProcessDocScreen({
                 })
               ) : (
                 <>
-                  {section === "metrics" && (
-                    <MetricsSummary
-                      metrics={sectionElements}
-                      onPickElement={goToElement}
-                      getRef={getRef}
-                    />
-                  )}
-                  {section === "exceptions" && (
-                    <ExceptionsSummary
-                      exceptions={sectionElements}
-                      onPickElement={goToElement}
-                      getRef={getRef}
-                    />
-                  )}
+                  <SectionSummary
+                    section={section}
+                    elements={sectionElements}
+                    allElements={doc.elements}
+                    onPickElement={goToElement}
+                    getRef={getRef}
+                  />
                   {visibleElements.map((el) => (
                     <ElementCard
                       key={el.id}

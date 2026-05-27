@@ -1,7 +1,9 @@
 "use client";
 
 import type { WikiPage } from "@/lib/wiki";
+import type { GetRef } from "@/lib/linkify";
 import ElementHovercard from "./ElementHovercard";
+import { str } from "@/lib/meta";
 
 // Worst-first bar list above the pain-point cards. Approved variant D:
 // 4 px coloured left bar (red/amber/green/grey by severity), ID + title +
@@ -24,10 +26,6 @@ const PRI_ORDER: Record<Priority | "MISSING", number> = {
   P3: 2,
   MISSING: 3,
 };
-
-function str(v: unknown): string {
-  return typeof v === "string" ? v : "";
-}
 
 function parseSeverity(raw: string): Severity | null {
   const v = raw.trim().toUpperCase();
@@ -55,7 +53,7 @@ export default function PainPointsSummary({
 }: {
   painPoints: WikiPage[];
   onPickElement?: (id: string) => void;
-  getRef?: (id: string) => { page: WikiPage; typeLabel: string } | undefined;
+  getRef?: GetRef;
 }) {
   if (painPoints.length === 0) return null;
 

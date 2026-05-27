@@ -1,7 +1,7 @@
 "use client";
 
 import type { CoverageReport, ProblemTypeCoverage } from "@/lib/coverage";
-import type { WikiPage } from "@/lib/wiki";
+import type { GetRef } from "@/lib/linkify";
 import ElementHovercard from "./ElementHovercard";
 
 // The Target-state coverage views — two renderings of one CoverageReport.
@@ -13,8 +13,6 @@ import ElementHovercard from "./ElementHovercard";
 // Uncovered problems render in neutral text — the listing is the signal, no
 // warning/error colour (design review D6). Red is reserved for the genuine
 // error findings (dangling / wrong-type refs).
-
-type GetRef = (id: string) => { page: WikiPage; typeLabel: string } | undefined;
 
 function pct(report: CoverageReport): number {
   if (report.totalOpen === 0) return 0;

@@ -1,5 +1,6 @@
 import { orderSteps } from "@/lib/stepOrder";
 import type { WikiPage } from "@/lib/wiki";
+import { asList } from "@/lib/meta";
 
 // RACI matrix — rows = process steps, columns = roles, cells = R/A/C/I.
 // The raci data lives on each role page (frontmatter `raci: [STEP:LEVEL]`);
@@ -11,11 +12,6 @@ const LEVEL_CLASS: Record<string, string> = {
   C: "raci-c",
   I: "raci-i",
 };
-
-function asList(v: string | string[] | undefined): string[] {
-  if (!v) return [];
-  return Array.isArray(v) ? v : [v];
-}
 
 // RACI rule check for the levels assigned to one step. A valid activity has
 // at least one Responsible and exactly one Accountable.

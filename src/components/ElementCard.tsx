@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { BlockSpec, FieldSpec, Note, WikiPage } from "@/lib/wiki";
+import type { GetRef } from "@/lib/linkify";
 import type { LinkGroup } from "@/lib/relations";
 import type { LintFinding } from "@/lib/lint";
 import { isSourcedType } from "@/lib/element-types";
@@ -14,6 +15,7 @@ import Tooltip from "./Tooltip";
 import ElementHovercard from "./ElementHovercard";
 import RelativeTime from "./RelativeTime";
 import FindingDismiss from "./FindingDismiss";
+import { asList } from "@/lib/meta";
 
 // Which fields and relations a card shows is no longer hand-kept here — it is
 // driven from `schema/process-schema.json` (each type's `frontmatter` block).
@@ -29,11 +31,6 @@ function specText(b: BlockSpec): string {
     bits.push(`${b.paragraphs} paragraph${b.paragraphs === "1" ? "" : "s"}`);
   if (b.words) bits.push(`${b.words} words`);
   return bits.length ? `Paragraph · ${bits.join(" · ")}` : "Paragraph";
-}
-
-function asList(v: string | string[] | undefined): string[] {
-  if (!v) return [];
-  return Array.isArray(v) ? v : [v];
 }
 
 const TRANSITION_KINDS = ["normal", "branch", "loopback", "exception"];
@@ -165,7 +162,7 @@ export default function ElementCard({
   /** True when the foundational run's cursor is on this element. */
   isCurrent?: boolean;
   /** Resolve a referenced element id to its page + type label, for hovercards. */
-  getRef?: (id: string) => { page: WikiPage; typeLabel: string } | undefined;
+  getRef?: GetRef;
   /** Resolve an `owner` field value (a role title or id) to its role element
    *  id, so the owner links to the role — its RACI entry. */
   resolveOwner?: (name: string) => string | undefined;
