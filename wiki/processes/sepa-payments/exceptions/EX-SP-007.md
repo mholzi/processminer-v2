@@ -9,7 +9,6 @@ source: sepa-payments-dtp-mockup.md
 category: timing
 impact: LOW
 handlingOwner: Payments Operations
-provenance: {"Description": {"evidence": "Step 6: 'The standard-SCT cut-off for same-cycle processing is 16:00 CET.' Section 6 E-7: 'Standard SCT rolls to the next cycle / next business day.'", "source": "document"}, "Handling": {"evidence": "Section 6 E-7: 'Standard SCT rolls to the next cycle / next business day; customer informed of the revised execution date.' Section 9 SLA: 'Standard SCT (after cut-off): Executed next business day (D+1, per the SEPA rulebook).'", "source": "document"}, "Impact": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:00Z
 ---

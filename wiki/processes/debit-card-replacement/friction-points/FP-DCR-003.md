@@ -9,7 +9,6 @@ source: Client journey session - S. Krause
 severity: MEDIUM
 occursAt: [PS-DCR-006]
 painPoint: [PP-DCR-004]
-provenance: {"Client impact": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}, "Description": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}, "Root cause": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}}
 ---
 ## Description
 After the call the client has no visibility of the replacement card — not whether it has been produced, posted, or is about to arrive.

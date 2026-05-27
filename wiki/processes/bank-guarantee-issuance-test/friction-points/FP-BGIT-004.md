@@ -9,7 +9,6 @@ source: client-journey-specialist — M. Berger, 2026-05-20
 severity: MEDIUM
 occursAt: [PS-BGIT-003]
 painPoint: [PP-BGIT-002]
-provenance: {"Client impact": {"evidence": "M. Berger confirmed PP-BGIT-002 as MEDIUM severity pain point — bespoke wording clients experience worst visibility in the process", "source": "elicited"}, "Description": {"evidence": "M. Berger: 'bespoke-wording email handoff invisible to client' confirmed as friction point", "source": "elicited"}, "Root cause": {"evidence": "M. Berger: 'bespoke wording handoff is by email today — no system handoff — flag as a process gap' (PG-BGIT-002)", "source": "elicited"}}
 ---
 ## Description
 The handoff from the TFO to Legal for bespoke wording review happens entirely by email with no client-facing status update. From the client's perspective, the application simply stalls without explanation.

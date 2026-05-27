@@ -8,7 +8,6 @@ confidence: high
 source: Client journey session - S. Krause
 severity: MEDIUM
 occursAt: [PS-DCR-006]
-provenance: {"Client impact": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}, "Description": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}, "Root cause": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}}
 ---
 ## Description
 Once the replacement is ordered the client has no usable debit card at all until the new one arrives by post, four to six business days later.

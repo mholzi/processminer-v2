@@ -8,7 +8,6 @@ confidence: high
 source: client-journey-specialist — M. Berger, 2026-05-20
 channelType: DIGITAL
 touchpoints: [JT-BGIT-004]
-provenance: {"Description": {"evidence": "M. Berger: 'SWIFT (for delivery to beneficiary's bank)' — confirmed as channel at final step", "source": "elicited"}, "Usage": {"evidence": "M. Berger: 'SWIFT MT760 receipt at beneficiary's bank' — confirmed as final delivery touchpoint", "source": "elicited"}}
 ---
 ## Description
 SWIFT is the messaging network through which the executed guarantee instrument is delivered to the beneficiary's bank via MT760 message. Not a client-facing channel.

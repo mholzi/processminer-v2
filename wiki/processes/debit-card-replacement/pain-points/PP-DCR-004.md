@@ -10,7 +10,6 @@ category: Visibility
 severity: MEDIUM
 priority: P2
 affects: [PS-DCR-006]
-provenance: {"Description": {"evidence": "Elicited from S. Krause during the foundational-run deepening probe.", "source": "elicited"}, "Impact": {"evidence": "Elicited from S. Krause during the foundational-run deepening probe.", "source": "elicited"}, "Root cause": {"evidence": "Elicited from S. Krause during the foundational-run deepening probe.", "source": "elicited"}}
 ---
 ## Description
 Once the replacement order is released to the card bureau, the process has no visibility of the card in production or in the post until the customer either uses it or calls to say it never arrived.

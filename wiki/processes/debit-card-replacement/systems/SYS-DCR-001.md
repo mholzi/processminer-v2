@@ -8,7 +8,6 @@ confidence: high
 source: dcr-dtp-mockup.md
 systemType: CORE
 integrates: [SYS-DCR-004]
-provenance: {"Purpose": {"evidence": "Card Management System (CMS) | System of record for cards; blocks and orders cards", "source": "document"}, "Role in this process": {"evidence": "System of record for cards; blocks and orders cards", "source": "document"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-19

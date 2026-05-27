@@ -11,7 +11,6 @@ decisionStatus: DECIDED
 resolves: [PP-DDMM-003]
 realises: []
 fromIdea: [II-DDMM-006]
-provenance: {"Options considered": {"evidence": "SME confirmed options and rationale — accepted without edit.", "source": "elicited"}, "Rationale": {"evidence": "SME confirmed rationale — accepted without edit.", "source": "elicited"}, "The decision": {"evidence": "SME (M. Vogel) accepted all ten decisions without edit; confirmed TD-10 correctly records the interim batch-interval reduction with II-DDMM-006 explicitly deferred for the IR-DDMM-006 reason.", "source": "elicited"}}
 ---
 ## The decision
 Reduce the MMS-to-Payment-Hub intraday batch sync interval to materially cut mandate status lag; explicitly defer full event-driven integration (II-DDMM-006) to a future programme given its HIGH complexity and HIGH reliability risk (IR-DDMM-006).

@@ -9,7 +9,6 @@ source: FinTech Futures, Feb 2024 — Germany's Commerzbank taps Surecomp to rev
 competitor: Commerzbank
 asOf: 2026-05-19
 sourceUrl: https://www.fintechfutures.com/bankingtech/germany-s-commerzbank-taps-surecomp-to-revamp-trade-finance-back-office/
-provenance: {"Evidence": {"evidence": "https://www.fintechfutures.com/bankingtech/germany-s-commerzbank-taps-surecomp-to-revamp-trade-finance-back-office/ — \"Germany's Commerzbank taps Surecomp to revamp trade finance back office\" — fetched 2026-05-19", "source": "web"}, "Relevance": {"evidence": "https://surecomp.com/news/commerzbank-ag-selects-surecomp-to-future-proof-next-level-trade-finance-business/ — \"reducing operating costs, increased volumes of transaction processing and operational efficiency, improved risk mitigation, control and visibility\" — fetched 2026-05-19", "source": "web"}, "The journey": {"evidence": "https://www.fintechfutures.com/bankingtech/germany-s-commerzbank-taps-surecomp-to-revamp-trade-finance-back-office/ — \"enhance and unify the back-office management of letters of credit, guarantees, and other trade finance instruments … expedite customer approvals\" — fetched 2026-05-19", "source": "web"}}
 ---
 ## The journey
 Commerzbank is replacing its legacy trade finance back office with Surecomp's DOKA-NG, hosted in its private cloud, to unify processing of guarantees, standby letters of credit, and documentary credits in a single system. The upgrade is designed to expedite client approvals, reduce operating costs, and improve real-time visibility into transaction status.

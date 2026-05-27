@@ -9,7 +9,6 @@ source: SME interview — process-specialist session 2026-05-26
 area: measurement
 gapStatus: open
 affects: [M-BGID-001]
-provenance: {"Impact": {"evidence": "SME validated — EU corporate guarantee desk, process-specialist session 2026-05-26", "source": "elicited"}, "Next step": {"evidence": "SME validated — EU corporate guarantee desk, process-specialist session 2026-05-26", "source": "elicited"}, "The gap": {"evidence": "SME validated — EU corporate guarantee desk, process-specialist session 2026-05-26", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:42:15Z
 approval: in-progress

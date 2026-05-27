@@ -8,7 +8,6 @@ confidence: high
 category: data-quality
 impact: MEDIUM
 handlingOwner: Trade Finance Officer
-provenance: {"Description": {"evidence": "missing beneficiary bank SWIFT details, wrong currency, vague wording-type instructions — and the TFO loses real time chasing them", "source": "elicited"}, "Handling": {"evidence": "the TFO holds the application and contacts the client through their relationship manager to obtain the missing detail — we never reject outright", "source": "elicited"}, "Impact": {"evidence": "the TFO loses real time chasing them", "source": "elicited"}}
 ---
 ## Description
 The application arrives at intake with missing or insufficient information — commonly missing beneficiary bank SWIFT details, wrong currency, or vague wording-type instructions.

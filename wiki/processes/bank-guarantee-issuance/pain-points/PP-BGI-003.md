@@ -8,7 +8,6 @@ confidence: high
 category: rework
 severity: MEDIUM
 affects: [PS-BGI-001]
-provenance: {"Description": {"evidence": "incomplete submissions are the biggest intake friction — missing beneficiary bank SWIFT details, wrong currency, vague wording-type instructions — and the TFO loses real time chasing them", "source": "elicited"}, "Impact": {"evidence": "the TFO loses real time chasing them", "source": "elicited"}, "Root cause": {"evidence": "", "source": "proposed"}}
 ---
 ## Description
 Incomplete submissions are the biggest intake friction — missing beneficiary bank SWIFT details, wrong currency, and vague wording-type instructions are the most common deficiencies.

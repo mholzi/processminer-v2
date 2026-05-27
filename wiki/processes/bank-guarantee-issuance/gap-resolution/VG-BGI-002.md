@@ -5,7 +5,6 @@ section: gap-resolution
 title: NLP Screening Engine Requires Compliance Validation Before Deployment
 status: draft
 confidence: low
-provenance: {"Resolution": {"evidence": "", "source": "proposed"}, "Status": {"evidence": "", "source": "proposed"}, "The gap": {"evidence": "", "source": "proposed"}}
 gapStatus: open
 validationArea: Risk & Compliance
 ---

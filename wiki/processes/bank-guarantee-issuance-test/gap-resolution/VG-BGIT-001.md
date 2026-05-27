@@ -8,7 +8,6 @@ confidence: high
 source: source-target — bank-guarantee-issuance-test wiki
 validationArea: IT Architecture
 gapStatus: open
-provenance: {"Resolution": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed gap-resolution from source-target stub", "source": "elicited"}, "Status": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed gap-resolution from source-target stub", "source": "elicited"}, "The gap": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed gap-resolution from source-target stub", "source": "elicited"}}
 ---
 ## The gap
 The current Trade Finance System has no ICC-SWIFT C2B API gateway. Integrating the standard requires a TFS platform extension or middleware layer before API intake can go live, and no such capability has been scoped.

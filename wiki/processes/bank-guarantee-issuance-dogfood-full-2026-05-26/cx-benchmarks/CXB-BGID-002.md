@@ -8,7 +8,6 @@ confidence: medium
 source: CGI Transaction Banking Survey 2026, February 2026 (356 corporates, 357 banks)
 sourceUrl: https://www.cgi.com/en/blog/banking-and-capital-markets/transaction-banking-2026-why-client-satisfaction-no-longer-guarantees-loyalty
 asOf: 2026-05-26
-provenance: {"Evidence": {"evidence": "https://www.cgi.com/en/blog/banking-and-capital-markets/transaction-banking-2026-why-client-satisfaction-no-longer-guarantees-loyalty — CGI Transaction Banking Survey 2026; 356 corporate executives and 357 banking providers surveyed; published February 2026 — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.cgi.com/en/blog/banking-and-capital-markets/transaction-banking-2026-why-client-satisfaction-no-longer-guarantees-loyalty — \"retention depends less on relationship depth and more on how easy a bank is to plug into the client's ecosystem\" — fetched 2026-05-26", "source": "web"}, "The benchmark": {"evidence": "https://www.cgi.com/en/blog/banking-and-capital-markets/transaction-banking-2026-why-client-satisfaction-no-longer-guarantees-loyalty — \"Only 31% of banks see real-time forecasting as high value, compared to 83% of corporates\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: admin
 updatedAt: 2026-05-26T08:37:27Z
 ---

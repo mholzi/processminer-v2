@@ -8,7 +8,6 @@ confidence: medium
 source: Revolut — Help Centre
 competitor: Revolut
 sourceUrl: https://help.revolut.com/help/making-payments/card-issues/what-to-do-if-my-card-was-lost-or-stolen
-provenance: {"Evidence": {"evidence": "https://help.revolut.com/help/making-payments/card-issues/what-to-do-if-my-card-was-lost-or-stolen — \"order a replacement card right away, with ... an estimated delivery date provided\" — fetched 2026-05-19", "source": "web"}, "Relevance": {"evidence": "https://help.revolut.com/help/card-payments-withdrawals/ping-other-card-security-settings/freezing-or-blocking-your-card/ — \"freezing your card can protect your money ... any card payments attempted with this card will fail\" — fetched 2026-05-19", "source": "web"}, "The journey": {"evidence": "https://help.revolut.com/help/making-payments/card-issues/what-to-do-if-my-card-was-lost-or-stolen — \"You will be able to order a replacement card right away ... add it to your Apple Pay or Google Pay wallet to start using it immediately\" — fetched 2026-05-19", "source": "web"}}
 asOf: 2026-05-19
 ---
 ## The journey

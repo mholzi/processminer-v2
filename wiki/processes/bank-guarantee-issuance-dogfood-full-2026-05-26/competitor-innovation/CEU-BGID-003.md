@@ -10,7 +10,6 @@ source: FF News — 'ABN AMRO Bank goes live with new release of IBAS', 3 July 2
 sourceUrl: https://ffnews.com/newsarticle/paytech/abn-amro-bank-goes-live-with-new-release-of-ibas-building-on-five-year-collaboration-agreement-with-cba-to-automate-trade-finance-processes/
 asOf: 2026-05-26
 bearsOn: [PP-BGID-003, CG-BGID-001, PP-BGID-001]
-provenance: {"Evidence": {"evidence": "https://ffnews.com/newsarticle/paytech/abn-amro-bank-goes-live-with-new-release-of-ibas-building-on-five-year-collaboration-agreement-with-cba-to-automate-trade-finance-processes/ — ABN AMRO confirmed the IBAS GTF go-live in July 2023; covers counter-guarantees and standby LC processing — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://ffnews.com/newsarticle/paytech/abn-amro-bank-goes-live-with-new-release-of-ibas-building-on-five-year-collaboration-agreement-with-cba-to-automate-trade-finance-processes/ — IBAS GTF routes counter-guarantees and standby LCs through a central ISO 20022 CBPR+ Payment Hub with RESTful APIs for structured client submission — fetched 2026-05-26", "source": "web"}, "The move": {"evidence": "https://ffnews.com/newsarticle/paytech/abn-amro-bank-goes-live-with-new-release-of-ibas-building-on-five-year-collaboration-agreement-with-cba-to-automate-trade-finance-processes/ — \"The successful roll-out marks the first deliverable of our renewed five-year partnership.\" (Burak Aslan, ABN AMRO) — fetched 2026-05-26", "source": "web"}}
 updatedBy: admin
 updatedAt: 2026-05-26T08:59:00Z
 ---

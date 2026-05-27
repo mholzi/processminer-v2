@@ -11,7 +11,6 @@ decisionStatus: DECIDED
 resolves: [FP-DDMM-001, FP-DDMM-002]
 realises: [TS-DDMM-002]
 fromIdea: [II-DDMM-003]
-provenance: {"Options considered": {"evidence": "SME confirmed options and rationale — accepted without edit.", "source": "elicited"}, "Rationale": {"evidence": "SME confirmed rationale — accepted without edit.", "source": "elicited"}, "The decision": {"evidence": "SME (M. Vogel) accepted all ten decisions without edit.", "source": "elicited"}}
 ---
 ## The decision
 Extend the Creditor Portal with inline field-level validation and per-rejection-type remediation guidance for both single-mandate submissions and bulk file line-item rejections.

@@ -8,7 +8,6 @@ owner: Trade Finance Officer
 sla:
 condition:
 systems: [SYS-BGID-001, SYS-BGID-002]
-provenance: {"Inputs": {"evidence": "The Trade Finance Officer receives the application and checks it is complete: beneficiary details, guarantee amount, currency, wording type (standard or bespoke), validity period and the underlying commercial contract reference.", "source": "document"}, "Outputs": {"evidence": "", "source": "proposed"}, "What happens": {"evidence": "Officer also opens a draft record in the Trade Finance System at intake. Incomplete-app path: officer returns it to the client/RM with a checklist of missing fields.", "source": "elicited"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 source: bank-guarantee-issuance-v1.md
 updatedBy: the assistant
 updatedAt: 2026-05-26T05:27:52Z

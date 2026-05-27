@@ -8,7 +8,6 @@ confidence: high
 source: M. Vogel, Senior Payments Operations Analyst
 domain: Payments / Scheme Compliance
 asOf: 2026-05-19
-provenance: {"How it is met": {"evidence": "SME accepted control links CP-DDMM-001, CP-DDMM-004 and process steps as correct.", "source": "elicited"}, "What it requires": {"evidence": "SME confirmed SEPA SDD Scheme Rules in scope; mandate content, UMR, IBAN, CI, R-transaction handling and confirmation obligations.", "source": "elicited"}, "Why it applies": {"evidence": "SME confirmed: bank registers and maintains SDD mandates on behalf of corporate creditors under the SEPA scheme.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

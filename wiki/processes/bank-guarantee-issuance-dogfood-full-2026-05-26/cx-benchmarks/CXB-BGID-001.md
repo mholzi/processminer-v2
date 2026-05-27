@@ -8,7 +8,6 @@ confidence: medium
 source: ICC Trade Register 2024 (ICC / BCG / Global Credit Data), October 2024 — via Trade Finance Global
 sourceUrl: https://www.tradefinanceglobal.com/posts/2024-icc-trade-register-report-positively-upbeat-despite-global-trade-goods-slowdown/
 asOf: 2026-05-26
-provenance: {"Evidence": {"evidence": "https://www.tradefinanceglobal.com/posts/2024-icc-trade-register-report-positively-upbeat-despite-global-trade-goods-slowdown/ — ICC Trade Register 2024, published October 2024 by ICC, BCG and Global Credit Data — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.tradefinanceglobal.com/posts/2024-icc-trade-register-report-positively-upbeat-despite-global-trade-goods-slowdown/ — \"customers are now prioritising leading service and digital capabilities more than ever\" — fetched 2026-05-26", "source": "web"}, "The benchmark": {"evidence": "https://www.tradefinanceglobal.com/posts/2024-icc-trade-register-report-positively-upbeat-despite-global-trade-goods-slowdown/ — \"As many as 90% of banks are investing in digital customer experience initiatives\" to align with client expectations — fetched 2026-05-26", "source": "web"}}
 updatedBy: admin
 updatedAt: 2026-05-26T08:37:27Z
 ---

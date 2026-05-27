@@ -10,7 +10,6 @@ owner: Payment Hub
 sla: Immediate for SCT Inst; within current STEP2 cycle for standard SCT
 condition: Customer account successfully debited
 systems: [SYS-SP-002, SYS-SP-006]
-provenance: {"Inputs": {"evidence": "Section 8 key inputs: 'debtor account, creditor IBAN, creditor name, BIC, amount in EUR, remittance reference.' Step 8: hub generates pacs.008.", "source": "document"}, "Outputs": {"evidence": "", "source": "proposed"}, "What happens": {"evidence": "Step 8: 'The hub generates a pacs.008 message and submits it to the clearing and settlement mechanism (CSM): the instant gateway (RT1) for SCT Inst, or the batch gateway (STEP2) for standard SCT.' Glossary: 'pacs.008 — The ISO 20022 message that carries a credit transfer to the CSM.'", "source": "document"}, "Why it matters": {"evidence": "SLA table: 'SCT Inst end-to-end: Funds available to the beneficiary within 10 seconds. Standard SCT (before cut-off): Executed same business day; settled next STEP2 cycle.'", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:15Z
 ---

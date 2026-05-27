@@ -12,7 +12,6 @@ endQuarter: 2026 Q3
 owner: Head of Trade Finance Engineering
 delivers: [TGTAPP-BGID-005, CAP-BGID-001, CAP-BGID-009]
 resolvesGap: [VG-BGID-001]
-provenance: {"Acceptance criteria": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Risks": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Scope": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T15:58:45Z
 approval: approved

@@ -9,7 +9,6 @@ source: Client journey session - S. Krause
 severity: HIGH
 occursAt: [PS-DCR-002]
 painPoint: [PP-DCR-002]
-provenance: {"Client impact": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}, "Description": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}, "Root cause": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}}
 ---
 ## Description
 A client who cannot answer the knowledge-based security questions on the phone is turned away from the call and told to visit a branch with photo identification.

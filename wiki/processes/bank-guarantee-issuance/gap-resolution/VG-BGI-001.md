@@ -5,7 +5,6 @@ section: gap-resolution
 title: ICC-SWIFT API Integration Capability Not Yet Built
 status: draft
 confidence: low
-provenance: {"Resolution": {"evidence": "", "source": "proposed"}, "Status": {"evidence": "", "source": "proposed"}, "The gap": {"evidence": "", "source": "proposed"}}
 gapStatus: open
 validationArea: IT Architecture
 ---

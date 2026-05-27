@@ -11,7 +11,6 @@ owner: Domain Architect
 domain: Trade Finance
 decision: [TD-BGID-003]
 resolvesGap: [VG-BGID-001]
-provenance: {"Alternatives considered": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Consequences": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Context": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Decision": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T14:59:49Z
 approval: approved

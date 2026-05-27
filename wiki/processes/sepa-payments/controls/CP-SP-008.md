@@ -11,7 +11,6 @@ execution: AUTOMATED
 effectiveness: HIGH
 owner: Payment Operations
 step: [PS-SP-009]
-provenance: {"Control activity": {"evidence": "E-5: 'Auto-fallback to standard SCT where eligible; otherwise returned to the customer.' Section 8: Payment Hub handles orchestration. Section 7 C-8: 'Continuous.'", "source": "document"}, "Risk addressed": {"evidence": "", "source": "proposed"}, "Timing": {"evidence": "Section 7 C-8: 'Continuous.' Step 8 names pacs.008 as the submission message. Step 9: 10-second window applies from submission to confirmation.", "source": "document"}, "What it checks": {"evidence": "Step 9: 'For SCT Inst, settlement and the beneficiary-bank confirmation complete within 10 seconds.' D-6: 'SCT Inst confirmed in 10s?' Section 7 C-8: 'SCT Inst SLA monitoring (10-second rule), Detective / automated, Continuous.'", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:00Z
 ---

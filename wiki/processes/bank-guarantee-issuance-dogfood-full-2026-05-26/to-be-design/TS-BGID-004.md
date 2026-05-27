@@ -8,7 +8,6 @@ confidence: high
 source: SME interview — transformation-agent session 2026-05-26
 replaces: [PS-BGID-004]
 systems: [SYS-BGID-003]
-provenance: {"Rationale": {"evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated", "source": "elicited"}, "Target description": {"evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated", "source": "elicited"}, "What changes": {"evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:27:02Z
 ---

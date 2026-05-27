@@ -10,7 +10,6 @@ controlType: PREVENTIVE
 execution: MANUAL
 owner: Contact Centre
 step: [PS-DCR-002]
-provenance: {"Control activity": {"evidence": "The Contact Centre Agent verifies the customer's identity ... knowledge-based verification (security questions)", "source": "document"}, "Risk addressed": {"evidence": "S. Krause confirmed in the foundational run: Risk addressed holds as drafted.", "source": "elicited"}, "Timing": {"evidence": "Every request", "source": "document"}, "What it checks": {"evidence": "Customer identity verification before any card action | Preventive / manual | Every request", "source": "document"}}
 approval: in-progress
 regulatedBy: [REG-DCR-001, REG-DCR-002]
 ---

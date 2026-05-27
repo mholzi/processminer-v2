@@ -8,7 +8,6 @@ confidence: high
 source: SME interview — transformation-agent session 2026-05-26
 validationArea: Control gaps
 gapStatus: addressed-in-target
-provenance: {"Resolution": {"evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated", "source": "elicited"}, "Status": {"evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated", "source": "elicited"}, "The gap": {"evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:27:02Z
 ---

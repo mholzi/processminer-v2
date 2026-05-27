@@ -9,9 +9,7 @@ source: ddmm-dtp-mockup.md
 owner: Mandate Clerk
 sla:
 condition:
-transitions: [PS-DDMM-003|normal|mandate data valid and complete, EX-DDMM-001|exception|mandate data invalid or incomplete, EX-DDMM-003|exception|duplicate UMR detected]
 systems: [SYS-DDMM-001, SYS-DDMM-005]
-provenance: {"Inputs": {"evidence": "New mandate gets full set. Amendment validates only changed field(s), re-runs IBAN checksum/reachability if IBAN changed, and checks UMR exists and is active. Cancellation: only UMR exists and is currently active in MMS.", "source": "elicited"}, "Outputs": {"evidence": "Both accurate as drafted.", "source": "elicited"}, "What happens": {"evidence": "Validation is automated-first (CP-DDMM-001); Mandate Clerk on exception. New mandate: full checks. Amendment: changed fields only, re-run IBAN if IBAN changed, confirm UMR exists and active. Cancellation: only UMR exists and active in MMS.", "source": "elicited"}, "Why it matters": {"evidence": "Accurate as drafted.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

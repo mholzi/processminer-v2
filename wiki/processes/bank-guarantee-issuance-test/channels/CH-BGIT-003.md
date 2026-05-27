@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: client-journey-specialist — M. Berger, 2026-05-20
 channelType: ASSISTED
-provenance: {"Description": {"evidence": "M. Berger: 'email (legacy for bespoke wording — flagged as a process gap)'", "source": "elicited"}, "Usage": {"evidence": "M. Berger confirmed email is the current mechanism for bespoke wording handoff to Legal — flagged as PG-BGIT-002", "source": "elicited"}}
 ---
 ## Description
 Email used as the current mechanism for bespoke guarantee wording handoff between the Trade Finance Officer and the Legal team. Not a client-facing channel; flagged as process gap PG-BGIT-002.

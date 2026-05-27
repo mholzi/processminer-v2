@@ -9,8 +9,6 @@ source: bank-guarantee-issuance-v2.md
 owner: Trade Finance Officer
 condition: Guarantee not fully covered by approved facility
 systems: []
-transitions: [PS-BGID-005|normal|collateral confirmed and blocked]
-provenance: {"Inputs": {"evidence": "", "source": "proposed"}, "Outputs": {"evidence": "", "source": "proposed"}, "What happens": {"evidence": "For guarantees not fully covered by an approved facility, the Trade Finance Officer confirms that cash collateral has been received and blocked before issuance can proceed. This step is now mandatory for every partially-secured guarantee.", "source": "document"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 updatedBy: admin
 updatedAt: 2026-05-26T07:08:15Z
 ---

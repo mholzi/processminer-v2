@@ -11,7 +11,6 @@ target: COREP C 07.00-compliant guarantee exposure feed delivered to regulatory 
 owner: Chief Risk Officer
 appliesTo: [TGTAPP-BGID-001]
 regulatedBy: [REG-BGID-012]
-provenance: {"Definition": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Measurement": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Verification": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T15:58:45Z
 approval: approved

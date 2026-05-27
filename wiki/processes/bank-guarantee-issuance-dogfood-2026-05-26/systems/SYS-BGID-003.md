@@ -8,7 +8,6 @@ confidence: high
 source: bank-guarantee-issuance-v1.md
 systemType: SUPPORTING
 integrates: [SYS-BGID-002]
-provenance: {"Purpose": {"evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list.", "source": "document"}, "Role in this process": {"evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list. A screening hit suspends the application pending Compliance investigation. | the screening result is attached to the application.", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T05:17:42Z
 ---

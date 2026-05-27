@@ -1,0 +1,67 @@
+{
+  "PS-DDMM-001": [
+    {
+      "to": "PS-DDMM-002",
+      "kind": "normal",
+      "when": "request received"
+    }
+  ],
+  "PS-DDMM-002": [
+    {
+      "to": "PS-DDMM-003",
+      "kind": "normal",
+      "when": "mandate data valid and complete"
+    },
+    {
+      "to": "EX-DDMM-001",
+      "kind": "exception",
+      "when": "mandate data invalid or incomplete"
+    },
+    {
+      "to": "EX-DDMM-003",
+      "kind": "exception",
+      "when": "duplicate UMR detected"
+    }
+  ],
+  "PS-DDMM-003": [
+    {
+      "to": "PS-DDMM-004",
+      "kind": "branch",
+      "when": "screening clear · bulk above 50 mandates"
+    },
+    {
+      "to": "PS-DDMM-005",
+      "kind": "branch",
+      "when": "screening clear · single or bulk 50 or fewer mandates"
+    },
+    {
+      "to": "EX-DDMM-002",
+      "kind": "exception",
+      "when": "confirmed sanctions hit"
+    }
+  ],
+  "PS-DDMM-004": [
+    {
+      "to": "PS-DDMM-005",
+      "kind": "normal",
+      "when": "dual-control review complete"
+    },
+    {
+      "to": "PS-DDMM-002",
+      "kind": "loopback",
+      "when": "discrepancies found - batch returned to Mandate Clerk for correction"
+    }
+  ],
+  "PS-DDMM-005": [
+    {
+      "to": "PS-DDMM-006",
+      "kind": "normal",
+      "when": "registration successful"
+    },
+    {
+      "to": "EX-DDMM-004",
+      "kind": "exception",
+      "when": "MMS registration failure"
+    }
+  ]
+}

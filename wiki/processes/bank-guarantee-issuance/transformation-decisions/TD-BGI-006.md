@@ -8,7 +8,6 @@ confidence: low
 resolves: [PP-BGI-005]
 realises: [TS-BGI-005]
 fromIdea: [II-BGI-007]
-provenance: {"Options considered": {"evidence": "", "source": "proposed"}, "Rationale": {"evidence": "", "source": "proposed"}, "The decision": {"evidence": "", "source": "proposed"}}
 decisionType: process redesign
 decisionStatus: proposed
 ---

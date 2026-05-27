@@ -8,7 +8,6 @@ confidence: medium
 source: SME interview
 sentiment: negative
 touchpoint: [JT-BGID-003]
-provenance: {"Design implication": {"evidence": "", "source": "proposed"}, "The moment": {"evidence": "", "source": "proposed"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:16:16Z
 ---

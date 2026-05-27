@@ -8,7 +8,6 @@ confidence: high
 source: periodic-kyc-review-dtp.pdf
 sentiment: negative
 touchpoint: []
-provenance: {"Design implication": {"evidence": "", "source": "proposed"}, "The moment": {"evidence": "One in-app prompt: 'Quick KYC check — 2 minutes.' (§6.2 table, row 'Outreach (when needed)', column 'What the client experiences')", "source": "document"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 ---
 ## The moment
 When the bank cannot complete the review from data it already holds, the client receives a single in-app prompt: "Quick KYC check — 2 minutes." This is the one permitted interruption in the target process.

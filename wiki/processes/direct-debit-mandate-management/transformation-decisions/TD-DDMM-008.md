@@ -11,7 +11,6 @@ decisionStatus: DECIDED
 resolves: [CG-DDMM-002, PG-DDMM-004]
 realises: [TS-DDMM-006]
 fromIdea: []
-provenance: {"Options considered": {"evidence": "SME confirmed options and rationale — accepted without edit.", "source": "elicited"}, "Rationale": {"evidence": "SME confirmed rationale — accepted without edit.", "source": "elicited"}, "The decision": {"evidence": "SME (M. Vogel) accepted all ten decisions without edit.", "source": "elicited"}}
 ---
 ## The decision
 Engage Compliance and/or EPC to obtain a formal opinion on whether IBAN changes require a new UMR under SEPA SDD Scheme Rules; update CP-DDMM-001 and the amendment procedure to reflect the outcome.

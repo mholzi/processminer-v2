@@ -9,7 +9,6 @@ source: sepa-payments-dtp-mockup.md
 category: scheme-failure
 impact: MEDIUM
 handlingOwner: Payments Operations
-provenance: {"Description": {"evidence": "Step 9: 'For SCT Inst, settlement and the beneficiary-bank confirmation complete within 10 seconds.' Decision D-6: 'SCT Inst confirmed in 10s?' Section 6 E-5 heading: 'SCT Inst timeout or beneficiary-bank rejection.'", "source": "document"}, "Handling": {"evidence": "Section 6 E-5: 'Auto-fallback to standard SCT where eligible; otherwise returned to the customer.'", "source": "document"}, "Impact": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:00Z
 ---

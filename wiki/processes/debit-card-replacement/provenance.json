@@ -1,0 +1,786 @@
+{
+  "CG-DCR-001": {
+    "Remediation": {
+      "source": "elicited",
+      "evidence": "Elicited from S. Krause during the foundational-run deepening probe."
+    },
+    "Risk": {
+      "source": "elicited",
+      "evidence": "Elicited from S. Krause during the foundational-run deepening probe."
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "Elicited from S. Krause during the foundational-run deepening probe."
+    }
+  },
+  "CG-DCR-002": {
+    "Remediation": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed this in the risk & compliance session."
+    },
+    "Risk": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed this in the risk & compliance session."
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed this in the risk & compliance session."
+    }
+  },
+  "CG-DCR-003": {
+    "Remediation": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed the remediation when working lint finding F-004."
+    },
+    "Risk": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed the mis-routing risk when working lint finding F-004."
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed the intake control gap when working lint finding F-004."
+    }
+  },
+  "CH-DCR-001": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "Usage": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    }
+  },
+  "CH-DCR-002": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "Usage": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    }
+  },
+  "CH-DCR-003": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "Usage": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    }
+  },
+  "CP-DCR-001": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "The Contact Centre Agent verifies the customer's identity ... knowledge-based verification (security questions)"
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed in the foundational run: Risk addressed holds as drafted."
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "Every request"
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "Customer identity verification before any card action | Preventive / manual | Every request"
+    }
+  },
+  "CP-DCR-002": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "The agent places an immediate block on the existing card in the Card Management System"
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed in the foundational run: Risk addressed holds as drafted."
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "Card block applied | Immediately during the request"
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "Immediate card block on lost/stolen report | Preventive / automated | Every lost/stolen request"
+    }
+  },
+  "CP-DCR-003": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "the Fraud Analyst, who reviews recent transactions for unauthorised activity"
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed in the foundational run: Risk addressed holds as drafted."
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "Every lost/stolen request"
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "Fraud exposure review on lost/stolen cards | Detective / manual | Every lost/stolen request"
+    }
+  },
+  "CP-DCR-004": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "dispatched to the customer's registered address"
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed in the foundational run: Risk addressed holds as drafted."
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "Every card order"
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "Dispatch only to the registered address on file | Preventive / automated | Every card order"
+    }
+  },
+  "CP-DCR-005": {
+    "Control activity": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed this in the risk & compliance session."
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed this in the risk & compliance session."
+    },
+    "Timing": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed this in the risk & compliance session."
+    },
+    "What it checks": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed this in the risk & compliance session."
+    }
+  },
+  "CXB-DCR-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.vericast.com/insights/blog/creating-your-card-strategy-for-2026/ — \"86% of Millennial and 85% of Gen Z respondents noting the same\" — fetched 2026-05-19"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.vericast.com/insights/blog/creating-your-card-strategy-for-2026/ — \"40% of consumers prefer to receive a new or replacement card instantly\" — fetched 2026-05-19"
+    },
+    "The benchmark": {
+      "source": "web",
+      "evidence": "https://www.vericast.com/insights/blog/creating-your-card-strategy-for-2026/ — \"Nearly three in four consumers (74%) say that receiving their credit or debit card instantly at their FI is important\" — fetched 2026-05-19"
+    }
+  },
+  "CXB-DCR-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://abcorp.com/card-resources/instant-card-issuance-serves-instant-gratification-for-cardholders/ — \"outperform mailed cards by 53% over a 45-day period\" — fetched 2026-05-19"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.vericast.com/insights/blog/creating-your-card-strategy-for-2026/ — \"cards issued instantly are used up to 32% more in the first 30 days\" — fetched 2026-05-19"
+    },
+    "The benchmark": {
+      "source": "web",
+      "evidence": "https://abcorp.com/card-resources/instant-card-issuance-serves-instant-gratification-for-cardholders/ — \"47% of instantly issued cards are used within eight hours\" — fetched 2026-05-19"
+    }
+  },
+  "CXE-DCR-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.barclays.co.uk/help/cards/debit-card/lost-stolen-damaged/ — \"Report damaged, lost or stolen\" — fetched 2026-05-19"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.barclays.co.uk/help/accounts/account-services/instant-card-branches/ — \"you can get a temporary card at some Barclays branches\" — fetched 2026-05-19"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.barclays.co.uk/help/cards/debit-card/lost-stolen-damaged/ — \"A new debit card will be posted to the address on file within five working days\" — fetched 2026-05-19"
+    }
+  },
+  "CXF-DCR-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://help.revolut.com/help/making-payments/card-issues/what-to-do-if-my-card-was-lost-or-stolen — \"order a replacement card right away, with ... an estimated delivery date provided\" — fetched 2026-05-19"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://help.revolut.com/help/card-payments-withdrawals/ping-other-card-security-settings/freezing-or-blocking-your-card/ — \"freezing your card can protect your money ... any card payments attempted with this card will fail\" — fetched 2026-05-19"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://help.revolut.com/help/making-payments/card-issues/what-to-do-if-my-card-was-lost-or-stolen — \"You will be able to order a replacement card right away ... add it to your Apple Pay or Google Pay wallet to start using it immediately\" — fetched 2026-05-19"
+    }
+  },
+  "CXG-DCR-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://wallethub.com/answers/chase-instant-issue-2140675162/ — \"replacement card that will arrive within 3-5 days\" — fetched 2026-05-19"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.chase.com/digital/digital-payments/apple-pay/faqs/lost-or-stolen — \"immediate digital access to your replacement card through Apple Pay\" — fetched 2026-05-19"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.chase.com/digital/digital-payments/apple-pay/faqs/lost-or-stolen — \"once it has been added to your wallet, you can use it right away\" — fetched 2026-05-19"
+    }
+  },
+  "EX-DCR-001": {
+    "Description": {
+      "source": "document",
+      "evidence": "Identity verification fails"
+    },
+    "Handling": {
+      "source": "document",
+      "evidence": "Replacement is not processed on the call; customer is directed to a branch with photo ID. The existing card is still blocked if the customer reports it lost or stolen."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed in the foundational run: Impact holds as drafted."
+    }
+  },
+  "EX-DCR-002": {
+    "Description": {
+      "source": "document",
+      "evidence": "Suspicious transactions found during fraud check"
+    },
+    "Handling": {
+      "source": "document",
+      "evidence": "Request handed to the Card Fraud process (PRC-RET-0255); replacement is held until the fraud case is opened, then resumes."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed in the foundational run: Impact holds as drafted."
+    }
+  },
+  "EX-DCR-003": {
+    "Description": {
+      "source": "document",
+      "evidence": "Customer's registered address is unconfirmed or stale"
+    },
+    "Handling": {
+      "source": "document",
+      "evidence": "Card cannot be dispatched; customer must confirm or update their address before the order is released."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed in the foundational run: Impact holds as drafted."
+    }
+  },
+  "FP-DCR-001": {
+    "Client impact": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    }
+  },
+  "FP-DCR-002": {
+    "Client impact": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    }
+  },
+  "FP-DCR-003": {
+    "Client impact": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    }
+  },
+  "JT-DCR-001": {
+    "Experience": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    }
+  },
+  "JT-DCR-002": {
+    "Experience": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    }
+  },
+  "JT-DCR-003": {
+    "Experience": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    }
+  },
+  "JT-DCR-004": {
+    "Experience": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    }
+  },
+  "JT-DCR-005": {
+    "Experience": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    }
+  },
+  "JT-DCR-006": {
+    "Experience": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    }
+  },
+  "M-DCR-001": {
+    "Current reading": {
+      "source": "document",
+      "evidence": "Card block applied | Immediately during the request"
+    },
+    "Definition": {
+      "source": "document",
+      "evidence": "Card block applied | Immediately during the request"
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed in the foundational run: Why it matters holds as drafted."
+    }
+  },
+  "M-DCR-002": {
+    "Current reading": {
+      "source": "document",
+      "evidence": "Replacement card ordered | Within 1 business day of the request"
+    },
+    "Definition": {
+      "source": "document",
+      "evidence": "Replacement card ordered | Within 1 business day of the request"
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed in the foundational run: Why it matters holds as drafted."
+    }
+  },
+  "M-DCR-003": {
+    "Current reading": {
+      "source": "document",
+      "evidence": "Card delivered to customer | Within 5-7 business days of the order"
+    },
+    "Definition": {
+      "source": "document",
+      "evidence": "Card delivered to customer | Within 5-7 business days of the order"
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed in the foundational run: Why it matters holds as drafted."
+    }
+  },
+  "MT-DCR-001": {
+    "Design implication": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "The moment": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    }
+  },
+  "MT-DCR-002": {
+    "Design implication": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "The moment": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    }
+  },
+  "MT-DCR-003": {
+    "Design implication": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "The moment": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "S. Krause narrated this in the client-journey session."
+    }
+  },
+  "OAF-DCR-001": {
+    "Finding": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed this in the risk & compliance session."
+    },
+    "Recommendation": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed this in the risk & compliance session."
+    }
+  },
+  "PP-DCR-001": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "Elicited from S. Krause during the foundational-run deepening probe."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "Elicited from S. Krause during the foundational-run deepening probe."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "Elicited from S. Krause during the foundational-run deepening probe."
+    }
+  },
+  "PP-DCR-002": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "Elicited from S. Krause during the foundational-run deepening probe."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "Elicited from S. Krause during the foundational-run deepening probe."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "Elicited from S. Krause during the foundational-run deepening probe."
+    }
+  },
+  "PP-DCR-003": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "Elicited from S. Krause during the foundational-run deepening probe."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "Elicited from S. Krause during the foundational-run deepening probe."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "Elicited from S. Krause during the foundational-run deepening probe."
+    }
+  },
+  "PP-DCR-004": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "Elicited from S. Krause during the foundational-run deepening probe."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "Elicited from S. Krause during the foundational-run deepening probe."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "Elicited from S. Krause during the foundational-run deepening probe."
+    }
+  },
+  "PS-DCR-001": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "Each request carries ... the reported reason (lost / stolen / damaged)"
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "The customer contacts the bank ... and to request a replacement"
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "The customer contacts the bank via the Contact Centre or raises a request in the mobile app, stating the card is lost, stolen, or damaged."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed in the foundational run: Why it matters holds as drafted."
+    }
+  },
+  "PS-DCR-002": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "knowledge-based verification (security questions); in the mobile app the customer is already authenticated by login"
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "If identity verification fails"
+    },
+    "What happens": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed in the foundational run: Why it matters holds as drafted."
+    }
+  },
+  "PS-DCR-003": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "the agent places an immediate block on the existing card"
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "Card lost or stolen? | Fraud exposure check | Skip to card order"
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "The agent places an immediate block on the existing card in the Card Management System so it can no longer be used. For lost or stolen cards the block is permanent; for damaged cards the block is also applied because the card number is reissued."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed in the foundational run: Why it matters holds as drafted."
+    }
+  },
+  "PS-DCR-004": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "reviews recent transactions for unauthorised activity"
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "If suspicious transactions are found, see Exception E-2"
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "For cards reported lost or stolen, the request is flagged to the Fraud Analyst, who reviews recent transactions for unauthorised activity. Damaged-card requests skip this check."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed in the foundational run: Why it matters holds as drafted."
+    }
+  },
+  "PS-DCR-005": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "orders a like-for-like replacement card"
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "A like-for-like replacement card of the same product and type as the original"
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "The Card Operations Clerk orders a like-for-like replacement card. The new card carries a new card number; the PIN is unchanged and is not reissued."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed in the foundational run: Why it matters holds as drafted."
+    }
+  },
+  "PS-DCR-006": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "dispatched to the customer's registered address"
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "The replacement card is produced by the card bureau and dispatched to the customer's registered address."
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "The replacement card is produced by the card bureau and dispatched to the customer's registered address. The customer is told the expected delivery time (5-7 business days) and that the card must be activated on first use."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "S. Krause confirmed in the foundational run: Why it matters holds as drafted."
+    }
+  },
+  "REG-DCR-001": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://www.ecb.europa.eu/press/intro/mip-online/2018/html/1803_revisedpsd.en.html — \"the payment service provider must be able to block it\" — fetched 2026-05-19"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://www.ecb.europa.eu/press/intro/mip-online/2018/html/1803_revisedpsd.en.html — \"The maximum amount for which a payer can be made liable ... has been lowered from 150 to 50 euro\" — fetched 2026-05-19"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://www.bundesbank.de/en/tasks/payment-systems/psd2/psd2-775954 — \"PSD2\" — fetched 2026-05-19"
+    }
+  },
+  "REG-DCR-002": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://www.gdprregulation.eu/gdpr-for-financial-services/ — \"uphold customers' rights, including access to, rectification, and erasure of personal data\" — fetched 2026-05-19"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://www.gdprregulation.eu/gdpr-for-financial-services/ — \"Banks must make sure the data they have is correct and up to date, and if there's an error, fix it fast\" — fetched 2026-05-19"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://www.gdprregulation.eu/gdpr-for-financial-services/ — \"Banks must adhere to GDPR principles such as lawfulness, fairness, transparency, and data minimization\" — fetched 2026-05-19"
+    }
+  },
+  "REG-DCR-003": {
+    "How it is met": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/publications-and-media/press-releases/eba-launches-consultation-its-draft-guidelines-third-party-risk-management-regard-non-ict-related — \"the sound management of third-party risk ... non-ICT related services provided by third-party service providers\" — fetched 2026-05-19"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://www.dlapiper.com/en-us/insights/publications/law-in-tech/from-outsourcing-to-third-party-arrangements-new-eba-guidelines-for-third-party — \"any provision by a third party of one or more functions to a financial services entity\" — fetched 2026-05-19"
+    }
+  },
+  "REG-DCR-004": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://gdprlocal.com/gdpr-credit-card-data/ — \"maintaining secure networks and firewalls, and performing regular vulnerability testing\" — fetched 2026-05-19"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://gdprlocal.com/gdpr-credit-card-data/ — \"encrypting cardholder data during transmission and storage, implementing strict access controls\" — fetched 2026-05-19"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://gdprlocal.com/gdpr-credit-card-data/ — \"Any banking app that processes, stores, or transmits card information must comply with PCI DSS requirements\" — fetched 2026-05-19"
+    }
+  },
+  "ROLE-DCR-001": {
+    "In this process": {
+      "source": "document",
+      "evidence": "The Contact Centre Agent verifies the customer's identity ... The agent places an immediate block on the existing card"
+    },
+    "Responsibility": {
+      "source": "document",
+      "evidence": "Verify customer identity | R ... Block existing card | R ... Confirm dispatch to customer | R"
+    }
+  },
+  "ROLE-DCR-002": {
+    "In this process": {
+      "source": "document",
+      "evidence": "The Card Operations Clerk orders a like-for-like replacement card."
+    },
+    "Responsibility": {
+      "source": "document",
+      "evidence": "The Card Operations Clerk orders a like-for-like replacement card."
+    }
+  },
+  "ROLE-DCR-003": {
+    "In this process": {
+      "source": "document",
+      "evidence": "the request is flagged to the Fraud Analyst, who reviews recent transactions for unauthorised activity"
+    },
+    "Responsibility": {
+      "source": "document",
+      "evidence": "the request is flagged to the Fraud Analyst, who reviews the card's recent transactions for unauthorised activity"
+    }
+  },
+  "SYS-DCR-001": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "Card Management System (CMS) | System of record for cards; blocks and orders cards"
+    },
+    "Role in this process": {
+      "source": "document",
+      "evidence": "System of record for cards; blocks and orders cards"
+    }
+  },
+  "SYS-DCR-002": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "Contact Centre Telephony / CRM | Channel and identity-verification workspace for phone requests"
+    },
+    "Role in this process": {
+      "source": "document",
+      "evidence": "Channel and identity-verification workspace for phone requests"
+    }
+  },
+  "SYS-DCR-003": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "Mobile Banking App | Self-service channel for raising a replacement request"
+    },
+    "Role in this process": {
+      "source": "document",
+      "evidence": "Self-service channel for raising a replacement request"
+    }
+  },
+  "SYS-DCR-004": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "Card Bureau Interface | Sends production and dispatch instructions to the external card bureau"
+    },
+    "Role in this process": {
+      "source": "document",
+      "evidence": "Sends production and dispatch instructions to the external card bureau"
+    }
+  }
+}

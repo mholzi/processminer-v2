@@ -12,7 +12,6 @@ severity: High
 owner: Digital
 targetClose: Q2 2027
 affects: [PS-PR-004]
-provenance: {"Impact": {"evidence": "", "source": "proposed"}, "Next step": {"evidence": "All non-PB outreach defaults to the mobile app, with RM-mediated as a 30-day fall-back. (Section 8, D4 Decision); G-04: Owner: Digital. Target close: Q2 2027. (Section 9 Gap Log)", "source": "document"}, "The gap": {"evidence": "G-04: Outreach is paper / email. (Section 9 Gap Log); As-Is Step 2: RM contacts the client (email, phone, in person). (Section 2 As-Is); D4 establishes digital outreach as the target default, implying it does not yet exist. (Section 8 D4)", "source": "document"}}
 ---
 ## The gap
 Client outreach for the periodic KYC review is conducted via email, phone, and in-person visits. There is no digital-first outreach channel; the Outreach Service targeting the mobile app does not yet exist in the As-Is state.

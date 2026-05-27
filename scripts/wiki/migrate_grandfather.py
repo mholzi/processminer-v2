@@ -27,14 +27,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from wiki_lib import (  # noqa: E402
-    ROOT,
     WIKI_DIR,
-    dump_provenance,
     element_types,
     iter_elements,
-    parse_blocks,
-    parse_frontmatter,
-    serialize_element,
+    load_provenance,
+    set_provenance,
     template_headings,
 )
 
@@ -50,11 +47,12 @@ def main(argv: list[str]) -> None:
         sys.exit(f"error: no process at wiki/processes/{slug}/")
 
     types = element_types()
+    provenance_bundle = load_provenance(slug)
     migrated: list[str] = []
     skipped_unapproved = 0
     skipped_have_provenance = 0
 
-    for path, meta, _body in iter_elements(slug):
+    for _path, meta, _body in iter_elements(slug):
         info = types.get(str(meta.get("type", "")))
         if not info or not info.get("template"):
             continue
@@ -62,7 +60,7 @@ def main(argv: list[str]) -> None:
         if str(meta.get("approval", "")).strip() != "approved":
             skipped_unapproved += 1
             continue
-        if meta.get("provenance"):
+        if provenance_bundle.get(eid):
             skipped_have_provenance += 1
             continue
 
@@ -74,11 +72,7 @@ def main(argv: list[str]) -> None:
         if dry_run:
             continue
 
-        # Re-read so the provenance key lands in a fixed frontmatter position
-        # and the body is preserved exactly.
-        fm, body = parse_frontmatter(path.read_text(encoding="utf-8"))
-        fm["provenance"] = dump_provenance(legacy)
-        path.write_text(serialize_element(fm, parse_blocks(body)), encoding="utf-8")
+        set_provenance(slug, eid, legacy)
 
     verb = "would tag" if dry_run else "tagged"
     print(f"{verb} {len(migrated)} approved element(s) as legacy-approved")

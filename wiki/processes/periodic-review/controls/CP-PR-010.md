@@ -12,7 +12,6 @@ effectiveness: HIGH
 owner: FCO
 step: [PS-PR-006]
 regulatedBy: [REG-PR-001, REG-PR-002, REG-PR-003, REG-PR-004]
-provenance: {"Control activity": {"evidence": "", "source": "proposed"}, "Risk addressed": {"evidence": "", "source": "proposed"}, "Timing": {"evidence": "[Table:] Frequency: Per case. [Step 6:] Sign-off gate applied per qualifying case before Close-out.", "source": "document"}, "What it checks": {"evidence": "Step 6 — Sign-off. Owner: Financial Crime Officer (FCO) — 4-eyes principle. Mandatory for: High-risk clients, PEPs, recommend-exit decisions, approve-with-conditions where the condition restricts a regulated product, and a random 5 % QA sample of STP and analyst approvals.", "source": "document"}}
 ---
 ## What it checks
 Whether every High-risk client review, PEP review, recommend-exit decision, and approve-with-conditions outcome that restricts a regulated product receives a mandatory second sign-off by the Financial Crime Officer before the case closes.

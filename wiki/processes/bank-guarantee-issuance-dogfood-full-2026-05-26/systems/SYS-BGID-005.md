@@ -8,7 +8,6 @@ confidence: medium
 source: it-architect session 2026-05-26
 systemType: CORE
 integrates: [SYS-BGID-002]
-provenance: {"Purpose": {"evidence": "Elicited: core banking credit system; vendor in-house; criticality HIGH; RTO 8h, RPO 1h", "source": "elicited"}, "Role in this process": {"evidence": "Elicited: consulted at PS-BGID-002 for headroom check; updated async post-issuance at PS-BGID-007; lag documented in EX-BGID-006, DEP-BGID-001", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T10:09:43Z
 approval: in-progress

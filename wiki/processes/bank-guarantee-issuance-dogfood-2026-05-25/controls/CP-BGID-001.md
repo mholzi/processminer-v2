@@ -11,7 +11,6 @@ execution: HYBRID
 owner: Trade Finance
 step: [PS-BGID-005]
 regulatedBy: [REG-BGID-001]
-provenance: {"Control activity": {"evidence": "A Trade Finance Manager reviews the assembled package and approves issuance. Guarantees above EUR 5 million additionally require sign-off by the Head of Trade Finance.", "source": "document"}, "Risk addressed": {"evidence": "", "source": "proposed"}, "Timing": {"evidence": "", "source": "proposed"}, "What it checks": {"evidence": "No guarantee is issued without a Trade Finance Manager's approval, recorded in the Trade Finance System.", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:56:10Z
 ---

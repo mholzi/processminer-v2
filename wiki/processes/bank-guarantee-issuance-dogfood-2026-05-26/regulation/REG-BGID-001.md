@@ -9,7 +9,6 @@ source: EU sanctions regulations, AML directives
 domain: AML, sanctions
 asOf: 2026-05-26
 sourceUrl:
-provenance: {"How it is met": {"evidence": "", "source": "proposed"}, "What it requires": {"evidence": "", "source": "proposed"}, "Why it applies": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T05:17:42Z
 ---

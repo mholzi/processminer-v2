@@ -8,7 +8,6 @@ confidence: medium
 source: SME interview
 channelType: ASSISTED
 touchpoints: [JT-BGID-005]
-provenance: {"Description": {"evidence": "SWIFT MT-799 for bank-to-bank guarantee requests", "source": "elicited"}, "Usage": {"evidence": "SWIFT MT-799 for bank-to-bank guarantee requests — MT760 delivers the issued guarantee instrument", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:15:47Z
 approval: in-progress

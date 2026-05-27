@@ -8,7 +8,6 @@ confidence: medium
 countries: DE
 variationType: REGULATORY
 affects: [PS-BGID-005]
-provenance: {"Description": {"evidence": "", "source": "proposed"}, "Reason": {"evidence": "", "source": "proposed"}, "Variation detail": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T19:43:22Z
 ---

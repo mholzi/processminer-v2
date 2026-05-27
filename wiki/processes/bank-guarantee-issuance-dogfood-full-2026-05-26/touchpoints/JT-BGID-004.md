@@ -8,7 +8,6 @@ confidence: medium
 source: SME interview
 channel: Corporate Portal
 occursAt: [PS-BGID-005]
-provenance: {"Experience": {"evidence": "", "source": "proposed"}, "What the bank does": {"evidence": "approval-decision notification triggered once four-eyes approval is recorded in TFS", "source": "elicited"}, "What the client does": {"evidence": "approval-decision notification — touchpoint named by SME", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:15:47Z
 ---

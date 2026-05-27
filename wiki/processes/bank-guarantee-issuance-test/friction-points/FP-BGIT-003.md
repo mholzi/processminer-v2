@@ -9,7 +9,6 @@ source: client-journey-specialist — M. Berger, 2026-05-20
 severity: MEDIUM
 occursAt: [PS-BGIT-003]
 painPoint: [PP-BGIT-002]
-provenance: {"Client impact": {"evidence": "M. Berger: PP-BGIT-002 'bespoke wording adds unpredictable delay because Legal review has no committed turnaround'", "source": "elicited"}, "Description": {"evidence": "M. Berger: 'no visibility for client on legal review progress' confirmed as friction point", "source": "elicited"}, "Root cause": {"evidence": "M. Berger: 'bespoke wording handoff is by email today — no system handoff' (PG-BGIT-002) — email-based review leaves no portal-visible status", "source": "elicited"}}
 ---
 ## Description
 When a bespoke-wording application is with Legal, the client sees only a generic in-progress status in the portal. There is no indication the delay is Legal-driven, no SLA and no expected return date.

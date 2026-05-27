@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: innovation-analyst — M. Berger, 2026-05-20
 severity: LOW
-provenance: {"Likelihood & impact": {"evidence": "M. Berger Stage 5 standing input confirmed severity LOW", "source": "elicited"}, "Mitigation": {"evidence": "M. Berger Stage 5 standing input; configuration/operational risk for II-BGIT-004", "source": "elicited"}, "The risk": {"evidence": "M. Berger Stage 5: 'IR-BGIT-004: TFS configuration change risk for II-BGIT-004, severity LOW'", "source": "elicited"}}
 ---
 ## The risk
 Implementing a system-enforced generation gate in the Trade Finance System requires configuration changes that define the approval-status conditions under which SWIFT dispatch is permitted. An incorrect configuration — overly strict or ambiguous approval-status logic — could block all guarantee generation, causing a processing outage until the configuration is corrected.

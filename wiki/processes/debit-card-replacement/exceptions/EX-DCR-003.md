@@ -9,7 +9,6 @@ source: dcr-dtp-mockup.md
 impact: LOW
 handlingOwner: Card Operations Clerk
 category: Data quality
-provenance: {"Description": {"evidence": "Customer's registered address is unconfirmed or stale", "source": "document"}, "Handling": {"evidence": "Card cannot be dispatched; customer must confirm or update their address before the order is released.", "source": "document"}, "Impact": {"evidence": "S. Krause confirmed in the foundational run: Impact holds as drafted.", "source": "elicited"}}
 approval: approved
 approvalBy: S. Krause
 approvalDate: 2026-05-19

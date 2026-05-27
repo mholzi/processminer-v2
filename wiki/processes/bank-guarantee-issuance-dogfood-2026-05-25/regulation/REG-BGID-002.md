@@ -9,7 +9,6 @@ source:
 domain: Trade Finance
 asOf: 2026-05-25
 sourceUrl:
-provenance: {"How it is met": {"evidence": "", "source": "proposed"}, "What it requires": {"evidence": "Bank guarantees follow the ICC Uniform Rules for Demand Guarantees (URDG 758) where the guarantee is issued on demand terms.", "source": "document"}, "Why it applies": {"evidence": "This process covers the issuance of a Bank Guarantee (BG) on behalf of a corporate client in favour of a third-party beneficiary. Bank guarantees follow the ICC Uniform Rules for Demand Guarantees (URDG 758) where the guarantee is issued on demand terms.", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:56:10Z
 ---

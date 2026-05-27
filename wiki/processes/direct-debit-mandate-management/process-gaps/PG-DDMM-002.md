@@ -9,7 +9,6 @@ source: ddmm-dtp-mockup.md
 area: Exception Handling
 gapStatus: open
 affects: [PS-DDMM-002]
-provenance: {"Impact": {"evidence": "SME (M. Vogel) confirmed: reactive-only handling — mandates only surface via R-transaction or creditor query; ad hoc resolution.", "source": "elicited"}, "Next step": {"evidence": "SME confirmed: procedure needs to be defined for suspended, cancelled, or retained mandate handling on CI deactivation.", "source": "elicited"}, "The gap": {"evidence": "SME confirmed: no automated mandate review on CI deactivation — purely reactive. Procedure for existing mandates under a deactivated CI is genuinely undocumented.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

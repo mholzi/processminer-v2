@@ -10,7 +10,6 @@ category: credit
 impact: HIGH
 frequencyPct:
 handlingOwner: Credit Team
-provenance: {"Description": {"evidence": "", "source": "proposed"}, "Handling": {"evidence": "\"the application is parked and routed to the Credit team\" (step 2); \"this is the most common reason for delay\" (step 2); \"Applications frequently stall at the credit and facility check when the client has not pre-arranged enough limit.\" (Known pain points)", "source": "document"}, "Impact": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T05:18:45Z
 ---

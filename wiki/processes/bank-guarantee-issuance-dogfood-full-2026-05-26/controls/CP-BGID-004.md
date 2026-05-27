@@ -11,7 +11,6 @@ execution: MANUAL
 owner: Trade Finance Officer
 step: [PS-BGID-007]
 regulatedBy: [REG-BGID-006]
-provenance: {"Control activity": {"evidence": "", "source": "proposed"}, "Risk addressed": {"evidence": "", "source": "proposed"}, "Timing": {"evidence": "Step 5 (Collateral confirmation) precedes step 6 (Issuance approval) in the documented process sequence. 'This step is now mandatory for every partially-secured guarantee.'", "source": "document"}, "What it checks": {"evidence": "For guarantees not fully covered by an approved facility, the Trade Finance Officer confirms that cash collateral has been received and blocked before issuance can proceed. This step is now mandatory for every partially-secured guarantee.", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T08:27:49Z
 ---

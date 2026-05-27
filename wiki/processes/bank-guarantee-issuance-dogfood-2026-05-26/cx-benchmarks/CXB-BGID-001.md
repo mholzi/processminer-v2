@@ -8,7 +8,6 @@ confidence: medium
 source: HSBC Fast-Track Demand Guarantee announcement (Business Money, 2023)
 sourceUrl: https://www.business-money.com/announcements/hsbc-pioneers-new-digital-fast-track-trade-finance-demand-guarantee/
 asOf: 2023-01-01
-provenance: {"Evidence": {"evidence": "https://www.business-money.com/announcements/hsbc-pioneers-new-digital-fast-track-trade-finance-demand-guarantee/ — \"reducing issuance times from a typical 3-4 days down to potentially minutes\" — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.business-money.com/announcements/hsbc-pioneers-new-digital-fast-track-trade-finance-demand-guarantee/ — \"Given no manufacturing can start until the guarantee is in place this enhancement supports working capital optimisation\" — fetched 2026-05-26", "source": "web"}, "The benchmark": {"evidence": "https://www.business-money.com/announcements/hsbc-pioneers-new-digital-fast-track-trade-finance-demand-guarantee/ — \"reducing issuance times from a typical 3-4 days down to potentially minutes\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: source-cx
 updatedAt: 2026-05-26T19:59:08Z
 ---

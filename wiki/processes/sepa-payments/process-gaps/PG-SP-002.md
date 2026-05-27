@@ -9,7 +9,6 @@ source: sepa-payments-dtp-mockup.md
 area: As-Is process
 gapStatus: open
 affects: [PS-SP-006, PS-SP-008]
-provenance: {"Impact": {"evidence": "", "source": "proposed"}, "Next step": {"evidence": "§10 open question: 'What happens when a bulk file mixes instant-eligible and standard items?'; §8 systems table: 'Payment Hub — Validation, routing, orchestration, message generation'", "source": "document"}, "The gap": {"evidence": "§5.1 step 1: 'Bulk files arrive as pain.001 messages'; §5.1 step 6: routing logic documented only for individual items with no mention of mixed-rail bulk files; §10 open question: 'What happens when a bulk file mixes instant-eligible and standard items?'", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:00Z
 ---

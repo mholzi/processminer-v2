@@ -10,7 +10,6 @@ severity: MEDIUM
 occursAt: [MT-PR-004]
 painPoint: [PP-PR-001]
 addressedBy: [PS-PR-007]
-provenance: {"Client impact": {"evidence": "", "source": "proposed"}, "Description": {"evidence": "", "source": "proposed"}, "Root cause": {"evidence": "", "source": "proposed"}}
 ---
 ## Description
 Between review cycles, clients have no KYC status visibility — complete, pending, or due — and cannot see their next review date. They discover the outcome only at the next outreach contact. The document records this as 'No visibility; clients found out at next outreach.'

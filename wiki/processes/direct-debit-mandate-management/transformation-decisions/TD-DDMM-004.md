@@ -11,7 +11,6 @@ decisionStatus: DECIDED
 resolves: [FP-DDMM-005]
 realises: [TS-DDMM-003]
 fromIdea: [II-DDMM-008]
-provenance: {"Options considered": {"evidence": "SME confirmed options and rationale — accepted without edit.", "source": "elicited"}, "Rationale": {"evidence": "SME confirmed rationale — accepted without edit.", "source": "elicited"}, "The decision": {"evidence": "SME (M. Vogel) accepted all ten decisions without edit.", "source": "elicited"}}
 ---
 ## The decision
 Add a raise-a-query action in the Creditor Portal on each mandate record, routing structured questions directly into the Payments Operations MMS work queue, with responses delivered in-portal and logged to the mandate activity record.

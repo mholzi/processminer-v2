@@ -9,8 +9,6 @@ source: bank-guarantee-issuance-v2.md
 owner: Trade Finance Officer
 condition: Guarantee amount not fully covered by approved facility (partially-secured guarantee)
 systems: [SYS-BGIT-002]
-provenance: {"Inputs": {"evidence": "", "source": "proposed"}, "Outputs": {"evidence": "", "source": "proposed"}, "What happens": {"evidence": "For guarantees not fully covered by an approved facility, the Trade Finance Officer confirms that cash collateral has been received and blocked before issuance can proceed. This step is now mandatory for every partially-secured guarantee.", "source": "document"}, "Why it matters": {"evidence": "", "source": "proposed"}}
-transitions: [PS-BGIT-005|normal|collateral confirmed]
 ---
 ## What happens
 For guarantees not fully covered by an approved facility (partially-secured guarantees), the Trade Finance Officer confirms that cash collateral has been received and blocked before issuance can proceed. This step is mandatory for every partially-secured guarantee and must be completed before the application advances to issuance approval.

@@ -8,8 +8,6 @@ confidence: high
 source: bank-guarantee-issuance-v1.md
 owner: Trade Finance Officer
 systems: [SYS-BGI-002]
-transitions: [PS-BGI-003|normal|limit is sufficient, EX-BGI-001|exception|limit is insufficient]
-provenance: {"Inputs": {"evidence": "Issuance is blocked in the Trade Finance System unless available facility limit covers the guarantee amount.", "source": "document"}, "Outputs": {"evidence": "If the limit is insufficient, the application is parked and routed to the Credit team.", "source": "document"}, "What happens": {"evidence": "The Trade Finance Officer confirms the client holds an approved guarantee facility with sufficient available limit. If the limit is insufficient, the application is parked and routed to the Credit team.", "source": "document"}, "Why it matters": {"evidence": "this is the most common reason for delay. Applications frequently stall at the credit and facility check when the client has not pre-arranged enough limit.", "source": "document"}}
 approval: approved
 approvalBy: m.berger
 approvalDate: 2026-05-19

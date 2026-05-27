@@ -8,7 +8,6 @@ confidence: high
 source: bank-guarantee-issuance-v1.md
 systemType: CORE
 integrates: [SYS-BGID-001, SYS-BGID-003, SYS-BGID-004, SYS-BGID-005, SYS-BGID-006]
-provenance: {"Purpose": {"evidence": "", "source": "proposed"}, "Role in this process": {"evidence": "", "source": "proposed"}}
 updatedBy: admin
 updatedAt: 2026-05-26T10:10:10Z
 approval: in-progress

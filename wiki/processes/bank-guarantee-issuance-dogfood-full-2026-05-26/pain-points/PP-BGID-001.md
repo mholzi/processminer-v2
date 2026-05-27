@@ -10,7 +10,6 @@ category: delay
 severity: HIGH
 priority: P1
 affects: [PS-BGID-002]
-provenance: {"Description": {"evidence": "Applications frequently stall at the credit and facility check when the client has not pre-arranged enough limit.", "source": "document"}, "Impact": {"evidence": "", "source": "proposed"}, "Root cause": {"evidence": "Applications frequently stall at the credit and facility check when the client has not pre-arranged enough limit.", "source": "document"}}
 updatedBy: admin
 updatedAt: 2026-05-26T07:08:15Z
 ---

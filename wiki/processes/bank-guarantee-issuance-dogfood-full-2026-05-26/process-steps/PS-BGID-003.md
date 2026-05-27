@@ -10,7 +10,6 @@ owner: Trade Finance Officer
 sla: 2 business days (bespoke wording — informal desk convention; not tracked in TFS)
 condition: Facility limit confirmed as sufficient
 systems: [SYS-BGID-002]
-provenance: {"Inputs": {"evidence": "Templates live in TFS, version-controlled by Legal", "source": "elicited"}, "Outputs": {"evidence": "[Y] Accept", "source": "elicited"}, "What happens": {"evidence": "", "source": "proposed"}, "Why it matters": {"evidence": "[Y] Accept", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T10:17:24Z
 approval: in-progress

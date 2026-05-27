@@ -8,7 +8,6 @@ confidence: high
 source: ddmm-client-journey-specialist
 sentiment: positive
 touchpoint: [JT-DDMM-005]
-provenance: {"Design implication": {"evidence": "SME confirmed: confirmation is currently well-executed; the lever is improving the journey that precedes it.", "source": "elicited"}, "The moment": {"evidence": "SME (M. Vogel): confirmation is unambiguous and type-specific; creditor can immediately schedule collections; SME confirmed relief is marked after the opaque wait.", "source": "elicited"}, "Why it matters": {"evidence": "SME confirmed: this is the trust-won moment; how much trust is restored depends on how much friction preceded it.", "source": "elicited"}}
 ---
 ## The moment
 The registration confirmation appears in the Creditor Portal — the mandate is active and the creditor can immediately schedule direct debit collections. After an opaque wait, the loop is closed and action is possible.

@@ -7,7 +7,6 @@ status: draft
 confidence: medium
 source: Vericast — Creating Your Card Strategy for 2026
 sourceUrl: https://www.vericast.com/insights/blog/creating-your-card-strategy-for-2026/
-provenance: {"Evidence": {"evidence": "https://www.vericast.com/insights/blog/creating-your-card-strategy-for-2026/ — \"86% of Millennial and 85% of Gen Z respondents noting the same\" — fetched 2026-05-19", "source": "web"}, "Relevance": {"evidence": "https://www.vericast.com/insights/blog/creating-your-card-strategy-for-2026/ — \"40% of consumers prefer to receive a new or replacement card instantly\" — fetched 2026-05-19", "source": "web"}, "The benchmark": {"evidence": "https://www.vericast.com/insights/blog/creating-your-card-strategy-for-2026/ — \"Nearly three in four consumers (74%) say that receiving their credit or debit card instantly at their FI is important\" — fetched 2026-05-19", "source": "web"}}
 asOf: 2026-05-19
 ---
 ## The benchmark

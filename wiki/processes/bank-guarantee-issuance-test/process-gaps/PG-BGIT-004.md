@@ -8,7 +8,6 @@ confidence: high
 source: process-specialist — M. Berger, 2026-05-20
 area: As-Is process
 gapStatus: open
-provenance: {"Impact": {"evidence": "M. Berger Stage 5 standing input confirmed gap area As-Is process", "source": "elicited"}, "Next step": {"evidence": "M. Berger Stage 5 standing input confirmed gapStatus open", "source": "elicited"}, "The gap": {"evidence": "M. Berger Stage 5: 'No end-to-end issuance cycle-time metric — only step-level SLAs tracked, 3-business-day commitment cannot be measured automatically'", "source": "elicited"}}
 ---
 ## The gap
 The process tracks only step-level SLAs — the credit team response window and the Legal review target — but has no end-to-end issuance cycle-time metric. The three-business-day commitment to the client cannot currently be measured or reported automatically.

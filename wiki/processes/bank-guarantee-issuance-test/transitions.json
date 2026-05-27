@@ -1,0 +1,59 @@
+{
+  "PS-BGIT-001": [
+    {
+      "to": "PS-BGIT-002",
+      "kind": "normal",
+      "when": "application is complete"
+    }
+  ],
+  "PS-BGIT-002": [
+    {
+      "to": "PS-BGIT-003",
+      "kind": "normal",
+      "when": "facility limit sufficient"
+    },
+    {
+      "to": "EX-BGIT-001",
+      "kind": "exception",
+      "when": "facility limit insufficient"
+    }
+  ],
+  "PS-BGIT-003": [
+    {
+      "to": "PS-BGIT-004",
+      "kind": "normal",
+      "when": "wording approved"
+    }
+  ],
+  "PS-BGIT-004": [
+    {
+      "to": "PS-BGIT-007",
+      "kind": "branch",
+      "when": "partially secured no screening hit"
+    },
+    {
+      "to": "PS-BGIT-005",
+      "kind": "branch",
+      "when": "fully secured no screening hit"
+    },
+    {
+      "to": "EX-BGIT-002",
+      "kind": "exception",
+      "when": "screening hit"
+    }
+  ],
+  "PS-BGIT-005": [
+    {
+      "to": "PS-BGIT-006",
+      "kind": "normal",
+      "when": "approved"
+    }
+  ],
+  "PS-BGIT-007": [
+    {
+      "to": "PS-BGIT-005",
+      "kind": "normal",
+      "when": "collateral confirmed"
+    }
+  ]
+}

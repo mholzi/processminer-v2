@@ -14,7 +14,6 @@ from: [TGTAPP-BGID-001]
 to: [TGTAPP-BGID-002]
 realises: [CAP-BGID-002, CAP-BGID-003]
 drivenByADR: [ADR-BGID-002]
-provenance: {"Contract details": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Failure mode": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Purpose": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T15:58:45Z
 ---

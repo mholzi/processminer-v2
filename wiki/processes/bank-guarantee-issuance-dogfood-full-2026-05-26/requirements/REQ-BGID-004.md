@@ -10,7 +10,6 @@ reqType: FUNCTIONAL
 moscow: MUST
 derivedFrom: [TD-BGID-004]
 addresses: []
-provenance: {"Acceptance criteria": {"evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated", "source": "elicited"}, "Rationale": {"evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated", "source": "elicited"}, "Requirement": {"evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:28:32Z
 ---

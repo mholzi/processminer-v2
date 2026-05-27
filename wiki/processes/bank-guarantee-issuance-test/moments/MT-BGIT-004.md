@@ -8,7 +8,6 @@ confidence: high
 source: client-journey-specialist — M. Berger, 2026-05-20
 sentiment: positive
 touchpoint: [JT-BGIT-004]
-provenance: {"Design implication": {"evidence": "M. Berger confirmed no real-time delivery notification currently sent to corporate applicant — improvement opportunity", "source": "elicited"}, "The moment": {"evidence": "M. Berger: 'delivery confirmation to beneficiary' confirmed as final moment of truth — commercial objective achieved", "source": "elicited"}, "Why it matters": {"evidence": "M. Berger confirmed SWIFT delivery at Step 6 as the moment the client's commercial obligation is fulfilled", "source": "elicited"}}
 ---
 ## The moment
 The executed guarantee is dispatched via SWIFT to the beneficiary's bank, and the client's commercial obligation — presenting the guarantee — is fulfilled.

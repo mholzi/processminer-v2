@@ -9,7 +9,6 @@ source: Standard Chartered press release, 15 Jan 2026
 competitor: Standard Chartered
 sourceUrl: https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/
 asOf: 2026-01-15
-provenance: {"Evidence": {"evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"automated the receipt of instructions and accelerated the issuance of digitally initiated bank guarantees, offering clients greater speed, transparency and reliability\" — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"Real-time visibility, greater interoperability, and seamless integration of digital bank guarantees across banks, corporates, and platforms\" — fetched 2026-05-26", "source": "web"}, "The journey": {"evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"automated the receipt of instructions and accelerated the issuance of digitally initiated bank guarantees, offering clients greater speed, transparency and reliability\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: source-cx
 updatedAt: 2026-05-26T19:59:08Z
 ---

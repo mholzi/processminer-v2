@@ -8,7 +8,6 @@ confidence: high
 source: ddmm-client-journey-specialist
 severity: HIGH
 occursAt: [PS-DDMM-002]
-provenance: {"Client impact": {"evidence": "SME confirmed: ambiguous codes (inactive CI, type/sequence mismatch) especially confusing; creditors must diagnose and correct without bank assistance; second rejection on resubmission is worst-case outcome.", "source": "elicited"}, "Description": {"evidence": "SME (M. Vogel): portal shows reason code + short standard description but no guidance on what to change; no remediation guidance — what's missing is the how-to-fix.", "source": "elicited"}, "Root cause": {"evidence": "SME confirmed: validation engine returns reason code from fixed catalogue; portal renders description but has no per-code remediation content; no self-service help layer built for rejection flow.", "source": "elicited"}}
 ---
 ## Description
 When a mandate is rejected at validation, the portal shows a structured reason code and a short standard description but provides no guidance on what the creditor should change to resolve the error and resubmit successfully.

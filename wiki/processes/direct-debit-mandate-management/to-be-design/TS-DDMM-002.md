@@ -9,7 +9,6 @@ source: ddmm-transformation-agent
 replaces: [PS-DDMM-001, PS-DDMM-002]
 systems: [SYS-DDMM-001]
 risks: []
-provenance: {"Rationale": {"evidence": "SME confirmed: FP-DDMM-001 and FP-DDMM-002 are LOW complexity fixes; framing accepted without edit.", "source": "elicited"}, "Target description": {"evidence": "SME (M. Vogel) confirmed: 'accurate, and the field-preservation point on partial-correction submissions is a good addition'; accepted without edit.", "source": "elicited"}, "What changes": {"evidence": "SME confirmed all five change bullets — accepted without edit.", "source": "elicited"}}
 ---
 ## Target description
 The Creditor Portal provides inline field-level validation with immediate human-readable error messages for every rejection. Each rejection includes specific remediation guidance mapped to the failure type — IBAN format, missing fields, SEPA scheme check failures — so the creditor knows exactly what to correct. Bulk file submissions receive a line-item rejection report with per-row remediation guidance, eliminating the current experience of a bare error code with no forward path. The portal preserves valid fields on partial correction submissions, removing the need to re-enter complete records on each iteration.

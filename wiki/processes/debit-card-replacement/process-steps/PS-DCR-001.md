@@ -8,8 +8,6 @@ confidence: high
 source: dcr-dtp-mockup.md
 owner: Contact Centre Agent
 systems: [SYS-DCR-002, SYS-DCR-003]
-transitions: [PS-DCR-002|normal|request logged]
-provenance: {"Inputs": {"evidence": "Each request carries ... the reported reason (lost / stolen / damaged)", "source": "document"}, "Outputs": {"evidence": "The customer contacts the bank ... and to request a replacement", "source": "document"}, "What happens": {"evidence": "The customer contacts the bank via the Contact Centre or raises a request in the mobile app, stating the card is lost, stolen, or damaged.", "source": "document"}, "Why it matters": {"evidence": "S. Krause confirmed in the foundational run: Why it matters holds as drafted.", "source": "elicited"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-19

@@ -10,7 +10,6 @@ category: collateral shortfall
 frequencyPct: 3%
 impact: HIGH
 handlingOwner: Trade Finance Officer
-provenance: {"Description": {"evidence": "SME validated — control-compliance-specialist session 2026-05-26", "source": "elicited"}, "Handling": {"evidence": "SME validated — control-compliance-specialist session 2026-05-26", "source": "elicited"}, "Impact": {"evidence": "SME validated — control-compliance-specialist session 2026-05-26", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:37:44Z
 approval: in-progress

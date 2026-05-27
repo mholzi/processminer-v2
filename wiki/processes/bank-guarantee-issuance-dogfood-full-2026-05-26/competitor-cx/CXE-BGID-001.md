@@ -9,7 +9,6 @@ competitor: BNP Paribas
 source: Global Trade Review — 'BNP Paribas and Surecomp successfully pilot Swift API guarantee', 20 November 2024
 sourceUrl: https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/
 asOf: 2026-05-26
-provenance: {"Evidence": {"evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — Marie-Laurence Faure, BNP Paribas: \"This is the beginning of a new and very promising journey in the digitalisation of bank guarantees\" — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — \"a low-cost way to use digital guarantees ... particularly advantageous for companies with modest transaction volumes\" — fetched 2026-05-26", "source": "web"}, "The journey": {"evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — \"the first trade finance guarantee using a Swift-ICC API standard ... processed in real time from Dutch logistics company Vanderlande to BNP Paribas through Surecomp's Rivo platform without manual intervention\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: admin
 updatedAt: 2026-05-26T08:37:27Z
 ---

@@ -1,5 +1,5 @@
 import type { WikiPage } from "@/lib/wiki";
-import { type Kind, type Transition, orderSteps, parseTransitions } from "@/lib/stepOrder";
+import { type Kind, type Transition, orderSteps, transitionsOf } from "@/lib/stepOrder";
 import ElementHovercard from "./ElementHovercard";
 import { asList } from "@/lib/meta";
 
@@ -108,7 +108,7 @@ export default function ProcessFlow({
   const stripW = n * NODE_W + (n - 1) * GAP_X;
   const lanesH = laneOrder.length * LANE_H;
 
-  const parsed = sorted.map((s) => parseTransitions(s.meta.transitions));
+  const parsed = sorted.map(transitionsOf);
   const hasData = parsed.some((t) => t.length > 0);
 
   // Edges to step targets, and exception exits grouped under their source.

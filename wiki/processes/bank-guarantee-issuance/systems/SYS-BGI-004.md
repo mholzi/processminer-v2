@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: bank-guarantee-issuance-v1.md
 systemType: EXTERNAL
-provenance: {"Purpose": {"evidence": "SWIFT — transmission of the executed guarantee to the beneficiary's bank.", "source": "document"}, "Role in this process": {"evidence": "MT 760 for guarantee issuance. TFO triggers transmission manually from within the TFS. MT 768 acknowledgement received from beneficiary's bank; step 6 is fully complete only on receipt of that acknowledgement, not at message send.", "source": "elicited"}}
 approval: approved
 approvalBy: m.berger
 approvalDate: 2026-05-19

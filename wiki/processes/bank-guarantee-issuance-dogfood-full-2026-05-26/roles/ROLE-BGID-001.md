@@ -9,7 +9,6 @@ source: bank-guarantee-issuance-v2.md
 systems: [SYS-BGID-001, SYS-BGID-002]
 controls: [CP-BGID-003]
 raci: [PS-BGID-001:R, PS-BGID-001:A, PS-BGID-002:R, PS-BGID-003:I, PS-BGID-004:I, PS-BGID-007:R, PS-BGID-007:A, PS-BGID-005:I, PS-BGID-006:R, PS-BGID-006:A]
-provenance: {"In this process": {"evidence": "", "source": "proposed"}, "Responsibility": {"evidence": "\"Trade Finance Officer — intake, checks, collateral confirmation, generation and delivery.\" (Roles section). Steps 1, 2, 5, and 7 each explicitly name the Trade Finance Officer as the actor.", "source": "document"}}
 updatedBy: admin
 updatedAt: 2026-05-26T07:08:52Z
 approval: approved

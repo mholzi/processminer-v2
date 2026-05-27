@@ -11,7 +11,6 @@ decisionStatus: agreed
 resolves: [PP-BGIT-003, CG-BGIT-001, PG-BGIT-002]
 realises: [TS-BGIT-001]
 fromIdea: [II-BGIT-001]
-provenance: {"Options considered": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub", "source": "elicited"}, "Rationale": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub", "source": "elicited"}, "The decision": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub", "source": "elicited"}}
 ---
 ## The decision
 Adopt the ICC-SWIFT C2B API standard for receiving corporate guarantee instructions, integrating an API gateway into the Trade Finance System alongside the existing Corporate Portal, with the portal retained for clients not yet on the standard.

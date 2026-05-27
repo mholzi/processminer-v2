@@ -10,7 +10,6 @@ category: Operations
 severity: HIGH
 priority: P1
 affects: [PS-DDMM-007]
-provenance: {"Description": {"evidence": "Every inbound R-transaction lands in the Mandate Clerk's queue and is worked entirely by hand: the Clerk reads the reason code, looks up the mandate in MMS, decides which of the four handling paths applies (MD01/MD02/AC04/SL01), and executes it. There is no automation and no decision support.", "source": "elicited"}, "Impact": {"evidence": "Volume is unpredictable (a debtor-bank batch can dump dozens at once); four codes need genuinely different actions — error-prone; an MD02 correction done in a hurry can itself trigger a fresh R-transaction; deprioritised behind new registrations, which risks the 2-day resolution SLA (M-DDMM-003).", "source": "elicited"}, "Root cause": {"evidence": "No automation and no decision support. Four codes need genuinely different actions. SME confirmed 'structurally different resolution paths' and 'no pre-classification' as fair framing.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

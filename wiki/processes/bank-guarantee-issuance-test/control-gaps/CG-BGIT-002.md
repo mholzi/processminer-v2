@@ -8,7 +8,6 @@ confidence: medium
 source: foundational-run — M. Berger
 severity: LOW
 gapStatus: open
-provenance: {"Remediation": {"evidence": "", "source": "proposed"}, "Risk": {"evidence": "", "source": "proposed"}, "The gap": {"evidence": "", "source": "proposed"}}
 control: [CP-BGIT-006]
 ---
 ## The gap

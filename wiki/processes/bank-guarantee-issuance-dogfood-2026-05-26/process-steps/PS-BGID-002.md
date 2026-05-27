@@ -9,7 +9,6 @@ owner: Trade Finance Officer
 sla:
 condition: Complete application received from ps-1
 systems: [SYS-BGID-002]
-provenance: {"Inputs": {"evidence": "", "source": "proposed"}, "Outputs": {"evidence": "", "source": "proposed"}, "What happens": {"evidence": "", "source": "proposed"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T05:17:42Z
 ---

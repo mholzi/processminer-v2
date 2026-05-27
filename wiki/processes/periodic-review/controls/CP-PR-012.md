@@ -12,7 +12,6 @@ effectiveness: MEDIUM
 owner: Financial Crime Operations
 step: [PS-PR-005]
 regulatedBy: [REG-PR-001, REG-PR-003]
-provenance: {"Control activity": {"evidence": "Step 5 — Reviewer Triage. SLA. 5 working days from case ready-for-review. [Step 1:] If it is not picked up within 72 hours, the Case Manager auto-opens the case and notifies the queue owner. [Evidence column:] Aged-case report.", "source": "document"}, "Risk addressed": {"evidence": "[Gap log G-05:] No KPI on cycle time per risk tier. Severity: Medium. [Executive Summary:] overdue on roughly 18.4 % of the High-Risk book as of Q1 2026.", "source": "document"}, "Timing": {"evidence": "[Table:] Frequency: Daily.", "source": "document"}, "What it checks": {"evidence": "[Table:] Aged-case escalation (> SLA). Detective. Daily. Case Manager. Aged-case report.", "source": "document"}}
 ---
 ## What it checks
 Whether any open KYC case has exceeded its risk-tier SLA without reaching a decision, and whether breaching cases are escalated to a senior owner before the review becomes overdue.

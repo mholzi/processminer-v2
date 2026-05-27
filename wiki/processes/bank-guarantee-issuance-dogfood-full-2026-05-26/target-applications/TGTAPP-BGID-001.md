@@ -11,7 +11,6 @@ vendor: Finastra Trade Innovation (configured)
 owningDomain: Trade Finance
 costBand: €500k–2M configuration + €300k–600k annual licence
 drivenByADR: [ADR-BGID-001]
-provenance: {"Rationale": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Risks": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Tech stack": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T14:59:49Z
 approval: approved

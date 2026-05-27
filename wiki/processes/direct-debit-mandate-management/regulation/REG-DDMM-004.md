@@ -8,7 +8,6 @@ confidence: high
 source: M. Vogel, Senior Payments Operations Analyst
 domain: Data Protection
 asOf: 2026-05-19
-provenance: {"How it is met": {"evidence": "SME accepted CP-DDMM-005 link and PG-DDMM-003 open-gap reference as correct.", "source": "elicited"}, "What it requires": {"evidence": "SME confirmed GDPR in scope; lawful basis, data minimisation, retention and deletion obligations for debtor personal data.", "source": "elicited"}, "Why it applies": {"evidence": "SME confirmed: mandate register holds debtor name and IBAN for mandate lifetime and beyond.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

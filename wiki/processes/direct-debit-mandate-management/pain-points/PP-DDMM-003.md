@@ -10,7 +10,6 @@ category: System Integration
 severity: MEDIUM
 priority: P3
 affects: [PS-DDMM-005]
-provenance: {"Description": {"evidence": "Daily reconciliation (CP-DDMM-004) regularly surfaces discrepancies — mandates registered in MMS but not yet, or wrongly, reflected in the Payment Hub store. Must chase each one down.", "source": "elicited"}, "Impact": {"evidence": "Low severity per item but a daily tax on the team that never goes away. Must decide benign sync lag or genuine failed sync, and re-trigger sync or raise IT ticket.", "source": "elicited"}, "Root cause": {"evidence": "Root cause is architectural — batch rather than real-time sync — not procedural. SME confirmed 'structural byproduct of the sync gap' as correct framing.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

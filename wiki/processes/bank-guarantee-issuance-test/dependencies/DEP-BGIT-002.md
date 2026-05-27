@@ -9,7 +9,6 @@ source: source-target — bank-guarantee-issuance-test wiki
 direction: DOWNSTREAM
 atStep: [PS-BGIT-006]
 viaSystem: [SYS-BGIT-004]
-provenance: {"The dependency": {"evidence": "", "source": "proposed"}, "What crosses the boundary": {"evidence": "", "source": "proposed"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 ---
 ## The dependency
 The executed guarantee is delivered to the beneficiary's bank via SWIFT MT798 or, in the target state, via ICC-SWIFT API standards where the beneficiary's bank supports the standard.

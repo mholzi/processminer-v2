@@ -9,8 +9,6 @@ source: bank-guarantee-issuance-v1.md
 owner: Trade Finance Manager
 condition: Wording review and sanctions screening have both passed
 systems: [SYS-BGID-002]
-transitions: [PS-BGID-006|normal|issuance is approved by Trade Finance Manager (and Head of Trade Finance where required)]
-provenance: {"Inputs": {"evidence": "", "source": "proposed"}, "Outputs": {"evidence": "", "source": "proposed"}, "What happens": {"evidence": "A Trade Finance Manager reviews the assembled package and approves issuance. Guarantees above EUR 5 million additionally require sign-off by the Head of Trade Finance. / No guarantee is issued without a Trade Finance Manager's approval, recorded in the Trade Finance System.", "source": "document"}, "Why it matters": {"evidence": "C1 — Four-eyes issuance approval. No guarantee is issued without a Trade Finance Manager's approval, recorded in the Trade Finance System.", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:56:10Z
 ---

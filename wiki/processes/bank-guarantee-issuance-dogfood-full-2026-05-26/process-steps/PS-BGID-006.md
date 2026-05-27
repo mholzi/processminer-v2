@@ -10,13 +10,11 @@ owner: Trade Finance Officer
 sla:
 condition: Issuance approval recorded in Trade Finance System
 systems: [SYS-BGID-002, SYS-BGID-004]
-provenance: {"Inputs": {"evidence": "[Y] Accept", "source": "elicited"}, "Outputs": {"evidence": "[Y] Accept", "source": "elicited"}, "What happens": {"evidence": "[Y] Accept", "source": "elicited"}, "Why it matters": {"evidence": "[Y] Accept", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T18:27:54Z
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-26
-transitions: [EX-BGID-001|exception|SWIFT NAK received on delivery]
 ---
 ## What happens
 The Trade Finance Officer generates the guarantee instrument in the Trade Finance System using the approved wording and details. The executed guarantee is transmitted to the beneficiary's bank via SWIFT. The client's facility utilisation record is updated to reflect the new exposure.

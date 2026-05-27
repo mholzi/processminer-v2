@@ -114,16 +114,24 @@ def word_count(text: str) -> int:
     return len(text.split()) if text else 0
 
 
-# ---- Provenance ---------------------------------------------------------
+# ---- Provenance + transitions bundles ------------------------------------
 # Hallucination countermeasure (HALLUCINATION-PLAN.md). Every template-bearing
-# element carries a `provenance` frontmatter key whose value is a JSON object
-# keyed by template heading title — {heading: {source, evidence}}. It is stored
-# JSON-encoded on one line so the flat frontmatter parser keeps it as an opaque
-# string; only the scripts that care decode it.
+# element has a provenance map keyed by template heading title —
+# {heading: {source, evidence}}. Process-step / exception elements also carry a
+# transitions list — [{to, kind, when}, ...] — the outgoing flow from the step.
+#
+# Both used to live in the element frontmatter (provenance as inline JSON, the
+# worst-of-both-worlds JSON-in-YAML; transitions as a pipe-delimited
+# `to|kind|when` mini-DSL). They are now per-process sidecar JSON, matching the
+# pattern of sections.json / lint.json / notes.json — the frontmatter stays
+# flat and human-diffable, and the structured data lives where it can be
+# validated as JSON.
 
 PROVENANCE_SOURCES = {"elicited", "document", "proposed", "web", "legacy-approved"}
 # Sources that mean "not yet confirmed by the SME" — these block approval.
 UNCONFIRMED_SOURCES = {"proposed", "web"}
+
+TRANSITION_KINDS = ("normal", "branch", "loopback", "exception")
 
 
 def template_headings(info: dict) -> list[str]:
@@ -131,24 +139,119 @@ def template_headings(info: dict) -> list[str]:
     return [s["heading"] for s in (info.get("template") or [])]
 
 
-def parse_provenance(meta: dict) -> dict:
-    """The element's provenance map, decoded. {} if absent or malformed."""
-    raw = meta.get("provenance")
-    if not raw:
+def _bundle_path(slug: str, name: str) -> Path:
+    return WIKI_DIR / slug / name
+
+
+def _load_bundle(slug: str, name: str) -> dict:
+    path = _bundle_path(slug, name)
+    if not path.is_file():
         return {}
-    if isinstance(raw, dict):
-        return raw
     try:
-        val = json.loads(raw)
-        return val if isinstance(val, dict) else {}
-    except (json.JSONDecodeError, TypeError):
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {}
+    except json.JSONDecodeError:
         return {}
 
 
-def dump_provenance(prov: dict) -> str:
-    """Serialise a provenance map to the one-line JSON string stored in
-    frontmatter. Sorted keys so a rewrite is byte-stable."""
-    return json.dumps(prov, ensure_ascii=False, sort_keys=True)
+def _save_bundle(slug: str, name: str, data: dict) -> None:
+    """Write a bundle, sorted by element id for byte-stable diffs. Removes the
+    file when the bundle is empty so an empty process doesn't carry stale
+    sidecars."""
+    path = _bundle_path(slug, name)
+    if not data:
+        path.unlink(missing_ok=True)
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    ordered = {eid: data[eid] for eid in sorted(data)}
+    path.write_text(
+        json.dumps(ordered, ensure_ascii=False, indent=2, sort_keys=False) + "\n",
+        encoding="utf-8",
+    )
+
+
+def load_provenance(slug: str) -> dict[str, dict]:
+    """The whole provenance bundle for a process — {eid: {heading: {source, evidence}}}."""
+    return _load_bundle(slug, "provenance.json")
+
+
+def get_provenance(slug: str, eid: str) -> dict:
+    """The provenance map for one element. {} if absent."""
+    entry = load_provenance(slug).get(eid)
+    return entry if isinstance(entry, dict) else {}
+
+
+def set_provenance(slug: str, eid: str, prov: dict) -> None:
+    """Replace one element's provenance entry. Removes the key when prov is empty."""
+    bundle = load_provenance(slug)
+    if prov:
+        bundle[eid] = {
+            h: {"source": e.get("source", ""), "evidence": e.get("evidence", "")}
+            for h, e in prov.items()
+            if isinstance(e, dict)
+        }
+    else:
+        bundle.pop(eid, None)
+    _save_bundle(slug, "provenance.json", bundle)
+
+
+def load_transitions(slug: str) -> dict[str, list[dict]]:
+    """The whole transitions bundle for a process — {eid: [{to, kind, when}, ...]}."""
+    bundle = _load_bundle(slug, "transitions.json")
+    return {
+        eid: [t for t in entries if isinstance(t, dict)]
+        for eid, entries in bundle.items()
+        if isinstance(entries, list)
+    }
+
+
+def get_transitions(slug: str, eid: str) -> list[dict]:
+    """The transitions list for one element. [] if absent."""
+    return load_transitions(slug).get(eid, [])
+
+
+def set_transitions(slug: str, eid: str, transitions: list[dict]) -> None:
+    """Replace one element's transitions entry. Removes the key when empty."""
+    bundle = load_transitions(slug)
+    cleaned: list[dict] = []
+    for entry in transitions:
+        if not isinstance(entry, dict):
+            continue
+        to = str(entry.get("to", "")).strip()
+        if not to:
+            continue
+        kind = str(entry.get("kind", "normal")).strip()
+        if kind not in TRANSITION_KINDS:
+            kind = "normal"
+        when = str(entry.get("when", "")).strip()
+        cleaned.append({"to": to, "kind": kind, "when": when})
+    if cleaned:
+        bundle[eid] = cleaned
+    else:
+        bundle.pop(eid, None)
+    _save_bundle(slug, "transitions.json", bundle)
+
+
+def parse_transition_dsl(entry: str | dict) -> dict | None:
+    """Accept either a structured {to, kind, when} dict or a legacy
+    `to|kind|when` string and return the dict form. None when the entry has no
+    `to` target. Skills and CLI callers can pass either form."""
+    if isinstance(entry, dict):
+        to = str(entry.get("to", "")).strip()
+        if not to:
+            return None
+        kind = str(entry.get("kind", "normal")).strip()
+        when = str(entry.get("when", "")).strip()
+    else:
+        parts = str(entry).split("|")
+        to = parts[0].strip() if parts else ""
+        if not to:
+            return None
+        kind = parts[1].strip() if len(parts) > 1 else "normal"
+        when = "|".join(parts[2:]).strip()
+    if kind not in TRANSITION_KINDS:
+        kind = "normal"
+    return {"to": to, "kind": kind, "when": when}
 
 
 # ---- Section + ownership resolution -------------------------------------
@@ -344,9 +447,16 @@ def write_element_spec(spec: dict, by: str | None = None) -> tuple[Path, str]:
         r["key"]
         for r in ((types[etype].get("frontmatter") or {}).get("relations") or [])
     }
-    # `transitions` / `raci` are id-lists carrying per-edge metadata.
-    rel_keys |= {"transitions", "raci"}
+    # `raci` is an id-list carrying per-edge metadata; it stays on the
+    # frontmatter. `transitions` also carries per-edge metadata, but its
+    # structured shape ({to, kind, when}) lives in the per-process
+    # transitions.json bundle — pulled out of the spec separately, below.
+    rel_keys |= {"raci"}
+    transitions_spec = None
     for key, val in (spec.get("relations") or {}).items():
+        if key == "transitions":
+            transitions_spec = val
+            continue
         if key not in rel_keys:
             print(
                 f"warning: dropped relation '{key}' — not a schema relation "
@@ -358,19 +468,21 @@ def write_element_spec(spec: dict, by: str | None = None) -> tuple[Path, str]:
 
     # Provenance map (HALLUCINATION-PLAN.md): one entry per block heading. A
     # heading the spec did not supply provenance for defaults to `proposed`.
+    # The map lives in wiki/processes/<slug>/provenance.json — written below
+    # after the element file is in place so a failed write doesn't leave a
+    # stale bundle entry pointing at nothing.
     spec_prov = spec.get("provenance") or {}
-    prov: dict = {}
+    prov_for_bundle: dict = {}
     for block in spec["blocks"]:
         heading = block["heading"]
         entry = spec_prov.get(heading)
         if isinstance(entry, dict) and entry.get("source"):
-            prov[heading] = {
+            prov_for_bundle[heading] = {
                 "source": entry["source"],
                 "evidence": entry.get("evidence", ""),
             }
         else:
-            prov[heading] = {"source": "proposed", "evidence": ""}
-    frontmatter["provenance"] = dump_provenance(prov)
+            prov_for_bundle[heading] = {"source": "proposed", "evidence": ""}
 
     # Auto-stamp `asOf` when the type declares it and the spec did not supply it.
     fm = types[etype].get("frontmatter", {}) or {}
@@ -386,10 +498,15 @@ def write_element_spec(spec: dict, by: str | None = None) -> tuple[Path, str]:
     existed = path.is_file()
 
     # Rewriting an existing element: carry forward every frontmatter key the
-    # spec did not re-supply, so a rewrite is never lossy.
+    # spec did not re-supply, so a rewrite is never lossy. `provenance` and
+    # `transitions` are skipped — they used to live in frontmatter but now
+    # live in per-process bundles; a stale frontmatter line from before the
+    # migration must not be resurrected.
     if existed:
         prior, _ = parse_frontmatter(path.read_text(encoding="utf-8"))
         for key, val in prior.items():
+            if key in ("provenance", "transitions"):
+                continue
             frontmatter.setdefault(key, val)
         # ...but a rewrite supersedes the content the SME approved — re-open it.
         if str(frontmatter.get("approval", "")).strip() in ("approved", "rejected"):
@@ -404,5 +521,18 @@ def write_element_spec(spec: dict, by: str | None = None) -> tuple[Path, str]:
 
     action = "updated" if existed else "created"
     path.write_text(serialize_element(frontmatter, spec["blocks"]), encoding="utf-8")
+
+    # Sidecar bundles: provenance for any template-bearing element; transitions
+    # for elements that declared one. Write after the element file is in place
+    # so a failed element write doesn't leave a dangling bundle entry.
+    set_provenance(spec["slug"], spec["id"], prov_for_bundle)
+    if transitions_spec is not None:
+        parsed_transitions = [
+            t
+            for t in (parse_transition_dsl(entry) for entry in transitions_spec)
+            if t is not None
+        ]
+        set_transitions(spec["slug"], spec["id"], parsed_transitions)
+
     log_write(spec["slug"], spec["id"], etype, action)
     return path, action

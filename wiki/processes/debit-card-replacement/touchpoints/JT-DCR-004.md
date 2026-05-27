@@ -9,7 +9,6 @@ source: Client journey session - S. Krause
 channel: Branch
 ces: 6
 occursAt: [PS-DCR-002]
-provenance: {"Experience": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}, "What the bank does": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}, "What the client does": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}}
 ---
 ## What the client does
 A client who could not pass phone verification must travel to a branch and present photo identification in person before the replacement can be processed.

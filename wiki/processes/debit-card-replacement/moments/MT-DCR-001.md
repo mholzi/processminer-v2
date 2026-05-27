@@ -8,7 +8,6 @@ confidence: high
 source: Client journey session - S. Krause
 sentiment: critical
 touchpoint: [JT-DCR-001]
-provenance: {"Design implication": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}, "The moment": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}, "Why it matters": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}}
 ---
 ## The moment
 The client realises their card is lost or stolen and reaches for the phone — not knowing yet whether money has already gone.

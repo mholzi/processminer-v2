@@ -1,0 +1,2714 @@
+{
+  "ADR-BGID-001": {
+    "Alternatives considered": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Consequences": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Context": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Decision": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "ADR-BGID-002": {
+    "Alternatives considered": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Consequences": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Context": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Decision": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "ADR-BGID-003": {
+    "Alternatives considered": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Consequences": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Context": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Decision": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "ADR-BGID-004": {
+    "Alternatives considered": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Consequences": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Context": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Decision": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "ADR-BGID-005": {
+    "Alternatives considered": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Consequences": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Context": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Decision": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "ADR-BGID-006": {
+    "Alternatives considered": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Consequences": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Context": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Decision": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "ADR-BGID-007": {
+    "Alternatives considered": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Consequences": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Context": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Decision": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "ADR-BGID-008": {
+    "Alternatives considered": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Consequences": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Context": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Decision": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "ADR-BGID-009": {
+    "Alternatives considered": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Consequences": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Context": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Decision": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "ADR-BGID-010": {
+    "Alternatives considered": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Consequences": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Context": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Decision": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "ADR-BGID-011": {
+    "Alternatives considered": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Consequences": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Context": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Decision": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "ADR-BGID-012": {
+    "Alternatives considered": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Consequences": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Context": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Decision": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "ASM-BGID-001": {
+    "Impact if wrong": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "The assumption": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Why it is unconfirmed": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "ASM-BGID-002": {
+    "Impact if wrong": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "The assumption": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Why it is unconfirmed": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "ASM-BGID-003": {
+    "Impact if wrong": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "The assumption": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Why it is unconfirmed": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "ASM-BGID-004": {
+    "Impact if wrong": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "The assumption": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Why it is unconfirmed": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "CAP-BGID-001": {
+    "Boundaries": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Inputs and outputs": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "CAP-BGID-002": {
+    "Boundaries": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Inputs and outputs": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "CAP-BGID-003": {
+    "Boundaries": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Inputs and outputs": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "CAP-BGID-004": {
+    "Boundaries": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Inputs and outputs": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "CAP-BGID-005": {
+    "Boundaries": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Inputs and outputs": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "CAP-BGID-006": {
+    "Boundaries": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Inputs and outputs": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "CAP-BGID-007": {
+    "Boundaries": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Inputs and outputs": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "CAP-BGID-008": {
+    "Boundaries": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Inputs and outputs": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "CAP-BGID-009": {
+    "Boundaries": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Inputs and outputs": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "CEU-BGID-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.digitalvaultservices.com/en/next-milestone-achieved-corporate-guarantees/ — \"As the first (and only) platform Guarantee Vault offers now fully end-to-end digital Corporate Guarantees\" — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.commerzbank.com/financing-foreigntrade/products/foreigntrade/digital-guarantee-management/ — \"issue and manage paper-based as well as digital guarantees\" with \"24/7 access\" and guarantee certificates \"uploaded and made available to the applicant\" after issuance — fetched 2026-05-26"
+    },
+    "The move": {
+      "source": "web",
+      "evidence": "https://www.commerzbank.com/financing-foreigntrade/products/foreigntrade/digital-guarantee-management/ — \"Digital orders, issuance and management of your guarantee orders helps to streamline your processes\" — fetched 2026-05-26"
+    }
+  },
+  "CEU-BGID-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://eastandpartners.com/news/how-ai-optimises-international-trade-finance-bnp-paribas/ — live in 15 countries, processing close to one million printed documents a year across three core Trade Finance domains — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://eastandpartners.com/news/how-ai-optimises-international-trade-finance-bnp-paribas/ — AI and OCR platform deployed across guarantees, documentary credit and short-term financing, accelerating data capture and AML screening — fetched 2026-05-26"
+    },
+    "The move": {
+      "source": "web",
+      "evidence": "https://eastandpartners.com/news/how-ai-optimises-international-trade-finance-bnp-paribas/ — \"The tools we have implemented help increase the processing speed of documentary credit operations while reducing risks of error through the manual handling of data.\" (Frederic Zeegers, BNP Paribas Fortis) — fetched 2026-05-26"
+    }
+  },
+  "CEU-BGID-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://ffnews.com/newsarticle/paytech/abn-amro-bank-goes-live-with-new-release-of-ibas-building-on-five-year-collaboration-agreement-with-cba-to-automate-trade-finance-processes/ — ABN AMRO confirmed the IBAS GTF go-live in July 2023; covers counter-guarantees and standby LC processing — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://ffnews.com/newsarticle/paytech/abn-amro-bank-goes-live-with-new-release-of-ibas-building-on-five-year-collaboration-agreement-with-cba-to-automate-trade-finance-processes/ — IBAS GTF routes counter-guarantees and standby LCs through a central ISO 20022 CBPR+ Payment Hub with RESTful APIs for structured client submission — fetched 2026-05-26"
+    },
+    "The move": {
+      "source": "web",
+      "evidence": "https://ffnews.com/newsarticle/paytech/abn-amro-bank-goes-live-with-new-release-of-ibas-building-on-five-year-collaboration-agreement-with-cba-to-automate-trade-finance-processes/ — \"The successful roll-out marks the first deliverable of our renewed five-year partnership.\" (Burak Aslan, ABN AMRO) — fetched 2026-05-26"
+    }
+  },
+  "CFT-BGID-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/introducing-gtk-future-of-digital-guarantee-and-trade-finance-management — Komgo GTK launched April 2025; Euromoney named Komgo world's most innovative trade finance software provider 2025 — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/tkelevator-and-komgo-boost-guarantee-management-with-gtk — \"TK Elevator Automates 70% of Its Guarantee Portfolio with Komgo's GTK\" — fetched 2026-05-26"
+    },
+    "The move": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/how-komgos-embedded-ai-is-transforming-bank-guarantee-management — \"AI supports issuance automation, clause and discrepancy analysis… using AI to extract data and clauses from contracts to automate… guarantee drafts\" — fetched 2026-05-26"
+    }
+  },
+  "CFT-BGID-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.finextra.com/pressarticle/103263/surecomp-commits-to-reducing-trade-finance-processing-time-by-30-with-ai — Surecomp November 2024: 30% processing-time reduction commitment; Barmag selected RIVO December 2025, citing elimination of manual Excel-and-email workflows — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://rivo-support.surecomp.com/hc/en-us/articles/37860931989905-AI-Email-Reader-in-RIVO — \"leveraging AWS native Gen AI technology, non-legal bank staff can check text in less than 10 seconds with the accuracy matching that of a seasoned trade finance expert\" — fetched 2026-05-26"
+    },
+    "The move": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/harnessing-the-power-of-ai-surecomp-commits-to-reducing-trade-finance-processing-time-by-30/ — \"By automatically converting key clauses of a request such as legal terms, conditions, expiry and transferability into structured text… expediting guarantee issuance from days to hours\" — fetched 2026-05-26"
+    }
+  },
+  "CFT-BGID-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.thebaehq.com/news/traydstream-raises-9-3m-ai-trade-finance-document-processing — EUR 9.3M raised August 2025 led by Pivot Investment Partners and e& to accelerate ML capabilities for trade finance automation — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.tradefinanceglobal.com/posts/erste-group-partners-with-traydstream/ — Erste Group partnership at Sibos 2024 to automate documentary credit operations across Central and Eastern Europe — fetched 2026-05-26"
+    },
+    "The move": {
+      "source": "web",
+      "evidence": "https://traydstream.com/traydcheck/ — \"compressing the four-to-ten-hour manual process to under three minutes for compliant transactions\" using OCR, NLP, and ML models trained on trade finance rules — fetched 2026-05-26"
+    }
+  },
+  "CG-BGID-001": {
+    "Remediation": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk": {
+      "source": "elicited",
+      "evidence": "No control here is an accepted gap; C3 facility check and C1 four-eyes catch issues downstream"
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "No control here is an accepted gap; C3 facility check and C1 four-eyes catch issues downstream"
+    }
+  },
+  "CGL-BGID-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"We are delighted to be among the first banks to commercialise the ICC-Swift API standards for bank guarantees\" — Samuel Mathew, Global Head, Documentary Trade — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"This automates receipt of instructions and accelerates digitally initiated bank guarantee issuance while supporting straight-through processing\" — fetched 2026-05-26"
+    },
+    "The move": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"Standard Chartered completed its first industry standard API-based bank guarantee transaction for a global energy company via Komgo's Konsole platform, fully compliant with ICC-Swift API standards\" — fetched 2026-05-26"
+    }
+  },
+  "CGL-BGID-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.microsoft.com/en-us/microsoft-cloud/blog/financial-services/2026/04/20/reimagining-trade-finance-with-ai-a-collaborative-proof-of-concept-from-microsoft-anz-hsbc-and-lloyds/ — Microsoft Cloud Blog, 20 April 2026: live PoC with HSBC, ANZ, Lloyds demonstrated at Sibos 2025, aligned to ICC KTDDE standards — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.microsoft.com/en-us/microsoft-cloud/blog/financial-services/2026/04/20/reimagining-trade-finance-with-ai-a-collaborative-proof-of-concept-from-microsoft-anz-hsbc-and-lloyds/ — \"Trade finance is still overwhelmingly document-driven, which is why the industry needs practical interoperability\" — Bhriguraj Singh, Chief Product Officer, Global Trade Solutions, HSBC — fetched 2026-05-26"
+    },
+    "The move": {
+      "source": "web",
+      "evidence": "https://www.microsoft.com/en-us/microsoft-cloud/blog/financial-services/2026/04/20/reimagining-trade-finance-with-ai-a-collaborative-proof-of-concept-from-microsoft-anz-hsbc-and-lloyds/ — \"The AI agent performed three core tasks: automatically parsed letters of credit to identify key data elements; cross-checked LC data against invoice and shipping information in ERP systems; detected discrepancies and suggested corrections\" — fetched 2026-05-26"
+    }
+  },
+  "CGL-BGID-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://fintech.global/2025/09/29/barclays-and-cgi-join-forces-on-trade-finance-digitisation/ — Fintech Global, 29 September 2025: Barclays partners CGI and Komgo to eliminate manual entry and provide fully digital straight-through trade finance processing — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://fintech.global/2025/09/29/barclays-and-cgi-join-forces-on-trade-finance-digitisation/ — \"By integrating Komgo with CGI Trade360, we will be providing our clients with a fully digital experience while simplifying operations processing.\" — Jaya Vohra, Barclays global head of trade & working capital — fetched 2026-05-26"
+    },
+    "The move": {
+      "source": "web",
+      "evidence": "https://fintech.global/2025/09/29/barclays-and-cgi-join-forces-on-trade-finance-digitisation/ — \"Corporate clients using Komgo's Konsole will see transactions flow directly into Barclays' systems through CGI Trade360\" and objective to \"eliminate manual entry processes\" — fetched 2026-05-26"
+    }
+  },
+  "CH-BGID-001": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "the bank's online corporate portal"
+    },
+    "Usage": {
+      "source": "elicited",
+      "evidence": "clients reach us through (a) the bank's online corporate portal"
+    }
+  },
+  "CH-BGID-002": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "email to the trade-finance desk"
+    },
+    "Usage": {
+      "source": "elicited",
+      "evidence": "email to the trade-finance desk — for document exchange and wording feedback on in-flight applications"
+    }
+  },
+  "CH-BGID-003": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "a relationship-manager (RM) on the phone"
+    },
+    "Usage": {
+      "source": "elicited",
+      "evidence": "relationship-manager (RM) on the phone — RM keys it into the portal on the client's behalf"
+    }
+  },
+  "CH-BGID-004": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "SWIFT MT-799 for bank-to-bank guarantee requests"
+    },
+    "Usage": {
+      "source": "elicited",
+      "evidence": "SWIFT MT-799 for bank-to-bank guarantee requests — MT760 delivers the issued guarantee instrument"
+    }
+  },
+  "COMP-BGID-001": {
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Technical detail": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "COMP-BGID-002": {
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Technical detail": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "COMP-BGID-003": {
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Technical detail": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "COMP-BGID-004": {
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Technical detail": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "COMP-BGID-005": {
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Technical detail": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "COMP-BGID-006": {
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Technical detail": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "COMP-BGID-007": {
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Technical detail": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "COMP-BGID-008": {
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Technical detail": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "COMP-BGID-009": {
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Technical detail": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "COMP-BGID-010": {
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Technical detail": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "COMP-BGID-011": {
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Technical detail": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "COMP-BGID-012": {
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Technical detail": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "COMP-BGID-013": {
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Technical detail": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "CP-BGID-001": {
+    "Control activity": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk addressed": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Timing": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What it checks": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CP-BGID-002": {
+    "Control activity": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk addressed": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Timing": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What it checks": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CP-BGID-003": {
+    "Control activity": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk addressed": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Timing": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What it checks": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CP-BGID-004": {
+    "Control activity": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk addressed": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "Step 5 (Collateral confirmation) precedes step 6 (Issuance approval) in the documented process sequence. 'This step is now mandatory for every partially-secured guarantee.'"
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "For guarantees not fully covered by an approved facility, the Trade Finance Officer confirms that cash collateral has been received and blocked before issuance can proceed. This step is now mandatory for every partially-secured guarantee."
+    }
+  },
+  "CP-BGID-005": {
+    "Control activity": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    },
+    "Timing": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    },
+    "What it checks": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    }
+  },
+  "CV-BGID-001": {
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Reason": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Variation detail": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CV-BGID-002": {
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Reason": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Variation detail": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CV-BGID-003": {
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Reason": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Variation detail": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CXB-BGID-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.tradefinanceglobal.com/posts/2024-icc-trade-register-report-positively-upbeat-despite-global-trade-goods-slowdown/ — ICC Trade Register 2024, published October 2024 by ICC, BCG and Global Credit Data — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.tradefinanceglobal.com/posts/2024-icc-trade-register-report-positively-upbeat-despite-global-trade-goods-slowdown/ — \"customers are now prioritising leading service and digital capabilities more than ever\" — fetched 2026-05-26"
+    },
+    "The benchmark": {
+      "source": "web",
+      "evidence": "https://www.tradefinanceglobal.com/posts/2024-icc-trade-register-report-positively-upbeat-despite-global-trade-goods-slowdown/ — \"As many as 90% of banks are investing in digital customer experience initiatives\" to align with client expectations — fetched 2026-05-26"
+    }
+  },
+  "CXB-BGID-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.cgi.com/en/blog/banking-and-capital-markets/transaction-banking-2026-why-client-satisfaction-no-longer-guarantees-loyalty — CGI Transaction Banking Survey 2026; 356 corporate executives and 357 banking providers surveyed; published February 2026 — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.cgi.com/en/blog/banking-and-capital-markets/transaction-banking-2026-why-client-satisfaction-no-longer-guarantees-loyalty — \"retention depends less on relationship depth and more on how easy a bank is to plug into the client's ecosystem\" — fetched 2026-05-26"
+    },
+    "The benchmark": {
+      "source": "web",
+      "evidence": "https://www.cgi.com/en/blog/banking-and-capital-markets/transaction-banking-2026-why-client-satisfaction-no-longer-guarantees-loyalty — \"Only 31% of banks see real-time forecasting as high value, compared to 83% of corporates\" — fetched 2026-05-26"
+    }
+  },
+  "CXB-BGID-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.finantrix.com/articles/what-is-trade-finance-automation-letters-of-credit-bank-guarantees — Finantrix industry analysis, March 2025; no named primary survey cited by publisher — hence low confidence — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.finantrix.com/articles/what-is-trade-finance-automation-letters-of-credit-bank-guarantees — \"Bank guarantees: processing capacity increases from 15 daily to 45 daily\" with automation — fetched 2026-05-26"
+    },
+    "The benchmark": {
+      "source": "web",
+      "evidence": "https://www.finantrix.com/articles/what-is-trade-finance-automation-letters-of-credit-bank-guarantees — \"Document examination: 4.2 business days average reduced to 1.1 business days\" and \"Same-day credit issuance for 78% of standard applications (vs. 3–5 business days manually)\" — fetched 2026-05-26"
+    }
+  },
+  "CXB-BGID-004": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — Standard Chartered press release, 15 January 2026; first live client transaction using ICC-SWIFT API bank guarantee standards — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"automates the receipt of instructions and accelerates the issuance of digitally initiated bank guarantees, offering clients greater speed, transparency and reliability\" — fetched 2026-05-26"
+    },
+    "The benchmark": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"The ICC-Swift API standards for bank guarantees, introduced in 2024, are the first industry-wide API specifications to be applied in trade finance\" — fetched 2026-05-26"
+    }
+  },
+  "CXE-BGID-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — Marie-Laurence Faure, BNP Paribas: \"This is the beginning of a new and very promising journey in the digitalisation of bank guarantees\" — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — \"a low-cost way to use digital guarantees ... particularly advantageous for companies with modest transaction volumes\" — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — \"the first trade finance guarantee using a Swift-ICC API standard ... processed in real time from Dutch logistics company Vanderlande to BNP Paribas through Surecomp's Rivo platform without manual intervention\" — fetched 2026-05-26"
+    }
+  },
+  "CXE-BGID-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.digitalvaultservices.com/en/next-milestone-achieved-corporate-guarantees/ — \"As the first (and only) platform Guarantee Vault offers now fully end-to-end digital Corporate Guarantees\" — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.commerzbank.com/financing-foreigntrade/products/foreigntrade/digital-guarantee-management/ — \"overview of your guarantee exposure at all times\" and digital delivery to beneficiaries for domestic guarantees — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.commerzbank.com/financing-foreigntrade/products/foreigntrade/digital-guarantee-management/ — \"issue and manage paper-based as well as digital guarantees\" with \"24/7 access\" and guarantee certificates \"uploaded and made available to the applicant\" after issuance — fetched 2026-05-26"
+    }
+  },
+  "CXE-BGID-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.unicreditgroup.eu/en/press-media/press-releases/2024/february/unicredit-is-standout-performer-in-euromoney-trade-finance-surve.html — UniCredit named standout performer in Euromoney 2024 Trade Finance Survey, recognising its digital trade finance capabilities — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.unicredit.ro/en/cib/financing/trade-finance.html — \"fully digitalized environment, allowing you to virtually issue and monitor new transactions, and access ordered and received guarantees\" — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.unicredit.ro/en/cib/financing/trade-finance.html — UniCredit Trade Finance Gate puts \"the entire processing of Trade Finance business ... on an electronic basis, from issuance over amendment to payment\" with incoming/outgoing guarantees managed in one system via single-sign-on Corporate Portal — fetched 2026-05-26"
+    }
+  },
+  "CXF-BGID-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/andritz-deploys-komgos-gtk-as-its-global-multi-bank-trade-finance-platform — \"300 users across 40 countries, digitalising communications with 30+ financing partners\" — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.prnewswire.co.uk/news-releases/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo-302660934.html — \"This integration automates the receipt of instructions and accelerates the issuance of digitally initiated bank guarantees, offering clients greater speed, transparency and reliability\" — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/andritz-deploys-komgos-gtk-as-its-global-multi-bank-trade-finance-platform — \"GTK centralises the management of guarantees, letters of credit, and credit risk insurance into a single digital tool, while providing a secure communication layer to financial institutions worldwide\" — fetched 2026-05-26"
+    }
+  },
+  "CXF-BGID-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/lbbw-goes-live-with-surecomps-rivo-to-digitize-the-management-of-guarantees-and-letters-of-credit/ — \"LBBW went live with RIVO in May 2026 to optimise the bank's digital application process for guarantees and LCs\" — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/lbbw-goes-live-with-surecomps-rivo-to-digitize-the-management-of-guarantees-and-letters-of-credit/ — \"a fully automated, centralized solution for the initiation, processing and management of these products… providing a seamless, end-to-end customer experience that significantly improves transparency, efficiency and turnaround times\" — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://surecomp.com/rivo-for-corporates/ — \"RIVO empowers corporates by streamlining communication with multiple banks through a single interface, eliminating the inefficiencies of disparate portals and email-based correspondence, allowing corporates to initiate, amend, and track all trade finance transactions\" — fetched 2026-05-26"
+    }
+  },
+  "CXF-BGID-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.tradefinanceglobal.com/posts/credit-insurance-and-surety-software-provider-tinubu-square-rebrands-as-tinubu/ — Tinubu Square rebranded as Tinubu; primary focus is surety bonds and trade credit insurance, not bank guarantees directly — confidence set to low accordingly — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.tinubu.com/news/tinubu-surety-outlook-2025-tech-forward-growth — \"for repeat business, brokers overwhelmingly expect same-day issuance, yet fewer than 40% of carriers consistently deliver\" — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.tinubu.com/surety-for-carriers — \"With Tinubu, carriers can issue Surety bonds automatically — no manual intervention required. Pre-configured underwriting rules determine eligibility, and when criteria are met, the bond is issued instantly\" — fetched 2026-05-26"
+    }
+  },
+  "CXG-BGID-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/hsbc-digitises-demand-guarantee-to-speed-up-trade/ — GTR December 2023, covering live STP deals in Qatar (KPMG) and the UK (Russell Finex) — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/hsbc-digitises-demand-guarantee-to-speed-up-trade/ — \"The fact that something that can take three to four days was done in a matter of minutes means that they can then move on to the next part of the bigger commercial deal.\" — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/hsbc-digitises-demand-guarantee-to-speed-up-trade/ — \"We've redesigned and simplified the user interface, which enables us to prepopulate a lot of the data into the guarantee. This then enables us to automate the validation checks all the way through to notification.\" — fetched 2026-05-26"
+    }
+  },
+  "CXG-BGID-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.jpmorgan.com/payments/solutions/trade-and-working-capital/trade-finance — JPMorgan product page and third-party analyst awards — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.jpmorgan.com/payments/solutions/trade-and-working-capital/trade-finance — Recognised \"#1 in Trade in the 2024 Coalition Greenwich Digital Transformation Benchmarking Study\" and \"Best Digital Asset Capabilities for Trade Finance by Global Finance 2025\" — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.jpmorgan.com/payments/solutions/trade-and-working-capital/trade-finance — Trade Channel described as \"an intuitive web-based platform\" enabling local issuance and reissuance of SBLCs and guarantees across 60+ markets, reducing the need for clients to hold multiple global facilities — fetched 2026-05-26"
+    }
+  },
+  "CXG-BGID-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.citigroup.com/global/news/press-release/2024/citi-developer-portal-leading-in-market-with-multi-channel-integration-capabilities — CitiConnect API platform reached 10 billion API calls as of October 2024, with ERP integrations to Oracle and SAP — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.citigroup.com/global/news/press-release/2025/citi-global-roll-out-enhancements-citidirect-commercial-banking-platform — CitiDirect provides \"360° view across Cash, Loans, Trade, FX, Servicing, and KYC/Onboarding\" from a single platform, covering 57% of Citi's commercial banking client base — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.citigroup.com/global/news/press-release/2025/citi-global-roll-out-enhancements-citidirect-commercial-banking-platform — \"AI-driven automation enhancing both efficiency and security by streamlining data extraction, form filling, client query routing and fraud detection\"; \"Citi Integrator reduced implementation time from seven weeks to under one day\" — fetched 2026-05-26"
+    }
+  },
+  "DEP-BGID-001": {
+    "The dependency": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "What crosses the boundary": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "DEP-BGID-002": {
+    "The dependency": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "What crosses the boundary": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "EX-BGID-001": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "SWIFT NAK → TFO investigates and resubmits; record this as an exception (SWIFT delivery failure)"
+    },
+    "Handling": {
+      "source": "elicited",
+      "evidence": "SWIFT NAK → TFO investigates and resubmits"
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "EX-BGID-002": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    },
+    "Handling": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    }
+  },
+  "EX-BGID-003": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    },
+    "Handling": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    }
+  },
+  "EX-BGID-004": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    },
+    "Handling": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    }
+  },
+  "EX-BGID-005": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    },
+    "Handling": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    }
+  },
+  "EX-BGID-006": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    },
+    "Handling": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    }
+  },
+  "FP-BGID-001": {
+    "Client impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "Legal review with no committed turnaround"
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "Legal review with no committed turnaround; PP-BGID-002 confirms no SLA"
+    }
+  },
+  "FP-BGID-002": {
+    "Client impact": {
+      "source": "elicited",
+      "evidence": "clients have no visibility into Legal's queue — cannot plan underlying transaction, RM absorbs escalation calls"
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "the bespoke-wording journey is the slowest path — clients have no visibility into Legal's queue"
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "Legal team operates without a committed or communicated SLA; no client-facing status interface on the review queue"
+    }
+  },
+  "FP-BGID-003": {
+    "Client impact": {
+      "source": "elicited",
+      "evidence": "clients don't know whether collateral has been booked — time-sensitive for underlying contracts with hard guarantee-delivery deadlines"
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "the collateral-confirmation journey when applicable — clients don't know whether collateral has been booked and the guarantee can therefore be released"
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "collateral blocking is an internal treasury operation with no client-facing notification step"
+    }
+  },
+  "FP-BGID-004": {
+    "Client impact": {
+      "source": "elicited",
+      "evidence": "clients are not notified of MT760 acknowledgement — contact beneficiary directly, adding friction at the moment the transaction should be proceeding"
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "the 'did the beneficiary receive it?' silent gap after MT760 — clients are not notified of MT760 acknowledgement"
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "SWIFT acknowledgement visible to bank's operations team but not relayed to the client — no process step routes it"
+    }
+  },
+  "II-BGID-001": {
+    "Expected benefit": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Feasibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The idea": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "II-BGID-002": {
+    "Expected benefit": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Feasibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The idea": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "II-BGID-003": {
+    "Expected benefit": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Feasibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The idea": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "II-BGID-004": {
+    "Expected benefit": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Feasibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The idea": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "II-BGID-005": {
+    "Expected benefit": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Feasibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The idea": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "INT-BGID-001": {
+    "Contract details": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Failure mode": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Purpose": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "INT-BGID-002": {
+    "Contract details": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Failure mode": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Purpose": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "INT-BGID-003": {
+    "Contract details": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Failure mode": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Purpose": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "INT-BGID-004": {
+    "Contract details": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Failure mode": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Purpose": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "INT-BGID-005": {
+    "Contract details": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Failure mode": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Purpose": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "INT-BGID-006": {
+    "Contract details": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Failure mode": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Purpose": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "INT-BGID-007": {
+    "Contract details": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Failure mode": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Purpose": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "INT-BGID-008": {
+    "Contract details": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Failure mode": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Purpose": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "IR-BGID-001": {
+    "Likelihood & impact": {
+      "source": "elicited",
+      "evidence": "Elicited from domain analysis; AI hallucination on legal-text classification is a well-documented failure mode"
+    },
+    "Mitigation": {
+      "source": "elicited",
+      "evidence": "Elicited from standard AI deployment practice for regulated banking contexts"
+    },
+    "The risk": {
+      "source": "elicited",
+      "evidence": "Elicited from domain analysis of II-BGID-001 delivery risk"
+    }
+  },
+  "IR-BGID-002": {
+    "Likelihood & impact": {
+      "source": "elicited",
+      "evidence": "Elicited from EBA AI Act guidance and BaFin supervisory expectations for automated banking decisions"
+    },
+    "Mitigation": {
+      "source": "elicited",
+      "evidence": "Elicited from EU AI Act compliance planning practice"
+    },
+    "The risk": {
+      "source": "elicited",
+      "evidence": "Elicited from regulatory analysis; EBA published initial AI Act scoping guidance for credit-adjacent banking systems in 2024"
+    }
+  },
+  "IR-BGID-003": {
+    "Likelihood & impact": {
+      "source": "elicited",
+      "evidence": "Elicited from domain knowledge of corporate client behaviour during channel transitions"
+    },
+    "Mitigation": {
+      "source": "elicited",
+      "evidence": "Elicited from standard change-management practice for corporate banking portal migrations"
+    },
+    "The risk": {
+      "source": "elicited",
+      "evidence": "Elicited from analysis of II-BGID-002 adoption risk in EU corporate-banking portal rollouts"
+    }
+  },
+  "IR-BGID-004": {
+    "Likelihood & impact": {
+      "source": "elicited",
+      "evidence": "Elicited from market knowledge of ICC-SWIFT API rollout progress across European corporate banks as of 2026"
+    },
+    "Mitigation": {
+      "source": "elicited",
+      "evidence": "Elicited from standard API channel rollout strategy for high-volume corporate clients"
+    },
+    "The risk": {
+      "source": "elicited",
+      "evidence": "Elicited from analysis of ICC-SWIFT API adoption maturity and corporate ERP integration complexity for II-BGID-004"
+    }
+  },
+  "IR-BGID-005": {
+    "Likelihood & impact": {
+      "source": "elicited",
+      "evidence": "Elicited from standard notification delivery risk assessment"
+    },
+    "Mitigation": {
+      "source": "elicited",
+      "evidence": "Elicited from standard opt-in notification rollout practice"
+    },
+    "The risk": {
+      "source": "elicited",
+      "evidence": "Elicited from analysis of II-BGID-005 as a low-complexity opt-in notification enhancement"
+    }
+  },
+  "IR-BGID-006": {
+    "Likelihood & impact": {
+      "source": "elicited",
+      "evidence": "Elicited from ASM-BGID-004 which flags credit system real-time API availability as an open assumption"
+    },
+    "Mitigation": {
+      "source": "elicited",
+      "evidence": "Elicited from standard data-freshness design practice for financial dashboard products"
+    },
+    "The risk": {
+      "source": "elicited",
+      "evidence": "Elicited from analysis of II-BGID-003 dependency on credit-system API real-time feed"
+    }
+  },
+  "JT-BGID-001": {
+    "Experience": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "PS-BGID-001: incomplete applications are returned to the client via the portal with a checklist"
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "Corporate Portal application submission; PS-BGID-001 lists all required fields"
+    }
+  },
+  "JT-BGID-002": {
+    "Experience": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "RM who keys it into the portal on the client's behalf"
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "relationship-manager (RM) on the phone — RM keys it into the portal on the client's behalf"
+    }
+  },
+  "JT-BGID-003": {
+    "Experience": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "Legal review feedback on bespoke wording — TFO emails outcome to client"
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "Legal-review feedback on bespoke wording — clients have no visibility into Legal's queue"
+    }
+  },
+  "JT-BGID-004": {
+    "Experience": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "approval-decision notification triggered once four-eyes approval is recorded in TFS"
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "approval-decision notification — touchpoint named by SME"
+    }
+  },
+  "JT-BGID-005": {
+    "Experience": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "MT760 issuance confirmation — bank transmits MT760, notifies client"
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "MT760 issuance confirmation — touchpoint named by SME"
+    }
+  },
+  "M-BGID-001": {
+    "Current reading": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Definition": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "M-BGID-002": {
+    "Current reading": {
+      "source": "elicited",
+      "evidence": "Elicited: baseline 280/month; thresholds green ≥300, amber 200–299, red <200"
+    },
+    "Definition": {
+      "source": "elicited",
+      "evidence": "Elicited: count of guarantees issued per calendar month from TFS issuance log; owner Head of Trade Finance; frequency monthly"
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "Elicited: volume is the primary demand and capacity signal for the trade finance desk"
+    }
+  },
+  "M-BGID-003": {
+    "Current reading": {
+      "source": "elicited",
+      "evidence": "Elicited: ~40% per FP-BGID-001 and PP-BGID-002 analysis; thresholds green ≥60%, amber 40–59%, red <40%"
+    },
+    "Definition": {
+      "source": "elicited",
+      "evidence": "Elicited: % of applications through PS-BGID-001–006 with no exception flag; sourced from workflow audit trail; owner Head of Trade Finance Operations; frequency monthly"
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "Elicited: STP rate is the composite health indicator for manual-handoff steps at PS-BGID-002 and PS-BGID-003"
+    }
+  },
+  "M-BGID-004": {
+    "Current reading": {
+      "source": "elicited",
+      "evidence": "Elicited: not currently measured; thresholds green ≤15%, amber 15–25%, red >25%"
+    },
+    "Definition": {
+      "source": "elicited",
+      "evidence": "Elicited: % of applications hitting at least one of EX-BGID-001–006; sourced from exception log; owner Trade Finance Manager; frequency monthly"
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "Elicited: exception rate aggregates PP-BGID-001/002/003 friction and gives early warning before SLA overruns appear in turnaround time reporting"
+    }
+  },
+  "MIG-BGID-001": {
+    "Acceptance criteria": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Risks": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Scope": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "MIG-BGID-002": {
+    "Acceptance criteria": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Risks": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Scope": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "MIG-BGID-003": {
+    "Acceptance criteria": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Risks": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Scope": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "MIG-BGID-004": {
+    "Acceptance criteria": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Risks": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Scope": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "MT-BGID-001": {
+    "Design implication": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The moment": {
+      "source": "elicited",
+      "evidence": "the moment the client first sees the draft text the bank is prepared to issue (do we match what they need?)"
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "MT-BGID-002": {
+    "Design implication": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The moment": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "MT-BGID-003": {
+    "Design implication": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The moment": {
+      "source": "elicited",
+      "evidence": "the moment we tell them the guarantee has been issued via MT760"
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "NFR-BGID-001": {
+    "Definition": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Measurement": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Verification": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "NFR-BGID-002": {
+    "Definition": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Measurement": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Verification": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "NFR-BGID-003": {
+    "Definition": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Measurement": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Verification": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "NFR-BGID-004": {
+    "Definition": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Measurement": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Verification": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "NFR-BGID-005": {
+    "Definition": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Measurement": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Verification": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "NFR-BGID-006": {
+    "Definition": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Measurement": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Verification": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "NFR-BGID-007": {
+    "Definition": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Measurement": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Verification": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "NFR-BGID-008": {
+    "Definition": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Measurement": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Verification": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "NFR-BGID-009": {
+    "Definition": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Measurement": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Verification": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "OAF-BGID-001": {
+    "Finding": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    },
+    "Recommendation": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    }
+  },
+  "OAF-BGID-002": {
+    "Finding": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    },
+    "Recommendation": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    }
+  },
+  "OAF-BGID-003": {
+    "Finding": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    },
+    "Recommendation": {
+      "source": "elicited",
+      "evidence": "SME validated — control-compliance-specialist session 2026-05-26"
+    }
+  },
+  "PG-BGID-001": {
+    "Impact": {
+      "source": "elicited",
+      "evidence": "SME validated — EU corporate guarantee desk, process-specialist session 2026-05-26"
+    },
+    "Next step": {
+      "source": "elicited",
+      "evidence": "SME validated — EU corporate guarantee desk, process-specialist session 2026-05-26"
+    },
+    "The gap": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PG-BGID-002": {
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Next step": {
+      "source": "elicited",
+      "evidence": "SME validated — EU corporate guarantee desk, process-specialist session 2026-05-26"
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "SME validated — EU corporate guarantee desk, process-specialist session 2026-05-26"
+    }
+  },
+  "PG-BGID-003": {
+    "Impact": {
+      "source": "elicited",
+      "evidence": "SME validated — EU corporate guarantee desk, process-specialist session 2026-05-26"
+    },
+    "Next step": {
+      "source": "elicited",
+      "evidence": "SME validated — EU corporate guarantee desk, process-specialist session 2026-05-26"
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "SME validated — EU corporate guarantee desk, process-specialist session 2026-05-26"
+    }
+  },
+  "PP-BGID-001": {
+    "Description": {
+      "source": "document",
+      "evidence": "Applications frequently stall at the credit and facility check when the client has not pre-arranged enough limit."
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Root cause": {
+      "source": "document",
+      "evidence": "Applications frequently stall at the credit and facility check when the client has not pre-arranged enough limit."
+    }
+  },
+  "PP-BGID-002": {
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Root cause": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PP-BGID-003": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "clients submitting without contract reference is the biggest recurring issue"
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Root cause": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PS-BGID-001": {
+    "Inputs": {
+      "source": "elicited",
+      "evidence": "[Y] Accept as drafted"
+    },
+    "Outputs": {
+      "source": "elicited",
+      "evidence": "[Y] Accept as drafted"
+    },
+    "What happens": {
+      "source": "elicited",
+      "evidence": "incomplete app → officer returns it via the portal with a checklist (no defined SLA — usually same day)"
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "[Y] Accept as drafted"
+    }
+  },
+  "PS-BGID-002": {
+    "Inputs": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    },
+    "Outputs": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    },
+    "What happens": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    }
+  },
+  "PS-BGID-003": {
+    "Inputs": {
+      "source": "elicited",
+      "evidence": "Templates live in TFS, version-controlled by Legal"
+    },
+    "Outputs": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    },
+    "What happens": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    }
+  },
+  "PS-BGID-004": {
+    "Inputs": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    },
+    "Outputs": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    },
+    "What happens": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    }
+  },
+  "PS-BGID-005": {
+    "Inputs": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    },
+    "Outputs": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    },
+    "What happens": {
+      "source": "elicited",
+      "evidence": "The EUR 5M threshold is enforced by TFS — Head of TF must sign-off in-app before issuance proceeds"
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    }
+  },
+  "PS-BGID-006": {
+    "Inputs": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    },
+    "Outputs": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    },
+    "What happens": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    }
+  },
+  "PS-BGID-007": {
+    "Inputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "For guarantees not fully covered by an approved facility, the Trade Finance Officer confirms that cash collateral has been received and blocked before issuance can proceed. This step is now mandatory for every partially-secured guarantee."
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "REG-BGID-001": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://eur-lex.europa.eu/eli/reg/2024/1624/oj/eng — AMLR obliges institutions to apply CDD at onboarding and on each transaction — fetched 2026-05-26"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://eur-lex.europa.eu/eli/reg/2024/1624/oj/eng — AMLR Article 20: verify identity, beneficial ownership at 25% threshold, screen against sanctions and PEP lists — fetched 2026-05-26"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://anti-money-laundering.eu/new-customer-due-diligence-cdd-data-points-under-amlr/ — banks are obliged entities; guarantee issuance creates a financial product relationship requiring CDD — fetched 2026-05-26"
+    }
+  },
+  "REG-BGID-002": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://www.tradefinanceglobal.com/guarantees/urdg-758-rules-impact-demand-guarantees/ — standard wording templates and Legal review ensure compliance with URDG terms — fetched 2026-05-26"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://www.tradefinanceglobal.com/guarantees/urdg-758-rules-impact-demand-guarantees/ — guarantee must be in writing; independence principle; bank must pay on first compliant demand — fetched 2026-05-26"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://iccwbo.org/news-publications/news/icc-demand-guarantee-rules-urdg-758-celebrate-two-years-of-rising-popularity/ — URDG 758 governs demand guarantees where incorporated by reference — fetched 2026-05-26"
+    }
+  },
+  "REG-BGID-003": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://lexparency.org/eu/CRR/ART_111/ — facility utilisation update at PS-BGID-006 records contingent exposure; capital calculation handled by risk management systems — fetched 2026-05-26"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://lexparency.org/eu/CRR/ART_111/ — Article 111: exposure value of off-balance-sheet items = nominal value × credit conversion factor; credit-substitute guarantees assigned 100% CCF — fetched 2026-05-26"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://lexparency.org/eu/CRR/ART_111/ — each guarantee issued creates a contingent credit exposure that enters the bank's risk-weighted asset calculation — fetched 2026-05-26"
+    }
+  },
+  "REG-BGID-004": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/sites/default/files/document_library/Publications/Guidelines/2023/EBA-GL-2023-03/1061654/Guidelines%20ML%20TF%20Risk%20Factors_conslidated.pdf.pdf — CP-BGID-002 sanctions screening addresses sanctions risk factors; broader ML/TF risk assessment to be confirmed with SME — fetched 2026-05-26"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/sites/default/files/document_library/Publications/Guidelines/2023/EBA-GL-2023-03/1061654/Guidelines%20ML%20TF%20Risk%20Factors_conslidated.pdf.pdf — obliged entities must assess ML/TF risk factors for trade finance products; enhanced due diligence for cross-border and correspondent banking — fetched 2026-05-26"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/sites/default/files/document_library/Publications/Guidelines/2023/EBA-GL-2023-03/1061654/Guidelines%20ML%20TF%20Risk%20Factors_conslidated.pdf.pdf — trade finance guarantees involve cross-border beneficiaries and complex ownership requiring product-specific risk assessment — fetched 2026-05-26"
+    }
+  },
+  "REG-BGID-005": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://www.bundesbank.de/en/tasks/banking-supervision/legal-basis/national-legal-basis/regulation-governing-large-exposures-and-loans-of-1-million-or-more-grosskredit-und-millionenkreditverordnung--640376 — Germany implements CRR Art. 395 directly; GroMiKV governs national discretions; institutions report large exposures quarterly to BaFin/Bundesbank via COREP LE templates under Art. 394 — fetched 2026-05-26"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://lexparency.org/eu/CRR/ART_395/ — \"An institution shall not incur an exposure to a client or group of connected clients the value of which exceeds 25 % of its Tier 1 capital after taking into account the effect of the credit risk mitigation in accordance with Articles 399 to 403\" — fetched 2026-05-26"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://service.betterregulation.com/document/155296 — Part Four (Articles 387–403) applies to \"any asset or off-balance sheet item\" (Art. 389); each issued bank guarantee is an off-balance-sheet exposure to the applicant client and, via Art. 403 substitution, potentially to the beneficiary guarantor — fetched 2026-05-26"
+    }
+  },
+  "REG-BGID-006": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/single-rule-book-qa/qna/view/publicId/2020_5496 — \"Mandatory substitution approach according to Article 403 CRR\": the protected portion is deducted from the original obligor and added to the guarantor in the COREP LE template; CP-BGID-004 records collateral at issuance, providing the data for this re-attribution — fetched 2026-05-26"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://lexparency.org/eu/CRR/ART_403/ — \"Where an exposure to a client is guaranteed by a third party, or is secured by collateral issued by a third party, an institution may treat the part of the exposure which is guaranteed as an exposure incurred on the guarantor and not on the client\" — fetched 2026-05-26"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/single-rule-book-qa/qna/view/publicId/2022_6396 — \"Mandatory substitution approach according to Articles 401(4) and 403 CRR\": when collateral or a counter-guarantee supports a guarantee issued by the bank, the exposure must be re-attributed to the protection provider for large-exposure purposes — fetched 2026-05-26"
+    }
+  },
+  "REG-BGID-007": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://www.betasystems.com/resources/blog/marisk-compliance-through-segregation-of-duties — \"MaRisk explicitly requires segregation of duties as a core element of the internal control system\" ensuring \"incompatible tasks — such as initiating and controlling transactions — are performed by different individuals\" — fetched 2026-05-26"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://www.bundesbank.de/resource/blob/623102/bca5bafd72a669115b15c4125e063feb/mL/minimum-requirements-for-risk-management-mindestanforderungen-an-das-risikomanagement-marisk-data.pdf — \"A clear organisational segregation of the front office (Markt) and back office (Marktfolge) up to and including management board level\" — fetched 2026-05-26"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://legal.pwc.de/en/news/articles/bafin-publishes-7th-amendment-to-marisk — \"Module BTO 1.2 (Loan Processing): addresses requirements for loan origination and monitoring, incorporating EBA Guidelines' supervisory objectives\" — fetched 2026-05-26"
+    }
+  },
+  "REG-BGID-008": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://www.betasystems.com/resources/blog/marisk-compliance-through-segregation-of-duties — \"Credit operations: Front office and back office separation\" cited as the primary application of EBA-aligned segregation requirements in credit processes — fetched 2026-05-26"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://www.bde.es/f/webbde/INF/MenuHorizontal/Normativa/guias/EBA-2021-05-EN.pdf — \"measures to manage or mitigate potential conflicts may consist of, among others: i) an appropriate segregation of duties; ii) information barriers\" — fetched 2026-05-26"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/activities/single-rulebook/regulatory-activities/internal-governance/guidelines-internal-governance-under-crd — \"guidelines apply to all institutions regardless of their governance structures\" covering \"sound and effective governance arrangements\" under CRD — fetched 2026-05-26"
+    }
+  },
+  "REG-BGID-009": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://www.digital-operational-resilience-act.com/Article_6.html — \"Financial entities must establish a sound, comprehensive and well-documented ICT risk management framework\" — the Trade Finance System that records and issues guarantees must be in scope — fetched 2026-05-26"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://www.digital-operational-resilience-act.com/Article_9.html — \"design, procure and implement ICT security policies, procedures, protocols and tools that aim to ensure the resilience, continuity and availability of ICT systems, in particular for those supporting critical or important functions\" — fetched 2026-05-26"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://www.digital-operational-resilience-act.com/Article_5.html — \"management body bears the ultimate responsibility for managing the financial entity's ICT risk\" and must \"define, approve, and oversee the ICT risk management framework\" — fetched 2026-05-26"
+    }
+  },
+  "REG-BGID-010": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://kycaml.guide/blog/the-impact-of-gdpr-on-kyc-procedure-a-closer-look/ — \"financial institutions typically retain complete KYC files for five years after relationship termination, then delete or anonymise data unless ongoing legal obligations apply\" — fetched 2026-05-26"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=celex:32016R0679 — Article 6(1)(b)/(c): processing lawful where necessary for contract performance or legal obligation; Article 5(1)(e): personal data kept no longer than necessary; Article 17(3)(b): right to erasure does not apply where retention is required by law — fetched 2026-05-26"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://gdprlocal.com/gdpr-for-kyc-platforms/ — \"Article 6 of GDPR provides lawful bases for processing personal data in KYC platforms, with legal obligation (Article 6(1)(c)) being the primary basis for AML compliance activities such as customer identification\" — fetched 2026-05-26"
+    }
+  },
+  "REG-BGID-011": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://anti-money-laundering.eu/new-record-retention-periods-under-art-77-amlr/ — \"Regulation (EU) 2024/1624 introduces a fully harmonised and directly applicable EU framework for AML record retention … creating a digitisation obligation for institutions with legacy paper files\" — fetched 2026-05-26"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://amlr.eu/article-77-record-retention/ — \"Article 77 AMLR requires retention of all CDD records for at least five years after the end of the business relationship … records must be kept in a format that allows machine-readable evaluation\" — fetched 2026-05-26"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://anti-money-laundering.eu/record-keeping-and-retention/ — \"Article 40(1)(a) AMLD5 obliges entities to retain a copy of the documents and information which are necessary to comply with the customer due diligence requirements for a period of five years after the end of their business relationship or after the date of an occasional transaction\" — fetched 2026-05-26"
+    }
+  },
+  "REG-BGID-012": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://regreportingdesk.com/corep-reporting-errors/ — accurate COREP reporting requires that off-balance-sheet items including guarantees issued are captured with the correct credit conversion factor before submission to the supervisory authority — fetched 2026-05-26"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/single-rule-book-qa/qna/view/publicId/2014_1188 — \"Template C 07.00 is titled CREDIT AND COUNTERPARTY CREDIT RISKS AND FREE DELIVERIES: STANDARDISED APPROACH TO CAPITAL REQUIREMENTS … covers credit risk in accordance with Chapter 2 of Title II of Part Three of CRR\" — fetched 2026-05-26"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/single-rule-book-qa/qna/view/publicId/2014_1055 — \"Guarantees received on off-balance sheet exposures … should be reported\" under the applicable COREP template; guarantees issued create off-balance-sheet credit exposures requiring supervisory reporting — fetched 2026-05-26"
+    }
+  },
+  "REQ-BGID-001": {
+    "Acceptance criteria": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Requirement": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "REQ-BGID-002": {
+    "Acceptance criteria": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Requirement": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "REQ-BGID-003": {
+    "Acceptance criteria": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Requirement": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "REQ-BGID-004": {
+    "Acceptance criteria": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Requirement": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "ROLE-BGID-001": {
+    "In this process": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Responsibility": {
+      "source": "document",
+      "evidence": "\"Trade Finance Officer — intake, checks, collateral confirmation, generation and delivery.\" (Roles section). Steps 1, 2, 5, and 7 each explicitly name the Trade Finance Officer as the actor."
+    }
+  },
+  "ROLE-BGID-002": {
+    "In this process": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    },
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    }
+  },
+  "ROLE-BGID-003": {
+    "In this process": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    },
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    }
+  },
+  "ROLE-BGID-004": {
+    "In this process": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    },
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    }
+  },
+  "ROLE-BGID-005": {
+    "In this process": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    },
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "[Y] Accept"
+    }
+  },
+  "ROLE-BGID-006": {
+    "In this process": {
+      "source": "elicited",
+      "evidence": "[Y] Accept — Legal is R+A on the wording-review work itself; TFO retains R+A on the step"
+    },
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "[Y] Accept — Legal is R+A on the wording-review work itself; TFO retains R+A on the step"
+    }
+  },
+  "SYS-BGID-001": {
+    "Purpose": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Role in this process": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "SYS-BGID-002": {
+    "Purpose": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Role in this process": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "SYS-BGID-003": {
+    "Purpose": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Role in this process": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "SYS-BGID-004": {
+    "Purpose": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Role in this process": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "SYS-BGID-005": {
+    "Purpose": {
+      "source": "elicited",
+      "evidence": "Elicited: core banking credit system; vendor in-house; criticality HIGH; RTO 8h, RPO 1h"
+    },
+    "Role in this process": {
+      "source": "elicited",
+      "evidence": "Elicited: consulted at PS-BGID-002 for headroom check; updated async post-issuance at PS-BGID-007; lag documented in EX-BGID-006, DEP-BGID-001"
+    }
+  },
+  "SYS-BGID-006": {
+    "Purpose": {
+      "source": "elicited",
+      "evidence": "Elicited: long-term archival of executed guarantee documents; 10-year retention; vendor in-house; criticality MEDIUM"
+    },
+    "Role in this process": {
+      "source": "elicited",
+      "evidence": "Elicited: receives executed guarantee documents from TFS at PS-BGID-006; supports audit and dispute retrieval"
+    }
+  },
+  "TD-BGID-001": {
+    "Options considered": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "The decision": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "TD-BGID-002": {
+    "Options considered": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "The decision": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "TD-BGID-003": {
+    "Options considered": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "The decision": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "TD-BGID-004": {
+    "Options considered": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "The decision": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "TGTAPP-BGID-001": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Risks": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Tech stack": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "TGTAPP-BGID-002": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Risks": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Tech stack": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "TGTAPP-BGID-003": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Risks": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Tech stack": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "TGTAPP-BGID-004": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Risks": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Tech stack": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "TGTAPP-BGID-005": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Risks": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Tech stack": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "TGTAPP-BGID-006": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Risks": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    },
+    "Tech stack": {
+      "source": "elicited",
+      "evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26"
+    }
+  },
+  "TR-BGID-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/supplements/gtr-risk-2025/how-llms-are-transforming-trade-finance-operations/ — \"Up to 40% reduction in processing time, depending on document complexity\" — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/supplements/gtr-risk-2025/how-llms-are-transforming-trade-finance-operations/ — \"Advanced models analyse language patterns across documents, identify inconsistencies and flag suspicious activities\" — fetched 2026-05-26"
+    },
+    "The trend": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/supplements/gtr-risk-2025/how-llms-are-transforming-trade-finance-operations/ — \"guarantees and standby letters of credit remain a significant opportunity for transformation ... LLMs can now read, interpret and extract insights at unprecedented speed and accuracy\" — fetched 2026-05-26"
+    }
+  },
+  "TR-BGID-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://emeraldcapitalco.com/july-global-adoption-of-mletr-are-we-approaching-the-turning-point-for-digital-trade/ — 12 economies have adopted or aligned with MLETR; the 5 major adopters represent nearly 37% of global GDP — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.tradefinanceglobal.com/posts/status-update-mletr-adoption-in-the-g7-and-emerging-markets/ — \"Once we shift towards digitisation, we will have easier compliance, better governance\" (Luca Castellani, UNCITRAL) — fetched 2026-05-26"
+    },
+    "The trend": {
+      "source": "web",
+      "evidence": "https://emeraldcapitalco.com/july-global-adoption-of-mletr-are-we-approaching-the-turning-point-for-digital-trade/ — \"The Model Law on Electronic Transferable Records (MLETR) has become a rallying point for digital trade advocacy\" and \"2024 will go down as a historic turning point\" — fetched 2026-05-26"
+    }
+  },
+  "TR-BGID-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.nomentia.com/blog/digitalize-bank-guarantee-management — enterprises deal with hundreds if not thousands of guarantees yearly against finite facility lines, driving demand for real-time headroom visibility — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.nomentia.com/blog/digitalized-guarantee-management-in-practice — \"Group Treasury can adjust the ideal utilization level and manage the allocation of business among the group's banks\" — fetched 2026-05-26"
+    },
+    "The trend": {
+      "source": "web",
+      "evidence": "https://www.nomentia.com/blog/digitalize-bank-guarantee-management — \"Digital solutions centralize all guarantees, automate approval workflows, and provide real-time visibility across guarantee lifecycle\" — fetched 2026-05-26"
+    }
+  },
+  "TR-BGID-004": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.tradefinanceglobal.com/posts/hsbc-launches-guarantees-digital-portal-for-fi-trade-finance-transactions/ — HSBC's FI Digital Network launched a dedicated guarantee portal with real-time status tracking and automated reporting, subsequently expanded to the full trade product suite — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.nomentia.com/blog/digitalize-bank-guarantee-management — \"use one digital standardized form for all requests and manage entire guarantee lifecycles digitally\" — fetched 2026-05-26"
+    },
+    "The trend": {
+      "source": "web",
+      "evidence": "https://www.tradefinanceglobal.com/posts/hsbc-launches-guarantees-digital-portal-for-fi-trade-finance-transactions/ — \"What was always lacking in this space was the ability for banks to automatically check where guarantees are\" (Vinay Mendonca, HSBC Chief Growth Officer, Global Trade) — fetched 2026-05-26"
+    }
+  },
+  "TR-BGID-005": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.signaturit.com/blog/the-digital-operational-resilience-act-dora/ — DORA mandates ICT incidents be reported to authorities within 24 hours, requires annual continuity testing; entered application January 2025 — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/activities/direct-supervision-and-oversight/digital-operational-resilience-act — DORA requires banks to maintain robust ICT risk management and continuous supervision of critical third-party digital providers governing guarantee issuance and e-delivery systems — fetched 2026-05-26"
+    },
+    "The trend": {
+      "source": "web",
+      "evidence": "https://www.signaturit.com/blog/the-digital-operational-resilience-act-dora/ — \"DORA Regulation came into force on January 17, 2025\" and applies to \"more than 20 types\" of financial organisations including banks — fetched 2026-05-26"
+    }
+  },
+  "TS-BGID-001": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Target description": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "What changes": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "TS-BGID-002": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Target description": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "What changes": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "TS-BGID-003": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Target description": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "What changes": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "TS-BGID-004": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Target description": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "What changes": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "TS-BGID-005": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Target description": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "What changes": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "TS-BGID-006": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Target description": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "What changes": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "TS-BGID-007": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Target description": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "What changes": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  },
+  "VG-BGID-001": {
+    "Resolution": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "Status": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated"
+    }
+  }
+}

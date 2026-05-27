@@ -246,13 +246,31 @@ def run() -> None:
     chk("patch_element leaves other blocks intact", "A logged intake record" in body)
 
     print("\n— provenance: write / conformance / approval gate —")
+    # The provenance map lives in wiki/processes/<slug>/provenance.json,
+    # keyed by element id. Each test reads the bundle to verify the writer's
+    # output rather than scraping the element's frontmatter.
+    prov_bundle_path = PROC_DIR / "provenance.json"
+
+    def load_prov_for(eid: str) -> dict:
+        if not prov_bundle_path.is_file():
+            return {}
+        return json.loads(prov_bundle_path.read_text()).get(eid, {})
+
+    def save_prov_for(eid: str, prov: dict) -> None:
+        all_prov = json.loads(prov_bundle_path.read_text()) if prov_bundle_path.is_file() else {}
+        all_prov[eid] = prov
+        prov_bundle_path.write_text(json.dumps(all_prov, ensure_ascii=False, indent=2) + "\n")
+
     # A heading the spec gives no provenance for defaults to `proposed`.
     script("write_element.py", spec_file(
         {"slug": SLUG, "type": "process-step", "id": "PS-SELF-010", "title": "Proposed",
          "fields": {"owner": "Officer"}, "blocks": STEP_BLOCKS}))
-    p10 = (PROC_DIR / "process-steps" / "PS-SELF-010.md").read_text()
-    chk("write_element builds a provenance map", "provenance:" in p10, p10.split("---")[1])
-    chk("unspecced headings default to proposed", '"source": "proposed"' in p10)
+    p10_prov = load_prov_for("PS-SELF-010")
+    chk("write_element builds a provenance map", bool(p10_prov), p10_prov)
+    chk("provenance lives in the per-process bundle, not frontmatter",
+        "provenance:" not in (PROC_DIR / "process-steps" / "PS-SELF-010.md").read_text())
+    chk("unspecced headings default to proposed",
+        all(e.get("source") == "proposed" for e in p10_prov.values()), p10_prov)
     r = script("check_conformance.py", SLUG, "PS-SELF-010")
     chk("conformance: an all-proposed element conforms", "conforms" in r.stdout, r.stdout)
     r = script("set_approval.py", SLUG, "PS-SELF-010", "approved", "M. Berger")
@@ -276,13 +294,9 @@ def run() -> None:
         "no evidence" in r.stdout, r.stdout)
     # A provenance key that names no template heading — the rename-drift the
     # review flagged as the accepted risk of keying the map by heading title.
-    f12 = PROC_DIR / "process-steps" / "PS-SELF-012.md"
-    m12, b12 = parse_frontmatter(f12.read_text())
-    drifted = json.loads(m12["provenance"])
+    drifted = load_prov_for("PS-SELF-012")
     drifted["What it does NOW"] = {"source": "elicited", "evidence": "stray."}
-    m12["provenance"] = json.dumps(drifted, ensure_ascii=False, sort_keys=True)
-    f12.write_text("---\n" + "\n".join(f"{k}: {v}" for k, v in m12.items())
-                   + "\n---\n" + b12 + "\n")
+    save_prov_for("PS-SELF-012", drifted)
     r = script("check_conformance.py", SLUG, "PS-SELF-012")
     chk("conformance flags a provenance key that drifted from the template",
         "names no template heading" in r.stdout, r.stdout)
@@ -293,41 +307,44 @@ def run() -> None:
               "test, long enough to clear the template word floor for the block.")
     tf2.close()
     script("patch_element.py", SLUG, "PS-SELF-011", "--block", "Why it matters", tf2.name)
-    m11, _ = parse_frontmatter((PROC_DIR / "process-steps" / "PS-SELF-011.md").read_text())
-    prov11 = json.loads(m11["provenance"])
+    prov11 = load_prov_for("PS-SELF-011")
     chk("patch flips the edited heading to proposed",
-        prov11["Why it matters"]["source"] == "proposed", prov11)
+        prov11.get("Why it matters", {}).get("source") == "proposed", prov11)
     chk("patch leaves other headings elicited",
-        prov11["What happens"]["source"] == "elicited", prov11)
+        prov11.get("What happens", {}).get("source") == "elicited", prov11)
     r = script("set_approval.py", SLUG, "PS-SELF-011", "approved", "M. Berger")
     chk("an edited heading re-blocks approval", r.returncode != 0, r.stdout + r.stderr)
 
     print("\n— migrate_grandfather: grandfather approved elements —")
-    # Simulate two pre-rule elements (no provenance key): one approved, one draft.
-    leg = PROC_DIR / "process-steps" / "PS-SELF-020.md"
+    # Simulate two pre-rule elements (no provenance entry): one approved, one
+    # draft. With the bundle storage the "pre-rule" state is the absence of an
+    # entry for the element in provenance.json — strip them out instead of
+    # editing a frontmatter line.
     script("write_element.py", spec_file(
         {"slug": SLUG, "type": "process-step", "id": "PS-SELF-020", "title": "Legacy Approved",
          "fields": {"owner": "Officer"}, "provenance": prov_elicited(STEP_BLOCKS),
          "blocks": STEP_BLOCKS}))
     script("set_approval.py", SLUG, "PS-SELF-020", "approved", "M. Berger")
-    draft = PROC_DIR / "process-steps" / "PS-SELF-021.md"
     script("write_element.py", spec_file(
         {"slug": SLUG, "type": "process-step", "id": "PS-SELF-021", "title": "Legacy Draft",
          "fields": {"owner": "Officer"}, "blocks": STEP_BLOCKS}))
-    for f in (leg, draft):  # strip provenance → looks pre-rule
-        f.write_text("\n".join(ln for ln in f.read_text().split("\n")
-                                if not ln.startswith("provenance:")))
+    all_prov = json.loads(prov_bundle_path.read_text())
+    all_prov.pop("PS-SELF-020", None)
+    all_prov.pop("PS-SELF-021", None)
+    prov_bundle_path.write_text(json.dumps(all_prov, ensure_ascii=False, indent=2) + "\n")
     r = script("check_conformance.py", SLUG, "PS-SELF-020")
     chk("a pre-rule element fails conformance (no provenance)",
         "provenance map is missing" in r.stdout, r.stdout)
     r = script("migrate_grandfather.py", SLUG)
     chk("migrate_grandfather runs", r.returncode == 0, r.stderr)
-    mig, _ = parse_frontmatter(leg.read_text())
+    mig20 = load_prov_for("PS-SELF-020")
     chk("migrate tags the approved element legacy-approved",
-        all(e["source"] == "legacy-approved" for e in json.loads(mig["provenance"]).values()),
-        mig.get("provenance"))
-    chk("migrate keeps the element approved", mig.get("approval") == "approved", mig)
-    chk("migrate leaves the draft element untouched", "provenance:" not in draft.read_text())
+        bool(mig20) and all(e["source"] == "legacy-approved" for e in mig20.values()),
+        mig20)
+    mig20_meta, _ = parse_frontmatter(
+        (PROC_DIR / "process-steps" / "PS-SELF-020.md").read_text())
+    chk("migrate keeps the element approved", mig20_meta.get("approval") == "approved", mig20_meta)
+    chk("migrate leaves the draft element untouched", not load_prov_for("PS-SELF-021"))
     r = script("check_conformance.py", SLUG, "PS-SELF-020")
     chk("REGRESSION: a migrated approved element conforms again",
         "conforms" in r.stdout, r.stdout)

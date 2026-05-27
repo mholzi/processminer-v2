@@ -9,7 +9,6 @@ owner: Trade Finance Officer
 sla: 3 business days from complete application (standard wording with no screening hit)
 condition: Issuance approval recorded in Trade Finance System
 systems: [SYS-BGID-002, SYS-BGID-004]
-provenance: {"Inputs": {"evidence": "", "source": "proposed"}, "Outputs": {"evidence": "", "source": "proposed"}, "What happens": {"evidence": "", "source": "proposed"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T05:17:42Z
 ---

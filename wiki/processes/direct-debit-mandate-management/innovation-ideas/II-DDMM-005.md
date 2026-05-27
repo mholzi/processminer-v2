@@ -11,7 +11,6 @@ strategicFit: MEDIUM
 complexity: MEDIUM
 addresses: [PP-DDMM-005]
 fromTrend: [TR-DDMM-003]
-provenance: {"Expected benefit": {"evidence": "SME confirmed: eliminates clerk information-relay work; may also reduce M-DDMM-004 (adjudication time); Compliance receives richer pack than current manual assembly produces.", "source": "elicited"}, "Feasibility": {"evidence": "SME confirmed: integration between MMS and Sanctions Screening Engine is the main dependency; Compliance must agree on a standard pack format before build.", "source": "elicited"}, "The idea": {"evidence": "SME (M. Vogel) confirmed: PP-DDMM-005 is repetitive manual context-gathering every time Compliance adjudicates a hit; data already exists in MMS, gap is assembly.", "source": "elicited"}}
 ---
 ## The idea
 When MMS routes a potential sanctions hit to Compliance, automatically assemble the triage context pack — mandate history, creditor profile, screening match details, watchlist source, and any prior Compliance decisions for the same party — and attach it to the escalation record.

@@ -8,7 +8,6 @@ confidence: high
 source: ddmm-dtp-mockup.md
 target: Within 2 business days of identification
 value: Not measured
-provenance: {"Current reading": {"evidence": "R-transaction resolution | Within 2 business days of identification", "source": "document"}, "Definition": {"evidence": "SME (M. Vogel) confirmed: clock starts on automatic queue entry from Payment Hub (effectively at receipt); does not wait for manual Clerk pickup to prevent SLA gaming.", "source": "elicited"}, "Why it matters": {"evidence": "SME confirmed accurate as drafted.", "source": "elicited"}}
 trend:
 approval: approved
 approvalBy: M. Vogel

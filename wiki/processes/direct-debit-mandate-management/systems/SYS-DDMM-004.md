@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: ddmm-dtp-mockup.md
 systemType: SUPPORTING
-provenance: {"Purpose": {"evidence": "Sanctions Screening Engine | Real-time screening of debtor and creditor names", "source": "document"}, "Role in this process": {"evidence": "Debtor and creditor names are screened against sanctions lists. Clean parties pass automatically. Potential hits are routed to Compliance for adjudication.", "source": "document"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

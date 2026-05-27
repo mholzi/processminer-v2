@@ -10,7 +10,6 @@ controlType: PREVENTIVE
 execution: AUTOMATED
 owner: Trade Finance Manager
 step: [PS-BGI-005]
-provenance: {"Control activity": {"evidence": "No emergency bypass in the system. The only path to issue above the limit is via a Credit-approved temporary limit increase (EX-BGI-001 resolution), which adjusts the limit and lets the block clear normally. The hard block itself is unconditional.", "source": "elicited"}, "Risk addressed": {"evidence": "Confirm and tighten — change to 'Uncovered credit exposure: issuing a guarantee that exceeds the client's approved facility and breaches delegated credit authority.'", "source": "elicited"}, "Timing": {"evidence": "The system-enforced hard block is control C3 (CP-BGI-003) and it fires at issuance, not here", "source": "elicited"}, "What it checks": {"evidence": "Issuance is blocked in the Trade Finance System unless available facility limit covers the guarantee amount.", "source": "document"}}
 approval: in-progress
 regulatedBy: [REG-BGI-003, REG-BGI-004]
 ---

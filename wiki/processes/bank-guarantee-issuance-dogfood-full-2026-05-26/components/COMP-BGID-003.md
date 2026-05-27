@@ -12,7 +12,6 @@ hosting: Finastra on-prem cluster + SWIFT Alliance Gateway co-located, EU
 scaling: Active-passive HA (SWIFT connectivity requires dedicated hardware)
 inApp: [TGTAPP-BGID-001]
 realisesCapability: [CAP-BGID-007]
-provenance: {"Responsibility": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Technical detail": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T15:58:45Z
 approval: approved

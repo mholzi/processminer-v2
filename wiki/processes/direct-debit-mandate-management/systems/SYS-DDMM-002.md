@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: ddmm-dtp-mockup.md
 systemType: CORE
-provenance: {"Purpose": {"evidence": "Mandate Management System (MMS) | System of record for all mandates", "source": "document"}, "Role in this process": {"evidence": "SME (M. Vogel) confirmed: MMS is read at Step 2 (UMR uniqueness check, existing-record lookup for amendments/cancellations) and written at Step 3 (Pending Compliance hold status). Steps 5 and 7 already documented.", "source": "elicited"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-19

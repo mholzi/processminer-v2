@@ -11,7 +11,6 @@ complexity: MEDIUM
 addresses: [PP-BGID-001]
 fromTrend: [TR-BGID-003]
 fromCompetitor: [CEU-BGID-003, CGL-BGID-003]
-provenance: {"Expected benefit": {"evidence": "", "source": "proposed"}, "Feasibility": {"evidence": "", "source": "proposed"}, "The idea": {"evidence": "", "source": "proposed"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:54:37Z
 ---

@@ -8,7 +8,6 @@ confidence: medium
 domain: Data Protection
 source: Regulation (EU) 2016/679 (GDPR), Articles 5(1)(e), 6(1)(c) and 17(3)(b)
 sourceUrl: https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679
-provenance: {"How it is met": {"evidence": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679 — GDPR Article 17(3)(b) prevents erasure requests from overriding mandatory AML/commercial retention; GwG §8(4) requires CDD records to be retained for 5 years after end of business relationship — fetched 2026-05-20", "source": "web"}, "What it requires": {"evidence": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679 — GDPR Article 5(1)(e): personal data kept \"no longer than is necessary\"; Article 17(3)(b): right to erasure does not apply where processing is necessary for compliance with a legal obligation — fetched 2026-05-20", "source": "web"}, "Why it applies": {"evidence": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679 — GDPR Article 6(1)(c): processing necessary for compliance with a legal obligation (here: GwG CDD requirements) is a lawful basis — fetched 2026-05-20", "source": "web"}}
 asOf: 2026-05-20
 ---
 ## What it requires

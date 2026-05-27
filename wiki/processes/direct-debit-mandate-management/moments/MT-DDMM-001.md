@@ -8,7 +8,6 @@ confidence: high
 source: ddmm-client-journey-specialist
 sentiment: critical
 touchpoint: [JT-DDMM-001]
-provenance: {"Design implication": {"evidence": "SME confirmed accuracy of inline validation / contextual tooltips as the design response.", "source": "elicited"}, "The moment": {"evidence": "SME (M. Vogel): UMR/CI format rules catch first-time submitters; no in-form guidance; first interaction can prime frustration.", "source": "elicited"}, "Why it matters": {"evidence": "SME confirmed: first impressions shape long-term confidence; a rejection on first submission primes frustration for every subsequent interaction.", "source": "elicited"}}
 ---
 ## The moment
 A first-time creditor submits their first mandate via the Creditor Portal; unfamiliar UMR and CI format rules may silently fail at validation, making the first interaction a test rather than a welcome.

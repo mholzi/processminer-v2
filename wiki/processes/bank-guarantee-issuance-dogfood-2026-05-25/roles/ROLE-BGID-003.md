@@ -9,7 +9,6 @@ source: bank-guarantee-issuance-v1.md
 systems: [SYS-BGID-002]
 controls: [CP-BGID-001]
 raci: [ps-5:C]
-provenance: {"In this process": {"evidence": "Guarantees above EUR 5 million additionally require sign-off by the Head of Trade Finance.", "source": "document"}, "Responsibility": {"evidence": "Head of Trade Finance — additional approval for guarantees above EUR 5 million.", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:56:10Z
 ---

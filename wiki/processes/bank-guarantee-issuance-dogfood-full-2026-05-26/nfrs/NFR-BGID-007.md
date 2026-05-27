@@ -11,7 +11,6 @@ target: Conformity assessment completed, CE declaration signed, and Article 11 t
 owner: Chief Compliance Officer
 appliesTo: [TGTAPP-BGID-002]
 drivenByADR: [ADR-BGID-006]
-provenance: {"Definition": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Measurement": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Verification": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T15:58:45Z
 approval: approved

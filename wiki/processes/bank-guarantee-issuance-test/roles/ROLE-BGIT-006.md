@@ -7,7 +7,6 @@ status: draft
 confidence: medium
 source: bank-guarantee-issuance-v1.md
 raci: [PS-BGIT-003:R]
-provenance: {"In this process": {"evidence": "Bespoke wording is sent to the Legal team for review and sign-off before issuance.", "source": "document"}, "Responsibility": {"evidence": "Legal team — bespoke wording review.", "source": "document"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-20

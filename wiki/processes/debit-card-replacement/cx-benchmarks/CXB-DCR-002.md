@@ -7,7 +7,6 @@ status: draft
 confidence: medium
 source: ABCorp / Vericast — instant card issuance data
 sourceUrl: https://abcorp.com/card-resources/instant-card-issuance-serves-instant-gratification-for-cardholders/
-provenance: {"Evidence": {"evidence": "https://abcorp.com/card-resources/instant-card-issuance-serves-instant-gratification-for-cardholders/ — \"outperform mailed cards by 53% over a 45-day period\" — fetched 2026-05-19", "source": "web"}, "Relevance": {"evidence": "https://www.vericast.com/insights/blog/creating-your-card-strategy-for-2026/ — \"cards issued instantly are used up to 32% more in the first 30 days\" — fetched 2026-05-19", "source": "web"}, "The benchmark": {"evidence": "https://abcorp.com/card-resources/instant-card-issuance-serves-instant-gratification-for-cardholders/ — \"47% of instantly issued cards are used within eight hours\" — fetched 2026-05-19", "source": "web"}}
 asOf: 2026-05-19
 ---
 ## The benchmark

@@ -11,7 +11,6 @@ reuse: NEW
 owningDomain: IT Architecture / Compliance
 hostedIn: [TGTAPP-BGID-006]
 realisesStep: [TS-BGID-001, TS-BGID-002, TS-BGID-003, TS-BGID-004, TS-BGID-005, TS-BGID-006, TS-BGID-007]
-provenance: {"Boundaries": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Description": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Inputs and outputs": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T14:59:49Z
 approval: approved

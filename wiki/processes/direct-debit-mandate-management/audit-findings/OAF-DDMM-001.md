@@ -11,7 +11,6 @@ findingStatus: IN-PROGRESS
 severity: MEDIUM
 control: [CP-DDMM-004]
 regulation: [REG-DDMM-006]
-provenance: {"Finding": {"evidence": "SME (M. Vogel) confirmed: Internal Audit 2026-02-15 finding — CP-DDMM-004 reconciliation performed but discrepancies not tracked to closure with documented evidence.", "source": "elicited"}, "Recommendation": {"evidence": "SME confirmed: team implementing structured discrepancy log with sign-off as remediation.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

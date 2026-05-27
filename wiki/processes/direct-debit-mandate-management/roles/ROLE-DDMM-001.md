@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: ddmm-dtp-mockup.md
 raci: [PS-DDMM-001:R, PS-DDMM-001:A, PS-DDMM-006:I, PS-DDMM-007:I]
-provenance: {"In this process": {"evidence": "Add PS-DDMM-006:I and PS-DDMM-007:I. Creditor notified during R-transaction resolution for MD01/MD02/AC04 specifically, NOT for SL01 — SL01 applies the restriction silently.", "source": "elicited"}, "Responsibility": {"evidence": "Confirmed as correct as drafted.", "source": "elicited"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-19

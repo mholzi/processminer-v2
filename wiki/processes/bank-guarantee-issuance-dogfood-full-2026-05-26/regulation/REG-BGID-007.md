@@ -9,7 +9,6 @@ domain: Operational Risk & Governance
 source: BaFin Circular 05/2023 (BA) — Minimum Requirements for Risk Management (MaRisk), Module BTO 1.2 and BTO 1.1 para. 1
 sourceUrl: https://www.bafin.de/SharedDocs/Downloads/EN/Rundschreiben/dl_rs_0523_marisk_ba_en.html
 asOf: 2026-05-26
-provenance: {"How it is met": {"evidence": "https://www.betasystems.com/resources/blog/marisk-compliance-through-segregation-of-duties — \"MaRisk explicitly requires segregation of duties as a core element of the internal control system\" ensuring \"incompatible tasks — such as initiating and controlling transactions — are performed by different individuals\" — fetched 2026-05-26", "source": "web"}, "What it requires": {"evidence": "https://www.bundesbank.de/resource/blob/623102/bca5bafd72a669115b15c4125e063feb/mL/minimum-requirements-for-risk-management-mindestanforderungen-an-das-risikomanagement-marisk-data.pdf — \"A clear organisational segregation of the front office (Markt) and back office (Marktfolge) up to and including management board level\" — fetched 2026-05-26", "source": "web"}, "Why it applies": {"evidence": "https://legal.pwc.de/en/news/articles/bafin-publishes-7th-amendment-to-marisk — \"Module BTO 1.2 (Loan Processing): addresses requirements for loan origination and monitoring, incorporating EBA Guidelines' supervisory objectives\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: admin
 updatedAt: 2026-05-26T08:25:32Z
 ---

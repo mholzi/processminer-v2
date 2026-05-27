@@ -8,7 +8,6 @@ confidence: high
 source: bank-guarantee-issuance-v1.md
 owner: Trade Finance Officer
 systems: [SYS-BGIT-002, SYS-BGIT-004]
-provenance: {"Inputs": {"evidence": "M. Berger: standing approval", "source": "elicited"}, "Outputs": {"evidence": "the guarantee is transmitted to the beneficiary's bank via SWIFT. The client's facility utilisation is updated.", "source": "document"}, "What happens": {"evidence": "The Trade Finance Officer generates the guarantee instrument in the Trade Finance System and the guarantee is transmitted to the beneficiary's bank via SWIFT. The client's facility utilisation is updated.", "source": "document"}, "Why it matters": {"evidence": "M. Berger: standing approval", "source": "elicited"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-20

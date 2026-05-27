@@ -9,7 +9,6 @@ competitor: HSBC
 source: HSBC GBM Insights — 'HSBC pioneers new digital fast-track trade finance demand guarantee', December 2023; Finextra; FF News
 sourceUrl: https://www.gbm.hsbc.com/en-gb/insights/facilitating-trade/new-digital-fast-track-trade-finance-demand-guarantee
 bearsOn: [PS-BGIT-002, PS-BGIT-003, PS-BGIT-005, PS-BGIT-006, PP-BGIT-001, PP-BGIT-002, PG-BGIT-001]
-provenance: {"Evidence": {"evidence": "https://www.finextra.com/pressarticle/99079/hsbc-pioneers-new-fast-track-digital-trade-finance-demand-guarantee — \"HSBC issuing a Tender Bond for KPMG in Qatar and an Advance Payment guarantee for UK international corporate Russell Finex Ltd\" — December 2023 — fetched 2026-05-20", "source": "web"}, "Relevance": {"evidence": "https://www.gbm.hsbc.com/en-gb/insights/facilitating-trade/new-digital-fast-track-trade-finance-demand-guarantee — \"The 'fast-track' digitally processed trade finance guarantee will be available to customers via HSBC Trade Solutions … deployed globally in 2024 and 2025\" — fetched 2026-05-20", "source": "web"}, "The move": {"evidence": "https://ffnews.com/newsarticle/tradetech/hsbc-pioneers-new-digital-fast-track-trade-finance-demand-guarantee/ — \"reducing issuance times from a typical 3-4 days down to potentially minutes, marking a significant milestone for the banking industry\" — fetched 2026-05-20", "source": "web"}}
 asOf: 2026-05-20
 ---
 ## The move

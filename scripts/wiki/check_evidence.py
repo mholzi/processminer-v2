@@ -36,7 +36,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from wiki_lib import ROOT, iter_elements, parse_provenance  # noqa: E402
+from wiki_lib import ROOT, iter_elements, load_provenance  # noqa: E402
 
 # Four consecutive words of a genuine quote will survive formatting drift and
 # still occur in the source; a wrong-document quote shares no such run.
@@ -80,9 +80,8 @@ def traceable(evidence: str, haystack: str) -> bool:
     return False
 
 
-def check_element(meta: dict, haystack: str | None) -> list[str]:
+def check_element(meta: dict, prov: dict, haystack: str | None) -> list[str]:
     issues: list[str] = []
-    prov = parse_provenance(meta)
     for heading, entry in prov.items():
         if not isinstance(entry, dict):
             continue
@@ -111,6 +110,7 @@ def main(argv: list[str]) -> None:
     only = argv[1] if len(argv) == 2 else None
 
     haystack = build_haystack(slug)
+    provenance_bundle = load_provenance(slug)
     checked = 0
     flagged = 0
     findings: list[dict] = []
@@ -118,7 +118,9 @@ def main(argv: list[str]) -> None:
         if only and meta.get("id") != only:
             continue
         checked += 1
-        issues = check_element(meta, haystack)
+        eid_str = str(meta.get("id", ""))
+        prov = provenance_bundle.get(eid_str, {})
+        issues = check_element(meta, prov, haystack)
         eid = meta.get("id")
         if issues:
             flagged += 1

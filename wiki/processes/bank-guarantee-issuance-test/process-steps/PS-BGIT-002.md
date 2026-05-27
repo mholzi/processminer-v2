@@ -8,8 +8,6 @@ confidence: high
 source: bank-guarantee-issuance-v1.md
 owner: Trade Finance Officer
 systems: [SYS-BGIT-002]
-transitions: [PS-BGIT-003|normal|facility limit sufficient, EX-BGIT-001|exception|facility limit insufficient]
-provenance: {"Inputs": {"evidence": "M. Berger confirmed: 'Y'", "source": "elicited"}, "Outputs": {"evidence": "M. Berger: confirmed full decision tree including formal rejection on decline", "source": "elicited"}, "What happens": {"evidence": "", "source": "proposed"}, "Why it matters": {"evidence": "M. Berger confirmed: 'Y'", "source": "elicited"}}
 approval: in-progress
 sla: Credit team response: informal 1–2 business days; no formal SLA — see PG-BGIT-001
 ---

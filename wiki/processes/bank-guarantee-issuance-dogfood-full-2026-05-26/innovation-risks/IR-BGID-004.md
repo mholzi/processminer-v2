@@ -7,7 +7,6 @@ status: draft
 confidence: medium
 source: innovation-analyst session 2026-05-26
 severity: MEDIUM
-provenance: {"Likelihood & impact": {"evidence": "Elicited from market knowledge of ICC-SWIFT API rollout progress across European corporate banks as of 2026", "source": "elicited"}, "Mitigation": {"evidence": "Elicited from standard API channel rollout strategy for high-volume corporate clients", "source": "elicited"}, "The risk": {"evidence": "Elicited from analysis of ICC-SWIFT API adoption maturity and corporate ERP integration complexity for II-BGID-004", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:56:41Z
 approval: in-progress

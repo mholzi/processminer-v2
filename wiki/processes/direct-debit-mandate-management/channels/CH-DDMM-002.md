@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: ddmm-client-journey-specialist
 channelType: DIGITAL
-provenance: {"Description": {"evidence": "SME (M. Vogel): large corporate creditors drop bulk mandate files via SFTP, which the portal ingests.", "source": "elicited"}, "Usage": {"evidence": "SME confirmed: no public API for mandate submission today; SFTP is the only programmatic submission route, used exclusively by large corporates with volumes too large for browser upload.", "source": "elicited"}}
 touchpoints: [JT-DDMM-002]
 ---
 ## Description

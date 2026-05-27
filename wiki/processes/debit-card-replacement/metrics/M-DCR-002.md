@@ -8,7 +8,6 @@ confidence: high
 source: dcr-dtp-mockup.md
 target: Within 1 business day of the request
 value: Not measured
-provenance: {"Current reading": {"evidence": "Replacement card ordered | Within 1 business day of the request", "source": "document"}, "Definition": {"evidence": "Replacement card ordered | Within 1 business day of the request", "source": "document"}, "Why it matters": {"evidence": "S. Krause confirmed in the foundational run: Why it matters holds as drafted.", "source": "elicited"}}
 approval: approved
 approvalBy: S. Krause
 approvalDate: 2026-05-19

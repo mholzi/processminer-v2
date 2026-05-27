@@ -9,7 +9,6 @@ criticality: HIGH
 reuse: NEW
 owningDomain: Payments · Mandate management
 hostedIn: [TGTAPP-DDMM-001]
-provenance: {"Boundaries": {"evidence": "", "source": "proposed"}, "Description": {"evidence": "", "source": "proposed"}, "Inputs and outputs": {"evidence": "", "source": "proposed"}}
 updatedBy: admin
 updatedAt: 2026-05-24T09:11:50Z
 ---

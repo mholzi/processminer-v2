@@ -10,7 +10,6 @@ severity: HIGH
 occursAt: [MT-PR-001]
 painPoint: [PP-PR-003]
 addressedBy: [TD-PR-004, PS-PR-001]
-provenance: {"Client impact": {"evidence": "", "source": "proposed"}, "Description": {"evidence": "", "source": "proposed"}, "Root cause": {"evidence": "", "source": "proposed"}}
 ---
 ## Description
 At the start of each review cycle, the Relationship Manager calls the client to ask whether anything has changed — identity, address, beneficial ownership, source of wealth — before checking what the bank already holds. The client receives an unsolicited compliance contact with no explanation.

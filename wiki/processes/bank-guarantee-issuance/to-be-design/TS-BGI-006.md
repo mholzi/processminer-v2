@@ -6,7 +6,6 @@ title: Straight-Through Digital Issuance with System-Enforced Pre-Transmission V
 status: draft
 confidence: low
 replaces: [PS-BGI-006]
-provenance: {"Rationale": {"evidence": "", "source": "proposed"}, "Target description": {"evidence": "", "source": "proposed"}, "What changes": {"evidence": "", "source": "proposed"}}
 ---
 ## Target description
 Guarantee generation and delivery are digitised via ICC-SWIFT API standards: the Trade Finance System generates the instrument and transmits it to the beneficiary's bank via API rather than manual MT 760 SWIFT message, with a system-enforced pre-transmission validation that checks all key fields against the approved application package before transmission. Facility utilisation updates automatically at transmission.

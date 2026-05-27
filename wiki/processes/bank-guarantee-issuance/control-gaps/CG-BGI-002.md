@@ -7,7 +7,6 @@ status: draft
 confidence: high
 severity: MEDIUM
 gapStatus: open
-provenance: {"Remediation": {"evidence": "", "source": "proposed"}, "Risk": {"evidence": "occasionally a wording type is mis-designated at intake and a non-standard case slips through as 'standard'", "source": "elicited"}, "The gap": {"evidence": "there is no template-conformance control for standard wording, the TFO's judgement is the only safeguard", "source": "elicited"}}
 ---
 ## The gap
 There is no system-enforced control ensuring the TFO selects the correct approved template for standard-wording guarantees; template selection is a manual judgement call with no conformance check.

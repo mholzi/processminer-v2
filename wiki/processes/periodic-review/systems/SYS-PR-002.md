@@ -8,7 +8,6 @@ confidence: high
 source: periodic-kyc-review-dtp.pdf
 systemType: CORE
 integrates: [SYS-PR-001]
-provenance: {"Purpose": {"evidence": "§7.2 table: System 'Trigger Engine', Role 'Deterministic triggering', Build 'Build', Status 'In design'. §3.2 Step 1: 'Triggers are deterministic and logged.' Output 'ReviewDue event with reason code'.", "source": "document"}, "Role in this process": {"evidence": "", "source": "proposed"}}
 ---
 ## Purpose
 Internal-build deterministic triggering service that detects when a client's KYC review is due and emits a ReviewDue event to the Case Manager. Status: In design.

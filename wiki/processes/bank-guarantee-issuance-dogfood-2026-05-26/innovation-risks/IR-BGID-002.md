@@ -6,7 +6,6 @@ title: Same-day SLA expectation creep beyond the fast-lane segment
 status: draft
 confidence: medium
 severity: MEDIUM
-provenance: {"Likelihood & impact": {"evidence": "", "source": "proposed"}, "Mitigation": {"evidence": "", "source": "proposed"}, "The risk": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T20:02:52Z
 ---

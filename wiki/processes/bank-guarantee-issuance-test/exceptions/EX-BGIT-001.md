@@ -9,7 +9,6 @@ source: bank-guarantee-issuance-v1.md
 category: credit
 impact: HIGH
 handlingOwner: Credit team
-provenance: {"Description": {"evidence": "If the limit is insufficient, the application is parked and routed to the Credit team — this is the most common reason for delay.", "source": "document"}, "Handling": {"evidence": "If the limit is insufficient, the application is parked and routed to the Credit team; M. Berger: Credit team may grant a temporary one-off uplift, recommend a permanent facility increase (separate process), or decline; on decline the application is formally rejected to the client through the portal", "source": "elicited"}, "Impact": {"evidence": "this is the most common reason for delay.", "source": "document"}}
 approval: approved
 approvalBy: m.berger
 approvalDate: 2026-05-20

@@ -10,7 +10,6 @@ category: AVAILABILITY
 target: Monthly availability ≥ 99.5% during 07:00–20:00 CET Monday to Friday
 owner: Head of Digital Channels Engineering
 appliesTo: [TGTAPP-BGID-005]
-provenance: {"Definition": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Measurement": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Verification": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T15:58:45Z
 approval: approved

@@ -28,9 +28,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from wiki_lib import (  # noqa: E402
     PROVENANCE_SOURCES,
     iter_elements,
+    load_provenance,
     load_schema,
     parse_blocks,
-    parse_provenance,
     template_headings,
     word_count,
 )
@@ -91,7 +91,7 @@ def check_field_values(meta: dict, info: dict, field_values: dict) -> list[str]:
     return issues
 
 
-def check_provenance(meta: dict, info: dict) -> list[str]:
+def check_provenance(prov: dict, info: dict) -> list[str]:
     """Every template heading needs a provenance entry; the map keys must not
     drift from the template; evidence must back an elicited/document/web claim.
     The hallucination countermeasure (HALLUCINATION-PLAN.md)."""
@@ -99,7 +99,6 @@ def check_provenance(meta: dict, info: dict) -> list[str]:
     tpl = template_headings(info)
     if not tpl:
         return issues
-    prov = parse_provenance(meta)
     if not prov:
         issues.append(
             "provenance map is missing — every heading must record where its "
@@ -140,7 +139,7 @@ def check_provenance(meta: dict, info: dict) -> list[str]:
     return issues
 
 
-def check_element(meta: dict, body: str, info: dict, field_values: dict) -> list[str]:
+def check_element(meta: dict, body: str, info: dict, field_values: dict, prov: dict) -> list[str]:
     issues: list[str] = []
     template = info.get("template") or []
     blocks = {b["heading"]: b for b in parse_blocks(body)}
@@ -187,7 +186,7 @@ def check_element(meta: dict, body: str, info: dict, field_values: dict) -> list
 
     issues.extend(check_frontmatter(meta, info))
     issues.extend(check_field_values(meta, info, field_values))
-    issues.extend(check_provenance(meta, info))
+    issues.extend(check_provenance(prov, info))
     return issues
 
 
@@ -202,6 +201,9 @@ def main(argv: list[str]) -> None:
     schema = load_schema()
     types = schema["elementTypes"]
     field_values = schema.get("fieldValues", {})
+    # The provenance bundle is loaded once and looked up per element — one disk
+    # read replaces a parse_provenance call inside the per-element loop.
+    provenance_bundle = load_provenance(slug)
     checked = 0
     flagged = 0
     findings: list[dict] = []
@@ -212,7 +214,9 @@ def main(argv: list[str]) -> None:
         if not info or not info.get("template"):
             continue
         checked += 1
-        issues = check_element(meta, body, info, field_values)
+        eid_str = str(meta.get("id", ""))
+        prov = provenance_bundle.get(eid_str, {})
+        issues = check_element(meta, body, info, field_values, prov)
         eid = meta.get("id")
         etype = meta.get("type")
         if issues:

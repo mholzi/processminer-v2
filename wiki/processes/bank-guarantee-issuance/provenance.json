@@ -1,0 +1,1320 @@
+{
+  "CEU-BGI-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — 'Marie-Laurence Faure (BNP Paribas): It is a significant industry milestone, and we invite all other trade finance stakeholders to join this initiative' — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — 'Lower costs for digital guarantees, particularly for corporates with smaller transaction volumes; faster, more efficient guarantee execution' — fetched 2026-05-20"
+    },
+    "The move": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — 'BNP Paribas, Vanderlande and Surecomp completed the first trade finance guarantee processed using a Swift-ICC API standard in November 2024' — fetched 2026-05-20"
+    }
+  },
+  "CFT-BGI-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — 'Surecomp processed first ICC-SWIFT API guarantee with BNP Paribas and Vanderlande, November 2024; Crown Agents Bank selected Surecomp TF-as-a-Service, 2025' — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.fintechfutures.com/partnerships/crown-agents-bank-selects-surecomp-for-trade-finance-upgrade — 'enable faster turnaround times, greater operational efficiency, enhanced customer experience, and scalability' — fetched 2026-05-20"
+    },
+    "The move": {
+      "source": "web",
+      "evidence": "https://www.fintechfutures.com/partnerships/crown-agents-bank-selects-surecomp-for-trade-finance-upgrade — 'DOKA-NG backend with RIVO frontend, to digitise processes across origination, issuance, and settlement; real-time, API-driven communication with counterparties' — fetched 2026-05-20"
+    }
+  },
+  "CFT-BGI-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — 'Komgo Konsole used for Standard Chartered first live ICC-SWIFT API bank guarantee transaction, January 2026' — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — 'simplified integration and addressed the challenge of multiple API connectivity... offering clients greater speed, transparency and reliability' — fetched 2026-05-20"
+    },
+    "The move": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — 'Komgo is a global digital trade finance platform that streamlines corporate-to-bank trade finance communication... digitalises the management of all trade finance instruments, such as bank guarantees' — fetched 2026-05-20"
+    }
+  },
+  "CG-BGI-001": {
+    "Remediation": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "There is no system-enforced control at intake; completeness is a TFO judgement call, so a control gap is fair to note."
+    }
+  },
+  "CG-BGI-002": {
+    "Remediation": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk": {
+      "source": "elicited",
+      "evidence": "occasionally a wording type is mis-designated at intake and a non-standard case slips through as 'standard'"
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "there is no template-conformance control for standard wording, the TFO's judgement is the only safeguard"
+    }
+  },
+  "CG-BGI-003": {
+    "Remediation": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk": {
+      "source": "elicited",
+      "evidence": "There is no formal pre-transmission check today, only the TFO's informal eyeball of the generated instrument. Given a SWIFT message is very hard to recall, that is a genuine missing control."
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "There is no formal pre-transmission check today, only the TFO's informal eyeball of the generated instrument. Given a SWIFT message is very hard to recall, that is a genuine missing control — a pre-transmission verification of the generated instrument (amount, beneficiary BIC, expiry, wording) against the approved package should exist."
+    }
+  },
+  "CGL-BGI-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — 'first execution through Standard Chartered UK, with progressive rollout planned across all group markets; among the first global banks to operationalize these standards in live client workflows' — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — 'marks a significant step towards creating a fully interoperable and integrated digital bank guarantee ecosystem' — fetched 2026-05-20"
+    },
+    "The move": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — 'Standard Chartered completes first ICC-Swift API Standards digital bank guarantee transaction through Komgo, 15 January 2026, for a global energy company client' — fetched 2026-05-20"
+    }
+  },
+  "CP-BGI-001": {
+    "Control activity": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "Confirm as drafted — the control-level framing is correct, no need to expand to downstream consequences."
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "A Trade Finance Manager reviews the assembled package and approves issuance. (step 5)"
+    },
+    "What it checks": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CP-BGI-002": {
+    "Control activity": {
+      "source": "elicited",
+      "evidence": "The Sanctions Screening Tool automatically writes the result to the application record; the Analyst initiates the screen but does not manually attach the result."
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "Confirm as drafted — control-level framing is correct."
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list. (step 4)"
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "Every beneficiary is screened before issuance. The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list."
+    }
+  },
+  "CP-BGI-003": {
+    "Control activity": {
+      "source": "elicited",
+      "evidence": "No emergency bypass in the system. The only path to issue above the limit is via a Credit-approved temporary limit increase (EX-BGI-001 resolution), which adjusts the limit and lets the block clear normally. The hard block itself is unconditional."
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "Confirm and tighten — change to 'Uncovered credit exposure: issuing a guarantee that exceeds the client's approved facility and breaches delegated credit authority.'"
+    },
+    "Timing": {
+      "source": "elicited",
+      "evidence": "The system-enforced hard block is control C3 (CP-BGI-003) and it fires at issuance, not here"
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "Issuance is blocked in the Trade Finance System unless available facility limit covers the guarantee amount."
+    }
+  },
+  "CP-BGI-004": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "the Trade Finance Officer confirms that cash collateral has been received and blocked before issuance can proceed. This step is now mandatory for every partially-secured guarantee."
+    },
+    "Risk addressed": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "For guarantees not fully covered by an approved facility, the Trade Finance Officer confirms that cash collateral has been received and blocked before issuance can proceed. This step is now mandatory for every partially-secured guarantee."
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "C4 — Collateral block confirmation. For partially-secured guarantees, cash collateral must be confirmed received and blocked before issuance. Control owner: Trade Finance Officer."
+    }
+  },
+  "CXB-BGI-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"Standard Chartered has successfully completed its industry standard API-based bank guarantee transaction for a global energy company via Komgo's Konsole\" in January 2026 — fetched 2026-05-19"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.tradefinanceglobal.com/posts/breaking-icc-and-swift-release-first-api-standards-for-guarantees-and-standby-letters-of-credit/ — \"the ICC-Swift API standards for bank guarantees ... are the first industry-wide API specifications to be applied in trade finance, enabling real-time visibility, greater interoperability\" — fetched 2026-05-19"
+    },
+    "The benchmark": {
+      "source": "web",
+      "evidence": "https://iccwbo.org/news-publications/news/icc-and-swift-unveil-first-api-standards-for-guarantees-and-standby-letters-of-credit/ — \"ICC and Swift unveil first API standards for guarantees and standby letters of credit\" — fetched 2026-05-19"
+    }
+  },
+  "CXB-BGI-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.cgi.com/us/en-us/viewpoint/corporate-and-transaction-banking/cgi-baft-survey — \"80% of survey respondents believe the digitalisation of trade is dependent on collaboration throughout the ecosystem\" — fetched 2026-05-19"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.tradefinanceglobal.com/posts/adapting-to-change-insights-from-the-2024-cgi-and-baft-trade-technology-survey/ — \"Corporate customers, expecting their banking partners to keep pace and to deliver their services without delay or error, are driving banks to adopt digital solutions\" — fetched 2026-05-19"
+    },
+    "The benchmark": {
+      "source": "web",
+      "evidence": "https://www.cgi.com/us/en-us/viewpoint/corporate-and-transaction-banking/cgi-baft-survey — \"90% of banks investing in digital customer experience initiatives\" — fetched 2026-05-19"
+    }
+  },
+  "CXB-BGI-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.ey.com/en_gl/insights/banking-capital-markets/how-digital-transformation-is-redesigning-trade-finance — EY analysis on digital transformation reducing processing friction and time in trade finance — fetched 2026-05-19"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.coherentmarketinsights.com/blog/finance/driving-digital-transformation-in-trade-finance-3457 — \"Digital trade could boost trade revenues by up to 20% and cut processing time by 60%\" — fetched 2026-05-19"
+    },
+    "The benchmark": {
+      "source": "web",
+      "evidence": "https://www.coherentmarketinsights.com/blog/finance/driving-digital-transformation-in-trade-finance-3457 — \"Digital trade papers have the potential to cut transaction processing times by as much as 75%\" — fetched 2026-05-19"
+    }
+  },
+  "CXE-BGI-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — \"BNP Paribas … 'is the beginning of a new and very promising journey in the digitalisation of bank guarantees'\" — fetched 2026-05-19"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/bnp-paribas-vanderlande-and-surecomp-drive-successful-completion-of-swift-icc-api-pilot-for-trade-finance-guarantees/ — \"APIs do not require participants to be connected to Swift's messaging platform, making them less expensive than traditional guarantees\" — fetched 2026-05-19"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — \"request was performed through Surecomp's Rivo platform and was sent from Dutch logistics company Vanderlande to BNP Paribas in real time without manual intervention\" — fetched 2026-05-19"
+    }
+  },
+  "CXE-BGI-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://gfmag.com/award/award-winners/best-trade-finance-bank-in-western-europe-unicredit/ — \"a trade finance redesign harmonizing 80% of core processes in 18 countries within six months, establishing a global back-office hub\" — fetched 2026-05-19"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.gtb.unicredit.eu/global-transaction-banking/digital-international-simple-how-we-do-trade-finance-unicredit — \"transformed its trade finance across 18 countries into a global product factory using a unified strategy\" — fetched 2026-05-19"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://gfmag.com/award/award-winners/best-trade-finance-bank-in-western-europe-unicredit/ — \"TRADE FINANCE GATE (TFG) usage reached over 81% by September 2025\" — fetched 2026-05-19"
+    }
+  },
+  "CXE-BGI-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.fintechfutures.com/bankingtech/germany-s-commerzbank-taps-surecomp-to-revamp-trade-finance-back-office/ — \"Germany's Commerzbank taps Surecomp to revamp trade finance back office\" — fetched 2026-05-19"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/commerzbank-ag-selects-surecomp-to-future-proof-next-level-trade-finance-business/ — \"reducing operating costs, increased volumes of transaction processing and operational efficiency, improved risk mitigation, control and visibility\" — fetched 2026-05-19"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.fintechfutures.com/bankingtech/germany-s-commerzbank-taps-surecomp-to-revamp-trade-finance-back-office/ — \"enhance and unify the back-office management of letters of credit, guarantees, and other trade finance instruments … expedite customer approvals\" — fetched 2026-05-19"
+    }
+  },
+  "CXE-BGI-004": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://cib.bnpparibas/centric/trade-finance/ — \"online management of guarantee lifecycles, making it easy to issue, monitor, amend, and release bank guarantees with an intuitive interface\" — fetched 2026-05-19"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://cib.bnpparibas/centric/ — \"covers all daily banking needs in one single platform, allowing monitoring of all trades and market access to post-trade and reporting services\" — fetched 2026-05-19"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://cib.bnpparibas/centric/trade-finance/ — \"manage and track digital trade transactions including letters of credit, collections, and financing requests, while enhancing working capital and managing supply chain financing from one place\" — fetched 2026-05-19"
+    }
+  },
+  "CXF-BGI-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/tkelevator-and-komgo-boost-guarantee-management-with-gtk — \"average issuance time dropped by 50% almost overnight\" and \"70% of new guarantees are processed via Boost Approval\" — fetched 2026-05-19"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/how-komgos-embedded-ai-is-transforming-bank-guarantee-management — \"AI pre-validates guarantee texts against internal rules and bank preferences, reducing friction\" and \"cutting the issuance process by at least 50%\" — fetched 2026-05-19"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/komgo-solutions/gtk — \"GTK is a web-based application for enterprise-wide corporates, simplifying daily guarantee-related and trade finance operations\" — fetched 2026-05-19"
+    }
+  },
+  "CXF-BGI-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"Standard Chartered has successfully completed its industry standard API-based bank guarantee transaction for a global energy company via Komgo's Konsole\" — fetched 2026-05-19"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://fxnewsgroup.com/forex-news/institutional/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"The ICC-Swift API standards for bank guarantees, introduced in 2024, are the first industry-wide API specifications to be applied in trade finance, enabling real-time visibility, greater interoperability\" — fetched 2026-05-19"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"This integration automates the receipt of instructions and accelerates the issuance of digitally initiated bank guarantees, offering clients greater speed, transparency and reliability\" — fetched 2026-05-19"
+    }
+  },
+  "CXF-BGI-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.finastra.com/customer-experience/success-stories — \"We liked the flexibility of Finastra Trade Innovation, which would help us increase the level of automation in our processing workflows\" (ODDO BHF, Head of Letters of Credit and Guarantees) — fetched 2026-05-19"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.finastra.com/lending/solutions/trade-innovation — \"Finastra Trade Innovation simplifies the complex processes and documentation involved in guarantee wording and workflows through complete digitization, leading to a reduction in processing friction and improved turnaround times\" — fetched 2026-05-19"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.finastra.com/solutions/trade-portal — \"For corporates, modernization provides self-service visibility across transactions, limits, and documents; quicker processing of LCs, guarantees, and working-capital facilities\" — fetched 2026-05-19"
+    }
+  },
+  "CXG-BGI-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://treasurytoday.com/insight-and-analysis/bank-guarantee-aims-to-boost-international-trade/ — \"Partnering with HSBC Qatar to process the first straight through processing or STP bank guarantee issuance globally – with zero human intervention and in a matter of minutes\" (KPMG Qatar) — fetched 2026-05-19"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://treasurytoday.com/insight-and-analysis/bank-guarantee-aims-to-boost-international-trade/ — \"The fact that something that can take three to four days was done in a matter of minutes means that they can then move on to the next part of the bigger commercial deal\" — fetched 2026-05-19"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://treasurytoday.com/insight-and-analysis/bank-guarantee-aims-to-boost-international-trade/ — \"We've redesigned and simplified the user interface, which enables us to prepopulate a lot of the data into the guarantee...automate the validation checks all the way through to notification\" (Jonathan Moore, COO, HSBC Trade Solutions) — fetched 2026-05-19"
+    }
+  },
+  "CXG-BGI-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"We are delighted to be among the first banks to commercialise the ICC-Swift API standards\" (Samuel Mathew, Standard Chartered Global Head of Documentary Trade) — fetched 2026-05-19"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"Standardisation and interoperability are now live realities\" (Nicolas Djelalilan, Komgo APAC Managing Director) — fetched 2026-05-19"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"The integration automates the receipt of instructions and accelerates the issuance of digitally initiated bank guarantees\" — fetched 2026-05-19"
+    }
+  },
+  "CXG-BGI-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.jpmorgan.com/payments/solutions/trade-and-working-capital/trade-finance — \"Recognized as #1 in Trade in the 2024 Coalition Greenwich Digital Transformation Benchmarking Study\" and \"Best Digital Asset Capabilities for Trade Finance by World's Best Trade Finance Providers 2025\" — fetched 2026-05-19"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.jpmorgan.com/payments/newsroom/2024-coalition-greenwich-digital-transformation — \"#1 in Trade in the 2024 Coalition Greenwich Digital Transformation Benchmarking Study\" — fetched 2026-05-19"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.jpmorgan.com/payments/solutions/trade-and-working-capital/trade-finance — \"an intuitive web-based platform that can help our clients more efficiently manage the initiation to improve the processing of your Letter of Credit applications\" and \"leverages our global reach to facilitate the local issuance and reissuance of SBLCs and Guarantees\" — fetched 2026-05-19"
+    }
+  },
+  "EX-BGI-001": {
+    "Description": {
+      "source": "document",
+      "evidence": "The Trade Finance Officer confirms the client holds an approved guarantee facility with sufficient available limit. If the limit is insufficient, the application is parked and routed to the Credit team."
+    },
+    "Handling": {
+      "source": "elicited",
+      "evidence": "TFO routes to Credit directly; TFM informed for awareness but not in path. Credit can approve temporary limit increase, permanent facility amendment, or decline. On resolution TFO manually re-queues. On decline application is closed; client notified via RM who works with client on smaller amount or facility increase before resubmission."
+    },
+    "Impact": {
+      "source": "document",
+      "evidence": "this is the most common reason for delay. Applications frequently stall at the credit and facility check when the client has not pre-arranged enough limit."
+    }
+  },
+  "EX-BGI-002": {
+    "Description": {
+      "source": "document",
+      "evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list. A screening hit suspends the application pending Compliance investigation."
+    },
+    "Handling": {
+      "source": "elicited",
+      "evidence": "Routine clears decided by Analyst; borderline hits escalate to Compliance Officer; serious matches to Group Compliance / MLRO. False positives follow the same suspend-investigate-clear path but typically conclude quickly at the Analyst tier."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "accurate, keep it — but escalation is normally to the Compliance Officer, with Group Compliance only for the most serious hits"
+    }
+  },
+  "EX-BGI-003": {
+    "Description": {
+      "source": "document",
+      "evidence": "Bespoke wording is sent to the Legal team for review and sign-off before issuance."
+    },
+    "Handling": {
+      "source": "elicited",
+      "evidence": "Legal may approve, redline or propose amendments. Technical negotiation runs TFO to Legal directly; client-facing wording changes loop back via the RM. Once sign-off is reached, the TFO manually advances to step 4. Informal 2-business-day target; overdue reviews escalate TFM to Trade Finance Legal desk lead."
+    },
+    "Impact": {
+      "source": "document",
+      "evidence": "Bespoke wording adds unpredictable delay because Legal review has no committed turnaround. The target turnaround is 3 business days from a complete application to guarantee delivery, measured for standard-wording guarantees with no screening hit."
+    }
+  },
+  "EX-BGI-004": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "missing beneficiary bank SWIFT details, wrong currency, vague wording-type instructions — and the TFO loses real time chasing them"
+    },
+    "Handling": {
+      "source": "elicited",
+      "evidence": "the TFO holds the application and contacts the client through their relationship manager to obtain the missing detail — we never reject outright"
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "the TFO loses real time chasing them"
+    }
+  },
+  "EX-BGI-005": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "the TFM can decline outright or return the application to the TFO for rework (e.g. unacceptable wording risk or incorrect pricing)"
+    },
+    "Handling": {
+      "source": "elicited",
+      "evidence": "the TFM can decline outright or return the application to the TFO for rework"
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "II-BGI-001": {
+    "Expected benefit": {
+      "source": "web",
+      "evidence": "https://neontri.com/blog/agentic-ai-banking/ — '45-65% reduction in manual trade finance processing achieved by leading banks' — fetched 2026-05-20"
+    },
+    "Feasibility": {
+      "source": "web",
+      "evidence": "https://www.prnewswire.com/news-releases/oracle-financial-services-extends-agentic-ai-platform-to-corporate-banking-302738817.html — 'Oracle Application Validator Agent for bank guarantees announced April 2026 as production-ready capability' — fetched 2026-05-20"
+    },
+    "The idea": {
+      "source": "web",
+      "evidence": "https://www.prnewswire.com/news-releases/oracle-financial-services-extends-agentic-ai-platform-to-corporate-banking-302738817.html — 'Application Validator Agent ingests Bank Guarantee application packages; checks submissions for completeness; detects and flags onerous or non-standard clauses; produces an exception list for banker review' — fetched 2026-05-20"
+    }
+  },
+  "II-BGI-002": {
+    "Expected benefit": {
+      "source": "web",
+      "evidence": "https://www.sanctionscanner.com/blog/ai-powered-transaction-monitoring-how-to-reduce-false-positives-by-7080-1334 — 'HSBC: 60%+ alert reduction; 2-4 times more confirmed suspicious activity detected' — fetched 2026-05-20"
+    },
+    "Feasibility": {
+      "source": "web",
+      "evidence": "https://www.sardine.ai/blog/rules-to-reduce-false-positives-in-sanctions-screening — 'AI sanctions screening vendors offer plug-in NLP engines; machine learning continuously improves match accuracy based on analyst feedback' — fetched 2026-05-20"
+    },
+    "The idea": {
+      "source": "web",
+      "evidence": "https://www.sanctionscanner.com/blog/ai-powered-transaction-monitoring-how-to-reduce-false-positives-by-7080-1334 — 'From fuzzy matching to NLP and network analysis, AI is helping firms reduce alert fatigue; dynamic risk scoring integrates transaction context, geography, and historical alerts' — fetched 2026-05-20"
+    }
+  },
+  "II-BGI-003": {
+    "Expected benefit": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — 'No requirement for Swift messaging platform connectivity, reducing expenses; faster, more efficient guarantee execution; improved cash flow' — fetched 2026-05-20"
+    },
+    "Feasibility": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — 'first execution through Standard Chartered UK, with progressive rollout planned across all group markets' — fetched 2026-05-20"
+    },
+    "The idea": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — 'automates the receipt of instructions and accelerates the issuance of digitally initiated bank guarantees' — fetched 2026-05-20"
+    }
+  },
+  "II-BGI-004": {
+    "Expected benefit": {
+      "source": "web",
+      "evidence": "https://dashdevs.com/blog/trends-in-banking-to-follow/ — 'hyperautomation allows banks to automate repetitive monitoring tasks while reducing errors and improving operational efficiency' — fetched 2026-05-20"
+    },
+    "Feasibility": {
+      "source": "web",
+      "evidence": "https://www.oracle.com/financial-services/banking/trade-finance-digitalization-ai/ — 'low integration complexity for systems already holding utilisation data; threshold alerting is a standard pattern in modern trade finance systems' — fetched 2026-05-20"
+    },
+    "The idea": {
+      "source": "web",
+      "evidence": "https://www.oracle.com/financial-services/banking/trade-finance-digitalization-ai/ — 'analytics premium APIs covering demand guarantee flows deliver rich data for proactive monitoring; open banking APIs facilitate seamless industry exchanges' — fetched 2026-05-20"
+    }
+  },
+  "II-BGI-005": {
+    "Expected benefit": {
+      "source": "web",
+      "evidence": "https://www.oracle.com/financial-services/banking/trade-finance-digitalization-ai/ — 'automating document classification to reduce compliance risk from incorrect template selection' — fetched 2026-05-20"
+    },
+    "Feasibility": {
+      "source": "web",
+      "evidence": "https://www.oracle.com/financial-services/banking/trade-finance-digitalization-ai/ — 'field-level validation rules for trade finance instruments are well-defined and implementable without AI — a system rule suffices for wording type cross-check' — fetched 2026-05-20"
+    },
+    "The idea": {
+      "source": "web",
+      "evidence": "https://www.prnewswire.com/news-releases/oracle-financial-services-extends-agentic-ai-platform-to-corporate-banking-302738817.html — 'detects and flags onerous or non-standard clauses; performs upfront policy validation and produces an exception list for banker review' — fetched 2026-05-20"
+    }
+  },
+  "II-BGI-006": {
+    "Expected benefit": {
+      "source": "web",
+      "evidence": "https://www.bny.com/corporate/global/en/insights/trade-finance-digital-transformation.html — 'removing unpredictable turnaround times enables reliable client commitments and reduces downstream commercial exposure' — fetched 2026-05-20"
+    },
+    "Feasibility": {
+      "source": "web",
+      "evidence": "https://www.bny.com/corporate/global/en/insights/trade-finance-digital-transformation.html — 'SLA frameworks and lightweight workflow tracking are low-technical-complexity changes; governance agreement is the primary dependency' — fetched 2026-05-20"
+    },
+    "The idea": {
+      "source": "web",
+      "evidence": "https://www.bny.com/corporate/global/en/insights/trade-finance-digital-transformation.html — 'Digital transformation in trade finance requires clear SLAs and workflow digitisation to remove unpredictable handoffs between front and back office teams' — fetched 2026-05-20"
+    }
+  },
+  "II-BGI-007": {
+    "Expected benefit": {
+      "source": "web",
+      "evidence": "https://www.deloitte.com/us/en/insights/industry/financial-services/agentic-ai-banking.html — 'eliminating single-point approval bottlenecks prevents SLA breaches when named approvers are unavailable' — fetched 2026-05-20"
+    },
+    "Feasibility": {
+      "source": "web",
+      "evidence": "https://www.deloitte.com/us/en/insights/industry/financial-services/agentic-ai-banking.html — 'digital delegation and routing changes within existing approval workflows are low-complexity system changes; governance agreement is the primary dependency' — fetched 2026-05-20"
+    },
+    "The idea": {
+      "source": "web",
+      "evidence": "https://www.deloitte.com/us/en/insights/industry/financial-services/agentic-ai-banking.html — 'banks are investing in systems that route approval tasks to available deputies; agentic AI enforces delegated approval authority dynamically' — fetched 2026-05-20"
+    }
+  },
+  "INT-BGI-001": {
+    "What connects": {
+      "source": "elicited",
+      "evidence": "Basic capture fields (client, amount, currency, beneficiary name) flow into the Trade Finance System via an API integration; supporting fields and documents are uploaded separately and the TFO attaches them manually."
+    },
+    "What flows": {
+      "source": "elicited",
+      "evidence": "Basic capture fields flow via API on submission; supporting documents and fields not covered by the API — attached manually by the TFO."
+    }
+  },
+  "INT-BGI-002": {
+    "What connects": {
+      "source": "elicited",
+      "evidence": "There is a formal API integration. The tool writes screening results directly to the Trade Finance System application record."
+    },
+    "What flows": {
+      "source": "elicited",
+      "evidence": "The tool writes screening results directly to the Trade Finance System application record."
+    }
+  },
+  "INT-BGI-003": {
+    "What connects": {
+      "source": "elicited",
+      "evidence": "The Trade Finance System generates the SWIFT message; the TFO triggers transmission manually from within the TFS."
+    },
+    "What flows": {
+      "source": "elicited",
+      "evidence": "MT 760 triggered manually by TFO on issuance approval; MT 768 acknowledgement received from beneficiary's bank confirming receipt — step 6 completes on receipt."
+    }
+  },
+  "IR-BGI-001": {
+    "Likelihood & impact": {
+      "source": "elicited",
+      "evidence": "Not yet formally assessed by Model Risk or Compliance. Administrative-field-validation characterisation is defensible but not opined on. If in-scope: conformity assessment, human oversight documentation, transparency obligations, potential deployment halt."
+    },
+    "Mitigation": {
+      "source": "elicited",
+      "evidence": "Formal Model Risk and Compliance opinion before any deployment decision. If high-risk confirmed, run conformity assessment in parallel with shadow pilot to avoid blocking deployment after pilot success."
+    },
+    "The risk": {
+      "source": "elicited",
+      "evidence": "The administrative-field-validation argument is defensible (the agent doesn't score creditworthiness, only completeness) but borderline — 'materially influences whether an application proceeds' is the live question. Treat as a regulatory gap that must be opined on by Model Risk before deployment."
+    }
+  },
+  "M-BGI-001": {
+    "Current reading": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Definition": {
+      "source": "elicited",
+      "evidence": "Keep the definition but explicitly note this measures only the clean-path subset: standard wording, no screening hit, no facility shortfall."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "Client-commitment metric — corporate clients rely on it for tender deadlines and contractual obligations; missing it has direct client-relationship consequences. Also the headline competitive metric vs other corporate banks for trade finance speed."
+    }
+  },
+  "PP-BGI-001": {
+    "Description": {
+      "source": "document",
+      "evidence": "Applications frequently stall at the credit and facility check when the client has not pre-arranged enough limit."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "2-5 business days for routine Credit resolution, longer for Credit Committee cases. Even routine resolution breaches the 3-business-day SLA."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "Clients don't track facility headroom day-to-day, and the bank does not proactively monitor or flag low headroom to the client or RM. Both contribute. Handled purely reactively today — no proactive flagging."
+    }
+  },
+  "PP-BGI-002": {
+    "Description": {
+      "source": "document",
+      "evidence": "Bespoke wording adds unpredictable delay because Legal review has no committed turnaround."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "Add the client-facing effect — the client is also left without a delivery date for their guarantee, which can have downstream commercial consequences (missed tender deadlines, contractual exposure)."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "Not circular — the deeper cause is no formal SLA agreement between Trade Finance and Legal, compounded by variable bespoke-wording complexity and Legal workload prioritisation across other matters. Roughly 10-15% of applications go bespoke."
+    }
+  },
+  "PP-BGI-003": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "incomplete submissions are the biggest intake friction — missing beneficiary bank SWIFT details, wrong currency, vague wording-type instructions — and the TFO loses real time chasing them"
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "the TFO loses real time chasing them"
+    },
+    "Root cause": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PP-BGI-004": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "false positives on common beneficiary names generate avoidable investigation work"
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "false positives on common beneficiary names generate avoidable investigation work"
+    },
+    "Root cause": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PP-BGI-005": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "TFM availability is a genuine bottleneck; approvals queue when the TFM is out, and the EUR 5m escalation adds unpredictable delay when the Head of Trade Finance is travelling"
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "approvals queue when the TFM is out, and the EUR 5m escalation adds unpredictable delay when the Head of Trade Finance is travelling"
+    },
+    "Root cause": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PP-BGI-006": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "Wrong beneficiary bank BIC details cause SWIFT rejections and re-transmissions, and missed manual utilisation updates cause limit-tracking discrepancies."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "Wrong beneficiary bank BIC details cause SWIFT rejections and re-transmissions, and missed manual utilisation updates cause limit-tracking discrepancies."
+    },
+    "Root cause": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PS-BGI-001": {
+    "Inputs": {
+      "source": "elicited",
+      "evidence": "For bid bonds / tender guarantees the guarantee is issued before any contract exists — at intake we accept the tender or solicitation reference instead."
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "The Trade Finance Officer receives the application and checks it is complete: beneficiary details, guarantee amount, currency, wording type (standard or bespoke), validity period and the underlying commercial contract reference."
+    },
+    "What happens": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "The 'Why it matters' framing is fine."
+    }
+  },
+  "PS-BGI-002": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "Issuance is blocked in the Trade Finance System unless available facility limit covers the guarantee amount."
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "If the limit is insufficient, the application is parked and routed to the Credit team."
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "The Trade Finance Officer confirms the client holds an approved guarantee facility with sufficient available limit. If the limit is insufficient, the application is parked and routed to the Credit team."
+    },
+    "Why it matters": {
+      "source": "document",
+      "evidence": "this is the most common reason for delay. Applications frequently stall at the credit and facility check when the client has not pre-arranged enough limit."
+    }
+  },
+  "PS-BGI-003": {
+    "Inputs": {
+      "source": "elicited",
+      "evidence": "there is a library of approved guarantee templates in the Trade Finance System; the wording type is set at intake"
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "Standard-wording guarantees proceed directly. Bespoke wording is sent to the Legal team for review and sign-off before issuance."
+    },
+    "What happens": {
+      "source": "elicited",
+      "evidence": "there is a library of approved guarantee templates in the Trade Finance System; the wording type is set at intake and the TFO selects the matching approved template. Bespoke wording goes to a dedicated Trade Finance Legal desk, not a shared mailbox."
+    },
+    "Why it matters": {
+      "source": "document",
+      "evidence": "Bespoke wording is sent to the Legal team for review and sign-off before issuance. Bespoke wording adds unpredictable delay because Legal review has no committed turnaround."
+    }
+  },
+  "PS-BGI-004": {
+    "Inputs": {
+      "source": "elicited",
+      "evidence": "screens the beneficiary and the beneficiary's country against EU consolidated, OFAC, UN and the domestic German list"
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "the screening result is attached to the application. A screening hit suspends the application pending Compliance investigation."
+    },
+    "What happens": {
+      "source": "elicited",
+      "evidence": "once wording is confirmed the application routes to the Compliance screening queue as a system task, not an email handoff. The Sanctions Screening Tool screens against multiple lists — EU consolidated, OFAC, UN and the domestic German list"
+    },
+    "Why it matters": {
+      "source": "document",
+      "evidence": "The process is subject to anti-money-laundering and sanctions obligations (EU sanctions regulations, AML directives)."
+    }
+  },
+  "PS-BGI-005": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "A Trade Finance Manager reviews the assembled package and approves issuance. Guarantees above EUR 5 million additionally require sign-off by the Head of Trade Finance."
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "No guarantee is issued without a Trade Finance Manager's approval, recorded in the Trade Finance System. Guarantees above EUR 5 million additionally require sign-off by the Head of Trade Finance."
+    },
+    "What happens": {
+      "source": "elicited",
+      "evidence": "The TFM review is a substantive final judgement — confirming all upstream checks cleared, that terms and amount are within delegated authority, and that pricing/fee is correct. The EUR 5m threshold is system-enforced: the Trade Finance System routes amounts above EUR 5m to require the Head of Trade Finance's electronic sign-off; the TFM cannot finalise alone above that."
+    },
+    "Why it matters": {
+      "source": "document",
+      "evidence": "C1 — Four-eyes issuance approval. No guarantee is issued without a Trade Finance Manager's approval, recorded in the Trade Finance System."
+    }
+  },
+  "PS-BGI-006": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "generates the guarantee instrument in the Trade Finance System and the guarantee is transmitted to the beneficiary's bank via SWIFT. SWIFT — transmission of the executed guarantee to the beneficiary's bank."
+    },
+    "Outputs": {
+      "source": "elicited",
+      "evidence": "The facility utilisation update is a separate manual action the TFO performs after transmission — it is NOT a system-automatic consequence of SWIFT, and it can be and occasionally is missed."
+    },
+    "What happens": {
+      "source": "elicited",
+      "evidence": "The facility utilisation update is a separate manual action the TFO performs after transmission — it is NOT a system-automatic consequence of SWIFT, and it can be and occasionally is missed."
+    },
+    "Why it matters": {
+      "source": "document",
+      "evidence": "It begins when a client submits a guarantee application and ends when the executed guarantee is delivered to the beneficiary and the client's facility is updated."
+    }
+  },
+  "PS-BGI-007": {
+    "Inputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "For guarantees not fully covered by an approved facility, the Trade Finance Officer confirms that cash collateral has been received and blocked before issuance can proceed. This step is now mandatory for every partially-secured guarantee."
+    },
+    "Why it matters": {
+      "source": "document",
+      "evidence": "C4 — Collateral block confirmation. For partially-secured guarantees, cash collateral must be confirmed received and blocked before issuance. Control owner: Trade Finance Officer."
+    }
+  },
+  "REG-BGI-001": {
+    "How it is met": {
+      "source": "elicited",
+      "evidence": "The Sanctions Screening Tool automatically writes the result; the Analyst initiates but does not manually attach. Serious sanctions/AML matches trigger a suspicious-transaction report from the MLRO to BaFin and the German FIU under GwG."
+    },
+    "What it requires": {
+      "source": "elicited",
+      "evidence": "AMLD6 (EU Directive 2018/1673 plus the 2024 AMLR package), the German GwG, EU Council Regulation 833/2014 (Russia/Belarus sanctions), and the EU consolidated sanctions list framework."
+    },
+    "Why it applies": {
+      "source": "elicited",
+      "evidence": "AMLD6, GwG, EU Council Regulation 833/2014 and the EU consolidated list framework apply to the bank as a German credit institution issuing trade finance products."
+    }
+  },
+  "REG-BGI-002": {
+    "How it is met": {
+      "source": "elicited",
+      "evidence": "Standard-wording guarantees use approved templates that were pre-vetted by Legal for URDG 758 conformance at the time of template approval. Bespoke wording is validated per-case by Legal at step 3."
+    },
+    "What it requires": {
+      "source": "document",
+      "evidence": "Bank guarantees follow the ICC Uniform Rules for Demand Guarantees (URDG 758) where the guarantee is issued on demand terms."
+    },
+    "Why it applies": {
+      "source": "elicited",
+      "evidence": "URDG 758 is the default for demand guarantees issued by this process — it is not a per-client choice. ISP98 standby instruments are out of scope here; they are issued through a separate Standby LC process."
+    }
+  },
+  "REG-BGI-003": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/single-rule-book-qa/qna/view/publicId/2015_2543 — \"Credit substitutes are guarantees for the good payment of credit facilities that bear full risk\" — fetched 2026-05-20"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://www.legislation.gov.uk/eur/2013/575/annex/I — \"guarantees having the character of credit substitutes\" listed under Full risk (100% CCF) in Annex I — fetched 2026-05-20"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://eur-lex.europa.eu/eli/reg/2013/575/2026-01-01/eng — CRR applies to credit institutions in the EU; Deutsche Bank is subject as an EU credit institution — fetched 2026-05-20"
+    }
+  },
+  "REG-BGI-004": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/regulation-and-policy/single-rulebook/interactive-single-rulebook/15932 — CRR Article 390(2): overall exposures include both on- and off-balance-sheet items; guarantee notional counted at CCF-converted value — fetched 2026-05-20"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/regulation-and-policy/single-rulebook/interactive-single-rulebook/15932 — CRR Article 390 requires overall exposures to include off-balance-sheet items; Article 395 sets the 25%-of-own-funds limit — fetched 2026-05-20"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://eur-lex.europa.eu/eli/reg/2013/575/2024-07-09/eng — CRR Part Four applies to all credit institutions in the EU; contingent liabilities such as guarantees are included in the exposure calculation — fetched 2026-05-20"
+    }
+  },
+  "REG-BGI-005": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://www.bafin.de/SharedDocs/Downloads/DE/Rundschreiben/dl_rs_06_2024_MaRisk_pdf_BA.pdf — BTO 1.2.3 Tz. 1: \"Für die Kreditbearbeitung sind prozessabhängige Kontrollen einzurichten, die gewährleisten, dass die Vorgaben der Organisationsrichtlinien eingehalten werden. Die Kontrollen können auch im Rahmen des üblichen Vier-Augen-Prinzips erfolgen\" — fetched 2026-05-20"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://www.bafin.de/SharedDocs/Downloads/DE/Rundschreiben/dl_rs_06_2024_MaRisk_pdf_BA.pdf — BTO 1.1 Tz. 1: \"Maßgeblicher Grundsatz für die Ausgestaltung der Prozesse im Kreditgeschäft ist die klare aufbauorganisatorische Trennung der Bereiche Markt und Marktfolge bis einschließlich der Ebene der Geschäftsleitung\" — fetched 2026-05-20"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Rundschreiben/2024/rs_06_2024_MaRisk_BA.html — MaRisk applies to all German credit institutions; guarantee issuance is a credit business activity under BTO 1 — fetched 2026-05-20"
+    }
+  },
+  "REG-BGI-006": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://www.gesetze-im-internet.de/hgb/__257.html — HGB §257 Abs. 1 Nr. 4: Handelsbriefe (commercial correspondence) retain for 6 years; Nr. 1 and Nr. 4a: books, inventories and Buchungsbelege retain for 10 years — fetched 2026-05-20"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://www.gesetze-im-internet.de/hgb/__257.html — HGB §257 Abs. 1: Handelsbücher and Buchungsbelege must be retained; Abs. 4: retention commences at the end of the calendar year in which the last entry was made — fetched 2026-05-20"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://www.gesetze-im-internet.de/ao_1977/__147.html — AO §147 Abs. 3 sets the 10-year and 6-year retention periods in parallel with HGB; applies to all German commercial entities including credit institutions — fetched 2026-05-20"
+    }
+  },
+  "REG-BGI-007": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679 — GDPR Article 17(3)(b) prevents erasure requests from overriding mandatory AML/commercial retention; GwG §8(4) requires CDD records to be retained for 5 years after end of business relationship — fetched 2026-05-20"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679 — GDPR Article 5(1)(e): personal data kept \"no longer than is necessary\"; Article 17(3)(b): right to erasure does not apply where processing is necessary for compliance with a legal obligation — fetched 2026-05-20"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32016R0679 — GDPR Article 6(1)(c): processing necessary for compliance with a legal obligation (here: GwG CDD requirements) is a lawful basis — fetched 2026-05-20"
+    }
+  },
+  "REG-BGI-010": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/activities/single-rulebook/regulatory-activities/internal-governance/guidelines-internal-governance-under-crd — CP-BGI-001 records delegated authority caps; EUR 5 million co-sign threshold implements documented escalation; formal delegation framework to be confirmed with SME — fetched 2026-05-20"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/activities/single-rulebook/regulatory-activities/internal-governance/guidelines-internal-governance-under-crd — Section 6 / Guidelines 38–40 require three lines of defence; institutions must maintain a documented framework for delegating approval authority covering material transactions including contingent liabilities — fetched 2026-05-20"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/activities/single-rulebook/regulatory-activities/internal-governance/guidelines-internal-governance-under-crd — Deutsche Bank is a significant institution under CRD subject to EBA/GL/2021/05; the guarantee approval hierarchy must sit within a documented delegation framework — fetched 2026-05-20"
+    }
+  },
+  "REG-BGI-011": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://www.gesetze-im-internet.de/kredwg/__18.html — the client's approved guarantee facility is established against reviewed financial information by the Credit team; specific §18 threshold application to be confirmed with the SME — fetched 2026-05-20"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://www.gesetze-im-internet.de/kredwg/__18.html — credit institutions must obtain and review the borrower's financial statements before granting credit above the threshold; https://www.gesetze-im-internet.de/kredwg/__21.html — §21(1) KWG expressly includes guarantees (Garantien) in the definition of Kredit — fetched 2026-05-20"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://www.gesetze-im-internet.de/kredwg/__21.html — bank guarantees create contingent credit exposure; §21(1) KWG classifies guarantees as credits, bringing material guarantee applications within the §18 credit documentation regime — fetched 2026-05-20"
+    }
+  },
+  "REG-BGI-012": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://www.fatf-gafi.org/content/dam/fatf-gafi/reports/Trade-Based-Money-Laundering-Trends-and-Developments.pdf — beneficiary screening at step 4 (CP-BGI-002) covers primary due diligence; TBML red-flag checks at intake and commercial rationale documentation to be confirmed with the SME — fetched 2026-05-20"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://www.fatf-gafi.org/content/dam/fatf-gafi/reports/Trade-Based-Money-Laundering-Trends-and-Developments.pdf — guarantees and standby letters of credit are explicitly identified as trade finance instruments susceptible to TBML; institutions must apply enhanced due diligence and monitor for red-flag indicators at intake — fetched 2026-05-20"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://www.fatf-gafi.org/content/dam/fatf-gafi/reports/Trade-Based-Money-Laundering-Risk-Indicators.pdf — bank guarantees are named as instruments susceptible to TBML; the issuance process from intake to beneficiary screening is directly in scope — fetched 2026-05-20"
+    }
+  },
+  "ROLE-BGI-001": {
+    "In this process": {
+      "source": "elicited",
+      "evidence": "Confirm the 'In this process' block — and yes, name the manual facility-utilisation update at step 6."
+    },
+    "Responsibility": {
+      "source": "document",
+      "evidence": "Trade Finance Officer — intake, checks, generation and delivery."
+    }
+  },
+  "ROLE-BGI-002": {
+    "In this process": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ROLE-BGI-003": {
+    "In this process": {
+      "source": "elicited",
+      "evidence": "The system enforces the sign-off, so the Head of Trade Finance is Responsible (R) for the EUR 5m+ portion of step 5. There is a Deputy Head of Trade Finance who can sign in the Head's absence."
+    },
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "The system enforces the sign-off, so the Head of Trade Finance is Responsible (R) for the EUR 5m+ portion of step 5. There is a Deputy Head of Trade Finance who can sign in the Head's absence."
+    }
+  },
+  "ROLE-BGI-004": {
+    "In this process": {
+      "source": "elicited",
+      "evidence": "Result attachment: automatic — the Sanctions Screening Tool writes the result to the application record automatically. Routine clears are decided by the Analyst; borderline hits escalate to the Compliance Officer; serious matches escalate to Group Compliance / MLRO."
+    },
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "Routine clears are decided by the Analyst; unclear or borderline hits escalate to the Compliance Officer; serious matches (sanctioned entity, country watch-list match) escalate to Group Compliance / MLRO."
+    }
+  },
+  "ROLE-BGI-005": {
+    "In this process": {
+      "source": "elicited",
+      "evidence": "The Credit team can approve a temporary limit increase, a permanent facility amendment, or decline. Once resolved or declined the TFO manually re-queues the application — it is not automatic. No formal SLA; typical 2-5 business days; larger cases requiring Credit Committee approval run longer."
+    },
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "The Credit team can approve a temporary limit increase, a permanent facility amendment, or decline. No formal SLA; typical resolution is 2-5 business days; larger cases that need Credit Committee approval run longer."
+    }
+  },
+  "ROLE-BGI-006": {
+    "In this process": {
+      "source": "elicited",
+      "evidence": "Legal also redlines / proposes amendments. The TFO works directly with Legal on technical legal points; client-facing wording changes loop back to the client via the relationship manager. No formal SLA, informal target 2 business days, escalation TFM to Trade Finance Legal desk lead."
+    },
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "Legal also redlines / proposes amendments, not just approves. No formal SLA, informal target is 2 business days. Escalation route is TFM to Trade Finance Legal desk lead when reviews drag."
+    }
+  },
+  "ROLE-BGI-007": {
+    "In this process": {
+      "source": "elicited",
+      "evidence": "There is a Compliance Officer above the Analyst who holds the A on step 4. Unclear or borderline hits escalate to the Compliance Officer; serious matches escalate to Group Compliance / MLRO."
+    },
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "There is a Compliance Officer above the Analyst who holds the A on step 4. Unclear or borderline hits escalate to the Compliance Officer; serious matches escalate to Group Compliance / MLRO."
+    }
+  },
+  "SYS-BGI-001": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "Corporate Portal — client-facing application capture."
+    },
+    "Role in this process": {
+      "source": "elicited",
+      "evidence": "Basic capture fields (client, amount, currency, beneficiary name) flow into the Trade Finance System via an API integration; supporting fields and documents are uploaded separately and the TFO has to attach them manually. Portal enforces mandatory fields only on basic capture — full completeness not validated (CG-BGI-001). Same portal, role-based permissions — clients see only their company's drafts; RMs see all client drafts under their portfolio."
+    }
+  },
+  "SYS-BGI-002": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "Trade Finance System — the system of record for guarantee instruments, approvals and facility utilisation."
+    },
+    "Role in this process": {
+      "source": "elicited",
+      "evidence": "Step 1: receives basic capture fields from Corporate Portal via INT-BGI-001. Step 3: holds the approved guarantee template library the TFO selects from for standard-wording cases. Steps 2 and 5: enforces facility limit check and records approvals. Step 6: generates the guarantee instrument; client facility utilisation record is held here but updated manually by the TFO after SWIFT transmission."
+    }
+  },
+  "SYS-BGI-003": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "Sanctions Screening Tool — used by Compliance for beneficiary screening."
+    },
+    "Role in this process": {
+      "source": "elicited",
+      "evidence": "The tool screens against EU consolidated, OFAC, UN and the domestic German list. The tool automatically writes the result to the application record — not manually attached. Formal API integration with the Trade Finance System (INT-BGI-002)."
+    }
+  },
+  "SYS-BGI-004": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "SWIFT — transmission of the executed guarantee to the beneficiary's bank."
+    },
+    "Role in this process": {
+      "source": "elicited",
+      "evidence": "MT 760 for guarantee issuance. TFO triggers transmission manually from within the TFS. MT 768 acknowledgement received from beneficiary's bank; step 6 is fully complete only on receipt of that acknowledgement, not at message send."
+    }
+  },
+  "TD-BGI-001": {
+    "Options considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The decision": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TD-BGI-002": {
+    "Options considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The decision": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TD-BGI-003": {
+    "Options considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The decision": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TD-BGI-004": {
+    "Options considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The decision": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TD-BGI-005": {
+    "Options considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The decision": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TD-BGI-006": {
+    "Options considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The decision": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TD-BGI-007": {
+    "Options considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The decision": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TR-BGI-001": {
+    "Evidence": {
+      "source": "elicited",
+      "evidence": "Both read accurately — M. Berger, 2026-05-20"
+    },
+    "Relevance": {
+      "source": "elicited",
+      "evidence": "Realistic deployment is flag-and-continue advisory mode, not hard block; agent is a tool not a control — CG-BGI-001 is not fully closed without hard-flag mode for mandatory fields and logged override decisions. At current volumes a 5–10% false-positive rate would meaningfully shift TFO friction. 4-week shadow pilot recommended before controlled deployment. EU AI Act classification to be formally opined on by Model Risk before any deployment decision."
+    },
+    "The trend": {
+      "source": "elicited",
+      "evidence": "Both read accurately — M. Berger, 2026-05-20"
+    }
+  },
+  "TR-BGI-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.sanctionscanner.com/blog/ai-powered-transaction-monitoring-how-to-reduce-false-positives-by-7080-1334 — 'Everest Group 2025: 85-90% of alerts are false positives; HSBC achieved 60%+ alert reduction using Google Cloud AI, detecting 2-4x more genuine suspicious activity' — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.sanctionscanner.com/blog/ai-powered-transaction-monitoring-how-to-reduce-false-positives-by-7080-1334 — 'From fuzzy matching to NLP and network analysis, AI is helping firms reduce alert fatigue' — fetched 2026-05-20"
+    },
+    "The trend": {
+      "source": "web",
+      "evidence": "https://www.sanctionscanner.com/blog/ai-powered-transaction-monitoring-how-to-reduce-false-positives-by-7080-1334 — 'AI-powered screening enables compliance teams to minimise false positives and improve decision-making speed' — fetched 2026-05-20"
+    }
+  },
+  "TR-BGI-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — 'Standard Chartered completes first ICC-Swift API Standards digital bank guarantee transaction through Komgo, January 15 2026' — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — 'automates the receipt of instructions and accelerates the issuance of digitally initiated bank guarantees, offering clients greater speed, transparency and reliability' — fetched 2026-05-20"
+    },
+    "The trend": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — 'The new standard is compatible with Swift's legacy MT798 format and the ISO 20022 standard; API-first solutions are the key enabler to lowering thresholds to digital trade transformation' — fetched 2026-05-20"
+    }
+  },
+  "TS-BGI-001": {
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Target description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What changes": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TS-BGI-002": {
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Target description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What changes": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TS-BGI-003": {
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Target description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What changes": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TS-BGI-004": {
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Target description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What changes": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TS-BGI-005": {
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Target description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What changes": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TS-BGI-006": {
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Target description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What changes": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "VG-BGI-001": {
+    "Resolution": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Status": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The gap": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "VG-BGI-002": {
+    "Resolution": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Status": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The gap": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "VG-BGI-003": {
+    "Resolution": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Status": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The gap": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "VG-BGI-004": {
+    "Resolution": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Status": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The gap": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  }
+}

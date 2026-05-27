@@ -10,7 +10,6 @@ owner: Payments Operations
 sla: Executed before CSM submission
 condition: Rail selection complete; for bulk files, 4-eyes approval received from Ops Approver
 systems: [SYS-SP-002, SYS-SP-003]
-provenance: {"Inputs": {"evidence": "Step 3 (earmark), Section 8 key inputs ('debtor account ... amount in EUR'), Control C-6 and RACI ('Bulk-file release approval (4-eyes)').", "source": "document"}, "Outputs": {"evidence": "", "source": "proposed"}, "What happens": {"evidence": "Step 7: 'The customer account is debited and the held amount released into the payment.' Step 3: 'the amount is earmarked on the account.' Section 8: Core Banking System handles 'Account balances, holds, debit booking.'", "source": "document"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:15Z
 ---

@@ -12,7 +12,6 @@ hosting: EKS · eu-frankfurt
 scaling: HPA · 2 → 8 replicas
 inApp: [TGTAPP-DDMM-001]
 realisesCapability: [CAP-DDMM-001]
-provenance: {"Responsibility": {"evidence": "", "source": "proposed"}, "Technical detail": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-24T06:48:16Z
 ---

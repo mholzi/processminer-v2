@@ -11,7 +11,6 @@ decisionStatus: DECIDED
 resolves: [PP-DDMM-002, CG-DDMM-003, PG-DDMM-001, PG-DDMM-005]
 realises: [TS-DDMM-004]
 fromIdea: [II-DDMM-007]
-provenance: {"Options considered": {"evidence": "SME confirmed options and rationale — accepted without edit.", "source": "elicited"}, "Rationale": {"evidence": "SME confirmed rationale — accepted without edit.", "source": "elicited"}, "The decision": {"evidence": "SME (M. Vogel) accepted all ten decisions without edit.", "source": "elicited"}}
 approval: approved
 approvalBy: Markus
 approvalDate: 2026-05-19

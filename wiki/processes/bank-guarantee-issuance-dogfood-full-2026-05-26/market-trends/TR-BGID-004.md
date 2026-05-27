@@ -10,7 +10,6 @@ source: Trade Finance Global — 'HSBC launches guarantees digital portal for FI
 sourceUrl: https://www.tradefinanceglobal.com/posts/hsbc-launches-guarantees-digital-portal-for-fi-trade-finance-transactions/
 asOf: 2026-05-26
 bearsOn: [PP-BGID-003, CG-BGID-001, PS-BGID-001]
-provenance: {"Evidence": {"evidence": "https://www.tradefinanceglobal.com/posts/hsbc-launches-guarantees-digital-portal-for-fi-trade-finance-transactions/ — HSBC's FI Digital Network launched a dedicated guarantee portal with real-time status tracking and automated reporting, subsequently expanded to the full trade product suite — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.nomentia.com/blog/digitalize-bank-guarantee-management — \"use one digital standardized form for all requests and manage entire guarantee lifecycles digitally\" — fetched 2026-05-26", "source": "web"}, "The trend": {"evidence": "https://www.tradefinanceglobal.com/posts/hsbc-launches-guarantees-digital-portal-for-fi-trade-finance-transactions/ — \"What was always lacking in this space was the ability for banks to automatically check where guarantees are\" (Vinay Mendonca, HSBC Chief Growth Officer, Global Trade) — fetched 2026-05-26", "source": "web"}}
 updatedBy: admin
 updatedAt: 2026-05-26T08:59:00Z
 ---

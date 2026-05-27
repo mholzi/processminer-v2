@@ -12,7 +12,6 @@ effectiveness: MEDIUM
 owner: QA Team
 step: [PS-PR-006]
 regulatedBy: [REG-PR-005]
-provenance: {"Control activity": {"evidence": "", "source": "proposed"}, "Risk addressed": {"evidence": "[Gap log G-07:] QA sampling ad-hoc, not statistical. Severity: Medium. [§10:] QA pass rate tracked as a KPI.", "source": "document"}, "Timing": {"evidence": "", "source": "proposed"}, "What it checks": {"evidence": "Step 6: a random 5 % QA sample of STP and analyst approvals [is routed to FCO sign-off]. [Evidence column:] QA scorecards.", "source": "document"}}
 ---
 ## What it checks
 Whether the STP auto-approval logic and analyst approval decisions are consistently sound by testing a statistically designed random sample against the full evidence pack.

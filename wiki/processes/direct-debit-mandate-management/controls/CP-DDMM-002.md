@@ -10,7 +10,6 @@ controlType: PREVENTIVE
 execution: AUTOMATED
 owner: Compliance
 step: [PS-DDMM-003]
-provenance: {"Control activity": {"evidence": "C-2 | Sanctions screening of debtor and creditor | Preventive / automated | Every request. Potential hits are routed to Compliance for adjudication.", "source": "document"}, "Risk addressed": {"evidence": "SME confirmed accurate as drafted.", "source": "elicited"}, "Timing": {"evidence": "SME confirmed: runs after validation on new mandates and party-name-changing amendments only; skipped for non-name amendments and cancellations.", "source": "elicited"}, "What it checks": {"evidence": "SME (M. Vogel) confirmed: screening is type-aware — runs on new mandates and party-name-changing amendments; skipped for non-name amendments and cancellations. 'Every request' would misstate coverage to an auditor.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

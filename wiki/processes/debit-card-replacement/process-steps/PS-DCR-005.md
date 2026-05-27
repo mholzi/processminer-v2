@@ -8,8 +8,6 @@ confidence: high
 source: dcr-dtp-mockup.md
 owner: Card Operations Clerk
 systems: [SYS-DCR-001, SYS-DCR-004]
-transitions: [PS-DCR-006|normal|replacement card ordered, EX-DCR-003|exception|registered address unconfirmed]
-provenance: {"Inputs": {"evidence": "orders a like-for-like replacement card", "source": "document"}, "Outputs": {"evidence": "A like-for-like replacement card of the same product and type as the original", "source": "document"}, "What happens": {"evidence": "The Card Operations Clerk orders a like-for-like replacement card. The new card carries a new card number; the PIN is unchanged and is not reissued.", "source": "document"}, "Why it matters": {"evidence": "S. Krause confirmed in the foundational run: Why it matters holds as drafted.", "source": "elicited"}}
 approval: approved
 approvalBy: S. Krause
 approvalDate: 2026-05-19

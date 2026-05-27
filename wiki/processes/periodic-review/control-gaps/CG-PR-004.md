@@ -9,7 +9,6 @@ source: periodic-kyc-review-dtp.pdf
 severity: HIGH
 gapStatus: open
 control: [CP-PR-010]
-provenance: {"Remediation": {"evidence": "", "source": "proposed"}, "Risk": {"evidence": "", "source": "proposed"}, "The gap": {"evidence": "Opaque escalation. Whether a case escalates to FCO depends on the analyst on duty, not a written rule. / §9 G-03: No 4-eyes enforcement on High / PEP — Severity High — Owner FCO — Target close Q3 2026 (interim policy) / Q1 2027 (system).", "source": "document"}}
 ---
 ## The gap
 There is no system-enforced 4-eyes sign-off requirement for High-risk client, PEP or exit-recommendation cases. Whether a case is escalated to the Financial Crime Officer depends on the analyst on duty, not a written rule. Escalation criteria are opaque and not codified in the workflow.

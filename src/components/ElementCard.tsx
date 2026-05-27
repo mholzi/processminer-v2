@@ -15,7 +15,6 @@ import Tooltip from "./Tooltip";
 import ElementHovercard from "./ElementHovercard";
 import RelativeTime from "./RelativeTime";
 import FindingDismiss from "./FindingDismiss";
-import { asList } from "@/lib/meta";
 
 // Which fields and relations a card shows is no longer hand-kept here — it is
 // driven from `schema/process-schema.json` (each type's `frontmatter` block).
@@ -32,8 +31,6 @@ function specText(b: BlockSpec): string {
   if (b.words) bits.push(`${b.words} words`);
   return bits.length ? `Paragraph · ${bits.join(" · ")}` : "Paragraph";
 }
-
-const TRANSITION_KINDS = ["normal", "branch", "loopback", "exception"];
 
 // Per-heading provenance (HALLUCINATION-PLAN.md) — the short tag and its
 // hover text, by source. `proposed` / `web` are unconfirmed by the SME.
@@ -180,20 +177,11 @@ export default function ElementCard({
   const checks = template ? checkElement(page, template) : [];
   const issueCount = checks.filter((c) => !c.ok).length;
 
-  // Typed outgoing relations (process-step `transitions`): `to|kind|when`.
-  // These carry per-edge metadata (kind + condition) a plain relation can't,
-  // so they render in their own block, not via `links`.
-  const transitions = asList(page.meta.transitions)
-    .map((entry) => {
-      const parts = entry.split("|");
-      const kind = (parts[1] ?? "normal").trim();
-      return {
-        to: (parts[0] ?? "").trim(),
-        kind: TRANSITION_KINDS.includes(kind) ? kind : "normal",
-        when: parts.slice(2).join("|").trim(),
-      };
-    })
-    .filter((t) => t.to);
+  // Typed outgoing relations (process-step `transitions`) carry per-edge
+  // metadata (kind + condition) a plain relation can't, so they render in
+  // their own block, not via `links`. The data is joined onto the page from
+  // wiki/processes/<slug>/transitions.json by getProcess().
+  const transitions = page.transitions ?? [];
 
   const isDraft = page.status === "draft";
   const router = useRouter();

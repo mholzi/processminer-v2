@@ -9,7 +9,6 @@ source: innovation-analyst session 2026-05-26
 target: 350/month
 value: 280/month (baseline)
 trend:
-provenance: {"Current reading": {"evidence": "Elicited: baseline 280/month; thresholds green ≥300, amber 200–299, red <200", "source": "elicited"}, "Definition": {"evidence": "Elicited: count of guarantees issued per calendar month from TFS issuance log; owner Head of Trade Finance; frequency monthly", "source": "elicited"}, "Why it matters": {"evidence": "Elicited: volume is the primary demand and capacity signal for the trade finance desk", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T10:02:05Z
 approval: in-progress

@@ -9,7 +9,6 @@ source: periodic-kyc-review-dtp.pdf
 severity: HIGH
 gapStatus: open
 control: [CP-PR-008]
-provenance: {"Remediation": {"evidence": "", "source": "proposed"}, "Risk": {"evidence": "", "source": "proposed"}, "The gap": {"evidence": "", "source": "proposed"}}
 ---
 ## The gap
 No system-enforced trigger exists for periodic KYC reviews. When an RM leaves, the client drops off the Excel list for a full cycle. As of Q1 2026, 18.4% of the High-risk book is overdue — findings from BaFin §44 KWG (Sep 2025) and audit IA-2025-117.

@@ -9,7 +9,6 @@ source: sepa-payments-dtp-mockup.md
 category: data-quality
 impact: LOW
 handlingOwner: Payments Operations
-provenance: {"Description": {"evidence": "Step 2: 'Creditor IBAN structure and check digits are valid. The creditor bank is reachable in the SEPA scheme directory. Mandatory fields are present; the remittance reference is well-formed.'", "source": "document"}, "Handling": {"evidence": "Section 6 E-1: 'Payment rejected to the customer with a reason code; correction and resubmission required.'", "source": "document"}, "Impact": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:00Z
 ---

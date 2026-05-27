@@ -8,7 +8,6 @@ confidence: high
 source: periodic-kyc-review-dtp.pdf
 systems: [SYS-PR-001]
 controls: [CP-PR-011, CP-PR-012]
-provenance: {"In this process": {"evidence": "", "source": "proposed"}, "Responsibility": {"evidence": "", "source": "proposed"}}
 ---
 ## Responsibility
 The Financial Crime Operations Analyst (FCO Analyst) is responsible for executing targeted client outreach (Step 4) and is responsible and accountable for triaging all non-STP review cases (Step 5).

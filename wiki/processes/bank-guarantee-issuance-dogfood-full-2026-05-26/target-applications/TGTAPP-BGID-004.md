@@ -11,7 +11,6 @@ vendor: Murex MX.3
 owningDomain: Credit & Trade Finance
 costBand: Existing licence — incremental API integration cost ~€50k–100k
 drivenByADR: [ADR-BGID-007]
-provenance: {"Rationale": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Risks": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Tech stack": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T14:59:49Z
 approval: approved

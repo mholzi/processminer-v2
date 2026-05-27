@@ -8,7 +8,6 @@ confidence: medium
 source: CGI Transaction Banking Survey 2025 (356 corporate executives, 357 banking providers)
 sourceUrl: https://www.cgi.com/en/blog/banking-and-capital-markets/transaction-banking-2026-why-client-satisfaction-no-longer-guarantees-loyalty
 asOf: 2025-01-01
-provenance: {"Evidence": {"evidence": "https://www.cgi.com/en/blog/banking-and-capital-markets/transaction-banking-2026-why-client-satisfaction-no-longer-guarantees-loyalty — \"83% of corporates view real-time forecasting as high value\" vs \"31% of banks\" — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.cgi.com/en/blog/banking-and-capital-markets/transaction-banking-2026-why-client-satisfaction-no-longer-guarantees-loyalty — \"96% of corporates rank strategic advice as a top priority, yet they consistently experience friction in the fundamentals\" — fetched 2026-05-26", "source": "web"}, "The benchmark": {"evidence": "https://www.cgi.com/en/blog/banking-and-capital-markets/transaction-banking-2026-why-client-satisfaction-no-longer-guarantees-loyalty — \"83% of corporates view real-time forecasting as high value\" and \"31% of banks see real-time forecasting as high value\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: source-cx
 updatedAt: 2026-05-26T19:59:08Z
 ---

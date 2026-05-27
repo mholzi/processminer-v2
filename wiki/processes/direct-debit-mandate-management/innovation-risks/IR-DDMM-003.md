@@ -8,7 +8,6 @@ confidence: high
 source: ddmm-innovation-analyst
 severity: MEDIUM
 affects: [II-DDMM-004]
-provenance: {"Likelihood & impact": {"evidence": "SME confirmed: historical R-transaction coding is inconsistent (gap documented in OAF-DDMM-002); training on this corpus is the direct mechanism by which mis-codes entrench.", "source": "elicited"}, "Mitigation": {"evidence": "SME confirmed: human review of pre-classification outputs is mandatory before operationalising; data-quality pass on training corpus required; accuracy metrics reported periodically.", "source": "elicited"}, "The risk": {"evidence": "SME (M. Vogel) confirmed: automated R-transaction pre-classification training on historical resolution data will learn from existing mis-coded entries; with low review coverage, errors propagate to future classifications.", "source": "elicited"}}
 ---
 ## The risk
 Automated R-transaction pre-classification (II-DDMM-004) trains on historical resolution records. OAF-DDMM-002 documents that R-transaction resolution rationale is not consistently recorded — meaning the training corpus already contains mis-codes. A model trained on this data reinforces those errors at scale if outputs are accepted without review.

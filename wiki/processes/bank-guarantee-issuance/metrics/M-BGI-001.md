@@ -9,7 +9,6 @@ source: bank-guarantee-issuance-v1.md
 target: 5 business days
 value: ~4-5 business days (current run-rate)
 trend: negative
-provenance: {"Current reading": {"evidence": "", "source": "proposed"}, "Definition": {"evidence": "Keep the definition but explicitly note this measures only the clean-path subset: standard wording, no screening hit, no facility shortfall.", "source": "elicited"}, "Why it matters": {"evidence": "Client-commitment metric — corporate clients rely on it for tender deadlines and contractual obligations; missing it has direct client-relationship consequences. Also the headline competitive metric vs other corporate banks for trade finance speed.", "source": "elicited"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-20

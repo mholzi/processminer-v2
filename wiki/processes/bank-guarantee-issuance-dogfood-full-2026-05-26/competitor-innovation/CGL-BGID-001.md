@@ -10,7 +10,6 @@ source: Standard Chartered Press Release — first ICC-Swift API Standards digit
 sourceUrl: https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/
 asOf: 2026-05-26
 bearsOn: [PP-BGID-003, FP-BGID-001, CG-BGID-001]
-provenance: {"Evidence": {"evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"We are delighted to be among the first banks to commercialise the ICC-Swift API standards for bank guarantees\" — Samuel Mathew, Global Head, Documentary Trade — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"This automates receipt of instructions and accelerates digitally initiated bank guarantee issuance while supporting straight-through processing\" — fetched 2026-05-26", "source": "web"}, "The move": {"evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"Standard Chartered completed its first industry standard API-based bank guarantee transaction for a global energy company via Komgo's Konsole platform, fully compliant with ICC-Swift API standards\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: admin
 updatedAt: 2026-05-26T08:59:00Z
 ---

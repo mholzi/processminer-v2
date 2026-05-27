@@ -10,7 +10,6 @@ source: Fintech Global — 'Barclays and CGI join forces on trade finance digiti
 sourceUrl: https://fintech.global/2025/09/29/barclays-and-cgi-join-forces-on-trade-finance-digitisation/
 asOf: 2026-05-26
 bearsOn: [PP-BGID-003, PP-BGID-001, CG-BGID-001, FP-BGID-001]
-provenance: {"Evidence": {"evidence": "https://fintech.global/2025/09/29/barclays-and-cgi-join-forces-on-trade-finance-digitisation/ — Fintech Global, 29 September 2025: Barclays partners CGI and Komgo to eliminate manual entry and provide fully digital straight-through trade finance processing — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://fintech.global/2025/09/29/barclays-and-cgi-join-forces-on-trade-finance-digitisation/ — \"By integrating Komgo with CGI Trade360, we will be providing our clients with a fully digital experience while simplifying operations processing.\" — Jaya Vohra, Barclays global head of trade & working capital — fetched 2026-05-26", "source": "web"}, "The move": {"evidence": "https://fintech.global/2025/09/29/barclays-and-cgi-join-forces-on-trade-finance-digitisation/ — \"Corporate clients using Komgo's Konsole will see transactions flow directly into Barclays' systems through CGI Trade360\" and objective to \"eliminate manual entry processes\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: admin
 updatedAt: 2026-05-26T08:59:00Z
 ---

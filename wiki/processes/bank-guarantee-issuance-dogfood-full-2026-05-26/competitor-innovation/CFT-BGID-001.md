@@ -10,7 +10,6 @@ source: Komgo newsroom — 'How Komgo's Embedded AI is Transforming Bank Guarant
 sourceUrl: https://www.komgo.io/newsroom/how-komgos-embedded-ai-is-transforming-bank-guarantee-management
 asOf: 2026-05-26
 bearsOn: [PP-BGID-002, FP-BGID-001, CG-BGID-001]
-provenance: {"Evidence": {"evidence": "https://www.komgo.io/newsroom/introducing-gtk-future-of-digital-guarantee-and-trade-finance-management — Komgo GTK launched April 2025; Euromoney named Komgo world's most innovative trade finance software provider 2025 — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.komgo.io/newsroom/tkelevator-and-komgo-boost-guarantee-management-with-gtk — \"TK Elevator Automates 70% of Its Guarantee Portfolio with Komgo's GTK\" — fetched 2026-05-26", "source": "web"}, "The move": {"evidence": "https://www.komgo.io/newsroom/how-komgos-embedded-ai-is-transforming-bank-guarantee-management — \"AI supports issuance automation, clause and discrepancy analysis… using AI to extract data and clauses from contracts to automate… guarantee drafts\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: admin
 updatedAt: 2026-05-26T08:59:00Z
 ---

@@ -10,7 +10,6 @@ category: Data quality
 severity: MEDIUM
 priority: P2
 affects: [PS-DCR-001]
-provenance: {"Description": {"evidence": "Elicited from S. Krause during the foundational-run deepening probe.", "source": "elicited"}, "Impact": {"evidence": "Elicited from S. Krause during the foundational-run deepening probe.", "source": "elicited"}, "Root cause": {"evidence": "Elicited from S. Krause during the foundational-run deepening probe.", "source": "elicited"}}
 ---
 ## Description
 The reported reason — lost, stolen, or damaged — is captured separately on each intake channel. Phone agents key it into the Card Management System by hand, while the mobile app captures it in its own form, and the two are not unified.

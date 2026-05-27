@@ -9,7 +9,6 @@ source: MODIFI product page; Finextra press release
 competitor: MODIFI
 sourceUrl: https://www.modifi.com/us/products/sellers
 asOf: 2026-05-26
-provenance: {"Evidence": {"evidence": "", "source": "proposed"}, "Relevance": {"evidence": "https://www.finextra.com/pressarticle/76402/billpay-founder-launches-digital-trade-finance-platform-modifi — \"apply for import financing in less than ten minutes online\" with \"responses generally within 48 hours\" — fetched 2026-05-26", "source": "web"}, "The journey": {"evidence": "https://www.modifi.com/us/products/sellers — \"We're 100% digital. Making it super easy for you to apply online, register in minutes, and access payment in days.\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: source-cx
 updatedAt: 2026-05-26T19:59:25Z
 ---

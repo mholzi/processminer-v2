@@ -8,7 +8,6 @@ confidence: high
 source: SME interview, bank-guarantee-issuance-v1.md
 channel: Online portal
 occursAt: [PS-BGID-001]
-provenance: {"Experience": {"evidence": "", "source": "proposed"}, "What the bank does": {"evidence": "PS-BGID-001: incomplete applications are returned to the client via the portal with a checklist", "source": "elicited"}, "What the client does": {"evidence": "Corporate Portal application submission; PS-BGID-001 lists all required fields", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T06:58:39Z
 ---

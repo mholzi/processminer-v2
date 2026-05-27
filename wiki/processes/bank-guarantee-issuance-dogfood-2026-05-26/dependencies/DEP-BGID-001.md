@@ -9,7 +9,6 @@ source: wiki-synthesis-2026-05-26
 direction: UPSTREAM
 atStep: [PS-BGID-001]
 viaSystem: [SYS-BGID-001]
-provenance: {"The dependency": {"evidence": "", "source": "proposed"}, "What crosses the boundary": {"evidence": "", "source": "proposed"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 updatedBy: admin
 updatedAt: 2026-05-26T20:15:01Z
 ---

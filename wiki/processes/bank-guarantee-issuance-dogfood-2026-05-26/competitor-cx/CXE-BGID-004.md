@@ -9,7 +9,6 @@ source: Euromoney Transaction Banking Awards 2025
 competitor: Société Générale
 sourceUrl: https://wholesale.banking.societegenerale.com/en/news-insights/all-news-insights/news-details/news/societe-generale-named-best-transaction-bank-in-europe-by-euromoney/
 asOf: 2024-11-13
-provenance: {"Evidence": {"evidence": "https://wholesale.banking.societegenerale.com/en/news-insights/all-news-insights/news-details/news/societe-generale-named-best-transaction-bank-in-europe-by-euromoney/ — \"Societe Generale named Best Transaction Bank in Europe by Euromoney\" — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.euromoney.com/article/c68d3feqpigoskk0088k4s8g4/corporate-banking/europes-best-transaction-bank-2025-societe-generale/ — \"a model that mirrors the way corporates operate – globally, across functions and at pace\" — fetched 2026-05-26", "source": "web"}, "The journey": {"evidence": "https://wholesale.banking.societegenerale.com/en/news-insights/all-news-insights/news-details/news/societe-generale-named-best-transaction-bank-in-europe-by-euromoney/ — \"bringing together cash management, trade finance, supply chain finance and correspondent banking within a single, client-centric platform\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: source-cx
 updatedAt: 2026-05-26T19:59:08Z
 ---

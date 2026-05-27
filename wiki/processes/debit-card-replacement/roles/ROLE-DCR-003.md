@@ -8,7 +8,6 @@ confidence: high
 source: dcr-dtp-mockup.md
 systems: [SYS-DCR-001]
 controls: [CP-DCR-003]
-provenance: {"In this process": {"evidence": "the request is flagged to the Fraud Analyst, who reviews recent transactions for unauthorised activity", "source": "document"}, "Responsibility": {"evidence": "the request is flagged to the Fraud Analyst, who reviews the card's recent transactions for unauthorised activity", "source": "document"}}
 approval: approved
 approvalBy: S. Krause
 approvalDate: 2026-05-19

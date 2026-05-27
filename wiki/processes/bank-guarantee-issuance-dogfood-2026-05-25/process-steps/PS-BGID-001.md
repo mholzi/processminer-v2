@@ -8,8 +8,6 @@ confidence: high
 source: bank-guarantee-issuance-v1.md
 owner: Trade Finance Officer
 systems: [SYS-BGID-001, SYS-BGID-002]
-transitions: [PS-BGID-002|normal|application is complete and accepted]
-provenance: {"Inputs": {"evidence": "beneficiary details, guarantee amount, currency, wording type (standard or bespoke), validity period and the underlying commercial contract reference", "source": "document"}, "Outputs": {"evidence": "", "source": "proposed"}, "What happens": {"evidence": "The Trade Finance Officer receives the application and checks it is complete: beneficiary details, guarantee amount, currency, wording type (standard or bespoke), validity period and the underlying commercial contract reference. / A corporate client submits a Bank Guarantee application through the Corporate Portal, or via a relationship manager who keys it into the portal on the client's behalf.", "source": "document"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:56:10Z
 ---

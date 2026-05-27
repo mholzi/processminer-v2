@@ -11,7 +11,6 @@ execution: AUTOMATED
 effectiveness: HIGH
 owner: Payment Operations
 step: [PS-SP-002]
-provenance: {"Control activity": {"evidence": "Step 2 describes Payment Hub validation; E-1: 'Payment rejected to the customer with a reason code'; Section 7 C-1: 'Preventive / automated, Every item'; step sequence (2->3->4) establishes position before funds check and screening.", "source": "document"}, "Risk addressed": {"evidence": "", "source": "proposed"}, "Timing": {"evidence": "Step 2 is sequenced before step 3 (funds check) and step 4 (sanctions/AML); Section 7 C-1: 'Every item'.", "source": "document"}, "What it checks": {"evidence": "Step 2: 'Creditor IBAN structure and check digits are valid. The creditor bank is reachable in the SEPA scheme directory. Currency is EUR and the creditor country is in the SEPA zone. Mandatory fields are present; the remittance reference is well-formed.'", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:15Z
 ---

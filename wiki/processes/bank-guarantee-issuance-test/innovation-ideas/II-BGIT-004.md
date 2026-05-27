@@ -9,7 +9,6 @@ category: control
 strategicFit: MEDIUM
 complexity: LOW
 addresses: [CG-BGIT-002]
-provenance: {"Expected benefit": {"evidence": "", "source": "proposed"}, "Feasibility": {"evidence": "", "source": "proposed"}, "The idea": {"evidence": "", "source": "proposed"}}
 ---
 ## The idea
 Implement a system-enforced gate in the Trade Finance System that prevents guarantee document generation unless a valid TFM approval record exists for the transaction — converting the current undocumented manual step into a hard system control.

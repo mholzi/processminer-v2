@@ -9,7 +9,6 @@ source: periodic-kyc-review-dtp.pdf
 category: exit-referral
 impact: HIGH
 handlingOwner: Financial Crime Officer
-provenance: {"Description": {"evidence": "", "source": "proposed"}, "Handling": {"evidence": "Financial Crime Officer (FCO) — 4-eyes principle. Sign-off is recorded against the FCO's identity (SSO) and is immutable. (§3.2 Step 6) / Client Exit workflow opened, or product / channel restrictions applied via the Restrictions Service. Customer Communications notified to draft the regulatory-compliant exit letter. (§3.2 Step 7)", "source": "document"}, "Impact": {"evidence": "", "source": "proposed"}}
 ---
 ## Description
 When the FCO Analyst's triage at Step 5 produces a "Recommend exit" decision, the case departs the normal approval path and escalates to the Financial Crime Officer for 4-eyes sign-off at Step 6. This is one of the mandatory escalation triggers alongside High-risk clients and PEPs.

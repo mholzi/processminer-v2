@@ -12,7 +12,6 @@ effectiveness: MEDIUM
 owner: Vendor Management
 step: [PS-DCR-006]
 regulatedBy: [REG-DCR-003]
-provenance: {"Control activity": {"evidence": "S. Krause confirmed this in the risk & compliance session.", "source": "elicited"}, "Risk addressed": {"evidence": "S. Krause confirmed this in the risk & compliance session.", "source": "elicited"}, "Timing": {"evidence": "S. Krause confirmed this in the risk & compliance session.", "source": "elicited"}, "What it checks": {"evidence": "S. Krause confirmed this in the risk & compliance session.", "source": "elicited"}}
 ---
 ## What it checks
 Checks that the external card bureau is meeting its production and dispatch service levels and operating within the terms of its outsourcing arrangement.

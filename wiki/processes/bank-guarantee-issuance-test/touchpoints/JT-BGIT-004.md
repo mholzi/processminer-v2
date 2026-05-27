@@ -8,7 +8,6 @@ confidence: high
 source: client-journey-specialist — M. Berger, 2026-05-20
 channel: SWIFT
 occursAt: [PS-BGIT-006]
-provenance: {"Experience": {"evidence": "M. Berger: delivery confirmation is indirect — client learns via portal or RM callback, not real-time notification", "source": "elicited"}, "What the bank does": {"evidence": "M. Berger confirmed TFO generates and dispatches guarantee via SWIFT at Step 6, updates TFS facility record", "source": "elicited"}, "What the client does": {"evidence": "M. Berger: 'SWIFT MT760 receipt at beneficiary's bank' confirmed as final delivery touchpoint", "source": "elicited"}}
 ---
 ## What the client does
 The client does not receive the SWIFT message directly — the instrument goes to the beneficiary's bank. The client learns of dispatch via the portal or an RM callback.

@@ -8,7 +8,6 @@ confidence: medium
 source: bank-guarantee-issuance-v1.md
 channelType: ASSISTED
 touchpoints: []
-provenance: {"Description": {"evidence": "via a relationship manager who keys it into the portal on the client's behalf.", "source": "document"}, "Usage": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:56:10Z
 ---

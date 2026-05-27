@@ -8,7 +8,6 @@ confidence: medium
 source: SME interview
 channelType: ASSISTED
 touchpoints: [JT-BGID-002]
-provenance: {"Description": {"evidence": "a relationship-manager (RM) on the phone", "source": "elicited"}, "Usage": {"evidence": "relationship-manager (RM) on the phone — RM keys it into the portal on the client's behalf", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:15:47Z
 approval: in-progress

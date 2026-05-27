@@ -9,7 +9,6 @@ source: dcr-dtp-mockup.md
 impact: MEDIUM
 handlingOwner: Contact Centre Agent
 category: Identity verification
-provenance: {"Description": {"evidence": "Identity verification fails", "source": "document"}, "Handling": {"evidence": "Replacement is not processed on the call; customer is directed to a branch with photo ID. The existing card is still blocked if the customer reports it lost or stolen.", "source": "document"}, "Impact": {"evidence": "S. Krause confirmed in the foundational run: Impact holds as drafted.", "source": "elicited"}}
 approval: approved
 approvalBy: S. Krause
 approvalDate: 2026-05-19

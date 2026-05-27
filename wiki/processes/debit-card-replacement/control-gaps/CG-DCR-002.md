@@ -9,7 +9,6 @@ source: Risk & compliance session - S. Krause
 severity: MEDIUM
 gapStatus: open
 control: [CP-DCR-003]
-provenance: {"Remediation": {"evidence": "S. Krause confirmed this in the risk & compliance session.", "source": "elicited"}, "Risk": {"evidence": "S. Krause confirmed this in the risk & compliance session.", "source": "elicited"}, "The gap": {"evidence": "S. Krause confirmed this in the risk & compliance session.", "source": "elicited"}}
 ---
 ## The gap
 The fraud-exposure review on lost or stolen cards (CP-DCR-003) has no defined completion time and no independent or second-line check — it rests entirely on one analyst's manual judgement.

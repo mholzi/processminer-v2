@@ -8,7 +8,6 @@ confidence: medium
 source: bank-guarantee-issuance-v1.md
 channelType: DIGITAL
 touchpoints: []
-provenance: {"Description": {"evidence": "A corporate client submits a Bank Guarantee application through the Corporate Portal … Corporate Portal — client-facing application capture.", "source": "document"}, "Usage": {"evidence": "A corporate client submits a Bank Guarantee application through the Corporate Portal … beneficiary details, guarantee amount, currency, wording type (standard or bespoke), validity period … The Trade Finance Officer receives the application and checks it is complete.", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:56:10Z
 ---

@@ -9,7 +9,6 @@ source: ddmm-dtp-mockup.md
 area: Process Steps
 gapStatus: open
 affects: [PS-DDMM-004]
-provenance: {"The gap": {"evidence": "Identified during foundational run review of PS-DDMM-004; SME confirmed the dual-control loopback correction procedure is not documented.", "source": "elicited"}, "Impact": {"evidence": "SME confirmed: inconsistent clerk handling is the direct risk of the gap being undocumented.", "source": "elicited"}, "Next step": {"evidence": "SME confirmed: full correction procedure — clerk steps and EX-DDMM-001 split-out decision — needs to be documented.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

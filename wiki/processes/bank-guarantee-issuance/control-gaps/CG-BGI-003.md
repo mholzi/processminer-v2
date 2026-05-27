@@ -7,7 +7,6 @@ status: draft
 confidence: high
 severity: HIGH
 gapStatus: open
-provenance: {"Remediation": {"evidence": "", "source": "proposed"}, "Risk": {"evidence": "There is no formal pre-transmission check today, only the TFO's informal eyeball of the generated instrument. Given a SWIFT message is very hard to recall, that is a genuine missing control.", "source": "elicited"}, "The gap": {"evidence": "There is no formal pre-transmission check today, only the TFO's informal eyeball of the generated instrument. Given a SWIFT message is very hard to recall, that is a genuine missing control — a pre-transmission verification of the generated instrument (amount, beneficiary BIC, expiry, wording) against the approved package should exist.", "source": "elicited"}}
 ---
 ## The gap
 No formal pre-transmission verification exists to confirm the generated guarantee instrument (amount, beneficiary BIC, expiry date, wording) matches the approved application package before SWIFT transmission; the only check is the TFO's informal visual inspection.

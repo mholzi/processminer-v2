@@ -11,7 +11,6 @@ findingStatus: OPEN
 severity: MEDIUM
 step: [PS-DDMM-007]
 regulation: [REG-DDMM-001]
-provenance: {"Finding": {"evidence": "SME (M. Vogel) confirmed: SEPA scheme compliance self-assessment 2026-03-20 — SLA tracked but per-reason-code resolution rationale not consistently recorded; bank cannot evidence correct scheme-defined handling path.", "source": "elicited"}, "Recommendation": {"evidence": "SME confirmed: per-reason-code resolution-record template proposed but not yet implemented; not started as remediation.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

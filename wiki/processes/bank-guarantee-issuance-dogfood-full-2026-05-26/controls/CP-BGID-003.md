@@ -11,7 +11,6 @@ execution: AUTOMATED
 owner: Trade Finance
 step: [PS-BGID-002]
 regulatedBy: [REG-BGID-005]
-provenance: {"Control activity": {"evidence": "", "source": "proposed"}, "Risk addressed": {"evidence": "", "source": "proposed"}, "Timing": {"evidence": "", "source": "proposed"}, "What it checks": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T08:27:49Z
 ---

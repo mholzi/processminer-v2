@@ -8,7 +8,6 @@ confidence: medium
 source: Chase — digital payments / Apple Pay help
 competitor: Chase
 sourceUrl: https://www.chase.com/digital/digital-payments/apple-pay/faqs/lost-or-stolen
-provenance: {"Evidence": {"evidence": "https://wallethub.com/answers/chase-instant-issue-2140675162/ — \"replacement card that will arrive within 3-5 days\" — fetched 2026-05-19", "source": "web"}, "Relevance": {"evidence": "https://www.chase.com/digital/digital-payments/apple-pay/faqs/lost-or-stolen — \"immediate digital access to your replacement card through Apple Pay\" — fetched 2026-05-19", "source": "web"}, "The journey": {"evidence": "https://www.chase.com/digital/digital-payments/apple-pay/faqs/lost-or-stolen — \"once it has been added to your wallet, you can use it right away\" — fetched 2026-05-19", "source": "web"}}
 asOf: 2026-05-19
 ---
 ## The journey

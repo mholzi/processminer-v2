@@ -8,7 +8,6 @@ confidence: medium
 source: periodic-kyc-review-dtp.pdf
 sentiment: positive
 touchpoint: []
-provenance: {"Design implication": {"evidence": "", "source": "proposed"}, "The moment": {"evidence": "Push notification on approval. (§6.2 table, row 'Decision', column 'What the client experiences')", "source": "document"}, "Why it matters": {"evidence": "Silent close; no acknowledgement (§6.2 table, row 'Decision', column 'Friction we removed')", "source": "document"}}
 ---
 ## The moment
 When the review is approved, the client receives a push notification confirming the outcome. For cases where the client was asked to provide information, this closes the loop on the interaction they participated in.

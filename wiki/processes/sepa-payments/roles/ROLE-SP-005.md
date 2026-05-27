@@ -8,7 +8,6 @@ confidence: high
 source: sepa-payments-dtp-mockup.md
 systems: [SYS-SP-005]
 controls: [CP-SP-005]
-provenance: {"In this process": {"evidence": "Step 5: 'The payment is scored in real time by the fraud engine. Low-risk items pass; high-risk items are held for review.' Exception E-4: 'Payment held; customer contacted for step-up verification; released or cancelled on the outcome.' RACI: Fraud = I for all rows except Fraud screening (A/R).", "source": "document"}, "Responsibility": {"evidence": "RACI table Section 4: Fraud screening — Fraud = A/R. Section 5.1 step 5: 'The payment is scored in real time by the fraud engine. Low-risk items pass; high-risk items are held for review.' Exception E-4: 'Payment held; customer contacted for step-up verification; released or cancelled on the outcome.'", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:15Z
 ---

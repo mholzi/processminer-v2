@@ -10,7 +10,6 @@ source: Nomentia — 'How to digitalize your bank guarantee management?' and 'Di
 sourceUrl: https://www.nomentia.com/blog/digitalize-bank-guarantee-management
 asOf: 2026-05-26
 bearsOn: [PP-BGID-001, PS-BGID-002]
-provenance: {"Evidence": {"evidence": "https://www.nomentia.com/blog/digitalize-bank-guarantee-management — enterprises deal with hundreds if not thousands of guarantees yearly against finite facility lines, driving demand for real-time headroom visibility — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.nomentia.com/blog/digitalized-guarantee-management-in-practice — \"Group Treasury can adjust the ideal utilization level and manage the allocation of business among the group's banks\" — fetched 2026-05-26", "source": "web"}, "The trend": {"evidence": "https://www.nomentia.com/blog/digitalize-bank-guarantee-management — \"Digital solutions centralize all guarantees, automate approval workflows, and provide real-time visibility across guarantee lifecycle\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: admin
 updatedAt: 2026-05-26T08:59:00Z
 ---

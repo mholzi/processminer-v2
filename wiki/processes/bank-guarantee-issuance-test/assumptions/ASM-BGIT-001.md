@@ -8,7 +8,6 @@ confidence: low
 source: source-target — bank-guarantee-issuance-test wiki
 assumptionStatus: OPEN
 bearsOn: [TD-BGIT-001]
-provenance: {"Impact if wrong": {"evidence": "", "source": "proposed"}, "The assumption": {"evidence": "", "source": "proposed"}, "Why it is unconfirmed": {"evidence": "", "source": "proposed"}}
 ---
 ## The assumption
 The target intake model assumes that a material share of corporate clients will connect their ERP or treasury system to the ICC-SWIFT C2B API within the planning horizon, making structured digital intake the primary channel rather than a niche capability.

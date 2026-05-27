@@ -8,7 +8,6 @@ confidence: medium
 source: SME interview
 sentiment: critical
 touchpoint: [JT-BGID-003]
-provenance: {"Design implication": {"evidence": "", "source": "proposed"}, "The moment": {"evidence": "the moment the client first sees the draft text the bank is prepared to issue (do we match what they need?)", "source": "elicited"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:15:47Z
 ---

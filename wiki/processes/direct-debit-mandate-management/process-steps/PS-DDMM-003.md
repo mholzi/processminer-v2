@@ -9,9 +9,7 @@ source: ddmm-dtp-mockup.md
 owner: Compliance
 sla:
 condition:
-transitions: [PS-DDMM-004|branch|screening clear · bulk above 50 mandates, PS-DDMM-005|branch|screening clear · single or bulk 50 or fewer mandates, EX-DDMM-002|exception|confirmed sanctions hit]
 systems: [SYS-DDMM-004]
-provenance: {"Inputs": {"evidence": "Debtor and creditor names are screened against sanctions lists.", "source": "document"}, "Outputs": {"evidence": "When the engine raises a potential hit, the mandate moves to a dedicated Pending Compliance hold status in MMS with its own holding queue.", "source": "elicited"}, "What happens": {"evidence": "Screening is name-based and skipped for amendments that change only non-name fields — deliberate current-state choice. When engine raises a potential hit, mandate moves to a dedicated Pending Compliance hold status in MMS with its own holding queue; 1-business-day SLA runs against that hold state.", "source": "elicited"}, "Why it matters": {"evidence": "Why it matters wording is fair — confirm as drafted.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

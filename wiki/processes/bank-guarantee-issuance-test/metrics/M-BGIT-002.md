@@ -8,7 +8,6 @@ confidence: high
 source: process-specialist — M. Berger, 2026-05-20
 value: ~180 guarantees per month (12-month average); Nov–Dec peak ~40% above the monthly mean
 trend: improving
-provenance: {"Current reading": {"evidence": "M. Berger Stage 5 standing input; index.md: frequency ~180/month, Nov-Dec peak ~40%, ~8% YoY", "source": "elicited"}, "Definition": {"evidence": "M. Berger Stage 5: 'M-BGIT-vol: ~180 guarantees/month, Nov-Dec peak 40% above mean'", "source": "elicited"}, "Why it matters": {"evidence": "M. Berger Stage 5 standing input confirmed improving trend", "source": "elicited"}}
 ---
 ## Definition
 The total number of bank guarantee instruments issued per calendar month, measured from application receipt to SWIFT MT760 dispatch.

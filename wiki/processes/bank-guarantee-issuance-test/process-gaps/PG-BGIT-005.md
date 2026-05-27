@@ -9,7 +9,6 @@ source: process-specialist — M. Berger, 2026-05-20
 area: As-Is process
 gapStatus: open
 affects: [PS-BGIT-003]
-provenance: {"Impact": {"evidence": "", "source": "proposed"}, "Next step": {"evidence": "M. Berger Stage 5 standing input confirmed gapStatus open", "source": "elicited"}, "The gap": {"evidence": "M. Berger Stage 5: 'Email-based Legal handoff at Step 3 produces no audit trail and no SLA enforcement'", "source": "elicited"}}
 ---
 ## The gap
 Bespoke-wording applications are routed to Legal via unstructured email rather than a system workflow. No formal SLA governs the Legal review turnaround, and no compliance-facing audit trail records when the request was sent, when Legal responded, or what wording was reviewed.

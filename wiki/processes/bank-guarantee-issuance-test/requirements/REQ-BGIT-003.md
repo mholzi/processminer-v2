@@ -10,7 +10,6 @@ reqType: FUNCTIONAL
 moscow: MUST
 derivedFrom: [TD-BGIT-003]
 addresses: [PP-BGIT-002, PG-BGIT-002, PG-BGIT-003]
-provenance: {"Acceptance criteria": {"evidence": "", "source": "proposed"}, "Rationale": {"evidence": "", "source": "proposed"}, "Requirement": {"evidence": "", "source": "proposed"}}
 ---
 ## Requirement
 The in-TFS Legal wording workflow must record routing timestamps, enforce a configurable SLA timer, send an automated reminder at 80% of SLA consumed, and trigger an escalation notification to Head of Legal at SLA breach.

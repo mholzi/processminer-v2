@@ -7,7 +7,6 @@ status: draft
 confidence: medium
 source: innovation-analyst session 2026-05-26
 severity: LOW
-provenance: {"Likelihood & impact": {"evidence": "Elicited from standard notification delivery risk assessment", "source": "elicited"}, "Mitigation": {"evidence": "Elicited from standard opt-in notification rollout practice", "source": "elicited"}, "The risk": {"evidence": "Elicited from analysis of II-BGID-005 as a low-complexity opt-in notification enhancement", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:56:41Z
 approval: in-progress

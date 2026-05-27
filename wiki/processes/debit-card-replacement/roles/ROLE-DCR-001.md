@@ -8,7 +8,6 @@ confidence: high
 source: dcr-dtp-mockup.md
 systems: [SYS-DCR-001, SYS-DCR-002]
 controls: [CP-DCR-001, CP-DCR-002]
-provenance: {"In this process": {"evidence": "The Contact Centre Agent verifies the customer's identity ... The agent places an immediate block on the existing card", "source": "document"}, "Responsibility": {"evidence": "Verify customer identity | R ... Block existing card | R ... Confirm dispatch to customer | R", "source": "document"}}
 approval: approved
 approvalBy: S. Krause
 approvalDate: 2026-05-19

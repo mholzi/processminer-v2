@@ -8,7 +8,6 @@ confidence: high
 source: ddmm-dtp-mockup.md
 target: Within 1 business day of receipt
 value: Not measured
-provenance: {"Current reading": {"evidence": "Single mandate registration | Within 1 business day of receipt", "source": "document"}, "Definition": {"evidence": "SME (M. Vogel) confirmed: metric measures bank-side elapsed time; clock pauses during creditor-side exception states (EX-DDMM-001), consistent with SLA pause established at that exception.", "source": "elicited"}, "Why it matters": {"evidence": "SME confirmed accurate as drafted.", "source": "elicited"}}
 trend:
 approval: approved
 approvalBy: M. Vogel

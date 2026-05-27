@@ -10,8 +10,6 @@ owner: Fraud Analyst
 condition: Only for cards reported lost or stolen
 sla: Fraud exposure review completed within the same business day
 systems: [SYS-DCR-001]
-transitions: [PS-DCR-005|normal|no suspicious activity found, EX-DCR-002|exception|suspicious transactions found]
-provenance: {"Inputs": {"evidence": "reviews recent transactions for unauthorised activity", "source": "document"}, "Outputs": {"evidence": "If suspicious transactions are found, see Exception E-2", "source": "document"}, "What happens": {"evidence": "For cards reported lost or stolen, the request is flagged to the Fraud Analyst, who reviews recent transactions for unauthorised activity. Damaged-card requests skip this check.", "source": "document"}, "Why it matters": {"evidence": "S. Krause confirmed in the foundational run: Why it matters holds as drafted.", "source": "elicited"}}
 approval: approved
 approvalBy: S. Krause
 approvalDate: 2026-05-19

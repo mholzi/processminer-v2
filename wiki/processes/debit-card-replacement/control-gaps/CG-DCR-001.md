@@ -8,7 +8,6 @@ confidence: medium
 source: Foundational run - S. Krause
 severity: MEDIUM
 gapStatus: open
-provenance: {"Remediation": {"evidence": "Elicited from S. Krause during the foundational-run deepening probe.", "source": "elicited"}, "Risk": {"evidence": "Elicited from S. Krause during the foundational-run deepening probe.", "source": "elicited"}, "The gap": {"evidence": "Elicited from S. Krause during the foundational-run deepening probe.", "source": "elicited"}}
 ---
 ## The gap
 No control verifies that the replacement card was actually delivered to and received by the customer. The Confirm Dispatch step ends when the bureau is instructed, not when the card arrives.

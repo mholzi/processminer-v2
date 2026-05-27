@@ -10,7 +10,6 @@ category: Capacity
 severity: MEDIUM
 priority: P2
 affects: [PS-DDMM-004]
-provenance: {"Description": {"evidence": "With 10–15 bulk files a week, each needs an independent Mandate Checker who is not the submitter. Pool of staff senior enough to act as Checker is small, so on busy days or when one or two are on leave, bulk files sit in a queue waiting for an available Checker rather than for any actual review effort.", "source": "elicited"}, "Impact": {"evidence": "That waiting time eats directly into the 2-day bulk SLA (M-DDMM-002) even though the review itself is quick. Scheduling/capacity friction, not a review-quality problem.", "source": "elicited"}, "Root cause": {"evidence": "Pool restricted to senior staff who did not submit the batch. Small team, 10-15 bulk files/week. SME confirmed 'segregation of duties' as correct framing for the constraint.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

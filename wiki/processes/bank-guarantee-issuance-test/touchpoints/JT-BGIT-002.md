@@ -8,7 +8,6 @@ confidence: high
 source: client-journey-specialist — M. Berger, 2026-05-20
 channel: Corporate Portal
 occursAt: [PS-BGIT-002, PS-BGIT-003]
-provenance: {"Experience": {"evidence": "M. Berger: stalled credit check and bespoke wording wait confirmed as leading pain points — no proactive communication", "source": "elicited"}, "What the bank does": {"evidence": "M. Berger: 'no formal chase SLA' — portal status is manually updated by TFO; no automated notifications", "source": "elicited"}, "What the client does": {"evidence": "M. Berger: 'portal status updates' confirmed as touchpoint during credit check and wording review steps", "source": "elicited"}}
 ---
 ## What the client does
 Returns to the Corporate Portal to check application progress. No push notification is sent when an application stalls at credit review or enters Legal review.

@@ -8,7 +8,6 @@ confidence: low
 source: wiki-synthesis-2026-05-26
 validationArea: wording review
 gapStatus: open
-provenance: {"Resolution": {"evidence": "", "source": "proposed"}, "Status": {"evidence": "", "source": "proposed"}, "The gap": {"evidence": "", "source": "proposed"}}
 updatedBy: admin
 updatedAt: 2026-05-26T20:15:01Z
 ---

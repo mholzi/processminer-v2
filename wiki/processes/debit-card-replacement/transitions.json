@@ -1,0 +1,57 @@
+{
+  "PS-DCR-001": [
+    {
+      "to": "PS-DCR-002",
+      "kind": "normal",
+      "when": "request logged"
+    }
+  ],
+  "PS-DCR-002": [
+    {
+      "to": "PS-DCR-003",
+      "kind": "normal",
+      "when": "identity verified"
+    },
+    {
+      "to": "EX-DCR-001",
+      "kind": "exception",
+      "when": "identity verification fails"
+    }
+  ],
+  "PS-DCR-003": [
+    {
+      "to": "PS-DCR-004",
+      "kind": "branch",
+      "when": "card reported lost or stolen"
+    },
+    {
+      "to": "PS-DCR-005",
+      "kind": "branch",
+      "when": "card reported damaged"
+    }
+  ],
+  "PS-DCR-004": [
+    {
+      "to": "PS-DCR-005",
+      "kind": "normal",
+      "when": "no suspicious activity found"
+    },
+    {
+      "to": "EX-DCR-002",
+      "kind": "exception",
+      "when": "suspicious transactions found"
+    }
+  ],
+  "PS-DCR-005": [
+    {
+      "to": "PS-DCR-006",
+      "kind": "normal",
+      "when": "replacement card ordered"
+    },
+    {
+      "to": "EX-DCR-003",
+      "kind": "exception",
+      "when": "registered address unconfirmed"
+    }
+  ]
+}

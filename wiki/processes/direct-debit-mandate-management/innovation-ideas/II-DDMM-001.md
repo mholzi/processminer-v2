@@ -11,7 +11,6 @@ strategicFit: HIGH
 complexity: MEDIUM
 addresses: [PP-DDMM-004]
 fromTrend: [TR-DDMM-001]
-provenance: {"Expected benefit": {"evidence": "SME confirmed: eliminating the queue-scanning tax and preventing silent SLA breaches are the primary gains.", "source": "elicited"}, "Feasibility": {"evidence": "SME confirmed accuracy of feasibility framing; MMS queue configuration is the primary dependency.", "source": "elicited"}, "The idea": {"evidence": "SME (M. Vogel): PP-DDMM-004 is the biggest systemic staff cost — manual queue scanning is a constant tax on every shift; SLA breaches are silent until a complaint arrives.", "source": "elicited"}}
 ---
 ## The idea
 Configure the MMS work queue to surface items by SLA urgency, request type, and risk profile rather than arrival order. Near-breach items rise automatically; bulk-file records from the same creditor are grouped; request types with tighter SLAs are weighted accordingly.

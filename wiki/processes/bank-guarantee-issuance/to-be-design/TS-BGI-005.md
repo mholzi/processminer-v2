@@ -6,7 +6,6 @@ title: Resilient Issuance Approval with Digital Delegation
 status: draft
 confidence: low
 replaces: [PS-BGI-005]
-provenance: {"Rationale": {"evidence": "", "source": "proposed"}, "Target description": {"evidence": "", "source": "proposed"}, "What changes": {"evidence": "", "source": "proposed"}}
 ---
 ## Target description
 The issuance approval step operates with a formally documented deputy policy: when the primary TFM is unavailable, the Trade Finance System routes applications to the designated deputy, preventing the approval queue from stalling. The EUR 5 million escalation path includes a documented cover arrangement for the Head of Trade Finance.

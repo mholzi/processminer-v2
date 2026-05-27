@@ -10,7 +10,6 @@ source: Traydstream product page — TraydCheck; The BAE HQ — 'Traydstream Rai
 sourceUrl: https://traydstream.com/traydcheck/
 asOf: 2026-05-26
 bearsOn: [PP-BGID-002, PP-BGID-003, FP-BGID-001, CG-BGID-001]
-provenance: {"Evidence": {"evidence": "https://www.thebaehq.com/news/traydstream-raises-9-3m-ai-trade-finance-document-processing — EUR 9.3M raised August 2025 led by Pivot Investment Partners and e& to accelerate ML capabilities for trade finance automation — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.tradefinanceglobal.com/posts/erste-group-partners-with-traydstream/ — Erste Group partnership at Sibos 2024 to automate documentary credit operations across Central and Eastern Europe — fetched 2026-05-26", "source": "web"}, "The move": {"evidence": "https://traydstream.com/traydcheck/ — \"compressing the four-to-ten-hour manual process to under three minutes for compliant transactions\" using OCR, NLP, and ML models trained on trade finance rules — fetched 2026-05-26", "source": "web"}}
 updatedBy: admin
 updatedAt: 2026-05-26T08:59:00Z
 ---

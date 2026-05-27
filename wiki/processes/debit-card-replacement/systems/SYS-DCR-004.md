@@ -8,7 +8,6 @@ confidence: high
 source: dcr-dtp-mockup.md
 systemType: EXTERNAL
 integrates: [SYS-DCR-001]
-provenance: {"Purpose": {"evidence": "Card Bureau Interface | Sends production and dispatch instructions to the external card bureau", "source": "document"}, "Role in this process": {"evidence": "Sends production and dispatch instructions to the external card bureau", "source": "document"}}
 approval: approved
 approvalBy: S. Krause
 approvalDate: 2026-05-19

@@ -12,7 +12,6 @@ owner: CISO
 appliesTo: [TGTAPP-BGID-001, TGTAPP-BGID-002, TGTAPP-BGID-003, TGTAPP-BGID-004, TGTAPP-BGID-005, TGTAPP-BGID-006]
 drivenByADR: [ADR-BGID-010]
 regulatedBy: [REG-BGID-010]
-provenance: {"Definition": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Measurement": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Verification": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T15:58:45Z
 approval: approved

@@ -9,7 +9,6 @@ source: bank-guarantee-issuance-v1.md
 category: credit
 impact: HIGH
 handlingOwner: Credit team
-provenance: {"Description": {"evidence": "The Trade Finance Officer confirms the client holds an approved guarantee facility with sufficient available limit. If the limit is insufficient, the application is parked and routed to the Credit team.", "source": "document"}, "Handling": {"evidence": "TFO routes to Credit directly; TFM informed for awareness but not in path. Credit can approve temporary limit increase, permanent facility amendment, or decline. On resolution TFO manually re-queues. On decline application is closed; client notified via RM who works with client on smaller amount or facility increase before resubmission.", "source": "elicited"}, "Impact": {"evidence": "this is the most common reason for delay. Applications frequently stall at the credit and facility check when the client has not pre-arranged enough limit.", "source": "document"}}
 approval: approved
 approvalBy: m.berger
 approvalDate: 2026-05-19

@@ -7,7 +7,6 @@ status: draft
 confidence: medium
 source: bank-guarantee-issuance-v1.md
 raci: [PS-BGIT-005:A]
-provenance: {"In this process": {"evidence": "", "source": "proposed"}, "Responsibility": {"evidence": "", "source": "proposed"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-20

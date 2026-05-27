@@ -9,7 +9,6 @@ source: innovation-analyst session 2026-05-26
 target: 65%
 value: ~40% (baseline)
 trend:
-provenance: {"Current reading": {"evidence": "Elicited: ~40% per FP-BGID-001 and PP-BGID-002 analysis; thresholds green ≥60%, amber 40–59%, red <40%", "source": "elicited"}, "Definition": {"evidence": "Elicited: % of applications through PS-BGID-001–006 with no exception flag; sourced from workflow audit trail; owner Head of Trade Finance Operations; frequency monthly", "source": "elicited"}, "Why it matters": {"evidence": "Elicited: STP rate is the composite health indicator for manual-handoff steps at PS-BGID-002 and PS-BGID-003", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T10:02:05Z
 approval: in-progress

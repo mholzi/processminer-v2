@@ -9,7 +9,6 @@ competitor: Komgo
 source: Standard Chartered press release / Komgo, January 2026
 sourceUrl: https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/
 bearsOn: [PS-BGI-001, PS-BGI-006]
-provenance: {"Evidence": {"evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — 'Komgo Konsole used for Standard Chartered first live ICC-SWIFT API bank guarantee transaction, January 2026' — fetched 2026-05-20", "source": "web"}, "Relevance": {"evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — 'simplified integration and addressed the challenge of multiple API connectivity... offering clients greater speed, transparency and reliability' — fetched 2026-05-20", "source": "web"}, "The move": {"evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — 'Komgo is a global digital trade finance platform that streamlines corporate-to-bank trade finance communication... digitalises the management of all trade finance instruments, such as bank guarantees' — fetched 2026-05-20", "source": "web"}}
 asOf: 2026-05-20
 ---
 ## The move

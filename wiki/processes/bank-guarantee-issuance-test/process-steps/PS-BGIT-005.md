@@ -7,8 +7,6 @@ status: draft
 confidence: high
 source: bank-guarantee-issuance-v1.md
 owner: Trade Finance Manager
-transitions: [PS-BGIT-006|normal|approved]
-provenance: {"Inputs": {"evidence": "M. Berger: standing approval", "source": "elicited"}, "Outputs": {"evidence": "M. Berger: standing approval", "source": "elicited"}, "What happens": {"evidence": "", "source": "proposed"}, "Why it matters": {"evidence": "M. Berger: standing approval", "source": "elicited"}}
 systems: [SYS-BGIT-002]
 approval: in-progress
 approvalBy: run-lint

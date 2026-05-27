@@ -10,7 +10,6 @@ severity: HIGH
 occursAt: [MT-PR-002]
 painPoint: [PP-PR-003]
 addressedBy: [PS-PR-004, TD-PR-004]
-provenance: {"Client impact": {"evidence": "", "source": "proposed"}, "Description": {"evidence": "", "source": "proposed"}, "Root cause": {"evidence": "", "source": "proposed"}}
 ---
 ## Description
 When outreach is needed, the client receives an email with a paper form to complete, scan, and return — and may be required to visit a branch in person. The document names this friction as 'Email + paper form + scan + return-trip to branch.'

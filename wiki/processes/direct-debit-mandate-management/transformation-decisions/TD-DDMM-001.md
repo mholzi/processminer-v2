@@ -11,7 +11,6 @@ decisionStatus: DECIDED
 resolves: [PP-DDMM-004]
 realises: [TS-DDMM-001]
 fromIdea: [II-DDMM-001]
-provenance: {"Options considered": {"evidence": "SME confirmed options considered and rationale for all ten — accepted without edit.", "source": "elicited"}, "Rationale": {"evidence": "SME confirmed rationale — accepted without edit.", "source": "elicited"}, "The decision": {"evidence": "SME (M. Vogel) accepted all ten decisions without edit.", "source": "elicited"}}
 ---
 ## The decision
 Implement an SLA-aware priority queue in MMS that scores all incoming mandate work by type, SLA remaining, and creditor risk tier, replacing the current undifferentiated inbox.

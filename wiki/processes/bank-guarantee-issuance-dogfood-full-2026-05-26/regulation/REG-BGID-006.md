@@ -9,7 +9,6 @@ domain: Prudential — Large Exposures
 source: Regulation (EU) No 575/2013 (CRR), Part Four, Article 403
 sourceUrl: https://lexparency.org/eu/CRR/ART_403/
 asOf: 2026-05-26
-provenance: {"How it is met": {"evidence": "https://www.eba.europa.eu/single-rule-book-qa/qna/view/publicId/2020_5496 — \"Mandatory substitution approach according to Article 403 CRR\": the protected portion is deducted from the original obligor and added to the guarantor in the COREP LE template; CP-BGID-004 records collateral at issuance, providing the data for this re-attribution — fetched 2026-05-26", "source": "web"}, "What it requires": {"evidence": "https://lexparency.org/eu/CRR/ART_403/ — \"Where an exposure to a client is guaranteed by a third party, or is secured by collateral issued by a third party, an institution may treat the part of the exposure which is guaranteed as an exposure incurred on the guarantor and not on the client\" — fetched 2026-05-26", "source": "web"}, "Why it applies": {"evidence": "https://www.eba.europa.eu/single-rule-book-qa/qna/view/publicId/2022_6396 — \"Mandatory substitution approach according to Articles 401(4) and 403 CRR\": when collateral or a counter-guarantee supports a guarantee issued by the bank, the exposure must be re-attributed to the protection provider for large-exposure purposes — fetched 2026-05-26", "source": "web"}}
 updatedBy: admin
 updatedAt: 2026-05-26T08:25:32Z
 ---

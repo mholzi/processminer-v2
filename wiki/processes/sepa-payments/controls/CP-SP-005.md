@@ -11,7 +11,6 @@ execution: AUTOMATED
 effectiveness: HIGH
 owner: Fraud
 step: [PS-SP-005]
-provenance: {"Control activity": {"evidence": "Step 5: 'Low-risk items pass; high-risk items are held for review.' E-4: 'Payment held; customer contacted for step-up verification; released or cancelled on the outcome.' Section 8 lists Fraud Engine.", "source": "document"}, "Risk addressed": {"evidence": "", "source": "proposed"}, "Timing": {"evidence": "Step sequence: step 4 (sanctions/AML) -> step 5 (fraud) -> step 6 (routing) -> step 7 (debit booking). Section 7 C-5: 'Every item'.", "source": "document"}, "What it checks": {"evidence": "Step 5: 'The payment is scored in real time by the fraud engine. Low-risk items pass; high-risk items are held for review.' References to 'behavioural and transactional risk models' and 'normal payment patterns' removed — not stated in the document.", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:00Z
 ---

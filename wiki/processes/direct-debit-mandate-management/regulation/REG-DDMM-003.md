@@ -8,7 +8,6 @@ confidence: high
 source: M. Vogel, Senior Payments Operations Analyst
 domain: Anti-Money Laundering
 asOf: 2026-05-19
-provenance: {"How it is met": {"evidence": "SME accepted EX-DDMM-002 silent freeze and STK-DDMM-001 Financial Crime engagement as correct.", "source": "elicited"}, "What it requires": {"evidence": "SME confirmed AML/AMLD (GwG) in scope; SAR obligation, tipping-off prohibition.", "source": "elicited"}, "Why it applies": {"evidence": "SME confirmed: confirmed hit may indicate financial crime; bank has statutory SAR obligation; must not disclose to creditor.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

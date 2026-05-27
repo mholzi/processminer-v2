@@ -1,0 +1,69 @@
+{
+  "PS-BGI-001": [
+    {
+      "to": "PS-BGI-002",
+      "kind": "normal",
+      "when": "application is complete"
+    },
+    {
+      "to": "EX-BGI-004",
+      "kind": "exception",
+      "when": "application is incomplete"
+    }
+  ],
+  "PS-BGI-002": [
+    {
+      "to": "PS-BGI-003",
+      "kind": "normal",
+      "when": "limit is sufficient"
+    },
+    {
+      "to": "EX-BGI-001",
+      "kind": "exception",
+      "when": "limit is insufficient"
+    }
+  ],
+  "PS-BGI-003": [
+    {
+      "to": "PS-BGI-004",
+      "kind": "normal",
+      "when": "standard wording confirmed or bespoke wording signed off by Legal"
+    },
+    {
+      "to": "EX-BGI-003",
+      "kind": "branch",
+      "when": "bespoke wording requested"
+    }
+  ],
+  "PS-BGI-004": [
+    {
+      "to": "PS-BGI-005",
+      "kind": "normal",
+      "when": "no screening hit"
+    },
+    {
+      "to": "EX-BGI-002",
+      "kind": "exception",
+      "when": "screening hit detected"
+    }
+  ],
+  "PS-BGI-005": [
+    {
+      "to": "PS-BGI-006",
+      "kind": "normal",
+      "when": "approved"
+    },
+    {
+      "to": "EX-BGI-005",
+      "kind": "exception",
+      "when": "TFM declines or returns for rework"
+    }
+  ],
+  "PS-BGI-007": [
+    {
+      "to": "PS-BGI-005",
+      "kind": "normal",
+      "when": "collateral confirmed and blocked"
+    }
+  ]
+}

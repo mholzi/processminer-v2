@@ -10,7 +10,6 @@ controlType: PREVENTIVE
 execution: MANUAL
 owner: Trade Finance Manager
 step: [PS-BGIT-005]
-provenance: {"Control activity": {"evidence": "A Trade Finance Manager reviews the assembled package and approves issuance. Guarantees above EUR 5 million additionally require sign-off by the Head of Trade Finance.", "source": "document"}, "Risk addressed": {"evidence": "M. Berger: standing approval", "source": "elicited"}, "Timing": {"evidence": "M. Berger: standing approval", "source": "elicited"}, "What it checks": {"evidence": "No guarantee is issued without a Trade Finance Manager's approval, recorded in the Trade Finance System.", "source": "document"}}
 approval: in-progress
 regulatedBy: [REG-BGIT-004, REG-BGIT-005, REG-BGIT-006]
 ---

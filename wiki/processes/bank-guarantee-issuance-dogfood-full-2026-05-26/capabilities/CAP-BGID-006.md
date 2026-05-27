@@ -11,7 +11,6 @@ reuse: REUSED
 owningDomain: Trade Finance
 hostedIn: [TGTAPP-BGID-001]
 realisesStep: [TS-BGID-005]
-provenance: {"Boundaries": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Description": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Inputs and outputs": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T15:00:11Z
 approval: approved

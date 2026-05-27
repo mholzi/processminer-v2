@@ -10,7 +10,6 @@ category: sanctions hit
 impact: HIGH
 frequencyPct:
 handlingOwner: Compliance Analyst
-provenance: {"Description": {"evidence": "\"The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list. A screening hit suspends the application pending Compliance investigation.\" (step 4)", "source": "document"}, "Handling": {"evidence": "\"A screening hit suspends the application pending Compliance investigation.\" (step 4); \"The process is subject to anti-money-laundering and sanctions obligations (EU sanctions regulations, AML directives).\" (Regulatory context)", "source": "document"}, "Impact": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T05:17:42Z
 ---

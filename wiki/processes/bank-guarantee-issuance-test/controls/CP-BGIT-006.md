@@ -10,7 +10,6 @@ controlType: PREVENTIVE
 execution: MANUAL
 owner: Trade Finance Operations
 step: [PS-BGIT-006]
-provenance: {"Control activity": {"evidence": "M. Berger Stage 5 standing input confirmed four-eyes check before SWIFT dispatch", "source": "elicited"}, "Risk addressed": {"evidence": "M. Berger Stage 5 input: remediating control for CG-BGIT-002", "source": "elicited"}, "Timing": {"evidence": "M. Berger Stage 5 standing input confirmed timing at PS-BGIT-006", "source": "elicited"}, "What it checks": {"evidence": "M. Berger Stage 5: 'CP-BGIT-006: Four-eyes pre-SWIFT dispatch verification, PREVENTIVE, MANUAL, owner Trade Finance Operations, step PS-BGIT-006, addresses CG-BGIT-002'", "source": "elicited"}}
 ---
 ## What it checks
 Verifies that the generated guarantee wording, beneficiary details, amount, currency and validity period in the guarantee document match the approved application and the approval decision before SWIFT MT760 dispatch.

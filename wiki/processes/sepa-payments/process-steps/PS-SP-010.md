@@ -10,7 +10,6 @@ owner: Payments Operations
 sla: End of business day
 condition: CSM settlement reports received for the day
 systems: [SYS-SP-002, SYS-SP-003, SYS-SP-006]
-provenance: {"Inputs": {"evidence": "", "source": "proposed"}, "Outputs": {"evidence": "", "source": "proposed"}, "What happens": {"evidence": "Step 10: 'At end of day, submitted payments are reconciled against CSM settlement reports; any break is investigated.' Control C-7: 'End-of-day reconciliation vs CSM settlement — Detective / manual — Daily.'", "source": "document"}, "Why it matters": {"evidence": "Control C-7: 'End-of-day reconciliation vs CSM settlement — Detective / manual.' Step 10: 'any break is investigated.'", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:15Z
 ---

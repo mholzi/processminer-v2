@@ -7,7 +7,6 @@ status: draft
 confidence: medium
 source: bank-guarantee-issuance-v1.md
 systemType: SUPPORTING
-provenance: {"Purpose": {"evidence": "", "source": "proposed"}, "Role in this process": {"evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list. A screening hit suspends the application pending Compliance investigation. The screening result is attached to the application.", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:56:10Z
 ---

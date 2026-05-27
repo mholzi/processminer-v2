@@ -8,7 +8,6 @@ confidence: high
 source: sepa-payments-dtp-mockup.md
 systems: [SYS-SP-001]
 controls: []
-provenance: {"In this process": {"evidence": "Section 5.1 step 1: 'Each carries debtor account, creditor IBAN, creditor name, BIC (optional for SEPA), amount in EUR, and a remittance reference. Bulk files arrive as pain.001 messages.' Section 3: 'A corporate customer uploads a payment file via the host-to-host channel.' RACI table: Customer/Channel = A/R for Submit payment instruction. Exception E-4: 'customer contacted for step-up verification; released or cancelled on the outcome.' Exception E-1: 'Payment rejected to the customer with a reason code; correction and resubmission required.'", "source": "document"}, "Responsibility": {"evidence": "Section 3 Trigger: 'A customer submits a euro payment instruction via online or mobile banking … A corporate customer uploads a payment file via the host-to-host channel.' Section 8: 'Channel platforms (online / mobile / host-to-host) — Capture and submit payment instructions.' Section 5.1 step 9: 'the customer is notified immediately … the customer sees the payment as executed.'", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:15Z
 ---

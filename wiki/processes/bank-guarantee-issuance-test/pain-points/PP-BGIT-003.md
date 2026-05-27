@@ -9,7 +9,6 @@ source: foundational-run — M. Berger
 category: delay
 severity: MEDIUM
 affects: [PS-BGIT-001]
-provenance: {"Description": {"evidence": "M. Berger: 'incomplete applications are returned through the portal with a missing-info comment (no formal chase SLA, that’s a known weakness)'", "source": "elicited"}, "Impact": {"evidence": "", "source": "proposed"}, "Root cause": {"evidence": "", "source": "proposed"}}
 painType: delay
 ---
 ## Description

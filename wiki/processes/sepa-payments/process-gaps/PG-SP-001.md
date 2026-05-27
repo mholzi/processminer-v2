@@ -9,7 +9,6 @@ source: sepa-payments-dtp-mockup.md
 area: As-Is process
 gapStatus: open
 affects: [PS-SP-006]
-provenance: {"Impact": {"evidence": "", "source": "proposed"}, "Next step": {"evidence": "§10 open question: 'Is the EUR 100,000 SCT Inst limit a bank-set limit or the scheme maximum?'; Document Control table: 'Author (SME): A. Vermeulen — Payments Product Owner'", "source": "document"}, "The gap": {"evidence": "§5.1 step 6: 'SCT Inst if the amount is at or below the instant limit (currently EUR 100,000)'; §10 open question: 'Is the EUR 100,000 SCT Inst limit a bank-set limit or the scheme maximum?'", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:00Z
 ---

@@ -8,7 +8,6 @@ confidence: medium
 domain: AML/Sanctions
 source: Directive (EU) 2015/849 (AMLD5); Regulation (EU) 2024/1624 (AMLR, from July 2027)
 sourceUrl: https://eur-lex.europa.eu/eli/reg/2024/1624/oj/eng
-provenance: {"How it is met": {"evidence": "https://eur-lex.europa.eu/eli/reg/2024/1624/oj/eng — AMLR obliges institutions to apply CDD at onboarding and on each transaction — fetched 2026-05-26", "source": "web"}, "What it requires": {"evidence": "https://eur-lex.europa.eu/eli/reg/2024/1624/oj/eng — AMLR Article 20: verify identity, beneficial ownership at 25% threshold, screen against sanctions and PEP lists — fetched 2026-05-26", "source": "web"}, "Why it applies": {"evidence": "https://anti-money-laundering.eu/new-customer-due-diligence-cdd-data-points-under-amlr/ — banks are obliged entities; guarantee issuance creates a financial product relationship requiring CDD — fetched 2026-05-26", "source": "web"}}
 asOf: 2026-05-26
 updatedBy: the assistant
 updatedAt: 2026-05-26T06:50:01Z

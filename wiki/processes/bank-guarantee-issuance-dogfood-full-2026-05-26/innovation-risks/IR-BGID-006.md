@@ -7,7 +7,6 @@ status: draft
 confidence: medium
 source: innovation-analyst session 2026-05-26
 severity: MEDIUM
-provenance: {"Likelihood & impact": {"evidence": "Elicited from ASM-BGID-004 which flags credit system real-time API availability as an open assumption", "source": "elicited"}, "Mitigation": {"evidence": "Elicited from standard data-freshness design practice for financial dashboard products", "source": "elicited"}, "The risk": {"evidence": "Elicited from analysis of II-BGID-003 dependency on credit-system API real-time feed", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:56:41Z
 approval: in-progress

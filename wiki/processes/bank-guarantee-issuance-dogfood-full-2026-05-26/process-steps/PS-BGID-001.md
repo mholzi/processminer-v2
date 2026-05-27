@@ -10,7 +10,6 @@ owner: Trade Finance Officer
 sla:
 condition:
 systems: [SYS-BGID-001]
-provenance: {"Inputs": {"evidence": "[Y] Accept as drafted", "source": "elicited"}, "Outputs": {"evidence": "[Y] Accept as drafted", "source": "elicited"}, "What happens": {"evidence": "incomplete app → officer returns it via the portal with a checklist (no defined SLA — usually same day)", "source": "elicited"}, "Why it matters": {"evidence": "[Y] Accept as drafted", "source": "elicited"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T06:11:34Z
 approval: in-progress

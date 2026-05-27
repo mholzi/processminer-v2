@@ -9,7 +9,6 @@ source: bank-guarantee-issuance-v1.md
 category: delay
 severity: HIGH
 affects: [PS-BGI-002]
-provenance: {"Description": {"evidence": "Applications frequently stall at the credit and facility check when the client has not pre-arranged enough limit.", "source": "document"}, "Impact": {"evidence": "2-5 business days for routine Credit resolution, longer for Credit Committee cases. Even routine resolution breaches the 3-business-day SLA.", "source": "elicited"}, "Root cause": {"evidence": "Clients don't track facility headroom day-to-day, and the bank does not proactively monitor or flag low headroom to the client or RM. Both contribute. Handled purely reactively today — no proactive flagging.", "source": "elicited"}}
 approval: approved
 approvalBy: m.berger
 approvalDate: 2026-05-19

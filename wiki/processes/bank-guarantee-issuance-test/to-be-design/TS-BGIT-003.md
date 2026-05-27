@@ -8,7 +8,6 @@ confidence: high
 source: source-target — bank-guarantee-issuance-test wiki
 replaces: [PS-BGIT-006]
 systems: [SYS-BGIT-002, SYS-BGIT-004]
-provenance: {"Rationale": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed target state from source-target stub", "source": "elicited"}, "Target description": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed target state from source-target stub", "source": "elicited"}, "What changes": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed target state from source-target stub", "source": "elicited"}}
 ---
 ## Target description
 The Trade Finance System enforces a hard gate at the guarantee generation step: no guarantee document can be generated or dispatched via SWIFT unless the TFS holds a valid TFM approval record for the transaction. This converts a currently undocumented manual step into a system-enforced control, closing the compliance gap (CG-BGIT-002) and creating an auditable record of every issuance against its approval.

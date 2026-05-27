@@ -9,7 +9,6 @@ source: bank-guarantee-issuance-v1.md
 systems: [SYS-BGID-001, SYS-BGID-002]
 controls: [CP-BGID-003]
 raci: [ps-1:R, ps-2:R, ps-6:R]
-provenance: {"In this process": {"evidence": "The Trade Finance Officer receives the application and checks it is complete [...] The Trade Finance Officer confirms the client holds an approved guarantee facility with sufficient available limit [...] The Trade Finance Officer generates the guarantee instrument in the Trade Finance System and the guarantee is transmitted to the beneficiary's bank via SWIFT.", "source": "document"}, "Responsibility": {"evidence": "Trade Finance Officer — intake, checks, generation and delivery.", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:56:10Z
 ---

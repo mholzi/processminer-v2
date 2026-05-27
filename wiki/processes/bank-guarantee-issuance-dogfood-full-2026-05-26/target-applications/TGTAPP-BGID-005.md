@@ -11,7 +11,6 @@ vendor: In-house (Node.js/React + ICC-SWIFT adapter)
 owningDomain: Trade Finance / Digital Channels
 costBand: €300k–700k build + €100k–200k annual run
 drivenByADR: [ADR-BGID-003]
-provenance: {"Rationale": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Risks": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Tech stack": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T14:59:49Z
 approval: approved

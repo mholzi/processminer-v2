@@ -9,7 +9,6 @@ owner: Compliance Analyst
 sla:
 condition: Wording approved and application ready for screening
 systems: [SYS-BGID-003]
-provenance: {"Inputs": {"evidence": "", "source": "proposed"}, "Outputs": {"evidence": "", "source": "proposed"}, "What happens": {"evidence": "", "source": "proposed"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T05:17:42Z
 ---

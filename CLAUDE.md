@@ -13,7 +13,8 @@ Three layers:
 
 - `raw-sources/<slug>/` — immutable uploaded source documents (layer 1)
 - `wiki/processes/<slug>/` — typed Markdown elements, one folder per section,
-  with JSON sidecars (`sections.json`, `ingest.json`, `lint.json`, etc.) (layer 2)
+  with JSON sidecars (`sections.json`, `ingest.json`, `lint.json`,
+  `provenance.json`, `transitions.json`, etc.) (layer 2)
 - `schema/process-schema.json` — the schema, single source of truth for
   element types, frontmatter, relations and the provenance contract (layer 3)
 

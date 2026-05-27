@@ -8,7 +8,6 @@ confidence: low
 source: wiki-synthesis-2026-05-26
 assumptionStatus: OPEN
 bearsOn: [TD-BGID-001, TD-BGID-002]
-provenance: {"Impact if wrong": {"evidence": "", "source": "proposed"}, "The assumption": {"evidence": "", "source": "proposed"}, "Why it is unconfirmed": {"evidence": "", "source": "proposed"}}
 updatedBy: admin
 updatedAt: 2026-05-26T20:15:01Z
 ---

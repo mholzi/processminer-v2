@@ -8,7 +8,6 @@ confidence: high
 source: ddmm-dtp-mockup.md
 target: Within 1 business day
 value: Not measured
-provenance: {"Current reading": {"evidence": "Sanctions adjudication (Compliance) | Within 1 business day", "source": "document"}, "Definition": {"evidence": "SME (M. Vogel) confirmed: clock starts at Compliance routing (post Clerk first-line triage), not at engine flag; Clerk triage is within M-DDMM-001 registration SLA; clock ends at adjudication decision.", "source": "elicited"}, "Why it matters": {"evidence": "SME confirmed accurate as drafted.", "source": "elicited"}}
 trend:
 approval: approved
 approvalBy: M. Vogel

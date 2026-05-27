@@ -11,7 +11,6 @@ target: POST /v1/classify P95 response latency ≤ 800ms under ≤ 50 concurrent
 owner: Head of Trade Finance Engineering
 appliesTo: [TGTAPP-BGID-002]
 drivenByADR: [ADR-BGID-002]
-provenance: {"Definition": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Measurement": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Verification": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T15:58:45Z
 approval: approved

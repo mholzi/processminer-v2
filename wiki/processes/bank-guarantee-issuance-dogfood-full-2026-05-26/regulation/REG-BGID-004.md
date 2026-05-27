@@ -8,7 +8,6 @@ confidence: medium
 domain: Financial Crime
 source: EBA Guidelines on ML/TF Risk Factors (EBA/GL/2021/02, consolidated EBA-GL-2023-03)
 sourceUrl: https://www.eba.europa.eu/sites/default/files/document_library/Publications/Guidelines/2023/EBA-GL-2023-03/1061654/Guidelines%20ML%20TF%20Risk%20Factors_conslidated.pdf.pdf
-provenance: {"How it is met": {"evidence": "https://www.eba.europa.eu/sites/default/files/document_library/Publications/Guidelines/2023/EBA-GL-2023-03/1061654/Guidelines%20ML%20TF%20Risk%20Factors_conslidated.pdf.pdf — CP-BGID-002 sanctions screening addresses sanctions risk factors; broader ML/TF risk assessment to be confirmed with SME — fetched 2026-05-26", "source": "web"}, "What it requires": {"evidence": "https://www.eba.europa.eu/sites/default/files/document_library/Publications/Guidelines/2023/EBA-GL-2023-03/1061654/Guidelines%20ML%20TF%20Risk%20Factors_conslidated.pdf.pdf — obliged entities must assess ML/TF risk factors for trade finance products; enhanced due diligence for cross-border and correspondent banking — fetched 2026-05-26", "source": "web"}, "Why it applies": {"evidence": "https://www.eba.europa.eu/sites/default/files/document_library/Publications/Guidelines/2023/EBA-GL-2023-03/1061654/Guidelines%20ML%20TF%20Risk%20Factors_conslidated.pdf.pdf — trade finance guarantees involve cross-border beneficiaries and complex ownership requiring product-specific risk assessment — fetched 2026-05-26", "source": "web"}}
 asOf: 2026-05-26
 updatedBy: the assistant
 updatedAt: 2026-05-26T06:50:01Z

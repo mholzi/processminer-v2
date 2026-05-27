@@ -11,7 +11,6 @@ execution: HYBRID
 owner: Compliance
 step: [PS-BGID-004]
 regulatedBy: [REG-BGID-001]
-provenance: {"Control activity": {"evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list. A screening hit suspends the application pending Compliance investigation. The screening result is attached to the application.", "source": "document"}, "Risk addressed": {"evidence": "", "source": "proposed"}, "Timing": {"evidence": "", "source": "proposed"}, "What it checks": {"evidence": "Every beneficiary is screened before issuance; the screening result is attached to the application.", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:56:10Z
 ---

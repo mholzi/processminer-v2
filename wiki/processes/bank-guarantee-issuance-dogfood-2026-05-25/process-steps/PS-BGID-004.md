@@ -8,8 +8,6 @@ confidence: high
 source: bank-guarantee-issuance-v1.md
 owner: Compliance Analyst
 systems: [SYS-BGID-003]
-transitions: [PS-BGID-005|normal|screening is clear with no hits, EX-BGID-002|exception|sanctions screening hit is identified]
-provenance: {"Inputs": {"evidence": "beneficiary and the beneficiary's country; Sanctions Screening Tool — used by Compliance for beneficiary screening.", "source": "document"}, "Outputs": {"evidence": "the screening result is attached to the application (C2); A screening hit suspends the application pending Compliance investigation.", "source": "document"}, "What happens": {"evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list. A screening hit suspends the application pending Compliance investigation.", "source": "document"}, "Why it matters": {"evidence": "The process is subject to anti-money-laundering and sanctions obligations (EU sanctions regulations, AML directives).", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:56:10Z
 ---

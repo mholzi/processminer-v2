@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: innovation-analyst — M. Berger, 2026-05-20
 severity: MEDIUM
-provenance: {"Likelihood & impact": {"evidence": "M. Berger Stage 5 standing input confirmed severity MEDIUM", "source": "elicited"}, "Mitigation": {"evidence": "M. Berger Stage 5 standing input; accuracy/governance risk for II-BGIT-002", "source": "elicited"}, "The risk": {"evidence": "", "source": "proposed"}}
 ---
 ## The risk
 An AI wording assistant may generate text that appears correct but contains subtle legal inaccuracies — non-standard clauses or ambiguous beneficiary conditions — that Legal has not reviewed. If such a guarantee is dispatched, the bank bears liability for an instrument that does not match its approval intent.

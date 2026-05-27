@@ -345,14 +345,13 @@
           "owner"
         ],
         "transitions": {
-          "format": "to|kind|when",
           "kinds": [
             "normal",
             "branch",
             "loopback",
             "exception"
           ],
-          "note": "Outgoing flow from this step. Frontmatter key `transitions` — a list, each entry `<targetId>|<kind>|<when>`: the element it flows to (a process-step or exception id), the transition kind, and the condition under which it fires. Keep the `when` clause free of commas (the list is comma-delimited)."
+          "note": "Outgoing flow from this step. Lives in the per-process sidecar `wiki/processes/<slug>/transitions.json`, keyed by element id. Each entry is `{to, kind, when}` — the element it flows to (a process-step or exception id), the transition kind, and the condition under which it fires. write_element.py / write_elements.py accept entries on the spec as either the structured `{to, kind, when}` object or the legacy `<to>|<kind>|<when>` pipe-string (the writer normalises). patch_element.py exposes the same field as `--list transitions <to|kind|when, ...>`. Editing the bundle file by hand is fine; editing element frontmatter is not — `transitions` no longer lives there."
         }
       },
       "template": [
@@ -2779,5 +2778,5 @@
       "done"
     ]
   },
-  "_provenanceComment": "Hallucination countermeasure (HALLUCINATION-PLAN.md). Every template-bearing element carries a `provenance` frontmatter key: a JSON object keyed by template heading title, each value {source, evidence}. `source` is one of fieldValues.provenanceSource — elicited (the SME said it; evidence is the verbatim SME quote), document (from an uploaded source; evidence is the source quote), proposed (AI-added, unconfirmed; evidence empty), web (web-sourced, unconfirmed; evidence is URL + snippet + fetch date), legacy-approved (predates this rule; evidence not required). check_conformance.py requires a provenance entry for every template heading, requires non-empty evidence for elicited/document/web, and cross-checks the map keys against the template headings. set_approval.py blocks `approved` while any heading is proposed or web (unconfirmed)."
+  "_provenanceComment": "Hallucination countermeasure (HALLUCINATION-PLAN.md). Every template-bearing element has a provenance map keyed by template heading title, each value {source, evidence}. The map lives in the per-process sidecar `wiki/processes/<slug>/provenance.json`, keyed by element id — not in the element frontmatter. `source` is one of fieldValues.provenanceSource — elicited (the SME said it; evidence is the verbatim SME quote), document (from an uploaded source; evidence is the source quote), proposed (AI-added, unconfirmed; evidence empty), web (web-sourced, unconfirmed; evidence is URL + snippet + fetch date), legacy-approved (predates this rule; evidence not required). write_element.py / write_elements.py accept a `provenance` map on the spec and write it to the bundle — skills do not have to know the on-disk shape. check_conformance.py requires a provenance entry for every template heading, requires non-empty evidence for elicited/document/web, and cross-checks the map keys against the template headings. set_approval.py blocks `approved` while any heading is proposed or web (unconfirmed)."
 }

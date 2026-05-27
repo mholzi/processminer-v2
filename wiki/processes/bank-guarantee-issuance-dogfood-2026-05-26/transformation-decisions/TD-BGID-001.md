@@ -11,7 +11,6 @@ decisionStatus: proposed
 resolves: [PP-BGID-001, PP-BGID-003, CG-BGID-001]
 realises: [TS-BGID-001]
 fromIdea: [II-BGID-001]
-provenance: {"Options considered": {"evidence": "", "source": "proposed"}, "Rationale": {"evidence": "", "source": "proposed"}, "The decision": {"evidence": "", "source": "proposed"}}
 updatedBy: admin
 updatedAt: 2026-05-26T20:15:01Z
 ---

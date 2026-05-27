@@ -7,7 +7,6 @@ status: draft
 confidence: medium
 source: it-architect session 2026-05-26
 systems: [SYS-BGID-002, SYS-BGID-004]
-provenance: {"What connects": {"evidence": "Elicited: SWIFT Alliance Access, async, 3-retry then ops alert, confidential, PS-BGID-006", "source": "elicited"}, "What flows": {"evidence": "Elicited: MT760 guarantee instrument, MT799 status message, ACK/NAK", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T10:09:43Z
 approval: approved

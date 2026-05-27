@@ -9,7 +9,6 @@ source: sepa-payments-dtp-mockup.md
 category: fraud
 impact: HIGH
 handlingOwner: Fraud
-provenance: {"Description": {"evidence": "Step 5: 'The payment is scored in real time by the fraud engine. Low-risk items pass; high-risk items are held for review.'", "source": "document"}, "Handling": {"evidence": "Section 6 E-4: 'Payment held; customer contacted for step-up verification; released or cancelled on the outcome.'", "source": "document"}, "Impact": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:00Z
 ---

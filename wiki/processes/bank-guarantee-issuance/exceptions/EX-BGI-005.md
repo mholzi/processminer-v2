@@ -8,7 +8,6 @@ confidence: high
 category: approval
 impact: MEDIUM
 handlingOwner: Trade Finance Manager
-provenance: {"Description": {"evidence": "the TFM can decline outright or return the application to the TFO for rework (e.g. unacceptable wording risk or incorrect pricing)", "source": "elicited"}, "Handling": {"evidence": "the TFM can decline outright or return the application to the TFO for rework", "source": "elicited"}, "Impact": {"evidence": "", "source": "proposed"}}
 ---
 ## Description
 At the issuance approval step, the Trade Finance Manager decides the application cannot proceed as submitted — either declining it outright or returning it to the TFO for rework due to unacceptable wording risk, incorrect pricing, or a terms issue.

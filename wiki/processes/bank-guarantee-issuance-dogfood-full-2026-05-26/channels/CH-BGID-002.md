@@ -8,7 +8,6 @@ confidence: medium
 source: SME interview
 channelType: ASSISTED
 touchpoints: [JT-BGID-003]
-provenance: {"Description": {"evidence": "email to the trade-finance desk", "source": "elicited"}, "Usage": {"evidence": "email to the trade-finance desk — for document exchange and wording feedback on in-flight applications", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:15:47Z
 approval: in-progress

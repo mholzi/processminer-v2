@@ -9,7 +9,6 @@ horizon: near-term
 asOf: 2026-05-26
 source: BCG Trade Finance Outlook 2026
 sourceUrl: https://www.bcg.com/publications/2026/trade-finance-outlook
-provenance: {"Evidence": {"evidence": "", "source": "proposed"}, "Relevance": {"evidence": "", "source": "proposed"}, "The trend": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T20:02:52Z
 ---

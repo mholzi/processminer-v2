@@ -10,7 +10,6 @@ owner: Compliance
 sla:
 condition: Funds are held on the debtor account following Step 3
 systems: [SYS-SP-002, SYS-SP-004, SYS-SP-007]
-provenance: {"Inputs": {"evidence": "Systems: Sanctions Screening Engine — Real-time sanctions/AML screening; AML Transaction Monitoring — Post-event monitoring and alerting.", "source": "document"}, "Outputs": {"evidence": "Clean items pass automatically; potential hits route to Compliance. If hit confirmed: Payment frozen; escalated to Compliance and Financial Crime; release blocked pending investigation.", "source": "document"}, "What happens": {"evidence": "Debtor and creditor are screened against sanctions lists; the payment is checked by AML transaction monitoring. Clean items pass automatically; potential hits route to Compliance. If a hit is confirmed → see Exception E-3. Payment frozen; escalated to Compliance and Financial Crime; release blocked pending investigation.", "source": "document"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:15Z
 ---

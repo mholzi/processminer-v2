@@ -6,7 +6,6 @@ title: AML Transaction Monitoring
 status: draft
 confidence: medium
 source: sepa-payments-dtp-mockup.md
-provenance: {"Purpose": {"evidence": "§8 Systems & Data: 'AML Transaction Monitoring | Post-event monitoring and alerting'", "source": "document"}, "Role in this process": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:09:11Z
 systemType: SUPPORTING

@@ -8,7 +8,6 @@ confidence: high
 source: foundational-run — M. Berger
 severity: MEDIUM
 gapStatus: open
-provenance: {"Remediation": {"evidence": "M. Berger: 'flag it as a control-gap to document later'", "source": "elicited"}, "Risk": {"evidence": "", "source": "proposed"}, "The gap": {"evidence": "M. Berger confirmed: 'the missing completeness control is a real gap, please flag it as a control-gap to document later'", "source": "elicited"}}
 gapType: MISSING_CONTROL
 remediationStatus: OPEN
 control: [CP-BGIT-005]

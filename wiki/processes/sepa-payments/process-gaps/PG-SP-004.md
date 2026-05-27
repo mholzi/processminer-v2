@@ -9,7 +9,6 @@ source: sepa-payments-dtp-mockup.md
 area: As-Is process
 gapStatus: open
 affects: [PS-SP-006, PS-SP-009]
-provenance: {"Impact": {"evidence": "", "source": "proposed"}, "Next step": {"evidence": "", "source": "proposed"}, "The gap": {"evidence": "§5.1 step 9: 'For SCT Inst, settlement and the beneficiary-bank confirmation complete within 10 seconds'; §9 SLA table: 'SCT Inst end-to-end — Funds available to the beneficiary within 10 seconds'; §10 open question: 'Is SCT Inst offered 24/7, including weekends and holidays?'", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:00Z
 ---

@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: bank-guarantee-issuance-v1.md
 systemType: EXTERNAL
-provenance: {"Purpose": {"evidence": "SWIFT — transmission of the executed guarantee to the beneficiary's bank.", "source": "document"}, "Role in this process": {"evidence": "the guarantee is transmitted to the beneficiary's bank via SWIFT.", "source": "document"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-20

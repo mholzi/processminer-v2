@@ -9,7 +9,6 @@ competitor: Tinubu (formerly Tinubu Square)
 source: Tinubu Surety for Carriers product page; Tinubu Surety Outlook 2025
 sourceUrl: https://www.tinubu.com/surety-for-carriers
 asOf: 2026-05-26
-provenance: {"Evidence": {"evidence": "https://www.tradefinanceglobal.com/posts/credit-insurance-and-surety-software-provider-tinubu-square-rebrands-as-tinubu/ — Tinubu Square rebranded as Tinubu; primary focus is surety bonds and trade credit insurance, not bank guarantees directly — confidence set to low accordingly — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.tinubu.com/news/tinubu-surety-outlook-2025-tech-forward-growth — \"for repeat business, brokers overwhelmingly expect same-day issuance, yet fewer than 40% of carriers consistently deliver\" — fetched 2026-05-26", "source": "web"}, "The journey": {"evidence": "https://www.tinubu.com/surety-for-carriers — \"With Tinubu, carriers can issue Surety bonds automatically — no manual intervention required. Pre-configured underwriting rules determine eligibility, and when criteria are met, the bond is issued instantly\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: admin
 updatedAt: 2026-05-26T08:37:27Z
 ---

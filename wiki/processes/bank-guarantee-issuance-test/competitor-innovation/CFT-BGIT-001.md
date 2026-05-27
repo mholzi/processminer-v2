@@ -9,7 +9,6 @@ competitor: Komgo
 source: Komgo GTK product page; Standard Chartered press release January 2026; Euromoney most innovative trade finance software provider 2025
 sourceUrl: https://www.komgo.io/komgo-solutions/gtk
 bearsOn: [PS-BGIT-001, PS-BGIT-002, PS-BGIT-006, PP-BGIT-001, PP-BGIT-002, PG-BGIT-001, CG-BGIT-001]
-provenance: {"Evidence": {"evidence": "https://www.komgo.io/newsroom/komgo-recognised-by-euromoney-as-the-worlds-most-innovative-software-provider-for-trade-finance-2025 — \"Komgo recognised by Euromoney as the world's most innovative software provider for trade finance 2025\" — fetched 2026-05-20", "source": "web"}, "Relevance": {"evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"automates the receipt of instructions and accelerates the issuance of digitally initiated bank guarantees, offering clients greater speed, transparency and reliability\" — fetched 2026-05-20", "source": "web"}, "The move": {"evidence": "https://www.komgo.io/komgo-solutions/gtk — \"GTK centralises and digitises the full lifecycle of trade finance instruments – guarantees, letters of credit and financing requests – while connecting corporates to all their banking partners, regardless of the channel used\" — fetched 2026-05-20", "source": "web"}}
 asOf: 2026-05-20
 ---
 ## The move

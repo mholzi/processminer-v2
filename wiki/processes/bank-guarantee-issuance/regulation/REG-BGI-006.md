@@ -8,7 +8,6 @@ confidence: high
 domain: Records & Governance
 source: Handelsgesetzbuch (HGB) §257 and Abgabenordnung (AO) §147
 sourceUrl: https://www.gesetze-im-internet.de/hgb/__257.html
-provenance: {"How it is met": {"evidence": "https://www.gesetze-im-internet.de/hgb/__257.html — HGB §257 Abs. 1 Nr. 4: Handelsbriefe (commercial correspondence) retain for 6 years; Nr. 1 and Nr. 4a: books, inventories and Buchungsbelege retain for 10 years — fetched 2026-05-20", "source": "web"}, "What it requires": {"evidence": "https://www.gesetze-im-internet.de/hgb/__257.html — HGB §257 Abs. 1: Handelsbücher and Buchungsbelege must be retained; Abs. 4: retention commences at the end of the calendar year in which the last entry was made — fetched 2026-05-20", "source": "web"}, "Why it applies": {"evidence": "https://www.gesetze-im-internet.de/ao_1977/__147.html — AO §147 Abs. 3 sets the 10-year and 6-year retention periods in parallel with HGB; applies to all German commercial entities including credit institutions — fetched 2026-05-20", "source": "web"}}
 asOf: 2026-05-20
 ---
 ## What it requires

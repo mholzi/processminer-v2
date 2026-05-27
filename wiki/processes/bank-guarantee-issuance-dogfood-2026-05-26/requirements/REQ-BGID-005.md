@@ -10,7 +10,6 @@ reqType: NON-FUNCTIONAL
 moscow: MUST
 derivedFrom: [TD-BGID-005]
 addresses: [PP-BGID-002]
-provenance: {"Acceptance criteria": {"evidence": "", "source": "proposed"}, "Rationale": {"evidence": "", "source": "proposed"}, "Requirement": {"evidence": "", "source": "proposed"}}
 updatedBy: admin
 updatedAt: 2026-05-26T20:15:01Z
 ---

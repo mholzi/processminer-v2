@@ -10,7 +10,6 @@ reqType: FUNCTIONAL
 moscow: MUST
 derivedFrom: [TD-BGIT-002]
 addresses: [PP-BGIT-001, PG-BGIT-001]
-provenance: {"Acceptance criteria": {"evidence": "", "source": "proposed"}, "Rationale": {"evidence": "", "source": "proposed"}, "Requirement": {"evidence": "", "source": "proposed"}}
 ---
 ## Requirement
 The Corporate Portal must display the client's current facility utilisation and available credit headroom — sourced from a real-time TFS query — at the point of application submission, before the client confirms and submits the guarantee request.

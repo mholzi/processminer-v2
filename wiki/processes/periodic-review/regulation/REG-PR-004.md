@@ -11,7 +11,6 @@ jurisdiction: CH
 article: Art. 6
 asOf: 2026-05-21
 sourceUrl:
-provenance: {"How it is met": {"evidence": "", "source": "proposed"}, "What it requires": {"evidence": "§5.1 table: \"GwG (CH) | Art. 6 | Special clarification obligations on increased risk\"", "source": "document"}, "Why it applies": {"evidence": "§1.1: \"All natural-person clients of Retail Banking and Private Banking Switzerland\"; §3.2 Step 6: \"Mandatory for: High-risk clients, PEPs, recommend-exit decisions, approve-with-conditions where the condition restricts a regulated product, and a random 5 % QA sample of STP and analyst approvals.\"", "source": "document"}}
 ---
 ## What it requires
 GwG Art. 6 imposes special clarification obligations on increased risk. The document maps this article to that obligation.

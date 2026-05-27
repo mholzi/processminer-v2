@@ -9,7 +9,6 @@ source: foundational-run — M. Berger
 area: As-Is process
 gapStatus: open
 affects: [PS-BGIT-002]
-provenance: {"Impact": {"evidence": "", "source": "proposed"}, "Next step": {"evidence": "", "source": "proposed"}, "The gap": {"evidence": "M. Berger: 'There is no formal SLA on Credit team response (informally 1–2 business days), which is the root cause of the stall pain point'", "source": "elicited"}}
 gapType: MISSING_SLA
 severity: HIGH
 priority: P2

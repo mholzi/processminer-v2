@@ -11,7 +11,6 @@ complexity: HIGH
 addresses: [PP-BGID-003, CG-BGID-001, FP-BGID-004]
 fromTrend: [TR-BGID-002, TR-BGID-005]
 fromCompetitor: [CGL-BGID-001, CGL-BGID-003, CEU-BGID-003]
-provenance: {"Expected benefit": {"evidence": "", "source": "proposed"}, "Feasibility": {"evidence": "", "source": "proposed"}, "The idea": {"evidence": "", "source": "proposed"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:54:37Z
 ---

@@ -10,7 +10,6 @@ owner: Fraud
 sla:
 condition: Instruction has cleared sanctions and AML screening in Step 4
 systems: [SYS-SP-002, SYS-SP-005]
-provenance: {"Inputs": {"evidence": "", "source": "proposed"}, "Outputs": {"evidence": "Low-risk items pass. High-risk: Payment held; customer contacted for step-up verification; released or cancelled on the outcome.", "source": "document"}, "What happens": {"evidence": "The payment is scored in real time by the fraud engine. Low-risk items pass; high-risk items are held for review. If flagged high-risk → see Exception E-4. Payment held; customer contacted for step-up verification; released or cancelled on the outcome.", "source": "document"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:15Z
 ---

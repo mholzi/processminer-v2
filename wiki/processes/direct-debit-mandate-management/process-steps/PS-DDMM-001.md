@@ -9,9 +9,7 @@ source: ddmm-dtp-mockup.md
 owner: Creditor Portal
 sla:
 condition:
-transitions: [PS-DDMM-002|normal|request received]
 systems: [SYS-DDMM-001]
-provenance: {"Inputs": {"evidence": "New mandate: UMR, CI, debtor name, IBAN, mandate type, signature date. Amendment: UMR plus field(s) being changed and new signature date. Cancellation: UMR and cancellation reason.", "source": "elicited"}, "Outputs": {"evidence": "Correct as drafted — the request is lodged in the Creditor Portal and the payload passes to validation.", "source": "elicited"}, "What happens": {"evidence": "Receipt is fully automated — the Creditor Portal lodges the request and passes the payload straight to validation with no human touch. New mandate: UMR, CI, debtor name, IBAN, mandate type, signature date. Amendment: UMR plus field(s) being changed and new signature date where debtor re-signs. Cancellation: UMR and cancellation reason.", "source": "elicited"}, "Why it matters": {"evidence": "Fair summary, keep it as drafted.", "source": "elicited"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-19

@@ -5,7 +5,6 @@ section: gap-resolution
 title: Legal SLA Governance Agreement Not Yet Negotiated
 status: draft
 confidence: low
-provenance: {"Resolution": {"evidence": "", "source": "proposed"}, "Status": {"evidence": "", "source": "proposed"}, "The gap": {"evidence": "", "source": "proposed"}}
 gapStatus: open
 validationArea: Process
 ---

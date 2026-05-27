@@ -11,7 +11,6 @@ vendor: In-house archival system
 owningDomain: IT Architecture / Compliance
 costBand: Existing system — storage extension ~€20k–50k annual
 drivenByADR: [ADR-BGID-011]
-provenance: {"Rationale": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Risks": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Tech stack": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T14:59:49Z
 approval: approved

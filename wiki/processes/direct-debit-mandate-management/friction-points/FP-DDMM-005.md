@@ -8,7 +8,6 @@ confidence: high
 source: ddmm-client-journey-specialist
 severity: MEDIUM
 occursAt: [PS-DDMM-002, PS-DDMM-003, PS-DDMM-004, PS-DDMM-005]
-provenance: {"Client impact": {"evidence": "SME confirmed: every query involves at least two hand-offs; creditor cannot escalate directly if relay stalls; portal provides no status update to fill the gap.", "source": "elicited"}, "Description": {"evidence": "SME (M. Vogel): no direct line from the creditor to the Mandate Operations team; queries go through corporate banking RM or general Payments service desk email, which relay to Payments Operations.", "source": "elicited"}, "Root cause": {"evidence": "SME confirmed: no direct creditor-to-operations contact path; corporate banking relationships managed through RMs; service queries through Payments service desk.", "source": "elicited"}}
 ---
 ## Description
 A creditor needing to query a delayed or rejected mandate has no direct access to the Payments Operations team. All queries must be routed through a Relationship Manager or a Payments service desk email, which then relay to operations internally.

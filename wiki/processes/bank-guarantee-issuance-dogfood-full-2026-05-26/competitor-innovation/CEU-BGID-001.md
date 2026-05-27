@@ -10,7 +10,6 @@ source: Commerzbank corporate website — Digital Guarantee and Surety Managemen
 sourceUrl: https://www.commerzbank.com/financing-foreigntrade/products/foreigntrade/digital-guarantee-management/
 asOf: 2026-05-26
 bearsOn: [CG-BGID-001, FP-BGID-001, PP-BGID-003]
-provenance: {"Evidence": {"evidence": "https://www.digitalvaultservices.com/en/next-milestone-achieved-corporate-guarantees/ — \"As the first (and only) platform Guarantee Vault offers now fully end-to-end digital Corporate Guarantees\" — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.commerzbank.com/financing-foreigntrade/products/foreigntrade/digital-guarantee-management/ — \"issue and manage paper-based as well as digital guarantees\" with \"24/7 access\" and guarantee certificates \"uploaded and made available to the applicant\" after issuance — fetched 2026-05-26", "source": "web"}, "The move": {"evidence": "https://www.commerzbank.com/financing-foreigntrade/products/foreigntrade/digital-guarantee-management/ — \"Digital orders, issuance and management of your guarantee orders helps to streamline your processes\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: admin
 updatedAt: 2026-05-26T08:59:00Z
 ---

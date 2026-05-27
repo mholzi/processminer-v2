@@ -10,7 +10,6 @@ controlType: PREVENTIVE
 execution: MANUAL
 owner: Contact Centre
 step: [PS-DCR-003]
-provenance: {"Control activity": {"evidence": "The agent places an immediate block on the existing card in the Card Management System", "source": "document"}, "Risk addressed": {"evidence": "S. Krause confirmed in the foundational run: Risk addressed holds as drafted.", "source": "elicited"}, "Timing": {"evidence": "Card block applied | Immediately during the request", "source": "document"}, "What it checks": {"evidence": "Immediate card block on lost/stolen report | Preventive / automated | Every lost/stolen request", "source": "document"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-19

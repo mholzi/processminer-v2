@@ -10,7 +10,6 @@ reqType: NON-FUNCTIONAL
 moscow: SHOULD
 derivedFrom: [TD-BGIT-001, TD-BGIT-002, TD-BGIT-003]
 addresses: [PP-BGIT-001, PP-BGIT-002, PP-BGIT-003]
-provenance: {"Acceptance criteria": {"evidence": "M. Berger Stage 5 standing input: STP rate target 70%", "source": "elicited"}, "Rationale": {"evidence": "M. Berger Stage 5 standing input: addresses [PP-BGIT-001, PP-BGIT-002, PP-BGIT-003]; current STP ~52%", "source": "elicited"}, "Requirement": {"evidence": "M. Berger Stage 5 standing input: 'STP rate target: NON-FUNCTIONAL SHOULD, derivedFrom [TD-BGIT-001, TD-BGIT-002, TD-BGIT-003]'", "source": "elicited"}}
 ---
 ## Requirement
 At least 70% of standard bank guarantee applications — in-limit facility, standard ICC wording — shall be processed from submission to SWIFT dispatch without any manual intervention by Trade Finance Operations, as measured over a rolling three-month window.

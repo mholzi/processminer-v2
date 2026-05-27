@@ -9,7 +9,6 @@ source: Komgo newsroom – ING Sets the Pace in Digital Trade Finance
 competitor: ING
 sourceUrl: https://www.komgo.io/newsroom/leading-the-way-ing-sets-the-pace-in-digital-trade-finance
 asOf: 2024-01-01
-provenance: {"Evidence": {"evidence": "https://www.komgo.io/newsroom/leading-the-way-ing-sets-the-pace-in-digital-trade-finance — \"Leading the Way: ING Sets the Pace in Digital Trade Finance\" — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.komgo.io/newsroom/leading-the-way-ing-sets-the-pace-in-digital-trade-finance — \"through automated data integration into backend systems, ING has seen operational efficiency gains and reduced manual error risks\" — fetched 2026-05-26", "source": "web"}, "The journey": {"evidence": "https://www.komgo.io/newsroom/leading-the-way-ing-sets-the-pace-in-digital-trade-finance — \"ING has partnered with Komgo... Konsole API connectivity... reduced media breaks in communication between applicants and banks\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: source-cx
 updatedAt: 2026-05-26T19:59:08Z
 ---

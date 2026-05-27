@@ -11,7 +11,6 @@ execution: HYBRID
 owner: Head of Trade Finance
 step: [PS-BGID-005]
 regulatedBy: [REG-BGID-007, REG-BGID-008]
-provenance: {"Control activity": {"evidence": "", "source": "proposed"}, "Risk addressed": {"evidence": "", "source": "proposed"}, "Timing": {"evidence": "", "source": "proposed"}, "What it checks": {"evidence": "", "source": "proposed"}}
 updatedBy: admin
 updatedAt: 2026-05-26T17:38:22Z
 ---

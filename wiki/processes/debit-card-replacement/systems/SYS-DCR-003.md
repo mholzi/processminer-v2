@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: dcr-dtp-mockup.md
 systemType: SUPPORTING
-provenance: {"Purpose": {"evidence": "Mobile Banking App | Self-service channel for raising a replacement request", "source": "document"}, "Role in this process": {"evidence": "Self-service channel for raising a replacement request", "source": "document"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-19

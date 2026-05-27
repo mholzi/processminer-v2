@@ -12,7 +12,6 @@ hosting: EKS eu-central-1 · GPU node pool (g5.xlarge)
 scaling: HPA 2→8 replicas · Karpenter GPU autoscale 1→4 nodes
 inApp: [TGTAPP-BGID-002]
 realisesCapability: [CAP-BGID-002]
-provenance: {"Responsibility": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Technical detail": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T15:58:45Z
 approval: approved

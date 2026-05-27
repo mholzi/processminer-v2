@@ -9,7 +9,6 @@ source: source-target — bank-guarantee-issuance-test wiki
 direction: UPSTREAM
 atStep: [PS-BGIT-001]
 viaSystem: [SYS-BGIT-001]
-provenance: {"The dependency": {"evidence": "", "source": "proposed"}, "What crosses the boundary": {"evidence": "", "source": "proposed"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 ---
 ## The dependency
 Corporate clients submit guarantee instructions from their ERP, treasury management system or directly via the Corporate Portal. In the target state, ICC-SWIFT-connected clients transmit structured C2B API instructions without portal interaction.

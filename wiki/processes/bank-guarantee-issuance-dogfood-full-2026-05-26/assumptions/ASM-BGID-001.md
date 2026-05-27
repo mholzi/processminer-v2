@@ -8,7 +8,6 @@ confidence: high
 source: SME interview — transformation-agent session 2026-05-26
 assumptionStatus: OPEN
 bearsOn: [TD-BGID-001, TS-BGID-001, TS-BGID-006]
-provenance: {"Impact if wrong": {"evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated", "source": "elicited"}, "The assumption": {"evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated", "source": "elicited"}, "Why it is unconfirmed": {"evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:28:32Z
 ---

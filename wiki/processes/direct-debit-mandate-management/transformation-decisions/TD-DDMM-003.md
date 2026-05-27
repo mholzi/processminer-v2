@@ -11,7 +11,6 @@ decisionStatus: DECIDED
 resolves: [FP-DDMM-003, FP-DDMM-004, FP-DDMM-006]
 realises: [TS-DDMM-003]
 fromIdea: [II-DDMM-002]
-provenance: {"Options considered": {"evidence": "SME confirmed options and rationale — accepted without edit.", "source": "elicited"}, "Rationale": {"evidence": "SME confirmed rationale — accepted without edit.", "source": "elicited"}, "The decision": {"evidence": "SME (M. Vogel) accepted all ten decisions without edit.", "source": "elicited"}}
 ---
 ## The decision
 Enrich MMS to emit stage-level events at key processing milestones, surface them in the Creditor Portal as a live mandate timeline, and offer opt-in email and webhook push notifications for action-required events.

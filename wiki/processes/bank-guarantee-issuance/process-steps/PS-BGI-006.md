@@ -9,7 +9,6 @@ source: bank-guarantee-issuance-v1.md
 owner: Trade Finance Officer
 condition: Issuance approved
 systems: [SYS-BGI-002, SYS-BGI-004]
-provenance: {"Inputs": {"evidence": "generates the guarantee instrument in the Trade Finance System and the guarantee is transmitted to the beneficiary's bank via SWIFT. SWIFT — transmission of the executed guarantee to the beneficiary's bank.", "source": "document"}, "Outputs": {"evidence": "The facility utilisation update is a separate manual action the TFO performs after transmission — it is NOT a system-automatic consequence of SWIFT, and it can be and occasionally is missed.", "source": "elicited"}, "What happens": {"evidence": "The facility utilisation update is a separate manual action the TFO performs after transmission — it is NOT a system-automatic consequence of SWIFT, and it can be and occasionally is missed.", "source": "elicited"}, "Why it matters": {"evidence": "It begins when a client submits a guarantee application and ends when the executed guarantee is delivered to the beneficiary and the client's facility is updated.", "source": "document"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-20

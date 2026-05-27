@@ -11,7 +11,6 @@ decisionStatus: agreed
 resolves: [PP-BGIT-001, PG-BGIT-001]
 realises: [TS-BGIT-001]
 fromIdea: [II-BGIT-003]
-provenance: {"Options considered": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub", "source": "elicited"}, "Rationale": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub", "source": "elicited"}, "The decision": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub", "source": "elicited"}}
 ---
 ## The decision
 Build a read-only credit limit advisory widget on the Corporate Portal that queries the Trade Finance System in real time at the point of application and displays current facility utilisation and available headroom to the client before submission.

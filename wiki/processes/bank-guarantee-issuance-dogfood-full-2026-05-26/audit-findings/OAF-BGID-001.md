@@ -9,7 +9,6 @@ source: Internal Audit 2024
 auditDate: 2024-03-15
 findingStatus: closed
 severity: LOW
-provenance: {"Finding": {"evidence": "SME validated — control-compliance-specialist session 2026-05-26", "source": "elicited"}, "Recommendation": {"evidence": "SME validated — control-compliance-specialist session 2026-05-26", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:37:44Z
 approval: in-progress

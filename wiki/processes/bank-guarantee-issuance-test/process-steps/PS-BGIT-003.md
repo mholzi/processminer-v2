@@ -7,8 +7,6 @@ status: draft
 confidence: high
 source: bank-guarantee-issuance-v1.md
 owner: Trade Finance Officer
-transitions: [PS-BGIT-004|normal|wording approved]
-provenance: {"Inputs": {"evidence": "M. Berger confirmed: 'Y'", "source": "elicited"}, "Outputs": {"evidence": "M. Berger confirmed: 'Y'", "source": "elicited"}, "What happens": {"evidence": "M. Berger: 'bespoke wording handoff is by email today (no system handoff); for standard wording, Step 3 is effectively a no-op for the TFO'", "source": "elicited"}, "Why it matters": {"evidence": "M. Berger confirmed: 'Y'", "source": "elicited"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-20

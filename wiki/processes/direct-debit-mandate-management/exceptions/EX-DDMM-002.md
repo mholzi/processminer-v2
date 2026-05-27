@@ -9,7 +9,6 @@ source: ddmm-dtp-mockup.md
 category: Compliance
 impact: HIGH
 handlingOwner: Compliance
-provenance: {"Description": {"evidence": "If a hit is confirmed → see Exception E-2. Potential hits are routed to Compliance for adjudication.", "source": "document"}, "Handling": {"evidence": "SME (M. Vogel) confirmed: freeze is silent — tipping-off rules prohibit disclosing a sanctions investigation to the customer; creditor sees 'pending/in progress' only. Financial Crime engaged on confirmed hit path.", "source": "elicited"}, "Impact": {"evidence": "SME confirmed: indefinite block and frozen collections accurate; also may trigger regulatory reporting obligations and wider creditor relationship review.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

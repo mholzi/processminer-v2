@@ -8,7 +8,6 @@ category: data-quality
 severity: MEDIUM
 priority: P2
 affects: [PS-BGID-001]
-provenance: {"Description": {"evidence": "Commercial contract reference is missing or wrong on roughly 1 in 5 applications.", "source": "elicited"}, "Impact": {"evidence": "The Portal does not validate it, so the officer catches it visually and bounces it back.", "source": "elicited"}, "Root cause": {"evidence": "The Portal does not validate the commercial contract reference before submission.", "source": "elicited"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T05:28:26Z
 ---

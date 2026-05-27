@@ -8,7 +8,6 @@ confidence: medium
 source: European Central Bank / Deutsche Bundesbank — PSD2
 domain: Payment Services
 sourceUrl: https://www.ecb.europa.eu/press/intro/mip-online/2018/html/1803_revisedpsd.en.html
-provenance: {"How it is met": {"evidence": "https://www.ecb.europa.eu/press/intro/mip-online/2018/html/1803_revisedpsd.en.html — \"the payment service provider must be able to block it\" — fetched 2026-05-19", "source": "web"}, "What it requires": {"evidence": "https://www.ecb.europa.eu/press/intro/mip-online/2018/html/1803_revisedpsd.en.html — \"The maximum amount for which a payer can be made liable ... has been lowered from 150 to 50 euro\" — fetched 2026-05-19", "source": "web"}, "Why it applies": {"evidence": "https://www.bundesbank.de/en/tasks/payment-systems/psd2/psd2-775954 — \"PSD2\" — fetched 2026-05-19", "source": "web"}}
 asOf: 2026-05-19
 ---
 ## What it requires

@@ -334,19 +334,16 @@ export default function ProcessDocScreen({
       : null;
 
   // `affects` on an exception is derived, not stored: every process-step
-  // whose `transitions` exit to an exception affects it. One source of truth.
+  // whose transitions exit to an exception affects it. One source of truth.
   const exceptionIds = new Set(
     doc.elements.filter((e) => e.type === "exception").map((e) => e.id),
   );
   const affectsByException: Record<string, string[]> = {};
   for (const el of doc.elements) {
     if (el.type !== "process-step") continue;
-    const raw = el.meta.transitions;
-    const list = !raw ? [] : Array.isArray(raw) ? raw : [raw];
-    for (const entry of list) {
-      const to = entry.split("|")[0]?.trim();
-      if (to && exceptionIds.has(to))
-        (affectsByException[to] ??= []).push(el.id);
+    for (const t of el.transitions ?? []) {
+      if (exceptionIds.has(t.to))
+        (affectsByException[t.to] ??= []).push(el.id);
     }
   }
   // Which controls cover each step — the process flow flags uncontrolled

@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: ddmm-dtp-mockup.md
 raci: [PS-DDMM-004:A, PS-DDMM-007:C]
-provenance: {"In this process": {"evidence": "Consulted on R-transaction resolutions that mutate a registered mandate record — in practice MD02 (mandate data corrected) and AC04 (mandate set to Dormant). MD01 and SL01 are handled by the Clerk solo.", "source": "elicited"}, "Responsibility": {"evidence": "Not a separate job title. A senior Mandate Clerk within Payments Operations designated as checker for a given bulk batch on a rotating basis, with the firm rule that the checker is never the same person who captured or submitted that batch — segregation of duties.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

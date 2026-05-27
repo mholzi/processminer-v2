@@ -12,7 +12,6 @@ hosting: Finastra on-prem cluster, EU data centre
 scaling: Active-passive HA
 inApp: [TGTAPP-BGID-001]
 realisesCapability: [CAP-BGID-002, CAP-BGID-003]
-provenance: {"Responsibility": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Technical detail": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T15:58:45Z
 approval: approved

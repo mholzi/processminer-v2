@@ -9,7 +9,6 @@ source: Client journey session - S. Krause
 channel: Contact Centre
 ces: 2
 occursAt: [PS-DCR-003]
-provenance: {"Experience": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}, "What the bank does": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}, "What the client does": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}}
 ---
 ## What the client does
 The client listens as the agent confirms the existing card has been blocked and can no longer be used.

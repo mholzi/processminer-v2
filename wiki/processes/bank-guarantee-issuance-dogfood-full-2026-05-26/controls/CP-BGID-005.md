@@ -12,7 +12,6 @@ effectiveness: MEDIUM
 owner: Compliance Analyst
 step: [PS-BGID-004]
 regulatedBy: [REG-BGID-001, REG-BGID-011]
-provenance: {"Control activity": {"evidence": "SME validated — control-compliance-specialist session 2026-05-26", "source": "elicited"}, "Risk addressed": {"evidence": "SME validated — control-compliance-specialist session 2026-05-26", "source": "elicited"}, "Timing": {"evidence": "SME validated — control-compliance-specialist session 2026-05-26", "source": "elicited"}, "What it checks": {"evidence": "SME validated — control-compliance-specialist session 2026-05-26", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:37:44Z
 ---

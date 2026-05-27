@@ -6,7 +6,6 @@ title: FATF Guidance on Trade-Based Money Laundering
 status: draft
 confidence: medium
 source: FATF/Egmont Group — Trade-Based Money Laundering Trends and Developments (2020) and TBML Risk Indicators (2021)
-provenance: {"How it is met": {"evidence": "https://www.fatf-gafi.org/content/dam/fatf-gafi/reports/Trade-Based-Money-Laundering-Trends-and-Developments.pdf — beneficiary screening at step 4 (CP-BGI-002) covers primary due diligence; TBML red-flag checks at intake and commercial rationale documentation to be confirmed with the SME — fetched 2026-05-20", "source": "web"}, "What it requires": {"evidence": "https://www.fatf-gafi.org/content/dam/fatf-gafi/reports/Trade-Based-Money-Laundering-Trends-and-Developments.pdf — guarantees and standby letters of credit are explicitly identified as trade finance instruments susceptible to TBML; institutions must apply enhanced due diligence and monitor for red-flag indicators at intake — fetched 2026-05-20", "source": "web"}, "Why it applies": {"evidence": "https://www.fatf-gafi.org/content/dam/fatf-gafi/reports/Trade-Based-Money-Laundering-Risk-Indicators.pdf — bank guarantees are named as instruments susceptible to TBML; the issuance process from intake to beneficiary screening is directly in scope — fetched 2026-05-20", "source": "web"}}
 asOf: 2026-05-20
 domain: Financial Crime
 ---

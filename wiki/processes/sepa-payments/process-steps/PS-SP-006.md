@@ -10,7 +10,6 @@ owner: Payment Hub
 sla: Standard SCT cut-off 16:00 CET
 condition: Payment instruction has passed sanctions/AML screening and fraud scoring
 systems: [SYS-SP-002]
-provenance: {"Inputs": {"evidence": "", "source": "proposed"}, "Outputs": {"evidence": "", "source": "proposed"}, "What happens": {"evidence": "Step 6: 'The hub selects the rail: SCT Inst if the amount is at or below the instant limit (currently EUR 100,000), the customer elected instant, and the creditor bank is instant-reachable. Standard SCT otherwise, or if the SCT Inst attempt is declined. The standard-SCT cut-off for same-cycle processing is 16:00 CET.'", "source": "document"}, "Why it matters": {"evidence": "Step 9 / SLA table: SCT Inst settles within 10 seconds. Exception E-5: SCT Inst timeout or beneficiary-bank rejection. Exception E-7: Missed cut-off — rolls to next cycle / next business day; customer informed of revised execution date.", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:15Z
 ---

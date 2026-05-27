@@ -6,7 +6,6 @@ title: Controlled Wording Review with Conformance Guardrails and Formalised Lega
 status: draft
 confidence: low
 replaces: [PS-BGI-003]
-provenance: {"Rationale": {"evidence": "", "source": "proposed"}, "Target description": {"evidence": "", "source": "proposed"}, "What changes": {"evidence": "", "source": "proposed"}}
 ---
 ## Target description
 The wording review step operates with two new controls. First, a system-enforced template-conformance check prevents mis-designated standard cases from bypassing Legal review. Second, bespoke guarantee reviews operate under a formal SLA between Trade Finance and the Legal desk, with a digital workflow tracking submission, acknowledgement and sign-off dates and triggering automatic escalation when at risk.

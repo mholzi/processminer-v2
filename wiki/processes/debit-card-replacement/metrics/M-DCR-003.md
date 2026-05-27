@@ -8,7 +8,6 @@ confidence: high
 source: dcr-dtp-mockup.md
 target: Within 4-6 business days of the order
 value: Not measured
-provenance: {"Current reading": {"evidence": "Card delivered to customer | Within 5-7 business days of the order", "source": "document"}, "Definition": {"evidence": "Card delivered to customer | Within 5-7 business days of the order", "source": "document"}, "Why it matters": {"evidence": "S. Krause confirmed in the foundational run: Why it matters holds as drafted.", "source": "elicited"}}
 approval: in-progress
 ---
 ## Definition

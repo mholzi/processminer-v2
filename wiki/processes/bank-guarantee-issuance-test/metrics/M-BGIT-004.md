@@ -9,7 +9,6 @@ source: process-specialist — M. Berger, 2026-05-20
 value: ~22%
 target: <15%
 trend: flat
-provenance: {"Current reading": {"evidence": "M. Berger Stage 5 standing input confirmed current ~22%, trend flat", "source": "elicited"}, "Definition": {"evidence": "", "source": "proposed"}, "Why it matters": {"evidence": "M. Berger Stage 5 standing input confirmed target <15%", "source": "elicited"}}
 ---
 ## Definition
 The percentage of guarantee applications requiring an exception escalation outside the standard process path — facility-limit referral, bespoke-wording escalation to Legal, or enhanced approval above EUR 5 million.

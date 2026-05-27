@@ -8,7 +8,6 @@ confidence: high
 source: source-target — bank-guarantee-issuance-test wiki
 validationArea: As-Is Process
 gapStatus: open
-provenance: {"Resolution": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed gap-resolution from source-target stub", "source": "elicited"}, "Status": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed gap-resolution from source-target stub", "source": "elicited"}, "The gap": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed gap-resolution from source-target stub", "source": "elicited"}}
 ---
 ## The gap
 The credit limit pre-check advisory reduces Credit team referrals but does not eliminate them. When a referral still occurs, there is no formal Credit team response SLA, leaving the stall pattern (PG-BGIT-001) partly intact in the target state.

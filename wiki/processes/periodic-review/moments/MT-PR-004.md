@@ -8,7 +8,6 @@ confidence: high
 source: periodic-kyc-review-dtp.pdf
 sentiment: positive
 touchpoint: []
-provenance: {"Design implication": {"evidence": "", "source": "proposed"}, "The moment": {"evidence": "'Your KYC is up to date until 14 Aug 2029.' (§6.2 table, row 'Status visibility', column 'What the client experiences'); No silence. The client sees their KYC status and next review date in the app at all times. (§6.1 Principle 5)", "source": "document"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 ---
 ## The moment
 At any point the client can open the app and see: "Your KYC is up to date until 14 Aug 2029." The next review date and current status are always visible, without any action required.

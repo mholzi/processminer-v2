@@ -8,7 +8,6 @@ confidence: high
 category: delay
 severity: HIGH
 affects: [PS-BGI-005]
-provenance: {"Description": {"evidence": "TFM availability is a genuine bottleneck; approvals queue when the TFM is out, and the EUR 5m escalation adds unpredictable delay when the Head of Trade Finance is travelling", "source": "elicited"}, "Impact": {"evidence": "approvals queue when the TFM is out, and the EUR 5m escalation adds unpredictable delay when the Head of Trade Finance is travelling", "source": "elicited"}, "Root cause": {"evidence": "", "source": "proposed"}}
 ---
 ## Description
 Approvals queue when the Trade Finance Manager is unavailable, and the EUR 5 million escalation path adds unpredictable delay when the Head of Trade Finance is travelling or otherwise unreachable.

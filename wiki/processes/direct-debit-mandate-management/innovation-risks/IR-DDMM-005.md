@@ -8,7 +8,6 @@ confidence: high
 source: ddmm-innovation-analyst
 severity: HIGH
 affects: [II-DDMM-007]
-provenance: {"Likelihood & impact": {"evidence": "SME confirmed: risk is governance drift over time — the boundary between routine and non-routine erodes without active oversight, weakening the control that the initiative is designed to preserve.", "source": "elicited"}, "Mitigation": {"evidence": "SME confirmed: routine/non-routine boundary governed by Compliance with periodic calibration reviews; lighter-certified checker scope restricted in MMS routing configuration, not left to manual judgement.", "source": "elicited"}, "The risk": {"evidence": "SME confirmed: lighter certification track reduces the expertise bar for routine reviews; if calibration of what is routine drifts, lower-certified checkers may process batches that warranted full review, silently degrading the control.", "source": "elicited"}}
 ---
 ## The risk
 Extending the checker pool with a lighter certification track (II-DDMM-007) makes dual-control strength dependent on correct calibration of what counts as routine. If that boundary drifts — through scope creep, operational pressure, or infrequent recalibration — lower-certified checkers process batches that should have received full review, silently degrading the control.

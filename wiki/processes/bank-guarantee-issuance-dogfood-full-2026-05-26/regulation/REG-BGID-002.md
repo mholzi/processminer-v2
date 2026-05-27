@@ -8,7 +8,6 @@ confidence: medium
 domain: Trade Finance Rules
 source: ICC Uniform Rules for Demand Guarantees (URDG 758)
 sourceUrl: https://iccwbo.org/news-publications/news/icc-demand-guarantee-rules-urdg-758-celebrate-two-years-of-rising-popularity/
-provenance: {"How it is met": {"evidence": "https://www.tradefinanceglobal.com/guarantees/urdg-758-rules-impact-demand-guarantees/ — standard wording templates and Legal review ensure compliance with URDG terms — fetched 2026-05-26", "source": "web"}, "What it requires": {"evidence": "https://www.tradefinanceglobal.com/guarantees/urdg-758-rules-impact-demand-guarantees/ — guarantee must be in writing; independence principle; bank must pay on first compliant demand — fetched 2026-05-26", "source": "web"}, "Why it applies": {"evidence": "https://iccwbo.org/news-publications/news/icc-demand-guarantee-rules-urdg-758-celebrate-two-years-of-rising-popularity/ — URDG 758 governs demand guarantees where incorporated by reference — fetched 2026-05-26", "source": "web"}}
 asOf: 2026-05-26
 updatedBy: the assistant
 updatedAt: 2026-05-26T06:50:01Z

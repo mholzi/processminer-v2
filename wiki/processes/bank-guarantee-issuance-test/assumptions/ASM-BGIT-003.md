@@ -8,7 +8,6 @@ confidence: low
 source: source-target — bank-guarantee-issuance-test wiki
 assumptionStatus: OPEN
 bearsOn: [TD-BGIT-004]
-provenance: {"Impact if wrong": {"evidence": "", "source": "proposed"}, "The assumption": {"evidence": "", "source": "proposed"}, "Why it is unconfirmed": {"evidence": "", "source": "proposed"}}
 ---
 ## The assumption
 The generation gate assumes the existing four-eyes approval model (CP-BGIT-001) is preserved unchanged in the target state. No modification to the approval workflow — such as AI-assisted pre-approval or threshold changes — is in scope for this transformation.

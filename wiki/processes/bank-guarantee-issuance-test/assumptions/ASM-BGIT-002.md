@@ -8,7 +8,6 @@ confidence: low
 source: source-target — bank-guarantee-issuance-test wiki
 assumptionStatus: OPEN
 bearsOn: [TD-BGIT-003]
-provenance: {"Impact if wrong": {"evidence": "", "source": "proposed"}, "The assumption": {"evidence": "", "source": "proposed"}, "Why it is unconfirmed": {"evidence": "", "source": "proposed"}}
 ---
 ## The assumption
 The in-TFS Legal wording workflow requires the Trade Finance System to support configurable SLA timers, automated notification dispatch and escalation routing natively, without requiring a major platform version upgrade.

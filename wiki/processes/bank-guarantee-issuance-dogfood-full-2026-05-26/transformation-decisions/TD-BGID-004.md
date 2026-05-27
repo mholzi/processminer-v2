@@ -11,7 +11,6 @@ decisionStatus: agreed
 resolves: [PP-BGID-001]
 realises: [TS-BGID-002]
 fromIdea: [II-BGID-003]
-provenance: {"Options considered": {"evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated", "source": "elicited"}, "Rationale": {"evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated", "source": "elicited"}, "The decision": {"evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:27:02Z
 ---

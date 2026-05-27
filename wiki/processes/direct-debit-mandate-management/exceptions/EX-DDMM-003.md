@@ -9,7 +9,6 @@ source: ddmm-dtp-mockup.md
 category: Validation
 impact: LOW
 handlingOwner: Mandate Clerk
-provenance: {"Description": {"evidence": "E-3 | Duplicate UMR detected | Request rejected; creditor asked to supply a unique mandate reference. The UMR is unique and well-formed.", "source": "document"}, "Handling": {"evidence": "SME (M. Vogel) confirmed: Clerk checks existing UMR status first; stuck-cancellation (Active/Dormant when should-be-cancelled) treated as system-state issue and escalated internally, not returned to creditor.", "source": "elicited"}, "Impact": {"evidence": "SME confirmed: LOW for common case; stuck-cancellation variant escalated internally, does not block other mandates.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

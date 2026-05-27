@@ -8,7 +8,6 @@ confidence: high
 source: Client journey session - S. Krause
 sentiment: positive
 touchpoint: [JT-DCR-003]
-provenance: {"Design implication": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}, "The moment": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}, "Why it matters": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}}
 ---
 ## The moment
 The agent confirms the card is blocked and can no longer be used — the single thing the client called to hear.

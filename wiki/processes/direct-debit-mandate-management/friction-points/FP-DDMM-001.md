@@ -8,7 +8,6 @@ confidence: high
 source: ddmm-client-journey-specialist
 severity: MEDIUM
 occursAt: [PS-DDMM-001]
-provenance: {"Client impact": {"evidence": "SME confirmed: round-trip delay especially costly when creditor is working to meet a collection campaign deadline.", "source": "elicited"}, "Description": {"evidence": "SME (M. Vogel) confirmed: UMR/CI format rules catch first-time submitters; no in-form guidance; errors only surface post-submission at validation.", "source": "elicited"}, "Root cause": {"evidence": "SME confirmed: portal has no client-side format validation; all logic sits in the back-end pipeline.", "source": "elicited"}}
 ---
 ## Description
 The mandate submission form in the Creditor Portal does not validate UMR and CI format rules inline. Errors are only detected after submission, when the mandate reaches the bank's validation step.

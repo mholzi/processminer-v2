@@ -5,7 +5,6 @@ section: gap-resolution
 title: Deputy Delegation Policy Requires Senior Management Governance Decision
 status: draft
 confidence: low
-provenance: {"Resolution": {"evidence": "", "source": "proposed"}, "Status": {"evidence": "", "source": "proposed"}, "The gap": {"evidence": "", "source": "proposed"}}
 gapStatus: open
 validationArea: Process
 ---

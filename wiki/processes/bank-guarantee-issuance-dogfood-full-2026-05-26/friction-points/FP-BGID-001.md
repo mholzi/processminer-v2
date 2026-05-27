@@ -9,7 +9,6 @@ source: SME interview, bank-guarantee-issuance-v1.md
 severity: HIGH
 occursAt: [PS-BGID-003]
 painPoint: [PP-BGID-002]
-provenance: {"Client impact": {"evidence": "", "source": "proposed"}, "Description": {"evidence": "Legal review with no committed turnaround", "source": "elicited"}, "Root cause": {"evidence": "Legal review with no committed turnaround; PP-BGID-002 confirms no SLA", "source": "elicited"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T20:27:02Z
 approval: in-progress

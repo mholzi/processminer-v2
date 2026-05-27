@@ -9,7 +9,6 @@ source: Comarch Raiffeisen Bank Polska case study; Comarch Trade Finance product
 competitor: Comarch (Guarantees Online)
 sourceUrl: https://www.comarch.com/finance/case-studies/supporting-trade-finance-products-at-raiffeisen-bank-polska-sa/
 asOf: 2026-05-26
-provenance: {"Evidence": {"evidence": "https://www.comarch.com/finance/case-studies/supporting-trade-finance-products-at-raiffeisen-bank-polska-sa/ — \"Raiffeisen's customers can order bank guarantees, open letters of credit and manage these products in one system, without visiting the branch office\" — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.comarch.com/finance/banking/trade-finance/ — \"significantly reducing processing time from days to hours\" and \"no need for a branch visit\" — fetched 2026-05-26", "source": "web"}, "The journey": {"evidence": "https://www.comarch.com/finance/case-studies/supporting-trade-finance-products-at-raiffeisen-bank-polska-sa/ — \"decreased the time of issuing an average banking guarantee from two working days to several hours\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: source-cx
 updatedAt: 2026-05-26T19:59:08Z
 ---

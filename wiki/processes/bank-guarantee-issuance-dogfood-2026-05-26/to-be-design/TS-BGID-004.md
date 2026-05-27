@@ -9,7 +9,6 @@ source: wiki-synthesis-2026-05-26
 replaces: [PS-BGID-006]
 systems: [SYS-BGID-002, SYS-BGID-004]
 risks: [IR-BGID-003]
-provenance: {"Rationale": {"evidence": "", "source": "proposed"}, "Target description": {"evidence": "", "source": "proposed"}, "What changes": {"evidence": "", "source": "proposed"}}
 updatedBy: admin
 updatedAt: 2026-05-26T20:15:01Z
 ---

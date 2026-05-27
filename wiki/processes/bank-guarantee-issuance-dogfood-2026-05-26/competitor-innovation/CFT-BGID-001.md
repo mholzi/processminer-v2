@@ -9,7 +9,6 @@ competitor: Mitigram
 asOf: 2026-05-26
 source: Mitigram platform brief, GTR News coverage
 sourceUrl: https://www.mitigram.com/guarantees
-provenance: {"Evidence": {"evidence": "", "source": "proposed"}, "Relevance": {"evidence": "", "source": "proposed"}, "The move": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T20:02:52Z
 ---

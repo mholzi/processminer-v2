@@ -11,7 +11,6 @@ vendor: In-house (fine-tuned NLP model, human-in-the-loop)
 owningDomain: Trade Finance
 costBand: €200k–500k build + €100k–200k annual run
 drivenByADR: [ADR-BGID-002, ADR-BGID-006]
-provenance: {"Rationale": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Risks": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Tech stack": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T14:59:49Z
 approval: approved

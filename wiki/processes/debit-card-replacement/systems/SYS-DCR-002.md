@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: dcr-dtp-mockup.md
 systemType: SUPPORTING
-provenance: {"Purpose": {"evidence": "Contact Centre Telephony / CRM | Channel and identity-verification workspace for phone requests", "source": "document"}, "Role in this process": {"evidence": "Channel and identity-verification workspace for phone requests", "source": "document"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-19

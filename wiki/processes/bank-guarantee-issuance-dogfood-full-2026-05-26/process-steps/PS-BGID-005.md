@@ -10,7 +10,6 @@ owner: Trade Finance Manager
 sla:
 condition: Sanctions screening cleared
 systems: [SYS-BGID-002]
-provenance: {"Inputs": {"evidence": "[Y] Accept", "source": "elicited"}, "Outputs": {"evidence": "[Y] Accept", "source": "elicited"}, "What happens": {"evidence": "The EUR 5M threshold is enforced by TFS — Head of TF must sign-off in-app before issuance proceeds", "source": "elicited"}, "Why it matters": {"evidence": "[Y] Accept", "source": "elicited"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T06:29:07Z
 approval: in-progress

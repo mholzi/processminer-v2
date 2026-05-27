@@ -7,7 +7,6 @@ status: draft
 confidence: medium
 source: innovation-analyst session 2026-05-26
 severity: MEDIUM
-provenance: {"Likelihood & impact": {"evidence": "Elicited from domain knowledge of corporate client behaviour during channel transitions", "source": "elicited"}, "Mitigation": {"evidence": "Elicited from standard change-management practice for corporate banking portal migrations", "source": "elicited"}, "The risk": {"evidence": "Elicited from analysis of II-BGID-002 adoption risk in EU corporate-banking portal rollouts", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:56:41Z
 approval: in-progress

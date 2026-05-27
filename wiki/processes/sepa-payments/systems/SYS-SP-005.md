@@ -6,7 +6,6 @@ title: Fraud Engine
 status: draft
 confidence: high
 source: sepa-payments-dtp-mockup.md
-provenance: {"Purpose": {"evidence": "§8 Systems & Data: 'Fraud Engine | Real-time fraud scoring'; §5.1 step 5: 'The payment is scored in real time by the fraud engine'", "source": "document"}, "Role in this process": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:09:11Z
 systemType: SUPPORTING

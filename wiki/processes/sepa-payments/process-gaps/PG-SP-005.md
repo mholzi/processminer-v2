@@ -9,7 +9,6 @@ source: sepa-payments-dtp-mockup.md
 area: As-Is process
 gapStatus: open
 affects: [PS-SP-002]
-provenance: {"Impact": {"evidence": "", "source": "proposed"}, "Next step": {"evidence": "§10 open question: 'How are positive/negative beneficiary-name-check results handled today?'; §8 systems table: 'Payment Hub — Validation, routing, orchestration, message generation'", "source": "document"}, "The gap": {"evidence": "§5.1 step 2 lists validation checks (IBAN structure, BIC reachability, currency, mandatory fields, duplicate) with no mention of name verification; §10 open question: 'How are positive/negative beneficiary-name-check results handled today?'", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:00Z
 ---

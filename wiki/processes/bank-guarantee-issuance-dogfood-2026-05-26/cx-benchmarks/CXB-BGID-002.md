@@ -8,7 +8,6 @@ confidence: medium
 source: Accenture, Find Your Competitive Advantage in Trade Finance (675 executives, 15 countries, Oct 2022)
 sourceUrl: https://www.accenture.com/us-en/insights/banking/find-your-competitive-advantage-in-trade-finance
 asOf: 2022-10-01
-provenance: {"Evidence": {"evidence": "https://www.accenture.com/us-en/insights/banking/find-your-competitive-advantage-in-trade-finance — \"survey of 675 finance executives in 15 countries\" conducted August–September 2022 — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.tradefinanceglobal.com/posts/accenture-report-overcoming-challenges-finding-competitive-advantage-trade-finance-sector/ — \"54% said expectations are being met\" and \"18% expressed dissatisfaction with overall bank dealings\" — fetched 2026-05-26", "source": "web"}, "The benchmark": {"evidence": "https://www.accenture.com/us-en/insights/banking/find-your-competitive-advantage-in-trade-finance — \"67% are planning to change their roster of partners in the next 12 months\" and \"76% will change the number of partners\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: source-cx
 updatedAt: 2026-05-26T19:59:08Z
 ---

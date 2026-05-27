@@ -1,0 +1,1118 @@
+{
+  "ASM-BGID-001": {
+    "Impact if wrong": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The assumption": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it is unconfirmed": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ASM-BGID-002": {
+    "Impact if wrong": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The assumption": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it is unconfirmed": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ASM-BGID-003": {
+    "Impact if wrong": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The assumption": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it is unconfirmed": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CEU-BGID-001": {
+    "Evidence": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Relevance": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The move": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CFT-BGID-001": {
+    "Evidence": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Relevance": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The move": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CG-BGID-001": {
+    "Remediation": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk": {
+      "source": "elicited",
+      "evidence": "No control at intake is an accepted gap: the real gates are C3 (facility) and C1 (four-eyes approval)."
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "No control at intake is an accepted gap: the real gates are C3 (facility) and C1 (four-eyes approval)."
+    }
+  },
+  "CP-BGID-001": {
+    "Control activity": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk addressed": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Timing": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What it checks": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CP-BGID-002": {
+    "Control activity": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk addressed": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Timing": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What it checks": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CP-BGID-003": {
+    "Control activity": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk addressed": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Timing": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What it checks": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CXB-BGID-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.business-money.com/announcements/hsbc-pioneers-new-digital-fast-track-trade-finance-demand-guarantee/ — \"reducing issuance times from a typical 3-4 days down to potentially minutes\" — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.business-money.com/announcements/hsbc-pioneers-new-digital-fast-track-trade-finance-demand-guarantee/ — \"Given no manufacturing can start until the guarantee is in place this enhancement supports working capital optimisation\" — fetched 2026-05-26"
+    },
+    "The benchmark": {
+      "source": "web",
+      "evidence": "https://www.business-money.com/announcements/hsbc-pioneers-new-digital-fast-track-trade-finance-demand-guarantee/ — \"reducing issuance times from a typical 3-4 days down to potentially minutes\" — fetched 2026-05-26"
+    }
+  },
+  "CXB-BGID-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.accenture.com/us-en/insights/banking/find-your-competitive-advantage-in-trade-finance — \"survey of 675 finance executives in 15 countries\" conducted August–September 2022 — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.tradefinanceglobal.com/posts/accenture-report-overcoming-challenges-finding-competitive-advantage-trade-finance-sector/ — \"54% said expectations are being met\" and \"18% expressed dissatisfaction with overall bank dealings\" — fetched 2026-05-26"
+    },
+    "The benchmark": {
+      "source": "web",
+      "evidence": "https://www.accenture.com/us-en/insights/banking/find-your-competitive-advantage-in-trade-finance — \"67% are planning to change their roster of partners in the next 12 months\" and \"76% will change the number of partners\" — fetched 2026-05-26"
+    }
+  },
+  "CXB-BGID-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.accenture.com/us-en/insights/banking/find-your-competitive-advantage-in-trade-finance — \"Only 16% of companies—most of them larger corporates—report that they are fully digital\" — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.accenture.com/us-en/insights/banking/find-your-competitive-advantage-in-trade-finance — \"companies said they are seeking efficiency and faster turnaround times\" — fetched 2026-05-26"
+    },
+    "The benchmark": {
+      "source": "web",
+      "evidence": "https://www.accenture.com/us-en/insights/banking/find-your-competitive-advantage-in-trade-finance — \"Only 16% of companies—most of them larger corporates—report that they are fully digital\" — fetched 2026-05-26"
+    }
+  },
+  "CXB-BGID-004": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.cgi.com/en/blog/banking-and-capital-markets/transaction-banking-2026-why-client-satisfaction-no-longer-guarantees-loyalty — \"83% of corporates view real-time forecasting as high value\" vs \"31% of banks\" — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.cgi.com/en/blog/banking-and-capital-markets/transaction-banking-2026-why-client-satisfaction-no-longer-guarantees-loyalty — \"96% of corporates rank strategic advice as a top priority, yet they consistently experience friction in the fundamentals\" — fetched 2026-05-26"
+    },
+    "The benchmark": {
+      "source": "web",
+      "evidence": "https://www.cgi.com/en/blog/banking-and-capital-markets/transaction-banking-2026-why-client-satisfaction-no-longer-guarantees-loyalty — \"83% of corporates view real-time forecasting as high value\" and \"31% of banks see real-time forecasting as high value\" — fetched 2026-05-26"
+    }
+  },
+  "CXE-BGID-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/bnp-paribas-vanderlande-and-surecomp-drive-successful-completion-of-swift-icc-api-pilot-for-trade-finance-guarantees/ — \"BNP Paribas, Vanderlande and Surecomp drive successful completion of Swift - ICC API pilot for Trade Finance guarantees\" — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/bnp-paribas-vanderlande-and-surecomp-drive-successful-completion-of-swift-icc-api-pilot-for-trade-finance-guarantees/ — \"easy and cost effective to implement... particularly well suited to corporates with limited transaction volumes\" — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/bnp-paribas-vanderlande-and-surecomp-drive-successful-completion-of-swift-icc-api-pilot-for-trade-finance-guarantees/ — \"The API-based communication channel enabled Dutch logistics company Vanderlande to request a guarantee through Surecomp's RIVO platform, which was transmitted securely to BNP Paribas in real-time without manual intervention\" — fetched 2026-05-26"
+    }
+  },
+  "CXE-BGID-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.commerzbank.com/financing-foreigntrade/products/foreigntrade/digital-guarantee-management/ — \"digital guarantee, surety and Standby LC processing and multi-guarantor solutions with support from Digital Vault Services (DVS)\" — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.commerzbank.com/financing-foreigntrade/products/foreigntrade/digital-guarantee-management/ — \"particularly useful for companies that maintain business relationships with several banks and want to manage guarantees via a centralized platform\" — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.commerzbank.com/financing-foreigntrade/products/foreigntrade/digital-guarantee-management/ — \"Together with Digital Vault Services GmbH (DVS), Commerzbank offers corporate clients a platform to issue and manage paper-based as well as digital guarantees\" — fetched 2026-05-26"
+    }
+  },
+  "CXE-BGID-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/leading-the-way-ing-sets-the-pace-in-digital-trade-finance — \"Leading the Way: ING Sets the Pace in Digital Trade Finance\" — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/leading-the-way-ing-sets-the-pace-in-digital-trade-finance — \"through automated data integration into backend systems, ING has seen operational efficiency gains and reduced manual error risks\" — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/leading-the-way-ing-sets-the-pace-in-digital-trade-finance — \"ING has partnered with Komgo... Konsole API connectivity... reduced media breaks in communication between applicants and banks\" — fetched 2026-05-26"
+    }
+  },
+  "CXE-BGID-004": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://wholesale.banking.societegenerale.com/en/news-insights/all-news-insights/news-details/news/societe-generale-named-best-transaction-bank-in-europe-by-euromoney/ — \"Societe Generale named Best Transaction Bank in Europe by Euromoney\" — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.euromoney.com/article/c68d3feqpigoskk0088k4s8g4/corporate-banking/europes-best-transaction-bank-2025-societe-generale/ — \"a model that mirrors the way corporates operate – globally, across functions and at pace\" — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://wholesale.banking.societegenerale.com/en/news-insights/all-news-insights/news-details/news/societe-generale-named-best-transaction-bank-in-europe-by-euromoney/ — \"bringing together cash management, trade finance, supply chain finance and correspondent banking within a single, client-centric platform\" — fetched 2026-05-26"
+    }
+  },
+  "CXF-BGID-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/harnessing-the-power-of-ai-surecomp-commits-to-reducing-trade-finance-processing-time-by-30/ — \"expediting guarantee issuance from days to hours\" — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/dz-bank-plans-to-revolutionize-trade-finance-customer-service-with-surecomps-rivo/ — \"revolutionizing customer experience while strengthening operational capabilities and giving us a competitive edge\" — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/dz-bank-plans-to-revolutionize-trade-finance-customer-service-with-surecomps-rivo/ — \"real-time corporate communication, transaction status transparency and accelerated trade finance issuance\" — fetched 2026-05-26"
+    }
+  },
+  "CXF-BGID-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.comarch.com/finance/case-studies/supporting-trade-finance-products-at-raiffeisen-bank-polska-sa/ — \"Raiffeisen's customers can order bank guarantees, open letters of credit and manage these products in one system, without visiting the branch office\" — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.comarch.com/finance/banking/trade-finance/ — \"significantly reducing processing time from days to hours\" and \"no need for a branch visit\" — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.comarch.com/finance/case-studies/supporting-trade-finance-products-at-raiffeisen-bank-polska-sa/ — \"decreased the time of issuing an average banking guarantee from two working days to several hours\" — fetched 2026-05-26"
+    }
+  },
+  "CXF-BGID-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.euromoney.com/article/5mlytiglasg080oc8gg8o4k0w/corporate-banking/the-worlds-best-software-provider-for-trade-finance-2025-finastra/ — Finastra named world's best software provider for trade finance 2025 — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.finastra.com/lending/solutions/trade-innovation — \"self-service visibility across transactions, limits, and documents; quicker processing of LCs, guarantees, and working-capital facilities\" — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.finastra.com/lending/solutions/trade-innovation — \"simplifies the complex processes and documentation involved in guarantee wording and workflows through complete digitization, leading to a reduction in processing friction and improved turnaround times\" — fetched 2026-05-26"
+    }
+  },
+  "CXF-BGID-004": {
+    "Evidence": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.finextra.com/pressarticle/76402/billpay-founder-launches-digital-trade-finance-platform-modifi — \"apply for import financing in less than ten minutes online\" with \"responses generally within 48 hours\" — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.modifi.com/us/products/sellers — \"We're 100% digital. Making it super easy for you to apply online, register in minutes, and access payment in days.\" — fetched 2026-05-26"
+    }
+  },
+  "CXG-BGID-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.hsbcnet.com/hsbcnet-for-trade-finance — \"one point of access for your trade finance needs\" including \"Guarantees and Standby Letters of Credit\" — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.hsbcnet.com/hsbcnet-for-trade-finance — HSBCnet positions guarantees inside a unified 24/7 portal with real-time dashboards — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.hsbcnet.com/hsbcnet-for-trade-finance — \"one point of access for your trade finance needs\" / \"Trade dashboard, Outstanding transactions, Pending transactions, and Applications pages\" / \"a single, clear picture of all your global transactions\" — fetched 2026-05-26"
+    }
+  },
+  "CXG-BGID-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.citibank.pl/poland/corporate/english/bank-guarantee.htm — \"the time of guarantee issuance from time of submitting an electronic application to the delivery of the electronic guarantee will be 2 days at maximum\" — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.citibank.pl/poland/corporate/english/bank-guarantee.htm — two-day SLA conditioned on revolving framework agreement and pre-agreed wording — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.citibank.pl/poland/corporate/english/bank-guarantee.htm — \"the time of guarantee issuance from time of submitting an electronic application to the delivery of the electronic guarantee will be 2 days at maximum\" / \"eGuarantee is an electronic delivery of a guarantee document with a qualified electronic signature\" — fetched 2026-05-26"
+    }
+  },
+  "CXG-BGID-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.jpmorgan.com/payments/solutions/trade-and-working-capital/trade-express — \"No login is needed. Simply enter your JP Morgan branch, a reference number, the date submitted, and the transaction currency, and amount\" — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.jpmorgan.com/payments/solutions/trade-and-working-capital/trade-express — tool designed to eliminate client service team contact for routine status inquiries — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.jpmorgan.com/payments/solutions/trade-and-working-capital/trade-express — \"No login is needed. Simply enter your JP Morgan branch, a reference number, the date submitted, and the transaction currency, and amount\" / \"all traditional trade transactions, including... bank guarantees\" / \"24/7\" — fetched 2026-05-26"
+    }
+  },
+  "CXG-BGID-004": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"automated the receipt of instructions and accelerated the issuance of digitally initiated bank guarantees, offering clients greater speed, transparency and reliability\" — fetched 2026-05-26"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"Real-time visibility, greater interoperability, and seamless integration of digital bank guarantees across banks, corporates, and platforms\" — fetched 2026-05-26"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"automated the receipt of instructions and accelerated the issuance of digitally initiated bank guarantees, offering clients greater speed, transparency and reliability\" — fetched 2026-05-26"
+    }
+  },
+  "DEP-BGID-001": {
+    "The dependency": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What crosses the boundary": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "DEP-BGID-002": {
+    "The dependency": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What crosses the boundary": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "DEP-BGID-003": {
+    "The dependency": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What crosses the boundary": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "DEP-BGID-004": {
+    "The dependency": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What crosses the boundary": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "EX-BGID-001": {
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Handling": {
+      "source": "document",
+      "evidence": "\"the application is parked and routed to the Credit team\" (step 2); \"this is the most common reason for delay\" (step 2); \"Applications frequently stall at the credit and facility check when the client has not pre-arranged enough limit.\" (Known pain points)"
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "EX-BGID-002": {
+    "Description": {
+      "source": "document",
+      "evidence": "\"The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list. A screening hit suspends the application pending Compliance investigation.\" (step 4)"
+    },
+    "Handling": {
+      "source": "document",
+      "evidence": "\"A screening hit suspends the application pending Compliance investigation.\" (step 4); \"The process is subject to anti-money-laundering and sanctions obligations (EU sanctions regulations, AML directives).\" (Regulatory context)"
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "II-BGID-001": {
+    "Expected benefit": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Feasibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The idea": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "II-BGID-002": {
+    "Expected benefit": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Feasibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The idea": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "II-BGID-003": {
+    "Expected benefit": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Feasibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The idea": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "II-BGID-004": {
+    "Expected benefit": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Feasibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The idea": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "IR-BGID-001": {
+    "Likelihood & impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Mitigation": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The risk": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "IR-BGID-002": {
+    "Likelihood & impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Mitigation": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The risk": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "IR-BGID-003": {
+    "Likelihood & impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Mitigation": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The risk": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "M-BGID-001": {
+    "Current reading": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Definition": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PP-BGID-001": {
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Root cause": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PP-BGID-002": {
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Root cause": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PP-BGID-003": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "Commercial contract reference is missing or wrong on roughly 1 in 5 applications."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "The Portal does not validate it, so the officer catches it visually and bounces it back."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "The Portal does not validate the commercial contract reference before submission."
+    }
+  },
+  "PS-BGID-001": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "The Trade Finance Officer receives the application and checks it is complete: beneficiary details, guarantee amount, currency, wording type (standard or bespoke), validity period and the underlying commercial contract reference."
+    },
+    "Outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What happens": {
+      "source": "elicited",
+      "evidence": "Officer also opens a draft record in the Trade Finance System at intake. Incomplete-app path: officer returns it to the client/RM with a checklist of missing fields."
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PS-BGID-002": {
+    "Inputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What happens": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PS-BGID-003": {
+    "Inputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What happens": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PS-BGID-004": {
+    "Inputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What happens": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PS-BGID-005": {
+    "Inputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What happens": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PS-BGID-006": {
+    "Inputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What happens": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "REG-BGID-001": {
+    "How it is met": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What it requires": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it applies": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "REG-BGID-002": {
+    "How it is met": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What it requires": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it applies": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "REQ-BGID-001": {
+    "Acceptance criteria": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Requirement": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "REQ-BGID-002": {
+    "Acceptance criteria": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Requirement": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "REQ-BGID-003": {
+    "Acceptance criteria": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Requirement": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "REQ-BGID-004": {
+    "Acceptance criteria": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Requirement": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "REQ-BGID-005": {
+    "Acceptance criteria": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Requirement": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ROLE-BGID-001": {
+    "In this process": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ROLE-BGID-002": {
+    "In this process": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ROLE-BGID-003": {
+    "In this process": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ROLE-BGID-004": {
+    "In this process": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ROLE-BGID-005": {
+    "In this process": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ROLE-BGID-006": {
+    "In this process": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "SYS-BGID-001": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "Corporate Portal — client-facing application capture."
+    },
+    "Role in this process": {
+      "source": "document",
+      "evidence": "A corporate client submits a Bank Guarantee application through the Corporate Portal, or via a relationship manager who keys it into the portal on the client's behalf."
+    }
+  },
+  "SYS-BGID-002": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "Trade Finance System — the system of record for guarantee instruments, approvals and facility utilisation."
+    },
+    "Role in this process": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "SYS-BGID-003": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list."
+    },
+    "Role in this process": {
+      "source": "document",
+      "evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list. A screening hit suspends the application pending Compliance investigation. | the screening result is attached to the application."
+    }
+  },
+  "SYS-BGID-004": {
+    "Purpose": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Role in this process": {
+      "source": "document",
+      "evidence": "the guarantee is transmitted to the beneficiary's bank via SWIFT."
+    }
+  },
+  "TD-BGID-001": {
+    "Options considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The decision": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TD-BGID-002": {
+    "Options considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The decision": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TD-BGID-003": {
+    "Options considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The decision": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TD-BGID-004": {
+    "Options considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The decision": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TD-BGID-005": {
+    "Options considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The decision": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TR-BGID-001": {
+    "Evidence": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Relevance": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The trend": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TR-BGID-002": {
+    "Evidence": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Relevance": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The trend": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TR-BGID-003": {
+    "Evidence": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Relevance": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The trend": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TS-BGID-001": {
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Target description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What changes": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TS-BGID-002": {
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Target description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What changes": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TS-BGID-003": {
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Target description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What changes": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TS-BGID-004": {
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Target description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What changes": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "VG-BGID-001": {
+    "Resolution": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Status": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The gap": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "VG-BGID-002": {
+    "Resolution": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Status": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The gap": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "VG-BGID-003": {
+    "Resolution": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Status": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The gap": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  }
+}

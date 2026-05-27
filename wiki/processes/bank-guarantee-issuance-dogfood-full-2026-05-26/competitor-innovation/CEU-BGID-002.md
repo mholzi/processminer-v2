@@ -10,7 +10,6 @@ source: East & Partners — 'How AI optimises international trade finance', repu
 sourceUrl: https://eastandpartners.com/news/how-ai-optimises-international-trade-finance-bnp-paribas/
 asOf: 2026-05-26
 bearsOn: [PP-BGID-002, FP-BGID-001, PP-BGID-003]
-provenance: {"Evidence": {"evidence": "https://eastandpartners.com/news/how-ai-optimises-international-trade-finance-bnp-paribas/ — live in 15 countries, processing close to one million printed documents a year across three core Trade Finance domains — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://eastandpartners.com/news/how-ai-optimises-international-trade-finance-bnp-paribas/ — AI and OCR platform deployed across guarantees, documentary credit and short-term financing, accelerating data capture and AML screening — fetched 2026-05-26", "source": "web"}, "The move": {"evidence": "https://eastandpartners.com/news/how-ai-optimises-international-trade-finance-bnp-paribas/ — \"The tools we have implemented help increase the processing speed of documentary credit operations while reducing risks of error through the manual handling of data.\" (Frederic Zeegers, BNP Paribas Fortis) — fetched 2026-05-26", "source": "web"}}
 updatedBy: admin
 updatedAt: 2026-05-26T08:59:00Z
 ---

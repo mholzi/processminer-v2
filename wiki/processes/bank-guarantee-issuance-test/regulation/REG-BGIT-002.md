@@ -8,7 +8,6 @@ confidence: medium
 source: bank-guarantee-issuance-v1.md
 domain: trade-finance
 asOf: 2026-05-20
-provenance: {"How it is met": {"evidence": "M. Berger: 'Standard guarantee templates incorporate URDG 758 by reference (template clauses 1, 4, 12 specifically) and the Trade Finance System enforces template selection for standard wording; for bespoke wording, Legal confirms URDG 758 conformity as part of its sign-off at PS-BGIT-003 (now control CP-BGIT-004)'", "source": "elicited"}, "What it requires": {"evidence": "Bank guarantees follow the ICC Uniform Rules for Demand Guarantees (URDG 758) where the guarantee is issued on demand terms.", "source": "document"}, "Why it applies": {"evidence": "Bank guarantees follow the ICC Uniform Rules for Demand Guarantees (URDG 758) where the guarantee is issued on demand terms.", "source": "document"}}
 approval: approved
 approvalBy: m.berger
 approvalDate: 2026-05-20

@@ -25,13 +25,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from wiki_lib import iter_elements  # noqa: E402
-
-
-def as_list(v) -> list[str]:
-    if not v:
-        return []
-    return [str(x).strip() for x in (v if isinstance(v, list) else [v]) if str(x).strip()]
+from wiki_lib import iter_elements, load_transitions  # noqa: E402
 
 
 def main(argv: list[str]) -> None:
@@ -52,15 +46,16 @@ def main(argv: list[str]) -> None:
         elif meta.get("type") == "exception":
             exceptions[eid] = meta
 
+    transitions_bundle = load_transitions(slug)
+
     # Step ids whose `transitions` flow into each exception id.
     into: dict[str, set[str]] = {eid: set() for eid in exceptions}
     # `exception`-kind transitions whose target is not a real exception.
     broken: list[tuple[str, str]] = []  # (step id, bad target)
-    for sid, meta in steps.items():
-        for entry in as_list(meta.get("transitions")):
-            parts = entry.split("|")
-            to = parts[0].strip()
-            kind = parts[1].strip() if len(parts) > 1 else "normal"
+    for sid in steps:
+        for entry in transitions_bundle.get(sid, []):
+            to = str(entry.get("to", "")).strip()
+            kind = str(entry.get("kind", "normal")).strip()
             if not to:
                 continue
             if to in exceptions:

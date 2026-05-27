@@ -8,7 +8,6 @@ confidence: medium
 source: periodic-kyc-review-dtp.pdf
 sentiment: positive
 touchpoint: []
-provenance: {"Design implication": {"evidence": "", "source": "proposed"}, "The moment": {"evidence": "", "source": "proposed"}, "Why it matters": {"evidence": "Quarterly RM phone call asking 'have you changed anything?' (§6.2 table, row 'Review starts', column 'Friction we removed')", "source": "document"}}
 ---
 ## The moment
 For ~62% of Low- and Medium-risk clients — those whose reviews complete straight-through — the review starts and finishes without any client-facing contact. The client experiences nothing; the bank works silently in the background.

@@ -10,7 +10,6 @@ severity: MEDIUM
 category: delay/hand-off friction
 priority:
 affects: [PS-BGID-003]
-provenance: {"Description": {"evidence": "Bespoke wording adds unpredictable delay because Legal review has no committed turnaround.", "source": "document"}, "Impact": {"evidence": "", "source": "proposed"}, "Root cause": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:56:10Z
 ---

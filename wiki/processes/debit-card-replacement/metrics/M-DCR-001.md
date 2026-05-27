@@ -8,7 +8,6 @@ confidence: high
 source: dcr-dtp-mockup.md
 target: Immediately during the request
 value: Not measured
-provenance: {"Current reading": {"evidence": "Card block applied | Immediately during the request", "source": "document"}, "Definition": {"evidence": "Card block applied | Immediately during the request", "source": "document"}, "Why it matters": {"evidence": "S. Krause confirmed in the foundational run: Why it matters holds as drafted.", "source": "elicited"}}
 approval: approved
 approvalBy: S. Krause
 approvalDate: 2026-05-19

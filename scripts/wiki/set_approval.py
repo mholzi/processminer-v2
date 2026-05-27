@@ -24,9 +24,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from wiki_lib import (  # noqa: E402
     UNCONFIRMED_SOURCES,
     WIKI_DIR,
+    get_provenance,
     iter_elements,
     parse_frontmatter,
-    parse_provenance,
 )
 
 STATUSES = ("in-progress", "approved", "rejected")
@@ -59,11 +59,11 @@ def patch(path: Path, status: str, by: str, today: str) -> None:
     path.write_text("---\n" + "\n".join(fm) + "\n---\n" + body, encoding="utf-8")
 
 
-def gate_approval(eid: str, meta: dict) -> None:
+def gate_approval(slug: str, eid: str) -> None:
     """Block `approved` while any heading is still unconfirmed by the SME —
     `proposed` (AI-added) or `web` (web-sourced). The hallucination
     countermeasure's approval gate (HALLUCINATION-PLAN.md)."""
-    prov = parse_provenance(meta)
+    prov = get_provenance(slug, eid)
     unconfirmed = sorted(
         h for h, e in prov.items()
         if isinstance(e, dict) and e.get("source") in UNCONFIRMED_SOURCES
@@ -99,7 +99,7 @@ def main(argv: list[str]) -> None:
     for path, meta, _body in iter_elements(slug):
         if str(meta.get("id")) == eid:
             if status == "approved":
-                gate_approval(eid, meta)
+                gate_approval(slug, eid)
             patch(path, status, by, today)
             print(f"{eid}: approval set to {status} by {by}")
             return

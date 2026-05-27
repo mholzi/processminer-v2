@@ -9,7 +9,6 @@ source: bank-guarantee-issuance-v1.md
 category: credit/facility
 impact: HIGH
 handlingOwner: Credit Team
-provenance: {"Description": {"evidence": "If the limit is insufficient, the application is parked and routed to the Credit team — this is the most common reason for delay.", "source": "document"}, "Handling": {"evidence": "", "source": "proposed"}, "Impact": {"evidence": "Applications frequently stall at the credit and facility check when the client has not pre-arranged enough limit. / The target turnaround is 3 business days from a complete application to guarantee delivery, measured for standard-wording guarantees with no screening hit.", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:56:10Z
 ---

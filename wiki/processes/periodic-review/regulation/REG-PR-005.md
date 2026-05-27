@@ -11,7 +11,6 @@ jurisdiction: DE
 article: AT 4.3
 asOf: 2026-05-21
 sourceUrl:
-provenance: {"How it is met": {"evidence": "", "source": "proposed"}, "What it requires": {"evidence": "§5.1 table: \"BaIT (DE BaFin) | AT 4.3 | IT-based control execution, evidence completeness\"", "source": "document"}, "Why it applies": {"evidence": "Executive Summary: \"Two regulatory findings (BaFin §44 KWG inspection, Sep 2025; internal audit report IA-2025-117) have been raised against control execution, ageing and evidence completeness.\"", "source": "document"}}
 ---
 ## What it requires
 BaIT AT 4.3 requires IT-based control execution and evidence completeness. The document maps this module to those obligations.

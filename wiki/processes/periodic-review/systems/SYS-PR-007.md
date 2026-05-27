@@ -8,7 +8,6 @@ confidence: high
 source: periodic-kyc-review-dtp.pdf
 systemType: SUPPORTING
 integrates: [SYS-PR-001]
-provenance: {"Purpose": {"evidence": "§7.2: 'Outreach Service | Client-facing digital outreach | Existing mobile platform | Extend'; §3.2 Step 4: 'Owner. Client Outreach Service. Channel. Mobile app (primary), secure message (secondary), RM-mediated for Private Banking.'", "source": "document"}, "Role in this process": {"evidence": "", "source": "proposed"}}
 ---
 ## Purpose
 Delivers targeted, data-minimised client-facing outreach via the bank's mobile app (primary), secure message (secondary), or RM-mediated contact for Private Banking.

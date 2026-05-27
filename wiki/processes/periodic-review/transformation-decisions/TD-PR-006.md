@@ -9,7 +9,6 @@ source: periodic-kyc-review-dtp.pdf
 decisionType: governance
 decisionStatus: proposed
 resolves: [pg-3]
-provenance: {"Options considered": {"evidence": "", "source": "proposed"}, "Rationale": {"evidence": "Group internal audit has flagged inconsistency between booking centres twice. A single framework is defensible to the lead supervisor (FINMA as group regulator).", "source": "document"}, "The decision": {"evidence": "One SLA framework with risk-rating-driven tiers, applied identically across booking centres.", "source": "document"}}
 ---
 ## The decision
 One SLA framework with risk-rating-driven tiers, applied identically across all booking centres.

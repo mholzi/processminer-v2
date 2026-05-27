@@ -10,7 +10,6 @@ owner: Payments Operations
 sla:
 condition: Instruction has passed all validation checks in Step 2
 systems: [SYS-SP-002, SYS-SP-003]
-provenance: {"Inputs": {"evidence": "Debtor account, Controls: C-3 Funds & limit check before debit.", "source": "document"}, "Outputs": {"evidence": "Amount is earmarked on the account. If insufficient: Single payments rejected; bulk-file items queued to next cycle.", "source": "document"}, "What happens": {"evidence": "The debtor account is checked for available balance including intraday limits; the amount is earmarked on the account. If funds are insufficient → see Exception E-2. Single payments rejected; bulk-file items queued to next cycle and the customer notified.", "source": "document"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:15Z
 ---

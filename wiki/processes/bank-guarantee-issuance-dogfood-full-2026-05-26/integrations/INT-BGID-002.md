@@ -7,7 +7,6 @@ status: draft
 confidence: medium
 source: it-architect session 2026-05-26
 systems: [SYS-BGID-002, SYS-BGID-003]
-provenance: {"What connects": {"evidence": "Elicited: synchronous API, SLA <2s, manual queue failover, confidential, PS-BGID-004", "source": "elicited"}, "What flows": {"evidence": "Elicited: beneficiary name/country/BIC, screening result, evidence record", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T10:09:43Z
 approval: approved

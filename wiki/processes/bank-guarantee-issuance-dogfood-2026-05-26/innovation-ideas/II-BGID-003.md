@@ -10,7 +10,6 @@ strategicFit: MEDIUM
 complexity: HIGH
 addresses: [PG-BGID-001]
 fromTrend: [TR-BGID-002]
-provenance: {"Expected benefit": {"evidence": "", "source": "proposed"}, "Feasibility": {"evidence": "", "source": "proposed"}, "The idea": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T20:02:52Z
 ---

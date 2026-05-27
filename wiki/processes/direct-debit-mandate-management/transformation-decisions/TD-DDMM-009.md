@@ -11,7 +11,6 @@ decisionStatus: DECIDED
 resolves: [CG-DDMM-001, PG-DDMM-002, PG-DDMM-003]
 realises: [TS-DDMM-007]
 fromIdea: []
-provenance: {"Options considered": {"evidence": "SME confirmed options and rationale — accepted without edit.", "source": "elicited"}, "Rationale": {"evidence": "SME confirmed rationale — accepted without edit.", "source": "elicited"}, "The decision": {"evidence": "SME (M. Vogel) accepted all ten decisions without edit.", "source": "elicited"}}
 ---
 ## The decision
 Define a formal mandate data retention period (active lifetime plus statutory minimum post-cancellation) with Legal/DPO approval; align CP-DDMM-005 dormancy threshold to the same value; implement automated purge and a CI-deactivation mandate review procedure in MMS.

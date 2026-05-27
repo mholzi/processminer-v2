@@ -1,38 +1,20 @@
-import type { WikiPage } from "@/lib/wiki";
+import type { Transition, WikiPage } from "@/lib/wiki";
 
-// Process-step ordering and transition parsing — shared by ProcessFlow,
-// RaciMatrix and TargetSynthesis so the process spine reads in the same order
-// everywhere. Order is derived from each step's `transitions` frontmatter; the
-// schema has no stored sequence number.
+// Process-step ordering — shared by ProcessFlow, RaciMatrix and
+// TargetSynthesis so the process spine reads in the same order everywhere.
+// Order is derived from each step's transitions; the schema has no stored
+// sequence number. Transitions themselves live in
+// wiki/processes/<slug>/transitions.json and are joined onto each WikiPage
+// at load by getProcess() in wiki.ts.
 
-export type Kind = "normal" | "branch" | "loopback" | "exception";
+export type Kind = Transition["kind"];
 
-export interface Transition {
-  to: string;
-  kind: Kind;
-  when: string;
-}
+export type { Transition };
 
-const KINDS: Kind[] = ["normal", "branch", "loopback", "exception"];
-
-// Parse a step's `transitions` frontmatter — each entry is `to|kind|when`.
-export function parseTransitions(
-  v: string | string[] | undefined,
-): Transition[] {
-  const raw = !v ? [] : Array.isArray(v) ? v : [v];
-  const out: Transition[] = [];
-  for (const entry of raw) {
-    const parts = entry.split("|");
-    const to = (parts[0] ?? "").trim();
-    if (!to) continue;
-    const k = (parts[1] ?? "normal").trim() as Kind;
-    out.push({
-      to,
-      kind: KINDS.includes(k) ? k : "normal",
-      when: parts.slice(2).join("|").trim(),
-    });
-  }
-  return out;
+/** A step's outgoing transitions — joined from the per-process bundle, with a
+ *  safe fallback to [] for steps that declared none. */
+export function transitionsOf(page: WikiPage): Transition[] {
+  return page.transitions ?? [];
 }
 
 // Order steps by their transition graph: a topological sort over the
@@ -47,7 +29,7 @@ export function orderSteps(steps: WikiPage[]): WikiPage[] {
   const indeg = new Map<string, number>(ids.map((id) => [id, 0]));
   const adj = new Map<string, string[]>(ids.map((id) => [id, []]));
   for (const s of steps) {
-    for (const t of parseTransitions(s.meta.transitions)) {
+    for (const t of transitionsOf(s)) {
       if (t.kind !== "normal" && t.kind !== "branch") continue;
       if (t.to === s.id || !idSet.has(t.to)) continue;
       adj.get(s.id)!.push(t.to);

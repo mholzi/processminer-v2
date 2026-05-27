@@ -8,7 +8,6 @@ confidence: high
 source: periodic-kyc-review-dtp.pdf
 systems: []
 controls: []
-provenance: {"In this process": {"evidence": "", "source": "proposed"}, "Responsibility": {"evidence": "", "source": "proposed"}}
 ---
 ## Responsibility
 The RM owns the client relationship and acts as the client-facing point of contact, but is no longer the process owner or accountable for review execution in the target process.

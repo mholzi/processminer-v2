@@ -10,7 +10,6 @@ controlType: PREVENTIVE
 execution: AUTOMATED
 owner: Compliance Analyst
 step: [PS-BGI-004]
-provenance: {"Control activity": {"evidence": "The Sanctions Screening Tool automatically writes the result to the application record; the Analyst initiates the screen but does not manually attach the result.", "source": "elicited"}, "Risk addressed": {"evidence": "Confirm as drafted — control-level framing is correct.", "source": "elicited"}, "Timing": {"evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list. (step 4)", "source": "document"}, "What it checks": {"evidence": "Every beneficiary is screened before issuance. The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list.", "source": "document"}}
 approval: in-progress
 regulatedBy: [REG-BGI-001, REG-BGI-012]
 ---

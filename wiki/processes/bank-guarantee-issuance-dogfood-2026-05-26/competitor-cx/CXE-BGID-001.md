@@ -9,7 +9,6 @@ source: Surecomp press release, November 2024
 competitor: BNP Paribas
 sourceUrl: https://surecomp.com/news/bnp-paribas-vanderlande-and-surecomp-drive-successful-completion-of-swift-icc-api-pilot-for-trade-finance-guarantees/
 asOf: 2024-11-14
-provenance: {"Evidence": {"evidence": "https://surecomp.com/news/bnp-paribas-vanderlande-and-surecomp-drive-successful-completion-of-swift-icc-api-pilot-for-trade-finance-guarantees/ — \"BNP Paribas, Vanderlande and Surecomp drive successful completion of Swift - ICC API pilot for Trade Finance guarantees\" — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://surecomp.com/news/bnp-paribas-vanderlande-and-surecomp-drive-successful-completion-of-swift-icc-api-pilot-for-trade-finance-guarantees/ — \"easy and cost effective to implement... particularly well suited to corporates with limited transaction volumes\" — fetched 2026-05-26", "source": "web"}, "The journey": {"evidence": "https://surecomp.com/news/bnp-paribas-vanderlande-and-surecomp-drive-successful-completion-of-swift-icc-api-pilot-for-trade-finance-guarantees/ — \"The API-based communication channel enabled Dutch logistics company Vanderlande to request a guarantee through Surecomp's RIVO platform, which was transmitted securely to BNP Paribas in real-time without manual intervention\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: source-cx
 updatedAt: 2026-05-26T19:59:08Z
 ---

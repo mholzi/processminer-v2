@@ -11,7 +11,6 @@ reuse: NEW
 owningDomain: Credit & Trade Finance
 hostedIn: [TGTAPP-BGID-004, TGTAPP-BGID-005]
 realisesStep: [TS-BGID-002]
-provenance: {"Boundaries": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Description": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Inputs and outputs": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T14:59:49Z
 approval: approved

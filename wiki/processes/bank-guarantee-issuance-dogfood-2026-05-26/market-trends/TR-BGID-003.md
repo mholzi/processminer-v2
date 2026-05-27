@@ -9,7 +9,6 @@ horizon: emerging
 asOf: 2026-05-26
 source: Celent — AI in Trade Finance 2026 report
 sourceUrl: https://www.celent.com/insights/ai-trade-finance-2026
-provenance: {"Evidence": {"evidence": "", "source": "proposed"}, "Relevance": {"evidence": "", "source": "proposed"}, "The trend": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T20:02:52Z
 ---

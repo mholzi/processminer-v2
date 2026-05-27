@@ -7,7 +7,6 @@ status: draft
 confidence: medium
 source: it-architect session 2026-05-26
 systems: [SYS-BGID-002, SYS-BGID-006]
-provenance: {"What connects": {"evidence": "Elicited: async REST, confidential, 10-year retention, PS-BGID-006", "source": "elicited"}, "What flows": {"evidence": "Elicited: guarantee document, retention metadata, storage confirmation and document reference ID", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T10:09:43Z
 approval: approved

@@ -9,7 +9,6 @@ source: bank-guarantee-issuance-v1.md
 systems: [SYS-BGID-002]
 controls: []
 raci: [ps-2:C]
-provenance: {"In this process": {"evidence": "If the limit is insufficient, the application is parked and routed to the Credit team — this is the most common reason for delay.", "source": "document"}, "Responsibility": {"evidence": "Credit team — limit increases when the facility is insufficient.", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:56:10Z
 ---

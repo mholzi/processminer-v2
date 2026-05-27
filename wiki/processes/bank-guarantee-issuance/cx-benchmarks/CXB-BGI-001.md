@@ -7,7 +7,6 @@ status: draft
 confidence: medium
 source: ICC / Swift — ICC and Swift unveil first API standards for guarantees and standby letters of credit, August 2024; Trade Finance Global coverage
 sourceUrl: https://iccwbo.org/news-publications/news/icc-and-swift-unveil-first-api-standards-for-guarantees-and-standby-letters-of-credit/
-provenance: {"Evidence": {"evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"Standard Chartered has successfully completed its industry standard API-based bank guarantee transaction for a global energy company via Komgo's Konsole\" in January 2026 — fetched 2026-05-19", "source": "web"}, "Relevance": {"evidence": "https://www.tradefinanceglobal.com/posts/breaking-icc-and-swift-release-first-api-standards-for-guarantees-and-standby-letters-of-credit/ — \"the ICC-Swift API standards for bank guarantees ... are the first industry-wide API specifications to be applied in trade finance, enabling real-time visibility, greater interoperability\" — fetched 2026-05-19", "source": "web"}, "The benchmark": {"evidence": "https://iccwbo.org/news-publications/news/icc-and-swift-unveil-first-api-standards-for-guarantees-and-standby-letters-of-credit/ — \"ICC and Swift unveil first API standards for guarantees and standby letters of credit\" — fetched 2026-05-19", "source": "web"}}
 asOf: 2026-05-20
 ---
 ## The benchmark

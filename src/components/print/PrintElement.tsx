@@ -26,16 +26,7 @@ export default function PrintElement({
   const fields = type?.frontmatter?.fields ?? [];
   const relations = type?.frontmatter?.relations ?? [];
 
-  const transitions = asList(page.meta.transitions)
-    .map((entry) => {
-      const parts = entry.split("|");
-      return {
-        to: (parts[0] ?? "").trim(),
-        kind: (parts[1] ?? "normal").trim(),
-        when: parts.slice(2).join("|").trim(),
-      };
-    })
-    .filter((t) => t.to);
+  const transitions = page.transitions ?? [];
 
   return (
     <article className="print-element">

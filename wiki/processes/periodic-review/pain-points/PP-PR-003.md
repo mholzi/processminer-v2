@@ -10,7 +10,6 @@ category: data collection
 severity: MEDIUM
 priority: P2
 affects: [PS-PR-004]
-provenance: {"Description": {"evidence": "Over-collection. Clients are asked for documents the bank already has in onboarding, transactions, or the customer master. (§2 Why it hurts, p.7); RM contacts the client (email, phone, in person) and asks for refreshed ID, proof of address, source-of-wealth attestation and an updated client profile questionnaire. (§2 Step 2, p.7)", "source": "document"}, "Impact": {"evidence": "", "source": "proposed"}, "Root cause": {"evidence": "", "source": "proposed"}}
 ---
 ## Description
 During outreach the RM asks clients to supply refreshed identity documents, proof of address, source-of-wealth attestation, and an updated client profile questionnaire — including items the bank already holds from onboarding, ongoing transactions, or the customer master.

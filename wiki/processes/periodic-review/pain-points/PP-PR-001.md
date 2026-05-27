@@ -10,7 +10,6 @@ category: data fragmentation
 severity: HIGH
 priority: P1
 affects: [PS-PR-002, PS-PR-003, PS-PR-005]
-provenance: {"Description": {"evidence": "No system of record. Evidence lives in four places (shared drive, email, SharePoint, core banking). Reconciliation is manual. (§2 Why it hurts, p.7)", "source": "document"}, "Impact": {"evidence": "", "source": "proposed"}, "Root cause": {"evidence": "", "source": "proposed"}}
 ---
 ## Description
 Evidence for a periodic review lives in four separate systems — shared drive, email, SharePoint, and core banking. There is no single authoritative case record; analysts must manually pull and reconcile artefacts from each system before they can assess or sign off a review.

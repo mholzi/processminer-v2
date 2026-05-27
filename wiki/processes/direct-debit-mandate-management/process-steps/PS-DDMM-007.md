@@ -9,9 +9,7 @@ source: ddmm-dtp-mockup.md
 owner: Mandate Clerk
 sla: Within 2 business days of identification
 condition: Triggered by inbound R-transaction from debtor bank
-transitions: []
 systems: [SYS-DDMM-002, SYS-DDMM-003]
-provenance: {"Inputs": {"evidence": "When an inbound R-transaction referencing a mandate is received, the Mandate Clerk identifies the reason code and acts.", "source": "document"}, "Outputs": {"evidence": "MD01, MD02 and AC04 always end in a creditor notification. SL01 does NOT notify the creditor — the restriction is applied silently.", "source": "elicited"}, "What happens": {"evidence": "MD01: Clerk investigates against MMS. If genuinely absent/cancelled: creditor notified, collection reversed. If MMS shows valid mandate: suspected wrongful reject — re-present or escalate to Payments Ops Lead. Compliance not involved in MD01. SL01: Clerk sets restriction flag manually in MMS, transcribing from R-transaction; not auto-applied. Creditor notification: MD01/MD02/AC04 always; SL01 no notification — restriction applied silently.", "source": "elicited"}, "Why it matters": {"evidence": "Confirmed as drafted.", "source": "elicited"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-19

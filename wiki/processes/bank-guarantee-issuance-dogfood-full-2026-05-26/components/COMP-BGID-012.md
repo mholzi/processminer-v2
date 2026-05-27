@@ -13,7 +13,6 @@ scaling: HPA 2→6 replicas
 inApp: [TGTAPP-BGID-005]
 dependsOn: [COMP-BGID-010, COMP-BGID-011]
 realisesCapability: [CAP-BGID-001]
-provenance: {"Responsibility": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Technical detail": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T15:58:45Z
 approval: approved

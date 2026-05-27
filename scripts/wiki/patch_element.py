@@ -26,18 +26,22 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from wiki_lib import (  # noqa: E402
     ROOT,
-    dump_provenance,
     element_types,
+    get_provenance,
     iter_elements,
     parse_blocks,
-    parse_provenance,
+    parse_transition_dsl,
     serialize_element,
+    set_provenance,
+    set_transitions,
     stamp_edit,
 )
 
 # List frontmatter keys that are not schema relations but are legitimately
-# id-lists (per-edge metadata handled separately — see relations.ts).
-NON_RELATION_LISTS = {"transitions", "raci"}
+# id-lists with per-edge metadata. `raci` lives on the frontmatter; transitions
+# live in the per-process transitions.json bundle but are exposed through the
+# same `--list transitions` CLI for the skills' continuity.
+NON_RELATION_LISTS = {"raci"}
 
 
 def main(argv: list[str]) -> None:
@@ -69,6 +73,10 @@ def main(argv: list[str]) -> None:
     path, meta, body = found
     blocks = parse_blocks(body)
 
+    # The transitions bundle write happens after the body+frontmatter is
+    # rewritten, so a failed file write doesn't leave a stale bundle entry.
+    pending_transitions: list[dict] | None = None
+
     if mode == "--block":
         try:
             text = Path(value).read_text(encoding="utf-8").strip()
@@ -86,32 +94,49 @@ def main(argv: list[str]) -> None:
         # AI-authored and unconfirmed until the SME re-approves it. Flip the
         # heading back to `proposed` (HALLUCINATION-PLAN.md — the critical gap:
         # without this, a hallucination re-enters an approved element silently).
-        prov = parse_provenance(meta)
+        prov = get_provenance(slug, eid)
         prov[key] = {"source": "proposed", "evidence": ""}
-        meta["provenance"] = dump_provenance(prov)
+        set_provenance(slug, eid, prov)
         what = f"block '## {key}' (provenance reset to proposed)"
     elif mode == "--list":
-        # A relation list must be a schema-declared relation for this element's
+        # `transitions` is the per-edge list that lives in the per-process
+        # transitions.json bundle, exposed through `--list` for skill continuity.
+        # Other id-lists must be schema-declared relations for this element's
         # type. A relation's reverse view (e.g. a system's steps) is derived
         # from the canonical side, never stored — patching it creates the
         # one-sided links lint then has to chase. Fail loudly on the misuse.
-        if key not in NON_RELATION_LISTS:
-            etype = str(meta.get("type", ""))
-            info = element_types().get(etype, {})
-            rel_keys = {
-                r["key"]
-                for r in ((info.get("frontmatter") or {}).get("relations") or [])
-            }
-            if key not in rel_keys:
-                sys.exit(
-                    f"error: '{key}' is not a schema relation for type "
-                    f"'{etype}'. Its reverse view is derived from the "
-                    f"canonical side — patch that side instead."
-                )
-        items = [x.strip() for x in value.split(",") if x.strip()]
-        meta[key] = items
-        what = f"field '{key}' (list)"
+        if key == "transitions":
+            items = [x.strip() for x in value.split(",") if x.strip()]
+            pending_transitions = [
+                t
+                for t in (parse_transition_dsl(entry) for entry in items)
+                if t is not None
+            ]
+            what = "field 'transitions' (bundle)"
+        else:
+            if key not in NON_RELATION_LISTS:
+                etype = str(meta.get("type", ""))
+                info = element_types().get(etype, {})
+                rel_keys = {
+                    r["key"]
+                    for r in ((info.get("frontmatter") or {}).get("relations") or [])
+                }
+                if key not in rel_keys:
+                    sys.exit(
+                        f"error: '{key}' is not a schema relation for type "
+                        f"'{etype}'. Its reverse view is derived from the "
+                        f"canonical side — patch that side instead."
+                    )
+            items = [x.strip() for x in value.split(",") if x.strip()]
+            meta[key] = items
+            what = f"field '{key}' (list)"
     else:  # --field
+        if key in ("provenance", "transitions"):
+            sys.exit(
+                f"error: '{key}' lives in wiki/processes/{slug}/{key}.json — "
+                f"use `--list transitions ...` for transitions, or "
+                f"patch_element.py --block to update provenance via a block edit."
+            )
         meta[key] = value
         what = f"field '{key}'"
 
@@ -140,6 +165,8 @@ def main(argv: list[str]) -> None:
         stamp_edit(meta, by)
 
     path.write_text(serialize_element(meta, blocks), encoding="utf-8")
+    if pending_transitions is not None:
+        set_transitions(slug, eid, pending_transitions)
     print(f"patched {what} of {eid} — {path.relative_to(ROOT)}")
 
 

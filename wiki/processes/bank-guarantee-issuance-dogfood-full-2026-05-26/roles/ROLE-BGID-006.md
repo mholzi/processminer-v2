@@ -8,7 +8,6 @@ confidence: high
 source: bank-guarantee-issuance-v1.md
 systems: []
 controls: []
-provenance: {"In this process": {"evidence": "[Y] Accept — Legal is R+A on the wording-review work itself; TFO retains R+A on the step", "source": "elicited"}, "Responsibility": {"evidence": "[Y] Accept — Legal is R+A on the wording-review work itself; TFO retains R+A on the step", "source": "elicited"}}
 raci: [PS-BGID-003:R, PS-BGID-003:A]
 updatedBy: the assistant
 updatedAt: 2026-05-26T06:36:54Z

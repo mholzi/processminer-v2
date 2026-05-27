@@ -9,7 +9,6 @@ source: ddmm-dtp-mockup.md
 category: Validation
 impact: MEDIUM
 handlingOwner: Mandate Clerk
-provenance: {"Description": {"evidence": "If validation fails → see Exception E-1. E-1: Invalid or incomplete mandate data.", "source": "document"}, "Handling": {"evidence": "SME (M. Vogel) confirmed: reason code is structured from a validation error catalogue (not free text); for bulk files only invalid mandates returned, valid ones proceed.", "source": "elicited"}, "Impact": {"evidence": "SME confirmed: partial-return for bulk (valid mandates proceed), only affected mandates blocked; registration SLA pauses during creditor resubmission window.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

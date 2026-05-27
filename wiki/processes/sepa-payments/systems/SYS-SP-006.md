@@ -6,7 +6,6 @@ title: CSM Gateway
 status: draft
 confidence: high
 source: sepa-payments-dtp-mockup.md
-provenance: {"Purpose": {"evidence": "§8 Systems & Data: 'CSM Gateway (STEP2 / RT1) | Clearing and settlement with the SEPA scheme'; §5.1 step 8: 'submits it to the clearing and settlement mechanism (CSM): the instant gateway (RT1) for SCT Inst, or the batch gateway (STEP2) for standard SCT'; §11 Glossary: 'CSM | Clearing and Settlement Mechanism (e.g. STEP2, RT1)'", "source": "document"}, "Role in this process": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:09:11Z
 systemType: EXTERNAL

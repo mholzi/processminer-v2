@@ -12,7 +12,7 @@
 // a TS-id entry at the same level (R/A/C/I), so the existing ownerOf() lookup
 // places the TS in the lane the PS would have been in.
 
-import type { WikiPage } from "./wiki";
+import type { Transition, WikiPage } from "./wiki";
 
 function asList(v: string | string[] | undefined): string[] {
   if (!v) return [];
@@ -47,30 +47,24 @@ export function buildTargetFlowView(
   }
 
   // Remap a transition target id: PS → TS if a replacement exists, else as-is.
-  // Transitions are encoded as `to|kind|when` strings on `meta.transitions`.
-  function remapTransition(entry: string): string {
-    const parts = entry.split("|");
-    const to = (parts[0] ?? "").trim();
-    const rest = parts.slice(1).join("|");
-    const replacement = psToTs.get(to);
-    if (!replacement) return entry;
-    return rest ? `${replacement.id}|${rest}` : replacement.id;
+  function remapTransition(t: Transition): Transition {
+    const replacement = psToTs.get(t.to);
+    return replacement ? { ...t, to: replacement.id } : t;
   }
 
   // Synthesise each step slot: TS if one replaces this PS, else PS unchanged.
   const steps: WikiPage[] = asIsSteps.map((ps) => {
     const ts = psToTs.get(ps.id);
     if (!ts) return ps;
-    const psTransitions = asList(ps.meta.transitions as string | string[] | undefined);
-    const remapped = psTransitions.map(remapTransition);
+    const remapped = (ps.transitions ?? []).map(remapTransition);
     // Synthesised step keeps the TS body and title but inherits the PS's
     // transitions (remapped to TS ids). We do NOT mutate the TS element —
     // it stays untouched on disk; this is a render-time projection only.
     return {
       ...ts,
+      transitions: remapped,
       meta: {
         ...ts.meta,
-        transitions: remapped,
         // Mark synthesised origin so the flow can opt into styling later
         // ("new target step" etc.) without re-deriving.
         __originPS: ps.id,

@@ -7,7 +7,6 @@ status: draft
 confidence: medium
 source: CGI and BAFT Trade Technology Survey 2024
 sourceUrl: https://www.cgi.com/us/en-us/viewpoint/corporate-and-transaction-banking/cgi-baft-survey
-provenance: {"Evidence": {"evidence": "https://www.cgi.com/us/en-us/viewpoint/corporate-and-transaction-banking/cgi-baft-survey — \"80% of survey respondents believe the digitalisation of trade is dependent on collaboration throughout the ecosystem\" — fetched 2026-05-19", "source": "web"}, "Relevance": {"evidence": "https://www.tradefinanceglobal.com/posts/adapting-to-change-insights-from-the-2024-cgi-and-baft-trade-technology-survey/ — \"Corporate customers, expecting their banking partners to keep pace and to deliver their services without delay or error, are driving banks to adopt digital solutions\" — fetched 2026-05-19", "source": "web"}, "The benchmark": {"evidence": "https://www.cgi.com/us/en-us/viewpoint/corporate-and-transaction-banking/cgi-baft-survey — \"90% of banks investing in digital customer experience initiatives\" — fetched 2026-05-19", "source": "web"}}
 asOf: 2026-05-20
 ---
 ## The benchmark

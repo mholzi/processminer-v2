@@ -10,7 +10,6 @@ horizon: near-term
 asOf: 2026-05-19
 sourceUrl: pending
 bearsOn: [FP-DDMM-003, FP-DDMM-004, PP-DDMM-003]
-provenance: {"Evidence": {"evidence": "SME accepted honest framing: figures are indicative only, sourceUrl: pending, require source-innovation verification.", "source": "elicited"}, "Relevance": {"evidence": "SME confirmed: FP-DDMM-003 (opaque status) is the daily creditor complaint; PP-DDMM-003 (reconciliation rework) is a systemic integration gap.", "source": "elicited"}, "The trend": {"evidence": "SME (M. Vogel) confirmed: DDMM relies on intraday batch sync to Payment Hub and binary portal status; event-driven integration addresses both the reconciliation burden and creditor opacity.", "source": "elicited"}}
 ---
 ## The trend
 ISO 20022 adoption and the broader shift to API-first banking are driving European banks to replace batch integrations with event-driven architectures. Real-time status propagation across systems — and outbound to clients — is becoming a baseline expectation rather than a differentiator.

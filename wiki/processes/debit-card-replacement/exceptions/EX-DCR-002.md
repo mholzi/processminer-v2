@@ -9,7 +9,6 @@ source: dcr-dtp-mockup.md
 impact: HIGH
 handlingOwner: Fraud Analyst
 category: Fraud
-provenance: {"Description": {"evidence": "Suspicious transactions found during fraud check", "source": "document"}, "Handling": {"evidence": "Request handed to the Card Fraud process (PRC-RET-0255); replacement is held until the fraud case is opened, then resumes.", "source": "document"}, "Impact": {"evidence": "S. Krause confirmed in the foundational run: Impact holds as drafted.", "source": "elicited"}}
 approval: approved
 approvalBy: S. Krause
 approvalDate: 2026-05-19

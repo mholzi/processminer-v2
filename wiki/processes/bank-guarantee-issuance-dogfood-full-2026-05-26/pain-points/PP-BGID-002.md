@@ -10,7 +10,6 @@ category: delay
 severity: MEDIUM
 priority: P2
 affects: [PS-BGID-003]
-provenance: {"Description": {"evidence": "", "source": "proposed"}, "Impact": {"evidence": "", "source": "proposed"}, "Root cause": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T06:01:39Z
 ---

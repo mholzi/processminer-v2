@@ -9,7 +9,6 @@ competitor: BNP Paribas
 asOf: 2026-05-26
 source: BNP Paribas Connexis Trade product page
 sourceUrl: https://cashmanagement.bnpparibas.com/connexis-trade
-provenance: {"Evidence": {"evidence": "", "source": "proposed"}, "Relevance": {"evidence": "", "source": "proposed"}, "The move": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T20:02:52Z
 ---

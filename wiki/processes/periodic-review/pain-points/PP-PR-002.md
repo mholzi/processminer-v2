@@ -10,7 +10,6 @@ category: process control
 severity: HIGH
 priority: P1
 affects: [PS-PR-001]
-provenance: {"Description": {"evidence": "No deterministic trigger. A client whose RM leaves drops off the list for a full review cycle. (§2 Why it hurts, p.7); RM receives a monthly Excel extract from Compliance listing her clients due for review. Owners change when an RM leaves; lists are not reconciled against the client master. (§2 Step 1, p.7)", "source": "document"}, "Impact": {"evidence": "", "source": "proposed"}, "Root cause": {"evidence": "RM receives a monthly Excel extract from Compliance listing her clients due for review. Owners change when an RM leaves; lists are not reconciled against the client master. (§2 Step 1, p.7)", "source": "document"}}
 ---
 ## Description
 Reviews are initiated when a Relationship Manager notices a client is due, based on a monthly Excel extract from Compliance. There is no system-generated, deterministic trigger. A client whose RM leaves the bank drops off the list for a full review cycle.

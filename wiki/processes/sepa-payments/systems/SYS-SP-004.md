@@ -6,7 +6,6 @@ title: Sanctions Screening Engine
 status: draft
 confidence: high
 source: sepa-payments-dtp-mockup.md
-provenance: {"Purpose": {"evidence": "§8 Systems & Data: 'Sanctions Screening Engine | Real-time sanctions / AML screening'; §5.1 step 4: 'Debtor and creditor are screened against sanctions lists'", "source": "document"}, "Role in this process": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:09:11Z
 systemType: SUPPORTING

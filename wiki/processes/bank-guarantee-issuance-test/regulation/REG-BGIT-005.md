@@ -8,7 +8,6 @@ confidence: high
 domain: prudential
 source: Kreditwesengesetz (KWG) §1 Abs. 1 Nr. 2 — Kreditgeschäft / Garantiegeschäft
 sourceUrl: https://www.gesetze-im-internet.de/kredwg/__1.html
-provenance: {"How it is met": {"evidence": "https://www.gesetze-im-internet.de/kredwg/__1.html — KWG licence is a precondition for operating this process; internal delegation of authority governs individual issuance decisions — fetched 2026-05-20", "source": "web"}, "What it requires": {"evidence": "https://www.gesetze-im-internet.de/kredwg/__1.html — §1 Abs. 1 Satz 2 Nr. 2: Kreditgeschäft includes granting of loans and Garantien; regulated as banking business requiring BaFin licence — fetched 2026-05-20", "source": "web"}, "Why it applies": {"evidence": "https://www.gesetze-im-internet.de/kredwg/__1.html — independent bank guarantees (Garantiegeschäft) fall under §1 Nr. 2 credit business — fetched 2026-05-20", "source": "web"}}
 asOf: 2026-05-20
 ---
 ## What it requires

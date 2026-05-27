@@ -9,7 +9,6 @@ source: foundational-run — M. Berger
 area: As-Is process
 gapStatus: open
 affects: [PS-BGIT-003]
-provenance: {"Impact": {"evidence": "", "source": "proposed"}, "Next step": {"evidence": "", "source": "proposed"}, "The gap": {"evidence": "M. Berger: 'bespoke wording handoff is by email today — no system handoff — flag as a process gap'", "source": "elicited"}}
 ---
 ## The gap
 The bespoke wording handoff from the Trade Finance Officer to the Legal team is handled by email with no system-supported workflow. There is no tracking, no automatic routing, and no record in the Trade Finance System.

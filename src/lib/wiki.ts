@@ -99,6 +99,22 @@ export interface ProseBlock {
   text: string;
 }
 
+/** Per-heading provenance entry (HALLUCINATION-PLAN.md): which source the
+ *  content came from + the verbatim quote that backs it. */
+export interface ProvenanceEntry {
+  source?: string;
+  evidence?: string;
+}
+
+/** A process-step's outgoing edge (schema: process-step.transitions). The
+ *  `kind` tells the flow whether this is the next step, a branch, a loop-back
+ *  or an exception exit; `when` is the condition the SME described. */
+export interface Transition {
+  to: string;
+  kind: "normal" | "branch" | "loopback" | "exception";
+  when: string;
+}
+
 export interface WikiPage {
   id: string;
   type: string;
@@ -113,6 +129,14 @@ export interface WikiPage {
   body: string;
   /** Body split into named prose blocks; empty when the body has no `## ` headings. */
   blocks: ProseBlock[];
+  /** Per-heading provenance — read from wiki/processes/<slug>/provenance.json
+   *  at load time, keyed by element id. Undefined when the element type has
+   *  no template (provenance only applies to template-bearing elements). */
+  provenance?: Record<string, ProvenanceEntry>;
+  /** Outgoing transitions — read from wiki/processes/<slug>/transitions.json
+   *  at load time, keyed by element id. Empty / undefined for elements that
+   *  do not declare a flow (anything other than process-step). */
+  transitions?: Transition[];
 }
 
 /** A conflict document-ingest flagged — doc vs wiki, left for the SME. */
@@ -368,6 +392,21 @@ export function getProcess(slug: string): ProcessDoc | null {
       return undefined;
     }
   };
+
+  // Lift provenance + transitions out of the per-process bundles and attach
+  // them to each element by id, so consumers see one WikiPage with everything
+  // already joined. Bundles live next to the element folders — see
+  // scripts/wiki/migrate_to_bundles.py for the on-disk shape.
+  const provenanceBundle =
+    readJson<Record<string, Record<string, ProvenanceEntry>>>("provenance.json") ?? {};
+  const transitionsBundle =
+    readJson<Record<string, Transition[]>>("transitions.json") ?? {};
+  for (const el of elements) {
+    const prov = provenanceBundle[el.id];
+    if (prov) el.provenance = prov;
+    const trans = transitionsBundle[el.id];
+    if (trans && trans.length) el.transitions = trans;
+  }
   // The lint report, with the dismissal sidecar re-applied — so a finding the
   // SME set aside stays dismissed even after run-lint rewrites lint.json.
   const lint = readJson<LintReport>("lint.json");

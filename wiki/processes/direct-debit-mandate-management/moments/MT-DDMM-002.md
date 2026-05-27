@@ -8,7 +8,6 @@ confidence: high
 source: ddmm-client-journey-specialist
 sentiment: negative
 touchpoint: [JT-DDMM-003]
-provenance: {"Design implication": {"evidence": "SME confirmed: reason-code-specific remediation guidance inline or linked would eliminate the out-of-band RM escalation.", "source": "elicited"}, "The moment": {"evidence": "SME (M. Vogel): rejection code + short description but no remediation guidance; only recourse is out-of-band RM call; second rejection on resubmission compounds damage.", "source": "elicited"}, "Why it matters": {"evidence": "SME confirmed: trust is most decisively lost here; bank says no without saying how.", "source": "elicited"}}
 ---
 ## The moment
 A creditor receives a rejection code and short description but no remediation guidance. Unable to determine what to fix, they escalate out-of-band. A second rejection on resubmission compounds the loss of trust.

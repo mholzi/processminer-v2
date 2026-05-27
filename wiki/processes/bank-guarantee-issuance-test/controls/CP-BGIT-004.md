@@ -10,7 +10,6 @@ controlType: PREVENTIVE
 execution: MANUAL
 owner: Head of Legal
 step: [PS-BGIT-003]
-provenance: {"Control activity": {"evidence": "", "source": "proposed"}, "Risk addressed": {"evidence": "", "source": "proposed"}, "Timing": {"evidence": "", "source": "proposed"}, "What it checks": {"evidence": "M. Berger: 'Legal sign-off IS a real control — add it as a new control, owner Head of Legal, type Preventive, linked to PS-BGIT-003'", "source": "elicited"}}
 ---
 ## What it checks
 Confirms that bespoke guarantee wording has been reviewed and signed off by the Legal team before the application advances to issuance. Applies only to bespoke-wording guarantees; standard wording is not subject to this control.

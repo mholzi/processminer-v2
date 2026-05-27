@@ -8,7 +8,6 @@ confidence: medium
 source: SME interview
 severity: MEDIUM
 occursAt: [PS-BGID-007]
-provenance: {"Client impact": {"evidence": "clients don't know whether collateral has been booked — time-sensitive for underlying contracts with hard guarantee-delivery deadlines", "source": "elicited"}, "Description": {"evidence": "the collateral-confirmation journey when applicable — clients don't know whether collateral has been booked and the guarantee can therefore be released", "source": "elicited"}, "Root cause": {"evidence": "collateral blocking is an internal treasury operation with no client-facing notification step", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:15:47Z
 approval: in-progress

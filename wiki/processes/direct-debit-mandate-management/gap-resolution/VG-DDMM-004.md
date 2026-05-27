@@ -8,7 +8,6 @@ confidence: high
 source: ddmm-transformation-agent
 validationArea: Operations
 gapStatus: open
-provenance: {"Resolution": {"evidence": "SME confirmed: SLA definition and capacity confirmation are hard prerequisites for TD-DDMM-004 deployment; must be defined before channel goes live.", "source": "elicited"}, "Status": {"evidence": "SME confirmed: OPEN; SLA definition is a hard prerequisite for deployment.", "source": "elicited"}, "The gap": {"evidence": "SME (M. Vogel) confirmed: TD-DDMM-004 commits to the in-portal query channel but no element defines a query-response SLA or Payments Operations capacity agreement — exactly the IR-DDMM-004 scenario.", "source": "elicited"}}
 ---
 ## The gap
 TD-DDMM-004 commits to the in-portal mandate query channel but no element defines a query-response SLA or a Payments Operations capacity agreement. Without both, the channel creates implicit response-time commitments the team may not consistently meet.

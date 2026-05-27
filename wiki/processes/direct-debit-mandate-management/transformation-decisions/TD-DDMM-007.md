@@ -11,7 +11,6 @@ decisionStatus: DECIDED
 resolves: [CG-DDMM-004, PG-DDMM-006]
 realises: [TS-DDMM-006]
 fromIdea: []
-provenance: {"Options considered": {"evidence": "SME confirmed options and rationale — accepted without edit.", "source": "elicited"}, "Rationale": {"evidence": "SME confirmed rationale — accepted without edit.", "source": "elicited"}, "The decision": {"evidence": "SME (M. Vogel) accepted all ten decisions without edit.", "source": "elicited"}}
 ---
 ## The decision
 Extend CP-DDMM-002 sanctions screening to cover IBAN amendments and cancellations; implement periodic re-screening of the active mandate register on a Compliance-defined schedule and ownership.

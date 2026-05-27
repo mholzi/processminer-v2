@@ -7,8 +7,6 @@ status: draft
 confidence: high
 owner: Trade Finance Officer
 systems: [SYS-BGI-001]
-transitions: [PS-BGI-002|normal|application is complete, EX-BGI-004|exception|application is incomplete]
-provenance: {"Inputs": {"evidence": "For bid bonds / tender guarantees the guarantee is issued before any contract exists — at intake we accept the tender or solicitation reference instead.", "source": "elicited"}, "Outputs": {"evidence": "The Trade Finance Officer receives the application and checks it is complete: beneficiary details, guarantee amount, currency, wording type (standard or bespoke), validity period and the underlying commercial contract reference.", "source": "document"}, "What happens": {"evidence": "", "source": "proposed"}, "Why it matters": {"evidence": "The 'Why it matters' framing is fine.", "source": "elicited"}}
 source: bank-guarantee-issuance-v1.md
 approval: in-progress
 ---

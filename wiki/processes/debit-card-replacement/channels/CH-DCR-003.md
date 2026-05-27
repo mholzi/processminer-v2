@@ -8,7 +8,6 @@ confidence: high
 source: Client journey session - S. Krause
 channelType: ASSISTED
 touchpoints: [JT-DCR-004]
-provenance: {"Description": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}, "Usage": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}}
 ---
 ## Description
 A physical bank branch, where the client can be served face to face by branch staff.

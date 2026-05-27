@@ -9,7 +9,6 @@ source: ddmm-transformation-agent
 replaces: [PS-DDMM-004]
 systems: [SYS-DDMM-002]
 risks: [IR-DDMM-001, IR-DDMM-005]
-provenance: {"Rationale": {"evidence": "SME confirmed: PP-DDMM-002 and CG-DDMM-003 share a root cause; framing accepted without edit.", "source": "elicited"}, "Target description": {"evidence": "SME (M. Vogel) confirmed: accurate; closes CG-DDMM-003 and PG-DDMM-005, requires Compliance sign-off on scoring model, carries IR-DDMM-001/005 risks; accepted without edit. Trim is formatting-only.", "source": "elicited"}, "What changes": {"evidence": "SME confirmed all six change bullets — accepted without edit.", "source": "elicited"}}
 ---
 ## Target description
 The fixed 50-mandate batch threshold is replaced by a risk-based routing model in MMS. Each batch is scored by total value, creditor risk tier, and request type and assigned to one of two tracks: full dual-control or risk-proportionate spot-check. A lighter certification track broadens the eligible reviewer pool, removing the single-Checker dependency. Single-mandate registrations are assessed by the same model; four-eyes is applied to high-risk singles, closing CG-DDMM-003. Compliance formally approves scoring criteria before go-live; boundary changes require re-approval.

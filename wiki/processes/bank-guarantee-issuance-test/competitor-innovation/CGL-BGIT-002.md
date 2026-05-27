@@ -9,7 +9,6 @@ competitor: Standard Chartered
 source: Standard Chartered press release — 'Standard Chartered completes first ICC-Swift API Standards digital bank guarantee transaction through Komgo', 15 January 2026
 sourceUrl: https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/
 bearsOn: [PS-BGIT-001, PS-BGIT-003, PS-BGIT-006, PG-BGIT-002, CG-BGIT-001]
-provenance: {"Evidence": {"evidence": "https://www.prnewswire.com/apac/news-releases/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo-302660953.html — \"announced on January 15, 2026 … will be progressively extended to clients across all the group's markets\" — fetched 2026-05-20", "source": "web"}, "Relevance": {"evidence": "https://iccwbo.org/news-publications/news/icc-and-swift-unveil-first-api-standards-for-guarantees-and-standby-letters-of-credit/ — \"real-time visibility, greater interoperability, and seamless integration of banking capabilities into corporate treasury, enterprise resource planning systems\" — fetched 2026-05-20", "source": "web"}, "The move": {"evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"Standard Chartered has successfully completed its industry standard API-based bank guarantee transaction for a global energy company via Komgo's Konsole\" — fetched 2026-05-20", "source": "web"}}
 asOf: 2026-05-20
 ---
 ## The move

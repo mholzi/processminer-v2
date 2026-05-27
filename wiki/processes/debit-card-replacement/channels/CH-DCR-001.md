@@ -8,7 +8,6 @@ confidence: high
 source: Client journey session - S. Krause
 channelType: ASSISTED
 touchpoints: [JT-DCR-001, JT-DCR-002, JT-DCR-003, JT-DCR-005]
-provenance: {"Description": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}, "Usage": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}}
 ---
 ## Description
 The bank's telephone Contact Centre, reached on the number printed on cards, statements and the website, where an agent takes the call.

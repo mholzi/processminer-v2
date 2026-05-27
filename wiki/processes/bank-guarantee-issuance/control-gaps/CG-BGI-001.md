@@ -7,7 +7,6 @@ status: draft
 confidence: medium
 severity: MEDIUM
 gapStatus: open
-provenance: {"Remediation": {"evidence": "", "source": "proposed"}, "Risk": {"evidence": "", "source": "proposed"}, "The gap": {"evidence": "There is no system-enforced control at intake; completeness is a TFO judgement call, so a control gap is fair to note.", "source": "elicited"}}
 ---
 ## The gap
 There is no system-enforced completeness check at application intake; completeness is assessed by the Trade Finance Officer as a manual judgement call.

@@ -11,7 +11,6 @@ decisionStatus: agreed
 resolves: [CG-BGIT-002]
 realises: [TS-BGIT-003]
 fromIdea: [II-BGIT-004]
-provenance: {"Options considered": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub", "source": "elicited"}, "Rationale": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub", "source": "elicited"}, "The decision": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub", "source": "elicited"}}
 ---
 ## The decision
 Configure the Trade Finance System to enforce a hard gate at the guarantee generation step: generation is blocked unless a valid TFM approval record exists for the transaction in TFS, converting the current manual dependency into a hard system control.

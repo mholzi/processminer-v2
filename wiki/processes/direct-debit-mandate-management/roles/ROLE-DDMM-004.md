@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: ddmm-dtp-mockup.md
 raci: [PS-DDMM-003:R, PS-DDMM-003:A, PS-DDMM-007:C]
-provenance: {"In this process": {"evidence": "SME (M. Vogel) clarified: Financial Crime is a separate team engaged only on EX-DDMM-002 (confirmed hit). Step 7 C is exception-driven — surfaces when a sanctions/financial-crime concern arises during resolution, not routine.", "source": "elicited"}, "Responsibility": {"evidence": "SME confirmed Compliance is A/R for sanctions adjudication (Step 3). DTP RACI: 'Sanctions screening of parties | I | C | I | A/R | I'.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

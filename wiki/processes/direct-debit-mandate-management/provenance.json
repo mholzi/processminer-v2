@@ -1,0 +1,1708 @@
+{
+  "ADR-DDMM-001": {
+    "Alternatives considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Consequences": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Context": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Decision": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CAP-DDMM-001": {
+    "Boundaries": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Inputs and outputs": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CAP-DDMM-002": {
+    "Boundaries": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Inputs and outputs": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CG-DDMM-001": {
+    "Remediation": {
+      "source": "elicited",
+      "evidence": "SME confirmed: define retention period and use same threshold as dormancy trigger in CP-DDMM-005 and PG-DDMM-003."
+    },
+    "Risk": {
+      "source": "elicited",
+      "evidence": "SME confirmed: GDPR Art. 5(1)(e) storage-limitation obligation; absence of threshold also prevents consistent application and audit of CP-DDMM-005."
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: no documented retention period exists; dormancy review in CP-DDMM-005 lacks a defined threshold."
+    }
+  },
+  "CG-DDMM-002": {
+    "Remediation": {
+      "source": "elicited",
+      "evidence": "SME confirmed: obtain formal scheme-compliance opinion and update CP-DDMM-001 or the IBAN-amendment procedure accordingly."
+    },
+    "Risk": {
+      "source": "elicited",
+      "evidence": "SME confirmed: scheme non-compliance risk if IBAN change is treated as amendment rather than new mandate; enforcement from EPC."
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: IBAN amendment treatment unconfirmed against SEPA SDD Scheme Rules; PG-DDMM-004 records the open question."
+    }
+  },
+  "CG-DDMM-003": {
+    "Remediation": {
+      "source": "elicited",
+      "evidence": "SME confirmed: assess whether risk appetite supports extending dual-control (or a sampling check) to single registrations, or document explicit risk-acceptance."
+    },
+    "Risk": {
+      "source": "elicited",
+      "evidence": "SME confirmed: single-mandate errors (incorrect IBAN, CI, UMR) can register without detection; MaRisk requires key operational processes to have adequate controls."
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: the dual-control in CP-DDMM-003 applies only to batches above 50 mandates; individual mandate registrations have no second-reviewer check."
+    }
+  },
+  "CG-DDMM-004": {
+    "Remediation": {
+      "source": "elicited",
+      "evidence": "SME confirmed: implement periodic (or event-driven) re-screening of active mandates against current sanctions lists; define frequency and ownership."
+    },
+    "Risk": {
+      "source": "elicited",
+      "evidence": "SME confirmed: a creditor or debtor designated after initial registration remains undetected; EU sanctions regulations and AML/GwG require ongoing screening obligations, not just point-in-time."
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: CP-DDMM-002 screens at registration only; no re-screening process exists when sanctions lists are updated post-registration."
+    }
+  },
+  "CH-DDMM-001": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): the Creditor Portal is the primary self-service web application — creditors log in and submit single mandates and smaller batches entirely through a browser."
+    },
+    "Usage": {
+      "source": "elicited",
+      "evidence": "SME confirmed: the large majority of submissions come through the portal; it also provides the only real-time status view the creditor has."
+    }
+  },
+  "CH-DDMM-002": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): large corporate creditors drop bulk mandate files via SFTP, which the portal ingests."
+    },
+    "Usage": {
+      "source": "elicited",
+      "evidence": "SME confirmed: no public API for mandate submission today; SFTP is the only programmatic submission route, used exclusively by large corporates with volumes too large for browser upload."
+    }
+  },
+  "CH-DDMM-003": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): creditors go through their corporate banking RM or a general Payments service desk email for any mid-process query."
+    },
+    "Usage": {
+      "source": "elicited",
+      "evidence": "SME confirmed: portal shows only pending/in-progress with no detail; any creditor wanting an actual reason must go out-of-band via RM or service desk, which then relays to Payments Operations."
+    }
+  },
+  "COMP-DDMM-001": {
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Technical detail": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CP-DDMM-001": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "C-1 | Mandate data validation (IBAN, UMR, CI) | Preventive / automated | Every request"
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "SME confirmed accurate as drafted."
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "C-1 | Frequency: Every request"
+    },
+    "What it checks": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: control is type-aware — new = full set (UMR, IBAN, CI, type/sequence); amendment = changed fields + UMR/CI; cancellation = UMR existence/status only. Full check set on every request would mislead an auditor."
+    }
+  },
+  "CP-DDMM-002": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "C-2 | Sanctions screening of debtor and creditor | Preventive / automated | Every request. Potential hits are routed to Compliance for adjudication."
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "SME confirmed accurate as drafted."
+    },
+    "Timing": {
+      "source": "elicited",
+      "evidence": "SME confirmed: runs after validation on new mandates and party-name-changing amendments only; skipped for non-name amendments and cancellations."
+    },
+    "What it checks": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: screening is type-aware — runs on new mandates and party-name-changing amendments; skipped for non-name amendments and cancellations. 'Every request' would misstate coverage to an auditor."
+    }
+  },
+  "CP-DDMM-003": {
+    "Control activity": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: Checker works from system-generated exception report + risk-based clean sample + dual-control checklist; not a full re-keying."
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "SME confirmed accurate as drafted."
+    },
+    "Timing": {
+      "source": "elicited",
+      "evidence": "SME confirmed: 50-mandate threshold is a fixed hard rule today — not risk-based. Whether it should become risk-based is captured in PG-DDMM-001."
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "C-3 | Dual-control on bulk mandate uploads | Preventive / manual | Per bulk file. For bulk mandate file uploads (above 50 mandates), a second person (Mandate Checker) independently reviews the batch before it is registered."
+    }
+  },
+  "CP-DDMM-004": {
+    "Control activity": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: comparison is tool-assisted (system-generated reconciliation report); review and discrepancy resolution are manual. Standard resolution: re-trigger MMS-to-Payment-Hub sync; IT ticket on failure. Resolution procedure documented in ops procedures (not DTP)."
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "SME confirmed accurate as drafted."
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "C-4 | Frequency: Daily"
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "C-4 | Daily reconciliation of MMS vs payment hub mandate store | Detective / manual | Daily"
+    }
+  },
+  "CP-DDMM-005": {
+    "Control activity": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: review is judgement-based with no fixed dormancy threshold — a known weakness linked to PG-DDMM-003. Creditor notified on cancellation consistent with normal cancellation handling."
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "SME confirmed accurate as drafted."
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "C-5 | Frequency: Quarterly"
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "C-5 | Periodic review of dormant mandates | Detective / manual | Quarterly"
+    }
+  },
+  "EX-DDMM-001": {
+    "Description": {
+      "source": "document",
+      "evidence": "If validation fails → see Exception E-1. E-1: Invalid or incomplete mandate data."
+    },
+    "Handling": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: reason code is structured from a validation error catalogue (not free text); for bulk files only invalid mandates returned, valid ones proceed."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: partial-return for bulk (valid mandates proceed), only affected mandates blocked; registration SLA pauses during creditor resubmission window."
+    }
+  },
+  "EX-DDMM-002": {
+    "Description": {
+      "source": "document",
+      "evidence": "If a hit is confirmed → see Exception E-2. Potential hits are routed to Compliance for adjudication."
+    },
+    "Handling": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: freeze is silent — tipping-off rules prohibit disclosing a sanctions investigation to the customer; creditor sees 'pending/in progress' only. Financial Crime engaged on confirmed hit path."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: indefinite block and frozen collections accurate; also may trigger regulatory reporting obligations and wider creditor relationship review."
+    }
+  },
+  "EX-DDMM-003": {
+    "Description": {
+      "source": "document",
+      "evidence": "E-3 | Duplicate UMR detected | Request rejected; creditor asked to supply a unique mandate reference. The UMR is unique and well-formed."
+    },
+    "Handling": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: Clerk checks existing UMR status first; stuck-cancellation (Active/Dormant when should-be-cancelled) treated as system-state issue and escalated internally, not returned to creditor."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: LOW for common case; stuck-cancellation variant escalated internally, does not block other mandates."
+    }
+  },
+  "EX-DDMM-004": {
+    "Description": {
+      "source": "document",
+      "evidence": "If Registration successful in MMS? → No: Exception E-4. E-4 | MMS registration failure (technical)."
+    },
+    "Handling": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: escalation trigger = unresolved within 1-business-day registration SLA (M-DDMM-001) → escalate to IT incident management and notify affected creditors."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: portal shows 'pending/in progress' with no technical detail exposed; creditor notified proactively only if SLA at risk (unlike EX-DDMM-002 where motive is tipping-off)."
+    }
+  },
+  "FP-DDMM-001": {
+    "Client impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: round-trip delay especially costly when creditor is working to meet a collection campaign deadline."
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: UMR/CI format rules catch first-time submitters; no in-form guidance; errors only surface post-submission at validation."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "SME confirmed: portal has no client-side format validation; all logic sits in the back-end pipeline."
+    }
+  },
+  "FP-DDMM-002": {
+    "Client impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: ambiguous codes (inactive CI, type/sequence mismatch) especially confusing; creditors must diagnose and correct without bank assistance; second rejection on resubmission is worst-case outcome."
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): portal shows reason code + short standard description but no guidance on what to change; no remediation guidance — what's missing is the how-to-fix."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "SME confirmed: validation engine returns reason code from fixed catalogue; portal renders description but has no per-code remediation content; no self-service help layer built for rejection flow."
+    }
+  },
+  "FP-DDMM-003": {
+    "Client impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: trust erodes quietly; worst during sanctions hold where reason cannot be disclosed (tipping-off rules, EX-DDMM-002); many contact RM unnecessarily."
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): portal shows only pending/in-progress with no detail — any creditor wanting an actual reason must go out-of-band."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "SME confirmed: portal status display designed to show simple operational state; no SLA-progress or stage-tracking data exposed to creditor-facing layer."
+    }
+  },
+  "FP-DDMM-004": {
+    "Client impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: creditor who does not proactively log in may miss resolution; repeated R-transactions can signal deteriorating collection relationship with no proactive alert."
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): notification is portal-only, no push or email; creditor has to log in to see it."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "SME confirmed: portal not designed with proactive outbound notification capability; all communication is in-portal."
+    }
+  },
+  "FP-DDMM-005": {
+    "Client impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: every query involves at least two hand-offs; creditor cannot escalate directly if relay stalls; portal provides no status update to fill the gap."
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): no direct line from the creditor to the Mandate Operations team; queries go through corporate banking RM or general Payments service desk email, which relay to Payments Operations."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "SME confirmed: no direct creditor-to-operations contact path; corporate banking relationships managed through RMs; service queries through Payments service desk."
+    }
+  },
+  "FP-DDMM-006": {
+    "Client impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: creditor discovers restriction only when a collection attempt fails; may continue submitting collections against restricted mandate, incurring R-transaction fees and reconciliation effort."
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): SL01 generates no notification at all — not even the passive portal message MD01/MD02/AC04 get; creditor not informed of the restriction."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "SME confirmed: SL01 is a debtor-requested specific-service restriction, NOT sanctions-related; bank is not prohibited from disclosing it; the gap is a design omission — no notification mechanism was built for SL01."
+    }
+  },
+  "II-DDMM-001": {
+    "Expected benefit": {
+      "source": "elicited",
+      "evidence": "SME confirmed: eliminating the queue-scanning tax and preventing silent SLA breaches are the primary gains."
+    },
+    "Feasibility": {
+      "source": "elicited",
+      "evidence": "SME confirmed accuracy of feasibility framing; MMS queue configuration is the primary dependency."
+    },
+    "The idea": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): PP-DDMM-004 is the biggest systemic staff cost — manual queue scanning is a constant tax on every shift; SLA breaches are silent until a complaint arrives."
+    }
+  },
+  "II-DDMM-002": {
+    "Expected benefit": {
+      "source": "elicited",
+      "evidence": "SME confirmed: highest-volume client complaint eliminated; RM/service desk load reduced; R-transaction resolutions pushed proactively."
+    },
+    "Feasibility": {
+      "source": "elicited",
+      "evidence": "SME confirmed: INT-DDMM-007 push path already exists; sanctions-hold stages must remain undisclosed (tipping-off rules, EX-DDMM-002) — opaque in-review label preserved."
+    },
+    "The idea": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): FP-DDMM-003 (opaque status) is the daily creditor complaint; FP-DDMM-004 (passive notification) and FP-DDMM-006 (SL01 zero notification) are design omissions, not compliance bars — extending the real-time notification model covers all three."
+    }
+  },
+  "II-DDMM-003": {
+    "Expected benefit": {
+      "source": "elicited",
+      "evidence": "SME confirmed: per-code guidance converts the sharpest trust-loss moment (MT-DDMM-002) into a self-service recovery path; reduces RM escalations and second rejections."
+    },
+    "Feasibility": {
+      "source": "elicited",
+      "evidence": "SME confirmed: portal front-end change only; no MMS changes required for inline validation; per-code content is one-time authoring effort."
+    },
+    "The idea": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: portal has no client-side validation; no remediation guidance on rejection; errors only surface post-submission."
+    }
+  },
+  "II-DDMM-004": {
+    "Expected benefit": {
+      "source": "elicited",
+      "evidence": "SME confirmed: reduces clerk investigation time for high-volume standard patterns; also lays groundwork for OAF-DDMM-002 remediation (structured resolution records)."
+    },
+    "Feasibility": {
+      "source": "elicited",
+      "evidence": "SME confirmed: rules-based is sufficient for standard codes; ML optional; structured resolution-record template (OAF-DDMM-002 remediation) should exist first."
+    },
+    "The idea": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: PP-DDMM-001 spikes with volume but is bounded; standard R-transaction patterns (MD01/MD02/AC04) are the bulk of the load and lend themselves to rules-based pre-classification."
+    }
+  },
+  "II-DDMM-005": {
+    "Expected benefit": {
+      "source": "elicited",
+      "evidence": "SME confirmed: eliminates clerk information-relay work; may also reduce M-DDMM-004 (adjudication time); Compliance receives richer pack than current manual assembly produces."
+    },
+    "Feasibility": {
+      "source": "elicited",
+      "evidence": "SME confirmed: integration between MMS and Sanctions Screening Engine is the main dependency; Compliance must agree on a standard pack format before build."
+    },
+    "The idea": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: PP-DDMM-005 is repetitive manual context-gathering every time Compliance adjudicates a hit; data already exists in MMS, gap is assembly."
+    }
+  },
+  "II-DDMM-006": {
+    "Expected benefit": {
+      "source": "elicited",
+      "evidence": "SME confirmed: eliminates reconciliation rework; makes CP-DDMM-004 an exception-only check; collections reference most current mandate data."
+    },
+    "Feasibility": {
+      "source": "elicited",
+      "evidence": "SME confirmed: high complexity — architectural change to INT-DDMM-005; phased rollout (near-real-time batch first, event-driven second) reduces delivery risk."
+    },
+    "The idea": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: PP-DDMM-003 stems from intraday batch sync creating a divergence window; event-driven integration is the structural fix."
+    }
+  },
+  "II-DDMM-007": {
+    "Expected benefit": {
+      "source": "elicited",
+      "evidence": "SME confirmed: eliminates scheduling bottleneck; addresses CG-DDMM-003 without mandating review on every trivial record; PG-DDMM-001 threshold question resolved as part of this initiative."
+    },
+    "Feasibility": {
+      "source": "elicited",
+      "evidence": "SME confirmed: requires MMS risk-scoring attributes, updated certification framework, and Compliance/Risk agreement on scoring criteria."
+    },
+    "The idea": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: PP-DDMM-002 (Checker availability bottleneck) is uncovered by earlier ideas; risk-based routing with a broader checker pool addresses it directly and provides a compliance-aligned path on CG-DDMM-003."
+    }
+  },
+  "II-DDMM-008": {
+    "Expected benefit": {
+      "source": "elicited",
+      "evidence": "SME confirmed: eliminates two-hand-off RM relay; gives creditors a direct, auditable channel tied to the specific mandate; reduces status-chasing contact."
+    },
+    "Feasibility": {
+      "source": "elicited",
+      "evidence": "SME confirmed: portal query UI routes into MMS work queue using existing MMS-to-portal path; dependency on Payments Operations to agree SLA and query scope before build."
+    },
+    "The idea": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: FP-DDMM-005 (no direct support line) and FP-DDMM-003 (opaque status) are uncovered by existing ideas; an in-portal query channel addresses both without requiring a new communication medium."
+    }
+  },
+  "INT-DDMM-001": {
+    "What connects": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): MFT gateway receives SFTP bulk mandate files from large corporate creditors and hands them off to the Creditor Portal for ingestion; one-directional."
+    },
+    "What flows": {
+      "source": "elicited",
+      "evidence": "SME confirmed: bulk mandate file payload (UMR, CI, debtor name, IBAN, mandate type, signature date per record) plus file metadata (creditor identifier, submission timestamp)."
+    }
+  },
+  "INT-DDMM-002": {
+    "What connects": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): mandate requests entered or ingested by the portal pass one-directionally into MMS where they enter the processing queue (queue is part of MMS, no separate system)."
+    },
+    "What flows": {
+      "source": "elicited",
+      "evidence": "SME confirmed: mandate request payload (UMR, CI, debtor name, IBAN, mandate type, signature date, request type) plus submitting creditor identifier so MMS can attribute the mandate."
+    }
+  },
+  "INT-DDMM-003": {
+    "What connects": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: bidirectional — MMS sends party names for screening, Sanctions Screening Engine returns clear or potential-hit result."
+    },
+    "What flows": {
+      "source": "elicited",
+      "evidence": "SME confirmed: outbound = debtor/creditor names (new mandates and party-name-changing amendments only, per CP-DDMM-002); inbound = screening result (clear pass or potential hit with match details)."
+    }
+  },
+  "INT-DDMM-004": {
+    "What connects": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: bidirectional query/response — MMS queries Core Banking for debtor account reachability and status, Core Banking responds."
+    },
+    "What flows": {
+      "source": "elicited",
+      "evidence": "SME confirmed: outbound = debtor IBAN; inbound = account reachability AND account standing (active / closed / blocked); 'direct-debit eligibility status' is confirmed fair label."
+    }
+  },
+  "INT-DDMM-005": {
+    "What connects": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: one-directional intraday batch sync from MMS to Payment Hub mandate store; not real-time (divergence window covered by CP-DDMM-004)."
+    },
+    "What flows": {
+      "source": "elicited",
+      "evidence": "SME confirmed: new mandate records (UMR, CI, IBAN, type, status: active), mandate amendments (updated fields for existing UMR), mandate cancellations (status update to cancelled)."
+    }
+  },
+  "INT-DDMM-006": {
+    "What connects": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: one-directional — Payment Hub receives inbound R-transactions from the payment scheme and forwards them to MMS to trigger Step 7 handling."
+    },
+    "What flows": {
+      "source": "elicited",
+      "evidence": "SME confirmed: R-transaction message (UMR, reason code MD01/MD02/AC04/SL01, debtor bank details) plus original collection/transaction reference (scheme R-messages carry the originating transaction reference)."
+    }
+  },
+  "INT-DDMM-007": {
+    "What connects": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: one-directional event push from MMS to Creditor Portal; portal does not pull from MMS — MMS pushes the events."
+    },
+    "What flows": {
+      "source": "elicited",
+      "evidence": "SME confirmed: processing-status events (pending/in-progress), registration confirmation (type-specific), and R-transaction resolution notification (MD01/MD02/AC04) all flow MMS to portal."
+    }
+  },
+  "IR-DDMM-001": {
+    "Likelihood & impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: risk is not that the model exists but that it operates before scoring criteria are regulatory-approved; a miscalibrated threshold could silently weaken dual-control coverage."
+    },
+    "Mitigation": {
+      "source": "elicited",
+      "evidence": "SME confirmed: Compliance and Risk must formally approve scoring criteria before any production routing; model calibration reviewed periodically."
+    },
+    "The risk": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: routing decisions driven by a risk model operating before Compliance sign-off could misclassify batches — sending a high-risk batch to spot-check instead of full dual-control."
+    }
+  },
+  "IR-DDMM-002": {
+    "Likelihood & impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: creditors receiving frequent low-urgency status pings may begin ignoring them; R-transaction resolution windows are time-sensitive — missed alerts translate to delayed responses."
+    },
+    "Mitigation": {
+      "source": "elicited",
+      "evidence": "SME confirmed: tiered notification model separating informational status updates from action-required alerts; allow creditors to configure notification preferences."
+    },
+    "The risk": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: increased notification volume across all creditors may lead creditors to normalise portal and email pings, reducing effective response to genuine R-transaction or SL01 alerts."
+    }
+  },
+  "IR-DDMM-003": {
+    "Likelihood & impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: historical R-transaction coding is inconsistent (gap documented in OAF-DDMM-002); training on this corpus is the direct mechanism by which mis-codes entrench."
+    },
+    "Mitigation": {
+      "source": "elicited",
+      "evidence": "SME confirmed: human review of pre-classification outputs is mandatory before operationalising; data-quality pass on training corpus required; accuracy metrics reported periodically."
+    },
+    "The risk": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: automated R-transaction pre-classification training on historical resolution data will learn from existing mis-coded entries; with low review coverage, errors propagate to future classifications."
+    }
+  },
+  "IR-DDMM-004": {
+    "Likelihood & impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: creditors submitting structured queries will have implicit expectations of timely response; without a defined SLA, inconsistent response times damage creditor trust and create audit exposure."
+    },
+    "Mitigation": {
+      "source": "elicited",
+      "evidence": "SME confirmed: SLA definition and operational scope agreement with Payments Operations is a hard prerequisite before launch; SLA adherence tracked in MMS reporting."
+    },
+    "The risk": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: Payments Operations has no agreed query-response SLA today; surfacing a structured query channel without a defined SLA creates reputational and contractual risk if response times are inconsistent."
+    }
+  },
+  "IR-DDMM-005": {
+    "Likelihood & impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: risk is governance drift over time — the boundary between routine and non-routine erodes without active oversight, weakening the control that the initiative is designed to preserve."
+    },
+    "Mitigation": {
+      "source": "elicited",
+      "evidence": "SME confirmed: routine/non-routine boundary governed by Compliance with periodic calibration reviews; lighter-certified checker scope restricted in MMS routing configuration, not left to manual judgement."
+    },
+    "The risk": {
+      "source": "elicited",
+      "evidence": "SME confirmed: lighter certification track reduces the expertise bar for routine reviews; if calibration of what is routine drifts, lower-certified checkers may process batches that warranted full review, silently degrading the control."
+    }
+  },
+  "IR-DDMM-006": {
+    "Likelihood & impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: a poorly executed migration could make MMS/Payment Hub divergence worse, not better; risk is highest in the cutover window and if CP-DDMM-004 daily reconciliation is retired prematurely."
+    },
+    "Mitigation": {
+      "source": "elicited",
+      "evidence": "SME confirmed: run event-driven path in parallel with batch sync for a proven period before cutover; retain CP-DDMM-004 reconciliation in full until event reliability is demonstrated; define and gate on divergence SLOs."
+    },
+    "The risk": {
+      "source": "elicited",
+      "evidence": "SME confirmed: event-driven integration introduces failure modes — message loss, out-of-order delivery, idempotency failures — that the current batch-plus-reconciliation model tolerates; retiring CP-DDMM-004 before reliability is proven removes the safety net."
+    }
+  },
+  "IR-DDMM-007": {
+    "Likelihood & impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: automation bias is a known pattern when AI-assembled summaries are presented alongside raw data — officers anchor on the summary; a missed sanctions signal has regulatory and reputational impact."
+    },
+    "Mitigation": {
+      "source": "elicited",
+      "evidence": "SME confirmed: pack presented as supplementary context only; raw data sources remain accessible and must be reviewed; assembly logic and omission rate audited periodically."
+    },
+    "The risk": {
+      "source": "elicited",
+      "evidence": "SME confirmed: a pre-assembled context pack frames the adjudication; if the assembly logic omits or de-emphasises a relevant signal, the Compliance officer may anchor on the pack and miss it — the pack must augment, not replace, the officer's own checks."
+    }
+  },
+  "JT-DDMM-001": {
+    "Experience": {
+      "source": "elicited",
+      "evidence": "SME confirmed: UMR/CI format rules catch first-time submitters; no in-form remediation guidance — errors only surface at validation post-submission."
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "SME confirmed: portal receives and queues the request; creditor sees immediate acknowledgement."
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): the Creditor Portal is the primary self-service web application — creditors log in and submit single mandates and smaller batches entirely through a browser."
+    }
+  },
+  "JT-DDMM-002": {
+    "Experience": {
+      "source": "elicited",
+      "evidence": "SME confirmed: effort is front-loaded into file preparation and format compliance; no push notification at ingestion — creditor must switch to portal to monitor progress."
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "SME confirmed: portal ingests the file and queues records; creditor can monitor batch progress in the portal."
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): large corporate creditors drop bulk mandate files via SFTP, which the portal ingests automatically."
+    }
+  },
+  "JT-DDMM-003": {
+    "Experience": {
+      "source": "elicited",
+      "evidence": "SME confirmed: no remediation guidance is provided; especially confusing for ambiguous codes such as inactive CI or type/sequence mismatch; creditors must diagnose and correct without bank assistance."
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "SME confirmed: valid mandates in a bulk file proceed independently under SLA."
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): portal shows structured reason code plus short standard human-readable description; for bulk files, a line-item rejection list per UMR alongside accepted/rejected counts."
+    }
+  },
+  "JT-DDMM-004": {
+    "Experience": {
+      "source": "elicited",
+      "evidence": "SME confirmed: opacity is especially acute during sanctions screening where reason for hold cannot be disclosed (tipping-off rules, EX-DDMM-002); trust is tested."
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "SME confirmed: portal displays binary status label with no reason, timeline or estimated completion; queries relayed via RM/service desk are forwarded to Payments Operations."
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): portal shows only pending/in-progress with no detail; any creditor wanting an actual reason must go out-of-band via RM or service desk."
+    }
+  },
+  "JT-DDMM-005": {
+    "Experience": {
+      "source": "elicited",
+      "evidence": "SME confirmed: confirmation is unambiguous and type-specific; SME accepted framing that relief is marked after the opaque wait, particularly when SLA approached its limit."
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "SME confirmed: portal delivers system-generated confirmation tailored by request type."
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): confirmation is system-generated; content varies by request type — new registration, amendment, or cancellation."
+    }
+  },
+  "JT-DDMM-006": {
+    "Experience": {
+      "source": "elicited",
+      "evidence": "SME confirmed: notification is portal-only, no push or email; creditor who does not proactively log in may miss it. SME accepted framing that repeated R-transactions can signal deteriorating collection relationship with no proactive alert."
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "SME confirmed: Mandate Clerk posts resolution notification in portal for MD01/MD02/AC04; SL01 generates no notification — creditor not informed of restriction."
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): portal notification appears for MD01/MD02/AC04; creditor must log in to see it; SL01 generates no notification."
+    }
+  },
+  "M-DDMM-001": {
+    "Current reading": {
+      "source": "document",
+      "evidence": "Single mandate registration | Within 1 business day of receipt"
+    },
+    "Definition": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: metric measures bank-side elapsed time; clock pauses during creditor-side exception states (EX-DDMM-001), consistent with SLA pause established at that exception."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "SME confirmed accurate as drafted."
+    }
+  },
+  "M-DDMM-002": {
+    "Current reading": {
+      "source": "document",
+      "evidence": "Bulk file processing | Within 2 business days of receipt"
+    },
+    "Definition": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: SLA covers valid-mandate subset only; invalid mandates drop out on return, timed as fresh requests on resubmission; dual-control check is bank-side work counted within the 2-day target."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "SME confirmed accurate as drafted."
+    }
+  },
+  "M-DDMM-003": {
+    "Current reading": {
+      "source": "document",
+      "evidence": "R-transaction resolution | Within 2 business days of identification"
+    },
+    "Definition": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: clock starts on automatic queue entry from Payment Hub (effectively at receipt); does not wait for manual Clerk pickup to prevent SLA gaming."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "SME confirmed accurate as drafted."
+    }
+  },
+  "M-DDMM-004": {
+    "Current reading": {
+      "source": "document",
+      "evidence": "Sanctions adjudication (Compliance) | Within 1 business day"
+    },
+    "Definition": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: clock starts at Compliance routing (post Clerk first-line triage), not at engine flag; Clerk triage is within M-DDMM-001 registration SLA; clock ends at adjudication decision."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "SME confirmed accurate as drafted."
+    }
+  },
+  "MT-DDMM-001": {
+    "Design implication": {
+      "source": "elicited",
+      "evidence": "SME confirmed accuracy of inline validation / contextual tooltips as the design response."
+    },
+    "The moment": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): UMR/CI format rules catch first-time submitters; no in-form guidance; first interaction can prime frustration."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "SME confirmed: first impressions shape long-term confidence; a rejection on first submission primes frustration for every subsequent interaction."
+    }
+  },
+  "MT-DDMM-002": {
+    "Design implication": {
+      "source": "elicited",
+      "evidence": "SME confirmed: reason-code-specific remediation guidance inline or linked would eliminate the out-of-band RM escalation."
+    },
+    "The moment": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): rejection code + short description but no remediation guidance; only recourse is out-of-band RM call; second rejection on resubmission compounds damage."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "SME confirmed: trust is most decisively lost here; bank says no without saying how."
+    }
+  },
+  "MT-DDMM-003": {
+    "Design implication": {
+      "source": "elicited",
+      "evidence": "SME confirmed: estimated completion range and SLA-risk notification would contain anxiety without exposing sensitive process detail."
+    },
+    "The moment": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): portal shows only pending/in-progress with no reason or timeline; worst when mandate held at sanctions screening where reason cannot be disclosed (tipping-off rules, EX-DDMM-002)."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "SME confirmed: trust erodes quietly; creditor with live collection campaign has time-sensitive business exposure; inability to estimate completion or escalate directly erodes confidence."
+    }
+  },
+  "MT-DDMM-004": {
+    "Design implication": {
+      "source": "elicited",
+      "evidence": "SME confirmed: confirmation is currently well-executed; the lever is improving the journey that precedes it."
+    },
+    "The moment": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): confirmation is unambiguous and type-specific; creditor can immediately schedule collections; SME confirmed relief is marked after the opaque wait."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "SME confirmed: this is the trust-won moment; how much trust is restored depends on how much friction preceded it."
+    }
+  },
+  "OAF-DDMM-001": {
+    "Finding": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: Internal Audit 2026-02-15 finding — CP-DDMM-004 reconciliation performed but discrepancies not tracked to closure with documented evidence."
+    },
+    "Recommendation": {
+      "source": "elicited",
+      "evidence": "SME confirmed: team implementing structured discrepancy log with sign-off as remediation."
+    }
+  },
+  "OAF-DDMM-002": {
+    "Finding": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: SEPA scheme compliance self-assessment 2026-03-20 — SLA tracked but per-reason-code resolution rationale not consistently recorded; bank cannot evidence correct scheme-defined handling path."
+    },
+    "Recommendation": {
+      "source": "elicited",
+      "evidence": "SME confirmed: per-reason-code resolution-record template proposed but not yet implemented; not started as remediation."
+    }
+  },
+  "PG-DDMM-001": {
+    "Impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: now resolved — the gap was documentation uncertainty, not a live operational risk."
+    },
+    "Next step": {
+      "source": "elicited",
+      "evidence": "SME confirmed: no current-state action. Design question (risk-based threshold) is target-state scope."
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed during CP-DDMM-003 review: 50-mandate threshold is a fixed hard rule today, not risk-based."
+    }
+  },
+  "PG-DDMM-002": {
+    "Impact": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: reactive-only handling — mandates only surface via R-transaction or creditor query; ad hoc resolution."
+    },
+    "Next step": {
+      "source": "elicited",
+      "evidence": "SME confirmed: procedure needs to be defined for suspended, cancelled, or retained mandate handling on CI deactivation."
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "SME confirmed: no automated mandate review on CI deactivation — purely reactive. Procedure for existing mandates under a deactivated CI is genuinely undocumented."
+    }
+  },
+  "PG-DDMM-003": {
+    "Impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed accurate as drafted."
+    },
+    "Next step": {
+      "source": "elicited",
+      "evidence": "SME confirmed: also needs the dormancy threshold that feeds the quarterly CP-DDMM-005 review (confirmed as undefined during CP-DDMM-005 review)."
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "SME confirmed: no defined retention or purge period exists today."
+    }
+  },
+  "PG-DDMM-004": {
+    "Impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: if in-place treatment is non-compliant, collections risk being presented under an invalid mandate reference."
+    },
+    "Next step": {
+      "source": "elicited",
+      "evidence": "SME confirmed: flag for Control and Compliance specialist; update procedures if scheme requires a new mandate."
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed current-state: IBAN change = in-place versioned amendment. Scheme compliance for this treatment (especially different debtor bank) cannot be confirmed by the ops SME."
+    }
+  },
+  "PG-DDMM-005": {
+    "The gap": {
+      "source": "elicited",
+      "evidence": "Identified during foundational run review of PS-DDMM-004; SME confirmed the dual-control loopback correction procedure is not documented."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: inconsistent clerk handling is the direct risk of the gap being undocumented."
+    },
+    "Next step": {
+      "source": "elicited",
+      "evidence": "SME confirmed: full correction procedure — clerk steps and EX-DDMM-001 split-out decision — needs to be documented."
+    }
+  },
+  "PG-DDMM-006": {
+    "The gap": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed during CP-DDMM-002 review: screening skipped for IBAN-only amendments and cancellations; formal assessment of whether this exclusion is appropriate has not been done."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "SME confirmed: unscreened IBAN amendment could register a changed IBAN on a mandate where the debtor is now sanctioned."
+    },
+    "Next step": {
+      "source": "elicited",
+      "evidence": "SME confirmed: control and compliance specialist to assess whether IBAN-only amendments and cancellations should trigger screening."
+    }
+  },
+  "PP-DDMM-001": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "Every inbound R-transaction lands in the Mandate Clerk's queue and is worked entirely by hand: the Clerk reads the reason code, looks up the mandate in MMS, decides which of the four handling paths applies (MD01/MD02/AC04/SL01), and executes it. There is no automation and no decision support."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "Volume is unpredictable (a debtor-bank batch can dump dozens at once); four codes need genuinely different actions — error-prone; an MD02 correction done in a hurry can itself trigger a fresh R-transaction; deprioritised behind new registrations, which risks the 2-day resolution SLA (M-DDMM-003)."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "No automation and no decision support. Four codes need genuinely different actions. SME confirmed 'structurally different resolution paths' and 'no pre-classification' as fair framing."
+    }
+  },
+  "PP-DDMM-002": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "With 10–15 bulk files a week, each needs an independent Mandate Checker who is not the submitter. Pool of staff senior enough to act as Checker is small, so on busy days or when one or two are on leave, bulk files sit in a queue waiting for an available Checker rather than for any actual review effort."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "That waiting time eats directly into the 2-day bulk SLA (M-DDMM-002) even though the review itself is quick. Scheduling/capacity friction, not a review-quality problem."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "Pool restricted to senior staff who did not submit the batch. Small team, 10-15 bulk files/week. SME confirmed 'segregation of duties' as correct framing for the constraint."
+    }
+  },
+  "PP-DDMM-003": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "Daily reconciliation (CP-DDMM-004) regularly surfaces discrepancies — mandates registered in MMS but not yet, or wrongly, reflected in the Payment Hub store. Must chase each one down."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "Low severity per item but a daily tax on the team that never goes away. Must decide benign sync lag or genuine failed sync, and re-trigger sync or raise IT ticket."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "Root cause is architectural — batch rather than real-time sync — not procedural. SME confirmed 'structural byproduct of the sync gap' as correct framing."
+    }
+  },
+  "PP-DDMM-004": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "New mandate captures, amendments, cancellations and inbound R-transactions all land in one shared work queue with no prioritisation by SLA urgency or request type. Clerk has to manually scan the whole queue to decide what to work next."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "Nothing flags an item approaching its SLA breach point. An urgent single-mandate registration near its 1-day SLA (M-DDMM-001) can sit behind a large bulk file or run of R-transactions. Risk is silent SLA breaches — not because the team is slow, but because the queue gives them no signal about urgency."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "Queue gives no signal about urgency. SME confirmed 'time-to-breach' and 'Clerk judgement on each shift' as fair framing."
+    }
+  },
+  "PP-DDMM-005": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "Pull mandate record from MMS, debtor and creditor details, and screening match detail from engine, assemble context pack for Compliance — same sequence every time, done by hand, switching between MMS, Sanctions Screening Engine and Creditor Portal."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "Compliance frequently comes back asking for something the Clerk did not include, causing a round-trip that adds latency to the adjudication path. Repetitive low-value work, slows sanctions resolution."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "Same sequence of steps every time, done by hand, switching between three systems. No automation. SME confirmed 'standard template' as a fair sub-case of 'no tool'."
+    }
+  },
+  "PS-DDMM-001": {
+    "Inputs": {
+      "source": "elicited",
+      "evidence": "New mandate: UMR, CI, debtor name, IBAN, mandate type, signature date. Amendment: UMR plus field(s) being changed and new signature date. Cancellation: UMR and cancellation reason."
+    },
+    "Outputs": {
+      "source": "elicited",
+      "evidence": "Correct as drafted — the request is lodged in the Creditor Portal and the payload passes to validation."
+    },
+    "What happens": {
+      "source": "elicited",
+      "evidence": "Receipt is fully automated — the Creditor Portal lodges the request and passes the payload straight to validation with no human touch. New mandate: UMR, CI, debtor name, IBAN, mandate type, signature date. Amendment: UMR plus field(s) being changed and new signature date where debtor re-signs. Cancellation: UMR and cancellation reason."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "Fair summary, keep it as drafted."
+    }
+  },
+  "PS-DDMM-002": {
+    "Inputs": {
+      "source": "elicited",
+      "evidence": "New mandate gets full set. Amendment validates only changed field(s), re-runs IBAN checksum/reachability if IBAN changed, and checks UMR exists and is active. Cancellation: only UMR exists and is currently active in MMS."
+    },
+    "Outputs": {
+      "source": "elicited",
+      "evidence": "Both accurate as drafted."
+    },
+    "What happens": {
+      "source": "elicited",
+      "evidence": "Validation is automated-first (CP-DDMM-001); Mandate Clerk on exception. New mandate: full checks. Amendment: changed fields only, re-run IBAN if IBAN changed, confirm UMR exists and active. Cancellation: only UMR exists and active in MMS."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "Accurate as drafted."
+    }
+  },
+  "PS-DDMM-003": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "Debtor and creditor names are screened against sanctions lists."
+    },
+    "Outputs": {
+      "source": "elicited",
+      "evidence": "When the engine raises a potential hit, the mandate moves to a dedicated Pending Compliance hold status in MMS with its own holding queue."
+    },
+    "What happens": {
+      "source": "elicited",
+      "evidence": "Screening is name-based and skipped for amendments that change only non-name fields — deliberate current-state choice. When engine raises a potential hit, mandate moves to a dedicated Pending Compliance hold status in MMS with its own holding queue; 1-business-day SLA runs against that hold state."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "Why it matters wording is fair — confirm as drafted."
+    }
+  },
+  "PS-DDMM-004": {
+    "Inputs": {
+      "source": "elicited",
+      "evidence": "Checker works from a system-generated bulk validation/exception report produced by the upload. Confirmed bulk mandate file, sanctions-cleared data, and validation results as accurate."
+    },
+    "Outputs": {
+      "source": "elicited",
+      "evidence": "Confirmed both outputs as accurate as drafted."
+    },
+    "What happens": {
+      "source": "elicited",
+      "evidence": "Checker works from system-generated bulk validation/exception report. Reviews every flagged item plus a risk-based sample of the clean ones against a standard dual-control checklist. Rejection loops back to Mandate Clerk; creditor-supplied discrepancies split out via EX-DDMM-001 path. Corrected batch resubmitted for re-review."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "Confirmed as accurate as drafted."
+    }
+  },
+  "PS-DDMM-005": {
+    "Inputs": {
+      "source": "elicited",
+      "evidence": "Confirmed both inputs as accurate as drafted."
+    },
+    "Outputs": {
+      "source": "elicited",
+      "evidence": "MMS statuses in play: Active, Cancelled, Dormant. Amendment = versioned update. Payment Hub sync is intraday batch, not real-time."
+    },
+    "What happens": {
+      "source": "elicited",
+      "evidence": "Amendment updates existing MMS record in place but is versioned — a new version row is written and prior version retained for audit; UMR unchanged. Cancellation moves mandate to Cancelled status — never deleted from MMS. Payment Hub sync is a batch sync, intraday, not real-time. Window where MMS and Payment Hub can be out of step; CP-DDMM-004 exists precisely to catch that divergence."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "Confirmed as accurate as drafted."
+    }
+  },
+  "PS-DDMM-006": {
+    "Inputs": {
+      "source": "elicited",
+      "evidence": "Confirmed both inputs as accurate as drafted."
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "A confirmation is returned to the creditor via the portal, including the registered UMR and effective date."
+    },
+    "What happens": {
+      "source": "elicited",
+      "evidence": "Confirmation is sent automatically by the system — once MMS confirms the registration write, the Creditor Portal generates and sends the confirmation. Mandate Clerk does not manually trigger it. New mandate: UMR + effective date. Amendment: UMR + field(s) changed + change effective date. Cancellation: UMR + cancellation effective date."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "Confirmed as accurate as drafted."
+    }
+  },
+  "PS-DDMM-007": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "When an inbound R-transaction referencing a mandate is received, the Mandate Clerk identifies the reason code and acts."
+    },
+    "Outputs": {
+      "source": "elicited",
+      "evidence": "MD01, MD02 and AC04 always end in a creditor notification. SL01 does NOT notify the creditor — the restriction is applied silently."
+    },
+    "What happens": {
+      "source": "elicited",
+      "evidence": "MD01: Clerk investigates against MMS. If genuinely absent/cancelled: creditor notified, collection reversed. If MMS shows valid mandate: suspected wrongful reject — re-present or escalate to Payments Ops Lead. Compliance not involved in MD01. SL01: Clerk sets restriction flag manually in MMS, transcribing from R-transaction; not auto-applied. Creditor notification: MD01/MD02/AC04 always; SL01 no notification — restriction applied silently."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "Confirmed as drafted."
+    }
+  },
+  "REG-DDMM-001": {
+    "How it is met": {
+      "source": "elicited",
+      "evidence": "SME accepted control links CP-DDMM-001, CP-DDMM-004 and process steps as correct."
+    },
+    "What it requires": {
+      "source": "elicited",
+      "evidence": "SME confirmed SEPA SDD Scheme Rules in scope; mandate content, UMR, IBAN, CI, R-transaction handling and confirmation obligations."
+    },
+    "Why it applies": {
+      "source": "elicited",
+      "evidence": "SME confirmed: bank registers and maintains SDD mandates on behalf of corporate creditors under the SEPA scheme."
+    }
+  },
+  "REG-DDMM-002": {
+    "How it is met": {
+      "source": "elicited",
+      "evidence": "SME accepted CP-DDMM-002 and EX-DDMM-002 as correct control links."
+    },
+    "What it requires": {
+      "source": "elicited",
+      "evidence": "SME confirmed EU Sanctions Regulations in scope; screening obligation, freeze and report on confirmed hits."
+    },
+    "Why it applies": {
+      "source": "elicited",
+      "evidence": "SME confirmed: process involves debtor and creditor identities; engaging with sanctioned party violates EU sanctions law."
+    }
+  },
+  "REG-DDMM-003": {
+    "How it is met": {
+      "source": "elicited",
+      "evidence": "SME accepted EX-DDMM-002 silent freeze and STK-DDMM-001 Financial Crime engagement as correct."
+    },
+    "What it requires": {
+      "source": "elicited",
+      "evidence": "SME confirmed AML/AMLD (GwG) in scope; SAR obligation, tipping-off prohibition."
+    },
+    "Why it applies": {
+      "source": "elicited",
+      "evidence": "SME confirmed: confirmed hit may indicate financial crime; bank has statutory SAR obligation; must not disclose to creditor."
+    }
+  },
+  "REG-DDMM-004": {
+    "How it is met": {
+      "source": "elicited",
+      "evidence": "SME accepted CP-DDMM-005 link and PG-DDMM-003 open-gap reference as correct."
+    },
+    "What it requires": {
+      "source": "elicited",
+      "evidence": "SME confirmed GDPR in scope; lawful basis, data minimisation, retention and deletion obligations for debtor personal data."
+    },
+    "Why it applies": {
+      "source": "elicited",
+      "evidence": "SME confirmed: mandate register holds debtor name and IBAN for mandate lifetime and beyond."
+    }
+  },
+  "REG-DDMM-005": {
+    "How it is met": {
+      "source": "elicited",
+      "evidence": "SME accepted CP-DDMM-001, CP-DDMM-004, PS-DDMM-007 and PS-DDMM-005 links as correct."
+    },
+    "What it requires": {
+      "source": "elicited",
+      "evidence": "SME confirmed PSD2 in scope; mandate authorisation requirement, 8-week unconditional refund right, R-transaction obligations."
+    },
+    "Why it applies": {
+      "source": "elicited",
+      "evidence": "SME confirmed: bank holds mandates authorising SDD collections; incorrect/uncancelled mandate undermines debtor refund rights and bank liability."
+    }
+  },
+  "REG-DDMM-006": {
+    "How it is met": {
+      "source": "elicited",
+      "evidence": "SME accepted CP-DDMM-003, CP-DDMM-004 links and Payments Ops Lead escalation paths as correct."
+    },
+    "What it requires": {
+      "source": "elicited",
+      "evidence": "SME confirmed MaRisk/KWG in scope; internal controls, segregation of duties, operational risk management and monitoring obligations."
+    },
+    "Why it applies": {
+      "source": "elicited",
+      "evidence": "SME confirmed: MaRisk/KWG is the supervisory frame behind the whole control set — dual control, reconciliation and screening."
+    }
+  },
+  "ROLE-DDMM-001": {
+    "In this process": {
+      "source": "elicited",
+      "evidence": "Add PS-DDMM-006:I and PS-DDMM-007:I. Creditor notified during R-transaction resolution for MD01/MD02/AC04 specifically, NOT for SL01 — SL01 applies the restriction silently."
+    },
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "Confirmed as correct as drafted."
+    }
+  },
+  "ROLE-DDMM-002": {
+    "In this process": {
+      "source": "elicited",
+      "evidence": "When the engine raises a potential hit, the item returns to the Clerk's queue and the Clerk performs first-line triage (confirms mandate data, gathers context) before routing to Compliance for formal adjudication. For clean items the Clerk receives the cleared result informationally. C is the correct RACI letter."
+    },
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "Step 6 is fully automated — Mandate Clerk does not manually trigger it."
+    }
+  },
+  "ROLE-DDMM-003": {
+    "In this process": {
+      "source": "elicited",
+      "evidence": "Consulted on R-transaction resolutions that mutate a registered mandate record — in practice MD02 (mandate data corrected) and AC04 (mandate set to Dormant). MD01 and SL01 are handled by the Clerk solo."
+    },
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "Not a separate job title. A senior Mandate Clerk within Payments Operations designated as checker for a given bulk batch on a rotating basis, with the firm rule that the checker is never the same person who captured or submitted that batch — segregation of duties."
+    }
+  },
+  "ROLE-DDMM-004": {
+    "In this process": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) clarified: Financial Crime is a separate team engaged only on EX-DDMM-002 (confirmed hit). Step 7 C is exception-driven — surfaces when a sanctions/financial-crime concern arises during resolution, not routine."
+    },
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "SME confirmed Compliance is A/R for sanctions adjudication (Step 3). DTP RACI: 'Sanctions screening of parties | I | C | I | A/R | I'."
+    }
+  },
+  "ROLE-DDMM-005": {
+    "In this process": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: add PS-DDMM-005:A (Step 5 missing-Accountable gap, same as Step 2) and PS-DDMM-003:I (informed of EX-DDMM-002 frozen mandate)."
+    },
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "SME confirmed PS-DDMM-002:A, PS-DDMM-005:A (E-4 escalation), PS-DDMM-007:A (DTP RACI). PS-DDMM-003:I added: confirmed sanctions hit is operationally significant."
+    }
+  },
+  "SYS-DDMM-001": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "Creditor Portal | Channel for creditors to submit mandate requests and files"
+    },
+    "Role in this process": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: confirmation content varies by request type (established at PS-DDMM-006); portal is also the creditor-facing status display for in-flight requests; EX-DDMM-002 and EX-DDMM-004 show as pending/in-progress; return channel for EX-DDMM-001 reason-coded rejections."
+    }
+  },
+  "SYS-DDMM-002": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "Mandate Management System (MMS) | System of record for all mandates"
+    },
+    "Role in this process": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: MMS is read at Step 2 (UMR uniqueness check, existing-record lookup for amendments/cancellations) and written at Step 3 (Pending Compliance hold status). Steps 5 and 7 already documented."
+    }
+  },
+  "SYS-DDMM-003": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "Payment Hub | Holds the mandate store used by SEPA collections; receives R-transactions"
+    },
+    "Role in this process": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: Payment Hub mandate store updated via intraday batch sync from MMS (not real-time); divergence window exists and is covered by CP-DDMM-004."
+    }
+  },
+  "SYS-DDMM-004": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "Sanctions Screening Engine | Real-time screening of debtor and creditor names"
+    },
+    "Role in this process": {
+      "source": "document",
+      "evidence": "Debtor and creditor names are screened against sanctions lists. Clean parties pass automatically. Potential hits are routed to Compliance for adjudication."
+    }
+  },
+  "SYS-DDMM-005": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "Core Banking System | Debtor account reachability and status checks"
+    },
+    "Role in this process": {
+      "source": "document",
+      "evidence": "Core Banking System | Debtor account reachability and status checks. The debtor IBAN passes checksum and reachability validation."
+    }
+  },
+  "SYS-DDMM-006": {
+    "Purpose": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel): SFTP endpoint is a separate MFT platform — standard corporate MFT gateway — distinct infrastructure from the Creditor Portal, operated separately by the bank."
+    },
+    "Role in this process": {
+      "source": "elicited",
+      "evidence": "SME confirmed: MFT receives bulk mandate files dropped by large corporate creditors via SFTP and hands them off to the Creditor Portal for ingestion; MFT has no creditor-facing UI of its own."
+    }
+  },
+  "TD-DDMM-001": {
+    "Options considered": {
+      "source": "elicited",
+      "evidence": "SME confirmed options considered and rationale for all ten — accepted without edit."
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "SME confirmed rationale — accepted without edit."
+    },
+    "The decision": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) accepted all ten decisions without edit."
+    }
+  },
+  "TD-DDMM-002": {
+    "Options considered": {
+      "source": "elicited",
+      "evidence": "SME confirmed options and rationale — accepted without edit."
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "SME confirmed rationale — accepted without edit."
+    },
+    "The decision": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) accepted all ten decisions without edit."
+    }
+  },
+  "TD-DDMM-003": {
+    "Options considered": {
+      "source": "elicited",
+      "evidence": "SME confirmed options and rationale — accepted without edit."
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "SME confirmed rationale — accepted without edit."
+    },
+    "The decision": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) accepted all ten decisions without edit."
+    }
+  },
+  "TD-DDMM-004": {
+    "Options considered": {
+      "source": "elicited",
+      "evidence": "SME confirmed options and rationale — accepted without edit."
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "SME confirmed rationale — accepted without edit."
+    },
+    "The decision": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) accepted all ten decisions without edit."
+    }
+  },
+  "TD-DDMM-005": {
+    "Options considered": {
+      "source": "elicited",
+      "evidence": "SME confirmed options and rationale — accepted without edit."
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "SME confirmed rationale — accepted without edit."
+    },
+    "The decision": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) accepted all ten decisions without edit."
+    }
+  },
+  "TD-DDMM-006": {
+    "Options considered": {
+      "source": "elicited",
+      "evidence": "SME confirmed options and rationale — accepted without edit."
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "SME confirmed rationale — accepted without edit."
+    },
+    "The decision": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) accepted all ten decisions without edit."
+    }
+  },
+  "TD-DDMM-007": {
+    "Options considered": {
+      "source": "elicited",
+      "evidence": "SME confirmed options and rationale — accepted without edit."
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "SME confirmed rationale — accepted without edit."
+    },
+    "The decision": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) accepted all ten decisions without edit."
+    }
+  },
+  "TD-DDMM-008": {
+    "Options considered": {
+      "source": "elicited",
+      "evidence": "SME confirmed options and rationale — accepted without edit."
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "SME confirmed rationale — accepted without edit."
+    },
+    "The decision": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) accepted all ten decisions without edit."
+    }
+  },
+  "TD-DDMM-009": {
+    "Options considered": {
+      "source": "elicited",
+      "evidence": "SME confirmed options and rationale — accepted without edit."
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "SME confirmed rationale — accepted without edit."
+    },
+    "The decision": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) accepted all ten decisions without edit."
+    }
+  },
+  "TD-DDMM-010": {
+    "Options considered": {
+      "source": "elicited",
+      "evidence": "SME confirmed options and rationale — accepted without edit."
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "SME confirmed rationale — accepted without edit."
+    },
+    "The decision": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) accepted all ten decisions without edit; confirmed TD-10 correctly records the interim batch-interval reduction with II-DDMM-006 explicitly deferred for the IR-DDMM-006 reason."
+    }
+  },
+  "TGTAPP-DDMM-001": {
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risks": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Tech stack": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "TR-DDMM-001": {
+    "Evidence": {
+      "source": "elicited",
+      "evidence": "SME accepted honest framing: figures are indicative only, sourceUrl: pending, require source-innovation verification."
+    },
+    "Relevance": {
+      "source": "elicited",
+      "evidence": "SME confirmed: DDMM relies on arrival-order queue scanning by Mandate Clerks every shift; causes silent SLA breaches and misallocation of effort."
+    },
+    "The trend": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: PP-DDMM-004 (undifferentiated queue) is the biggest systemic staff cost — manual queue scanning is a constant tax on every shift."
+    }
+  },
+  "TR-DDMM-002": {
+    "Evidence": {
+      "source": "elicited",
+      "evidence": "SME accepted honest framing: figures are indicative only, sourceUrl: pending, require source-innovation verification."
+    },
+    "Relevance": {
+      "source": "elicited",
+      "evidence": "SME confirmed: FP-DDMM-003 (opaque status) is the daily creditor complaint; PP-DDMM-003 (reconciliation rework) is a systemic integration gap."
+    },
+    "The trend": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: DDMM relies on intraday batch sync to Payment Hub and binary portal status; event-driven integration addresses both the reconciliation burden and creditor opacity."
+    }
+  },
+  "TR-DDMM-003": {
+    "Evidence": {
+      "source": "elicited",
+      "evidence": "SME accepted honest framing: figures are indicative only, sourceUrl: pending, require source-innovation verification."
+    },
+    "Relevance": {
+      "source": "elicited",
+      "evidence": "SME confirmed: repetitive manual context-gathering when Compliance adjudicates potential hits; AI-assisted pack assembly would convert clerk-intensive workflow into near-automated hand-off."
+    },
+    "The trend": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: PP-DDMM-005 (repetitive manual context-gathering for sanctions triage) is a systemic process efficiency gap where AI assistance would apply."
+    }
+  },
+  "TR-DDMM-004": {
+    "Evidence": {
+      "source": "elicited",
+      "evidence": "SME accepted honest framing: figures are indicative only, sourceUrl: pending, require source-innovation verification."
+    },
+    "Relevance": {
+      "source": "elicited",
+      "evidence": "SME confirmed: FP-DDMM-001 (no inline validation) and FP-DDMM-002 (rejection without guidance) are directly addressed by self-service portal improvements."
+    },
+    "The trend": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: DDMM Creditor Portal has no inline validation and no remediation guidance — the two friction points most directly linked to RM escalations and resubmission cycles."
+    }
+  },
+  "TS-DDMM-001": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "SME confirmed: PP-DDMM-004 is the highest systemic operational cost; framing accepted without edit."
+    },
+    "Target description": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: 'makes operational exposure visible before it becomes failure is the right framing'; structure and scope accepted without edit."
+    },
+    "What changes": {
+      "source": "elicited",
+      "evidence": "SME confirmed all five change bullets — accepted without edit."
+    }
+  },
+  "TS-DDMM-002": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "SME confirmed: FP-DDMM-001 and FP-DDMM-002 are LOW complexity fixes; framing accepted without edit."
+    },
+    "Target description": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: 'accurate, and the field-preservation point on partial-correction submissions is a good addition'; accepted without edit."
+    },
+    "What changes": {
+      "source": "elicited",
+      "evidence": "SME confirmed all five change bullets — accepted without edit."
+    }
+  },
+  "TS-DDMM-003": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "SME confirmed: FP-DDMM-003 is the highest-volume creditor complaint; framing accepted without edit."
+    },
+    "Target description": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: accurate, correctly carries IR-DDMM-002 and IR-DDMM-004 risks and preserves sanctions-hold opacity; accepted without edit. Trim is formatting-only, content unchanged."
+    },
+    "What changes": {
+      "source": "elicited",
+      "evidence": "SME confirmed all six change bullets — accepted without edit."
+    }
+  },
+  "TS-DDMM-004": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "SME confirmed: PP-DDMM-002 and CG-DDMM-003 share a root cause; framing accepted without edit."
+    },
+    "Target description": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: accurate; closes CG-DDMM-003 and PG-DDMM-005, requires Compliance sign-off on scoring model, carries IR-DDMM-001/005 risks; accepted without edit. Trim is formatting-only."
+    },
+    "What changes": {
+      "source": "elicited",
+      "evidence": "SME confirmed all six change bullets — accepted without edit."
+    }
+  },
+  "TS-DDMM-005": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "SME confirmed: PP-DDMM-001 and OAF-DDMM-002 share root cause; framing accepted without edit."
+    },
+    "Target description": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: accurate; mandatory structured rationale at closure makes OAF-DDMM-002 a system guarantee; IR-DDMM-003 correctly carried; accepted without edit."
+    },
+    "What changes": {
+      "source": "elicited",
+      "evidence": "SME confirmed all five change bullets — accepted without edit."
+    }
+  },
+  "TS-DDMM-006": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "SME confirmed: CG-DDMM-002, CG-DDMM-004, PG-DDMM-006 are live obligations; framing accepted without edit."
+    },
+    "Target description": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: accurate; closes CG-DDMM-002, CG-DDMM-004, PG-DDMM-004 and PG-DDMM-006; correctly sequences regulatory closure ahead of second-wave AI augmentation. Trim is formatting-only."
+    },
+    "What changes": {
+      "source": "elicited",
+      "evidence": "SME confirmed all five change bullets — accepted without edit."
+    }
+  },
+  "TS-DDMM-007": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "SME confirmed: CG-DDMM-001 and PG-DDMM-003 are the same gap in two registers; framing accepted without edit."
+    },
+    "Target description": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: accurate; closes PG-DDMM-002, CG-DDMM-001 and PG-DDMM-003; one retention decision framing accepted. Trim is formatting-only."
+    },
+    "What changes": {
+      "source": "elicited",
+      "evidence": "SME confirmed all six change bullets — accepted without edit."
+    }
+  },
+  "VG-DDMM-001": {
+    "Resolution": {
+      "source": "elicited",
+      "evidence": "SME confirmed: commission II-DDMM-005 as follow-on once first-wave capabilities are live; TS-DDMM-006 is the prerequisite foundation."
+    },
+    "Status": {
+      "source": "elicited",
+      "evidence": "SME confirmed: OPEN, dependent on second-wave programme funding."
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: VG-DDMM-001 is a genuine residual gap — PP-DDMM-005 is addressed only by second-wave II-DDMM-005; no committed decision delivers it."
+    }
+  },
+  "VG-DDMM-002": {
+    "Resolution": {
+      "source": "elicited",
+      "evidence": "SME confirmed: mandatory closure-evidencing procedure within CP-DDMM-004; Internal Audit confirmation required."
+    },
+    "Status": {
+      "source": "elicited",
+      "evidence": "SME confirmed: OPEN; requires targeted process decision and audit confirmation."
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: OAF-DDMM-001 requires evidencing discrepancies to closure; TD-DDMM-010 shortens the batch interval but does not define the evidencing procedure."
+    }
+  },
+  "VG-DDMM-003": {
+    "Resolution": {
+      "source": "elicited",
+      "evidence": "SME confirmed: formal approval gate must be designed as part of TS-DDMM-004 delivery plan; Compliance and Risk sign-off required before production routing; periodic calibration review required post-launch."
+    },
+    "Status": {
+      "source": "elicited",
+      "evidence": "SME confirmed: OPEN; approval gate must be designed before routing model goes live."
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: 'Compliance approves' is stated as a condition in TS-DDMM-004 and TD-DDMM-005 but no element defines the approval gate structure, ownership, or criteria."
+    }
+  },
+  "VG-DDMM-004": {
+    "Resolution": {
+      "source": "elicited",
+      "evidence": "SME confirmed: SLA definition and capacity confirmation are hard prerequisites for TD-DDMM-004 deployment; must be defined before channel goes live."
+    },
+    "Status": {
+      "source": "elicited",
+      "evidence": "SME confirmed: OPEN; SLA definition is a hard prerequisite for deployment."
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "SME (M. Vogel) confirmed: TD-DDMM-004 commits to the in-portal query channel but no element defines a query-response SLA or Payments Operations capacity agreement — exactly the IR-DDMM-004 scenario."
+    }
+  }
+}

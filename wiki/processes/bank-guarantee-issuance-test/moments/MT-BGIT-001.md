@@ -8,7 +8,6 @@ confidence: high
 source: client-journey-specialist — M. Berger, 2026-05-20
 sentiment: positive
 touchpoint: [JT-BGIT-001]
-provenance: {"Design implication": {"evidence": "M. Berger: portal is the intake channel — confirmation screen is the first opportunity to anchor expectations", "source": "elicited"}, "The moment": {"evidence": "M. Berger confirmed: first portal submission confirmation as moment of truth — sets SLA expectations", "source": "elicited"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 ---
 ## The moment
 The client clicks submit and receives a portal confirmation that the application has been received and is under review.

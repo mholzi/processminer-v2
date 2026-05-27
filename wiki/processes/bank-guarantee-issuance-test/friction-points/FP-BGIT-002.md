@@ -9,7 +9,6 @@ source: client-journey-specialist — M. Berger, 2026-05-20
 severity: HIGH
 occursAt: [PS-BGIT-002]
 painPoint: [PP-BGIT-001]
-provenance: {"Client impact": {"evidence": "M. Berger: credit limit stalls are 'the most common reason for delay' — clients discover stall by polling or RM call", "source": "elicited"}, "Description": {"evidence": "M. Berger: 'no proactive notification when application is parked at credit' — confirmed as friction point", "source": "elicited"}, "Root cause": {"evidence": "M. Berger: no automated notification triggered when TFO parks application for Credit review", "source": "elicited"}}
 ---
 ## Description
 When an application is parked at Step 2 awaiting a Credit team limit review, the client receives no notification. The portal status may remain unchanged for days with no explanation.

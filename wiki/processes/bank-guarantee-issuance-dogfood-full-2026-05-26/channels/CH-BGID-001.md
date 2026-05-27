@@ -8,7 +8,6 @@ confidence: medium
 source: SME interview
 channelType: DIGITAL
 touchpoints: [JT-BGID-001, JT-BGID-004]
-provenance: {"Description": {"evidence": "the bank's online corporate portal", "source": "elicited"}, "Usage": {"evidence": "clients reach us through (a) the bank's online corporate portal", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:15:47Z
 approval: in-progress

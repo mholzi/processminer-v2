@@ -8,7 +8,6 @@ confidence: high
 source: dcr-dtp-mockup.md
 systems: [SYS-DCR-001, SYS-DCR-004]
 controls: [CP-DCR-004]
-provenance: {"In this process": {"evidence": "The Card Operations Clerk orders a like-for-like replacement card.", "source": "document"}, "Responsibility": {"evidence": "The Card Operations Clerk orders a like-for-like replacement card.", "source": "document"}}
 approval: approved
 approvalBy: S. Krause
 approvalDate: 2026-05-19

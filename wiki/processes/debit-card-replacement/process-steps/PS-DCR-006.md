@@ -9,7 +9,6 @@ source: dcr-dtp-mockup.md
 owner: Contact Centre Agent
 sla: Card delivered within 4-6 business days of the order
 systems: [SYS-DCR-004]
-provenance: {"Inputs": {"evidence": "dispatched to the customer's registered address", "source": "document"}, "Outputs": {"evidence": "The replacement card is produced by the card bureau and dispatched to the customer's registered address.", "source": "document"}, "What happens": {"evidence": "The replacement card is produced by the card bureau and dispatched to the customer's registered address. The customer is told the expected delivery time (5-7 business days) and that the card must be activated on first use.", "source": "document"}, "Why it matters": {"evidence": "S. Krause confirmed in the foundational run: Why it matters holds as drafted.", "source": "elicited"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-19

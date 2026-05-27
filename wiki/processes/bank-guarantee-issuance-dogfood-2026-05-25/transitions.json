@@ -1,0 +1,47 @@
+{
+  "PS-BGID-001": [
+    {
+      "to": "PS-BGID-002",
+      "kind": "normal",
+      "when": "application is complete and accepted"
+    }
+  ],
+  "PS-BGID-002": [
+    {
+      "to": "PS-BGID-003",
+      "kind": "normal",
+      "when": "facility limit is sufficient and credit check passes"
+    },
+    {
+      "to": "EX-BGID-001",
+      "kind": "exception",
+      "when": "facility limit is insufficient"
+    }
+  ],
+  "PS-BGID-003": [
+    {
+      "to": "PS-BGID-004",
+      "kind": "normal",
+      "when": "wording is approved (standard or legal sign-off received)"
+    }
+  ],
+  "PS-BGID-004": [
+    {
+      "to": "PS-BGID-005",
+      "kind": "normal",
+      "when": "screening is clear with no hits"
+    },
+    {
+      "to": "EX-BGID-002",
+      "kind": "exception",
+      "when": "sanctions screening hit is identified"
+    }
+  ],
+  "PS-BGID-005": [
+    {
+      "to": "PS-BGID-006",
+      "kind": "normal",
+      "when": "issuance is approved by Trade Finance Manager (and Head of Trade Finance where required)"
+    }
+  ]
+}

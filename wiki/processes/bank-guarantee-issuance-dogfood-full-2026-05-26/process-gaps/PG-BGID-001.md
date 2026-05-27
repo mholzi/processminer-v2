@@ -9,7 +9,6 @@ source: SME interview — process-specialist session 2026-05-26
 area: process design
 gapStatus: open
 affects: [PP-BGID-001, PP-BGID-002, FP-BGID-001, FP-BGID-002, M-BGID-001]
-provenance: {"Impact": {"evidence": "SME validated — EU corporate guarantee desk, process-specialist session 2026-05-26", "source": "elicited"}, "Next step": {"evidence": "SME validated — EU corporate guarantee desk, process-specialist session 2026-05-26", "source": "elicited"}, "The gap": {"evidence": "", "source": "proposed"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:42:26Z
 approval: in-progress

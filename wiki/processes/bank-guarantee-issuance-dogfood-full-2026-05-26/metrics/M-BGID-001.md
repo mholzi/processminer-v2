@@ -9,7 +9,6 @@ source: bank-guarantee-issuance-v1.md
 target: 3 business days
 value: Not measured
 trend:
-provenance: {"Current reading": {"evidence": "", "source": "proposed"}, "Definition": {"evidence": "", "source": "proposed"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T06:01:39Z
 ---

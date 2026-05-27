@@ -11,7 +11,6 @@ execution: AUTOMATED
 effectiveness: HIGH
 owner: Payment Operations
 step: [PS-SP-002]
-provenance: {"Control activity": {"evidence": "Step 2: 'The instruction is not a duplicate of one seen in the last 24 hours.' Step sequence (validation at step 2, funds at step 3) establishes rejection before funds earmarking. Specific matching fields (debtor, creditor IBAN, amount, remittance reference) were removed — not stated in the document.", "source": "document"}, "Risk addressed": {"evidence": "", "source": "proposed"}, "Timing": {"evidence": "Duplicate check is listed within step 2 bullet list alongside IBAN/BIC checks; Section 7 C-2: 'Every item'.", "source": "document"}, "What it checks": {"evidence": "Step 2: 'The instruction is not a duplicate of one seen in the last 24 hours.'", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:15Z
 ---

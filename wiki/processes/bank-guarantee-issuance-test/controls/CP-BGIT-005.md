@@ -10,7 +10,6 @@ controlType: PREVENTIVE
 execution: MANUAL
 owner: Trade Finance Operations
 step: [PS-BGIT-001]
-provenance: {"Control activity": {"evidence": "M. Berger Stage 5 standing input confirmed manual completeness check at intake", "source": "elicited"}, "Risk addressed": {"evidence": "M. Berger Stage 5 input: remediating control for CG-BGIT-001", "source": "elicited"}, "Timing": {"evidence": "M. Berger Stage 5 standing input confirmed timing at PS-BGIT-001", "source": "elicited"}, "What it checks": {"evidence": "M. Berger Stage 5: 'CP-BGIT-005: Application completeness check, PREVENTIVE, MANUAL, owner Trade Finance Operations, step PS-BGIT-001, addresses CG-BGIT-001'", "source": "elicited"}}
 ---
 ## What it checks
 Verifies that each incoming guarantee application contains all mandatory fields: beneficiary details, guarantee amount and currency, wording type, validity period, and underlying commercial contract reference.

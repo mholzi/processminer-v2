@@ -11,7 +11,6 @@ execution: MANUAL
 effectiveness: MEDIUM
 owner: Payment Operations
 step: [PS-SP-010]
-provenance: {"Control activity": {"evidence": "Step 10: 'submitted payments are reconciled against CSM settlement reports; any break is investigated.' Section 9 SLA: 'Exception resolution: Within 1 business day of identification.' Step 8 names pacs.008 as the submission message.", "source": "document"}, "Risk addressed": {"evidence": "", "source": "proposed"}, "Timing": {"evidence": "Step 10: 'At end of day.' Section 7 C-7: 'Daily.'", "source": "document"}, "What it checks": {"evidence": "Step 10: 'submitted payments are reconciled against CSM settlement reports; any break is investigated.' Section 7 C-7: 'End-of-day reconciliation vs CSM settlement, Detective / manual, Daily.'", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:00Z
 ---

@@ -8,7 +8,6 @@ confidence: high
 category: rework
 severity: MEDIUM
 affects: [PS-BGI-004]
-provenance: {"Description": {"evidence": "false positives on common beneficiary names generate avoidable investigation work", "source": "elicited"}, "Impact": {"evidence": "false positives on common beneficiary names generate avoidable investigation work", "source": "elicited"}, "Root cause": {"evidence": "", "source": "proposed"}}
 ---
 ## Description
 The Sanctions Screening Tool generates false positive hits on common or generic beneficiary names, triggering Compliance investigations for applications that are clearly not sanctions-related.

@@ -10,7 +10,6 @@ reqType: FUNCTIONAL
 moscow: MUST
 derivedFrom: [TD-BGIT-004]
 addresses: [CG-BGIT-002]
-provenance: {"Acceptance criteria": {"evidence": "", "source": "proposed"}, "Rationale": {"evidence": "", "source": "proposed"}, "Requirement": {"evidence": "", "source": "proposed"}}
 ---
 ## Requirement
 The Trade Finance System must prevent the generation and SWIFT dispatch of a guarantee document unless a valid, timestamped TFM approval record exists for that transaction in TFS at the time of generation.

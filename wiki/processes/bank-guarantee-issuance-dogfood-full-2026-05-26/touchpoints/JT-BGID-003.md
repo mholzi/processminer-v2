@@ -8,7 +8,6 @@ confidence: medium
 source: SME interview
 channel: Trade-Finance Desk Email
 occursAt: [PS-BGID-003]
-provenance: {"Experience": {"evidence": "", "source": "proposed"}, "What the bank does": {"evidence": "Legal review feedback on bespoke wording — TFO emails outcome to client", "source": "elicited"}, "What the client does": {"evidence": "Legal-review feedback on bespoke wording — clients have no visibility into Legal's queue", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:15:47Z
 ---

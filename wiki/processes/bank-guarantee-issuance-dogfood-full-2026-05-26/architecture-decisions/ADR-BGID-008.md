@@ -9,7 +9,6 @@ source: Markus Holzhäuser, Domain Architect — batch review session 2026-05-26
 adrStatus: ACCEPTED
 owner: Domain Architect
 domain: IT Architecture / Security
-provenance: {"Alternatives considered": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Consequences": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Context": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Decision": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T14:59:49Z
 approval: approved

@@ -9,7 +9,6 @@ competitor: BNP Paribas
 source: Global Trade Review; Surecomp press release — BNP Paribas, Vanderlande and Surecomp SWIFT-ICC API pilot, November 2024
 sourceUrl: https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/
 bearsOn: [PS-BGIT-001, PS-BGIT-006, PG-BGIT-002, CG-BGIT-001]
-provenance: {"Evidence": {"evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — \"It is a significant industry milestone\" (Marie-Laurence Faure, Head of Digital Trade Channels, BNP Paribas) — fetched 2026-05-20", "source": "web"}, "Relevance": {"evidence": "https://surecomp.com/news/bnp-paribas-vanderlande-and-surecomp-drive-successful-completion-of-swift-icc-api-pilot-for-trade-finance-guarantees/ — \"APIs do not require participants to be connected to Swift's messaging platform, making them less expensive than traditional guarantees\" — fetched 2026-05-20", "source": "web"}, "The move": {"evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — \"The request was transmitted from Vanderlande to BNP Paribas in real time without manual intervention\" — fetched 2026-05-20", "source": "web"}}
 asOf: 2026-05-20
 ---
 ## The move

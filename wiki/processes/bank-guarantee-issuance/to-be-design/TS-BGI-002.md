@@ -6,7 +6,6 @@ title: Proactive Facility Management with Real-Time Headroom Alerts
 status: draft
 confidence: low
 replaces: [PS-BGI-002]
-provenance: {"Rationale": {"evidence": "", "source": "proposed"}, "Target description": {"evidence": "", "source": "proposed"}, "What changes": {"evidence": "", "source": "proposed"}}
 ---
 ## Target description
 Rather than discovering a credit limit shortfall reactively at the credit check step, the process moves to proactive monitoring: the Trade Finance System continuously tracks guarantee facility utilisation for each client and automatically alerts the relationship manager and client when available headroom falls below a configurable threshold.

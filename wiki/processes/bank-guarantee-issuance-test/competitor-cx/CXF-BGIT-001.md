@@ -9,7 +9,6 @@ competitor: Komgo
 asOf: 2025-05-01
 source: Komgo newsroom case study (TK Elevator) and GTR coverage of GTK launch
 sourceUrl: https://www.komgo.io/newsroom/tkelevator-and-komgo-boost-guarantee-management-with-gtk
-provenance: {"Evidence": {"evidence": "https://www.komgo.io/newsroom/tkelevator-and-komgo-boost-guarantee-management-with-gtk — \"average guarantee issuance time dropped by 50% almost overnight\" — fetched 2026-05-20", "source": "web"}, "Relevance": {"evidence": "https://www.gtreview.com/news/fintech/komgo-launches-global-trade-konnect-in-major-system-upgrade/ — GTR reporting on GTK as next-generation unified guarantee and LC platform — fetched 2026-05-20", "source": "web"}, "The journey": {"evidence": "https://www.komgo.io/newsroom/tkelevator-and-komgo-boost-guarantee-management-with-gtk — \"70% of new guarantees are now processed via Boost Approval, which cuts manual work, reduces errors\" — fetched 2026-05-20", "source": "web"}}
 ---
 ## The journey
 Corporate treasury teams submit guarantee applications in Komgo's GTK portal, selecting standard or bespoke wording. Low-value standard transactions route automatically via Boost Approval with a four-eyes check; non-standard items escalate. Multi-bank credit line visibility is embedded in the same screen alongside open guarantee positions.

@@ -138,21 +138,13 @@ export const UNCONFIRMED_SOURCES = new Set(["proposed", "web"]);
 /** Sources whose claim must be backed by a verbatim quote / snippet. */
 const EVIDENCE_REQUIRED = new Set(["elicited", "document", "web"]);
 
-/** The element's provenance map, decoded. {} if absent or malformed.
- *  The value is stored JSON-encoded on one frontmatter line. */
+/** The element's provenance map. {} if absent.
+ *  Lives in wiki/processes/<slug>/provenance.json — keyed by element id, then
+ *  by heading. getProcess() in wiki.ts joins it onto each element at load. */
 export function parseProvenance(
   page: WikiPage,
 ): Record<string, { source?: string; evidence?: string }> {
-  const raw = page.meta["provenance"];
-  if (typeof raw !== "string" || !raw.trim()) return {};
-  try {
-    const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
-      ? (parsed as Record<string, { source?: string; evidence?: string }>)
-      : {};
-  } catch {
-    return {};
-  }
+  return page.provenance ?? {};
 }
 
 /** Every template heading needs a provenance entry; the map keys must not

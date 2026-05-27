@@ -8,7 +8,6 @@ confidence: medium
 domain: credit-risk
 source: EBA Guidelines on Loan Origination and Monitoring (EBA/GL/2020/06), May 2020
 sourceUrl: https://www.eba.europa.eu/regulation-and-policy/credit-risk/guidelines-on-loan-origination-and-monitoring
-provenance: {"How it is met": {"evidence": "https://www.eba.europa.eu/regulation-and-policy/credit-risk/guidelines-on-loan-origination-and-monitoring — creditworthiness assessment and approval governance at Steps 2 and 5 address core EBA/GL/2020/06 requirements — fetched 2026-05-20", "source": "web"}, "What it requires": {"evidence": "https://www.eba.europa.eu/regulation-and-policy/credit-risk/guidelines-on-loan-origination-and-monitoring — EBA/GL/2020/06 requires documented creditworthiness assessment, governance and approval policies for credit facilities; applicable to guarantees as contingent credit — fetched 2026-05-20", "source": "web"}, "Why it applies": {"evidence": "https://www.eba.europa.eu/regulation-and-policy/credit-risk/guidelines-on-loan-origination-and-monitoring — guarantee facilities extended to corporate clients are credit exposures in scope — fetched 2026-05-20", "source": "web"}}
 asOf: 2026-05-20
 ---
 ## What it requires

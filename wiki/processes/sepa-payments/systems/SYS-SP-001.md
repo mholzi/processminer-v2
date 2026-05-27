@@ -6,7 +6,6 @@ title: Channel Platforms
 status: draft
 confidence: high
 source: sepa-payments-dtp-mockup.md
-provenance: {"Purpose": {"evidence": "§8 Systems & Data table: 'Channel platforms (online / mobile / host-to-host) | Capture and submit payment instructions'", "source": "document"}, "Role in this process": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:09:11Z
 systemType: CORE

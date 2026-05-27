@@ -9,7 +9,6 @@ source: bank-guarantee-issuance-v1.md
 severity: LOW
 gapStatus: mitigated
 control: []
-provenance: {"Remediation": {"evidence": "", "source": "proposed"}, "Risk": {"evidence": "No control here is an accepted gap; C3 facility check and C1 four-eyes catch issues downstream", "source": "elicited"}, "The gap": {"evidence": "No control here is an accepted gap; C3 facility check and C1 four-eyes catch issues downstream", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:38:01Z
 ---

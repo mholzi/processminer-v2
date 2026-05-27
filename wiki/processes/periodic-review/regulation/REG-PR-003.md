@@ -11,7 +11,6 @@ jurisdiction: Global
 article: Recommendation 10(d)
 asOf: 2026-05-21
 sourceUrl:
-provenance: {"How it is met": {"evidence": "", "source": "proposed"}, "What it requires": {"evidence": "§5.1 table: \"FATF Recommendation 10 | (d) | Ongoing due diligence\"", "source": "document"}, "Why it applies": {"evidence": "Executive Summary: \"It is the bank's primary ongoing-due-diligence control under [...] the FATF Recommendation 10.\"; §1.1: \"Retail Banking and Private Banking Switzerland, EU and UK booking centres\"", "source": "document"}}
 ---
 ## What it requires
 FATF Recommendation 10, clause (d) requires ongoing due diligence. The document maps this clause to that obligation.

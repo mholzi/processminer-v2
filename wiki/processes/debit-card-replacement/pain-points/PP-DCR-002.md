@@ -10,7 +10,6 @@ category: Identity verification
 severity: HIGH
 priority: P1
 affects: [PS-DCR-002]
-provenance: {"Description": {"evidence": "Elicited from S. Krause during the foundational-run deepening probe.", "source": "elicited"}, "Impact": {"evidence": "Elicited from S. Krause during the foundational-run deepening probe.", "source": "elicited"}, "Root cause": {"evidence": "Elicited from S. Krause during the foundational-run deepening probe.", "source": "elicited"}}
 ---
 ## Description
 On the phone channel, identity is verified with knowledge-based security questions. Customers often cannot answer them because the stored answers are stale, and the exchange is slow even when it succeeds.

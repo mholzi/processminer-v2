@@ -9,7 +9,6 @@ source: periodic-kyc-review-dtp.pdf
 category: outreach-timeout
 impact: MEDIUM
 handlingOwner: Relationship Manager
-provenance: {"Description": {"evidence": "", "source": "proposed"}, "Handling": {"evidence": "Outreach uses a single thread, has a hard 30-day timeout, and falls back to RM-mediated outreach if the client does not respond on the digital channel. (§3.2 Step 4) / RM-mediated channel preserved for PB, with the same data-minimised payload. (§5.3)", "source": "document"}, "Impact": {"evidence": "", "source": "proposed"}}
 ---
 ## Description
 When a client does not respond to the targeted digital outreach within the hard 30-day timeout window, the single-thread outreach channel is considered exhausted and the exception is raised. At Step 4, the Outreach Service has sent the data-delta request and received no reply.

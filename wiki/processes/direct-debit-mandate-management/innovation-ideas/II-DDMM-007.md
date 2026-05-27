@@ -11,7 +11,6 @@ strategicFit: HIGH
 complexity: MEDIUM
 addresses: [PP-DDMM-002]
 fromTrend: [TR-DDMM-001]
-provenance: {"Expected benefit": {"evidence": "SME confirmed: eliminates scheduling bottleneck; addresses CG-DDMM-003 without mandating review on every trivial record; PG-DDMM-001 threshold question resolved as part of this initiative.", "source": "elicited"}, "Feasibility": {"evidence": "SME confirmed: requires MMS risk-scoring attributes, updated certification framework, and Compliance/Risk agreement on scoring criteria.", "source": "elicited"}, "The idea": {"evidence": "SME (M. Vogel) confirmed: PP-DDMM-002 (Checker availability bottleneck) is uncovered by earlier ideas; risk-based routing with a broader checker pool addresses it directly and provides a compliance-aligned path on CG-DDMM-003.", "source": "elicited"}}
 ---
 ## The idea
 Replace the fixed 50-mandate batch threshold with a risk-based routing model assessing each batch by total value, creditor risk tier, and request type. Routine low-risk batches receive a lighter spot-check; higher-risk batches get full dual-control. Extend the checker pool with a lighter certification track for routine work, removing dependency on a single scheduled checker.

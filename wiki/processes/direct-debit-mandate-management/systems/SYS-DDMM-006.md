@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: ddmm-it-architect
 systemType: SUPPORTING
-provenance: {"Purpose": {"evidence": "SME (M. Vogel): SFTP endpoint is a separate MFT platform — standard corporate MFT gateway — distinct infrastructure from the Creditor Portal, operated separately by the bank.", "source": "elicited"}, "Role in this process": {"evidence": "SME confirmed: MFT receives bulk mandate files dropped by large corporate creditors via SFTP and hands them off to the Creditor Portal for ingestion; MFT has no creditor-facing UI of its own.", "source": "elicited"}}
 integrates: [SYS-DDMM-001]
 approval: approved
 approvalBy: M. Vogel

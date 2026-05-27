@@ -9,7 +9,6 @@ source: Client journey session - S. Krause
 channel: Contact Centre
 ces: 6
 occursAt: [PS-DCR-002]
-provenance: {"Experience": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}, "What the bank does": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}, "What the client does": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}}
 ---
 ## What the client does
 Before anything can be done, the client must answer a set of knowledge-based security questions to prove they are the genuine cardholder.

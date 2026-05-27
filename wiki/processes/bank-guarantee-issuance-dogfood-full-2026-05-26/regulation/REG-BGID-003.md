@@ -8,7 +8,6 @@ confidence: medium
 domain: Prudential
 source: Regulation (EU) No 575/2013 (CRR), Article 111 and Annex I
 sourceUrl: https://lexparency.org/eu/CRR/ART_111/
-provenance: {"How it is met": {"evidence": "https://lexparency.org/eu/CRR/ART_111/ — facility utilisation update at PS-BGID-006 records contingent exposure; capital calculation handled by risk management systems — fetched 2026-05-26", "source": "web"}, "What it requires": {"evidence": "https://lexparency.org/eu/CRR/ART_111/ — Article 111: exposure value of off-balance-sheet items = nominal value × credit conversion factor; credit-substitute guarantees assigned 100% CCF — fetched 2026-05-26", "source": "web"}, "Why it applies": {"evidence": "https://lexparency.org/eu/CRR/ART_111/ — each guarantee issued creates a contingent credit exposure that enters the bank's risk-weighted asset calculation — fetched 2026-05-26", "source": "web"}}
 asOf: 2026-05-26
 updatedBy: the assistant
 updatedAt: 2026-05-26T06:50:01Z

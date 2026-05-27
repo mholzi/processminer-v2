@@ -9,7 +9,6 @@ horizon: near-term
 source: Oracle Banking Trade Finance; KPMG — 'Agentic AI in trade finance'; GTR Issue 1 2026
 sourceUrl: https://www.oracle.com/financial-services/banking/agentic-ai-and-trade-finance/
 bearsOn: [PS-BGIT-001, PS-BGIT-002, PS-BGIT-003, PP-BGIT-001, PP-BGIT-002, CG-BGIT-001]
-provenance: {"Evidence": {"evidence": "https://www.azilen.com/blog/agentic-ai-in-financial-services/ — \"44% of finance teams will use agentic AI in 2026, representing an increase of over 600% from 2025\" — fetched 2026-05-20", "source": "web"}, "Relevance": {"evidence": "https://www.oracle.com/financial-services/banking/agentic-ai-and-trade-finance/ — \"bank guarantee vetting and document data extraction, using large language models alongside embedded analytics … identifying any discrepancies in the guarantee wording as per ICC/Legal laws\" — fetched 2026-05-20", "source": "web"}, "The trend": {"evidence": "https://www.gtreview.com/magazine/gtr-issue-1-2026/transforming-trade-finance-how-ai-is-reshaping-the-future-of-global-commerce/ — \"About 45 percent of banks as of 2025 are deploying AI or machine learning in live client trade finance transactions, up from one-third the previous year\" — fetched 2026-05-20", "source": "web"}}
 asOf: 2026-05-20
 ---
 ## The trend

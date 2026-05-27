@@ -7,7 +7,6 @@ status: draft
 confidence: medium
 source: innovation-analyst session 2026-05-26
 severity: MEDIUM
-provenance: {"Likelihood & impact": {"evidence": "Elicited from EBA AI Act guidance and BaFin supervisory expectations for automated banking decisions", "source": "elicited"}, "Mitigation": {"evidence": "Elicited from EU AI Act compliance planning practice", "source": "elicited"}, "The risk": {"evidence": "Elicited from regulatory analysis; EBA published initial AI Act scoping guidance for credit-adjacent banking systems in 2024", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:56:41Z
 approval: in-progress

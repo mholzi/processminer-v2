@@ -8,7 +8,6 @@ confidence: high
 source: sepa-payments-dtp-mockup.md
 systems: [SYS-SP-004, SYS-SP-007]
 controls: [CP-SP-004]
-provenance: {"In this process": {"evidence": "Section 5.1 step 4: 'potential hits route to Compliance.' RACI: Compliance = A/R for Sanctions/AML screening. Exception E-3: 'escalated to Compliance and Financial Crime; release blocked pending investigation.' RACI: R-transaction handling — Compliance = C. RACI: Compliance = I for all remaining rows.", "source": "document"}, "Responsibility": {"evidence": "RACI table Section 4: Sanctions/AML screening — Compliance = A/R. Exception E-3: 'Payment frozen; escalated to Compliance and Financial Crime; release blocked pending investigation.'", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:15Z
 ---

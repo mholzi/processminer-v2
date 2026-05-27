@@ -10,7 +10,6 @@ controlType: PREVENTIVE
 execution: AUTOMATED
 owner: Card Operations
 step: [PS-DCR-005]
-provenance: {"Control activity": {"evidence": "dispatched to the customer's registered address", "source": "document"}, "Risk addressed": {"evidence": "S. Krause confirmed in the foundational run: Risk addressed holds as drafted.", "source": "elicited"}, "Timing": {"evidence": "Every card order", "source": "document"}, "What it checks": {"evidence": "Dispatch only to the registered address on file | Preventive / automated | Every card order", "source": "document"}}
 approval: in-progress
 regulatedBy: [REG-DCR-002]
 ---

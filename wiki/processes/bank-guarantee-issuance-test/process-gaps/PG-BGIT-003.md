@@ -9,7 +9,6 @@ source: foundational-run — M. Berger
 area: As-Is process
 gapStatus: open
 affects: [PS-BGIT-003]
-provenance: {"Impact": {"evidence": "", "source": "proposed"}, "Next step": {"evidence": "", "source": "proposed"}, "The gap": {"evidence": "M. Berger: 'Legal has no committed SLA — root cause of PP-BGIT-002 — flag'", "source": "elicited"}}
 ---
 ## The gap
 There is no committed SLA for how quickly the Legal team must review and sign off bespoke guarantee wording. Review turnaround is informal and unmonitored.

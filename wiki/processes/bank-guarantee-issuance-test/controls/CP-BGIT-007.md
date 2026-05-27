@@ -10,7 +10,6 @@ controlType: PREVENTIVE
 execution: MANUAL
 owner: Trade Finance Officer
 step: [PS-BGIT-007]
-provenance: {"Control activity": {"evidence": "For partially-secured guarantees, cash collateral must be confirmed received and blocked before issuance. Control owner: Trade Finance Officer.", "source": "document"}, "Risk addressed": {"evidence": "", "source": "proposed"}, "Timing": {"evidence": "", "source": "proposed"}, "What it checks": {"evidence": "C4 — Collateral block confirmation. For partially-secured guarantees, cash collateral must be confirmed received and blocked before issuance.", "source": "document"}}
 ---
 ## What it checks
 Verifies that cash collateral has been received and blocked before issuance of a partially-secured guarantee can proceed.

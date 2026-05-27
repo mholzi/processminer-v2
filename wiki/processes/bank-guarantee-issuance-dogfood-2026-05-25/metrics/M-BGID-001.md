@@ -9,7 +9,6 @@ source: bank-guarantee-issuance-v1.md
 target: 3 business days
 value: Not measured
 trend:
-provenance: {"Current reading": {"evidence": "The target turnaround is 3 business days from a complete application to guarantee delivery, measured for standard-wording guarantees with no screening hit.", "source": "document"}, "Definition": {"evidence": "The target turnaround is 3 business days from a complete application to guarantee delivery, measured for standard-wording guarantees with no screening hit.", "source": "document"}, "Why it matters": {"evidence": "Applications frequently stall at the credit and facility check when the client has not pre-arranged enough limit. Bespoke wording adds unpredictable delay because Legal review has no committed turnaround.", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:56:10Z
 ---

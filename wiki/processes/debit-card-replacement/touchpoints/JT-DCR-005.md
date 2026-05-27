@@ -9,7 +9,6 @@ source: Client journey session - S. Krause
 channel: Contact Centre
 ces: 2
 occursAt: [PS-DCR-006]
-provenance: {"Experience": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}, "What the bank does": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}, "What the client does": {"evidence": "S. Krause narrated this in the client-journey session.", "source": "elicited"}}
 ---
 ## What the client does
 At the end of the call the client hears when the new card should arrive and that it must be activated on first use.

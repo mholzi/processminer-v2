@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: innovation-analyst — M. Berger, 2026-05-20
 severity: HIGH
-provenance: {"Likelihood & impact": {"evidence": "", "source": "proposed"}, "Mitigation": {"evidence": "M. Berger Stage 5 standing input; adoption/governance risk for II-BGIT-001", "source": "elicited"}, "The risk": {"evidence": "", "source": "proposed"}}
 ---
 ## The risk
 The C2B API standard is not yet widely adopted by corporate ERP systems. If the bank invests before clients have ERP connectivity, the digital channel goes underutilised and the manual portal path must run in parallel indefinitely, increasing cost instead of reducing it.

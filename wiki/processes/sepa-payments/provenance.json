@@ -1,0 +1,698 @@
+{
+  "CP-SP-003": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "Step 3 describes funds check and earmarking; E-2: 'Single payments rejected; bulk-file items queued to next cycle and the customer notified.' Section 8: Core Banking System handles 'Account balances, holds, debit booking.' Phrase 'in real time' removed — not stated in the document."
+    },
+    "Risk addressed": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "Step sequence: step 2 (validation) -> step 3 (funds check) -> step 4 (sanctions/AML); Section 7 C-3: 'Every item'."
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "Step 3: 'The debtor account is checked for available balance including intraday limits; the amount is earmarked on the account.'"
+    }
+  },
+  "CP-SP-004": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "Step 4: 'Clean items pass automatically; potential hits route to Compliance.' E-3: 'Payment frozen; escalated to Compliance and Financial Crime.' Section 8 lists Sanctions Screening Engine and AML Transaction Monitoring as systems."
+    },
+    "Risk addressed": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "Step sequence: step 3 (funds check) -> step 4 (sanctions/AML) -> step 5 (fraud). Section 7 C-4: 'Every item'."
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "Step 4: 'Debtor and creditor are screened against sanctions lists; the payment is checked by AML transaction monitoring.' Phrase 'known financial-crime patterns or watchlist entries' removed — not stated in the document."
+    }
+  },
+  "CP-SP-005": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "Step 5: 'Low-risk items pass; high-risk items are held for review.' E-4: 'Payment held; customer contacted for step-up verification; released or cancelled on the outcome.' Section 8 lists Fraud Engine."
+    },
+    "Risk addressed": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "Step sequence: step 4 (sanctions/AML) -> step 5 (fraud) -> step 6 (routing) -> step 7 (debit booking). Section 7 C-5: 'Every item'."
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "Step 5: 'The payment is scored in real time by the fraud engine. Low-risk items pass; high-risk items are held for review.' References to 'behavioural and transactional risk models' and 'normal payment patterns' removed — not stated in the document."
+    }
+  },
+  "CP-SP-006": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "RACI: Ops Approver is A/R for 'Bulk-file release approval (4-eyes).' Sentence 'The initiating Payments Operations staff member cannot be the same person as the approver' removed — not stated in the document, only inferred from the 4-eyes label."
+    },
+    "Risk addressed": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "Section 7 C-6: 'Per file.' Step sequence places CSM submission at step 8; per-item controls (validation, funds, sanctions, fraud) precede it."
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "Section 7 C-6: '4-eyes release of bulk payment files, Preventive / manual, Per file.' RACI: 'Bulk-file release approval (4-eyes)' — Ops Approver is A/R."
+    }
+  },
+  "CP-SP-007": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "Step 10: 'submitted payments are reconciled against CSM settlement reports; any break is investigated.' Section 9 SLA: 'Exception resolution: Within 1 business day of identification.' Step 8 names pacs.008 as the submission message."
+    },
+    "Risk addressed": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "Step 10: 'At end of day.' Section 7 C-7: 'Daily.'"
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "Step 10: 'submitted payments are reconciled against CSM settlement reports; any break is investigated.' Section 7 C-7: 'End-of-day reconciliation vs CSM settlement, Detective / manual, Daily.'"
+    }
+  },
+  "CP-SP-008": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "E-5: 'Auto-fallback to standard SCT where eligible; otherwise returned to the customer.' Section 8: Payment Hub handles orchestration. Section 7 C-8: 'Continuous.'"
+    },
+    "Risk addressed": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "Section 7 C-8: 'Continuous.' Step 8 names pacs.008 as the submission message. Step 9: 10-second window applies from submission to confirmation."
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "Step 9: 'For SCT Inst, settlement and the beneficiary-bank confirmation complete within 10 seconds.' D-6: 'SCT Inst confirmed in 10s?' Section 7 C-8: 'SCT Inst SLA monitoring (10-second rule), Detective / automated, Continuous.'"
+    }
+  },
+  "CP-SP-009": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "Step 2 describes Payment Hub validation; E-1: 'Payment rejected to the customer with a reason code'; Section 7 C-1: 'Preventive / automated, Every item'; step sequence (2->3->4) establishes position before funds check and screening."
+    },
+    "Risk addressed": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "Step 2 is sequenced before step 3 (funds check) and step 4 (sanctions/AML); Section 7 C-1: 'Every item'."
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "Step 2: 'Creditor IBAN structure and check digits are valid. The creditor bank is reachable in the SEPA scheme directory. Currency is EUR and the creditor country is in the SEPA zone. Mandatory fields are present; the remittance reference is well-formed.'"
+    }
+  },
+  "CP-SP-010": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "Step 2: 'The instruction is not a duplicate of one seen in the last 24 hours.' Step sequence (validation at step 2, funds at step 3) establishes rejection before funds earmarking. Specific matching fields (debtor, creditor IBAN, amount, remittance reference) were removed — not stated in the document."
+    },
+    "Risk addressed": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "Duplicate check is listed within step 2 bullet list alongside IBAN/BIC checks; Section 7 C-2: 'Every item'."
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "Step 2: 'The instruction is not a duplicate of one seen in the last 24 hours.'"
+    }
+  },
+  "EX-SP-001": {
+    "Description": {
+      "source": "document",
+      "evidence": "Step 2: 'Creditor IBAN structure and check digits are valid. The creditor bank is reachable in the SEPA scheme directory. Mandatory fields are present; the remittance reference is well-formed.'"
+    },
+    "Handling": {
+      "source": "document",
+      "evidence": "Section 6 E-1: 'Payment rejected to the customer with a reason code; correction and resubmission required.'"
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "EX-SP-002": {
+    "Description": {
+      "source": "document",
+      "evidence": "Step 3: 'The debtor account is checked for available balance including intraday limits; the amount is earmarked on the account.'"
+    },
+    "Handling": {
+      "source": "document",
+      "evidence": "Section 6 E-2: 'Single payments rejected; bulk-file items queued to next cycle and the customer notified.'"
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "EX-SP-003": {
+    "Description": {
+      "source": "document",
+      "evidence": "Step 4: 'Debtor and creditor are screened against sanctions lists; the payment is checked by AML transaction monitoring. Clean items pass automatically; potential hits route to Compliance.'"
+    },
+    "Handling": {
+      "source": "document",
+      "evidence": "Section 6 E-3: 'Payment frozen; escalated to Compliance and Financial Crime; release blocked pending investigation.'"
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "EX-SP-004": {
+    "Description": {
+      "source": "document",
+      "evidence": "Step 5: 'The payment is scored in real time by the fraud engine. Low-risk items pass; high-risk items are held for review.'"
+    },
+    "Handling": {
+      "source": "document",
+      "evidence": "Section 6 E-4: 'Payment held; customer contacted for step-up verification; released or cancelled on the outcome.'"
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "EX-SP-005": {
+    "Description": {
+      "source": "document",
+      "evidence": "Step 9: 'For SCT Inst, settlement and the beneficiary-bank confirmation complete within 10 seconds.' Decision D-6: 'SCT Inst confirmed in 10s?' Section 6 E-5 heading: 'SCT Inst timeout or beneficiary-bank rejection.'"
+    },
+    "Handling": {
+      "source": "document",
+      "evidence": "Section 6 E-5: 'Auto-fallback to standard SCT where eligible; otherwise returned to the customer.'"
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "EX-SP-006": {
+    "Description": {
+      "source": "document",
+      "evidence": "Section 2 scope: 'Handling of R-transactions (returns, rejects, recalls, refunds).' Section 11 glossary: 'R-transaction: A return, reject, recall or refund of a SEPA payment.'"
+    },
+    "Handling": {
+      "source": "document",
+      "evidence": "Section 6 E-6: 'Matched to the original payment; funds re-credited or recall actioned within scheme deadlines.' Section 9 SLA: 'Recall / return action: Within the EPC scheme deadline (10 business days).'"
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "EX-SP-007": {
+    "Description": {
+      "source": "document",
+      "evidence": "Step 6: 'The standard-SCT cut-off for same-cycle processing is 16:00 CET.' Section 6 E-7: 'Standard SCT rolls to the next cycle / next business day.'"
+    },
+    "Handling": {
+      "source": "document",
+      "evidence": "Section 6 E-7: 'Standard SCT rolls to the next cycle / next business day; customer informed of the revised execution date.' Section 9 SLA: 'Standard SCT (after cut-off): Executed next business day (D+1, per the SEPA rulebook).'"
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "M-SP-001": {
+    "Current reading": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Definition": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "M-SP-002": {
+    "Current reading": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Definition": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "M-SP-003": {
+    "Current reading": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Definition": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "M-SP-004": {
+    "Current reading": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Definition": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "M-SP-005": {
+    "Current reading": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Definition": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "document",
+      "evidence": "Exception E-6: 'funds re-credited or recall actioned within scheme deadlines'; Section 9 SLA table: 'Recall / return action | Within the EPC scheme deadline (10 business days)'"
+    }
+  },
+  "M-SP-006": {
+    "Current reading": {
+      "source": "document",
+      "evidence": "Section 5.1 step 6: 'The standard-SCT cut-off for same-cycle processing is 16:00 CET'; Section 9 SLA table: 'Standard-SCT cut-off | 16:00 CET'"
+    },
+    "Definition": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PG-SP-001": {
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Next step": {
+      "source": "document",
+      "evidence": "§10 open question: 'Is the EUR 100,000 SCT Inst limit a bank-set limit or the scheme maximum?'; Document Control table: 'Author (SME): A. Vermeulen — Payments Product Owner'"
+    },
+    "The gap": {
+      "source": "document",
+      "evidence": "§5.1 step 6: 'SCT Inst if the amount is at or below the instant limit (currently EUR 100,000)'; §10 open question: 'Is the EUR 100,000 SCT Inst limit a bank-set limit or the scheme maximum?'"
+    }
+  },
+  "PG-SP-002": {
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Next step": {
+      "source": "document",
+      "evidence": "§10 open question: 'What happens when a bulk file mixes instant-eligible and standard items?'; §8 systems table: 'Payment Hub — Validation, routing, orchestration, message generation'"
+    },
+    "The gap": {
+      "source": "document",
+      "evidence": "§5.1 step 1: 'Bulk files arrive as pain.001 messages'; §5.1 step 6: routing logic documented only for individual items with no mention of mixed-rail bulk files; §10 open question: 'What happens when a bulk file mixes instant-eligible and standard items?'"
+    }
+  },
+  "PG-SP-003": {
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Next step": {
+      "source": "document",
+      "evidence": "§10 open question: 'Who approves bulk files above the corporate daily aggregate limit?'"
+    },
+    "The gap": {
+      "source": "document",
+      "evidence": "§7 C-6: '4-eyes release of bulk payment files — Preventive / manual — Per file'; §4 RACI: 'Bulk-file release approval (4-eyes) — Ops Approver A/R'; §10 open question: 'Who approves bulk files above the corporate daily aggregate limit?'"
+    }
+  },
+  "PG-SP-004": {
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Next step": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The gap": {
+      "source": "document",
+      "evidence": "§5.1 step 9: 'For SCT Inst, settlement and the beneficiary-bank confirmation complete within 10 seconds'; §9 SLA table: 'SCT Inst end-to-end — Funds available to the beneficiary within 10 seconds'; §10 open question: 'Is SCT Inst offered 24/7, including weekends and holidays?'"
+    }
+  },
+  "PG-SP-005": {
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Next step": {
+      "source": "document",
+      "evidence": "§10 open question: 'How are positive/negative beneficiary-name-check results handled today?'; §8 systems table: 'Payment Hub — Validation, routing, orchestration, message generation'"
+    },
+    "The gap": {
+      "source": "document",
+      "evidence": "§5.1 step 2 lists validation checks (IBAN structure, BIC reachability, currency, mandatory fields, duplicate) with no mention of name verification; §10 open question: 'How are positive/negative beneficiary-name-check results handled today?'"
+    }
+  },
+  "PS-SP-001": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "Key inputs: debtor account, creditor IBAN, creditor name, BIC, amount in EUR, remittance reference, channel and customer election (instant or standard). / Trigger: A customer submits a euro payment instruction via online or mobile banking, or a corporate customer uploads a payment file via the host-to-host channel, or a branch user captures a payment on the customer's behalf."
+    },
+    "Outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "The payment instruction arrives at the payment hub from one of the channels. Each carries debtor account, creditor IBAN, creditor name, BIC (optional for SEPA), amount in EUR, and a remittance reference. Bulk files arrive as pain.001 messages."
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PS-SP-002": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "Key inputs: debtor account, creditor IBAN, creditor name, BIC, amount in EUR, remittance reference. Controls: C-1 IBAN/BIC validation against the scheme directory; C-2 Duplicate-payment detection."
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "If validation fails → Payment rejected to the customer with a reason code; correction and resubmission required. (Exception E-1)"
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "The payment hub checks: Creditor IBAN structure and check digits are valid. The creditor bank is reachable in the SEPA scheme directory. Currency is EUR and the creditor country is in the SEPA zone. Mandatory fields are present; the remittance reference is well-formed. The instruction is not a duplicate of one seen in the last 24 hours. If validation fails → see Exception E-1."
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PS-SP-003": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "Debtor account, Controls: C-3 Funds & limit check before debit."
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "Amount is earmarked on the account. If insufficient: Single payments rejected; bulk-file items queued to next cycle."
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "The debtor account is checked for available balance including intraday limits; the amount is earmarked on the account. If funds are insufficient → see Exception E-2. Single payments rejected; bulk-file items queued to next cycle and the customer notified."
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PS-SP-004": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "Systems: Sanctions Screening Engine — Real-time sanctions/AML screening; AML Transaction Monitoring — Post-event monitoring and alerting."
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "Clean items pass automatically; potential hits route to Compliance. If hit confirmed: Payment frozen; escalated to Compliance and Financial Crime; release blocked pending investigation."
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "Debtor and creditor are screened against sanctions lists; the payment is checked by AML transaction monitoring. Clean items pass automatically; potential hits route to Compliance. If a hit is confirmed → see Exception E-3. Payment frozen; escalated to Compliance and Financial Crime; release blocked pending investigation."
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PS-SP-005": {
+    "Inputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "Low-risk items pass. High-risk: Payment held; customer contacted for step-up verification; released or cancelled on the outcome."
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "The payment is scored in real time by the fraud engine. Low-risk items pass; high-risk items are held for review. If flagged high-risk → see Exception E-4. Payment held; customer contacted for step-up verification; released or cancelled on the outcome."
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PS-SP-006": {
+    "Inputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "Step 6: 'The hub selects the rail: SCT Inst if the amount is at or below the instant limit (currently EUR 100,000), the customer elected instant, and the creditor bank is instant-reachable. Standard SCT otherwise, or if the SCT Inst attempt is declined. The standard-SCT cut-off for same-cycle processing is 16:00 CET.'"
+    },
+    "Why it matters": {
+      "source": "document",
+      "evidence": "Step 9 / SLA table: SCT Inst settles within 10 seconds. Exception E-5: SCT Inst timeout or beneficiary-bank rejection. Exception E-7: Missed cut-off — rolls to next cycle / next business day; customer informed of revised execution date."
+    }
+  },
+  "PS-SP-007": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "Step 3 (earmark), Section 8 key inputs ('debtor account ... amount in EUR'), Control C-6 and RACI ('Bulk-file release approval (4-eyes)')."
+    },
+    "Outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "Step 7: 'The customer account is debited and the held amount released into the payment.' Step 3: 'the amount is earmarked on the account.' Section 8: Core Banking System handles 'Account balances, holds, debit booking.'"
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PS-SP-008": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "Section 8 key inputs: 'debtor account, creditor IBAN, creditor name, BIC, amount in EUR, remittance reference.' Step 8: hub generates pacs.008."
+    },
+    "Outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "Step 8: 'The hub generates a pacs.008 message and submits it to the clearing and settlement mechanism (CSM): the instant gateway (RT1) for SCT Inst, or the batch gateway (STEP2) for standard SCT.' Glossary: 'pacs.008 — The ISO 20022 message that carries a credit transfer to the CSM.'"
+    },
+    "Why it matters": {
+      "source": "document",
+      "evidence": "SLA table: 'SCT Inst end-to-end: Funds available to the beneficiary within 10 seconds. Standard SCT (before cut-off): Executed same business day; settled next STEP2 cycle.'"
+    }
+  },
+  "PS-SP-009": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "Step 9 describes CSM settlement and beneficiary-bank confirmation signals. Decision D-6: 'SCT Inst confirmed in 10s?'"
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "Step 9: customer notified immediately (SCT Inst) or payment shown as executed (standard SCT). Exception E-5 triggered on timeout/rejection."
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "Step 9: 'For SCT Inst, settlement and the beneficiary-bank confirmation complete within 10 seconds; the customer is notified immediately. For standard SCT, settlement completes in the next STEP2 cycle and the customer sees the payment as executed. If an SCT Inst attempt times out or is rejected → see Exception E-5.'"
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PS-SP-010": {
+    "Inputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "Step 10: 'At end of day, submitted payments are reconciled against CSM settlement reports; any break is investigated.' Control C-7: 'End-of-day reconciliation vs CSM settlement — Detective / manual — Daily.'"
+    },
+    "Why it matters": {
+      "source": "document",
+      "evidence": "Control C-7: 'End-of-day reconciliation vs CSM settlement — Detective / manual.' Step 10: 'any break is investigated.'"
+    }
+  },
+  "ROLE-SP-001": {
+    "In this process": {
+      "source": "document",
+      "evidence": "Section 5.1 step 1: 'Each carries debtor account, creditor IBAN, creditor name, BIC (optional for SEPA), amount in EUR, and a remittance reference. Bulk files arrive as pain.001 messages.' Section 3: 'A corporate customer uploads a payment file via the host-to-host channel.' RACI table: Customer/Channel = A/R for Submit payment instruction. Exception E-4: 'customer contacted for step-up verification; released or cancelled on the outcome.' Exception E-1: 'Payment rejected to the customer with a reason code; correction and resubmission required.'"
+    },
+    "Responsibility": {
+      "source": "document",
+      "evidence": "Section 3 Trigger: 'A customer submits a euro payment instruction via online or mobile banking … A corporate customer uploads a payment file via the host-to-host channel.' Section 8: 'Channel platforms (online / mobile / host-to-host) — Capture and submit payment instructions.' Section 5.1 step 9: 'the customer is notified immediately … the customer sees the payment as executed.'"
+    }
+  },
+  "ROLE-SP-002": {
+    "In this process": {
+      "source": "proposed",
+      "evidence": "RACI-backed assignments: ps-2 Validate=R, ps-3 Funds check=R, ps-4 Sanctions=C, ps-5 Fraud=C, ps-6 Bulk-file release=R, ps-8 Submit to CSM=R, ps-9 Confirmation=R, ps-10 R-transaction=A/R. Step 10 narrative: 'submitted payments are reconciled against CSM settlement reports.' Control C-6 / RACI row support the bulk-file 4-eyes claim. Routing decision (Section 5.1 step 6) and debit booking (Section 5.1 step 7) are described in the narrative but have no explicit RACI rows — Payments Ops R-assignments for those steps are inferred from overall operational ownership."
+    },
+    "Responsibility": {
+      "source": "document",
+      "evidence": "RACI table Section 4: Payments Ops = R for Validate instruction, Funds check, Bulk-file release, Submit to clearing (CSM), Confirmation to customer; A/R for R-transaction handling. Section 1 / Section 2 scope describes outbound SEPA payments as the process."
+    }
+  },
+  "ROLE-SP-003": {
+    "In this process": {
+      "source": "document",
+      "evidence": "RACI table: Ops Approver = A/R for 'Bulk-file release approval (4-eyes)'; I for all other rows. Control C-6 supports the 4-eyes reference."
+    },
+    "Responsibility": {
+      "source": "document",
+      "evidence": "RACI table Section 4: 'Bulk-file release approval (4-eyes)' — Ops Approver = A/R. Control C-6: '4-eyes release of bulk payment files — Preventive / manual — Per file.'"
+    }
+  },
+  "ROLE-SP-004": {
+    "In this process": {
+      "source": "document",
+      "evidence": "Section 5.1 step 4: 'potential hits route to Compliance.' RACI: Compliance = A/R for Sanctions/AML screening. Exception E-3: 'escalated to Compliance and Financial Crime; release blocked pending investigation.' RACI: R-transaction handling — Compliance = C. RACI: Compliance = I for all remaining rows."
+    },
+    "Responsibility": {
+      "source": "document",
+      "evidence": "RACI table Section 4: Sanctions/AML screening — Compliance = A/R. Exception E-3: 'Payment frozen; escalated to Compliance and Financial Crime; release blocked pending investigation.'"
+    }
+  },
+  "ROLE-SP-005": {
+    "In this process": {
+      "source": "document",
+      "evidence": "Step 5: 'The payment is scored in real time by the fraud engine. Low-risk items pass; high-risk items are held for review.' Exception E-4: 'Payment held; customer contacted for step-up verification; released or cancelled on the outcome.' RACI: Fraud = I for all rows except Fraud screening (A/R)."
+    },
+    "Responsibility": {
+      "source": "document",
+      "evidence": "RACI table Section 4: Fraud screening — Fraud = A/R. Section 5.1 step 5: 'The payment is scored in real time by the fraud engine. Low-risk items pass; high-risk items are held for review.' Exception E-4: 'Payment held; customer contacted for step-up verification; released or cancelled on the outcome.'"
+    }
+  },
+  "SYS-SP-001": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "§8 Systems & Data table: 'Channel platforms (online / mobile / host-to-host) | Capture and submit payment instructions'"
+    },
+    "Role in this process": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "SYS-SP-002": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "§8 Systems & Data table: 'Payment Hub | Validation, routing, orchestration, message generation'"
+    },
+    "Role in this process": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "SYS-SP-003": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "§8 Systems & Data: 'Core Banking System | Account balances, holds, debit booking'; §5.1 step 3: 'The debtor account is checked for available balance including intraday limits; the amount is earmarked on the account'; step 7: 'The customer account is debited and the held amount released into the payment'"
+    },
+    "Role in this process": {
+      "source": "document",
+      "evidence": "§5.1 step 3: 'The debtor account is checked for available balance including intraday limits; the amount is earmarked on the account'; step 7: 'The customer account is debited and the held amount released into the payment'"
+    }
+  },
+  "SYS-SP-004": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "§8 Systems & Data: 'Sanctions Screening Engine | Real-time sanctions / AML screening'; §5.1 step 4: 'Debtor and creditor are screened against sanctions lists'"
+    },
+    "Role in this process": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "SYS-SP-005": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "§8 Systems & Data: 'Fraud Engine | Real-time fraud scoring'; §5.1 step 5: 'The payment is scored in real time by the fraud engine'"
+    },
+    "Role in this process": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "SYS-SP-006": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "§8 Systems & Data: 'CSM Gateway (STEP2 / RT1) | Clearing and settlement with the SEPA scheme'; §5.1 step 8: 'submits it to the clearing and settlement mechanism (CSM): the instant gateway (RT1) for SCT Inst, or the batch gateway (STEP2) for standard SCT'; §11 Glossary: 'CSM | Clearing and Settlement Mechanism (e.g. STEP2, RT1)'"
+    },
+    "Role in this process": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "SYS-SP-007": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "§8 Systems & Data: 'AML Transaction Monitoring | Post-event monitoring and alerting'"
+    },
+    "Role in this process": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  }
+}

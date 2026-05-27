@@ -8,7 +8,6 @@ confidence: medium
 source: Barclays UK — debit card help pages
 competitor: Barclays
 sourceUrl: https://www.barclays.co.uk/help/cards/debit-card/lost-stolen-damaged/
-provenance: {"Evidence": {"evidence": "https://www.barclays.co.uk/help/cards/debit-card/lost-stolen-damaged/ — \"Report damaged, lost or stolen\" — fetched 2026-05-19", "source": "web"}, "Relevance": {"evidence": "https://www.barclays.co.uk/help/accounts/account-services/instant-card-branches/ — \"you can get a temporary card at some Barclays branches\" — fetched 2026-05-19", "source": "web"}, "The journey": {"evidence": "https://www.barclays.co.uk/help/cards/debit-card/lost-stolen-damaged/ — \"A new debit card will be posted to the address on file within five working days\" — fetched 2026-05-19", "source": "web"}}
 asOf: 2026-05-19
 ---
 ## The journey

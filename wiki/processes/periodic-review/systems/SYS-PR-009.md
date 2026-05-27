@@ -8,7 +8,6 @@ confidence: medium
 source: periodic-kyc-review-dtp.pdf
 systemType: SUPPORTING
 integrates: [SYS-PR-001]
-provenance: {"Purpose": {"evidence": "§7.2: 'Entity Resolution | Beneficial-owner graph | Existing (Bvd Orbis + internal) | Connect'", "source": "document"}, "Role in this process": {"evidence": "", "source": "proposed"}}
 ---
 ## Purpose
 Resolves and maintains the beneficial-owner graph, drawing on Bureau van Dijk Orbis data combined with internal ownership records.

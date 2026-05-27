@@ -10,7 +10,6 @@ severity: HIGH
 category: credit/facility
 priority:
 affects: [PS-BGID-002]
-provenance: {"Description": {"evidence": "Applications frequently stall at the credit and facility check when the client has not pre-arranged enough limit. […] this is the most common reason for delay.", "source": "document"}, "Impact": {"evidence": "", "source": "proposed"}, "Root cause": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:56:10Z
 ---

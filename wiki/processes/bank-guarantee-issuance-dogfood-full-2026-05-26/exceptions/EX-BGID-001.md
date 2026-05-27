@@ -9,7 +9,6 @@ source: bank-guarantee-issuance-v1.md
 category: transmission failure
 impact: HIGH
 handlingOwner: Trade Finance Officer
-provenance: {"Description": {"evidence": "SWIFT NAK → TFO investigates and resubmits; record this as an exception (SWIFT delivery failure)", "source": "elicited"}, "Handling": {"evidence": "SWIFT NAK → TFO investigates and resubmits", "source": "elicited"}, "Impact": {"evidence": "", "source": "proposed"}}
 updatedBy: admin
 updatedAt: 2026-05-26T19:11:43.605Z
 approval: in-progress

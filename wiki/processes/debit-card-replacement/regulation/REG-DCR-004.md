@@ -8,7 +8,6 @@ confidence: medium
 source: PCI DSS — cardholder-data security standard (banking guidance)
 domain: Information Security
 sourceUrl: https://gdprlocal.com/gdpr-credit-card-data/
-provenance: {"How it is met": {"evidence": "https://gdprlocal.com/gdpr-credit-card-data/ — \"maintaining secure networks and firewalls, and performing regular vulnerability testing\" — fetched 2026-05-19", "source": "web"}, "What it requires": {"evidence": "https://gdprlocal.com/gdpr-credit-card-data/ — \"encrypting cardholder data during transmission and storage, implementing strict access controls\" — fetched 2026-05-19", "source": "web"}, "Why it applies": {"evidence": "https://gdprlocal.com/gdpr-credit-card-data/ — \"Any banking app that processes, stores, or transmits card information must comply with PCI DSS requirements\" — fetched 2026-05-19", "source": "web"}}
 asOf: 2026-05-19
 ---
 ## What it requires

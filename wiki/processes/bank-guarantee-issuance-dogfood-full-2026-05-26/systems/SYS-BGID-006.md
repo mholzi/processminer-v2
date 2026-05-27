@@ -8,7 +8,6 @@ confidence: medium
 source: it-architect session 2026-05-26
 systemType: SUPPORTING
 integrates: [SYS-BGID-002]
-provenance: {"Purpose": {"evidence": "Elicited: long-term archival of executed guarantee documents; 10-year retention; vendor in-house; criticality MEDIUM", "source": "elicited"}, "Role in this process": {"evidence": "Elicited: receives executed guarantee documents from TFS at PS-BGID-006; supports audit and dispute retrieval", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T10:09:43Z
 approval: in-progress

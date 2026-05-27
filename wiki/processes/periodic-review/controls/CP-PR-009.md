@@ -12,7 +12,6 @@ effectiveness: HIGH
 owner: Financial Crime Operations
 step: [PS-PR-003]
 regulatedBy: [REG-PR-001, REG-PR-003, REG-PR-005]
-provenance: {"Control activity": {"evidence": "", "source": "proposed"}, "Risk addressed": {"evidence": "[§5.1:] AMLD6 (EU 2018/1673) Art. 13(1)(d): Ongoing monitoring + periodic review. BaIT (DE BaFin) AT 4.3: IT-based control execution, evidence completeness.", "source": "document"}, "Timing": {"evidence": "[Table:] Frequency: Per case. [Step 3:] STP Decision Engine evaluates eligibility at Step 3.", "source": "document"}, "What it checks": {"evidence": "Step 3 — STP Decision. Eligibility: Low or Medium risk and completeness ≥ 92 and no open screening hit and no event-based trigger and product mix unchanged.", "source": "document"}}
 ---
 ## What it checks
 Whether the data completeness score computed at case-open meets the minimum threshold (≥ 92 out of 100) required for a case to be eligible for straight-through processing, and that no open screening hit or event-based trigger exists.

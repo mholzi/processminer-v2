@@ -9,7 +9,6 @@ source: Global Finance Magazine — Best Trade Finance Bank in Western Europe: U
 competitor: UniCredit
 asOf: 2026-05-19
 sourceUrl: https://gfmag.com/award/award-winners/best-trade-finance-bank-in-western-europe-unicredit/
-provenance: {"Evidence": {"evidence": "https://gfmag.com/award/award-winners/best-trade-finance-bank-in-western-europe-unicredit/ — \"a trade finance redesign harmonizing 80% of core processes in 18 countries within six months, establishing a global back-office hub\" — fetched 2026-05-19", "source": "web"}, "Relevance": {"evidence": "https://www.gtb.unicredit.eu/global-transaction-banking/digital-international-simple-how-we-do-trade-finance-unicredit — \"transformed its trade finance across 18 countries into a global product factory using a unified strategy\" — fetched 2026-05-19", "source": "web"}, "The journey": {"evidence": "https://gfmag.com/award/award-winners/best-trade-finance-bank-in-western-europe-unicredit/ — \"TRADE FINANCE GATE (TFG) usage reached over 81% by September 2025\" — fetched 2026-05-19", "source": "web"}}
 ---
 ## The journey
 Corporate clients access UniCredit's Trade Finance Gate (TFG) through the UniCredit Corporate Portal to submit, amend, and monitor guarantees and letters of credit across 18 countries from a single interface. By September 2025 TFG adoption reached over 81% of eligible transactions, with OCR-assisted LC availments cutting processing time by 50%.

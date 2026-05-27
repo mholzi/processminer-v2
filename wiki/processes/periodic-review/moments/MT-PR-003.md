@@ -8,7 +8,6 @@ confidence: medium
 source: periodic-kyc-review-dtp.pdf
 sentiment: negative
 touchpoint: []
-provenance: {"Design implication": {"evidence": "", "source": "proposed"}, "The moment": {"evidence": "", "source": "proposed"}, "Why it matters": {"evidence": "Re-uploading the ID the bank already holds (§6.2 table, row 'Information request', column 'Friction we removed')", "source": "document"}}
 ---
 ## The moment
 When the client opens the outreach prompt, they see a pre-filled form with data the bank already holds. Only the delta — what has changed or is genuinely missing — is requested.

@@ -9,7 +9,6 @@ competitor: Commerzbank
 source: Commerzbank Corporate Clients — Digital Guarantee and Surety Management via the Guarantee Vault Platform; Digital Vault Services announcement
 sourceUrl: https://www.commerzbank.com/financing-foreigntrade/products/foreigntrade/digital-guarantee-management/
 asOf: 2026-05-26
-provenance: {"Evidence": {"evidence": "https://www.digitalvaultservices.com/en/next-milestone-achieved-corporate-guarantees/ — \"As the first (and only) platform Guarantee Vault offers now fully end-to-end digital Corporate Guarantees\" — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.commerzbank.com/financing-foreigntrade/products/foreigntrade/digital-guarantee-management/ — \"overview of your guarantee exposure at all times\" and digital delivery to beneficiaries for domestic guarantees — fetched 2026-05-26", "source": "web"}, "The journey": {"evidence": "https://www.commerzbank.com/financing-foreigntrade/products/foreigntrade/digital-guarantee-management/ — \"issue and manage paper-based as well as digital guarantees\" with \"24/7 access\" and guarantee certificates \"uploaded and made available to the applicant\" after issuance — fetched 2026-05-26", "source": "web"}}
 updatedBy: admin
 updatedAt: 2026-05-26T08:37:27Z
 ---

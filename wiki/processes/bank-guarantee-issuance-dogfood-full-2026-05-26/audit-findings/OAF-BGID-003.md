@@ -9,7 +9,6 @@ source: Internal Audit 2025
 auditDate: 2025-02-10
 findingStatus: open
 severity: HIGH
-provenance: {"Finding": {"evidence": "SME validated — control-compliance-specialist session 2026-05-26", "source": "elicited"}, "Recommendation": {"evidence": "SME validated — control-compliance-specialist session 2026-05-26", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:37:44Z
 approval: in-progress

@@ -10,7 +10,6 @@ owner: Compliance Analyst
 sla:
 condition: Approved wording confirmed
 systems: [SYS-BGID-003]
-provenance: {"Inputs": {"evidence": "[Y] Accept", "source": "elicited"}, "Outputs": {"evidence": "[Y] Accept", "source": "elicited"}, "What happens": {"evidence": "[Y] Accept", "source": "elicited"}, "Why it matters": {"evidence": "[Y] Accept", "source": "elicited"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T06:26:14Z
 approval: in-progress

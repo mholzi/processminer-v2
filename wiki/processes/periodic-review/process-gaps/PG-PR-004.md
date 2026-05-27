@@ -12,7 +12,6 @@ severity: Medium
 owner: Data
 targetClose: Q4 2027 (remediation programme)
 affects: [PS-PR-002, PS-PR-003]
-provenance: {"Impact": {"evidence": "When the case opens it is pre-populated with Beneficial-owner graph (Entity Resolution Service). (Section 3 Step 2); STP eligibility requires completeness >= 92. (Section 3 Step 3); cases not meeting completeness are routed to Reviewer Triage. (Section 3 Step 3)", "source": "document"}, "Next step": {"evidence": "Mitigation: remediation programme PRJ-ENT-BO (separate plan). (Section 5.3); G-06: Owner: Data. Target close: Q4 2027 (remediation programme). (Section 9 Gap Log)", "source": "document"}, "The gap": {"evidence": "Data quality in legacy entity records. Beneficial-owner graphs for entities onboarded pre-2018 are incomplete. Mitigation: remediation programme PRJ-ENT-BO (separate plan). (Section 5.3 Residual risks accepted); G-06: Beneficial-owner graphs incomplete pre-2018. Owner: Data. Target close: Q4 2027 (remediation programme). (Section 9 Gap Log)", "source": "document"}}
 ---
 ## The gap
 Beneficial-owner (BO) graphs held in the Entity Resolution Service are incomplete for legal-entity clients onboarded before 2018. The structured BO data required to pre-fill cases and support STP eligibility is absent or unreliable for this legacy cohort.

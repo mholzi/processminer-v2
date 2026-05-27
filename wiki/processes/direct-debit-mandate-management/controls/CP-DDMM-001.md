@@ -10,7 +10,6 @@ controlType: PREVENTIVE
 execution: AUTOMATED
 owner: Payments Operations
 step: [PS-DDMM-002]
-provenance: {"Control activity": {"evidence": "C-1 | Mandate data validation (IBAN, UMR, CI) | Preventive / automated | Every request", "source": "document"}, "Risk addressed": {"evidence": "SME confirmed accurate as drafted.", "source": "elicited"}, "Timing": {"evidence": "C-1 | Frequency: Every request", "source": "document"}, "What it checks": {"evidence": "SME (M. Vogel) confirmed: control is type-aware — new = full set (UMR, IBAN, CI, type/sequence); amendment = changed fields + UMR/CI; cancellation = UMR existence/status only. Full check set on every request would mislead an auditor.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

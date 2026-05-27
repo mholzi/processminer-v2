@@ -9,7 +9,6 @@ source: control-compliance-specialist — M. Berger, 2026-05-20
 auditDate: 2024-12-31
 findingStatus: in-remediation
 severity: MEDIUM
-provenance: {"Finding": {"evidence": "", "source": "proposed"}, "Recommendation": {"evidence": "M. Berger Stage 5 standing input confirmed generation gate remediation", "source": "elicited"}}
 ---
 ## Finding
 Internal audit identified three instances in H2 2024 where the client's guarantee facility utilisation was updated in the Trade Finance System five or more business days after the SWIFT MT760 had been dispatched. In each case the guarantee was live and binding but the bank's credit-exposure records did not reflect the utilisation, creating a window of inaccurate facility reporting.

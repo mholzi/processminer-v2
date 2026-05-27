@@ -10,7 +10,6 @@ source: Trade Finance Global — 'Status update: MLETR adoption in the G7 and em
 sourceUrl: https://www.tradefinanceglobal.com/posts/status-update-mletr-adoption-in-the-g7-and-emerging-markets/
 asOf: 2026-05-26
 bearsOn: [PS-BGID-003, PS-BGID-006]
-provenance: {"Evidence": {"evidence": "https://emeraldcapitalco.com/july-global-adoption-of-mletr-are-we-approaching-the-turning-point-for-digital-trade/ — 12 economies have adopted or aligned with MLETR; the 5 major adopters represent nearly 37% of global GDP — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.tradefinanceglobal.com/posts/status-update-mletr-adoption-in-the-g7-and-emerging-markets/ — \"Once we shift towards digitisation, we will have easier compliance, better governance\" (Luca Castellani, UNCITRAL) — fetched 2026-05-26", "source": "web"}, "The trend": {"evidence": "https://emeraldcapitalco.com/july-global-adoption-of-mletr-are-we-approaching-the-turning-point-for-digital-trade/ — \"The Model Law on Electronic Transferable Records (MLETR) has become a rallying point for digital trade advocacy\" and \"2024 will go down as a historic turning point\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: admin
 updatedAt: 2026-05-26T08:59:00Z
 ---

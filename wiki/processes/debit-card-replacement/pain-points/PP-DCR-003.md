@@ -10,7 +10,6 @@ category: Hand-off
 severity: MEDIUM
 priority: P2
 affects: [PS-DCR-004]
-provenance: {"Description": {"evidence": "Elicited from S. Krause during the foundational-run deepening probe.", "source": "elicited"}, "Impact": {"evidence": "Elicited from S. Krause during the foundational-run deepening probe.", "source": "elicited"}, "Root cause": {"evidence": "Elicited from S. Krause during the foundational-run deepening probe.", "source": "elicited"}}
 ---
 ## Description
 For lost or stolen cards the request is handed to a separate Fraud Operations team for the exposure check. The agent who took the call has no visibility of when that review will be completed.

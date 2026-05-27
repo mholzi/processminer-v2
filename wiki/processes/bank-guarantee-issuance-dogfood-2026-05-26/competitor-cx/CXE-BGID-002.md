@@ -9,7 +9,6 @@ source: Commerzbank Digital Guarantee Management product page
 competitor: Commerzbank
 sourceUrl: https://www.commerzbank.com/financing-foreigntrade/products/foreigntrade/digital-guarantee-management/
 asOf: 2025-01-01
-provenance: {"Evidence": {"evidence": "https://www.commerzbank.com/financing-foreigntrade/products/foreigntrade/digital-guarantee-management/ — \"digital guarantee, surety and Standby LC processing and multi-guarantor solutions with support from Digital Vault Services (DVS)\" — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.commerzbank.com/financing-foreigntrade/products/foreigntrade/digital-guarantee-management/ — \"particularly useful for companies that maintain business relationships with several banks and want to manage guarantees via a centralized platform\" — fetched 2026-05-26", "source": "web"}, "The journey": {"evidence": "https://www.commerzbank.com/financing-foreigntrade/products/foreigntrade/digital-guarantee-management/ — \"Together with Digital Vault Services GmbH (DVS), Commerzbank offers corporate clients a platform to issue and manage paper-based as well as digital guarantees\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: source-cx
 updatedAt: 2026-05-26T19:59:08Z
 ---

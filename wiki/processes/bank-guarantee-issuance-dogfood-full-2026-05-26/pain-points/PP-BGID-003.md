@@ -10,7 +10,6 @@ category: incomplete submission
 severity: HIGH
 priority: P2
 affects: [PS-BGID-001]
-provenance: {"Description": {"evidence": "clients submitting without contract reference is the biggest recurring issue", "source": "elicited"}, "Impact": {"evidence": "", "source": "proposed"}, "Root cause": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T06:11:34Z
 ---

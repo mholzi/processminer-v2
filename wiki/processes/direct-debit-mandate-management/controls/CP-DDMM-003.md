@@ -10,7 +10,6 @@ controlType: PREVENTIVE
 execution: MANUAL
 owner: Payments Operations
 step: [PS-DDMM-004]
-provenance: {"Control activity": {"evidence": "SME (M. Vogel) confirmed: Checker works from system-generated exception report + risk-based clean sample + dual-control checklist; not a full re-keying.", "source": "elicited"}, "Risk addressed": {"evidence": "SME confirmed accurate as drafted.", "source": "elicited"}, "Timing": {"evidence": "SME confirmed: 50-mandate threshold is a fixed hard rule today — not risk-based. Whether it should become risk-based is captured in PG-DDMM-001.", "source": "elicited"}, "What it checks": {"evidence": "C-3 | Dual-control on bulk mandate uploads | Preventive / manual | Per bulk file. For bulk mandate file uploads (above 50 mandates), a second person (Mandate Checker) independently reviews the batch before it is registered.", "source": "document"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

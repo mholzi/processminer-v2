@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: innovation-analyst — M. Berger, 2026-05-20
 severity: MEDIUM
-provenance: {"Likelihood & impact": {"evidence": "M. Berger Stage 5 standing input confirmed severity MEDIUM", "source": "elicited"}, "Mitigation": {"evidence": "M. Berger Stage 5 standing input; adoption/client-expectation risk for II-BGIT-003", "source": "elicited"}, "The risk": {"evidence": "M. Berger Stage 5: 'IR-BGIT-003: Credit advisory false-assurance for II-BGIT-003, severity MEDIUM'", "source": "elicited"}}
 ---
 ## The risk
 A real-time credit limit pre-check that returns a provisional 'likely approved' signal before formal credit review may cause clients and relationship managers to treat it as a commitment. If the full credit assessment subsequently declines or conditions the application, the discrepancy damages the relationship and may generate complaints or escalations.

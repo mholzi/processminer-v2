@@ -1,0 +1,23 @@
+{
+  "PS-BGID-002": [
+    {
+      "to": "PS-BGID-003",
+      "kind": "normal",
+      "when": "all four checks pass"
+    }
+  ],
+  "PS-BGID-006": [
+    {
+      "to": "EX-BGID-001",
+      "kind": "exception",
+      "when": "SWIFT NAK received on delivery"
+    }
+  ],
+  "PS-BGID-007": [
+    {
+      "to": "PS-BGID-005",
+      "kind": "normal",
+      "when": "collateral confirmed and blocked"
+    }
+  ]
+}

@@ -12,7 +12,6 @@ complexity: LOW
 addresses: [FP-BGID-003]
 fromTrend: []
 fromCompetitor: []
-provenance: {"Expected benefit": {"evidence": "", "source": "proposed"}, "Feasibility": {"evidence": "", "source": "proposed"}, "The idea": {"evidence": "", "source": "proposed"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:54:37Z
 ---

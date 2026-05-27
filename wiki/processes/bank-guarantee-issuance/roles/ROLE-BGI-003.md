@@ -7,7 +7,6 @@ status: draft
 confidence: medium
 source: bank-guarantee-issuance-v1.md
 raci: [PS-BGI-005:R]
-provenance: {"In this process": {"evidence": "The system enforces the sign-off, so the Head of Trade Finance is Responsible (R) for the EUR 5m+ portion of step 5. There is a Deputy Head of Trade Finance who can sign in the Head's absence.", "source": "elicited"}, "Responsibility": {"evidence": "The system enforces the sign-off, so the Head of Trade Finance is Responsible (R) for the EUR 5m+ portion of step 5. There is a Deputy Head of Trade Finance who can sign in the Head's absence.", "source": "elicited"}}
 approval: approved
 approvalBy: m.berger
 approvalDate: 2026-05-19

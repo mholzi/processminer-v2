@@ -9,7 +9,6 @@ horizon: near-term
 source: SanctionScanner / Everest Group 2025 Benchmarking Report; HSBC Google Cloud AML AI case study
 sourceUrl: https://www.sanctionscanner.com/blog/ai-powered-transaction-monitoring-how-to-reduce-false-positives-by-7080-1334
 bearsOn: [PS-BGI-004, PP-BGI-004, CP-BGI-002]
-provenance: {"Evidence": {"evidence": "https://www.sanctionscanner.com/blog/ai-powered-transaction-monitoring-how-to-reduce-false-positives-by-7080-1334 — 'Everest Group 2025: 85-90% of alerts are false positives; HSBC achieved 60%+ alert reduction using Google Cloud AI, detecting 2-4x more genuine suspicious activity' — fetched 2026-05-20", "source": "web"}, "Relevance": {"evidence": "https://www.sanctionscanner.com/blog/ai-powered-transaction-monitoring-how-to-reduce-false-positives-by-7080-1334 — 'From fuzzy matching to NLP and network analysis, AI is helping firms reduce alert fatigue' — fetched 2026-05-20", "source": "web"}, "The trend": {"evidence": "https://www.sanctionscanner.com/blog/ai-powered-transaction-monitoring-how-to-reduce-false-positives-by-7080-1334 — 'AI-powered screening enables compliance teams to minimise false positives and improve decision-making speed' — fetched 2026-05-20", "source": "web"}}
 asOf: 2026-05-20
 relevance: disregarded
 relevanceBy: m.berger

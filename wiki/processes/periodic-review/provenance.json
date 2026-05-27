@@ -1,0 +1,1040 @@
+{
+  "CG-PR-003": {
+    "Remediation": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The gap": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CG-PR-004": {
+    "Remediation": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The gap": {
+      "source": "document",
+      "evidence": "Opaque escalation. Whether a case escalates to FCO depends on the analyst on duty, not a written rule. / §9 G-03: No 4-eyes enforcement on High / PEP — Severity High — Owner FCO — Target close Q3 2026 (interim policy) / Q1 2027 (system)."
+    }
+  },
+  "CP-PR-008": {
+    "Control activity": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk addressed": {
+      "source": "document",
+      "evidence": "Why this DTP exists. The current process is paper-trailed, owned by Relationship Managers in spreadsheets, and overdue on roughly 18.4 % of the High-Risk book as of Q1 2026. [As-Is:] No deterministic trigger. A client whose RM leaves drops off the list for a full review cycle."
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "[Table:] Frequency: Continuous. [§7.3:] Trigger Engine → Case Manager: event-driven, idempotent, with reconciliation against the client master nightly."
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "Triggers are deterministic and logged. A review fires when any of: The client's review cadence expires (Low 5y / Med 3y / High 1y); An event-based trigger fires: a sanctions/PEP hit, an adverse-media match above threshold, a transaction-monitoring case closure with recommendation RECHECK_KYC, or a confirmed beneficial-owner change."
+    }
+  },
+  "CP-PR-009": {
+    "Control activity": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk addressed": {
+      "source": "document",
+      "evidence": "[§5.1:] AMLD6 (EU 2018/1673) Art. 13(1)(d): Ongoing monitoring + periodic review. BaIT (DE BaFin) AT 4.3: IT-based control execution, evidence completeness."
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "[Table:] Frequency: Per case. [Step 3:] STP Decision Engine evaluates eligibility at Step 3."
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "Step 3 — STP Decision. Eligibility: Low or Medium risk and completeness ≥ 92 and no open screening hit and no event-based trigger and product mix unchanged."
+    }
+  },
+  "CP-PR-010": {
+    "Control activity": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk addressed": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "[Table:] Frequency: Per case. [Step 6:] Sign-off gate applied per qualifying case before Close-out."
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "Step 6 — Sign-off. Owner: Financial Crime Officer (FCO) — 4-eyes principle. Mandatory for: High-risk clients, PEPs, recommend-exit decisions, approve-with-conditions where the condition restricts a regulated product, and a random 5 % QA sample of STP and analyst approvals."
+    }
+  },
+  "CP-PR-011": {
+    "Control activity": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk addressed": {
+      "source": "document",
+      "evidence": "[Gap log G-07:] QA sampling ad-hoc, not statistical. Severity: Medium. [§10:] QA pass rate tracked as a KPI."
+    },
+    "Timing": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "Step 6: a random 5 % QA sample of STP and analyst approvals [is routed to FCO sign-off]. [Evidence column:] QA scorecards."
+    }
+  },
+  "CP-PR-012": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "Step 5 — Reviewer Triage. SLA. 5 working days from case ready-for-review. [Step 1:] If it is not picked up within 72 hours, the Case Manager auto-opens the case and notifies the queue owner. [Evidence column:] Aged-case report."
+    },
+    "Risk addressed": {
+      "source": "document",
+      "evidence": "[Gap log G-05:] No KPI on cycle time per risk tier. Severity: Medium. [Executive Summary:] overdue on roughly 18.4 % of the High-Risk book as of Q1 2026."
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "[Table:] Frequency: Daily."
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "[Table:] Aged-case escalation (> SLA). Detective. Daily. Case Manager. Aged-case report."
+    }
+  },
+  "CP-PR-013": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "[Table:] Sanctions-screen re-run at sign-off. [§7.2:] Screening Service: Sanctions / PEP / adverse media. Existing (Dow Jones RC). Re-contract. [Evidence column:] Screening evidence. [§5.2 footer:] Every control writes to the Audit Ledger with the case ID, the actor (human or system), the policy clause it satisfies, and the timestamp."
+    },
+    "Risk addressed": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "[Table:] Frequency: Per case. Control title: re-run at sign-off."
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "[Table:] Sanctions-screen re-run at sign-off. Preventive. Per case. Screening Svc. Screening evidence. [Step 2 pre-fill:] Latest sanctions / PEP / adverse-media screens (Screening Service)."
+    }
+  },
+  "CP-PR-014": {
+    "Control activity": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk addressed": {
+      "source": "document",
+      "evidence": "[As-Is, p.7:] Audit fragility. Reconstructing why a review was approved requires pulling four artefacts, none of which are timestamped consistently. [D5, p.15:] Closes the BaFin §44 finding decisively. [Executive Summary:] BaFin §44 KWG inspection, Sep 2025."
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "[Table:] Frequency: Continuous. [§7.3:] Case Manager → Audit Ledger: every state transition."
+    },
+    "What it checks": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "EX-PR-001": {
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Handling": {
+      "source": "document",
+      "evidence": "Outreach uses a single thread, has a hard 30-day timeout, and falls back to RM-mediated outreach if the client does not respond on the digital channel. (§3.2 Step 4) / RM-mediated channel preserved for PB, with the same data-minimised payload. (§5.3)"
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "EX-PR-002": {
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Handling": {
+      "source": "document",
+      "evidence": "Financial Crime Officer (FCO) — 4-eyes principle. Sign-off is recorded against the FCO's identity (SSO) and is immutable. (§3.2 Step 6) / Client Exit workflow opened, or product / channel restrictions applied via the Restrictions Service. Customer Communications notified to draft the regulatory-compliant exit letter. (§3.2 Step 7)"
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "FP-PR-001": {
+    "Client impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Root cause": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "FP-PR-002": {
+    "Client impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Root cause": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "FP-PR-003": {
+    "Client impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Description": {
+      "source": "document",
+      "evidence": "Section 6.2 table, Moment 'Information request', Friction column: 'Re-uploading the ID the bank already holds'"
+    },
+    "Root cause": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "FP-PR-004": {
+    "Client impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Description": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Root cause": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "INT-PR-001": {
+    "What connects": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What flows": {
+      "source": "document",
+      "evidence": "Trigger Engine → Case Manager: event-driven, idempotent, with reconciliation against the client master nightly."
+    }
+  },
+  "INT-PR-002": {
+    "What connects": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What flows": {
+      "source": "document",
+      "evidence": "Case Manager → Audit Ledger: every state transition, hash-chained, retained 10 years (matches AMLD record-keeping)."
+    }
+  },
+  "INT-PR-003": {
+    "What connects": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What flows": {
+      "source": "document",
+      "evidence": "Outreach Service → Mobile App: uses the same secure-message rail as transactional approvals; supports step-up auth."
+    }
+  },
+  "INT-PR-004": {
+    "What connects": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What flows": {
+      "source": "document",
+      "evidence": "Case Manager → Core Banking: writes back nextReviewDate, riskRating, and any restrictions via the existing client-master update API."
+    }
+  },
+  "M-PR-001": {
+    "Current reading": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Definition": {
+      "source": "document",
+      "evidence": "Coverage. % of due reviews completed on time, by risk tier. [Section 10, p.17]"
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "M-PR-002": {
+    "Current reading": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Definition": {
+      "source": "document",
+      "evidence": "Efficiency. Median cycle time, RM hours per review, cost per review. [Section 10, p.17] | ~62 % of Low- and Medium-risk reviews complete straight-through using authoritative data already held by the bank (no client contact). [p.5]"
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "M-PR-003": {
+    "Current reading": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Definition": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "M-PR-004": {
+    "Current reading": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Definition": {
+      "source": "document",
+      "evidence": "Efficiency. Median cycle time, RM hours per review, cost per review. [Section 10, p.17] | As-Is: RM contacts the client, uploads scans, emails Compliance Ops a filled-in cover sheet [p.7]"
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "M-PR-005": {
+    "Current reading": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Definition": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "M-PR-006": {
+    "Current reading": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Definition": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "MT-PR-001": {
+    "Design implication": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The moment": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "document",
+      "evidence": "Quarterly RM phone call asking 'have you changed anything?' (§6.2 table, row 'Review starts', column 'Friction we removed')"
+    }
+  },
+  "MT-PR-002": {
+    "Design implication": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The moment": {
+      "source": "document",
+      "evidence": "One in-app prompt: 'Quick KYC check — 2 minutes.' (§6.2 table, row 'Outreach (when needed)', column 'What the client experiences')"
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "MT-PR-003": {
+    "Design implication": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The moment": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "document",
+      "evidence": "Re-uploading the ID the bank already holds (§6.2 table, row 'Information request', column 'Friction we removed')"
+    }
+  },
+  "MT-PR-004": {
+    "Design implication": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The moment": {
+      "source": "document",
+      "evidence": "'Your KYC is up to date until 14 Aug 2029.' (§6.2 table, row 'Status visibility', column 'What the client experiences'); No silence. The client sees their KYC status and next review date in the app at all times. (§6.1 Principle 5)"
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "MT-PR-005": {
+    "Design implication": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The moment": {
+      "source": "document",
+      "evidence": "Push notification on approval. (§6.2 table, row 'Decision', column 'What the client experiences')"
+    },
+    "Why it matters": {
+      "source": "document",
+      "evidence": "Silent close; no acknowledgement (§6.2 table, row 'Decision', column 'Friction we removed')"
+    }
+  },
+  "PG-PR-001": {
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Next step": {
+      "source": "document",
+      "evidence": "G-02: Evidence scattered across 4 systems. Owner: IT. Target close: Q1 2027. (Section 9 Gap Log)"
+    },
+    "The gap": {
+      "source": "document",
+      "evidence": "No system of record. Evidence lives in four places (shared drive, email, SharePoint, core banking). Reconciliation is manual. (Section 2 As-Is, Why it hurts)"
+    }
+  },
+  "PG-PR-002": {
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Next step": {
+      "source": "document",
+      "evidence": "All non-PB outreach defaults to the mobile app, with RM-mediated as a 30-day fall-back. (Section 8, D4 Decision); G-04: Owner: Digital. Target close: Q2 2027. (Section 9 Gap Log)"
+    },
+    "The gap": {
+      "source": "document",
+      "evidence": "G-04: Outreach is paper / email. (Section 9 Gap Log); As-Is Step 2: RM contacts the client (email, phone, in person). (Section 2 As-Is); D4 establishes digital outreach as the target default, implying it does not yet exist. (Section 8 D4)"
+    }
+  },
+  "PG-PR-003": {
+    "Impact": {
+      "source": "document",
+      "evidence": "Reviews overdue (High-risk): 18.4% as of Q1 2026. (Executive Summary headline targets table)"
+    },
+    "Next step": {
+      "source": "document",
+      "evidence": "G-05: Owner: PMO. Target close: Q3 2026. (Section 9 Gap Log); Section 10 KPIs and Measurement: Efficiency — median cycle time. Target dashboards owned by PMO. (Section 10)"
+    },
+    "The gap": {
+      "source": "document",
+      "evidence": "G-05: No KPI on cycle time per risk tier. Owner: PMO. Target close: Q3 2026. (Section 9 Gap Log)"
+    }
+  },
+  "PG-PR-004": {
+    "Impact": {
+      "source": "document",
+      "evidence": "When the case opens it is pre-populated with Beneficial-owner graph (Entity Resolution Service). (Section 3 Step 2); STP eligibility requires completeness >= 92. (Section 3 Step 3); cases not meeting completeness are routed to Reviewer Triage. (Section 3 Step 3)"
+    },
+    "Next step": {
+      "source": "document",
+      "evidence": "Mitigation: remediation programme PRJ-ENT-BO (separate plan). (Section 5.3); G-06: Owner: Data. Target close: Q4 2027 (remediation programme). (Section 9 Gap Log)"
+    },
+    "The gap": {
+      "source": "document",
+      "evidence": "Data quality in legacy entity records. Beneficial-owner graphs for entities onboarded pre-2018 are incomplete. Mitigation: remediation programme PRJ-ENT-BO (separate plan). (Section 5.3 Residual risks accepted); G-06: Beneficial-owner graphs incomplete pre-2018. Owner: Data. Target close: Q4 2027 (remediation programme). (Section 9 Gap Log)"
+    }
+  },
+  "PG-PR-005": {
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Next step": {
+      "source": "document",
+      "evidence": "KYC-C-04: 5% random QA on STP and analyst approvals. Type: Detective. Owner: QA Team. (Section 5.2 Key controls); G-07: Owner: QA. Target close: Q4 2026. (Section 9 Gap Log)"
+    },
+    "The gap": {
+      "source": "document",
+      "evidence": "G-07: QA sampling ad-hoc, not statistical. Owner: QA. Target close: Q4 2026. (Section 9 Gap Log)"
+    }
+  },
+  "PG-PR-006": {
+    "Impact": {
+      "source": "document",
+      "evidence": "Hard cap STP share at 70% of the eligible book, even if the model would route more. Rationale: 70% balances cost-out against the supervisory expectation that human review remains a material control. The cap is removable when challenger model validation has run for >= 12 months. (Section 8, D3)"
+    },
+    "Next step": {
+      "source": "document",
+      "evidence": "Mitigation: quarterly model validation by Model Risk Management, challenger model in shadow, and hard caps on STP share (<= 70%). (Section 5.3); G-08: Owner: MRM. Target close: Pre-go-live. (Section 9 Gap Log)"
+    },
+    "The gap": {
+      "source": "document",
+      "evidence": "G-08: Risk-rating model not validated under STP load. Owner: MRM. Target close: Pre-go-live. (Section 9 Gap Log); Model risk on STP eligibility. The risk-rating model can drift. (Section 5.3 Residual risks accepted)"
+    }
+  },
+  "PG-PR-007": {
+    "Impact": {
+      "source": "document",
+      "evidence": "Status visibility As-Is: No visibility; clients found out at the next outreach. Friction removed: No visibility. (Section 6.2 The client's journey)"
+    },
+    "Next step": {
+      "source": "document",
+      "evidence": "2027 Q3: Client KYC-status visible in app. (Section 11 Roadmap); G-09: Owner: Digital. Target close: Q3 2027. (Section 9 Gap Log)"
+    },
+    "The gap": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PG-PR-008": {
+    "Impact": {
+      "source": "document",
+      "evidence": "Group internal audit has flagged inconsistency between booking centres twice. A single framework is defensible to the lead supervisor (FINMA as group regulator). (Section 8, D6 Rationale)"
+    },
+    "Next step": {
+      "source": "document",
+      "evidence": "Customer Communications notified to draft the regulatory-compliant exit letter. (Section 3 Step 7 Close-out); G-10: Owner: Legal. Target close: Q1 2027. (Section 9 Gap Log)"
+    },
+    "The gap": {
+      "source": "document",
+      "evidence": "G-10: Exit-letter templates not centralised. Owner: Legal. Target close: Q1 2027. (Section 9 Gap Log)"
+    }
+  },
+  "PP-PR-001": {
+    "Description": {
+      "source": "document",
+      "evidence": "No system of record. Evidence lives in four places (shared drive, email, SharePoint, core banking). Reconciliation is manual. (§2 Why it hurts, p.7)"
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Root cause": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PP-PR-002": {
+    "Description": {
+      "source": "document",
+      "evidence": "No deterministic trigger. A client whose RM leaves drops off the list for a full review cycle. (§2 Why it hurts, p.7); RM receives a monthly Excel extract from Compliance listing her clients due for review. Owners change when an RM leaves; lists are not reconciled against the client master. (§2 Step 1, p.7)"
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Root cause": {
+      "source": "document",
+      "evidence": "RM receives a monthly Excel extract from Compliance listing her clients due for review. Owners change when an RM leaves; lists are not reconciled against the client master. (§2 Step 1, p.7)"
+    }
+  },
+  "PP-PR-003": {
+    "Description": {
+      "source": "document",
+      "evidence": "Over-collection. Clients are asked for documents the bank already has in onboarding, transactions, or the customer master. (§2 Why it hurts, p.7); RM contacts the client (email, phone, in person) and asks for refreshed ID, proof of address, source-of-wealth attestation and an updated client profile questionnaire. (§2 Step 2, p.7)"
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Root cause": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PP-PR-004": {
+    "Description": {
+      "source": "document",
+      "evidence": "Opaque escalation. Whether a case escalates to FCO depends on the analyst on duty, not a written rule. (§2 Why it hurts, p.7)"
+    },
+    "Impact": {
+      "source": "document",
+      "evidence": "G-03: No 4-eyes enforcement on High / PEP — High — Q3 2026 (interim policy) / Q1 2027 (system). (§9 Gap Log, p.16)"
+    },
+    "Root cause": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PP-PR-005": {
+    "Description": {
+      "source": "document",
+      "evidence": "Audit fragility. Reconstructing why a review was approved requires pulling four artefacts, none of which are timestamped consistently. (§2 Why it hurts, p.7)"
+    },
+    "Impact": {
+      "source": "document",
+      "evidence": "Two regulatory findings (BaFin §44 KWG inspection, Sep 2025; internal audit report IA-2025-117) have been raised against control execution, ageing and evidence completeness. (Executive Summary, p.5); G-02: Evidence scattered across 4 systems — Critical — Q1 2027. (§9 Gap Log, p.16)"
+    },
+    "Root cause": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PS-PR-001": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "Client master, last-review date, risk rating, event bus (sanctions, adverse media, transaction-monitoring, BO change)."
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "Output. ReviewDue event with reason code."
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "Triggers are deterministic and logged. A review fires when any of: The client's review cadence expires (Low 5y / Med 3y / High 1y). An event-based trigger fires: a sanctions/PEP hit, an adverse-media match above threshold, a transaction-monitoring case closure with recommendation RECHECK_KYC, or a confirmed beneficial-owner change. A ReviewDue event never silently expires. If it is not picked up within 72 hours, the Case Manager auto-opens the case and notifies the queue owner."
+    },
+    "Why it matters": {
+      "source": "document",
+      "evidence": "Reviews are triggered automatically by a central trigger engine — never by an RM remembering a date."
+    }
+  },
+  "PS-PR-002": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "When the case opens it is pre-populated with everything the bank already knows: Identity documents and their expiry (Document Vault). Address on file (Client Master) plus the last three statement-delivery bounce-backs. Source-of-funds signal from the last 12 months of transactions (Transaction Datamart). Beneficial-owner graph (Entity Resolution Service). Latest sanctions / PEP / adverse-media screens (Screening Service). Last KYC decision and its evidence pack."
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "The case is assigned a completeness score (0–100) and an STP eligibility flag."
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "When the case opens it is pre-populated with everything the bank already knows. The case is assigned a completeness score (0–100) and an STP eligibility flag."
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PS-PR-003": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "Owner. STP Decision Engine. Eligibility. Low or Medium risk and completeness ≥ 92 and no open screening hit and no event-based trigger and product mix unchanged."
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "If eligible, the engine: Refreshes the client's risk rating (re-running the rating model). Writes the new nextReviewDate to the client master. Posts the decision and the full evidence snapshot to the Audit Ledger. Notifies the RM (FYI) — no client contact."
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "Owner. STP Decision Engine. Eligibility. Low or Medium risk and completeness ≥ 92 and no open screening hit and no event-based trigger and product mix unchanged. If ineligible, the case is routed to Reviewer Triage with the reason spelt out (e.g. 'ID document expires in < 90 days; address bounce-back twice in 6 months')."
+    },
+    "Why it matters": {
+      "source": "document",
+      "evidence": "~62 % of Low- and Medium-risk reviews complete straight-through using authoritative data already held by the bank (no client contact)."
+    }
+  },
+  "PS-PR-004": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "Owner. Client Outreach Service. Channel. Mobile app (primary), secure message (secondary), RM-mediated for Private Banking. The system computes the minimal data delta — what is missing or stale — and asks for only that. No re-collection of documents the bank holds and can still verify."
+    },
+    "Outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "The system computes the minimal data delta — what is missing or stale — and asks for only that. No re-collection of documents the bank holds and can still verify. Outreach uses a single thread, has a hard 30-day timeout, and falls back to RM-mediated outreach if the client does not respond on the digital channel."
+    },
+    "Why it matters": {
+      "source": "document",
+      "evidence": "Targeted outreach based on the minimal data delta removes the friction of re-uploading documents the bank already holds, reducing outreach rate from 91% to a target of 38% by Year 1."
+    }
+  },
+  "PS-PR-005": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "Owner. Financial Crime Operations Analyst (FCO Analyst). SLA. 5 working days from case ready-for-review. The analyst sees a single screen with: The completeness score and the explicit reason for non-STP. The full evidence pack, with provenance — every fact links to its source record. The risk model's rating with feature contributions. Open screening hits with the analyst's tooling to clear or escalate."
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "Decision options: Approve. Recorded with rationale. Approve with conditions. E.g. monitoring tier raised, debit cap applied, product restriction. Refer to EDD. Triggers the Enhanced Due Diligence subprocess. Recommend exit. Sent to FCO sign-off (Step 6)."
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "The analyst sees a single screen with: The completeness score and the explicit reason for non-STP. The full evidence pack, with provenance — every fact links to its source record. The risk model's rating with feature contributions. Open screening hits with the analyst's tooling to clear or escalate."
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PS-PR-006": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "Mandatory for: High-risk clients, PEPs, recommend-exit decisions, approve-with-conditions where the condition restricts a regulated product, and a random 5 % QA sample of STP and analyst approvals."
+    },
+    "Outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "Owner. Financial Crime Officer (FCO) — 4-eyes principle. Mandatory for: High-risk clients, PEPs, recommend-exit decisions, approve-with-conditions where the condition restricts a regulated product, and a random 5 % QA sample of STP and analyst approvals. Sign-off is recorded against the FCO's identity (SSO) and is immutable."
+    },
+    "Why it matters": {
+      "source": "document",
+      "evidence": "Opaque escalation. Whether a case escalates to FCO depends on the analyst on duty, not a written rule."
+    }
+  },
+  "PS-PR-007": {
+    "Inputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "On approval: Risk rating refreshed. Next review date written to the client master. Outreach threads archived to the case. Audit Ledger entry sealed. RM notified (informational). On exit / restriction: Client Exit workflow opened, or product / channel restrictions applied via the Restrictions Service. Customer Communications notified to draft the regulatory-compliant exit letter."
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "Owner. Case Manager (system). On approval: Risk rating refreshed. Next review date written to the client master. Outreach threads archived to the case. Audit Ledger entry sealed. RM notified (informational). On exit / restriction: Client Exit workflow opened, or product / channel restrictions applied via the Restrictions Service. Customer Communications notified to draft the regulatory-compliant exit letter."
+    },
+    "Why it matters": {
+      "source": "document",
+      "evidence": "End — happy path: Reviewer approval recorded → Risk rating refreshed, next-review date written back to client master. End — unhappy path: Senior FCO sign-off on exit / restriction → Client exit workflow opened or restrictions applied (debit block, product caps)."
+    }
+  },
+  "REG-PR-001": {
+    "How it is met": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What it requires": {
+      "source": "document",
+      "evidence": "§5.1 table: \"AMLD6 (EU 2018/1673) | Art. 13(1)(d) | Ongoing monitoring + periodic review\""
+    },
+    "Why it applies": {
+      "source": "document",
+      "evidence": "Executive Summary: \"It is the bank's primary ongoing-due-diligence control under the EU 6th Anti-Money Laundering Directive (AMLD6)\"; §1.1: \"All natural-person clients of Retail Banking and Private Banking Switzerland, EU and UK booking centres.\"; Executive Summary: \"Periodic KYC Review is the recurring re-verification of a client's identity, beneficial ownership, source of wealth, and risk classification\""
+    }
+  },
+  "REG-PR-002": {
+    "How it is met": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What it requires": {
+      "source": "document",
+      "evidence": "§5.1 table: \"AMLO-FINMA (FINMA-RS 2016/7) | §22, §23 | Re-verification of identity and beneficial owners\""
+    },
+    "Why it applies": {
+      "source": "document",
+      "evidence": "§1.1: \"All natural-person clients of Retail Banking and Private Banking Switzerland, EU and UK booking centres.\""
+    }
+  },
+  "REG-PR-003": {
+    "How it is met": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What it requires": {
+      "source": "document",
+      "evidence": "§5.1 table: \"FATF Recommendation 10 | (d) | Ongoing due diligence\""
+    },
+    "Why it applies": {
+      "source": "document",
+      "evidence": "Executive Summary: \"It is the bank's primary ongoing-due-diligence control under [...] the FATF Recommendation 10.\"; §1.1: \"Retail Banking and Private Banking Switzerland, EU and UK booking centres\""
+    }
+  },
+  "REG-PR-004": {
+    "How it is met": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What it requires": {
+      "source": "document",
+      "evidence": "§5.1 table: \"GwG (CH) | Art. 6 | Special clarification obligations on increased risk\""
+    },
+    "Why it applies": {
+      "source": "document",
+      "evidence": "§1.1: \"All natural-person clients of Retail Banking and Private Banking Switzerland\"; §3.2 Step 6: \"Mandatory for: High-risk clients, PEPs, recommend-exit decisions, approve-with-conditions where the condition restricts a regulated product, and a random 5 % QA sample of STP and analyst approvals.\""
+    }
+  },
+  "REG-PR-005": {
+    "How it is met": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What it requires": {
+      "source": "document",
+      "evidence": "§5.1 table: \"BaIT (DE BaFin) | AT 4.3 | IT-based control execution, evidence completeness\""
+    },
+    "Why it applies": {
+      "source": "document",
+      "evidence": "Executive Summary: \"Two regulatory findings (BaFin §44 KWG inspection, Sep 2025; internal audit report IA-2025-117) have been raised against control execution, ageing and evidence completeness.\""
+    }
+  },
+  "REG-PR-006": {
+    "How it is met": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What it requires": {
+      "source": "document",
+      "evidence": "§5.1 table: \"GDPR | Art. 5(1)(c), Art. 25 | Data minimisation in outreach; privacy-by-design pre-fill\""
+    },
+    "Why it applies": {
+      "source": "document",
+      "evidence": "§2 As-Is: \"Over-collection. Clients are asked for documents the bank already has in onboarding, transactions, or the customer master.\""
+    }
+  },
+  "ROLE-PR-001": {
+    "In this process": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ROLE-PR-002": {
+    "In this process": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ROLE-PR-003": {
+    "In this process": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "SYS-PR-001": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "§7.2 table: System 'KYC Case Manager', Role 'Orchestration + SoR', Build/Buy 'Buy (Fenergo / ComplyAdvantage)', Status 'RFP Q3 2026'. §7.1 diagram: 'KYC CASE MANAGER (new) (orchestration + system of record)'. §8 D2: 'Buy a vendor case-management platform (Fenergo or ComplyAdvantage Mesh).'"
+    },
+    "Role in this process": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "SYS-PR-002": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "§7.2 table: System 'Trigger Engine', Role 'Deterministic triggering', Build 'Build', Status 'In design'. §3.2 Step 1: 'Triggers are deterministic and logged.' Output 'ReviewDue event with reason code'."
+    },
+    "Role in this process": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "SYS-PR-003": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "§7.2 table: System 'STP Decision Engine', Role 'STP eligibility', Build 'Build (rules + ML model gate)', Status 'In design'."
+    },
+    "Role in this process": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "SYS-PR-004": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "§7.2 table: System 'Document Vault', Role 'Identity docs, SoW evidence', Build 'Existing (Hyland)', Status 'Integrate'. §3.2 Step 2: 'Identity documents and their expiry (Document Vault)'."
+    },
+    "Role in this process": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "SYS-PR-005": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "§7.2 table: System 'Screening Service', Role 'Sanctions / PEP / adverse media', Build 'Existing (Dow Jones RC)', Status 'Re-contract'."
+    },
+    "Role in this process": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "SYS-PR-006": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "§7.2 system inventory table: 'Risk Rating Service | Client risk score | Existing (model rebuilt 2025) | Connect'"
+    },
+    "Role in this process": {
+      "source": "document",
+      "evidence": "§3.2 Step 3: 'Refreshes the client's risk rating (re-running the rating model)'; §3.2 Step 5: 'The risk model's rating with feature contributions'; §7.2: 'Existing (model rebuilt 2025) | Connect'"
+    }
+  },
+  "SYS-PR-007": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "§7.2: 'Outreach Service | Client-facing digital outreach | Existing mobile platform | Extend'; §3.2 Step 4: 'Owner. Client Outreach Service. Channel. Mobile app (primary), secure message (secondary), RM-mediated for Private Banking.'"
+    },
+    "Role in this process": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "SYS-PR-008": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "§7.2: 'Audit Ledger | Immutable decision log | Build (hash-chained) | In design'; §7.3: 'Case Manager → Audit Ledger: every state transition, hash-chained, retained 10 years (matches AMLD record-keeping)'; §5.2: 'Every control writes to the Audit Ledger with the case ID, the actor (human or system), the policy clause it satisfies, and the timestamp.'"
+    },
+    "Role in this process": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "SYS-PR-009": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "§7.2: 'Entity Resolution | Beneficial-owner graph | Existing (Bvd Orbis + internal) | Connect'"
+    },
+    "Role in this process": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "SYS-PR-010": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "§7.2: 'Transaction Datamart | SoW signal | Existing | Connect'"
+    },
+    "Role in this process": {
+      "source": "document",
+      "evidence": "§3.2 Step 2: 'Source-of-funds signal from the last 12 months of transactions (Transaction Datamart)'; §7.2: 'Existing | Connect'"
+    }
+  },
+  "TD-PR-001": {
+    "Options considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "document",
+      "evidence": "The root cause of overdue reviews is incentive misalignment, not tooling. RMs are measured on AUM and revenue; periodic reviews are a cost. Moving accountability to FCO and reducing RM involvement to a consultation role removes the incentive conflict."
+    },
+    "The decision": {
+      "source": "document",
+      "evidence": "Periodic KYC Review is owned by Financial Crime Operations. The RM owns the client relationship but is not accountable for review execution."
+    }
+  },
+  "TD-PR-002": {
+    "Options considered": {
+      "source": "document",
+      "evidence": "Build everything; buy everything."
+    },
+    "Rationale": {
+      "source": "document",
+      "evidence": "Case management is a commodity; integration depth and configurability matter more than uniqueness. The trigger / decision / audit layer is our competitive and regulatory differentiator and must not be a black box to FCO and Internal Audit."
+    },
+    "The decision": {
+      "source": "document",
+      "evidence": "Buy a vendor case-management platform (Fenergo or ComplyAdvantage Mesh). Build the Trigger Engine, the STP Decision Engine, and the Audit Ledger in-house."
+    }
+  },
+  "TD-PR-003": {
+    "Options considered": {
+      "source": "document",
+      "evidence": "Let the model decide; cap at 50 %."
+    },
+    "Rationale": {
+      "source": "document",
+      "evidence": "70 % balances cost-out against the supervisory expectation that human review remains a material control. The cap is removable when challenger model validation has run for ≥ 12 months."
+    },
+    "The decision": {
+      "source": "document",
+      "evidence": "Hard cap STP share at 70 % of the eligible book, even if the model would route more."
+    }
+  },
+  "TD-PR-004": {
+    "Options considered": {
+      "source": "document",
+      "evidence": "Email; branch visit; phone."
+    },
+    "Rationale": {
+      "source": "document",
+      "evidence": "Mobile app outreach has a 7-day median completion in the pilot vs. 21 days for email; RM-mediated remains essential for PB tone-of-voice and for clients without the app (~9 % of the book)."
+    },
+    "The decision": {
+      "source": "document",
+      "evidence": "All non-PB outreach defaults to the mobile app, with RM-mediated as a 30-day fall-back. PB stays RM-mediated."
+    }
+  },
+  "TD-PR-005": {
+    "Options considered": {
+      "source": "document",
+      "evidence": "Trust SharePoint logs; trust the case manager's internal log."
+    },
+    "Rationale": {
+      "source": "document",
+      "evidence": "Closes the BaFin §44 finding decisively. The hash chain makes silent tampering detectable; the external checkpoint defends against insider edits. Cost is low (≤ CHF 60k / year)."
+    },
+    "The decision": {
+      "source": "document",
+      "evidence": "A single audit ledger for all KYC decisions, append-only, with a Merkle hash chain checkpointed to an external timestamping authority weekly."
+    }
+  },
+  "TD-PR-006": {
+    "Options considered": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "document",
+      "evidence": "Group internal audit has flagged inconsistency between booking centres twice. A single framework is defensible to the lead supervisor (FINMA as group regulator)."
+    },
+    "The decision": {
+      "source": "document",
+      "evidence": "One SLA framework with risk-rating-driven tiers, applied identically across booking centres."
+    }
+  }
+}

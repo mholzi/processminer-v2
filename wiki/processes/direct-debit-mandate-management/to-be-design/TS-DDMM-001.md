@@ -9,7 +9,6 @@ source: ddmm-transformation-agent
 replaces: [PS-DDMM-001, PS-DDMM-007]
 systems: [SYS-DDMM-002]
 risks: []
-provenance: {"Rationale": {"evidence": "SME confirmed: PP-DDMM-004 is the highest systemic operational cost; framing accepted without edit.", "source": "elicited"}, "Target description": {"evidence": "SME (M. Vogel) confirmed: 'makes operational exposure visible before it becomes failure is the right framing'; structure and scope accepted without edit.", "source": "elicited"}, "What changes": {"evidence": "SME confirmed all five change bullets — accepted without edit.", "source": "elicited"}}
 approval: approved
 approvalBy: Markus
 approvalDate: 2026-05-19

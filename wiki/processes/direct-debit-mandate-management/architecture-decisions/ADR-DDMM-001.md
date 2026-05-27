@@ -8,7 +8,6 @@ confidence: high
 adrStatus: ACCEPTED
 owner: Domain Architect · Payments
 domain: Case & lifecycle management
-provenance: {"Alternatives considered": {"evidence": "", "source": "proposed"}, "Consequences": {"evidence": "", "source": "proposed"}, "Context": {"evidence": "", "source": "proposed"}, "Decision": {"evidence": "", "source": "proposed"}}
 ---
 ## Context
 Mandate state transitions need to be observable, auditable, and SLA-enforceable. The legacy spreadsheet workflow gives none of these. Whatever runtime we pick must run BPMN authored by the business, integrate with our IAM and DMS, and survive the 2027 Q2 SEPA scheme upgrade. We evaluated three candidates.

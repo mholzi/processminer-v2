@@ -10,7 +10,6 @@ severity: HIGH
 occursAt: [MT-PR-003]
 painPoint: [PP-PR-003]
 addressedBy: [PS-PR-002, PS-PR-004]
-provenance: {"Client impact": {"evidence": "", "source": "proposed"}, "Description": {"evidence": "Section 6.2 table, Moment 'Information request', Friction column: 'Re-uploading the ID the bank already holds'", "source": "document"}, "Root cause": {"evidence": "", "source": "proposed"}}
 ---
 ## Description
 During the information-request stage, clients are asked to re-upload identity documents — such as a passport or national ID — that the bank already holds from onboarding. The document names this friction explicitly as 'Re-uploading the ID the bank already holds.'

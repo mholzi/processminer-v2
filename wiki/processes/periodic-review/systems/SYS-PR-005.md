@@ -8,7 +8,6 @@ confidence: medium
 source: periodic-kyc-review-dtp.pdf
 systemType: SUPPORTING
 integrates: [SYS-PR-001]
-provenance: {"Purpose": {"evidence": "§7.2 table: System 'Screening Service', Role 'Sanctions / PEP / adverse media', Build 'Existing (Dow Jones RC)', Status 'Re-contract'.", "source": "document"}, "Role in this process": {"evidence": "", "source": "proposed"}}
 ---
 ## Purpose
 Existing sanctions, PEP and adverse-media screening platform (Dow Jones RC). Contract renewal required; status: Re-contract.

@@ -11,7 +11,6 @@ jurisdiction: CH
 article: §22 and §23
 asOf: 2026-05-21
 sourceUrl:
-provenance: {"How it is met": {"evidence": "", "source": "proposed"}, "What it requires": {"evidence": "§5.1 table: \"AMLO-FINMA (FINMA-RS 2016/7) | §22, §23 | Re-verification of identity and beneficial owners\"", "source": "document"}, "Why it applies": {"evidence": "§1.1: \"All natural-person clients of Retail Banking and Private Banking Switzerland, EU and UK booking centres.\"", "source": "document"}}
 ---
 ## What it requires
 AMLO-FINMA (FINMA-RS 2016/7) §22 and §23 require re-verification of identity and beneficial owners. The document maps these clauses to that obligation.

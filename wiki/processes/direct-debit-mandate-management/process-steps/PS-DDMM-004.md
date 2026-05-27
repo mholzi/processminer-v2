@@ -9,9 +9,7 @@ source: ddmm-dtp-mockup.md
 owner: Mandate Checker
 sla:
 condition: Bulk upload above 50 mandates
-transitions: [PS-DDMM-005|normal|dual-control review complete, PS-DDMM-002|loopback|discrepancies found - batch returned to Mandate Clerk for correction]
 systems: []
-provenance: {"Inputs": {"evidence": "Checker works from a system-generated bulk validation/exception report produced by the upload. Confirmed bulk mandate file, sanctions-cleared data, and validation results as accurate.", "source": "elicited"}, "Outputs": {"evidence": "Confirmed both outputs as accurate as drafted.", "source": "elicited"}, "What happens": {"evidence": "Checker works from system-generated bulk validation/exception report. Reviews every flagged item plus a risk-based sample of the clean ones against a standard dual-control checklist. Rejection loops back to Mandate Clerk; creditor-supplied discrepancies split out via EX-DDMM-001 path. Corrected batch resubmitted for re-review.", "source": "elicited"}, "Why it matters": {"evidence": "Confirmed as accurate as drafted.", "source": "elicited"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-19

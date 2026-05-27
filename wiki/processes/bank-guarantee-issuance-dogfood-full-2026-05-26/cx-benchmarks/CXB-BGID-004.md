@@ -8,7 +8,6 @@ confidence: medium
 source: Standard Chartered press release — 'Standard Chartered completes first ICC-Swift API Standards digital bank guarantee transaction through Komgo', January 2026
 sourceUrl: https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/
 asOf: 2026-05-26
-provenance: {"Evidence": {"evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — Standard Chartered press release, 15 January 2026; first live client transaction using ICC-SWIFT API bank guarantee standards — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"automates the receipt of instructions and accelerates the issuance of digitally initiated bank guarantees, offering clients greater speed, transparency and reliability\" — fetched 2026-05-26", "source": "web"}, "The benchmark": {"evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"The ICC-Swift API standards for bank guarantees, introduced in 2024, are the first industry-wide API specifications to be applied in trade finance\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: admin
 updatedAt: 2026-05-26T08:37:27Z
 ---

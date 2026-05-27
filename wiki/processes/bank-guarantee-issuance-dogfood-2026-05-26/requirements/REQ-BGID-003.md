@@ -10,7 +10,6 @@ reqType: FUNCTIONAL
 moscow: SHOULD
 derivedFrom: [TD-BGID-003]
 addresses: []
-provenance: {"Acceptance criteria": {"evidence": "", "source": "proposed"}, "Rationale": {"evidence": "", "source": "proposed"}, "Requirement": {"evidence": "", "source": "proposed"}}
 updatedBy: admin
 updatedAt: 2026-05-26T20:15:01Z
 ---

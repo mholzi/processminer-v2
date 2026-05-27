@@ -8,7 +8,6 @@ confidence: medium
 source: SME interview
 channel: SWIFT MT-799 / MT760
 occursAt: [PS-BGID-006]
-provenance: {"Experience": {"evidence": "", "source": "proposed"}, "What the bank does": {"evidence": "MT760 issuance confirmation — bank transmits MT760, notifies client", "source": "elicited"}, "What the client does": {"evidence": "MT760 issuance confirmation — touchpoint named by SME", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:15:47Z
 ---

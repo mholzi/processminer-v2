@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: ddmm-it-architect
 systems: [SYS-DDMM-006, SYS-DDMM-001]
-provenance: {"What connects": {"evidence": "SME (M. Vogel): MFT gateway receives SFTP bulk mandate files from large corporate creditors and hands them off to the Creditor Portal for ingestion; one-directional.", "source": "elicited"}, "What flows": {"evidence": "SME confirmed: bulk mandate file payload (UMR, CI, debtor name, IBAN, mandate type, signature date per record) plus file metadata (creditor identifier, submission timestamp).", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

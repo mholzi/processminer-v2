@@ -8,7 +8,6 @@ confidence: high
 source: ddmm-dtp-mockup.md
 target: Within 2 business days of receipt
 value: Not measured
-provenance: {"Current reading": {"evidence": "Bulk file processing | Within 2 business days of receipt", "source": "document"}, "Definition": {"evidence": "SME (M. Vogel) confirmed: SLA covers valid-mandate subset only; invalid mandates drop out on return, timed as fresh requests on resubmission; dual-control check is bank-side work counted within the 2-day target.", "source": "elicited"}, "Why it matters": {"evidence": "SME confirmed accurate as drafted.", "source": "elicited"}}
 trend:
 approval: approved
 approvalBy: M. Vogel

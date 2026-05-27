@@ -9,7 +9,6 @@ source: bank-guarantee-issuance-v1.md
 category: delay
 severity: MEDIUM
 affects: [PS-BGIT-003]
-provenance: {"Description": {"evidence": "Bespoke wording adds unpredictable delay because Legal review has no committed turnaround.", "source": "document"}, "Impact": {"evidence": "Bespoke wording adds unpredictable delay because Legal review has no committed turnaround.", "source": "document"}, "Root cause": {"evidence": "Legal review has no committed turnaround.", "source": "document"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-20

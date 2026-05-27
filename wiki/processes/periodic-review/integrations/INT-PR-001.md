@@ -7,7 +7,6 @@ status: draft
 confidence: low
 source: periodic-kyc-review-dtp.pdf
 systems: [SYS-PR-002, SYS-PR-001]
-provenance: {"What connects": {"evidence": "", "source": "proposed"}, "What flows": {"evidence": "Trigger Engine → Case Manager: event-driven, idempotent, with reconciliation against the client master nightly.", "source": "document"}}
 ---
 ## What connects
 The KYC Trigger Engine (@sys-2) pushes review-due events to the KYC Case Manager (@sys-1) via an event-driven, idempotent integration.

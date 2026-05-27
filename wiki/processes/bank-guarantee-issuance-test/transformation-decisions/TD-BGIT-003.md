@@ -11,7 +11,6 @@ decisionStatus: agreed
 resolves: [PP-BGIT-002, PG-BGIT-002, PG-BGIT-003]
 realises: [TS-BGIT-002]
 fromIdea: [II-BGIT-002]
-provenance: {"Options considered": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub", "source": "elicited"}, "Rationale": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub", "source": "elicited"}, "The decision": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub", "source": "elicited"}}
 ---
 ## The decision
 Replace the current email-based bespoke wording handoff with an in-TFS Legal workflow that routes bespoke cases to Legal via the Trade Finance System, enforces a configurable SLA timer, and embeds an AI wording assistant to pre-screen wording before Legal review.

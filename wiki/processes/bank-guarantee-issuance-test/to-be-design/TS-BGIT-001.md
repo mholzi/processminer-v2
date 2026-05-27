@@ -8,7 +8,6 @@ confidence: high
 source: source-target — bank-guarantee-issuance-test wiki
 replaces: [PS-BGIT-001, PS-BGIT-002]
 systems: [SYS-BGIT-001, SYS-BGIT-002]
-provenance: {"Rationale": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed target state from source-target stub", "source": "elicited"}, "Target description": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed target state from source-target stub", "source": "elicited"}, "What changes": {"evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed target state from source-target stub", "source": "elicited"}}
 ---
 ## Target description
 Corporate clients submit guarantee applications through a structured digital channel — either the enhanced Corporate Portal or, for connected clients, via the ICC-SWIFT C2B API from their ERP or treasury system. The portal enforces a completeness gate before submission, rejecting incomplete applications at source rather than returning them by comment. Available credit limit headroom is displayed to clients before they submit, reducing Credit team referrals. Standard applications satisfying the completeness gate and within pre-approved credit limits flow straight through to the Trade Finance System with no manual intake step.

@@ -9,7 +9,6 @@ source: Citi Handlowy bank guarantee page — citibank.pl
 competitor: Citibank
 sourceUrl: https://www.citibank.pl/poland/corporate/english/bank-guarantee.htm
 asOf: 2026-05-26
-provenance: {"Evidence": {"evidence": "https://www.citibank.pl/poland/corporate/english/bank-guarantee.htm — \"the time of guarantee issuance from time of submitting an electronic application to the delivery of the electronic guarantee will be 2 days at maximum\" — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.citibank.pl/poland/corporate/english/bank-guarantee.htm — two-day SLA conditioned on revolving framework agreement and pre-agreed wording — fetched 2026-05-26", "source": "web"}, "The journey": {"evidence": "https://www.citibank.pl/poland/corporate/english/bank-guarantee.htm — \"the time of guarantee issuance from time of submitting an electronic application to the delivery of the electronic guarantee will be 2 days at maximum\" / \"eGuarantee is an electronic delivery of a guarantee document with a qualified electronic signature\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: source-cx
 updatedAt: 2026-05-26T19:59:08Z
 ---

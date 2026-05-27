@@ -10,7 +10,6 @@ severity: MEDIUM
 gapStatus: open
 control: [CP-DDMM-003]
 regulation: [REG-DDMM-006]
-provenance: {"Remediation": {"evidence": "SME confirmed: assess whether risk appetite supports extending dual-control (or a sampling check) to single registrations, or document explicit risk-acceptance.", "source": "elicited"}, "Risk": {"evidence": "SME confirmed: single-mandate errors (incorrect IBAN, CI, UMR) can register without detection; MaRisk requires key operational processes to have adequate controls.", "source": "elicited"}, "The gap": {"evidence": "SME (M. Vogel) confirmed: the dual-control in CP-DDMM-003 applies only to batches above 50 mandates; individual mandate registrations have no second-reviewer check.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

@@ -10,7 +10,6 @@ owner: Payments Operations
 sla:
 condition: Payment instruction has been received and queued in the payment hub
 systems: [SYS-SP-002]
-provenance: {"Inputs": {"evidence": "Key inputs: debtor account, creditor IBAN, creditor name, BIC, amount in EUR, remittance reference. Controls: C-1 IBAN/BIC validation against the scheme directory; C-2 Duplicate-payment detection.", "source": "document"}, "Outputs": {"evidence": "If validation fails → Payment rejected to the customer with a reason code; correction and resubmission required. (Exception E-1)", "source": "document"}, "What happens": {"evidence": "The payment hub checks: Creditor IBAN structure and check digits are valid. The creditor bank is reachable in the SEPA scheme directory. Currency is EUR and the creditor country is in the SEPA zone. Mandatory fields are present; the remittance reference is well-formed. The instruction is not a duplicate of one seen in the last 24 hours. If validation fails → see Exception E-1.", "source": "document"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:15Z
 ---

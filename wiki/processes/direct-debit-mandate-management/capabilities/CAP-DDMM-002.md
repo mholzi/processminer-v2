@@ -9,7 +9,6 @@ criticality: HIGH
 reuse: NEW
 owningDomain: Payments · Mandate management
 hostedIn: [TGTAPP-DDMM-001]
-provenance: {"Boundaries": {"evidence": "", "source": "proposed"}, "Description": {"evidence": "", "source": "proposed"}, "Inputs and outputs": {"evidence": "", "source": "proposed"}}
 ---
 ## Description
 Owns mandate state transitions across its lifetime — active, paused, revoked, lapsed. Enforces SEPA-mandated rules (e.g. a mandate not used in 36 months auto-lapses; revocation requires party authentication). Emits one canonical event per state transition.

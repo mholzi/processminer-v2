@@ -10,7 +10,6 @@ controlType: PREVENTIVE
 execution: MANUAL
 owner: Trade Finance Manager
 step: [PS-BGI-005]
-provenance: {"Control activity": {"evidence": "", "source": "proposed"}, "Risk addressed": {"evidence": "Confirm as drafted — the control-level framing is correct, no need to expand to downstream consequences.", "source": "elicited"}, "Timing": {"evidence": "A Trade Finance Manager reviews the assembled package and approves issuance. (step 5)", "source": "document"}, "What it checks": {"evidence": "", "source": "proposed"}}
 approval: in-progress
 regulatedBy: [REG-BGI-003, REG-BGI-005, REG-BGI-010]
 ---

@@ -9,7 +9,6 @@ source: Surecomp DZ BANK press release (June 2024); Surecomp AI processing commi
 competitor: Surecomp (RIVO)
 sourceUrl: https://surecomp.com/news/dz-bank-plans-to-revolutionize-trade-finance-customer-service-with-surecomps-rivo/
 asOf: 2026-05-26
-provenance: {"Evidence": {"evidence": "https://surecomp.com/news/harnessing-the-power-of-ai-surecomp-commits-to-reducing-trade-finance-processing-time-by-30/ — \"expediting guarantee issuance from days to hours\" — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://surecomp.com/news/dz-bank-plans-to-revolutionize-trade-finance-customer-service-with-surecomps-rivo/ — \"revolutionizing customer experience while strengthening operational capabilities and giving us a competitive edge\" — fetched 2026-05-26", "source": "web"}, "The journey": {"evidence": "https://surecomp.com/news/dz-bank-plans-to-revolutionize-trade-finance-customer-service-with-surecomps-rivo/ — \"real-time corporate communication, transaction status transparency and accelerated trade finance issuance\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: source-cx
 updatedAt: 2026-05-26T19:59:08Z
 ---

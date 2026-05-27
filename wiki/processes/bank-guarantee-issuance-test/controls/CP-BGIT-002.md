@@ -10,7 +10,6 @@ controlType: PREVENTIVE
 execution: HYBRID
 owner: Compliance Analyst
 step: [PS-BGIT-004]
-provenance: {"Control activity": {"evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list. A screening hit suspends the application pending Compliance investigation.", "source": "document"}, "Risk addressed": {"evidence": "M. Berger: standing approval", "source": "elicited"}, "Timing": {"evidence": "Every beneficiary is screened before issuance", "source": "document"}, "What it checks": {"evidence": "Every beneficiary is screened before issuance; the screening result is attached to the application.", "source": "document"}}
 approval: in-progress
 regulatedBy: [REG-BGIT-008]
 ---

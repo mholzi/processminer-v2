@@ -8,7 +8,6 @@ confidence: high
 source: bank-guarantee-issuance-v1.md
 systems: [SYS-BGID-002]
 controls: [CP-BGID-003]
-provenance: {"In this process": {"evidence": "[Y] Accept", "source": "elicited"}, "Responsibility": {"evidence": "[Y] Accept", "source": "elicited"}}
 raci: [PS-BGID-002:C]
 updatedBy: the assistant
 updatedAt: 2026-05-26T06:36:06Z

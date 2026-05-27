@@ -9,7 +9,6 @@ competitor: HSBC
 source: Global Trade Review — 'HSBC digitises demand guarantee to speed up trade', December 2023
 sourceUrl: https://www.gtreview.com/news/digital-trade/hsbc-digitises-demand-guarantee-to-speed-up-trade/
 asOf: 2026-05-26
-provenance: {"Evidence": {"evidence": "https://www.gtreview.com/news/digital-trade/hsbc-digitises-demand-guarantee-to-speed-up-trade/ — GTR December 2023, covering live STP deals in Qatar (KPMG) and the UK (Russell Finex) — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.gtreview.com/news/digital-trade/hsbc-digitises-demand-guarantee-to-speed-up-trade/ — \"The fact that something that can take three to four days was done in a matter of minutes means that they can then move on to the next part of the bigger commercial deal.\" — fetched 2026-05-26", "source": "web"}, "The journey": {"evidence": "https://www.gtreview.com/news/digital-trade/hsbc-digitises-demand-guarantee-to-speed-up-trade/ — \"We've redesigned and simplified the user interface, which enables us to prepopulate a lot of the data into the guarantee. This then enables us to automate the validation checks all the way through to notification.\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: admin
 updatedAt: 2026-05-26T08:37:27Z
 ---

@@ -9,7 +9,6 @@ source: J.P. Morgan Trade Express product page — jpmorgan.com
 competitor: J.P. Morgan
 sourceUrl: https://www.jpmorgan.com/payments/solutions/trade-and-working-capital/trade-express
 asOf: 2026-05-26
-provenance: {"Evidence": {"evidence": "https://www.jpmorgan.com/payments/solutions/trade-and-working-capital/trade-express — \"No login is needed. Simply enter your JP Morgan branch, a reference number, the date submitted, and the transaction currency, and amount\" — fetched 2026-05-26", "source": "web"}, "Relevance": {"evidence": "https://www.jpmorgan.com/payments/solutions/trade-and-working-capital/trade-express — tool designed to eliminate client service team contact for routine status inquiries — fetched 2026-05-26", "source": "web"}, "The journey": {"evidence": "https://www.jpmorgan.com/payments/solutions/trade-and-working-capital/trade-express — \"No login is needed. Simply enter your JP Morgan branch, a reference number, the date submitted, and the transaction currency, and amount\" / \"all traditional trade transactions, including... bank guarantees\" / \"24/7\" — fetched 2026-05-26", "source": "web"}}
 updatedBy: source-cx
 updatedAt: 2026-05-26T19:59:08Z
 ---

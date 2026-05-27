@@ -9,7 +9,6 @@ source: ddmm-dtp-mockup.md
 controlType: DETECTIVE
 execution: MANUAL
 owner: Payments Operations
-provenance: {"Control activity": {"evidence": "SME (M. Vogel) confirmed: comparison is tool-assisted (system-generated reconciliation report); review and discrepancy resolution are manual. Standard resolution: re-trigger MMS-to-Payment-Hub sync; IT ticket on failure. Resolution procedure documented in ops procedures (not DTP).", "source": "elicited"}, "Risk addressed": {"evidence": "SME confirmed accurate as drafted.", "source": "elicited"}, "Timing": {"evidence": "C-4 | Frequency: Daily", "source": "document"}, "What it checks": {"evidence": "C-4 | Daily reconciliation of MMS vs payment hub mandate store | Detective / manual | Daily", "source": "document"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-19

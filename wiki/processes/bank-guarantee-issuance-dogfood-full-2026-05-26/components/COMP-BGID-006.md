@@ -11,7 +11,6 @@ dataStore: PostgreSQL 16 (model metadata) + S3-compatible EU object store (model
 hosting: EKS eu-central-1 · CPU node pool
 scaling: N/A — management plane, not on critical path
 inApp: [TGTAPP-BGID-002]
-provenance: {"Responsibility": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Technical detail": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T15:58:45Z
 approval: approved

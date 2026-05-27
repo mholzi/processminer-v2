@@ -9,7 +9,6 @@ source: ddmm-transformation-agent
 replaces: [PS-DDMM-006]
 systems: [SYS-DDMM-002]
 risks: []
-provenance: {"Rationale": {"evidence": "SME confirmed: CG-DDMM-001 and PG-DDMM-003 are the same gap in two registers; framing accepted without edit.", "source": "elicited"}, "Target description": {"evidence": "SME (M. Vogel) confirmed: accurate; closes PG-DDMM-002, CG-DDMM-001 and PG-DDMM-003; one retention decision framing accepted. Trim is formatting-only.", "source": "elicited"}, "What changes": {"evidence": "SME confirmed all six change bullets — accepted without edit.", "source": "elicited"}}
 ---
 ## Target description
 A formal data retention period is defined for mandate records — active lifetime plus a statutory minimum post-cancellation — satisfying GDPR Art. 5(1)(e). The same threshold becomes the dormancy trigger in CP-DDMM-005, making that control auditable; CG-DDMM-001 and PG-DDMM-003 are closed in a single governance act. Mandates are purged or anonymised on an automated MMS schedule at end of retention. CI deactivation triggers a proactive review of all active mandates under that CI — each assessed for suspension, cancellation, or retention — recorded per mandate, closing PG-DDMM-002.

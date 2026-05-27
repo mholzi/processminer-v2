@@ -7,7 +7,6 @@ status: draft
 severity: LOW
 gapStatus: open
 control: []
-provenance: {"Remediation": {"evidence": "", "source": "proposed"}, "Risk": {"evidence": "No control at intake is an accepted gap: the real gates are C3 (facility) and C1 (four-eyes approval).", "source": "elicited"}, "The gap": {"evidence": "No control at intake is an accepted gap: the real gates are C3 (facility) and C1 (four-eyes approval).", "source": "elicited"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T05:28:36Z
 ---

@@ -9,8 +9,6 @@ source: bank-guarantee-issuance-v1.md
 owner: Trade Finance Officer / Legal Team
 condition: Credit and facility check has passed
 systems: []
-transitions: [PS-BGID-004|normal|wording is approved (standard or legal sign-off received)]
-provenance: {"Inputs": {"evidence": "", "source": "proposed"}, "Outputs": {"evidence": "", "source": "proposed"}, "What happens": {"evidence": "Standard-wording guarantees proceed directly. Bespoke wording is sent to the Legal team for review and sign-off before issuance.", "source": "document"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:56:10Z
 ---

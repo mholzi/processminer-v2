@@ -9,7 +9,6 @@ source: SME interview
 severity: HIGH
 occursAt: [PS-BGID-003]
 painPoint: [PP-BGID-002]
-provenance: {"Client impact": {"evidence": "clients have no visibility into Legal's queue — cannot plan underlying transaction, RM absorbs escalation calls", "source": "elicited"}, "Description": {"evidence": "the bespoke-wording journey is the slowest path — clients have no visibility into Legal's queue", "source": "elicited"}, "Root cause": {"evidence": "Legal team operates without a committed or communicated SLA; no client-facing status interface on the review queue", "source": "elicited"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T20:27:02Z
 approval: in-progress

@@ -8,7 +8,6 @@ confidence: medium
 domain: AML
 source: EBA Guidelines on Money Laundering and Terrorist Financing Risk Factors (EBA/GL/2021/02), March 2021
 sourceUrl: https://www.eba.europa.eu/regulation-and-policy/anti-money-laundering-and-countering-financing-terrorism/guidelines-on-revised-ml-tf-risk-factors
-provenance: {"How it is met": {"evidence": "https://www.eba.europa.eu/regulation-and-policy/anti-money-laundering-and-countering-financing-terrorism/guidelines-on-revised-ml-tf-risk-factors — CP-BGIT-002 (sanctions screening) addresses beneficiary-level risk; alignment with trade-based ML indicator monitoring is to be confirmed with Compliance — fetched 2026-05-20", "source": "web"}, "What it requires": {"evidence": "https://www.eba.europa.eu/regulation-and-policy/anti-money-laundering-and-countering-financing-terrorism/guidelines-on-revised-ml-tf-risk-factors — EBA/GL/2021/02 identifies trade finance as higher-risk sector; institutions must apply enhanced due diligence and monitor for trade-based money laundering indicators — fetched 2026-05-20", "source": "web"}, "Why it applies": {"evidence": "https://www.eba.europa.eu/regulation-and-policy/anti-money-laundering-and-countering-financing-terrorism/guidelines-on-revised-ml-tf-risk-factors — bank guarantee issuance is a trade finance product; EBA sector-specific guidance applies alongside the general AMLD obligations covered by REG-BGIT-001 — fetched 2026-05-20", "source": "web"}}
 asOf: 2026-05-20
 ---
 ## What it requires

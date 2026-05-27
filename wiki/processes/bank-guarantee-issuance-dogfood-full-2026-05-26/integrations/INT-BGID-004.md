@@ -7,7 +7,6 @@ status: draft
 confidence: medium
 source: it-architect session 2026-05-26
 systems: [SYS-BGID-002, SYS-BGID-005]
-provenance: {"What connects": {"evidence": "Elicited: bi-directional REST, sync read/async write, eventually-consistent, 1 business day lag, PS-BGID-002 and PS-BGID-007", "source": "elicited"}, "What flows": {"evidence": "Elicited: headroom query, available headroom response, post-issuance utilisation write", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T10:09:43Z
 approval: approved

@@ -8,8 +8,6 @@ confidence: high
 source: dcr-dtp-mockup.md
 owner: Contact Centre Agent
 systems: [SYS-DCR-002, SYS-DCR-003]
-transitions: [PS-DCR-003|normal|identity verified, EX-DCR-001|exception|identity verification fails]
-provenance: {"Inputs": {"evidence": "knowledge-based verification (security questions); in the mobile app the customer is already authenticated by login", "source": "document"}, "Outputs": {"evidence": "If identity verification fails", "source": "document"}, "What happens": {"evidence": "", "source": "proposed"}, "Why it matters": {"evidence": "S. Krause confirmed in the foundational run: Why it matters holds as drafted.", "source": "elicited"}}
 approval: in-progress
 ---
 ## What happens

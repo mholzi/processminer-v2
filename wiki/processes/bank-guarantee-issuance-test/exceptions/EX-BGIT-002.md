@@ -9,7 +9,6 @@ source: bank-guarantee-issuance-v1.md
 category: sanctions hit
 impact: HIGH
 handlingOwner: Compliance Analyst
-provenance: {"Description": {"evidence": "A screening hit suspends the application pending Compliance investigation.", "source": "document"}, "Handling": {"evidence": "A screening hit suspends the application pending Compliance investigation.", "source": "document"}, "Impact": {"evidence": "M. Berger: standing approval", "source": "elicited"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-20

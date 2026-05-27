@@ -12,7 +12,6 @@ hosting: EKS eu-central-1 · CPU node pool
 scaling: HPA 2→6 replicas on request rate
 inApp: [TGTAPP-BGID-003]
 realisesCapability: [CAP-BGID-004]
-provenance: {"Responsibility": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}, "Technical detail": {"evidence": "Markus Holzhäuser, Domain Architect — batch review session 2026-05-26", "source": "elicited"}}
 updatedBy: Markus Holzhäuser
 updatedAt: 2026-05-26T15:58:45Z
 approval: approved

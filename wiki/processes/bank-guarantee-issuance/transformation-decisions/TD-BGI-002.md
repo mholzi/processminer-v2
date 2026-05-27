@@ -8,7 +8,6 @@ confidence: low
 resolves: [PP-BGI-001]
 realises: [TS-BGI-002]
 fromIdea: [II-BGI-004]
-provenance: {"Options considered": {"evidence": "", "source": "proposed"}, "Rationale": {"evidence": "", "source": "proposed"}, "The decision": {"evidence": "", "source": "proposed"}}
 decisionType: configuration
 decisionStatus: proposed
 ---

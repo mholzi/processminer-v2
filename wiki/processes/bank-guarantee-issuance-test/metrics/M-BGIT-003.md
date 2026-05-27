@@ -9,7 +9,6 @@ source: process-specialist — M. Berger, 2026-05-20
 value: ~52%
 target: 70%
 trend: improving
-provenance: {"Current reading": {"evidence": "M. Berger Stage 5 standing input confirmed current STP ~52%", "source": "elicited"}, "Definition": {"evidence": "M. Berger Stage 5: 'M-BGIT-stp: STP rate, current ~52%, target 70%'", "source": "elicited"}, "Why it matters": {"evidence": "M. Berger Stage 5 standing input confirmed target 70%", "source": "elicited"}}
 ---
 ## Definition
 The percentage of standard bank guarantee applications processed from submission to SWIFT dispatch without any manual intervention by Trade Finance Operations, measured over a rolling three-month window.

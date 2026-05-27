@@ -7,7 +7,6 @@ status: draft
 confidence: medium
 source: innovation-analyst session 2026-05-26
 severity: HIGH
-provenance: {"Likelihood & impact": {"evidence": "Elicited from domain analysis; AI hallucination on legal-text classification is a well-documented failure mode", "source": "elicited"}, "Mitigation": {"evidence": "Elicited from standard AI deployment practice for regulated banking contexts", "source": "elicited"}, "The risk": {"evidence": "Elicited from domain analysis of II-BGID-001 delivery risk", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:56:41Z
 approval: in-progress

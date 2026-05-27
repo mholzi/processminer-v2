@@ -9,7 +9,6 @@ horizon: near-term
 source: ICC/SWIFT press release (October 2025); Standard Chartered press release (January 2026)
 sourceUrl: https://iccwbo.org/news-publications/news/icc-and-swift-unveil-first-api-standards-for-guarantees-and-standby-letters-of-credit/
 bearsOn: [PS-BGIT-001, PS-BGIT-006, PG-BGIT-002, CG-BGIT-001]
-provenance: {"Evidence": {"evidence": "https://ctmfile.com/story/icc-and-swift-launch-trade-finance-api-standards-industry-roundup-23-august — \"Seven banks are already in the process of implementing C2B Guarantee APIs\" — fetched 2026-05-20", "source": "web"}, "Relevance": {"evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"automates the receipt of instructions and accelerates the issuance of digitally initiated bank guarantees\" — fetched 2026-05-20", "source": "web"}, "The trend": {"evidence": "https://iccwbo.org/news-publications/news/icc-and-swift-unveil-first-api-standards-for-guarantees-and-standby-letters-of-credit/ — \"ICC and Swift unveil first API standards for guarantees and standby letters of credit\" — fetched 2026-05-20", "source": "web"}}
 asOf: 2026-05-20
 ---
 ## The trend

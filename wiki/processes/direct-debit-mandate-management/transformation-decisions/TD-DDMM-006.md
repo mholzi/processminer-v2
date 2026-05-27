@@ -11,7 +11,6 @@ decisionStatus: DECIDED
 resolves: [PP-DDMM-001, OAF-DDMM-002]
 realises: [TS-DDMM-005]
 fromIdea: [II-DDMM-004]
-provenance: {"Options considered": {"evidence": "SME confirmed options and rationale — accepted without edit.", "source": "elicited"}, "Rationale": {"evidence": "SME confirmed rationale — accepted without edit.", "source": "elicited"}, "The decision": {"evidence": "SME (M. Vogel) accepted all ten decisions without edit.", "source": "elicited"}}
 ---
 ## The decision
 Implement MMS R-transaction pre-classification by reason code with guided code-specific resolution checklists; make structured rationale capture mandatory at point of closure — the item cannot be closed without it.

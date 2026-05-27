@@ -10,7 +10,6 @@ controlType: DETECTIVE
 execution: MANUAL
 owner: Fraud Operations
 step: [PS-DCR-004]
-provenance: {"Control activity": {"evidence": "the Fraud Analyst, who reviews recent transactions for unauthorised activity", "source": "document"}, "Risk addressed": {"evidence": "S. Krause confirmed in the foundational run: Risk addressed holds as drafted.", "source": "elicited"}, "Timing": {"evidence": "Every lost/stolen request", "source": "document"}, "What it checks": {"evidence": "Fraud exposure review on lost/stolen cards | Detective / manual | Every lost/stolen request", "source": "document"}}
 approval: in-progress
 regulatedBy: [REG-DCR-001]
 ---

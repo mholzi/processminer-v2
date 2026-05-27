@@ -8,7 +8,6 @@ confidence: high
 source: periodic-kyc-review-dtp.pdf
 systems: [SYS-PR-001, SYS-PR-008]
 controls: [CP-PR-010, CP-PR-011, CP-PR-013]
-provenance: {"In this process": {"evidence": "", "source": "proposed"}, "Responsibility": {"evidence": "", "source": "proposed"}}
 ---
 ## Responsibility
 The Financial Crime Officer (FCO) is the senior accountable role for Periodic KYC Review, providing mandatory 4-eyes sign-off on high-risk, PEP, recommend-exit, and approve-with-conditions cases that restrict a regulated product.

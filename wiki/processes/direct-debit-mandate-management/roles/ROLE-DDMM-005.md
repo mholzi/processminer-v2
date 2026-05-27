@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: ddmm-dtp-mockup.md
 raci: [PS-DDMM-002:A, PS-DDMM-003:I, PS-DDMM-005:A, PS-DDMM-006:A, PS-DDMM-007:A]
-provenance: {"In this process": {"evidence": "SME (M. Vogel) confirmed: add PS-DDMM-005:A (Step 5 missing-Accountable gap, same as Step 2) and PS-DDMM-003:I (informed of EX-DDMM-002 frozen mandate).", "source": "elicited"}, "Responsibility": {"evidence": "SME confirmed PS-DDMM-002:A, PS-DDMM-005:A (E-4 escalation), PS-DDMM-007:A (DTP RACI). PS-DDMM-003:I added: confirmed sanctions hit is operationally significant.", "source": "elicited"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-19

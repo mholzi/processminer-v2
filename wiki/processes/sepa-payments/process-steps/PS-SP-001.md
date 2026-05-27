@@ -10,7 +10,6 @@ owner: Payments Operations
 sla:
 condition: Customer submits a euro payment instruction via online/mobile banking, a corporate customer uploads a payment file via host-to-host, or a branch user captures a payment on behalf of the customer
 systems: [SYS-SP-001, SYS-SP-002]
-provenance: {"Inputs": {"evidence": "Key inputs: debtor account, creditor IBAN, creditor name, BIC, amount in EUR, remittance reference, channel and customer election (instant or standard). / Trigger: A customer submits a euro payment instruction via online or mobile banking, or a corporate customer uploads a payment file via the host-to-host channel, or a branch user captures a payment on the customer's behalf.", "source": "document"}, "Outputs": {"evidence": "", "source": "proposed"}, "What happens": {"evidence": "The payment instruction arrives at the payment hub from one of the channels. Each carries debtor account, creditor IBAN, creditor name, BIC (optional for SEPA), amount in EUR, and a remittance reference. Bulk files arrive as pain.001 messages.", "source": "document"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:15Z
 ---

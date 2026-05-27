@@ -8,7 +8,6 @@ confidence: medium
 source: SME interview
 sentiment: positive
 touchpoint: [JT-BGID-005]
-provenance: {"Design implication": {"evidence": "", "source": "proposed"}, "The moment": {"evidence": "the moment we tell them the guarantee has been issued via MT760", "source": "elicited"}, "Why it matters": {"evidence": "", "source": "proposed"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:16:17Z
 ---

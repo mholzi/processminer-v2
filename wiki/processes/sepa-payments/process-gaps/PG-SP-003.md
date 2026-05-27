@@ -9,7 +9,6 @@ source: sepa-payments-dtp-mockup.md
 area: As-Is process
 gapStatus: open
 affects: [PS-SP-008]
-provenance: {"Impact": {"evidence": "", "source": "proposed"}, "Next step": {"evidence": "§10 open question: 'Who approves bulk files above the corporate daily aggregate limit?'", "source": "document"}, "The gap": {"evidence": "§7 C-6: '4-eyes release of bulk payment files — Preventive / manual — Per file'; §4 RACI: 'Bulk-file release approval (4-eyes) — Ops Approver A/R'; §10 open question: 'Who approves bulk files above the corporate daily aggregate limit?'", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:00Z
 ---

@@ -9,7 +9,6 @@ source: SME interview — transformation-agent session 2026-05-26
 direction: UPSTREAM
 atStep: [PS-BGID-002]
 viaSystem: [SYS-BGID-002]
-provenance: {"The dependency": {"evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated", "source": "elicited"}, "What crosses the boundary": {"evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated", "source": "elicited"}, "Why it matters": {"evidence": "standard EU corporate-banking trade-finance modernisation thesis, SME validated", "source": "elicited"}}
 updatedBy: admin
 updatedAt: 2026-05-26T09:28:32Z
 ---

@@ -9,7 +9,6 @@ horizon: regulatory-deadline
 asOf: 2026-05-26
 source: SWIFT ISO 20022 migration roadmap
 sourceUrl: https://www.swift.com/standards/iso-20022
-provenance: {"Evidence": {"evidence": "", "source": "proposed"}, "Relevance": {"evidence": "", "source": "proposed"}, "The trend": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T20:02:52Z
 ---

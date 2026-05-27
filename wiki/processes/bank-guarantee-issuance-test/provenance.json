@@ -1,0 +1,1646 @@
+{
+  "ASM-BGIT-001": {
+    "Impact if wrong": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The assumption": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it is unconfirmed": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ASM-BGIT-002": {
+    "Impact if wrong": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The assumption": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it is unconfirmed": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ASM-BGIT-003": {
+    "Impact if wrong": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The assumption": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it is unconfirmed": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CEU-BGIT-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — \"It is a significant industry milestone\" (Marie-Laurence Faure, Head of Digital Trade Channels, BNP Paribas) — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/bnp-paribas-vanderlande-and-surecomp-drive-successful-completion-of-swift-icc-api-pilot-for-trade-finance-guarantees/ — \"APIs do not require participants to be connected to Swift's messaging platform, making them less expensive than traditional guarantees\" — fetched 2026-05-20"
+    },
+    "The move": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — \"The request was transmitted from Vanderlande to BNP Paribas in real time without manual intervention\" — fetched 2026-05-20"
+    }
+  },
+  "CEU-BGIT-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/leading-the-way-ing-sets-the-pace-in-digital-trade-finance — Komgo case study confirms reduced turnaround times, elimination of manual errors and back-office automation via API integration — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/leading-the-way-ing-sets-the-pace-in-digital-trade-finance — \"ING named 2025 Most Innovative Bank for Trade Finance globally and 2025 Best Bank for Trade & Supply Chain Finance in Europe\" — fetched 2026-05-20"
+    },
+    "The move": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/leading-the-way-ing-sets-the-pace-in-digital-trade-finance — \"reducing media breaks in communication between applicant and bank, allowing for smoother end-to-end digital workflow through automated data integration into backend systems\" — fetched 2026-05-20"
+    }
+  },
+  "CFT-BGIT-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/komgo-recognised-by-euromoney-as-the-worlds-most-innovative-software-provider-for-trade-finance-2025 — \"Komgo recognised by Euromoney as the world's most innovative software provider for trade finance 2025\" — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"automates the receipt of instructions and accelerates the issuance of digitally initiated bank guarantees, offering clients greater speed, transparency and reliability\" — fetched 2026-05-20"
+    },
+    "The move": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/komgo-solutions/gtk — \"GTK centralises and digitises the full lifecycle of trade finance instruments – guarantees, letters of credit and financing requests – while connecting corporates to all their banking partners, regardless of the channel used\" — fetched 2026-05-20"
+    }
+  },
+  "CFT-BGIT-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/harnessing-the-power-of-ai-surecomp-commits-to-reducing-trade-finance-processing-time-by-30/ — Surecomp committed to 30% processing time reduction; RIVO v3.2 AI Email Reader shipped October 2024 — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.finextra.com/pressarticle/103263/surecomp-commits-to-reducing-trade-finance-processing-time-by-30-with-ai — \"the development to its collaborative trade finance RIVO™ platform aims to address the inefficient, manual guarantee text checks which are a key source of issuance delays\" — fetched 2026-05-20"
+    },
+    "The move": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/harnessing-the-power-of-ai-surecomp-commits-to-reducing-trade-finance-processing-time-by-30/ — \"By automatically converting key clauses of a request such as legal terms, conditions, expiry and transferability into structured text, Surecomp customers can now significantly reduce the time it takes to process emails applications, expediting guarantee issuance from days to hours\" — fetched 2026-05-20"
+    }
+  },
+  "CFT-BGIT-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.prnewswire.com/news-releases/finastra-simplifies-trade-finance-with-ai-powered-assistant-using-microsoft-azure-openai-service-302371436.html — Finastra press release dated 10 February 2025; IDC MarketScape 2025–26 names Finastra a Leader in AI-Enabled Trade Finance Applications — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.finastra.com/lending/solutions/trade-innovation — \"Finastra Trade Innovation simplifies the complex processes and documentation involved in guarantee wording and workflows through complete digitization, leading to a reduction in processing friction and improved turnaround times\" — fetched 2026-05-20"
+    },
+    "The move": {
+      "source": "web",
+      "evidence": "https://www.finastra.com/press-media/finastra-simplifies-trade-finance-ai-powered-assistant-using-microsoft-azure-openai — \"Built on Microsoft Azure and integrated with Microsoft Copilot, it offers secure, real-time, and context-aware support across documentation, compliance, and transaction workflows\" — fetched 2026-05-20"
+    }
+  },
+  "CG-BGIT-001": {
+    "Remediation": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'flag it as a control-gap to document later'"
+    },
+    "Risk": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "M. Berger confirmed: 'the missing completeness control is a real gap, please flag it as a control-gap to document later'"
+    }
+  },
+  "CG-BGIT-002": {
+    "Remediation": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The gap": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CGL-BGIT-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.finextra.com/pressarticle/99079/hsbc-pioneers-new-fast-track-digital-trade-finance-demand-guarantee — \"HSBC issuing a Tender Bond for KPMG in Qatar and an Advance Payment guarantee for UK international corporate Russell Finex Ltd\" — December 2023 — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.gbm.hsbc.com/en-gb/insights/facilitating-trade/new-digital-fast-track-trade-finance-demand-guarantee — \"The 'fast-track' digitally processed trade finance guarantee will be available to customers via HSBC Trade Solutions … deployed globally in 2024 and 2025\" — fetched 2026-05-20"
+    },
+    "The move": {
+      "source": "web",
+      "evidence": "https://ffnews.com/newsarticle/tradetech/hsbc-pioneers-new-digital-fast-track-trade-finance-demand-guarantee/ — \"reducing issuance times from a typical 3-4 days down to potentially minutes, marking a significant milestone for the banking industry\" — fetched 2026-05-20"
+    }
+  },
+  "CGL-BGIT-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.prnewswire.com/apac/news-releases/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo-302660953.html — \"announced on January 15, 2026 … will be progressively extended to clients across all the group's markets\" — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://iccwbo.org/news-publications/news/icc-and-swift-unveil-first-api-standards-for-guarantees-and-standby-letters-of-credit/ — \"real-time visibility, greater interoperability, and seamless integration of banking capabilities into corporate treasury, enterprise resource planning systems\" — fetched 2026-05-20"
+    },
+    "The move": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"Standard Chartered has successfully completed its industry standard API-based bank guarantee transaction for a global energy company via Komgo's Konsole\" — fetched 2026-05-20"
+    }
+  },
+  "CH-BGIT-001": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'Corporate Portal is the primary channel — even when the RM keys it in on the client's behalf, the portal is the entry point'"
+    },
+    "Usage": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'Corporate Portal is the sole intake channel even when the RM keys it in on the client's behalf'"
+    }
+  },
+  "CH-BGIT-002": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'the RM keys it into the portal on the client's behalf'"
+    },
+    "Usage": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'RM phone follow-up on stalled applications' is a documented touchpoint — confirms RM acts as escalation channel"
+    }
+  },
+  "CH-BGIT-003": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'email (legacy for bespoke wording — flagged as a process gap)'"
+    },
+    "Usage": {
+      "source": "elicited",
+      "evidence": "M. Berger confirmed email is the current mechanism for bespoke wording handoff to Legal — flagged as PG-BGIT-002"
+    }
+  },
+  "CH-BGIT-004": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'SWIFT (for delivery to beneficiary's bank)' — confirmed as channel at final step"
+    },
+    "Usage": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'SWIFT MT760 receipt at beneficiary's bank' — confirmed as final delivery touchpoint"
+    }
+  },
+  "CP-BGIT-001": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "A Trade Finance Manager reviews the assembled package and approves issuance. Guarantees above EUR 5 million additionally require sign-off by the Head of Trade Finance."
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "M. Berger: standing approval"
+    },
+    "Timing": {
+      "source": "elicited",
+      "evidence": "M. Berger: standing approval"
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "No guarantee is issued without a Trade Finance Manager's approval, recorded in the Trade Finance System."
+    }
+  },
+  "CP-BGIT-002": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list. A screening hit suspends the application pending Compliance investigation."
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "M. Berger: standing approval"
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "Every beneficiary is screened before issuance"
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "Every beneficiary is screened before issuance; the screening result is attached to the application."
+    }
+  },
+  "CP-BGIT-003": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "Issuance is blocked in the Trade Finance System unless available facility limit covers the guarantee amount."
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "M. Berger: standing approval"
+    },
+    "Timing": {
+      "source": "elicited",
+      "evidence": "M. Berger: standing approval"
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "Issuance is blocked in the Trade Finance System unless available facility limit covers the guarantee amount."
+    }
+  },
+  "CP-BGIT-004": {
+    "Control activity": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Risk addressed": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Timing": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What it checks": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'Legal sign-off IS a real control — add it as a new control, owner Head of Legal, type Preventive, linked to PS-BGIT-003'"
+    }
+  },
+  "CP-BGIT-005": {
+    "Control activity": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input confirmed manual completeness check at intake"
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 input: remediating control for CG-BGIT-001"
+    },
+    "Timing": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input confirmed timing at PS-BGIT-001"
+    },
+    "What it checks": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5: 'CP-BGIT-005: Application completeness check, PREVENTIVE, MANUAL, owner Trade Finance Operations, step PS-BGIT-001, addresses CG-BGIT-001'"
+    }
+  },
+  "CP-BGIT-006": {
+    "Control activity": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input confirmed four-eyes check before SWIFT dispatch"
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 input: remediating control for CG-BGIT-002"
+    },
+    "Timing": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input confirmed timing at PS-BGIT-006"
+    },
+    "What it checks": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5: 'CP-BGIT-006: Four-eyes pre-SWIFT dispatch verification, PREVENTIVE, MANUAL, owner Trade Finance Operations, step PS-BGIT-006, addresses CG-BGIT-002'"
+    }
+  },
+  "CP-BGIT-007": {
+    "Control activity": {
+      "source": "document",
+      "evidence": "For partially-secured guarantees, cash collateral must be confirmed received and blocked before issuance. Control owner: Trade Finance Officer."
+    },
+    "Risk addressed": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Timing": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What it checks": {
+      "source": "document",
+      "evidence": "C4 — Collateral block confirmation. For partially-secured guarantees, cash collateral must be confirmed received and blocked before issuance."
+    }
+  },
+  "CXB-BGIT-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://iccwbo.org/news-publications/news/icc-and-swift-unveil-first-api-standards-for-guarantees-and-standby-letters-of-credit/ — ICC/SWIFT announcement 2024; BNP Paribas pilot Nov 2024; Standard Chartered live transaction Jan 2026 — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/bnp-paribas-vanderlande-and-surecomp-drive-successful-completion-of-swift-icc-api-pilot-for-trade-finance-guarantees/ and https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — BNP Paribas and Standard Chartered live pilots completed — fetched 2026-05-20"
+    },
+    "The benchmark": {
+      "source": "web",
+      "evidence": "https://iccwbo.org/news-publications/news/icc-and-swift-unveil-first-api-standards-for-guarantees-and-standby-letters-of-credit/ — ICC and SWIFT published first industry API standards for bank guarantees covering full lifecycle — fetched 2026-05-20"
+    }
+  },
+  "CXB-BGIT-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.jpmorgan.com/insights/payments/trade-and-working-capital/trends-in-trade-2024 — J.P. Morgan Trends in Trade 2024: \"digitized processes reduce turnaround from 36 hours to 3 hours\" — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.jpmorgan.com/insights/payments/trade-and-working-capital/trends-in-trade-2024 — benchmark applies directly to standard-wording guarantee pipeline where manual steps dominate — fetched 2026-05-20"
+    },
+    "The benchmark": {
+      "source": "web",
+      "evidence": "https://www.jpmorgan.com/insights/payments/trade-and-working-capital/trends-in-trade-2024 — digitized processes reduce turnaround from 36 hours to 3 hours — an 87.5% reduction — fetched 2026-05-20"
+    }
+  },
+  "CXB-BGIT-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.greenwich.com/corporate-banking/2024-european-trade-finance-insights — Coalition Greenwich 2024 European Trade Finance Insights survey scope and methodology — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.greenwich.com/corporate-banking/2024-european-trade-finance-insights — 479 interviews across 12 European countries, March–August 2024 — fetched 2026-05-20"
+    },
+    "The benchmark": {
+      "source": "web",
+      "evidence": "https://www.greenwich.com/corporate-banking/2024-european-trade-finance-insights — approximately 40% of large European corporates (€500M+ revenue) expected to shift trade finance banking relationships in 2024; turnaround times cited as a critical competitive factor — fetched 2026-05-20"
+    }
+  },
+  "CXE-BGIT-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — \"It is a significant industry milestone\" (Marie-Laurence Faure, Head of Digital Trade Channels, BNP Paribas) — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.euromoney.com/article/wqt3fhsi8s0s4wssso4c4ogc/corporate-banking/europes-best-trade-finance-bank-2025-bnp-paribas/ — \"Europe's most effective and influential trade finance bank, combining geographic reach, digital innovation and product breadth\" — fetched 2026-05-20"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/bnp-paribas-vanderlande-and-surecomp-drive-successful-completion-of-swift-icc-api-pilot-for-trade-finance-guarantees/ — \"guarantee request transmitted to BNP Paribas in real-time without manual intervention\" — fetched 2026-05-20"
+    }
+  },
+  "CXE-BGIT-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/leading-the-way-ing-sets-the-pace-in-digital-trade-finance — \"tangible gains in operational efficiency and a marked reduction in the risk of manual errors\" — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/introducing-gtk-the-future-of-digital-guarantee-and-trade-finance-management — \"Say goodbye to email threads, paper applications, and wet-ink signatures\" and \"Get live visibility on the availability and utilization of your credit lines, across banks and geographies\" — fetched 2026-05-20"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/leading-the-way-ing-sets-the-pace-in-digital-trade-finance — \"reduced media breaks in communication between the applicant and the bank, allowing for a smoother, end-to-end digital workflow\" and \"streamlining processes and reducing turnaround times\" — fetched 2026-05-20"
+    }
+  },
+  "CXE-BGIT-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "UC Trade Finance Gate Quick Guide PDF; UniCredit GTB product pages gtb.unicredit.eu — EBICS multi-banking support, SSO, OSD2 compliant — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.gtb.unicredit.eu/ — platform serves corporates from SMEs to multinationals; SSO via Corporate Portal; consolidated domestic and international guarantees in one system — fetched 2026-05-20"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "UC Trade Finance Gate Quick Guide PDF — \"full cycle of Trade Finance operations in a time-saving, forward looking and fully digitalized environment… virtually issue and monitor new transactions… monitor the status of deals in real time with notifications for changes\" — fetched 2026-05-20"
+    }
+  },
+  "CXF-BGIT-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/tkelevator-and-komgo-boost-guarantee-management-with-gtk — \"average guarantee issuance time dropped by 50% almost overnight\" — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/fintech/komgo-launches-global-trade-konnect-in-major-system-upgrade/ — GTR reporting on GTK as next-generation unified guarantee and LC platform — fetched 2026-05-20"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/tkelevator-and-komgo-boost-guarantee-management-with-gtk — \"70% of new guarantees are now processed via Boost Approval, which cuts manual work, reduces errors\" — fetched 2026-05-20"
+    }
+  },
+  "CXF-BGIT-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/harnessing-the-power-of-ai-surecomp-commits-to-reducing-trade-finance-processing-time-by-30/ — \"AI commits to reducing Trade Finance processing time by 30%\" — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/dz-bank-plans-to-revolutionize-trade-finance-customer-service-with-surecomps-rivo/ — DZ BANK adopts RIVO for real-time corporate communication and accelerated trade finance issuance — fetched 2026-05-20"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://surecomp.com/rivo-for-corporates/ — RIVO described as cloud platform connecting corporates and banks in real-time for end-to-end LC and guarantee lifecycle in a single workspace — fetched 2026-05-20"
+    }
+  },
+  "CXF-BGIT-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/xdc-ventures-to-re-energise-contour-after-xalts-sale/ — XDC Ventures acquired Contour from Xalts, Oct 2025, adding stablecoin settlement — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.tradefinanceglobal.com/posts/contour-collapses-what-does-this-mean-for-digital-trade-finance/ — TFG analysis of Contour collapse as lesson in consortium-model scaling difficulty — fetched 2026-05-20"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://techcrunch.com/2024/02/19/xalts-contour/ — Contour described as blockchain platform digitising LCs and guarantees with real-time processing and multi-party visibility — fetched 2026-05-20"
+    }
+  },
+  "CXG-BGIT-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/fintech/hsbc-digitises-demand-guarantee-to-speed-up-trade/ — GTR coverage of KPMG Qatar STP tender bond issuance, zero human intervention — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.euromoney.com/article/3l6tu7eba36s8ksw0k4sw0ccc/tf26-global-hsbc/ — HSBC ranked #1 trade finance provider globally by Euromoney 2026 survey of 13,000+ businesses — fetched 2026-05-20"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.gbm.hsbc.com/en-gb/insights/facilitating-trade/new-digital-fast-track-trade-finance-demand-guarantee — \"customers to issue digitally processed guarantees that can be issued to a beneficiary in real time, reducing issuance times from a typical 3-4 days down to potentially minutes\" — fetched 2026-05-20"
+    }
+  },
+  "CXG-BGIT-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.prnewswire.com/apac/news-releases/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo-302660953.html — January 15 2026 PR Newswire release — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://fxnewsgroup.com/forex-news/institutional/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"real-time connectivity between Komgo's Konsole and the Bank...simplified integration and addressed the challenge of multiple API connectivity\" — fetched 2026-05-20"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"automates the receipt of instructions and accelerates the issuance of digitally initiated bank guarantees, offering clients greater speed, transparency and reliability\" — fetched 2026-05-20"
+    }
+  },
+  "CXG-BGIT-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.jpmorgan.com/payments/solutions/trade-and-working-capital/trade-finance — Coalition Greenwich 2024 #1 in Trade Digital Transformation Benchmarking Study cited on product page — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.jpmorgan.com/payments/solutions/trade-and-working-capital/trade-finance — \"see all traditional trade transactions, including standby letters of credit, bank guarantees\" with real-time status — fetched 2026-05-20"
+    },
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.jpmorgan.com/insights/treasury/automated-receivables/digitizing-trade-finance-with-trade-channel — \"mobile-app connectivity enabling users to read, approve, and transact on the go\" and \"instantly see the status of their trade transactions\" — fetched 2026-05-20"
+    }
+  },
+  "DEP-BGIT-001": {
+    "The dependency": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What crosses the boundary": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "DEP-BGIT-002": {
+    "The dependency": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What crosses the boundary": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "DEP-BGIT-003": {
+    "The dependency": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5: 'DEP-BGIT-003 Credit team UPSTREAM dependency, atStep [PS-BGIT-002]'"
+    },
+    "What crosses the boundary": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input confirmed credit check dependency at PS-BGIT-002"
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 input; confirmed root cause of PP-BGIT-001 and PG-BGIT-001"
+    }
+  },
+  "EX-BGIT-001": {
+    "Description": {
+      "source": "document",
+      "evidence": "If the limit is insufficient, the application is parked and routed to the Credit team — this is the most common reason for delay."
+    },
+    "Handling": {
+      "source": "elicited",
+      "evidence": "If the limit is insufficient, the application is parked and routed to the Credit team; M. Berger: Credit team may grant a temporary one-off uplift, recommend a permanent facility increase (separate process), or decline; on decline the application is formally rejected to the client through the portal"
+    },
+    "Impact": {
+      "source": "document",
+      "evidence": "this is the most common reason for delay."
+    }
+  },
+  "EX-BGIT-002": {
+    "Description": {
+      "source": "document",
+      "evidence": "A screening hit suspends the application pending Compliance investigation."
+    },
+    "Handling": {
+      "source": "document",
+      "evidence": "A screening hit suspends the application pending Compliance investigation."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "M. Berger: standing approval"
+    }
+  },
+  "FP-BGIT-001": {
+    "Client impact": {
+      "source": "elicited",
+      "evidence": "M. Berger: PP-BGIT-001 is the most common cause of delay — absence of SLA countdown amplifies client anxiety during stall periods"
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'no real-time SLA countdown in portal' confirmed as friction point"
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "M. Berger: no SLA display built into portal — 3-business-day commitment is not surfaced to clients"
+    }
+  },
+  "FP-BGIT-002": {
+    "Client impact": {
+      "source": "elicited",
+      "evidence": "M. Berger: credit limit stalls are 'the most common reason for delay' — clients discover stall by polling or RM call"
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'no proactive notification when application is parked at credit' — confirmed as friction point"
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "M. Berger: no automated notification triggered when TFO parks application for Credit review"
+    }
+  },
+  "FP-BGIT-003": {
+    "Client impact": {
+      "source": "elicited",
+      "evidence": "M. Berger: PP-BGIT-002 'bespoke wording adds unpredictable delay because Legal review has no committed turnaround'"
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'no visibility for client on legal review progress' confirmed as friction point"
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'bespoke wording handoff is by email today — no system handoff' (PG-BGIT-002) — email-based review leaves no portal-visible status"
+    }
+  },
+  "FP-BGIT-004": {
+    "Client impact": {
+      "source": "elicited",
+      "evidence": "M. Berger confirmed PP-BGIT-002 as MEDIUM severity pain point — bespoke wording clients experience worst visibility in the process"
+    },
+    "Description": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'bespoke-wording email handoff invisible to client' confirmed as friction point"
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'bespoke wording handoff is by email today — no system handoff — flag as a process gap' (PG-BGIT-002)"
+    }
+  },
+  "II-BGIT-001": {
+    "Expected benefit": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"automates the receipt of instructions … offering clients greater speed, transparency and reliability\" — fetched 2026-05-20"
+    },
+    "Feasibility": {
+      "source": "web",
+      "evidence": "https://ctmfile.com/story/icc-and-swift-launch-trade-finance-api-standards-industry-roundup-23-august — \"Seven banks are already in the process of implementing C2B Guarantee APIs\" — fetched 2026-05-20"
+    },
+    "The idea": {
+      "source": "web",
+      "evidence": "https://iccwbo.org/news-publications/news/icc-and-swift-unveil-first-api-standards-for-guarantees-and-standby-letters-of-credit/ — ICC-SWIFT API standard published October 2025; production-proven via Standard Chartered January 2026 — fetched 2026-05-20"
+    }
+  },
+  "II-BGIT-002": {
+    "Expected benefit": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/harnessing-the-power-of-ai-surecomp-commits-to-reducing-trade-finance-processing-time-by-30/ — \"expediting guarantee issuance from days to hours\" — fetched 2026-05-20"
+    },
+    "Feasibility": {
+      "source": "web",
+      "evidence": "https://www.finastra.com/press-media/finastra-simplifies-trade-finance-ai-powered-assistant-using-microsoft-azure-openai — GenAI wording guidance proven in production (Finastra Assist.AI, Surecomp RIVO) — fetched 2026-05-20"
+    },
+    "The idea": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/harnessing-the-power-of-ai-surecomp-commits-to-reducing-trade-finance-processing-time-by-30/ — AI Email Reader for bespoke wording extraction; https://www.finastra.com/press-media/finastra-simplifies-trade-finance-ai-powered-assistant-using-microsoft-azure-openai — Assist.AI in-platform wording guidance — fetched 2026-05-20"
+    }
+  },
+  "II-BGIT-003": {
+    "Expected benefit": {
+      "source": "web",
+      "evidence": "https://www.gbm.hsbc.com/en-gb/insights/facilitating-trade/new-digital-fast-track-trade-finance-demand-guarantee — \"reducing issuance times from a typical 3-4 days down to potentially minutes\" — fetched 2026-05-20"
+    },
+    "Feasibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The idea": {
+      "source": "web",
+      "evidence": "https://ffnews.com/newsarticle/tradetech/hsbc-pioneers-new-digital-fast-track-trade-finance-demand-guarantee/ — HSBC STP model automatically checks credit and facility before advancing; benchmark for removing manual credit-limit referral — fetched 2026-05-20"
+    }
+  },
+  "II-BGIT-004": {
+    "Expected benefit": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Feasibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The idea": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "II-BGIT-005": {
+    "Expected benefit": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Feasibility": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The idea": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "IR-BGIT-001": {
+    "Likelihood & impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Mitigation": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input; adoption/governance risk for II-BGIT-001"
+    },
+    "The risk": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "IR-BGIT-002": {
+    "Likelihood & impact": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input confirmed severity MEDIUM"
+    },
+    "Mitigation": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input; accuracy/governance risk for II-BGIT-002"
+    },
+    "The risk": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "IR-BGIT-003": {
+    "Likelihood & impact": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input confirmed severity MEDIUM"
+    },
+    "Mitigation": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input; adoption/client-expectation risk for II-BGIT-003"
+    },
+    "The risk": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5: 'IR-BGIT-003: Credit advisory false-assurance for II-BGIT-003, severity MEDIUM'"
+    }
+  },
+  "IR-BGIT-004": {
+    "Likelihood & impact": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input confirmed severity LOW"
+    },
+    "Mitigation": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input; configuration/operational risk for II-BGIT-004"
+    },
+    "The risk": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5: 'IR-BGIT-004: TFS configuration change risk for II-BGIT-004, severity LOW'"
+    }
+  },
+  "JT-BGIT-001": {
+    "Experience": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'no formal chase SLA, that's a known weakness' — portal gives no completeness gate or SLA confirmation at submission"
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "M. Berger confirmed TFO performs manual completeness check on receipt — CG-BGIT-001 gap"
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'portal submission' confirmed as primary intake touchpoint"
+    }
+  },
+  "JT-BGIT-002": {
+    "Experience": {
+      "source": "elicited",
+      "evidence": "M. Berger: stalled credit check and bespoke wording wait confirmed as leading pain points — no proactive communication"
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'no formal chase SLA' — portal status is manually updated by TFO; no automated notifications"
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'portal status updates' confirmed as touchpoint during credit check and wording review steps"
+    }
+  },
+  "JT-BGIT-003": {
+    "Experience": {
+      "source": "elicited",
+      "evidence": "M. Berger: credit limit stalls are 'the most common reason for delay' — RM call is a symptomatic response to the absence of proactive communication"
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "M. Berger confirmed RM calls internally to establish status — avoidable effort created by lack of proactive portal notification"
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'RM phone follow-up on stalled applications' — confirmed as touchpoint when credit stall occurs"
+    }
+  },
+  "JT-BGIT-004": {
+    "Experience": {
+      "source": "elicited",
+      "evidence": "M. Berger: delivery confirmation is indirect — client learns via portal or RM callback, not real-time notification"
+    },
+    "What the bank does": {
+      "source": "elicited",
+      "evidence": "M. Berger confirmed TFO generates and dispatches guarantee via SWIFT at Step 6, updates TFS facility record"
+    },
+    "What the client does": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'SWIFT MT760 receipt at beneficiary's bank' confirmed as final delivery touchpoint"
+    }
+  },
+  "M-BGIT-001": {
+    "Current reading": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Definition": {
+      "source": "document",
+      "evidence": "The target turnaround is 3 business days from a complete application to guarantee delivery, measured for standard-wording guarantees with no screening hit."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "M. Berger: standing approval"
+    }
+  },
+  "M-BGIT-002": {
+    "Current reading": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input; index.md: frequency ~180/month, Nov-Dec peak ~40%, ~8% YoY"
+    },
+    "Definition": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5: 'M-BGIT-vol: ~180 guarantees/month, Nov-Dec peak 40% above mean'"
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input confirmed improving trend"
+    }
+  },
+  "M-BGIT-003": {
+    "Current reading": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input confirmed current STP ~52%"
+    },
+    "Definition": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5: 'M-BGIT-stp: STP rate, current ~52%, target 70%'"
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input confirmed target 70%"
+    }
+  },
+  "M-BGIT-004": {
+    "Current reading": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input confirmed current ~22%, trend flat"
+    },
+    "Definition": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input confirmed target <15%"
+    }
+  },
+  "MT-BGIT-001": {
+    "Design implication": {
+      "source": "elicited",
+      "evidence": "M. Berger: portal is the intake channel — confirmation screen is the first opportunity to anchor expectations"
+    },
+    "The moment": {
+      "source": "elicited",
+      "evidence": "M. Berger confirmed: first portal submission confirmation as moment of truth — sets SLA expectations"
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "MT-BGIT-002": {
+    "Design implication": {
+      "source": "elicited",
+      "evidence": "M. Berger: proactive notification absent — RM phone call is the current workaround, confirming the gap"
+    },
+    "The moment": {
+      "source": "elicited",
+      "evidence": "M. Berger: PP-BGIT-001 'credit limit stalls — the most common reason for delay' confirmed as the most damaging negative moment"
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'no formal SLA on Credit team response (informally 1–2 business days)' — silent stall with no client communication"
+    }
+  },
+  "MT-BGIT-003": {
+    "Design implication": {
+      "source": "elicited",
+      "evidence": "M. Berger confirmed VG-BGIT-002 (no agreed Legal SLA) as an open gap — portal cannot show timer until SLA is agreed"
+    },
+    "The moment": {
+      "source": "elicited",
+      "evidence": "M. Berger: PP-BGIT-002 'bespoke wording delays — Legal review has no committed turnaround' confirmed as second major negative moment"
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "M. Berger: bespoke wording adds 'unpredictable delay because Legal review has no committed turnaround'"
+    }
+  },
+  "MT-BGIT-004": {
+    "Design implication": {
+      "source": "elicited",
+      "evidence": "M. Berger confirmed no real-time delivery notification currently sent to corporate applicant — improvement opportunity"
+    },
+    "The moment": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'delivery confirmation to beneficiary' confirmed as final moment of truth — commercial objective achieved"
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "M. Berger confirmed SWIFT delivery at Step 6 as the moment the client's commercial obligation is fulfilled"
+    }
+  },
+  "OAF-BGIT-001": {
+    "Finding": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Recommendation": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input confirmed generation gate remediation"
+    }
+  },
+  "OAF-BGIT-002": {
+    "Finding": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5: 'AF-2025-02: external audit flagged absence of documented Legal SLA as process-control weakness'"
+    },
+    "Recommendation": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input confirmed Legal SLA remediation required"
+    }
+  },
+  "PG-BGIT-001": {
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Next step": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'There is no formal SLA on Credit team response (informally 1–2 business days), which is the root cause of the stall pain point'"
+    }
+  },
+  "PG-BGIT-002": {
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Next step": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'bespoke wording handoff is by email today — no system handoff — flag as a process gap'"
+    }
+  },
+  "PG-BGIT-003": {
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Next step": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'Legal has no committed SLA — root cause of PP-BGIT-002 — flag'"
+    }
+  },
+  "PG-BGIT-004": {
+    "Impact": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input confirmed gap area As-Is process"
+    },
+    "Next step": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input confirmed gapStatus open"
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5: 'No end-to-end issuance cycle-time metric — only step-level SLAs tracked, 3-business-day commitment cannot be measured automatically'"
+    }
+  },
+  "PG-BGIT-005": {
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Next step": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input confirmed gapStatus open"
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5: 'Email-based Legal handoff at Step 3 produces no audit trail and no SLA enforcement'"
+    }
+  },
+  "PP-BGIT-001": {
+    "Description": {
+      "source": "document",
+      "evidence": "Applications frequently stall at the credit and facility check when the client has not pre-arranged enough limit. this is the most common reason for delay."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "M. Berger: standing approval"
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "Applications frequently stall at the credit and facility check when the client has not pre-arranged enough limit; M. Berger: no formal SLA on Credit team response (informally 1–2 business days) compounds the stall duration — documented as PG-BGIT-001"
+    }
+  },
+  "PP-BGIT-002": {
+    "Description": {
+      "source": "document",
+      "evidence": "Bespoke wording adds unpredictable delay because Legal review has no committed turnaround."
+    },
+    "Impact": {
+      "source": "document",
+      "evidence": "Bespoke wording adds unpredictable delay because Legal review has no committed turnaround."
+    },
+    "Root cause": {
+      "source": "document",
+      "evidence": "Legal review has no committed turnaround."
+    }
+  },
+  "PP-BGIT-003": {
+    "Description": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'incomplete applications are returned through the portal with a missing-info comment (no formal chase SLA, that’s a known weakness)'"
+    },
+    "Impact": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Root cause": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "PS-BGIT-001": {
+    "Inputs": {
+      "source": "document",
+      "evidence": "checks it is complete: beneficiary details, guarantee amount, currency, wording type (standard or bespoke), validity period and the underlying commercial contract reference."
+    },
+    "Outputs": {
+      "source": "elicited",
+      "evidence": "M. Berger confirmed: 'outputs and why-it-matters are fine'"
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "The Trade Finance Officer receives the application and checks it is complete: beneficiary details, guarantee amount, currency, wording type (standard or bespoke), validity period and the underlying commercial contract reference."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "M. Berger confirmed: 'outputs and why-it-matters are fine'"
+    }
+  },
+  "PS-BGIT-002": {
+    "Inputs": {
+      "source": "elicited",
+      "evidence": "M. Berger confirmed: 'Y'"
+    },
+    "Outputs": {
+      "source": "elicited",
+      "evidence": "M. Berger: confirmed full decision tree including formal rejection on decline"
+    },
+    "What happens": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "M. Berger confirmed: 'Y'"
+    }
+  },
+  "PS-BGIT-003": {
+    "Inputs": {
+      "source": "elicited",
+      "evidence": "M. Berger confirmed: 'Y'"
+    },
+    "Outputs": {
+      "source": "elicited",
+      "evidence": "M. Berger confirmed: 'Y'"
+    },
+    "What happens": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'bespoke wording handoff is by email today (no system handoff); for standard wording, Step 3 is effectively a no-op for the TFO'"
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "M. Berger confirmed: 'Y'"
+    }
+  },
+  "PS-BGIT-004": {
+    "Inputs": {
+      "source": "elicited",
+      "evidence": "M. Berger: standing approval"
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "the screening result is attached to the application"
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list. A screening hit suspends the application pending Compliance investigation."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "M. Berger: standing approval"
+    }
+  },
+  "PS-BGIT-005": {
+    "Inputs": {
+      "source": "elicited",
+      "evidence": "M. Berger: standing approval"
+    },
+    "Outputs": {
+      "source": "elicited",
+      "evidence": "M. Berger: standing approval"
+    },
+    "What happens": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "M. Berger: standing approval"
+    }
+  },
+  "PS-BGIT-006": {
+    "Inputs": {
+      "source": "elicited",
+      "evidence": "M. Berger: standing approval"
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "the guarantee is transmitted to the beneficiary's bank via SWIFT. The client's facility utilisation is updated."
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "The Trade Finance Officer generates the guarantee instrument in the Trade Finance System and the guarantee is transmitted to the beneficiary's bank via SWIFT. The client's facility utilisation is updated."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "M. Berger: standing approval"
+    }
+  },
+  "PS-BGIT-007": {
+    "Inputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Outputs": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "What happens": {
+      "source": "document",
+      "evidence": "For guarantees not fully covered by an approved facility, the Trade Finance Officer confirms that cash collateral has been received and blocked before issuance can proceed. This step is now mandatory for every partially-secured guarantee."
+    },
+    "Why it matters": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "REG-BGIT-001": {
+    "How it is met": {
+      "source": "document",
+      "evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list. A screening hit suspends the application pending Compliance investigation."
+    },
+    "What it requires": {
+      "source": "document",
+      "evidence": "The process is subject to anti-money-laundering and sanctions obligations (EU sanctions regulations, AML directives)."
+    },
+    "Why it applies": {
+      "source": "elicited",
+      "evidence": "M. Berger: standing approval"
+    }
+  },
+  "REG-BGIT-002": {
+    "How it is met": {
+      "source": "elicited",
+      "evidence": "M. Berger: 'Standard guarantee templates incorporate URDG 758 by reference (template clauses 1, 4, 12 specifically) and the Trade Finance System enforces template selection for standard wording; for bespoke wording, Legal confirms URDG 758 conformity as part of its sign-off at PS-BGIT-003 (now control CP-BGIT-004)'"
+    },
+    "What it requires": {
+      "source": "document",
+      "evidence": "Bank guarantees follow the ICC Uniform Rules for Demand Guarantees (URDG 758) where the guarantee is issued on demand terms."
+    },
+    "Why it applies": {
+      "source": "document",
+      "evidence": "Bank guarantees follow the ICC Uniform Rules for Demand Guarantees (URDG 758) where the guarantee is issued on demand terms."
+    }
+  },
+  "REG-BGIT-003": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://eur-lex.europa.eu/eli/reg/2013/575/oj/eng — Annex I framework requires pre-approved credit facility covering the guarantee amount — fetched 2026-05-20"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://eur-lex.europa.eu/eli/reg/2013/575/oj/eng — \"Annex I: Classification of off-balance-sheet items ... Full-risk items: ... Guarantees having the character of credit substitutes\" (CCF 100%) — fetched 2026-05-20"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://eur-lex.europa.eu/eli/reg/2013/575/oj/eng — Article 111: exposure value of off-balance-sheet items calculated as CCF × nominal value — fetched 2026-05-20"
+    }
+  },
+  "REG-BGIT-004": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Rundschreiben/2023/rs_05_2023_MaRisk_BA.html — BT 1.1 Vier-Augen-Prinzip satisfied by dual-approver structure at Step 5 — fetched 2026-05-20"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Rundschreiben/2023/rs_05_2023_MaRisk_BA.html — MaRisk BT 1.1 requires Funktionstrennung (function separation) between market and risk/approval functions, and Vier-Augen-Prinzip for credit decisions — fetched 2026-05-20"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://www.bafin.de/SharedDocs/Veroeffentlichungen/DE/Rundschreiben/2023/rs_05_2023_MaRisk_BA.html — Garantiegeschäft falls under BT 1 credit business scope — fetched 2026-05-20"
+    }
+  },
+  "REG-BGIT-005": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://www.gesetze-im-internet.de/kredwg/__1.html — KWG licence is a precondition for operating this process; internal delegation of authority governs individual issuance decisions — fetched 2026-05-20"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://www.gesetze-im-internet.de/kredwg/__1.html — §1 Abs. 1 Satz 2 Nr. 2: Kreditgeschäft includes granting of loans and Garantien; regulated as banking business requiring BaFin licence — fetched 2026-05-20"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://www.gesetze-im-internet.de/kredwg/__1.html — independent bank guarantees (Garantiegeschäft) fall under §1 Nr. 2 credit business — fetched 2026-05-20"
+    }
+  },
+  "REG-BGIT-006": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/regulation-and-policy/credit-risk/guidelines-on-loan-origination-and-monitoring — creditworthiness assessment and approval governance at Steps 2 and 5 address core EBA/GL/2020/06 requirements — fetched 2026-05-20"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/regulation-and-policy/credit-risk/guidelines-on-loan-origination-and-monitoring — EBA/GL/2020/06 requires documented creditworthiness assessment, governance and approval policies for credit facilities; applicable to guarantees as contingent credit — fetched 2026-05-20"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/regulation-and-policy/credit-risk/guidelines-on-loan-origination-and-monitoring — guarantee facilities extended to corporate clients are credit exposures in scope — fetched 2026-05-20"
+    }
+  },
+  "REG-BGIT-007": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj — DORA compliance for SYS-BGIT-002 and SYS-BGIT-004 managed at infrastructure level; process-level controls rely on system availability — fetched 2026-05-20"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj — Article 6: ICT risk management framework; Article 28: third-party ICT provider management; SWIFT is an explicitly named critical ICT provider category — fetched 2026-05-20"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://eur-lex.europa.eu/eli/reg/2022/2554/oj — Deutsche Bank as credit institution is a financial entity under DORA Article 2; TFS and SWIFT are in-scope ICT systems — fetched 2026-05-20"
+    }
+  },
+  "REG-BGIT-008": {
+    "How it is met": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/regulation-and-policy/anti-money-laundering-and-countering-financing-terrorism/guidelines-on-revised-ml-tf-risk-factors — CP-BGIT-002 (sanctions screening) addresses beneficiary-level risk; alignment with trade-based ML indicator monitoring is to be confirmed with Compliance — fetched 2026-05-20"
+    },
+    "What it requires": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/regulation-and-policy/anti-money-laundering-and-countering-financing-terrorism/guidelines-on-revised-ml-tf-risk-factors — EBA/GL/2021/02 identifies trade finance as higher-risk sector; institutions must apply enhanced due diligence and monitor for trade-based money laundering indicators — fetched 2026-05-20"
+    },
+    "Why it applies": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/regulation-and-policy/anti-money-laundering-and-countering-financing-terrorism/guidelines-on-revised-ml-tf-risk-factors — bank guarantee issuance is a trade finance product; EBA sector-specific guidance applies alongside the general AMLD obligations covered by REG-BGIT-001 — fetched 2026-05-20"
+    }
+  },
+  "REQ-BGIT-001": {
+    "Acceptance criteria": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Requirement": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "REQ-BGIT-002": {
+    "Acceptance criteria": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Requirement": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "REQ-BGIT-003": {
+    "Acceptance criteria": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Requirement": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "REQ-BGIT-004": {
+    "Acceptance criteria": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Rationale": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Requirement": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "REQ-BGIT-005": {
+    "Acceptance criteria": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input: STP rate target 70%"
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input: addresses [PP-BGIT-001, PP-BGIT-002, PP-BGIT-003]; current STP ~52%"
+    },
+    "Requirement": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 standing input: 'STP rate target: NON-FUNCTIONAL SHOULD, derivedFrom [TD-BGIT-001, TD-BGIT-002, TD-BGIT-003]'"
+    }
+  },
+  "ROLE-BGIT-001": {
+    "In this process": {
+      "source": "elicited",
+      "evidence": "The Trade Finance Officer receives the application and checks it is complete... The Trade Finance Officer confirms the client holds an approved guarantee facility... The Trade Finance Officer generates the guarantee instrument in the Trade Finance System; M. Berger: Step 3 is a no-op for standard wording; for bespoke the TFO emails draft to Legal"
+    },
+    "Responsibility": {
+      "source": "document",
+      "evidence": "Trade Finance Officer — intake, checks, generation and delivery."
+    }
+  },
+  "ROLE-BGIT-002": {
+    "In this process": {
+      "source": "document",
+      "evidence": "A Trade Finance Manager reviews the assembled package and approves issuance."
+    },
+    "Responsibility": {
+      "source": "document",
+      "evidence": "Trade Finance Manager — issuance approval."
+    }
+  },
+  "ROLE-BGIT-003": {
+    "In this process": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Responsibility": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "ROLE-BGIT-004": {
+    "In this process": {
+      "source": "document",
+      "evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list. A screening hit suspends the application pending Compliance investigation."
+    },
+    "Responsibility": {
+      "source": "document",
+      "evidence": "Compliance Analyst — sanctions and compliance screening."
+    }
+  },
+  "ROLE-BGIT-005": {
+    "In this process": {
+      "source": "elicited",
+      "evidence": "If the limit is insufficient, the application is parked and routed to the Credit team; M. Berger: Credit team can grant a temporary one-off uplift, recommend a permanent facility increase (separate process), or decline; on decline the application is formally rejected to the client through the portal"
+    },
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "Credit team — limit increases when the facility is insufficient; M. Berger: can also decline leading to formal rejection"
+    }
+  },
+  "ROLE-BGIT-006": {
+    "In this process": {
+      "source": "document",
+      "evidence": "Bespoke wording is sent to the Legal team for review and sign-off before issuance."
+    },
+    "Responsibility": {
+      "source": "document",
+      "evidence": "Legal team — bespoke wording review."
+    }
+  },
+  "SYS-BGIT-001": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "Corporate Portal — client-facing application capture."
+    },
+    "Role in this process": {
+      "source": "document",
+      "evidence": "A corporate client submits a Bank Guarantee application through the Corporate Portal, or via a relationship manager who keys it into the portal on the client's behalf."
+    }
+  },
+  "SYS-BGIT-002": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "Trade Finance System — the system of record for guarantee instruments, approvals and facility utilisation."
+    },
+    "Role in this process": {
+      "source": "document",
+      "evidence": "Issuance is blocked in the Trade Finance System unless available facility limit covers the guarantee amount... No guarantee is issued without a Trade Finance Manager's approval, recorded in the Trade Finance System... The Trade Finance Officer generates the guarantee instrument in the Trade Finance System"
+    }
+  },
+  "SYS-BGIT-003": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "Sanctions Screening Tool — used by Compliance for beneficiary screening."
+    },
+    "Role in this process": {
+      "source": "document",
+      "evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list."
+    }
+  },
+  "SYS-BGIT-004": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "SWIFT — transmission of the executed guarantee to the beneficiary's bank."
+    },
+    "Role in this process": {
+      "source": "document",
+      "evidence": "the guarantee is transmitted to the beneficiary's bank via SWIFT."
+    }
+  },
+  "TD-BGIT-001": {
+    "Options considered": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub"
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub"
+    },
+    "The decision": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub"
+    }
+  },
+  "TD-BGIT-002": {
+    "Options considered": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub"
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub"
+    },
+    "The decision": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub"
+    }
+  },
+  "TD-BGIT-003": {
+    "Options considered": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub"
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub"
+    },
+    "The decision": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub"
+    }
+  },
+  "TD-BGIT-004": {
+    "Options considered": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub"
+    },
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub"
+    },
+    "The decision": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed transformation decision from source-target stub"
+    }
+  },
+  "TR-BGIT-001": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://ctmfile.com/story/icc-and-swift-launch-trade-finance-api-standards-industry-roundup-23-august — \"Seven banks are already in the process of implementing C2B Guarantee APIs\" — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"automates the receipt of instructions and accelerates the issuance of digitally initiated bank guarantees\" — fetched 2026-05-20"
+    },
+    "The trend": {
+      "source": "web",
+      "evidence": "https://iccwbo.org/news-publications/news/icc-and-swift-unveil-first-api-standards-for-guarantees-and-standby-letters-of-credit/ — \"ICC and Swift unveil first API standards for guarantees and standby letters of credit\" — fetched 2026-05-20"
+    }
+  },
+  "TR-BGIT-002": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.azilen.com/blog/agentic-ai-in-financial-services/ — \"44% of finance teams will use agentic AI in 2026, representing an increase of over 600% from 2025\" — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.oracle.com/financial-services/banking/agentic-ai-and-trade-finance/ — \"bank guarantee vetting and document data extraction, using large language models alongside embedded analytics … identifying any discrepancies in the guarantee wording as per ICC/Legal laws\" — fetched 2026-05-20"
+    },
+    "The trend": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/magazine/gtr-issue-1-2026/transforming-trade-finance-how-ai-is-reshaping-the-future-of-global-commerce/ — \"About 45 percent of banks as of 2025 are deploying AI or machine learning in live client trade finance transactions, up from one-third the previous year\" — fetched 2026-05-20"
+    }
+  },
+  "TR-BGIT-003": {
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.futuremarketinsights.com/reports/regtech-market — RegTech market growing at 19.2% CAGR (2026–2036), from USD 20.1 billion in 2026 to USD 116.7 billion by 2036 — fetched 2026-05-20"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://fintech.global/2025/11/07/best-aml-and-sanctions-software-in-2026/ — \"GSS teamed up with Swift in October 2024 to integrate its transaction screening platform with Swift's global financial messaging network, enabling automated sanctions screening\" — fetched 2026-05-20"
+    },
+    "The trend": {
+      "source": "web",
+      "evidence": "https://www.trustsphere.ai/post/regtech-at-scale-how-ai-is-transforming-financial-crime-compliance-operations — \"AI-powered compliance tools are moving from pilot programmes into production deployment at scale, with large language models, graph neural networks, and advanced machine learning techniques being applied to transaction monitoring, sanctions screening\" — fetched 2026-05-20"
+    }
+  },
+  "TS-BGIT-001": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed target state from source-target stub"
+    },
+    "Target description": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed target state from source-target stub"
+    },
+    "What changes": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed target state from source-target stub"
+    }
+  },
+  "TS-BGIT-002": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed target state from source-target stub"
+    },
+    "Target description": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed target state from source-target stub"
+    },
+    "What changes": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed target state from source-target stub"
+    }
+  },
+  "TS-BGIT-003": {
+    "Rationale": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed target state from source-target stub"
+    },
+    "Target description": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed target state from source-target stub"
+    },
+    "What changes": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed target state from source-target stub"
+    }
+  },
+  "VG-BGIT-001": {
+    "Resolution": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed gap-resolution from source-target stub"
+    },
+    "Status": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed gap-resolution from source-target stub"
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed gap-resolution from source-target stub"
+    }
+  },
+  "VG-BGIT-002": {
+    "Resolution": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed gap-resolution from source-target stub"
+    },
+    "Status": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed gap-resolution from source-target stub"
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed gap-resolution from source-target stub"
+    }
+  },
+  "VG-BGIT-003": {
+    "Resolution": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed gap-resolution from source-target stub"
+    },
+    "Status": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed gap-resolution from source-target stub"
+    },
+    "The gap": {
+      "source": "elicited",
+      "evidence": "M. Berger Stage 5 refinement session, 2026-05-20 — confirmed gap-resolution from source-target stub"
+    }
+  }
+}

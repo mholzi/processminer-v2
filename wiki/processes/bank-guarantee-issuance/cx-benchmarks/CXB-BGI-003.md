@@ -7,7 +7,6 @@ status: draft
 confidence: low
 source: EY Global — How digital transformation is redesigning trade finance; Coherent Market Insights — Driving Digital Transformation in Trade Finance (2025)
 sourceUrl: https://www.ey.com/en_gl/insights/banking-capital-markets/how-digital-transformation-is-redesigning-trade-finance
-provenance: {"Evidence": {"evidence": "https://www.ey.com/en_gl/insights/banking-capital-markets/how-digital-transformation-is-redesigning-trade-finance — EY analysis on digital transformation reducing processing friction and time in trade finance — fetched 2026-05-19", "source": "web"}, "Relevance": {"evidence": "https://www.coherentmarketinsights.com/blog/finance/driving-digital-transformation-in-trade-finance-3457 — \"Digital trade could boost trade revenues by up to 20% and cut processing time by 60%\" — fetched 2026-05-19", "source": "web"}, "The benchmark": {"evidence": "https://www.coherentmarketinsights.com/blog/finance/driving-digital-transformation-in-trade-finance-3457 — \"Digital trade papers have the potential to cut transaction processing times by as much as 75%\" — fetched 2026-05-19", "source": "web"}}
 asOf: 2026-05-20
 ---
 ## The benchmark

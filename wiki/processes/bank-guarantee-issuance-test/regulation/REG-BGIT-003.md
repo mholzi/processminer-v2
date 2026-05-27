@@ -8,7 +8,6 @@ confidence: high
 domain: prudential
 source: EU Capital Requirements Regulation No 575/2013 (CRR), Annex I and Article 111
 sourceUrl: https://eur-lex.europa.eu/eli/reg/2013/575/oj/eng
-provenance: {"How it is met": {"evidence": "https://eur-lex.europa.eu/eli/reg/2013/575/oj/eng — Annex I framework requires pre-approved credit facility covering the guarantee amount — fetched 2026-05-20", "source": "web"}, "What it requires": {"evidence": "https://eur-lex.europa.eu/eli/reg/2013/575/oj/eng — \"Annex I: Classification of off-balance-sheet items ... Full-risk items: ... Guarantees having the character of credit substitutes\" (CCF 100%) — fetched 2026-05-20", "source": "web"}, "Why it applies": {"evidence": "https://eur-lex.europa.eu/eli/reg/2013/575/oj/eng — Article 111: exposure value of off-balance-sheet items calculated as CCF × nominal value — fetched 2026-05-20", "source": "web"}}
 asOf: 2026-05-20
 ---
 ## What it requires

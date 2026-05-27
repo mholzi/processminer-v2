@@ -8,7 +8,6 @@ confidence: high
 category: rework
 severity: MEDIUM
 affects: [PS-BGI-006]
-provenance: {"Description": {"evidence": "Wrong beneficiary bank BIC details cause SWIFT rejections and re-transmissions, and missed manual utilisation updates cause limit-tracking discrepancies.", "source": "elicited"}, "Impact": {"evidence": "Wrong beneficiary bank BIC details cause SWIFT rejections and re-transmissions, and missed manual utilisation updates cause limit-tracking discrepancies.", "source": "elicited"}, "Root cause": {"evidence": "", "source": "proposed"}}
 ---
 ## Description
 Wrong beneficiary bank BIC details supplied at application cause SWIFT rejections and re-transmissions at the guarantee generation and delivery step. Separately, the manual facility utilisation update that the TFO must perform after SWIFT transmission is occasionally missed.

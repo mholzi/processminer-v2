@@ -7,7 +7,6 @@ status: draft
 confidence: high
 source: ddmm-dtp-mockup.md
 systemType: SUPPORTING
-provenance: {"Purpose": {"evidence": "Payment Hub | Holds the mandate store used by SEPA collections; receives R-transactions", "source": "document"}, "Role in this process": {"evidence": "SME (M. Vogel) confirmed: Payment Hub mandate store updated via intraday batch sync from MMS (not real-time); divergence window exists and is covered by CP-DDMM-004.", "source": "elicited"}}
 approval: approved
 approvalBy: M. Vogel
 approvalDate: 2026-05-19

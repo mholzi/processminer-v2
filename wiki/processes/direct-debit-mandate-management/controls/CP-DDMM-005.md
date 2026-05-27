@@ -9,7 +9,6 @@ source: ddmm-dtp-mockup.md
 controlType: DETECTIVE
 execution: MANUAL
 owner: Payments Operations
-provenance: {"Control activity": {"evidence": "SME (M. Vogel) confirmed: review is judgement-based with no fixed dormancy threshold — a known weakness linked to PG-DDMM-003. Creditor notified on cancellation consistent with normal cancellation handling.", "source": "elicited"}, "Risk addressed": {"evidence": "SME confirmed accurate as drafted.", "source": "elicited"}, "Timing": {"evidence": "C-5 | Frequency: Quarterly", "source": "document"}, "What it checks": {"evidence": "C-5 | Periodic review of dormant mandates | Detective / manual | Quarterly", "source": "document"}}
 approval: in-progress
 approvalBy: run-lint
 approvalDate: 2026-05-19

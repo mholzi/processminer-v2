@@ -11,7 +11,6 @@ execution: AUTOMATED
 effectiveness: HIGH
 owner: Compliance
 step: [PS-SP-004]
-provenance: {"Control activity": {"evidence": "Step 4: 'Clean items pass automatically; potential hits route to Compliance.' E-3: 'Payment frozen; escalated to Compliance and Financial Crime.' Section 8 lists Sanctions Screening Engine and AML Transaction Monitoring as systems.", "source": "document"}, "Risk addressed": {"evidence": "", "source": "proposed"}, "Timing": {"evidence": "Step sequence: step 3 (funds check) -> step 4 (sanctions/AML) -> step 5 (fraud). Section 7 C-4: 'Every item'.", "source": "document"}, "What it checks": {"evidence": "Step 4: 'Debtor and creditor are screened against sanctions lists; the payment is checked by AML transaction monitoring.' Phrase 'known financial-crime patterns or watchlist entries' removed — not stated in the document.", "source": "document"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:00Z
 ---

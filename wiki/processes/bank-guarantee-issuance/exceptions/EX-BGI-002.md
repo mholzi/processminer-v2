@@ -9,7 +9,6 @@ source: bank-guarantee-issuance-v1.md
 category: sanctions
 impact: HIGH
 handlingOwner: Compliance Analyst
-provenance: {"Description": {"evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list. A screening hit suspends the application pending Compliance investigation.", "source": "document"}, "Handling": {"evidence": "Routine clears decided by Analyst; borderline hits escalate to Compliance Officer; serious matches to Group Compliance / MLRO. False positives follow the same suspend-investigate-clear path but typically conclude quickly at the Analyst tier.", "source": "elicited"}, "Impact": {"evidence": "accurate, keep it — but escalation is normally to the Compliance Officer, with Group Compliance only for the most serious hits", "source": "elicited"}}
 approval: approved
 approvalBy: m.berger
 approvalDate: 2026-05-19

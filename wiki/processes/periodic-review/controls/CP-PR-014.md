@@ -12,7 +12,6 @@ effectiveness: HIGH
 owner: Audit Service
 step: [PS-PR-001, PS-PR-003, PS-PR-005, PS-PR-006, PS-PR-007]
 regulatedBy: [REG-PR-001, REG-PR-002, REG-PR-005]
-provenance: {"Control activity": {"evidence": "", "source": "proposed"}, "Risk addressed": {"evidence": "[As-Is, p.7:] Audit fragility. Reconstructing why a review was approved requires pulling four artefacts, none of which are timestamped consistently. [D5, p.15:] Closes the BaFin §44 finding decisively. [Executive Summary:] BaFin §44 KWG inspection, Sep 2025.", "source": "document"}, "Timing": {"evidence": "[Table:] Frequency: Continuous. [§7.3:] Case Manager → Audit Ledger: every state transition.", "source": "document"}, "What it checks": {"evidence": "", "source": "proposed"}}
 ---
 ## What it checks
 Whether every material decision — trigger, STP auto-approve, analyst decision, FCO sign-off, and close-out — is recorded with actor identity, timestamp, policy clause, and case ID, and whether the record is tamper-free.

@@ -9,7 +9,6 @@ source: sepa-payments-dtp-mockup.md
 category: r-transaction
 impact: MEDIUM
 handlingOwner: Payments Operations
-provenance: {"Description": {"evidence": "Section 2 scope: 'Handling of R-transactions (returns, rejects, recalls, refunds).' Section 11 glossary: 'R-transaction: A return, reject, recall or refund of a SEPA payment.'", "source": "document"}, "Handling": {"evidence": "Section 6 E-6: 'Matched to the original payment; funds re-credited or recall actioned within scheme deadlines.' Section 9 SLA: 'Recall / return action: Within the EPC scheme deadline (10 business days).'", "source": "document"}, "Impact": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-25T20:05:00Z
 ---

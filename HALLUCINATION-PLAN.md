@@ -31,18 +31,26 @@ it stores the **verbatim SME quote inline on the element**. The quote is the
 record — self-contained, git-versioned with the element, no dangling
 reference. Claude Code's own session log is ephemeral and not used as evidence.
 
-### 2. Per-heading provenance, frontmatter map (D3, D6)
+### 2. Per-heading provenance, per-process bundle (D3, D6)
 The said-vs-added split is marked **per schema-template heading** (## What it
-checks, ## Control activity, …). Each element's frontmatter carries a
-`provenance` map keyed by heading title:
+checks, ## Control activity, …). Each element has a `provenance` map keyed by
+heading title, living in the per-process sidecar
+`wiki/processes/<slug>/provenance.json` and keyed by element id:
 
-```yaml
-provenance:
-  "What it checks":   { source: elicited, evidence: "<verbatim SME quote>" }
-  "Control activity": { source: proposed, evidence: "" }
-  "Risk addressed":   { source: document, evidence: "<quote from source doc>" }
-  "Timing":           { source: web,      evidence: "<url> — <snippet> — fetched 2026-05-18" }
+```json
+{
+  "CP-FR-001": {
+    "What it checks":   { "source": "elicited", "evidence": "<verbatim SME quote>" },
+    "Control activity": { "source": "proposed", "evidence": "" },
+    "Risk addressed":   { "source": "document", "evidence": "<quote from source doc>" },
+    "Timing":           { "source": "web",      "evidence": "<url> — <snippet> — fetched 2026-05-18" }
+  }
+}
 ```
+
+(Historically the map sat inline as a JSON string in the element frontmatter.
+It moved to a bundle so the YAML stays flat and human-diffable — the writer
+scripts handle the on-disk shape, skills still author one map per element.)
 
 `source` taxonomy: `elicited` (SME said it) · `document` (from an uploaded
 source) · `proposed` (AI-added, unconfirmed) · `web` (web-sourced,

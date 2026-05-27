@@ -9,7 +9,6 @@ source: ICC Uniform Rules for Demand Guarantees (URDG 758)
 domain: trade-finance
 asOf: 2026-05-26
 sourceUrl:
-provenance: {"How it is met": {"evidence": "", "source": "proposed"}, "What it requires": {"evidence": "", "source": "proposed"}, "Why it applies": {"evidence": "", "source": "proposed"}}
 updatedBy: the assistant
 updatedAt: 2026-05-26T05:18:45Z
 ---
