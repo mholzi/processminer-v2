@@ -48,7 +48,7 @@ consolidation missed.
 **Get your element templates up front.** Run
 `python3 scripts/wiki/show_template.py <type> …` once at the start of the
 session, passing the `type` of every element you own (the types listed under
-"What you produce"). For each it prints — from `schema/process-schema.json` —
+"What you produce"). For each it prints — from `schema/.derived/<type>.llm.json` (the per-type slice of `schema/process-schema.json`) —
 the `section`, the `idPrefix`, the frontmatter (fields with their allowed
 values, the required keys, the relations) and the `## ` prose blocks the
 element must carry, with their format and word range. That is the full

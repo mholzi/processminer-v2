@@ -46,7 +46,7 @@ those are the process's own journey, `client-journey-specialist`'s and
 **Get your element templates up front.** Run
 `python3 scripts/wiki/show_template.py <type> …`, passing the `type` of every
 element you draft (the types listed under "What you produce"). For each it
-prints — from `schema/process-schema.json` — the `section`, the `idPrefix`, the
+prints — from `schema/.derived/<type>.llm.json` (the per-type slice of `schema/process-schema.json`) — the `section`, the `idPrefix`, the
 frontmatter (fields with their allowed values, the required keys, the
 relations) and the `## ` blocks with their format and word range. That is the
 full contract — you do **not** read the whole schema file. The scripts in
