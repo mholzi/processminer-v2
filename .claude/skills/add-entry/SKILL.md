@@ -21,14 +21,21 @@ counterpart to the bulk `source-innovation` / `source-cx` skills.
 
 ## Step 1 — Read the section's context
 
-- Read `schema/process-schema.json` for the section — the element type(s) it
-  holds. For each of those types run `python3 scripts/wiki/show_template.py
-  <type>`: it prints the type's `## ` blocks **and** its type-specific
-  frontmatter fields and relations, so the entry you draft is as complete as
-  one the dedicated sourcing skills produce.
+- For each element type the section holds, run
+  `python3 scripts/wiki/show_template.py <type>` — it prints the type's
+  full contract (`##` blocks, type-specific frontmatter fields and
+  relations) from `schema/.derived/<type>.llm.json`, so the entry you
+  draft is as complete as one the dedicated sourcing skills produce. The
+  derived file is the per-type slice of the schema — you do not separately
+  read `schema/process-schema.json`. If you don't know which type(s) the
+  section holds, run `python3 scripts/wiki/show_template.py --list` to
+  see them all.
 - Read the section's existing elements in `wiki/processes/<slug>/<section>/`
   so the new entry fits and does not duplicate one already there.
-- Read `index.md` for the process — its domain, what it does, its scope.
+- For the process meta (domain, scope), run
+  `python3 scripts/wiki/get_context.py --slug <slug> --type <type> --channels process-meta`
+  — one call returns the overview + section progress without re-reading
+  `index.md` by hand.
 
 If the section holds more than one element type, note them.
 
