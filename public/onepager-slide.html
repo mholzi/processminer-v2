@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Processminer — Slide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --primary: #1e40af;
+    --secondary: #2563eb;
+    --soft: #e9eaf6;
+    --bg: #f7f8f8;
+    --surface: #ffffff;
+    --ink: #16181d;
+    --muted: #6b7280;
+    --line: #e2e4e8;
+    --success: #3f7d5c;
+    --warning: #9a7b32;
+    --r-sm: 4px;
+    --r-md: 6px;
+    --r-pill: 9999px;
+    --font: "Geist", -apple-system, system-ui, sans-serif;
+    --mono: "Geist Mono", ui-monospace, "SF Mono", monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    color: var(--ink);
+    background: #e5e7eb;
+    -webkit-font-smoothing: antialiased;
+    display: flex; justify-content: center; align-items: flex-start;
+  }
+  .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  /* The slide canvas — fixed PPTX 16:9 widescreen at 1920×1080 */
+  .slide {
+    width: 1920px;
+    height: 1080px;
+    background: var(--bg);
+    padding: 40px 56px 32px;
+    display: grid;
+    grid-template-rows: 32px 200px 280px 220px 200px 32px;
+    row-gap: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,.06);
+  }
+
+  /* ── Top bar */
+  .topbar { display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-weight: 600; letter-spacing: 0.10em; font-size: 14px; text-transform: uppercase; }
+  .topbar .meta { color: var(--muted); font-size: 13px; }
+  .topbar .meta .mono { color: var(--ink); }
+  .topbar .meta span + span { margin-left: 16px; padding-left: 16px; border-left: 1px solid var(--line); }
+
+  /* ── Title block — full width */
+  .title-block { display: flex; flex-direction: column; justify-content: center; max-width: 1600px; }
+  .eyebrow { color: var(--secondary); font-size: 14px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; }
+  h1 { font-size: 56px; line-height: 1.08; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 18px; max-width: 1500px; }
+  .lede { font-size: 20px; color: var(--ink); margin: 0; line-height: 1.45; max-width: 1300px; }
+  .lede .muted { color: var(--muted); }
+
+  /* ── Hero shot full-width strip */
+  .hero-shot { border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; background: var(--surface); }
+  .hero-shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+
+  /* ── Three cards */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 20px 22px;
+    display: flex; flex-direction: column;
+  }
+  .card .kicker {
+    font-family: var(--mono); font-size: 12px; color: var(--secondary);
+    letter-spacing: 0.04em; margin-bottom: 8px;
+  }
+  .card h3 { font-size: 17px; font-weight: 600; margin: 0 0 10px; line-height: 1.25; }
+  .card p { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+  .card .chips { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 2px 8px; font-size: 11px;
+    border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--bg);
+    font-family: var(--mono);
+  }
+  .chip .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+  .chip .dot.g { background: var(--success); }
+  .chip .dot.b { background: var(--secondary); }
+  .chip .dot.a { background: var(--warning); }
+
+  /* ── Bottom row: two product shots + stats */
+  .bottom { display: grid; grid-template-columns: 1fr 1fr 320px; gap: 20px; }
+  .shot {
+    border: 1px solid var(--line); border-radius: var(--r-md);
+    background: var(--surface); overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .shot .frame { flex: 1; overflow: hidden; }
+  .shot .frame img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .shot .cap {
+    padding: 10px 14px; border-top: 1px solid var(--line);
+    display: flex; flex-direction: column; gap: 2px;
+    background: var(--surface);
+  }
+  .shot .cap .kicker { font-family: var(--mono); font-size: 11px; color: var(--secondary); letter-spacing: 0.04em; }
+  .shot .cap .t { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .shot .cap .d { font-size: 12px; color: var(--muted); }
+
+  /* ── Stats column */
+  .stats-col {
+    display: grid; grid-template-rows: auto repeat(2, 1fr) auto;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md);
+    padding: 16px 18px;
+  }
+  .stats-col h3 { font-size: 13px; font-weight: 600; margin: 0 0 8px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; align-content: center; }
+  .stat { background: var(--bg); border-radius: var(--r-sm); padding: 8px 10px; }
+  .stat .n { font-family: var(--mono); font-size: 22px; font-weight: 500; color: var(--primary); display: block; line-height: 1; }
+  .stat .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; display: block; }
+  .stats-col .note { font-size: 11px; color: var(--muted); margin-top: 10px; line-height: 1.45; }
+
+  /* ── Footer strip */
+  .footer {
+    border-top: 1px solid var(--line); padding-top: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: var(--muted); font-size: 12px;
+  }
+  .footer strong { color: var(--ink); font-weight: 600; }
+  .footer .stack > span + span { margin-left: 12px; padding-left: 12px; border-left: 1px solid var(--line); }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="logo">PROCESSMINER</div>
+    <div class="meta">
+      <span>For transformation, audit &amp; operations teams</span>
+      <span>Onepager <span class="mono">v0.1</span></span>
+      <span>28 May 2026</span>
+    </div>
+  </div>
+
+  <!-- Title — full width -->
+  <div class="title-block">
+    <div class="eyebrow">AI-assisted process documentation for banks</div>
+    <h1>Process documentation banks can finish — and auditors can trust.</h1>
+    <p class="lede">
+      Processminer pairs your subject-matter expert with an AI interviewer, drafts every section as you go, and shows the <strong>source for every sentence</strong>. The SME approves block by block. <span class="muted">What ships is complete, cited, and ready for the next audit.</span>
+    </p>
+  </div>
+
+  <!-- Hero shot — full-width strip -->
+  <div class="hero-shot">
+    <img src="onepager-assets/01-dashboard.png" alt="Processminer dashboard" />
+  </div>
+
+  <!-- Three cards -->
+  <div class="cards">
+    <div class="card">
+      <div class="kicker">THE PROBLEM</div>
+      <h3>Process docs take a quarter — and nobody trusts them when they ship.</h3>
+      <p>Senior SME time is the bottleneck. "Just let AI write it" sounds great until the AI confidently invents the part nobody actually said. Compliance teams notice. Auditors notice.</p>
+    </div>
+    <div class="card">
+      <div class="kicker">THE PITCH</div>
+      <h3>The AI does the typing. The SME does the saying.</h3>
+      <p>Every sentence shows who said it and where. What's confirmed looks confirmed. What's still a draft looks like a draft. Nothing is hidden, nothing is invented, nothing ships without your SME's nod.</p>
+      <div class="chips">
+        <span class="chip"><span class="dot g"></span>said by SME</span>
+        <span class="chip"><span class="dot b"></span>from document</span>
+        <span class="chip"><span class="dot a"></span>AI draft</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="kicker">THE OUTCOME</div>
+      <h3>One source of truth covering six perspectives — ready for audit, transformation, or board.</h3>
+      <p>The same record serves the regulator, the transformation lead, and the operations team. No parallel decks, no stale Confluence pages, no "let me find the latest version."</p>
+    </div>
+  </div>
+
+  <!-- Bottom: two shots + stats -->
+  <div class="bottom">
+    <div class="shot">
+      <div class="frame"><img src="onepager-assets/02-triage.png" alt="Triage" /></div>
+      <div class="cap">
+        <span class="kicker">STEP 1 · DROP THE DOCUMENT IN</span>
+        <span class="t">The AI reads it and proposes a first draft.</span>
+        <span class="d">You see exactly what's covered, what's still open, and what's worth a closer look — before you spend any SME time.</span>
+      </div>
+    </div>
+    <div class="shot">
+      <div class="frame"><img src="onepager-assets/03-steps.png" alt="Process Steps" /></div>
+      <div class="cap">
+        <span class="kicker">STEP 2 · WALK IT WITH THE SME</span>
+        <span class="t">The AI proposes. The SME confirms, corrects, or cuts.</span>
+        <span class="d">Every step shows its source. "AI-drafted · awaiting confirmation" is honest, not hidden. The SME stays in charge.</span>
+      </div>
+    </div>
+    <div class="stats-col">
+      <h3>What you get</h3>
+      <div class="stats-grid">
+        <div class="stat"><span class="n">6</span><span class="l">Perspectives covered</span></div>
+        <div class="stat"><span class="n">100%</span><span class="l">Cited on approval</span></div>
+        <div class="stat"><span class="n">1</span><span class="l">SME, no team</span></div>
+        <div class="stat"><span class="n">git</span><span class="l">Local audit trail</span></div>
+      </div>
+      <p class="note">Wiki lives on the analyst's filesystem. <span class="mono">git diff</span> is the audit log. Model inference runs via Anthropic API — see slide 3 for the full trust model.</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="stack">
+      <span><strong>Status</strong> v0.4 — As-Is &amp; target architecture both live</span>
+      <span>Six pilot processes documented end-to-end</span>
+      <span>Next: pilot with two transformation teams</span>
+    </div>
+    <div><span class="mono">processminer.local</span></div>
+  </div>
+
+</div>
+</body>
+</html>
