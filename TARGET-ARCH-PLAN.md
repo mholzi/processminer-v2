@@ -1,5 +1,12 @@
 # Target Architecture — Implementation Plan
 
+> **Status (2026-05-28): SHIPPED.** All three pieces delivered and the skill
+> rollout completed across [v0.2.0-alpha](https://github.com/mholzi/processminer-v2/releases/tag/v0.2.0-alpha) →
+> [v0.2.0-beta](https://github.com/mholzi/processminer-v2/releases/tag/v0.2.0-beta) →
+> [v0.2.0](https://github.com/mholzi/processminer-v2/releases/tag/v0.2.0) →
+> [v0.3.0](https://github.com/mholzi/processminer-v2/releases/tag/v0.3.0). See
+> "What's still open" at the bottom.
+
 Three structural pieces that move the codebase toward the target architecture
 sketched by Miso in the ProcessMiner Architecture diagram (Confluence, 2026-05-27),
 with LLM efficiency as the primary lens.
@@ -474,6 +481,60 @@ Locked in during planning, 2026-05-28:
 4. **Orchestrator deferred to v0.3.** Piece 2 must expose a deterministic
    `view.state` as the seam. Design doc to follow once piece 2 ships and the
    state object is in real use.
+
+## What's still open
+
+The original three pieces shipped. These are the items that surfaced during
+or after execution and are *not yet* delivered:
+
+### 1. Orchestrator (deferred from Piece 2)
+
+The diagram's "Orchestrator" component still does not exist as a discrete
+module. Today, routing lives implicitly inside each skill and inside
+`/api/session/route.ts`. Piece 2 preserved the seam:
+`ProcessView.state` (sections + lint findings + coverage) is reachable as
+pure data on the server side — a future orchestrator can read it and dispatch
+without burning LLM calls on routing decisions.
+
+What's needed before any code:
+- A short design doc deciding shape (state machine over `view.state` /
+  LLM-driven dispatcher / hybrid).
+- A concrete answer to "where does it live" (route handler, separate Python
+  CLI, separate Node service).
+- A concrete answer to "what does it route between" (skill invocation,
+  next-element suggestion, lint-finding triage).
+
+### 2. Cache benchmark
+
+The v0.2 / v0.3 work claims cache and consistency wins. The actual cache-hit
+rate against Anthropic's prompt cache is unmeasured. A short benchmark
+comparing pre-v0.2 vs post-v0.3 skill turns on `sepa-payments` would either
+validate the claim with numbers or surface gaps in how the STABLE bucket is
+being assembled.
+
+What's needed:
+- A repeatable benchmark harness (probably in `eval/`).
+- Baseline measurements: `/process-specialist` and `/foundational-run` turn
+  shapes pre-v0.2 (reconstructable from git).
+- Post-v0.3 measurements: same turns with the new infrastructure.
+- A short write-up to publish alongside.
+
+### 3. View-side context builder (TS-side counterpart to `get_context.py`)
+
+The Python `get_context.py` covers the skill side. The web app has
+`contextFor(view, id, opts)` in `src/lib/process-view.ts` but no consumer
+yet — the app reads relations via `buildRelations()` directly. If the app
+ever surfaces "the LLM context for X" as a UI panel (useful for debugging
+why an element was authored a certain way), the TS side becomes the natural
+home. Not urgent.
+
+### 4. Skills genuinely not migrated
+
+Five skills were considered and intentionally left untouched (see
+[v0.3.0 release notes](https://github.com/mholzi/processminer-v2/releases/tag/v0.3.0)):
+`/conflict-resolution`, `/run-lint`, `/qer-session`, `/new-process`,
+`/dogfood-*`. These don't have context-gathering patterns the new
+infrastructure targets; revisit only if their shape changes.
 
 ## Cross-references
 
