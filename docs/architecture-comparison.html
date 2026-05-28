@@ -90,9 +90,12 @@
 <h1>ProcessMiner Architecture — Target vs Current</h1>
 <p class="meta">
   Comparison of the target architecture in Miso Pach's Confluence diagram
-  (2026-05-27) against the codebase at <code>v0.3.0</code> (2026-05-28).
-  Four of seven diagram concepts match closely; two have a different on-disk
-  shape; one is still pending (orchestrator) and has a design plan.
+  (2026-05-27) against the codebase at <code>v0.4.0</code> (2026-05-28).
+  <strong>Updated 2026-05-28 (post-v0.4.0):</strong> the orchestrator
+  shipped — five of seven diagram concepts now match exactly; one is a
+  deliberate Karpathy-layer-2 divergence ("Process JSON" is reconstructed
+  at runtime via <code>ProcessView</code>); none remain pending against the
+  original plan.
 </p>
 
 <h2>Summary</h2>
@@ -120,9 +123,9 @@
     </tr>
     <tr>
       <td><strong>Orchestrator</strong><br><span class="meta">Drives discovery from JSON</span></td>
-      <td>Scattered across <code>WelcomeScreen</code>, <code>TriagePanel</code>, <code>coverage.ts</code></td>
-      <td><span class="verdict-pill pill-missing">Not consolidated</span></td>
-      <td>Design plan exists (<code>ORCHESTRATOR-PLAN.md</code>) — v0.4 build is consolidation, not greenfield.</td>
+      <td><code>src/lib/orchestrator.ts</code> — pure-data state machine over <code>ProcessView</code> + <code>ProcessDoc</code></td>
+      <td><span class="verdict-pill pill-match">Matches</span></td>
+      <td>Shipped v0.4.0. Read-only, never writes to <code>wiki/</code>. <code>WelcomeScreen</code> migrated; <code>TriagePanel</code> deliberately untouched.</td>
     </tr>
     <tr>
       <td><strong>Navigation UI</strong><br><span class="meta">Dynamically rendered</span></td>
@@ -214,7 +217,7 @@
 
 <!-- 3. Orchestrator -->
 <div class="section">
-  <h3>3. Orchestrator <span class="verdict-pill pill-missing">Not yet consolidated</span></h3>
+  <h3>3. Orchestrator <span class="verdict-pill pill-match">Matches — shipped v0.4.0</span></h3>
   <div class="columns">
     <div class="col col-target">
       <h4><span class="tag-target">Target</span> Diagram</h4>
@@ -222,25 +225,23 @@
     </div>
     <div class="col col-current">
       <h4><span class="tag-current">Current</span> Implementation</h4>
-      <p>No discrete module yet. The orchestration responsibility is in the codebase but scattered:</p>
+      <p><code>src/lib/orchestrator.ts</code> — a pure-data state machine over <code>ProcessView</code> + <code>ProcessDoc</code>. No LLM call in the routing hot path; authoring stays LLM-driven, routing stays deterministic. Two exported functions:</p>
       <ul>
-        <li><code>src/components/WelcomeScreen.tsx</code> — <code>pmAttentionForDoc(d)</code> computes weighted attention items from ingest conflicts, lint findings and open comments</li>
-        <li><code>src/components/TriagePanel.tsx</code> — per-process equivalent</li>
-        <li><code>src/lib/coverage.ts</code> — target-state coverage delta</li>
-        <li><code>src/lib/process-view.ts</code> — reserved <code>ProcessView.state</code> seam</li>
-        <li><code>src/app/api/session/route.ts</code> — chat pipeline (transport only, no orchestration)</li>
+        <li><code>buildOrchestratorState(view, doc)</code> — per-process: returns ranked <code>actions</code> + a coarse <code>health</code> summary (clean, conflicts, openLintFindings, openComments, runResumable).</li>
+        <li><code>buildAttentionFeed(docs)</code> — cross-process: splits docs into <code>attentionRows</code> (ranked, weighted) and <code>cleanProcesses</code>. Used by the WelcomeScreen ATTENTION column — verified byte-identical pre/post-migration on <code>sepa-payments</code> + the bank-guarantee dogfood processes.</li>
       </ul>
+      <p>Action vocabulary v1: <code>resolve-ingest-conflict</code>, <code>resolve-lint-finding</code>, <code>address-comment</code>, <code>resume-foundational-run</code>. Weight formula preserved verbatim from the pre-v0.4 <code>pmAttentionForDoc</code>: <code>conflicts × 100 + lint × 5 + comments</code>.</p>
     </div>
   </div>
-  <div class="gap">
-    <strong>Design plan exists</strong> — <code>ORCHESTRATOR-PLAN.md</code> (committed 2026-05-28).
-    v0.4 is consolidation into <code>src/lib/orchestrator.ts</code>, not greenfield.
-    Shape: state machine over <code>ProcessView</code> + <code>ProcessDoc</code> sidecars.
-    Pure function; no LLM call in the routing hot path.
-    Action vocabulary v1: <code>resolve-ingest-conflict</code>, <code>resolve-lint-finding</code>,
-    <code>address-comment</code>, <code>resume-foundational-run</code>.
+  <div class="extra">
+    <strong>Hard principle, pinned at the top of <a href="../ORCHESTRATOR-PLAN.md">ORCHESTRATOR-PLAN.md</a>:</strong>
+    never contaminate Karpathy wiki logic. The orchestrator is a read-only consumer of the wiki. It MUST NOT
+    write to <code>wiki/processes/&lt;slug&gt;/</code> or any sidecar, add a new sidecar of its own, stamp
+    anything onto element frontmatter, or reinterpret a schema field outside its declared meaning. If
+    persistence is ever needed (e.g. dismissals) it lives outside the wiki tree —
+    <code>.claude/</code>, <code>~/.processminer/</code>, never inside <code>wiki/</code>.
   </div>
-  <p>Key principle pinned at the top of the design: <strong>never contaminate Karpathy wiki logic</strong>. The orchestrator is a read-only consumer; if persistence is ever needed (e.g. dismissals) it lives outside the wiki tree.</p>
+  <p><strong>What landed:</strong> <code>WelcomeScreen</code> migrated to read <code>buildAttentionFeed(docs).attentionRows</code> instead of its inline <code>pmAttentionForDoc</code> loop. <code>TriagePanel</code> was inspected and deliberately <em>not</em> migrated — it does post-ingest-specific work (ingest receipt, confidence-spread bar, untouched-sections list) that doesn't fit the generic action vocabulary; forcing it through would have bloated the vocabulary (revision note in the plan). 13 unit tests in <code>src/lib/orchestrator.test.ts</code> cover weight ordering, clean-process detection, dismissed/resolved filtering, and the attention-feed split. Tagged at <a href="https://github.com/mholzi/processminer-v2/releases/tag/v0.4.0">v0.4.0</a>.</p>
 </div>
 
 <!-- 4. Navigation UI -->
@@ -378,18 +379,21 @@
 
 <h2>Net takeaway</h2>
 
-<p>The codebase implements the diagram's intent <strong>faithfully</strong> with two
-specific structural choices the diagram doesn't anticipate:</p>
+<p>The codebase implements the diagram's intent <strong>faithfully</strong>. After
+v0.4.0:</p>
 
-<ol>
-  <li><strong>The "Process JSON" is a runtime view (<code>ProcessView</code>), not an on-disk file.</strong> Karpathy LLM-Wiki layer 2 keeps the wiki as typed Markdown so provenance, approval gating and git review work line-by-line. Reading consumers see the join; writers see the typed elements.</li>
-  <li><strong>The "Orchestrator" exists as scattered widget logic today, with a design plan to consolidate it in v0.4.</strong> The seam was deliberately preserved (<code>ProcessView.state</code>) when Piece 2 shipped.</li>
-</ol>
+<ul>
+  <li><strong>Six of seven concepts now match exactly</strong> — Process Schema, Orchestrator, Navigation UI, Renderers, Validation, LLM interactions.</li>
+  <li><strong>One deliberate Karpathy-layer-2 divergence</strong> — the "Process JSON" lives as a runtime <code>ProcessView</code>, not a single on-disk file. The wiki stays typed Markdown so provenance, approval gating and git review work line-by-line; the join is reconstructed at render time and at <code>get_context.py</code> call time.</li>
+  <li><strong>Nothing remaining pending</strong> against the original TARGET-ARCH-PLAN.md trilogy.</li>
+</ul>
 
 <p>Beyond the diagram, the codebase carries the per-heading provenance contract, approval gating, schema-validated writers, the skill-as-Markdown runtime and a warm worker pool — none shown in the diagram but each load-bearing.</p>
 
 <footer>
-  Generated 2026-05-28 from the v0.3.0 codebase.
+  Updated 2026-05-28 (post-v0.4.0). Original draft was against v0.3.0; this
+  revision reflects the orchestrator consolidation shipped in
+  <a href="https://github.com/mholzi/processminer-v2/releases/tag/v0.4.0">v0.4.0</a>.
   Source diagram: ProcessMiner Architecture, Miso Pach (Confluence, 2026-05-27).
   Plans referenced: <code>TARGET-ARCH-PLAN.md</code>, <code>ORCHESTRATOR-PLAN.md</code>,
   <code>HALLUCINATION-PLAN.md</code>.
