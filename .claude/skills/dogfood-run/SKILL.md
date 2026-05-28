@@ -183,7 +183,14 @@ For each area with a "✦ Source from the web" empty-state CTA, trigger it and
 let the sourcing skill run: **Regulation** (`source-regulation`), **Competitor
 CX / CX Benchmarks** (`source-cx`), **Market Trends / Competitor / Innovation
 Ideas** (`source-innovation`), and the **Target Process** area CTA
-(`source-target`). These do live web research and take time.
+(`source-target`). These do live web research and take time — **expect
+15–60 minutes per skill** in normal operation; watch the chat for the
+active-skill chip and the agent's progress messages rather than the file
+system. The CTA now routes through the main chat pipeline (commit fixing
+`runSourcing` to use `handleSend`, post-run 2026-05-28-1502), so the same
+watchdog and error-surfacing that drives every other skill applies here —
+errors and stuck turns will appear in the chat, not vanish silently.
+
 *Assert:* each produces draft elements; sourced elements carry a
 `relevant` / `disregarded` relevance state (not approval); `source-target`
 produces target-state, transformation-decision and gap drafts.

@@ -1207,82 +1207,48 @@ export default function ProcessDocScreen({
       .catch(() => setSummaryGen({ area: target, status: "error" }));
   }
 
-  // progress banner, and it ends with a dismissable notice.
+  // Web-sourcing runs via the same chat pipeline as every other skill —
+  // through handleSend, not a raw fetch. The previous implementation called
+  // `fetch("/api/session", { sessionId: null })` directly, which bypassed
+  // useAgentChat entirely: no transcript, no active-skill chip, no watchdog,
+  // no session continuity, and any worker error vanished into a .catch with
+  // nothing in the chat to look at. The dogfood run (2026-05-28-1502) caught
+  // this — Stage 4 sat for 25+ minutes with the top-bar "Sourcing…" pill
+  // showing but no files appearing and no visibility into why. Aligning with
+  // runLint / runAreaSpecialist / runCouncilReview fixes all of that in one
+  // change: the turn is visible in the chat, errors surface inline, and the
+  // session worker is reused with the rest of the user's session.
   function runSourcing(kind: "innovation" | "cx" | "regulation") {
-    if (sourcing?.status === "running") return;
-    setSourcing({ kind, status: "running" });
+    if (sourcing?.status === "running" || chatPending) return;
     const skill =
       kind === "innovation"
         ? "source-innovation"
         : kind === "cx"
           ? "source-cx"
           : "source-regulation";
-    fetch("/api/session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message: `Run the ${skill} skill on the process with slug "${currentSlug}".`,
-        sessionId: null,
-      }),
-    })
-      .then(async (res) => {
-        if (!res.body) throw new Error("No response from the server.");
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-        let buf = "";
-        let final: { ok: boolean; text: string } | null = null;
-        for (;;) {
-          const { value, done } = await reader.read();
-          if (done) break;
-          buf += decoder.decode(value, { stream: true });
-          let sep: number;
-          while ((sep = buf.indexOf("\n\n")) !== -1) {
-            const frame = buf.slice(0, sep);
-            buf = buf.slice(sep + 2);
-            const line = frame.startsWith("data:")
-              ? frame.slice(5).trim()
-              : frame.trim();
-            if (!line) continue;
-            try {
-              const evt = JSON.parse(line) as {
-                type: string;
-                reply?: string;
-                error?: string;
-              };
-              if (evt.type === "done")
-                final = { ok: true, text: evt.reply || "Sourcing complete." };
-              else if (evt.type === "error")
-                final = { ok: false, text: evt.error || "Sourcing failed." };
-            } catch {
-              /* partial / non-JSON frame */
-            }
-          }
-        }
-        if (final && !final.ok) {
-          setSourcing({ kind, status: "error", text: final.text });
-        } else {
+    const areaLabel =
+      kind === "innovation"
+        ? "Innovation"
+        : kind === "cx"
+          ? "Client Experience"
+          : "Regulation";
+    setSourcing({ kind, status: "running" });
+    setChatOpen(true);
+    handleSend(
+      `Run the ${skill} skill on the process with slug "${currentSlug}".`,
+      {
+        skill,
+        displayText: `Source ${areaLabel} content from the web (${skill}).`,
+        onComplete: () => {
           setSourcing({
             kind,
             status: "done",
-            text: `Sourcing of ${
-              kind === "innovation"
-                ? "Innovation"
-                : kind === "cx"
-                  ? "Client Experience"
-                  : "Regulation"
-            } items completed.`,
-            report: final?.text,
+            text: `Sourcing of ${areaLabel} items completed.`,
           });
           router.refresh();
-        }
-      })
-      .catch((e: unknown) => {
-        setSourcing({
-          kind,
-          status: "error",
-          text: e instanceof Error ? e.message : "Sourcing failed.",
-        });
-      });
+        },
+      },
+    );
   }
 
   // The perspective specialist that owns an element's section. The schema

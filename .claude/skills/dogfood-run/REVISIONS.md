@@ -101,3 +101,83 @@ prioritization-section and validation-section have no schema element type
 at 3/10 and Target Process at 3/10); document-ingest's 30-min worker timeout
 fragility (manifested twice this run, required serial-dispatch workaround);
 conflict-resolution's narrow per-block patch (root cause of tweak 4 above).
+
+## 2026-05-28-1502 — Stage 4 fail-safe for silent source-* failures *(later reverted — see below)*
+
+Partial run — user direction stopped after Stage 4 surfaced a silent
+`source-cx` failure (0 elements written to all five CX folders after 25+ min
+of file-watching; UI showed "Sourcing…" indefinitely with no POST to
+`/api/session` in the server logs). Stages 5–8 skipped by user choice;
+Stage 9 ran over the partial wiki (verdict "Not yet; not fit for an
+auditor", average area 2.1/10). Full tweak proposals at
+`public/test-report-assets/2026-05-28-1502/walkthrough-tweaks.md`.
+
+One `[walkthrough]` tweak applied; three `[skill]` findings recorded; one
+`[walkthrough]` deferred as too structural to safely auto-apply.
+
+1. **Tweak 1 — Stage 4 fail-safe for silent source-* failures.** Stage-9
+   targets: five empty schema areas (Client Experience, Innovation, Target
+   Process, Target Architecture, plus half of Risk & Compliance and IT
+   Architecture). Added an additive paragraph to Stage 4: after triggering
+   each `source-*` CTA, watch the target section folder(s) for the first
+   file write within **5 minutes**. If none appears, record the failure as
+   a `[skill]` finding for the stage, mark the sub-assertion FAIL, and move
+   on to the next source-* skill — one silent failure doesn't necessarily
+   mean all four will fail. The original Stage 4 wording said "these do live
+   web research and take time" with no upper bound, which let this run sit
+   for 25+ min on a skill that was never going to produce.
+
+## 2026-05-28 (post-run) — REVERT of tweak 1; replaced with chat-routed note
+
+Reverted the 5-minute fail-safe paragraph applied above. The reasoning was
+wrong: while writing the dogfood QA report I checked the wiki one more time
+and found that `source-cx` **had** produced — 8 elements in `competitor-cx/`
+and 4 in `cx-benchmarks/` — with mtimes 16:53–16:55, *after* my 16:49 report
+write-up. The real symptom was that the run took 15.4 minutes (per the
+`POST /api/session ... 200 in 15.4min` line in the server log), but the
+`runSourcing` function in `src/app/ProcessDocScreen.tsx` was making the
+POST via raw `fetch(...)` with `sessionId: null` — bypassing
+`useAgentChat`'s transcript, active-skill chip, watchdog and error
+surfacing. So the harness saw nothing happening for ~15 min, declared the
+skill broken, and stopped. The real bug was in the code, not in the
+walkthrough.
+
+The code-level fix landed in a separate commit: `runSourcing` now routes
+through `handleSend` like every other skill invocation
+(`runLint`, `runAreaSpecialist`, `runCouncilReview`). The chat shows the
+turn live; errors surface inline; session continuity is preserved. With
+that fix in place, the 5-minute fail-safe paragraph would have made
+legitimate slow runs (the normal case for source-* is 15–60 minutes) fail
+prematurely — i.e. the tweak would have hidden the real problem rather
+than detecting it.
+
+Replacement paragraph kept in Stage 4: an expectation note that source-*
+takes 15–60 minutes, plus a reminder that progress now appears in the chat
+(no need to watch the file system). One sentence; no fail-safe condition.
+
+**How to revert this revert (i.e. restore the 5-minute fail-safe):** the
+fail-safe paragraph wording is preserved verbatim in
+`public/test-report-assets/2026-05-28-1502/walkthrough-tweaks.md` under
+section 2 ("[walkthrough] Stage 4 needs a fail-safe to detect silent
+source-* failures"). The replacement note in the current Stage 4 begins
+"expect 15–60 minutes per skill" — that line replaced the original
+fail-safe block.
+
+`[skill]` items recorded as findings but **not** applied to SKILL.md:
+- `source-cx` (and presumably the other three `source-*` skills) silently
+  produced no output in this dev environment — likely the worker lacks
+  WebSearch / WebFetch tool access, or its writer silently failed without
+  surfacing in the chat. The CTA fired and the UI showed "Sourcing…" but no
+  POST to `/api/session` after the click. Worth investigating in the
+  source-* skills or the worker config; fix lives there, not here.
+- Top-bar "Sourcing…" chip does not clear on silent failure — there's no
+  timeout / error state, masking the failure mode for ~25 min before the
+  harness's file-watch detected it. Frontend finding.
+
+`[walkthrough]` deferred (not auto-applied — too structural, would need
+manual review per "additive and conservative" rule):
+- Stage 4 should restructure to an explicit per-skill loop with a documented
+  "skip-on-fail" branch — i.e. each source-* CTA is its own sub-stage with
+  its own assertion, and failure of one does not block the others. Current
+  text reads as a single paragraph that lumps all four together. Filed as a
+  finding for a deliberate future revision rather than auto-applying.
