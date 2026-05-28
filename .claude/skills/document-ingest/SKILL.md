@@ -133,11 +133,20 @@ group. The 315k-token main-agent output of the legacy flow becomes ~30k.
    > to a different type the parent will pick up on a re-ingest. Output one
    > spec per entry on your slice, no more, no fewer.
    >
-   > Read `schema/process-schema.json` for your element types' frontmatter,
-   > relations and template headings. Read the section folder(s) for your
-   > types under `wiki/processes/<slug>/` if you need an existing element's
-   > body to decide how to merge a refine. Then read the document and draft
-   > each assigned entry:
+   > For each element type on your slice, run
+   > `python3 scripts/wiki/show_template.py <type>` — it prints the per-type
+   > contract (frontmatter, relations, template headings + ranges) from
+   > `schema/.derived/<type>.llm.json`, much smaller than reading the whole
+   > 2.8k-line `schema/process-schema.json`.
+   >
+   > For a **refine** entry (one that already has an `id`), run
+   > `python3 scripts/wiki/get_context.py --slug <slug> --element <id>` to see
+   > the existing element with its directly-related context — exactly the
+   > picture you need to decide how to merge new document content with the
+   > current wiki state. One call instead of hunting through the section
+   > folder.
+   >
+   > Then read the document and draft each assigned entry:
    >
    > - **New entry (has `tempKey`, no `id`)** — draft a `write_element.py`
    >   spec: `tempKey`, `type`, `title`, `status: "draft"`, `fields`,
