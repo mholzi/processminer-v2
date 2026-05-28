@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ProcessMiner Architecture — Target (Confluence) vs Current (v0.3.0)</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1a1a1a;
+    --muted: #666;
+    --rule: #e5e5e5;
+    --target: #3b82f6;
+    --target-bg: #eff6ff;
+    --current: #10b981;
+    --current-bg: #ecfdf5;
+    --match: #16a34a;
+    --partial: #d97706;
+    --missing: #dc2626;
+    --gap-bg: #fef3c7;
+    --gap-rule: #f59e0b;
+    --gap-fg: #92400e;
+    --code-bg: #f5f5f5;
+    --extra-bg: #f3e8ff;
+    --extra-rule: #a855f7;
+    --extra-fg: #6b21a8;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    max-width: 1180px;
+    margin: 2.5em auto;
+    padding: 0 1.25em 4em;
+    line-height: 1.6;
+    color: var(--fg);
+    background: var(--bg);
+  }
+  h1 { font-size: 1.9em; margin: 0 0 0.2em; letter-spacing: -0.01em; }
+  h2 { font-size: 1.35em; margin: 2.5em 0 0.5em; letter-spacing: -0.01em; }
+  h3 { font-size: 1.15em; margin: 1.5em 0 0.5em; }
+  h4 { font-size: 0.85em; margin: 0 0 0.5em; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; }
+  p { margin: 0.5em 0; }
+  .meta { color: var(--muted); font-size: 0.95em; margin-bottom: 1.5em; }
+  table { width: 100%; border-collapse: collapse; margin: 1em 0; font-size: 0.95em; }
+  th, td { padding: 0.65em 0.85em; text-align: left; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { background: #fafafa; font-weight: 600; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  tr:last-child td { border-bottom: none; }
+  .verdict-match { color: var(--match); font-weight: 600; }
+  .verdict-partial { color: var(--partial); font-weight: 600; }
+  .verdict-missing { color: var(--missing); font-weight: 600; }
+  .section { border: 1px solid var(--rule); border-radius: 10px; padding: 1.5em 1.75em; margin: 1.5em 0; background: #fff; }
+  .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5em; margin: 1em 0; }
+  @media (max-width: 760px) { .columns { grid-template-columns: 1fr; } }
+  .col { border-left: 3px solid; padding: 0.5em 0 0.5em 1em; }
+  .col-target { border-color: var(--target); }
+  .col-current { border-color: var(--current); }
+  code { background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace; font-size: 0.88em; }
+  pre { background: var(--code-bg); padding: 0.85em 1em; border-radius: 6px; overflow-x: auto; font-size: 0.85em; line-height: 1.45; }
+  pre code { background: transparent; padding: 0; font-size: inherit; }
+  ul, ol { padding-left: 1.5em; margin: 0.5em 0; }
+  li { margin: 0.25em 0; }
+  .gap, .extra {
+    border-radius: 6px; padding: 0.85em 1em; margin: 1em 0;
+    border-left: 4px solid;
+  }
+  .gap { background: var(--gap-bg); border-color: var(--gap-rule); color: var(--gap-fg); }
+  .gap strong { color: var(--gap-fg); }
+  .extra { background: var(--extra-bg); border-color: var(--extra-rule); color: var(--extra-fg); }
+  .extra strong { color: var(--extra-fg); }
+  .verdict-pill {
+    display: inline-block; padding: 0.15em 0.6em; border-radius: 10px;
+    font-size: 0.8em; font-weight: 600; letter-spacing: 0.03em;
+  }
+  .pill-match { background: #dcfce7; color: #166534; }
+  .pill-partial { background: #fef3c7; color: #92400e; }
+  .pill-missing { background: #fee2e2; color: #991b1b; }
+  .tag-target, .tag-current {
+    display: inline-block; font-size: 0.7em; padding: 0.1em 0.5em; border-radius: 10px;
+    font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-right: 0.4em;
+  }
+  .tag-target { background: var(--target-bg); color: var(--target); }
+  .tag-current { background: var(--current-bg); color: var(--current); }
+  footer { margin-top: 4em; padding-top: 1.5em; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.9em; }
+  a { color: var(--target); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<h1>ProcessMiner Architecture — Target vs Current</h1>
+<p class="meta">
+  Comparison of the target architecture in Miso Pach's Confluence diagram
+  (2026-05-27) against the codebase at <code>v0.3.0</code> (2026-05-28).
+  Four of seven diagram concepts match closely; two have a different on-disk
+  shape; one is still pending (orchestrator) and has a design plan.
+</p>
+
+<h2>Summary</h2>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 22%">Concept (diagram)</th>
+      <th style="width: 30%">Current implementation</th>
+      <th style="width: 14%">Verdict</th>
+      <th>Note</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Process Schema</strong><br><span class="meta">"XYZ schema"</span></td>
+      <td><code>schema/process-schema.json</code><br><code>schema/.derived/*.llm.json</code></td>
+      <td><span class="verdict-pill pill-match">Matches</span></td>
+      <td>Plus a derived per-type slice for LLM efficiency (v0.2.0-alpha).</td>
+    </tr>
+    <tr>
+      <td><strong>Process JSON</strong><br><span class="meta">"e.g. COB-003" — one consolidated file</span></td>
+      <td><code>wiki/processes/&lt;slug&gt;/</code><br>elements + 7+ JSON sidecars</td>
+      <td><span class="verdict-pill pill-partial">Different shape</span></td>
+      <td>Intentional Karpathy layer-2 pattern. <code>ProcessView</code> reconstructs the join at runtime.</td>
+    </tr>
+    <tr>
+      <td><strong>Orchestrator</strong><br><span class="meta">Drives discovery from JSON</span></td>
+      <td>Scattered across <code>WelcomeScreen</code>, <code>TriagePanel</code>, <code>coverage.ts</code></td>
+      <td><span class="verdict-pill pill-missing">Not consolidated</span></td>
+      <td>Design plan exists (<code>ORCHESTRATOR-PLAN.md</code>) — v0.4 build is consolidation, not greenfield.</td>
+    </tr>
+    <tr>
+      <td><strong>Navigation UI</strong><br><span class="meta">Dynamically rendered</span></td>
+      <td><code>src/app/ProcessDocScreen.tsx</code></td>
+      <td><span class="verdict-pill pill-match">Matches</span></td>
+      <td>Reads schema + wiki on every request.</td>
+    </tr>
+    <tr>
+      <td><strong>Generic Renderer</strong></td>
+      <td><code>src/components/ElementCard.tsx</code></td>
+      <td><span class="verdict-pill pill-match">Matches</span></td>
+      <td>Renders any element type's frontmatter + prose blocks.</td>
+    </tr>
+    <tr>
+      <td><strong>Custom Renderer</strong><br><span class="meta">RACI matrix / process flow</span></td>
+      <td><code>RaciMatrix.tsx</code> + <code>ProcessFlow.tsx</code></td>
+      <td><span class="verdict-pill pill-match">Matches</span></td>
+      <td>Now pure render — joins live in <code>ProcessView</code> (v0.2.0-beta).</td>
+    </tr>
+    <tr>
+      <td><strong>Deterministic validation</strong><br><span class="meta">JSON + schema</span></td>
+      <td><code>check_conformance.py</code> + <code>conformance.ts</code> twin</td>
+      <td><span class="verdict-pill pill-match">Matches</span></td>
+      <td>Python + TS twins with a parity test.</td>
+    </tr>
+    <tr>
+      <td><strong>LLM interactions</strong><br><span class="meta">specific artifact + LLM output schema</span></td>
+      <td><code>scripts/wiki/get_context.py</code><br>+ <code>schema/.derived/&lt;type&gt;.llm.json</code></td>
+      <td><span class="verdict-pill pill-match">Matches</span></td>
+      <td>STABLE/VOLATILE bucketing extends the diagram's design (cache reuse).</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Detailed comparison</h2>
+
+<!-- 1. Process Schema -->
+<div class="section">
+  <h3>1. Process Schema <span class="verdict-pill pill-match">Matches</span></h3>
+  <div class="columns">
+    <div class="col col-target">
+      <h4><span class="tag-target">Target</span> Diagram</h4>
+      <p>The orange column on the left: a single "XYZ schema" with Process Meta-Data, Roles (each with Meta Data + LLM output schema for RACI/controls/systems) and Steps (each with Meta Data + LLM output schema for step name/description).</p>
+    </div>
+    <div class="col col-current">
+      <h4><span class="tag-current">Current</span> Implementation</h4>
+      <p><code>schema/process-schema.json</code> (~2,781 lines) is the single source of truth. It defines 40 element types, their frontmatter contracts, relations, template blocks with format + word ranges, and the per-heading provenance rules.</p>
+      <p>Per-type derived files live at <code>schema/.derived/&lt;type&gt;.llm.json</code> (~50–80 lines each). The "LLM output schema" boxes in the diagram correspond to these — they are what the LLM is shown when authoring an element of a given type.</p>
+    </div>
+  </div>
+  <p>Roles and Steps in the diagram are two of the 40 actual element types; the schema generalises to all of them. The <code>show_template.py</code> CLI reads the derived files (not the source schema) when a skill asks for one type's contract.</p>
+</div>
+
+<!-- 2. Process JSON -->
+<div class="section">
+  <h3>2. Process JSON <span class="verdict-pill pill-partial">Different shape, intentional</span></h3>
+  <div class="columns">
+    <div class="col col-target">
+      <h4><span class="tag-target">Target</span> Diagram</h4>
+      <p>The blue column in the middle: a single "Process JSON" per process instance (e.g. <code>COB-003</code>) carrying Process Meta-Data, Roles (with Content: RACI / controls / systems), Steps, etc. One-to-many with the schema.</p>
+    </div>
+    <div class="col col-current">
+      <h4><span class="tag-current">Current</span> Implementation</h4>
+      <p>Per process under <code>wiki/processes/&lt;slug&gt;/</code>:</p>
+      <ul>
+        <li><code>index.md</code> — process overview</li>
+        <li>Per-section folders of <code>.md</code> element files</li>
+        <li>JSON sidecars: <code>provenance.json</code>, <code>raci.json</code>, <code>transitions.json</code>, <code>sections.json</code>, <code>lint.json</code>, <code>notes.json</code>, <code>ingest.json</code>, <code>review-state.json</code></li>
+      </ul>
+    </div>
+  </div>
+  <div class="gap">
+    <strong>This is the biggest structural divergence from the diagram</strong> — and it is deliberate.
+    Karpathy's LLM-Wiki pattern (the project's foundation) keeps content as
+    typed Markdown so per-heading provenance is human-diffable in git and
+    every change goes through schema-validated writers. Collapsing to one
+    JSON would force per-heading provenance into a nested object that
+    can't be reviewed line-by-line, would lose the file-level
+    <code>updatedBy</code>/<code>updatedAt</code> stamps git tracks for free,
+    and would make every element edit a whole-file rewrite.
+  </div>
+  <p>The diagram's "Process JSON" exists at runtime, not on disk:
+  <code>src/lib/process-view.ts</code>'s <code>buildProcessView(doc, schema)</code> reads
+  all the on-disk pieces and materialises a single joined view (RACI grid,
+  flow lanes, by-id and by-type lookups). Consumers (renderers,
+  <code>get_context.py</code>, the future orchestrator) see one consolidated
+  shape; the wiki layer stays git-native.</p>
+</div>
+
+<!-- 3. Orchestrator -->
+<div class="section">
+  <h3>3. Orchestrator <span class="verdict-pill pill-missing">Not yet consolidated</span></h3>
+  <div class="columns">
+    <div class="col col-target">
+      <h4><span class="tag-target">Target</span> Diagram</h4>
+      <p>Top right: a discrete "orchestrator" component that <em>uses the Process JSON to drive the discovery workflow</em>. Sits above the Navigation UI and feeds it.</p>
+    </div>
+    <div class="col col-current">
+      <h4><span class="tag-current">Current</span> Implementation</h4>
+      <p>No discrete module yet. The orchestration responsibility is in the codebase but scattered:</p>
+      <ul>
+        <li><code>src/components/WelcomeScreen.tsx</code> — <code>pmAttentionForDoc(d)</code> computes weighted attention items from ingest conflicts, lint findings and open comments</li>
+        <li><code>src/components/TriagePanel.tsx</code> — per-process equivalent</li>
+        <li><code>src/lib/coverage.ts</code> — target-state coverage delta</li>
+        <li><code>src/lib/process-view.ts</code> — reserved <code>ProcessView.state</code> seam</li>
+        <li><code>src/app/api/session/route.ts</code> — chat pipeline (transport only, no orchestration)</li>
+      </ul>
+    </div>
+  </div>
+  <div class="gap">
+    <strong>Design plan exists</strong> — <code>ORCHESTRATOR-PLAN.md</code> (committed 2026-05-28).
+    v0.4 is consolidation into <code>src/lib/orchestrator.ts</code>, not greenfield.
+    Shape: state machine over <code>ProcessView</code> + <code>ProcessDoc</code> sidecars.
+    Pure function; no LLM call in the routing hot path.
+    Action vocabulary v1: <code>resolve-ingest-conflict</code>, <code>resolve-lint-finding</code>,
+    <code>address-comment</code>, <code>resume-foundational-run</code>.
+  </div>
+  <p>Key principle pinned at the top of the design: <strong>never contaminate Karpathy wiki logic</strong>. The orchestrator is a read-only consumer; if persistence is ever needed (e.g. dismissals) it lives outside the wiki tree.</p>
+</div>
+
+<!-- 4. Navigation UI -->
+<div class="section">
+  <h3>4. Navigation UI / Progress Menu <span class="verdict-pill pill-match">Matches</span></h3>
+  <div class="columns">
+    <div class="col col-target">
+      <h4><span class="tag-target">Target</span> Diagram</h4>
+      <p>"The navigation menu is dynamically rendered from the process file." Sits between the Process JSON and the View/Render/Edit boxes.</p>
+    </div>
+    <div class="col col-current">
+      <h4><span class="tag-current">Current</span> Implementation</h4>
+      <p><code>src/app/ProcessDocScreen.tsx</code> renders areas → sections → elements hierarchically. Built per request via <code>getProcess(slug)</code> + <code>buildProcessView()</code>. Section status comes from <code>sections.json</code>; coverage from <code>src/lib/coverage.ts</code>.</p>
+    </div>
+  </div>
+  <p>The page is server-rendered with <code>dynamic = "force-dynamic"</code> — every request re-reads the wiki, so a Python writer mutation surfaces in the UI on the next refresh without invalidation logic.</p>
+</div>
+
+<!-- 5. & 6. Renderers -->
+<div class="section">
+  <h3>5. Generic + Custom Renderers <span class="verdict-pill pill-match">Matches</span></h3>
+  <div class="columns">
+    <div class="col col-target">
+      <h4><span class="tag-target">Target</span> Diagram</h4>
+      <p>"View / Render / Edit: section / artifact UI" branches into a Generic Renderer and a Custom Renderer (examples: RACI matrix, process flow). "All the detail views are dynamically rendered from the JSON (filtered to specific section / artifact)."</p>
+    </div>
+    <div class="col col-current">
+      <h4><span class="tag-current">Current</span> Implementation</h4>
+      <ul>
+        <li><strong>Generic:</strong> <code>src/components/ElementCard.tsx</code> renders any element type's frontmatter + prose blocks</li>
+        <li><strong>Custom — RACI matrix:</strong> <code>RaciMatrix.tsx</code> reads <code>view.raciGrid</code></li>
+        <li><strong>Custom — Process flow:</strong> <code>ProcessFlow.tsx</code> reads <code>view.flow</code> (lanes, stepLane, ownerOf)</li>
+      </ul>
+    </div>
+  </div>
+  <p>Before v0.2.0-beta the join logic lived inside each renderer (a 30-line grid-pivot in RaciMatrix; a lane-assignment loop in ProcessFlow). Now both components are pure render. The diagram says "filtered down to the specific section / artifact" — that filtering is the <code>ProcessView.byType</code> + <code>byId</code> lookups.</p>
+</div>
+
+<!-- 7. Validation -->
+<div class="section">
+  <h3>6. Deterministic Validation <span class="verdict-pill pill-match">Matches</span></h3>
+  <div class="columns">
+    <div class="col col-target">
+      <h4><span class="tag-target">Target</span> Diagram</h4>
+      <p>"Deterministic validation is done against: 1) Process JSON — e.g. dependencies, 2) Process schema — e.g. mandatory fields."</p>
+    </div>
+    <div class="col col-current">
+      <h4><span class="tag-current">Current</span> Implementation</h4>
+      <ul>
+        <li><strong>Schema validation:</strong> <code>scripts/wiki/check_conformance.py</code> — required frontmatter, template heading order, format + word ranges</li>
+        <li><strong>Dependency validation:</strong> <code>src/lib/relations.ts</code>, <code>scripts/wiki/check_transitions.py</code></li>
+        <li><strong>TS twin:</strong> <code>src/lib/conformance.ts</code> mirrors the Python conformance rules; a parity test in <code>test_wiki_scripts.py</code> keeps them in lock-step</li>
+      </ul>
+    </div>
+  </div>
+  <p>Validation runs as a hard gate before every <code>write_element.py</code> / <code>patch_element.py</code> / <code>set_approval.py</code> call — schema-validated writers are the only mutation path into the wiki.</p>
+</div>
+
+<!-- 8. LLM interactions -->
+<div class="section">
+  <h3>7. LLM Interactions <span class="verdict-pill pill-match">Matches, with extras</span></h3>
+  <div class="columns">
+    <div class="col col-target">
+      <h4><span class="tag-target">Target</span> Diagram</h4>
+      <p>"Only specific artifact content + LLM output schema content is fed to LLM."</p>
+    </div>
+    <div class="col col-current">
+      <h4><span class="tag-current">Current</span> Implementation</h4>
+      <p><code>scripts/wiki/get_context.py --slug --element</code> emits a bucketed prompt:</p>
+      <ul>
+        <li><strong>STABLE</strong> — type schema (the diagram's "LLM output schema content"), process meta. Cacheable across turns.</li>
+        <li><strong>VOLATILE</strong> — the focal artifact + ~30-word summaries of every directly-related element. Re-read per turn.</li>
+      </ul>
+    </div>
+  </div>
+  <p>The diagram says "specific artifact content + LLM output schema." v0.2.0 delivers exactly that — and adds two refinements the diagram doesn't show:</p>
+  <ul>
+    <li><strong>Cache-prefix bucketing</strong> so the STABLE part reuses across consecutive turns in the same skill session</li>
+    <li><strong>Related-element summaries</strong> (~30 words each) for forward + reverse links + RACI + transitions, so context scales with process size rather than exploding</li>
+  </ul>
+  <p>All 13 specialist and worker skills now invoke <code>get_context.py</code> via Bash before patching existing elements (see <code>SKILL.md</code> WRITING-PROCEDURE-BLOCK).</p>
+</div>
+
+<!-- What we built that's NOT in the diagram -->
+<h2>What's in the code that's NOT in the diagram</h2>
+
+<div class="extra">
+  <strong>Per-heading provenance contract.</strong> Every template-bearing element
+  records the source of each <code>##</code> block (<code>elicited</code>,
+  <code>document</code>, <code>proposed</code>, <code>web</code>) plus an evidence
+  quote where applicable. Lives in <code>wiki/processes/&lt;slug&gt;/provenance.json</code>
+  and is enforced by <code>scripts/wiki/check_conformance.py</code>.
+  See <code>HALLUCINATION-PLAN.md</code>. Critical for compliance use cases that
+  the diagram doesn't address.
+</div>
+
+<div class="extra">
+  <strong>Approval gating.</strong> Every element flows
+  <code>draft → in-progress → approved</code>. <code>set_approval.py</code> blocks
+  approval while any heading is still <code>proposed</code> or <code>web</code>
+  (unconfirmed). The web UI surfaces approval state on every element card.
+</div>
+
+<div class="extra">
+  <strong>Schema-validated writers as the only mutation path.</strong> The wiki
+  is never edited directly. All writes go through <code>write_element.py</code>,
+  <code>write_elements.py</code>, <code>patch_element.py</code>,
+  <code>set_approval.py</code> or <code>set_section_status.py</code>. The diagram
+  shows validation as a downstream gate; reality is that writers refuse to
+  produce invalid output upstream.
+</div>
+
+<div class="extra">
+  <strong>Skills as Markdown.</strong> 21 skills under <code>.claude/skills/&lt;name&gt;/SKILL.md</code>
+  each carry their own runbook + verbatim cross-skill blocks
+  (<code>PROVENANCE-BLOCK</code>, <code>WRITING-PROCEDURE-BLOCK</code>,
+  <code>BATCHING-BLOCK</code>, <code>WEB-PROVENANCE-BLOCK</code>) kept
+  byte-identical via <code>scripts/check_skill_blocks.py</code>. Routing is by
+  description match (the chat input fuzzy-matches the skill's frontmatter
+  <code>description</code>), not by orchestrator dispatch.
+</div>
+
+<div class="extra">
+  <strong>Warm Claude CLI worker pool.</strong> <code>src/lib/session-worker.ts</code>
+  manages a pool of pre-spawned <code>claude</code> processes so chat turns skip
+  the cold start. The diagram's orchestrator implicitly assumes a single
+  request/response shape; the real chat pipeline is streaming + worker-pooled.
+</div>
+
+<div class="extra">
+  <strong>Multi-module entitlements.</strong> Processminer and ArchitectMiner
+  are co-installed in one app with per-user module entitlements
+  (<code>src/lib/process-access.ts</code>). The diagram is single-module.
+</div>
+
+<h2>Net takeaway</h2>
+
+<p>The codebase implements the diagram's intent <strong>faithfully</strong> with two
+specific structural choices the diagram doesn't anticipate:</p>
+
+<ol>
+  <li><strong>The "Process JSON" is a runtime view (<code>ProcessView</code>), not an on-disk file.</strong> Karpathy LLM-Wiki layer 2 keeps the wiki as typed Markdown so provenance, approval gating and git review work line-by-line. Reading consumers see the join; writers see the typed elements.</li>
+  <li><strong>The "Orchestrator" exists as scattered widget logic today, with a design plan to consolidate it in v0.4.</strong> The seam was deliberately preserved (<code>ProcessView.state</code>) when Piece 2 shipped.</li>
+</ol>
+
+<p>Beyond the diagram, the codebase carries the per-heading provenance contract, approval gating, schema-validated writers, the skill-as-Markdown runtime and a warm worker pool — none shown in the diagram but each load-bearing.</p>
+
+<footer>
+  Generated 2026-05-28 from the v0.3.0 codebase.
+  Source diagram: ProcessMiner Architecture, Miso Pach (Confluence, 2026-05-27).
+  Plans referenced: <code>TARGET-ARCH-PLAN.md</code>, <code>ORCHESTRATOR-PLAN.md</code>,
+  <code>HALLUCINATION-PLAN.md</code>.
+</footer>
+
+</body>
+</html>

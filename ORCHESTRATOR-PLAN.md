@@ -163,9 +163,20 @@ deferred precisely so this decision could be made later — and "later" is now.
 | Today | After |
 |---|---|
 | `pmAttentionForDoc(d)` lives in `WelcomeScreen.tsx` | Moves to `orchestrator.ts`; `WelcomeScreen` reads `buildAttentionFeed(docs)`. |
-| `TriagePanel` re-derives the same numbers per-process | Reads `buildOrchestratorState(view, doc)`. |
+| `TriagePanel` does post-ingest specific work | **Unchanged.** See revision note below. |
 | `/api/session/route.ts` knows nothing about state | Unchanged (chat input → skill is still self-routing). The orchestrator's job is to *display* state, not to route chat turns. |
 | `ProcessView.state` field reserved in the type but not populated | Now optional — callers needing it call `buildOrchestratorState(view, doc).health` directly. The view stays a pure-data join layer; the orchestrator is the next layer up. |
+
+**Revision note (2026-05-28, during build):** Closer inspection of `TriagePanel`
+showed its work is post-ingest specific (ingest receipt rows, confidence-spread
+bar, untouched-sections list) — *not* the same "what needs attention?" question
+the dashboard answers. Only one row (the conflicts count) overlaps with the
+orchestrator's vocabulary. Migrating `TriagePanel` would force the orchestrator's
+action vocabulary to grow to accommodate UI-specific shapes
+(`low-confidence-draft`, `empty-section`, etc.) and undo the scope discipline
+named at the top of this plan. Decision: `TriagePanel` stays as-is; the
+orchestrator still exposes `buildOrchestratorState` so future consumers can use
+it, but `TriagePanel` is not a target of this consolidation.
 
 No on-disk format changes. No new sidecar files. No writer changes. Pure
 read-side consolidation.

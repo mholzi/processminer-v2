@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ProcessDoc } from "@/lib/wiki";
 import { hasEntitlement, type User } from "@/lib/user";
+import { buildAttentionFeed } from "@/lib/orchestrator";
 import UserMenu from "./UserMenu";
-import { isOpen } from "@/lib/lint";
 import RelativeTime from "./RelativeTime";
 
 // The welcome screen — replaces SplashScreen. One component, three faces:
@@ -34,41 +34,12 @@ const TARGET_SECTIONS = new Set([
 
 const RECENT_KEY = "pm.procsw.recent";
 
-type PMItem = {
-  kind: "pm-attention" | "handoff";
-  slug: string;
-  id: string;
-  title: string;
-  /** Sub-bullets that compose the row's summary. */
-  reasons: string[];
-  /** For sorting — higher = more urgent. */
-  weight: number;
-};
-
-function pmAttentionForDoc(d: ProcessDoc): PMItem | null {
-  const conflicts = d.ingest?.conflicts?.length ?? 0;
-  const lint = d.lint?.findings?.filter(isOpen).length ?? 0;
-  let openComments = 0;
-  if (d.notes) {
-    for (const arr of Object.values(d.notes)) {
-      for (const n of arr) if (!n.resolved) openComments++;
-    }
-  }
-  const reasons: string[] = [];
-  if (conflicts) reasons.push(`${conflicts} ingest conflict${conflicts === 1 ? "" : "s"}`);
-  if (lint) reasons.push(`${lint} quality finding${lint === 1 ? "" : "s"}`);
-  if (openComments) reasons.push(`${openComments} comment${openComments === 1 ? "" : "s"}`);
-  if (reasons.length === 0) return null;
-  return {
-    kind: "pm-attention",
-    slug: d.slug,
-    id: d.process.id,
-    title: d.process.title,
-    reasons,
-    // Conflicts beat lint beats comments — urgency-weighted.
-    weight: conflicts * 100 + lint * 5 + openComments,
-  };
-}
+// The PM "attention" list is now built by src/lib/orchestrator.ts —
+// buildAttentionFeed(docs) returns the same shape this component used to
+// derive inline (the reasons + weight formula are preserved byte-identical so
+// the dashboard's row order doesn't change). The handoff queue stays here
+// because it's a different concept (every-element-confirmed in the target
+// sections), with no overlap with the orchestrator's action vocabulary.
 
 function handoffReady(d: ProcessDoc): boolean {
   let total = 0;
@@ -131,15 +102,12 @@ export default function WelcomeScreen({
   }, [docs, hasPM]);
 
   // ----- derive the queue items (real data, per-process aggregated) -----
-  const pmAttention = useMemo(() => {
-    if (!hasPM) return [];
-    const items: PMItem[] = [];
-    for (const d of docs) {
-      const it = pmAttentionForDoc(d);
-      if (it) items.push(it);
-    }
-    return items.sort((a, b) => b.weight - a.weight);
-  }, [docs, hasPM]);
+  // Cross-process attention feed comes from the orchestrator now (v0.4).
+  // Already sorted by weight, highest first.
+  const pmAttention = useMemo(
+    () => (hasPM ? buildAttentionFeed(docs).attentionRows : []),
+    [docs, hasPM],
+  );
 
   const handoffDocs = useMemo(
     () => (hasPM || hasAM ? docs.filter(handoffReady) : []),
