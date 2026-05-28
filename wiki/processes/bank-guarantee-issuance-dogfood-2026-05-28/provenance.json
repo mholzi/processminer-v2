@@ -1,0 +1,754 @@
+{
+  "CEU-BGID-001": {
+    "The move": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/fintech/hsbc-reveals-first-api-for-trade-finance/ — \"APIs are fundamental to the digitisation of trade finance\" — partner banks ING and Standard Bank completed initial transactions enabling customers to track guarantee status inside their own banking platforms — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.fintechfutures.com/baas/hsbc-launches-trade-finance-api-for-bank-guarantees — HSBC handles 500,000 bank guarantees a year and launched the API as first in a series of trade finance APIs — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/fintech/hsbc-reveals-first-api-for-trade-finance/ — First live API-based guarantee transactions between HSBC, ING Bank and Standard Bank; FinTech Futures confirmed ~500,000 guarantees per year processed via the API — fetched 2026-05-28"
+    }
+  },
+  "CEU-BGID-002": {
+    "The move": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — \"API-first solutions are the key enabler to lowering thresholds to digital trade transformation\" — first API guarantee sent from Vanderlande to BNP Paribas in real time without manual intervention, compatible with MT798 and ISO 20022 — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — STP issuance with zero manual steps production-proven at Tier-1 European bank; ISO 20022 MX compatibility confirmed — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/digital-trade/bnp-paribas-and-surecomp-successfully-pilot-swift-api-guarantee/ — GTR report 20 November 2024 confirmed first live transaction under SWIFT/ICC API standard via Surecomp's Rivo platform — fetched 2026-05-28"
+    }
+  },
+  "CEU-BGID-003": {
+    "The move": {
+      "source": "web",
+      "evidence": "https://www.tradefinanceglobal.com/posts/commerzbank-ag-strengthens-trade-finance-operations-surecomps-doka-ng/ — \"A new, modern technological infrastructure is the foundation to securing our leading market position in trade finance\" — Surecomp DOKA-NG deployed in Commerzbank's private cloud for back-office guarantee and LC processing — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.commerzbank.com/financing-foreigntrade/products/foreigntrade/digital-guarantee-management/ — Commerzbank offers domestic digital guarantees with legal equivalence to paper via Guarantee Vault, with international digital guarantees to follow — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.tradefinanceglobal.com/posts/commerzbank-ag-strengthens-trade-finance-operations-surecomps-doka-ng/ — TFG 8 February 2024 confirmed DOKA-NG go-live; Commerzbank product page confirms Guarantee Vault domestic digital guarantees live — fetched 2026-05-28"
+    }
+  },
+  "CFT-BGID-001": {
+    "The move": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/lbbw-goes-live-with-surecomps-rivo-to-digitize-the-management-of-guarantees-and-letters-of-credit/ — \"LBBW introduced a fully automated, centralised solution for the initiation, processing and management of these products, enabling corporate customers to submit, track and manage guarantee and LC applications through a single digital channel\" — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/harnessing-the-power-of-ai-surecomp-commits-to-reducing-trade-finance-processing-time-by-30/ — \"non-legal bank staff can check text in less than 10 seconds with the accuracy matching that of a seasoned trade finance expert\" — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/lbbw-goes-live-with-surecomps-rivo-to-digitize-the-management-of-guarantees-and-letters-of-credit/ — LBBW RIVO go-live announced 5 May 2026; Surecomp commits to 30% processing-time reduction — fetched 2026-05-28"
+    }
+  },
+  "CFT-BGID-002": {
+    "The move": {
+      "source": "web",
+      "evidence": "https://enigio.com/news/oracle-and-enigio-collaborate-to-revolutionise-trade-finance-with-digital-document-technology/ — \"Oracle Financial Services and Enigio joined forces to explore how the trace:original electronic document technology can be offered to Oracle's customers to provide seamless end-to-end digital transfer of title to trade documents\" — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://enigio.com/use-cases/guarantees/ — \"all guarantees can be handled as they are today and in parallel with paper guarantees … exchanged through any digital medium, like email, SWIFT\" — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://enigio.com/news/oracle-and-enigio-collaborate-to-revolutionise-trade-finance-with-digital-document-technology/ — Oracle-Enigio collaboration announced 22 September 2025; Enigio named Best Fintech at GTR Leaders in Trade Awards 2025 — fetched 2026-05-28"
+    }
+  },
+  "CFT-BGID-003": {
+    "The move": {
+      "source": "web",
+      "evidence": "https://www.coindesk.com/business/2025/10/22/xdc-network-acquires-contour-to-expand-stablecoins-and-tokenization-in-trade-finance — \"XDC Ventures acquired Contour Network … aims to offer end-to-end digital trade finance from documentation to real-time settlement\" — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.coindesk.com/business/2025/10/22/xdc-network-acquires-contour-to-expand-stablecoins-and-tokenization-in-trade-finance — \"reduce processing times from days to hours\" — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.coindesk.com/business/2025/10/22/xdc-network-acquires-contour-to-expand-stablecoins-and-tokenization-in-trade-finance — XDC Ventures acquisition announced 22 October 2025; stablecoin (USDC) settlement pilots in US, EU and Asia planned — fetched 2026-05-28"
+    }
+  },
+  "CGL-BGID-001": {
+    "The move": {
+      "source": "web",
+      "evidence": "https://ffnews.com/newsarticle/tradetech/hsbc-pioneers-new-digital-fast-track-trade-finance-demand-guarantee/ — \"The fact that something that can take three to four days was done in a matter of minutes means that they can then move on to the next part of the bigger commercial deal.\" — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/fintech/hsbc-digitises-demand-guarantee-to-speed-up-trade/ — \"we're identifying all those groupings where there's a high volume of standard wording, to enable the customer to access the templates via our digital channel\" — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://ffnews.com/newsarticle/tradetech/hsbc-pioneers-new-digital-fast-track-trade-finance-demand-guarantee/ — First live STP transactions December 2023; platform rolling out to 28 markets through 2024–2025 — fetched 2026-05-28"
+    }
+  },
+  "CGL-BGID-002": {
+    "The move": {
+      "source": "web",
+      "evidence": "https://www.citigroup.com/global/news/press-release/2024/citi-token-services-marks-new-milestone — \"By replacing transactions such as guarantees and letters of credit with smart contracts backed by tokenized cash, Citi Token Services for Trade will bring trade finance into an increasingly real-time world.\" — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.citigroup.com/global/news/press-release/2024/citi-token-services-marks-new-milestone — Citi Token Services enables 24/7 settlements reducing processing from days to minutes; removes manual approval and SWIFT transmission steps — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.citigroup.com/global/news/press-release/2024/citi-token-services-marks-new-milestone — First real-world use via CB Fenton and GAC Panama Shipping for transit operations, October 2024 — fetched 2026-05-28"
+    }
+  },
+  "CGL-BGID-003": {
+    "The move": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"We are delighted to be among the first banks to commercialise the ICC-Swift API standards for bank guarantees\" — Samuel Mathew, Global Head of Documentary Trade — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — Real-time connectivity and automated instruction receipt through Komgo accelerates digitally initiated guarantee issuance end-to-end — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — First live ICC-Swift API transaction for a global energy company, January 2026 — fetched 2026-05-28"
+    }
+  },
+  "CP-BGID-001": {
+    "What it checks": {
+      "source": "document",
+      "evidence": "C1 — Four-eyes issuance approval. No guarantee is issued without a Trade Finance Manager's approval, recorded in the Trade Finance System."
+    },
+    "Control activity": {
+      "source": "document",
+      "evidence": "A Trade Finance Manager reviews the assembled package and approves issuance. Guarantees above EUR 5 million additionally require sign-off by the Head of Trade Finance."
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "TFMs do reject items routinely (typically wording mismatches or beneficiary detail errors caught at approval); not a rubber-stamp."
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "A Trade Finance Manager reviews the assembled package and approves issuance."
+    }
+  },
+  "CP-BGID-002": {
+    "What it checks": {
+      "source": "document",
+      "evidence": "C2 — Sanctions screening. Every beneficiary is screened before issuance; the screening result is attached to the application."
+    },
+    "Control activity": {
+      "source": "elicited",
+      "evidence": "Compliance Analyst initiates, the tool does the matching — HYBRID execution confirmed."
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "Effectiveness HIGH — false negatives possible (list-update lag, transliteration mismatches) but rare; secondary control is post-issuance batch re-screening in Compliance Ops, out of scope."
+    },
+    "Timing": {
+      "source": "document",
+      "evidence": "Every beneficiary is screened before issuance; the screening result is attached to the application."
+    }
+  },
+  "CP-BGID-003": {
+    "What it checks": {
+      "source": "document",
+      "evidence": "Issuance is blocked in the Trade Finance System unless available facility limit covers the guarantee amount."
+    },
+    "Control activity": {
+      "source": "elicited",
+      "evidence": "No manual override is permitted; an override requires a code path that the platform doesn't expose."
+    },
+    "Risk addressed": {
+      "source": "elicited",
+      "evidence": "Effectiveness: HIGH — no manual override is permitted."
+    },
+    "Timing": {
+      "source": "elicited",
+      "evidence": "Add PS-BGID-006 to the linked steps — the amount-vs-approved check at generation is the same control firing again."
+    }
+  },
+  "CXB-BGID-001": {
+    "The benchmark": {
+      "source": "web",
+      "evidence": "https://www.tradefinanceglobal.com/posts/lloyds-bank-completes-first-wavebl-electronic-bill-of-lading-transaction/ — \"While a previous trade between Paull's and the Exporter took 15 days and involved couriering physical documentation six times between India and the UK, this transaction was completed in just over 24 hours\" — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.dbs.com.sg/sme/businessclass/strategy-and-outlook/banker-guarantee-guide — DBS guide cites 3 working days as expected turnaround for banker's guarantee issuance when all documents are in order — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CXB-BGID-002": {
+    "The benchmark": {
+      "source": "web",
+      "evidence": "https://www.cgi.com/en/blog/banking-and-capital-markets/transaction-banking-2026-why-client-satisfaction-no-longer-guarantees-loyalty — \"83% of corporates view real-time forecasting as high value\" vs \"Only 31% of banks see real-time forecasting as high value\" — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.cgi.com/en/blog/banking-and-capital-markets/transaction-banking-2026-why-client-satisfaction-no-longer-guarantees-loyalty — \"Despite 97% satisfaction with primary banking partners, 79% of corporates increased the number of banks they work with in the past year\" — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CXB-BGID-003": {
+    "The benchmark": {
+      "source": "web",
+      "evidence": "https://www.cgi.com/en/blog/banking-and-capital-markets/2025-cgi-and-baft-survey-results-realigning-trade-finance-for-a-new-era — \"38% of banks are modernizing front-office trade portals (an 11-point increase)\" and \"39% of banks are upgrading back-office platforms\" — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/magazine/the-supply-chain-issue-2025/trade-finance-at-a-crossroads-survey-shows-trade-banks-under-pressure-to-modernise/ — GTR coverage: trade banks under pressure to modernise front-office portals to meet rising client expectations — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.cgi.com/en/blog/banking-and-capital-markets/2025-cgi-and-baft-survey-results-realigning-trade-finance-for-a-new-era — \"55% of respondents identify intelligent process automation (IPA) as a key investment focus\" — CGI/BAFT fifth annual Trade Technology Survey, 2025 — fetched 2026-05-28"
+    }
+  },
+  "CXB-BGID-004": {
+    "The benchmark": {
+      "source": "web",
+      "evidence": "https://traydstream.com/digitization-in-trade-finance/ — \"Paper-based trade finance processes add up to 20% to transaction costs (World Economic Forum)\" and \"A single trade transaction can involve up to 240 pages of documentation across 27 different parties (International Chamber of Commerce – ICC)\" — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://traydstream.com/digitization-in-trade-finance/ — \"Average cross-border trade takes 10–14 days longer due to manual document processing and approvals\" — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CXE-BGID-001": {
+    "The journey": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://static.autobahn.db.com/microSite/html/corporate-bank.html — portal described as providing 'seamless user-centric experience' across trade finance products — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://static.autobahn.db.com/microSite/html/corporate-bank.html — 'fast track your guarantee and standby letter of credit business'; https://www.youtube.com/watch?v=97lr8psQ6bY — 'flow – Guarantee Business – Autobahn Trade Finance App' — fetched 2026-05-28"
+    }
+  },
+  "CXE-BGID-002": {
+    "The journey": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/leading-the-way-ing-sets-the-pace-in-digital-trade-finance — 'through automated data integration into backend systems, ING has seen tangible gains in operational efficiency and a marked reduction in the risk of manual errors' — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/leading-the-way-ing-sets-the-pace-in-digital-trade-finance — ING Product Manager Christian Voitl: 'The platform has significantly enhanced the digital client experience by streamlining processes and reducing turnaround times' — fetched 2026-05-28"
+    }
+  },
+  "CXE-BGID-003": {
+    "The journey": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://gtgdownload.unicreditgroup.de/WS_QG_UC_TFG_UserguideGross_EN.pdf — 'monitor the status of their deals in real time, receive notifications for changes and developments of existing transactions' — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CXF-BGID-001": {
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/introducing-gtk-future-of-digital-guarantee-and-trade-finance-management — \"GTK replaces fragmented communication with structured digital requests, complete with built-in signature workflows, eliminating email threads, paper applications, and wet-ink signatures\" — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/komgo-solutions/gtk — \"centralising and digitising the full lifecycle of trade finance instruments – guarantees, letters of credit and financing requests – while connecting corporates to all their banking partners, regardless of the channel used\" — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"Standard Chartered is among the first global banks to adopt and operationalise the new ICC-Swift API standards for bank guarantees\" — fetched 2026-05-28; https://www.euromoney.com/article/76jubw5ttegw840ww8cw40488/corporate-banking/the-worlds-most-innovative-software-provider-for-trade-finance-2025-komgo/ — \"the world's most innovative software provider for trade finance 2025\" — fetched 2026-05-28"
+    }
+  },
+  "CXF-BGID-002": {
+    "The journey": {
+      "source": "web",
+      "evidence": "https://surecomp.com/rivo-for-corporates/ — \"companies can submit applications for the issuance of letters of credit and guarantees entirely online, while centralizing their interactions with multiple banks through a single portal\" — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/lbbw-goes-live-with-surecomps-rivo-to-digitize-the-management-of-guarantees-and-letters-of-credit/ — \"enabling corporate customers to submit, track and manage guarantee and LC applications through a single digital channel\" — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://surecomp.com/news/lbbw-goes-live-with-surecomps-rivo-to-digitize-the-management-of-guarantees-and-letters-of-credit/ — \"LBBW in Germany has gone live with its advanced trade finance management platform RIVO to optimize the bank's digital application process for guarantees and letters of credit\" — fetched 2026-05-28; https://surecomp.com/news/bbva-adds-surecomps-rivo-to-its-digital-offering-to-drive-trade-finance-transformation/ — \"BBVA incorporated RIVO, Surecomp's multi-bank platform\" (November 2025) — fetched 2026-05-28"
+    }
+  },
+  "CXF-BGID-003": {
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/komgo-solutions/corp-solutions-konsole — \"open APIs that allow banks and corporates to interface with their own systems\" and \"Komgo's Digital Instrument Certificate provides real-time access to the data and status of Issued Bank Guarantees\" — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/introducing-gtk-future-of-digital-guarantee-and-trade-finance-management — \"automates the receipt of instructions and accelerates the issuance of digitally initiated bank guarantees, offering clients greater speed, transparency and reliability\" — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.komgo.io/newsroom/mufg-us-strengthens-digital-trade-finance-workflows-with-konsole-integration — MUFG Americas adopts Konsole API for digital trade finance workflows (2025) — fetched 2026-05-28; https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"Standard Chartered completes first ICC-Swift API Standards digital bank guarantee transaction through Komgo\" (January 2026) — fetched 2026-05-28"
+    }
+  },
+  "CXG-BGID-001": {
+    "The journey": {
+      "source": "web",
+      "evidence": "https://www.gtreview.com/news/fintech/hsbc-digitises-demand-guarantee-to-speed-up-trade/ — \"We've redesigned and simplified the user interface, which enables us to prepopulate a lot of the data into the guarantee. This then enables us to automate the validation checks all the way through to notification.\" — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://treasurytoday.com/insight-and-analysis/bank-guarantee-aims-to-boost-international-trade/ — \"The solution allows customers to issue digitally processed guarantees that can be issued to a beneficiary in real time, reducing issuance times from three or four days down to potentially minutes.\" — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "proposed",
+      "evidence": ""
+    }
+  },
+  "CXG-BGID-002": {
+    "The journey": {
+      "source": "proposed",
+      "evidence": ""
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://cxotoday.com/press-release/standard-chartered-launches-innovative-global-icc-swift-api-bank-guarantee-standard-capability-with-national-e-governance-services-ltd/ — \"By leveraging industry standard APIs for initiation and electronic advising via NeSL eBG platform, paper handling is eliminated in the end to end bank guarantee flow\" — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"This integration automates the receipt of instructions and accelerates the issuance of digitally initiated bank guarantees, offering clients greater speed, transparency and reliability.\" — fetched 2026-05-28"
+    }
+  },
+  "II-BGID-001": {
+    "The idea": {
+      "source": "web",
+      "evidence": "Derived from trend-3 (AI/STP), trend-6 (Finastra Nexus API), competitor-eu-3 (Commerzbank Guarantee Vault client self-service)"
+    },
+    "Expected benefit": {
+      "source": "web",
+      "evidence": "PP-BGID-001 affects 15-20% of applications; early facility visibility eliminates most of these stalls before submission"
+    },
+    "Feasibility": {
+      "source": "web",
+      "evidence": "Finastra Trade Innovation Nexus exposes facility data via REST API; Corporate Portal already reads from TFS"
+    }
+  },
+  "II-BGID-002": {
+    "The idea": {
+      "source": "web",
+      "evidence": "Derived from trend-3 (AI/STP in trade finance — 96% STP rates), competitor-fintech-1 (Surecomp RIVO AI wording check — sub-10-second classification)"
+    },
+    "Expected benefit": {
+      "source": "web",
+      "evidence": "PP-BGID-002: no Legal SLA, no escalation path; Surecomp reports 30% processing time reduction and AI accuracy matching seasoned trade finance expert"
+    },
+    "Feasibility": {
+      "source": "web",
+      "evidence": "Surecomp RIVO or similar GenAI wording engine available as SaaS; integration point is TFS wording module and Legal team workflow"
+    }
+  },
+  "II-BGID-003": {
+    "The idea": {
+      "source": "web",
+      "evidence": "Derived from trend-1 (ICC-SWIFT API standard, 2024), trend-4 (ISO 20022 MX migration), competitor-eu-2 (BNP Paribas zero-manual-intervention pilot Nov 2024), competitor-global-3 (Standard Chartered first live ICC-SWIFT API transaction Jan 2026)"
+    },
+    "Expected benefit": {
+      "source": "web",
+      "evidence": "BNP Paribas/Surecomp pilot confirms zero manual intervention for API-submitted standard guarantees; HSBC Trade Solutions reports days-to-minutes STP issuance"
+    },
+    "Feasibility": {
+      "source": "web",
+      "evidence": "Finastra Trade Innovation Nexus REST API layer supports ICC-SWIFT API connectivity; requires TFS upgrade or Nexus migration plus corporate portal or ERP connector"
+    }
+  },
+  "M-BGID-001": {
+    "Definition": {
+      "source": "document",
+      "evidence": "The target turnaround is 3 business days from a complete application to guarantee delivery, measured for standard-wording guarantees with no screening hit."
+    },
+    "Current reading": {
+      "source": "elicited",
+      "evidence": "TFS records timestamps, monthly ops dashboard shows actual vs target. Current is ~85% within-SLA for standard wording (the 15% miss largely correlates with the facility shortfalls). Trend: flat over the last 6 months."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "Add the client relationship angle — repeat business implications of missing the SLA is a real concern."
+    }
+  },
+  "PP-BGID-001": {
+    "Description": {
+      "source": "document",
+      "evidence": "Applications frequently stall at the credit and facility check when the client has not pre-arranged enough limit."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "~15-20% of applications hit a limit-related delay — the single biggest delay cause by volume."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "Root cause holds."
+    }
+  },
+  "PP-BGID-002": {
+    "Description": {
+      "source": "document",
+      "evidence": "Bespoke wording adds unpredictable delay because Legal review has no committed turnaround."
+    },
+    "Impact": {
+      "source": "elicited",
+      "evidence": "Impact framing holds; add no formal escalation path when Legal overruns the informal 2-day target. Severity MEDIUM/P2 — lower frequency than limit shortfall."
+    },
+    "Root cause": {
+      "source": "elicited",
+      "evidence": "Framing holds."
+    }
+  },
+  "PS-BGID-001": {
+    "What happens": {
+      "source": "document",
+      "evidence": "The Trade Finance Officer receives the application and checks it is complete: beneficiary details, guarantee amount, currency, wording type (standard or bespoke), validity period and the underlying commercial contract reference."
+    },
+    "Inputs": {
+      "source": "document",
+      "evidence": "beneficiary details, guarantee amount, currency, wording type (standard or bespoke), validity period and the underlying commercial contract reference"
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "Standard-wording guarantees proceed directly. Bespoke wording is sent to the Legal team for review and sign-off before issuance."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "The 'Why it matters' framing is correct."
+    }
+  },
+  "PS-BGID-002": {
+    "What happens": {
+      "source": "document",
+      "evidence": "The Trade Finance Officer confirms the client holds an approved guarantee facility with sufficient available limit. If the limit is insufficient, the application is parked and routed to the Credit team — this is the most common reason for delay."
+    },
+    "Inputs": {
+      "source": "document",
+      "evidence": "The Trade Finance Officer confirms the client holds an approved guarantee facility with sufficient available limit."
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "the application is parked and routed to the Credit team"
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "Framing is correct."
+    }
+  },
+  "PS-BGID-003": {
+    "What happens": {
+      "source": "elicited",
+      "evidence": "Legal informal target: 2 business days (no SLA, but that's the unwritten expectation)."
+    },
+    "Inputs": {
+      "source": "document",
+      "evidence": "Bespoke wording is sent to the Legal team for review and sign-off before issuance."
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "Bespoke wording is sent to the Legal team for review and sign-off before issuance."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "Framing is right."
+    }
+  },
+  "PS-BGID-004": {
+    "What happens": {
+      "source": "elicited",
+      "evidence": "Compliance Operations owns the investigation. There's a 5 business-day investigation target; if unresolved, the application is formally declined and the client is notified — there's no indefinite hold."
+    },
+    "Inputs": {
+      "source": "document",
+      "evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list."
+    },
+    "Outputs": {
+      "source": "elicited",
+      "evidence": "If unresolved, the application is formally declined and the client is notified."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "Framing is correct."
+    }
+  },
+  "PS-BGID-005": {
+    "What happens": {
+      "source": "document",
+      "evidence": "A Trade Finance Manager reviews the assembled package and approves issuance. Guarantees above EUR 5 million additionally require sign-off by the Head of Trade Finance."
+    },
+    "Inputs": {
+      "source": "document",
+      "evidence": "A Trade Finance Manager reviews the assembled package and approves issuance."
+    },
+    "Outputs": {
+      "source": "document",
+      "evidence": "Approvals are recorded in the Trade Finance System."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "Framing holds."
+    }
+  },
+  "PS-BGID-006": {
+    "What happens": {
+      "source": "elicited",
+      "evidence": "Generation amount-vs-approved check is system-enforced in TFS (built-in match). Client notification: TFO emails the issued instrument to the client and RM same-day."
+    },
+    "Inputs": {
+      "source": "document",
+      "evidence": "The Trade Finance Officer generates the guarantee instrument in the Trade Finance System and the guarantee is transmitted to the beneficiary's bank via SWIFT. The client's facility utilisation is updated."
+    },
+    "Outputs": {
+      "source": "elicited",
+      "evidence": "TFO emails the issued instrument to the client and RM same-day."
+    },
+    "Why it matters": {
+      "source": "elicited",
+      "evidence": "Framing holds."
+    }
+  },
+  "REG-BGID-001": {
+    "What it requires": {
+      "source": "document",
+      "evidence": "The process is subject to anti-money-laundering and sanctions obligations (EU sanctions regulations, AML directives)."
+    },
+    "Why it applies": {
+      "source": "elicited",
+      "evidence": "Framing is fine."
+    },
+    "How it is met": {
+      "source": "elicited",
+      "evidence": "Framing is fine."
+    }
+  },
+  "REG-BGID-002": {
+    "What it requires": {
+      "source": "elicited",
+      "evidence": "URDG 758 sets the rules for demand guarantees: the instrument must state amount, expiry, presentation requirements, and the demand-compliance terms. The bank's obligation is independent of the underlying commercial contract. Expiry must be either a fixed date or a defined event."
+    },
+    "Why it applies": {
+      "source": "elicited",
+      "evidence": "Applies by default when the guarantee text incorporates URDG 758 (the standard wording does). If the parties opt for a different framework, it doesn't apply. Applies to all URDG-incorporated demand guarantees, not all guarantees universally."
+    },
+    "How it is met": {
+      "source": "elicited",
+      "evidence": "Baked into the standard wording template (which incorporates URDG 758 by reference); Legal verifies the incorporation clause is present when reviewing bespoke wording at PS-BGID-003. The Trade Finance System's wording library is the operational source of the standard template."
+    }
+  },
+  "ROLE-BGID-001": {
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "TFO also routes wording review (PS-BGID-003) — auto-pass for standard wording, hand-off to Legal for bespoke. It's a real responsibility, not just admin."
+    },
+    "In this process": {
+      "source": "elicited",
+      "evidence": "TFO also routes wording review (PS-BGID-003) — auto-pass for standard wording, hand-off to Legal for bespoke."
+    }
+  },
+  "ROLE-BGID-002": {
+    "Responsibility": {
+      "source": "document",
+      "evidence": "A Trade Finance Manager reviews the assembled package and approves issuance. C1: No guarantee is issued without a Trade Finance Manager's approval, recorded in the Trade Finance System."
+    },
+    "In this process": {
+      "source": "document",
+      "evidence": "A Trade Finance Manager reviews the assembled package and approves issuance. Control owner: Trade Finance Manager."
+    }
+  },
+  "ROLE-BGID-003": {
+    "Responsibility": {
+      "source": "document",
+      "evidence": "Guarantees above EUR 5 million additionally require sign-off by the Head of Trade Finance."
+    },
+    "In this process": {
+      "source": "elicited",
+      "evidence": "HoTF is A only for the >EUR 5m sign-off (a separate accountability that sits on ROLE-BGID-003)."
+    }
+  },
+  "ROLE-BGID-004": {
+    "Responsibility": {
+      "source": "document",
+      "evidence": "The Compliance Analyst screens the beneficiary and the beneficiary's country against the sanctions list. A screening hit suspends the application pending Compliance investigation."
+    },
+    "In this process": {
+      "source": "elicited",
+      "evidence": "They ARE separate. Compliance Analyst does the per-transaction screening; on a hit, hands off to Compliance Operations who own the investigation."
+    }
+  },
+  "ROLE-BGID-005": {
+    "Responsibility": {
+      "source": "elicited",
+      "evidence": "When a parked application reaches them, they decide between (a) requesting a temporary limit uplift via Credit Risk Committee, (b) requiring the client to post additional collateral, or (c) declining the increase if the client's credit profile no longer supports it."
+    },
+    "In this process": {
+      "source": "elicited",
+      "evidence": "Same-day for amounts within delegated authority, otherwise 1-3 business days. They do NOT change the underlying facility structure — that's a separate facility-amendment process. Once they sign off, the application re-enters at step 2 for limit re-check. RACI: Responsible (R) at step 2 for the limit-uplift decision when invoked."
+    }
+  },
+  "ROLE-BGID-006": {
+    "Responsibility": {
+      "source": "document",
+      "evidence": "Bespoke wording is sent to the Legal team for review and sign-off before issuance."
+    },
+    "In this process": {
+      "source": "elicited",
+      "evidence": "R is correct for bespoke applications — Legal performs the review and owns the sign-off."
+    }
+  },
+  "SYS-BGID-001": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "A corporate client submits a Bank Guarantee application through the Corporate Portal, or via a relationship manager who keys it into the portal on the client's behalf."
+    },
+    "Role in this process": {
+      "source": "elicited",
+      "evidence": "SUPPORTING confirmed — RMs can fall back to direct TFS keying if the portal is down (degraded but not blocked). In-house build on standard corporate-banking platform stack. dataClassification: confidential. RTO 4h / RPO 1h."
+    }
+  },
+  "SYS-BGID-002": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "The Trade Finance System — the system of record for guarantee instruments, approvals and facility utilisation."
+    },
+    "Role in this process": {
+      "source": "elicited",
+      "evidence": "systemType CORE confirmed. Add PS-BGID-003 — TFS hosts the wording library. Finastra Trade Innovation on-prem. RTO 2h / RPO 15min (Tier-1 core system)."
+    }
+  },
+  "SYS-BGID-003": {
+    "Purpose": {
+      "source": "document",
+      "evidence": "Sanctions Screening Tool — used by Compliance for beneficiary screening."
+    },
+    "Role in this process": {
+      "source": "elicited",
+      "evidence": "Fircosoft. If unavailable: manual list check possible but degraded — Compliance queues the application and waits unless a hard deadline forces manual override. confidential / RTO 4h / RPO 1h."
+    }
+  },
+  "SYS-BGID-004": {
+    "Purpose": {
+      "source": "elicited",
+      "evidence": "Direct SWIFT membership, message type MT760 (issuance)."
+    },
+    "Role in this process": {
+      "source": "elicited",
+      "evidence": "Criticality HIGH confirmed, no operational fallback — if SWIFT is down, issuance is paused. MX migration on roadmap but not yet live for guarantees."
+    }
+  },
+  "TR-BGID-001": {
+    "The trend": {
+      "source": "web",
+      "evidence": "https://iccwbo.org/news-publications/news/icc-and-swift-unveil-first-api-standards-for-bank-guarantees-and-standby-letters-of-credit/ — \"ICC-Swift API standards for bank guarantees, introduced in 2024, are the first industry-wide API specifications to be applied in trade finance\" — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"automates the receipt of instructions and accelerates the issuance of digitally initiated bank guarantees\" — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.sc.com/en/press-release/standard-chartered-completes-first-icc-swift-api-standards-digital-bank-guarantee-transaction-through-komgo/ — \"Standard Chartered completes first ICC-Swift API Standards digital bank guarantee transaction through Komgo\" January 2026 — fetched 2026-05-28"
+    }
+  },
+  "TR-BGID-002": {
+    "The trend": {
+      "source": "web",
+      "evidence": "https://www.eba.europa.eu/publications-and-media/press-releases/eba-issues-final-guidance-internal-policies-procedures-and-controls-ensure-implementation-union-and — \"EBA published two sets of final Guidelines that, for the first time, set common EU standards on the governance arrangements and the policies, procedures and controls financial institutions should have in place\" — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://ripjar.com/blog/eba-guidelines-2025-preparing-for-new-sanctions-screening-rules/ — \"Tuning, or calibration as it is referred to by the EBA, is now a regulatory expectation, with financial institutions required to calibrate their systems\" — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://aml-analytics.com/2025/06/24/understanding-the-new-eba-guidelines-key-requirements-for-all/ — \"Coming into effect on 30 December 2025, these Guidelines will become an integral part of the EU's Anti-Money Laundering Regulation\" — fetched 2026-05-28"
+    }
+  },
+  "TR-BGID-003": {
+    "The trend": {
+      "source": "web",
+      "evidence": "https://cleareye.ai/automating-trade-finance-how-ai-is-reshaping-global-compliance/ — \"AI is enabling intelligent automation across end-to-end processes, from extracting data in unstructured documents to real-time fraud detection and dynamic compliance screening\" — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://klearstack.com/blogs/trade-finance-automation-software — \"GenAI is being considered to help advise guarantees, which tend to have unformatted text, so that this process can also be streamlined\" — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://klearstack.com/blogs/trade-finance-automation-software — \"Over 96 percent straight-through processing for structured finance and payments is being achieved in agentic systems, with clients reporting cycle time reduction from days to seconds\" — fetched 2026-05-28"
+    }
+  },
+  "TR-BGID-004": {
+    "The trend": {
+      "source": "web",
+      "evidence": "https://www.redcompasslabs.com/insights/what-now-iso-20022-deadlines-in-2026-onwards/ — \"Starting November 14, 2026, Swift is mandating all financial institutions be able to receive Enquiry and Investigation messages in MX format\" — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.swift.com/standards/iso-20022/iso-20022-financial-institutions-focus-payments-instructions — \"ISO 20022 migration involves the replacement of SWIFT related FIN Message Types (MT) for Cross Border payments by equivalent ISO 20022 messages\" — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.fxcintel.com/research/analysis/swift-iso-20022-migration-completed — \"97% of payment instructions sent through Swift's platform were sent using ISO 20022\" as of November 2025 — fetched 2026-05-28"
+    }
+  },
+  "TR-BGID-005": {
+    "The trend": {
+      "source": "web",
+      "evidence": "https://www.ibm.com/think/topics/digital-operational-resilience-act — \"DORA entered into application on 17 January 2025 to ensure that banks can withstand, respond to, and recover from ICT disruptions\" — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.dlapiper.com/en/insights/publications/2025/02/application-of-the-digital-operational-resilience-act---dora — \"DORA brings harmonisation to rules relating to operational resilience for the financial sector, applicable to 20 different types of financial entities and ICT third-party service providers\" — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://www.esma.europa.eu/esmas-activities/digital-finance-and-innovation/digital-operational-resilience-act-dora — 19 ICT providers including AWS, Azure and Google Cloud designated as critical third parties subject to direct EU supervisory oversight since November 2025 — fetched 2026-05-28"
+    }
+  },
+  "TR-BGID-006": {
+    "The trend": {
+      "source": "web",
+      "evidence": "https://www.tradefinanceglobal.com/posts/sibos-2025-finastra-unveils-trade-innovation-nexus-integration-layer-simplify-interoperability/ — \"Finastra unveiled its Trade Innovation Nexus integration layer at Sibos 2025 to streamline how banks adopt and connect with its trade finance software\" — fetched 2026-05-28"
+    },
+    "Relevance": {
+      "source": "web",
+      "evidence": "https://www.finastra.com/viewpoints/brochure/trade-innovation-nexus-factsheet — \"built on a REST-based Open API architecture that delivers secure, scalable, and future-ready integration — helping institutions accelerate digital transformation, reduce costs, and migrate from legacy systems with ease\" — fetched 2026-05-28"
+    },
+    "Evidence": {
+      "source": "web",
+      "evidence": "https://fintech.global/2026/01/12/finastra-helps-bni-speed-up-trade-finance-operations-worldwide/ — BNI migrated nine international locations to a central Finastra Trade Innovation Nexus instance in January 2026 — fetched 2026-05-28"
+    }
+  }
+}

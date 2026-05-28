@@ -1,0 +1,280 @@
+{
+  "generatedAt": "2026-05-28T13:26:12.690447+00:00",
+  "slug": "bank-guarantee-issuance-dogfood-2026-05-28",
+  "file": "",
+  "created": [
+    "CP-BGID-001",
+    "CP-BGID-002",
+    "CP-BGID-003",
+    "PP-BGID-001",
+    "PP-BGID-002",
+    "M-BGID-001",
+    "REG-BGID-001",
+    "REG-BGID-002",
+    "PS-BGID-001",
+    "PS-BGID-002",
+    "PS-BGID-003",
+    "PS-BGID-004",
+    "PS-BGID-005",
+    "PS-BGID-006",
+    "ROLE-BGID-001",
+    "ROLE-BGID-002",
+    "ROLE-BGID-003",
+    "ROLE-BGID-004",
+    "ROLE-BGID-005",
+    "ROLE-BGID-006",
+    "SYS-BGID-001",
+    "SYS-BGID-002",
+    "SYS-BGID-003",
+    "SYS-BGID-004"
+  ],
+  "updated": [],
+  "conflicts": [],
+  "corrections": [
+    {
+      "element": "control-1",
+      "field": "fields.effectiveness",
+      "removed": "HIGH — effectiveness rating not stated in source document; entirely inferred"
+    },
+    {
+      "element": "control-1",
+      "field": "blocks[Control activity].body",
+      "removed": "Phrase 'creating a two-level four-eyes check' — invented label not present in source document"
+    },
+    {
+      "element": "control-2",
+      "field": "fields.execution",
+      "removed": "HYBRID changed to MANUAL — document shows analyst using a tool but never characterises the control as hybrid; execution is analyst-driven"
+    },
+    {
+      "element": "control-2",
+      "field": "fields.effectiveness",
+      "removed": "HIGH — effectiveness rating not stated in source document; entirely inferred"
+    },
+    {
+      "element": "control-3",
+      "field": "fields.effectiveness",
+      "removed": "HIGH — effectiveness rating not stated in source document; entirely inferred"
+    },
+    {
+      "element": "control-3",
+      "field": "fields.owner",
+      "removed": "Trade Finance — C3 names no control owner; unlike C1 (Trade Finance Manager) and C2 (Compliance Analyst), C3 carries no explicit owner in the document"
+    },
+    {
+      "element": "control-3",
+      "field": "blocks[Control activity].body",
+      "removed": "Phrase 'for a limit increase' — document says applications are routed to the Credit team but does not state the outcome is a limit increase within this process step"
+    },
+    {
+      "element": "control-3",
+      "field": "confidence",
+      "removed": "Downgraded from implicit HIGH to medium — owner field had no document support; control body required minor trim"
+    },
+    {
+      "element": "pp-1",
+      "field": "blocks[Impact].body",
+      "removed": "directly degrading the client experience — not stated in the source document; inference removed"
+    },
+    {
+      "element": "pp-2",
+      "field": "blocks[Impact].body",
+      "removed": "'making it impossible to reliably meet the 3-business-day target for bespoke applications' — overstates the document; document says the SLA is measured for standard-wording only and that bespoke adds unpredictable delay, not that meeting it is impossible; rewritten to reflect document text"
+    },
+    {
+      "element": "metric-1",
+      "field": "blocks[Current reading].provenance",
+      "removed": "source demoted from 'document' to 'proposed': 'actual performance is not tracked' is an inference; the document is silent on whether tracking exists, not explicit that it does not"
+    },
+    {
+      "element": "reg-1",
+      "field": "blocks[What it requires].body",
+      "removed": "'AML directives require the bank to identify and assess money-laundering risk in the underlying transaction' — the document names AML directives but does not describe what they specifically require; hallucinated content removed"
+    },
+    {
+      "element": "reg-2",
+      "field": "blocks[What it requires].body",
+      "removed": "All specifics about URDG 758 content ('form, presentation and payment obligations', 'wording, expiry', 'complying demand must be honoured') — the document names URDG 758 but does not describe its requirements; hallucinated content removed; provenance demoted from 'proposed' (already proposed in draft) and body reduced to traceable statement only"
+    },
+    {
+      "element": "reg-2",
+      "field": "blocks[How it is met].body",
+      "removed": "'ensures guarantee text conforms to URDG 758 requirements' and 'provides additional assurance of compliance' — Step 3 describes wording review but does not mention URDG 758 conformance; inference removed; provenance confirmed as 'proposed'"
+    },
+    {
+      "element": "ps-1",
+      "field": "blocks[What happens].body",
+      "removed": "Incomplete applications are returned to the client for correction before progressing — not stated in the document; removed."
+    },
+    {
+      "element": "ps-1",
+      "field": "blocks[Outputs].body",
+      "removed": "\"Application returned to client (if incomplete)\" — not stated in the document; removed from Outputs list."
+    },
+    {
+      "element": "ps-2",
+      "field": "blocks[What happens].body",
+      "removed": "\"to arrange a limit increase\" — the document says the application is routed to the Credit team but does not state the purpose is to arrange a limit increase; removed."
+    },
+    {
+      "element": "ps-2",
+      "field": "blocks[Why it matters].provenance",
+      "removed": "Provenance was marked 'document'; demoted to 'proposed' — the rationale text is inference, not stated in the document."
+    },
+    {
+      "element": "ps-3",
+      "field": "blocks[What happens].body",
+      "removed": "\"The Legal team assesses the proposed wording for legal risk and confirms or amends it\" — not in the document (which only says 'review and sign-off'); removed."
+    },
+    {
+      "element": "ps-4",
+      "field": "blocks[What happens].body",
+      "removed": "\"The application may only resume if Compliance clears the hit; otherwise it is declined\" — the document only says the hit suspends the application pending investigation; 'otherwise it is declined' is not stated; removed."
+    },
+    {
+      "element": "ps-4",
+      "field": "blocks[Outputs].body",
+      "removed": "\"Screening audit trail recorded\" — not stated in the document; removed from Outputs list."
+    },
+    {
+      "element": "ps-4",
+      "field": "blocks[Outputs].provenance",
+      "removed": "Provenance was marked 'document' for the full block including unsupported items; retained as 'document' only for the two explicitly supported claims; evidence tightened."
+    },
+    {
+      "element": "ps-4",
+      "field": "blocks[Why it matters].provenance",
+      "removed": "Provenance was marked 'document'; demoted to 'proposed' — the rationale text is drawn from the Regulatory Context section, not from step 4's own description."
+    },
+    {
+      "element": "ps-5",
+      "field": "blocks[What happens].body",
+      "removed": "\"including the credit check outcome, approved wording and clear sanctions result\" — the document says 'assembled package' without listing its contents; enumerated contents removed."
+    },
+    {
+      "element": "ps-5",
+      "field": "blocks[Why it matters].body",
+      "removed": "\"against errors and fraud\" and \"largest exposure items\" — not stated in the document; rewritten to what the document supports."
+    },
+    {
+      "element": "ps-5",
+      "field": "blocks[Why it matters].provenance",
+      "removed": "Provenance was marked 'document'; demoted to 'proposed' — the rationale text is inference not stated in the document."
+    },
+    {
+      "element": "ps-6",
+      "field": "blocks[What happens].body",
+      "removed": "\"Once delivery is confirmed\" — not stated in the document; removed."
+    },
+    {
+      "element": "ps-6",
+      "field": "blocks[Outputs].body",
+      "removed": "\"Delivery confirmation to client\" — not stated in the document; removed from Outputs list."
+    },
+    {
+      "element": "role-1",
+      "field": "blocks[Responsibility].body",
+      "removed": "Phrase 'Owns the end-to-end operational handling' and 'executed instrument' — ownership language and 'executed instrument' are inferences not present in the document. Block rewritten down to document-supported tasks."
+    },
+    {
+      "element": "role-1",
+      "field": "blocks[In this process].body",
+      "removed": "Phrase 'triggers SWIFT transmission' — document says the guarantee 'is transmitted to the beneficiary's bank via SWIFT' (passive; TFO's role in triggering SWIFT is not stated). Rewritten to passive form matching source."
+    },
+    {
+      "element": "role-1",
+      "field": "blocks[Responsibility].provenance",
+      "removed": "Provenance demoted from 'document' to 'proposed' because 'end-to-end ownership' framing is an inference across multiple passages, not a verbatim document statement."
+    },
+    {
+      "element": "role-3",
+      "field": "blocks[Responsibility].body",
+      "removed": "Phrase 'senior escalation approval', 'second layer of sign-off above the Trade Finance Manager', and 'exposures above EUR 5 million' — hierarchy inference is unsupported; 'exposures' substitutes for document's 'guarantee amount'. Block rewritten to document-supported text."
+    },
+    {
+      "element": "role-3",
+      "field": "blocks[In this process].body",
+      "removed": "Phrase 'before the guarantee can be issued in those cases' — the document states the sign-off is required but does not explicitly sequence it as a precondition for issuance in those words. Rewritten to remove the unsupported causal framing."
+    },
+    {
+      "element": "role-4",
+      "field": "blocks[Responsibility].body",
+      "removed": "Phrase 'manages any screening hits through to resolution' — document says 'suspends the application pending Compliance investigation'; resolution outcome is not described. Removed 'through to resolution'."
+    },
+    {
+      "element": "role-5",
+      "field": "blocks[Responsibility].body",
+      "removed": "Phrase 'Handles facility limit increases' — document says the application is routed to the Credit team but does not state the Credit team performs limit increases. Action rewritten to match what the document actually says."
+    },
+    {
+      "element": "role-5",
+      "field": "blocks[In this process].body",
+      "removed": "Phrase 'to arrange a limit increase' — document does not describe what the Credit team does once routed the application; action is an inference. Removed."
+    },
+    {
+      "element": "role-6",
+      "field": "blocks[Responsibility].body",
+      "removed": "Phrase 'ensuring legal soundness' — document does not describe the purpose of Legal review in these terms. Removed."
+    },
+    {
+      "element": "role-6",
+      "field": "blocks[In this process].provenance",
+      "removed": "Provenance demoted from 'document' to 'proposed' for the sequencing claim 'before the application advances to sanctions screening and issuance approval' — step ordering is inferred from the numbered step sequence, not from a verbatim document statement."
+    },
+    {
+      "element": "sys-1",
+      "field": "fields.criticality",
+      "removed": "HIGH — criticality rating not stated in source document; value is an inference, kept but flagged"
+    },
+    {
+      "element": "sys-1",
+      "field": "fields.systemType",
+      "removed": "SUPPORTING — system type classification not stated in source document; value is an inference, kept but flagged"
+    },
+    {
+      "element": "sys-2",
+      "field": "fields.criticality",
+      "removed": "HIGH — criticality rating not stated in source document; value is an inference, kept but flagged"
+    },
+    {
+      "element": "sys-2",
+      "field": "fields.systemType",
+      "removed": "CORE — system type classification not stated in source document; value is an inference, kept but flagged"
+    },
+    {
+      "element": "sys-2",
+      "field": "relations.integrates",
+      "removed": "[\"@sys-4\"] — no explicit integration between Trade Finance System and SWIFT is stated; document only says the guarantee 'is transmitted via SWIFT' after generation in TFS, which does not confirm a system-level integration; removed"
+    },
+    {
+      "element": "sys-3",
+      "field": "fields.criticality",
+      "removed": "HIGH — criticality rating not stated in source document; value is an inference, kept but flagged"
+    },
+    {
+      "element": "sys-3",
+      "field": "fields.systemType",
+      "removed": "SUPPORTING — system type classification not stated in source document; value is an inference, kept but flagged"
+    },
+    {
+      "element": "sys-3",
+      "field": "blocks.Purpose.body",
+      "removed": "\"Automated\" — the document does not describe the tool as automated; word removed. \"AML watchlists\" — the document mentions only 'the sanctions list'; AML watchlists are not mentioned as a screening target for this tool (AML obligations appear in the regulatory context section only); phrase removed. Rewritten to: 'Screening tool used by the Compliance function to check parties against the sanctions list.'"
+    },
+    {
+      "element": "sys-4",
+      "field": "fields.criticality",
+      "removed": "HIGH — criticality rating not stated in source document; value is an inference, kept but flagged"
+    },
+    {
+      "element": "sys-4",
+      "field": "fields.systemType",
+      "removed": "EXTERNAL — system type classification not stated in source document; value is an inference, kept but flagged"
+    },
+    {
+      "element": "sys-4",
+      "field": "blocks.Purpose.body",
+      "removed": "Original proposed text 'Global interbank messaging network used to transmit executed financial instruments and instructions between correspondent banks' contained general-knowledge claims not found in the source document. Rewritten to document-supported text: 'Network used to transmit the executed guarantee to the beneficiary's bank.' Confidence set to medium because the Purpose block previously had no document support; Role block is fully document-supported."
+    }
+  ]
+}
