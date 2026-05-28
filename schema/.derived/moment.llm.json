@@ -1,0 +1,54 @@
+{
+  "elementType": "moment",
+  "label": "Moment That Matters",
+  "section": "moments",
+  "idPrefix": "MT",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "sentiment",
+        "label": "Sentiment",
+        "hint": "positive / negative / critical — the client's emotional read of this moment.",
+        "enum": [
+          "positive",
+          "negative",
+          "critical"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "key": "touchpoint",
+        "label": "Touchpoint",
+        "target": "cx-touchpoint"
+      }
+    ],
+    "required": [
+      "sentiment"
+    ]
+  },
+  "template": [
+    {
+      "heading": "The moment",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "6–35",
+      "purpose": "The specific moment in the client journey."
+    },
+    {
+      "heading": "Why it matters",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–45",
+      "purpose": "Why this moment shapes the client's overall perception."
+    },
+    {
+      "heading": "Design implication",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–45",
+      "purpose": "What the process should do about this moment."
+    }
+  ],
+  "examples": []
+}

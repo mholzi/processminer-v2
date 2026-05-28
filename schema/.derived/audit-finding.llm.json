@@ -1,0 +1,54 @@
+{
+  "elementType": "audit-finding",
+  "label": "Audit Finding",
+  "section": "audit-findings",
+  "idPrefix": "OAF",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "auditDate",
+        "label": "Audit",
+        "hint": "The date the finding was raised by audit."
+      },
+      {
+        "key": "findingStatus",
+        "label": "Status",
+        "hint": "Where the finding stands — open, in remediation, or closed."
+      },
+      {
+        "key": "severity",
+        "label": "Severity",
+        "hint": "HIGH / MEDIUM / LOW / NONE — the audit-assessed severity.",
+        "enum": [
+          "HIGH",
+          "MEDIUM",
+          "LOW",
+          "NONE"
+        ]
+      }
+    ],
+    "relations": [],
+    "required": [
+      "auditDate",
+      "findingStatus",
+      "severity"
+    ]
+  },
+  "template": [
+    {
+      "heading": "Finding",
+      "format": "paragraph",
+      "paragraphs": "1–2",
+      "words": "15–60",
+      "purpose": "What the audit observed, with enough context to act on."
+    },
+    {
+      "heading": "Recommendation",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–45",
+      "purpose": "The auditor's recommended action."
+    }
+  ],
+  "examples": []
+}

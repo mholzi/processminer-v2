@@ -1,0 +1,92 @@
+{
+  "elementType": "adr",
+  "label": "Architecture Decision",
+  "section": "architecture-decisions",
+  "idPrefix": "ADR",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "adrStatus",
+        "label": "Status",
+        "hint": "DRAFT / PROPOSED / ACCEPTED / REJECTED / SUPERSEDED — the ADR lifecycle state."
+      },
+      {
+        "key": "owner",
+        "label": "Owner",
+        "hint": "The accountable architect (a role, not a named person)."
+      },
+      {
+        "key": "domain",
+        "label": "Domain",
+        "hint": "The architectural domain this decision belongs to (e.g. 'Case management', 'Payments')."
+      }
+    ],
+    "relations": [
+      {
+        "key": "decision",
+        "label": "Drives",
+        "target": "transformation-decision"
+      },
+      {
+        "key": "resolvesGap",
+        "label": "Resolves gap",
+        "target": "gap"
+      },
+      {
+        "key": "satisfiesControl",
+        "label": "Satisfies control",
+        "target": "control"
+      },
+      {
+        "key": "supersededBy",
+        "label": "Superseded by",
+        "target": "adr"
+      },
+      {
+        "key": "dependsOn",
+        "label": "Depends on",
+        "target": "adr"
+      }
+    ],
+    "required": [
+      "adrStatus",
+      "owner"
+    ]
+  },
+  "template": [
+    {
+      "heading": "Context",
+      "format": "paragraph",
+      "paragraphs": "1–2",
+      "words": "30–120",
+      "purpose": "Why the decision is needed — the situation, constraints and forces in play."
+    },
+    {
+      "heading": "Decision",
+      "format": "paragraph",
+      "paragraphs": "1–2",
+      "words": "15–80",
+      "purpose": "What we decided to do."
+    },
+    {
+      "heading": "Alternatives considered",
+      "format": "bullets",
+      "items": "2–6",
+      "purpose": "The options we weighed and why each was not chosen."
+    },
+    {
+      "heading": "Consequences",
+      "format": "bullets",
+      "items": "2–8",
+      "purpose": "What follows from the decision — new dependencies, NFRs, risks, technical debt."
+    }
+  ],
+  "examples": [
+    {
+      "path": "wiki/processes/sepa-payments/architecture-decisions/ADR-SP-001.md"
+    },
+    {
+      "path": "wiki/processes/sepa-payments/architecture-decisions/ADR-SP-002.md"
+    }
+  ]
+}

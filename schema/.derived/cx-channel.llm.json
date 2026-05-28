@@ -1,0 +1,46 @@
+{
+  "elementType": "cx-channel",
+  "label": "Channel",
+  "section": "channels",
+  "idPrefix": "CH",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "channelType",
+        "label": "Type",
+        "hint": "DIGITAL or ASSISTED — self-service, or mediated by staff.",
+        "enum": [
+          "DIGITAL",
+          "ASSISTED"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "key": "touchpoints",
+        "label": "Touchpoints",
+        "target": "cx-touchpoint"
+      }
+    ],
+    "required": [
+      "channelType"
+    ]
+  },
+  "template": [
+    {
+      "heading": "Description",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "5–35",
+      "purpose": "What the channel is and how clients reach it."
+    },
+    {
+      "heading": "Usage",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–40",
+      "purpose": "When and how much the channel is used in onboarding."
+    }
+  ],
+  "examples": []
+}

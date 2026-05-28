@@ -1,0 +1,100 @@
+{
+  "elementType": "control",
+  "label": "Control",
+  "section": "controls",
+  "idPrefix": "CP",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "controlType",
+        "label": "Type",
+        "hint": "PREVENTIVE / DETECTIVE / CORRECTIVE — when the control acts relative to the risk.",
+        "enum": [
+          "PREVENTIVE",
+          "DETECTIVE",
+          "CORRECTIVE"
+        ]
+      },
+      {
+        "key": "execution",
+        "label": "Execution",
+        "hint": "MANUAL / AUTOMATED / HYBRID — whether a person performs the control, the system enforces it, or both (a manual trigger plus an automated execution, e.g. an analyst initiating an automated screening tool).",
+        "enum": [
+          "MANUAL",
+          "AUTOMATED",
+          "HYBRID"
+        ]
+      },
+      {
+        "key": "effectiveness",
+        "label": "Effectiveness",
+        "hint": "HIGH / MEDIUM / LOW — how well the control mitigates its risk, as assessed.",
+        "enum": [
+          "HIGH",
+          "MEDIUM",
+          "LOW"
+        ]
+      },
+      {
+        "key": "owner",
+        "label": "Owner",
+        "hint": "The accountable function (e.g. 'Compliance', 'Operations') — never a named individual, even for an automated control."
+      }
+    ],
+    "relations": [
+      {
+        "key": "step",
+        "label": "Step",
+        "target": "process-step"
+      },
+      {
+        "key": "regulatedBy",
+        "label": "Regulated by",
+        "target": "regulation"
+      }
+    ],
+    "required": [
+      "controlType",
+      "execution",
+      "owner"
+    ]
+  },
+  "template": [
+    {
+      "heading": "What it checks",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–40",
+      "purpose": "The specific risk or condition the control verifies."
+    },
+    {
+      "heading": "Control activity",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–50",
+      "purpose": "How the control is performed, by whom and with what."
+    },
+    {
+      "heading": "Risk addressed",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "6–40",
+      "purpose": "The risk that would materialise without this control."
+    },
+    {
+      "heading": "Timing",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "6–35",
+      "purpose": "When and how often the control runs."
+    }
+  ],
+  "examples": [
+    {
+      "path": "wiki/processes/sepa-payments/controls/CP-SP-003.md"
+    },
+    {
+      "path": "wiki/processes/sepa-payments/controls/CP-SP-004.md"
+    }
+  ]
+}

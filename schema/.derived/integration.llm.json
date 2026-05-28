@@ -1,0 +1,35 @@
+{
+  "elementType": "integration",
+  "label": "Integration",
+  "section": "integrations",
+  "idPrefix": "INT",
+  "frontmatter": {
+    "fields": [],
+    "relations": [
+      {
+        "key": "systems",
+        "label": "Systems",
+        "target": "system"
+      }
+    ],
+    "required": [
+      "systems"
+    ]
+  },
+  "template": [
+    {
+      "heading": "What connects",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "6–30",
+      "purpose": "The two systems the integration links."
+    },
+    {
+      "heading": "What flows",
+      "format": "bullets",
+      "items": "2–6",
+      "purpose": "Each kind of data that moves across the integration."
+    }
+  ],
+  "examples": []
+}

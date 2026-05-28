@@ -600,6 +600,78 @@ def run() -> None:
     chk("shared SKILL.md blocks are byte-identical across skills",
         r.returncode == 0, r.stdout + r.stderr)
 
+    print("\n— schema: derived per-type files in sync with source —")
+    r = subprocess.run(
+        ["python3", str(ROOT / "scripts" / "wiki" / "build_derived_schemas.py"), "--check"],
+        capture_output=True, text=True, cwd=ROOT)
+    chk("schema/.derived/ matches build_derived_schemas.py output",
+        r.returncode == 0, r.stdout + r.stderr)
+
+    # Structural parity between the source schema and the derived per-type
+    # files. The --check above catches any drift in the *bytes*; these checks
+    # protect against a builder bug that emits drift-free but structurally
+    # wrong output (e.g. dropping a required key or reordering headings).
+    print("\n— schema: derived structure matches source —")
+    full_schema = json.loads((ROOT / "schema" / "process-schema.json").read_text(encoding="utf-8"))
+    source_types = set(full_schema["elementTypes"])
+    derived_dir = ROOT / "schema" / ".derived"
+    derived_types = {p.stem.removesuffix(".llm") for p in derived_dir.glob("*.llm.json")}
+    chk("every source elementType has a derived file",
+        source_types == derived_types,
+        f"only in source: {sorted(source_types - derived_types)}; "
+        f"only in derived: {sorted(derived_types - source_types)}")
+
+    bad_required = []
+    bad_headings = []
+    for etype, t in full_schema["elementTypes"].items():
+        derived = json.loads((derived_dir / f"{etype}.llm.json").read_text(encoding="utf-8"))
+        src_req = list((t.get("frontmatter", {}) or {}).get("required") or [])
+        if src_req != derived["frontmatter"]["required"]:
+            bad_required.append(etype)
+        src_headings = [b["heading"] for b in (t.get("template") or [])]
+        drv_headings = [b["heading"] for b in derived["template"]]
+        if src_headings != drv_headings:
+            bad_headings.append(etype)
+    chk("required frontmatter keys preserved in derived",
+        not bad_required, f"mismatched: {bad_required}")
+    chk("template heading order preserved in derived",
+        not bad_headings, f"mismatched: {bad_headings}")
+
+    # Curation override: a curated example path should win over auto-pick.
+    # Synthesizes a curation file in a temp location so the real one (if any
+    # is ever added) isn't touched. Picks a real wiki path that we know
+    # exists, and asserts the builder emits exactly that.
+    print("\n— schema: curated-examples override —")
+    curated_target = "wiki/processes/sepa-payments/process-steps/PS-SP-001.md"
+    if (ROOT / curated_target).is_file():
+        with tempfile.TemporaryDirectory() as tmp_out:
+            with tempfile.NamedTemporaryFile(
+                "w", suffix=".json", delete=False, encoding="utf-8"
+            ) as cf:
+                json.dump({"role": [curated_target]}, cf)
+                cf_path = cf.name
+            try:
+                r = subprocess.run(
+                    ["python3", str(ROOT / "scripts" / "wiki" / "build_derived_schemas.py"),
+                     "--out", tmp_out, "--curation", cf_path],
+                    capture_output=True, text=True, cwd=ROOT,
+                )
+                chk("builder accepts --curation override",
+                    r.returncode == 0, r.stdout + r.stderr)
+                if r.returncode == 0:
+                    role_derived = json.loads(
+                        (Path(tmp_out) / "role.llm.json").read_text(encoding="utf-8")
+                    )
+                    paths = [ex["path"] for ex in role_derived["examples"]]
+                    chk("curated path wins over auto-pick for 'role'",
+                        paths == [curated_target],
+                        f"got {paths}")
+            finally:
+                Path(cf_path).unlink(missing_ok=True)
+    else:
+        chk("curated-examples test fixture exists", False,
+            f"missing reference element {curated_target}")
+
 
 def main() -> None:
     shutil.rmtree(PROC_DIR, ignore_errors=True)

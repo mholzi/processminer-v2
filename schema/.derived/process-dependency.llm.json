@@ -1,0 +1,60 @@
+{
+  "elementType": "process-dependency",
+  "label": "Process Dependency",
+  "section": "dependencies",
+  "idPrefix": "DEP",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "direction",
+        "label": "Direction",
+        "hint": "UPSTREAM / DOWNSTREAM / BIDIRECTIONAL — how this process and the dependency relate.",
+        "enum": [
+          "UPSTREAM",
+          "DOWNSTREAM",
+          "BIDIRECTIONAL"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "key": "atStep",
+        "label": "At step",
+        "target": "process-step"
+      },
+      {
+        "key": "viaSystem",
+        "label": "Via system",
+        "target": "system"
+      }
+    ],
+    "required": [
+      "direction",
+      "atStep"
+    ]
+  },
+  "template": [
+    {
+      "heading": "The dependency",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–45",
+      "purpose": "The connected process or party at the boundary."
+    },
+    {
+      "heading": "What crosses the boundary",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–50",
+      "purpose": "The data, trigger or artefact handed over, and in which direction."
+    },
+    {
+      "heading": "Why it matters",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "6–40",
+      "purpose": "The impact if the dependency fails or runs late."
+    }
+  ],
+  "examples": []
+}

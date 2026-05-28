@@ -1,0 +1,80 @@
+{
+  "elementType": "process-step",
+  "label": "Process Step",
+  "section": "process-steps",
+  "idPrefix": "PS",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "owner",
+        "label": "Owner",
+        "hint": "Who performs this step — a role (e.g. 'Operations Analyst'), or 'system / unassigned' if automated. Never a named individual."
+      },
+      {
+        "key": "sla",
+        "label": "SLA",
+        "hint": "The turnaround target for this step (e.g. 'within 2 hours', 'same business day')."
+      },
+      {
+        "key": "condition",
+        "label": "Condition",
+        "hint": "Any precondition or entry criterion that must hold before this step runs."
+      }
+    ],
+    "relations": [
+      {
+        "key": "systems",
+        "label": "Systems",
+        "target": "system"
+      }
+    ],
+    "required": [
+      "owner"
+    ],
+    "transitions": {
+      "kinds": [
+        "normal",
+        "branch",
+        "loopback",
+        "exception"
+      ],
+      "note": "Outgoing flow from this step. Lives in the per-process sidecar `wiki/processes/<slug>/transitions.json`, keyed by element id. Each entry is `{to, kind, when}` — the element it flows to (a process-step or exception id), the transition kind, and the condition under which it fires. write_element.py / write_elements.py accept entries on the spec as either the structured `{to, kind, when}` object or the legacy `<to>|<kind>|<when>` pipe-string (the writer normalises). patch_element.py exposes the same field as `--list transitions <to|kind|when, ...>`. Editing the bundle file by hand is fine; editing element frontmatter is not — `transitions` no longer lives there."
+    }
+  },
+  "template": [
+    {
+      "heading": "What happens",
+      "format": "paragraph",
+      "paragraphs": "1–2",
+      "words": "20–95",
+      "purpose": "The concrete actions performed in this step, in plain language."
+    },
+    {
+      "heading": "Inputs",
+      "format": "bullets",
+      "items": "2–6",
+      "purpose": "Each thing the step consumes — documents, data or prior outputs."
+    },
+    {
+      "heading": "Outputs",
+      "format": "bullets",
+      "items": "2–6",
+      "purpose": "Each thing the step produces and hands to the next step."
+    },
+    {
+      "heading": "Why it matters",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–60",
+      "purpose": "The risk this step controls or the value it adds."
+    }
+  ],
+  "examples": [
+    {
+      "path": "wiki/processes/sepa-payments/process-steps/PS-SP-001.md"
+    },
+    {
+      "path": "wiki/processes/sepa-payments/process-steps/PS-SP-002.md"
+    }
+  ]
+}

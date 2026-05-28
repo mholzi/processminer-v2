@@ -1,0 +1,68 @@
+{
+  "elementType": "competitor-eu",
+  "label": "European Competitor",
+  "section": "competitor-innovation",
+  "idPrefix": "CEU",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "competitor",
+        "label": "Competitor",
+        "hint": "The competitor bank or fintech this observation is about."
+      },
+      {
+        "key": "asOf",
+        "label": "Sourced",
+        "hint": "The date this competitor observation was captured."
+      },
+      {
+        "key": "source",
+        "label": "Source",
+        "hint": "Citation or URL for the observation.",
+        "urlKey": "sourceUrl"
+      }
+    ],
+    "relations": [
+      {
+        "key": "bearsOn",
+        "label": "Bears on",
+        "target": [
+          "process-step",
+          "system",
+          "pain-point",
+          "control",
+          "compliance-gap"
+        ]
+      }
+    ],
+    "required": [
+      "competitor",
+      "asOf",
+      "sourceUrl"
+    ]
+  },
+  "template": [
+    {
+      "heading": "The move",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "12–55",
+      "purpose": "The innovation a European corporate bank is pursuing, described plainly."
+    },
+    {
+      "heading": "Relevance",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "12–55",
+      "purpose": "What it means for this process — the competitive gap it opens."
+    },
+    {
+      "heading": "Evidence",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–40",
+      "purpose": "The announcement, report or launch that evidences the move."
+    }
+  ],
+  "examples": []
+}

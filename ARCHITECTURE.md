@@ -323,6 +323,7 @@ them.
 | 7 | Verbatim cross-skill blocks (provenance block, element-writing procedure, batching rule) must stay byte-identical across SKILL.md files | [`scripts/check_skill_blocks.py`](scripts/check_skill_blocks.py) — run by the test suite |
 | 8 | The TS conformance mirror (`src/lib/conformance.ts`) must agree with the Python (`check_conformance.py`) — verdicts diverging would make the UI lie | a parity test in `test_wiki_scripts.py` |
 | 9 | Re-ingesting a document that contradicts the wiki must surface a conflict, never silently overwrite | [`document-ingest` SKILL.md](.claude/skills/document-ingest/SKILL.md), `conflicts.json` |
+| 10 | `schema/.derived/<type>.llm.json` must stay in sync with `schema/process-schema.json` — derived files are the LLM-facing per-type contract and out-of-date ones would teach wrong rules | [`build_derived_schemas.py --check`](scripts/wiki/build_derived_schemas.py) — run by the test suite |
 
 If you change any of {schema, write_element, patch_element, set_approval, conformance.ts}, run
 `npm test` — these invariants are exactly what the test suite covers.

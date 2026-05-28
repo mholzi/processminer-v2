@@ -1,0 +1,72 @@
+{
+  "elementType": "exception",
+  "label": "Exception",
+  "section": "exceptions",
+  "idPrefix": "EX",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "category",
+        "label": "Category",
+        "hint": "The kind of exception (e.g. data-quality, sanctions hit, missing approval)."
+      },
+      {
+        "key": "frequencyPct",
+        "label": "Frequency",
+        "hint": "Roughly how often the exception occurs, as a percentage of cases.",
+        "suffix": "%"
+      },
+      {
+        "key": "impact",
+        "label": "Impact",
+        "hint": "HIGH / MEDIUM / LOW — the severity of the exception's effect on the process or client.",
+        "enum": [
+          "HIGH",
+          "MEDIUM",
+          "LOW"
+        ]
+      },
+      {
+        "key": "handlingOwner",
+        "label": "Handling",
+        "hint": "The role accountable for resolving this exception."
+      }
+    ],
+    "relations": [],
+    "required": [
+      "category",
+      "impact"
+    ]
+  },
+  "template": [
+    {
+      "heading": "Description",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "12–50",
+      "purpose": "What the exception is and the conditions under which it arises."
+    },
+    {
+      "heading": "Handling",
+      "format": "paragraph",
+      "paragraphs": "1–2",
+      "words": "10–60",
+      "purpose": "How the exception is resolved, and by whom."
+    },
+    {
+      "heading": "Impact",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–40",
+      "purpose": "Effect on cycle time, cost, the client or compliance."
+    }
+  ],
+  "examples": [
+    {
+      "path": "wiki/processes/sepa-payments/exceptions/EX-SP-001.md"
+    },
+    {
+      "path": "wiki/processes/sepa-payments/exceptions/EX-SP-002.md"
+    }
+  ]
+}

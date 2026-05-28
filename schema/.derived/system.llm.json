@@ -1,0 +1,102 @@
+{
+  "elementType": "system",
+  "label": "System",
+  "section": "systems",
+  "idPrefix": "SYS",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "systemType",
+        "label": "Type",
+        "hint": "CORE / SUPPORTING / EXTERNAL — the system's role in this process.",
+        "enum": [
+          "CORE",
+          "SUPPORTING",
+          "EXTERNAL"
+        ]
+      },
+      {
+        "key": "criticality",
+        "label": "Criticality",
+        "hint": "HIGH / MEDIUM / LOW — operational impact if the system is unavailable.",
+        "enum": [
+          "HIGH",
+          "MEDIUM",
+          "LOW"
+        ]
+      },
+      {
+        "key": "vendor",
+        "label": "Vendor",
+        "hint": "Vendor or build origin (e.g. Finastra Trade Innovation, SWIFT, in-house). Free text."
+      },
+      {
+        "key": "dataClassification",
+        "label": "Data Classification",
+        "hint": "confidential / restricted / internal / public — sensitivity of the data the system holds for this process.",
+        "enum": [
+          "confidential",
+          "restricted",
+          "internal",
+          "public"
+        ]
+      },
+      {
+        "key": "rtoBand",
+        "label": "RTO",
+        "hint": "Recovery Time Objective — 1h / 4h / 8h / 24h. The DORA / ICT-mapping band.",
+        "enum": [
+          "1h",
+          "4h",
+          "8h",
+          "24h"
+        ]
+      },
+      {
+        "key": "rpoBand",
+        "label": "RPO",
+        "hint": "Recovery Point Objective — 0 / 15min / 1h / 4h. The DORA / ICT-mapping band.",
+        "enum": [
+          "0",
+          "15min",
+          "1h",
+          "4h"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "key": "integrates",
+        "label": "Integrates with",
+        "target": "system"
+      }
+    ],
+    "required": [
+      "systemType"
+    ]
+  },
+  "template": [
+    {
+      "heading": "Purpose",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "4–30",
+      "purpose": "What the system is for."
+    },
+    {
+      "heading": "Role in this process",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "6–40",
+      "purpose": "Which steps use the system and how."
+    }
+  ],
+  "examples": [
+    {
+      "path": "wiki/processes/sepa-payments/systems/SYS-SP-001.md"
+    },
+    {
+      "path": "wiki/processes/sepa-payments/systems/SYS-SP-002.md"
+    }
+  ]
+}

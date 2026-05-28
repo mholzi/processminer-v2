@@ -1,0 +1,72 @@
+{
+  "elementType": "compliance-gap",
+  "label": "Control Gap",
+  "section": "control-gaps",
+  "idPrefix": "CG",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "severity",
+        "label": "Severity",
+        "hint": "HIGH / MEDIUM / LOW / NONE — the regulatory exposure the gap creates.",
+        "enum": [
+          "HIGH",
+          "MEDIUM",
+          "LOW",
+          "NONE"
+        ]
+      },
+      {
+        "key": "gapStatus",
+        "label": "Status",
+        "hint": "Where the gap stands — open, in remediation, or closed.",
+        "enum": [
+          "open",
+          "in-remediation",
+          "closed",
+          "resolved",
+          "addressed",
+          "addressed-in-target",
+          "remediated",
+          "mitigated",
+          "done"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "key": "control",
+        "label": "Control",
+        "target": "control"
+      }
+    ],
+    "required": [
+      "severity",
+      "gapStatus"
+    ]
+  },
+  "template": [
+    {
+      "heading": "The gap",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "12–45",
+      "purpose": "What is missing or non-compliant."
+    },
+    {
+      "heading": "Risk",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–40",
+      "purpose": "The regulatory or operational exposure the gap creates."
+    },
+    {
+      "heading": "Remediation",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–40",
+      "purpose": "The actions needed to close the gap."
+    }
+  ],
+  "examples": []
+}

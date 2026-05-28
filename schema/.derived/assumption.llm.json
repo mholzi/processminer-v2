@@ -1,0 +1,55 @@
+{
+  "elementType": "assumption",
+  "label": "Assumption",
+  "section": "assumptions",
+  "idPrefix": "ASM",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "assumptionStatus",
+        "label": "Status",
+        "hint": "OPEN / CONFIRMED / INVALIDATED — whether the assumption still holds.",
+        "enum": [
+          "OPEN",
+          "CONFIRMED",
+          "INVALIDATED"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "key": "bearsOn",
+        "label": "Bears on",
+        "target": "*"
+      }
+    ],
+    "required": [
+      "assumptionStatus",
+      "bearsOn"
+    ]
+  },
+  "template": [
+    {
+      "heading": "The assumption",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–45",
+      "purpose": "What is being assumed."
+    },
+    {
+      "heading": "Why it is unconfirmed",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–45",
+      "purpose": "What is unknown, and why it could not be verified."
+    },
+    {
+      "heading": "Impact if wrong",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "6–40",
+      "purpose": "What breaks if the assumption does not hold."
+    }
+  ],
+  "examples": []
+}

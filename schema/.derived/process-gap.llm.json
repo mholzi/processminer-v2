@@ -1,0 +1,66 @@
+{
+  "elementType": "process-gap",
+  "label": "Process Gap",
+  "section": "process-gaps",
+  "idPrefix": "PG",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "area",
+        "label": "Area",
+        "hint": "The area the gap sits in (e.g. As-Is process, controls, systems)."
+      },
+      {
+        "key": "gapStatus",
+        "label": "Status",
+        "hint": "Where the gap stands — open, in remediation, or closed.",
+        "enum": [
+          "open",
+          "in-remediation",
+          "closed",
+          "resolved",
+          "addressed",
+          "addressed-in-target",
+          "remediated",
+          "mitigated",
+          "done"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "key": "affects",
+        "label": "Affects",
+        "target": "process-step"
+      }
+    ],
+    "required": [
+      "area",
+      "gapStatus"
+    ]
+  },
+  "template": [
+    {
+      "heading": "The gap",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–45",
+      "purpose": "What is missing in how the process is run or measured."
+    },
+    {
+      "heading": "Impact",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–40",
+      "purpose": "What the gap prevents or puts at risk."
+    },
+    {
+      "heading": "Next step",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–35",
+      "purpose": "The recommended action to close the gap."
+    }
+  ],
+  "examples": []
+}

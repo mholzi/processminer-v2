@@ -1,0 +1,62 @@
+{
+  "elementType": "competitor-cx-eu",
+  "label": "European Competitor CX",
+  "section": "competitor-cx",
+  "idPrefix": "CXE",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "competitor",
+        "label": "Competitor",
+        "hint": "The competitor bank or fintech this observation is about."
+      },
+      {
+        "key": "asOf",
+        "label": "Sourced",
+        "hint": "The date this competitor CX observation was captured."
+      },
+      {
+        "key": "source",
+        "label": "Source",
+        "hint": "Citation or URL for the observation.",
+        "urlKey": "sourceUrl"
+      }
+    ],
+    "relations": [
+      {
+        "key": "bearsOn",
+        "label": "Bears on",
+        "target": "friction-point"
+      }
+    ],
+    "required": [
+      "competitor",
+      "asOf",
+      "sourceUrl"
+    ]
+  },
+  "template": [
+    {
+      "heading": "The journey",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "12–55",
+      "purpose": "How a European corporate bank runs this client journey."
+    },
+    {
+      "heading": "Relevance",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "12–55",
+      "purpose": "What it means for this process — the experience gap it opens."
+    },
+    {
+      "heading": "Evidence",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–40",
+      "purpose": "The review, case study or announcement that evidences it."
+    }
+  ],
+  "examples": []
+}

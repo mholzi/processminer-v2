@@ -1,0 +1,70 @@
+{
+  "elementType": "transformation-decision",
+  "label": "Transformation Decision",
+  "section": "transformation-decisions",
+  "idPrefix": "TD",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "decisionType",
+        "label": "Type",
+        "hint": "The kind of decision (e.g. build/buy, scope, sequencing)."
+      },
+      {
+        "key": "decisionStatus",
+        "label": "Status",
+        "hint": "Where the decision stands — proposed, agreed, or deferred."
+      }
+    ],
+    "relations": [
+      {
+        "key": "resolves",
+        "label": "Resolves",
+        "target": [
+          "pain-point",
+          "process-gap",
+          "compliance-gap",
+          "friction-point",
+          "audit-finding"
+        ]
+      },
+      {
+        "key": "realises",
+        "label": "Realises",
+        "target": "target-state"
+      },
+      {
+        "key": "fromIdea",
+        "label": "From idea",
+        "target": "innovation-idea"
+      }
+    ],
+    "required": [
+      "decisionType",
+      "decisionStatus"
+    ]
+  },
+  "template": [
+    {
+      "heading": "The decision",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–50",
+      "purpose": "What was decided."
+    },
+    {
+      "heading": "Options considered",
+      "format": "bullets",
+      "items": "2–5",
+      "purpose": "The alternatives that were weighed."
+    },
+    {
+      "heading": "Rationale",
+      "format": "paragraph",
+      "paragraphs": "1–2",
+      "words": "12–60",
+      "purpose": "Why this option was chosen over the others."
+    }
+  ],
+  "examples": []
+}

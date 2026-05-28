@@ -1,0 +1,54 @@
+{
+  "elementType": "regulation",
+  "label": "Regulation",
+  "section": "regulation",
+  "idPrefix": "REG",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "domain",
+        "label": "Domain",
+        "hint": "The regulatory domain (e.g. AML, sanctions, prudential, conduct)."
+      },
+      {
+        "key": "asOf",
+        "label": "As of",
+        "hint": "The date this regulatory position was captured or last verified."
+      },
+      {
+        "key": "source",
+        "label": "Source",
+        "hint": "Citation or URL for the rule — the regulation, supervisory guidance or article.",
+        "urlKey": "sourceUrl"
+      }
+    ],
+    "relations": [],
+    "required": [
+      "domain"
+    ]
+  },
+  "template": [
+    {
+      "heading": "What it requires",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "6–45",
+      "purpose": "The obligations the regulation imposes on the process."
+    },
+    {
+      "heading": "Why it applies",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–45",
+      "purpose": "Why this regulation is in scope for this process."
+    },
+    {
+      "heading": "How it is met",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "6–40",
+      "purpose": "The controls and process steps that satisfy the regulation."
+    }
+  ],
+  "examples": []
+}

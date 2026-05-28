@@ -1,0 +1,59 @@
+{
+  "elementType": "gap",
+  "label": "Gap",
+  "section": "gap-resolution",
+  "idPrefix": "VG",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "validationArea",
+        "label": "Area",
+        "hint": "The area this gap was surfaced in during validation."
+      },
+      {
+        "key": "gapStatus",
+        "label": "Status",
+        "hint": "Where the gap stands — open, in remediation, or closed.",
+        "enum": [
+          "open",
+          "in-remediation",
+          "closed",
+          "resolved",
+          "addressed",
+          "addressed-in-target",
+          "remediated",
+          "mitigated",
+          "done"
+        ]
+      }
+    ],
+    "relations": [],
+    "required": [
+      "gapStatus"
+    ]
+  },
+  "template": [
+    {
+      "heading": "The gap",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–50",
+      "purpose": "The As-Is gap being resolved."
+    },
+    {
+      "heading": "Resolution",
+      "format": "paragraph",
+      "paragraphs": "1–2",
+      "words": "12–60",
+      "purpose": "How the target state closes the gap."
+    },
+    {
+      "heading": "Status",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "5–30",
+      "purpose": "Where the resolution currently stands."
+    }
+  ],
+  "examples": []
+}

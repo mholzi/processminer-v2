@@ -1,0 +1,74 @@
+{
+  "elementType": "requirement",
+  "label": "Requirement",
+  "section": "requirements",
+  "idPrefix": "REQ",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "reqType",
+        "label": "Type",
+        "hint": "FUNCTIONAL or NON-FUNCTIONAL — what the requirement constrains.",
+        "enum": [
+          "FUNCTIONAL",
+          "NON-FUNCTIONAL"
+        ]
+      },
+      {
+        "key": "moscow",
+        "label": "MoSCoW",
+        "hint": "MUST / SHOULD / COULD / WONT — MoSCoW priority for this requirement.",
+        "enum": [
+          "MUST",
+          "SHOULD",
+          "COULD",
+          "WONT"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "key": "derivedFrom",
+        "label": "Derived from",
+        "target": [
+          "transformation-decision",
+          "gap",
+          "target-state"
+        ]
+      },
+      {
+        "key": "addresses",
+        "label": "Addresses",
+        "target": "gap"
+      }
+    ],
+    "required": [
+      "reqType",
+      "moscow",
+      "derivedFrom"
+    ]
+  },
+  "template": [
+    {
+      "heading": "Requirement",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–50",
+      "purpose": "One testable statement of what the target process or system must do."
+    },
+    {
+      "heading": "Rationale",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–50",
+      "purpose": "The transformation decision or gap this requirement comes from."
+    },
+    {
+      "heading": "Acceptance criteria",
+      "format": "bullets",
+      "items": "2–6",
+      "purpose": "How you would confirm the requirement is met."
+    }
+  ],
+  "examples": []
+}

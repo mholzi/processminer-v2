@@ -1,0 +1,73 @@
+{
+  "elementType": "market-trend",
+  "label": "Market Trend",
+  "section": "market-trends",
+  "idPrefix": "TR",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "horizon",
+        "label": "Horizon",
+        "hint": "regulatory-deadline / near-term / emerging — how soon the trend bites.",
+        "enum": [
+          "regulatory-deadline",
+          "near-term",
+          "emerging"
+        ]
+      },
+      {
+        "key": "asOf",
+        "label": "Sourced",
+        "hint": "The date this trend was captured or last verified."
+      },
+      {
+        "key": "source",
+        "label": "Source",
+        "hint": "Citation or URL — the market study, analyst report or article.",
+        "urlKey": "sourceUrl"
+      }
+    ],
+    "relations": [
+      {
+        "key": "bearsOn",
+        "label": "Bears on",
+        "target": [
+          "process-step",
+          "system",
+          "pain-point",
+          "control",
+          "compliance-gap"
+        ]
+      }
+    ],
+    "required": [
+      "horizon",
+      "asOf",
+      "sourceUrl"
+    ]
+  },
+  "template": [
+    {
+      "heading": "The trend",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "12–55",
+      "purpose": "The market or industry trend, described plainly."
+    },
+    {
+      "heading": "Relevance",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "12–55",
+      "purpose": "Why the trend matters for this process."
+    },
+    {
+      "heading": "Evidence",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–40",
+      "purpose": "The specific figure, statistic or signal that evidences the trend — the data point, not a re-listing of the source."
+    }
+  ],
+  "examples": []
+}

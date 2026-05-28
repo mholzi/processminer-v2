@@ -1,0 +1,71 @@
+{
+  "elementType": "friction-point",
+  "label": "Friction Point",
+  "section": "friction-points",
+  "idPrefix": "FP",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "severity",
+        "label": "Severity",
+        "hint": "HIGH / MEDIUM / LOW / NONE — how badly this friction hurts the client experience.",
+        "enum": [
+          "HIGH",
+          "MEDIUM",
+          "LOW",
+          "NONE"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "key": "occursAt",
+        "label": "Occurs at",
+        "target": "process-step"
+      },
+      {
+        "key": "touchpoint",
+        "label": "Touchpoint",
+        "target": "cx-touchpoint"
+      },
+      {
+        "key": "painPoint",
+        "label": "Pain point",
+        "target": "pain-point"
+      },
+      {
+        "key": "addressedBy",
+        "label": "Addressed by",
+        "target": "innovation-idea"
+      }
+    ],
+    "required": [
+      "severity",
+      "occursAt"
+    ]
+  },
+  "template": [
+    {
+      "heading": "Description",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–45",
+      "purpose": "Where and how the client experiences friction."
+    },
+    {
+      "heading": "Root cause",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "6–40",
+      "purpose": "Why the friction occurs."
+    },
+    {
+      "heading": "Client impact",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–45",
+      "purpose": "How it affects the client's effort and perception."
+    }
+  ],
+  "examples": []
+}

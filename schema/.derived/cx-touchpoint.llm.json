@@ -1,0 +1,56 @@
+{
+  "elementType": "cx-touchpoint",
+  "label": "Touchpoint",
+  "section": "touchpoints",
+  "idPrefix": "JT",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "channel",
+        "label": "Channel",
+        "hint": "The channel this touchpoint occurs on (e.g. branch, app, call centre)."
+      },
+      {
+        "key": "ces",
+        "label": "Client Effort Score",
+        "hint": "Customer Effort Score for this touchpoint, if measured.",
+        "suffix": " / 7"
+      }
+    ],
+    "relations": [
+      {
+        "key": "occursAt",
+        "label": "Step",
+        "target": "process-step"
+      }
+    ],
+    "required": [
+      "channel",
+      "occursAt"
+    ]
+  },
+  "template": [
+    {
+      "heading": "What the client does",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–40",
+      "purpose": "The client's action at this touchpoint."
+    },
+    {
+      "heading": "What the bank does",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "6–35",
+      "purpose": "The bank's response or action at this touchpoint."
+    },
+    {
+      "heading": "Experience",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–45",
+      "purpose": "How the touchpoint feels — effort, clarity and emotion."
+    }
+  ],
+  "examples": []
+}

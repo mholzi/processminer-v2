@@ -1,0 +1,88 @@
+{
+  "elementType": "innovation-idea",
+  "label": "Innovation Idea",
+  "section": "innovation-ideas",
+  "idPrefix": "II",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "category",
+        "label": "Category",
+        "hint": "The kind of idea (e.g. automation, new channel, control redesign)."
+      },
+      {
+        "key": "strategicFit",
+        "label": "Strategic fit",
+        "hint": "HIGH / MEDIUM / LOW — how well the idea aligns with strategy.",
+        "enum": [
+          "HIGH",
+          "MEDIUM",
+          "LOW"
+        ]
+      },
+      {
+        "key": "complexity",
+        "label": "Complexity",
+        "hint": "HIGH / MEDIUM / LOW — the effort and difficulty of delivering it.",
+        "enum": [
+          "HIGH",
+          "MEDIUM",
+          "LOW"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "key": "addresses",
+        "label": "Addresses",
+        "target": [
+          "process-gap",
+          "pain-point",
+          "friction-point",
+          "compliance-gap"
+        ]
+      },
+      {
+        "key": "fromTrend",
+        "label": "From trend",
+        "target": "market-trend"
+      },
+      {
+        "key": "fromCompetitor",
+        "label": "From competitor",
+        "target": [
+          "competitor-eu",
+          "competitor-global",
+          "competitor-fintech"
+        ]
+      }
+    ],
+    "required": [
+      "addresses"
+    ]
+  },
+  "template": [
+    {
+      "heading": "The idea",
+      "format": "paragraph",
+      "paragraphs": "1–2",
+      "words": "12–55",
+      "purpose": "The proposed change, described plainly."
+    },
+    {
+      "heading": "Expected benefit",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–45",
+      "purpose": "The outcome it would deliver and for whom."
+    },
+    {
+      "heading": "Feasibility",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–45",
+      "purpose": "Effort, dependencies and the main risks."
+    }
+  ],
+  "examples": []
+}

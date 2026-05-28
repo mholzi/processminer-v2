@@ -1,0 +1,82 @@
+{
+  "elementType": "capability",
+  "label": "Capability",
+  "section": "capabilities",
+  "idPrefix": "CAP",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "criticality",
+        "label": "Criticality",
+        "hint": "CRITICAL / HIGH / MEDIUM / LOW — how essential this capability is to the target process.",
+        "enum": [
+          "HIGH",
+          "MEDIUM",
+          "LOW"
+        ]
+      },
+      {
+        "key": "reuse",
+        "label": "Reuse",
+        "hint": "NEW / REUSED — whether this is a fresh capability or one already in the catalog."
+      },
+      {
+        "key": "owningDomain",
+        "label": "Owning domain",
+        "hint": "The business domain that owns this capability (e.g. 'Case management', 'Payments')."
+      }
+    ],
+    "relations": [
+      {
+        "key": "hostedIn",
+        "label": "Hosted in",
+        "target": "target-application"
+      },
+      {
+        "key": "realisesStep",
+        "label": "Realises step",
+        "target": "target-state"
+      },
+      {
+        "key": "resolvesGap",
+        "label": "Resolves gap",
+        "target": "gap"
+      }
+    ],
+    "required": [
+      "criticality",
+      "reuse"
+    ]
+  },
+  "template": [
+    {
+      "heading": "Description",
+      "format": "paragraph",
+      "paragraphs": "1–2",
+      "words": "20–80",
+      "purpose": "What the capability does — the function from the consumer's perspective."
+    },
+    {
+      "heading": "Inputs and outputs",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "15–60",
+      "purpose": "What the capability needs to operate, and what it produces."
+    },
+    {
+      "heading": "Boundaries",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–40",
+      "purpose": "What this capability is NOT responsible for — adjacent capabilities it relies on."
+    }
+  ],
+  "examples": [
+    {
+      "path": "wiki/processes/sepa-payments/capabilities/CAP-SP-001.md"
+    },
+    {
+      "path": "wiki/processes/sepa-payments/capabilities/CAP-SP-002.md"
+    }
+  ]
+}

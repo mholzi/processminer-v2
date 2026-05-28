@@ -1,0 +1,50 @@
+{
+  "elementType": "target-state",
+  "label": "TO-BE Element",
+  "section": "to-be-design",
+  "idPrefix": "TS",
+  "frontmatter": {
+    "fields": [],
+    "relations": [
+      {
+        "key": "replaces",
+        "label": "Replaces",
+        "target": "process-step"
+      },
+      {
+        "key": "systems",
+        "label": "Systems",
+        "target": "system"
+      },
+      {
+        "key": "risks",
+        "label": "Risks",
+        "target": "innovation-risk"
+      }
+    ],
+    "required": []
+  },
+  "template": [
+    {
+      "heading": "Target description",
+      "format": "paragraph",
+      "paragraphs": "1–2",
+      "words": "20–95",
+      "purpose": "How the step or process works in the target state."
+    },
+    {
+      "heading": "What changes",
+      "format": "bullets",
+      "items": "2–6",
+      "purpose": "Each concrete change from the As-Is."
+    },
+    {
+      "heading": "Rationale",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–50",
+      "purpose": "Why the target state is designed this way."
+    }
+  ],
+  "examples": []
+}

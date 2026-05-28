@@ -1,0 +1,92 @@
+{
+  "elementType": "target-integration",
+  "label": "Target Integration",
+  "section": "target-integrations",
+  "idPrefix": "INT",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "pattern",
+        "label": "Pattern",
+        "hint": "SYNC / ASYNC / EVENT / BATCH — the interaction style."
+      },
+      {
+        "key": "direction",
+        "label": "Direction",
+        "hint": "ONE-WAY / TWO-WAY / PUB-SUB — the data-flow direction.",
+        "enum": [
+          "UPSTREAM",
+          "DOWNSTREAM",
+          "BIDIRECTIONAL"
+        ]
+      },
+      {
+        "key": "contract",
+        "label": "Contract",
+        "hint": "Interface contract reference — OpenAPI 3.1, AsyncAPI 2.6, CMIS, Snowflake stage, etc."
+      },
+      {
+        "key": "volume",
+        "label": "Volume",
+        "hint": "Approximate volume + latency target (e.g. '~12k req/day · p95 380ms')."
+      }
+    ],
+    "relations": [
+      {
+        "key": "from",
+        "label": "From",
+        "target": "target-application"
+      },
+      {
+        "key": "to",
+        "label": "To",
+        "target": "target-application"
+      },
+      {
+        "key": "realises",
+        "label": "Realises",
+        "target": "capability"
+      },
+      {
+        "key": "drivenByADR",
+        "label": "Driven by ADR",
+        "target": "adr"
+      }
+    ],
+    "required": [
+      "pattern",
+      "direction"
+    ]
+  },
+  "template": [
+    {
+      "heading": "Purpose",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "15–60",
+      "purpose": "Why the two apps need to talk, and what data flows."
+    },
+    {
+      "heading": "Contract details",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "15–80",
+      "purpose": "Auth, schema, idempotency, versioning — the contract specifics."
+    },
+    {
+      "heading": "Failure mode",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–50",
+      "purpose": "Behaviour when the downstream is unavailable or returns an error."
+    }
+  ],
+  "examples": [
+    {
+      "path": "wiki/processes/sepa-payments/target-integrations/INT-SP-001.md"
+    },
+    {
+      "path": "wiki/processes/sepa-payments/target-integrations/INT-SP-002.md"
+    }
+  ]
+}

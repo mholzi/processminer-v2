@@ -1,0 +1,58 @@
+{
+  "elementType": "metric",
+  "label": "Metric",
+  "section": "metrics",
+  "idPrefix": "M",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "target",
+        "label": "Target",
+        "hint": "The goal / SLA figure (e.g. 'same business day'). The figure stated in a process-design document is almost always the target, not the measured actual."
+      },
+      {
+        "key": "value",
+        "label": "Value",
+        "hint": "The measured actual today. Leave empty if only a target is known — an unmeasured metric is itself worth flagging."
+      },
+      {
+        "key": "trend",
+        "label": "Trend",
+        "hint": "The direction of travel — improving, flat or worsening — if known."
+      }
+    ],
+    "relations": [],
+    "required": []
+  },
+  "template": [
+    {
+      "heading": "Definition",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "6–35",
+      "purpose": "What the metric measures and how it is calculated."
+    },
+    {
+      "heading": "Current reading",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "4–35",
+      "purpose": "The latest value and the trend."
+    },
+    {
+      "heading": "Why it matters",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–40",
+      "purpose": "What the metric tells the process owner."
+    }
+  ],
+  "examples": [
+    {
+      "path": "wiki/processes/sepa-payments/metrics/M-SP-001.md"
+    },
+    {
+      "path": "wiki/processes/sepa-payments/metrics/M-SP-002.md"
+    }
+  ]
+}

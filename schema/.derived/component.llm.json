@@ -1,0 +1,75 @@
+{
+  "elementType": "component",
+  "label": "Component",
+  "section": "components",
+  "idPrefix": "COMP",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "tech",
+        "label": "Tech",
+        "hint": "The technology / framework (e.g. 'Spring Boot 3', 'Camunda Zeebe', 'Quarkus')."
+      },
+      {
+        "key": "dataStore",
+        "label": "Data store",
+        "hint": "The persistence layer this component owns, if any (e.g. 'Postgres 16')."
+      },
+      {
+        "key": "hosting",
+        "label": "Hosting",
+        "hint": "Runtime environment (e.g. 'EKS · eu-frankfurt', 'AWS Lambda', 'on-prem')."
+      },
+      {
+        "key": "scaling",
+        "label": "Scaling",
+        "hint": "Replica / scaling profile (e.g. 'HPA · 3 → 12 replicas')."
+      }
+    ],
+    "relations": [
+      {
+        "key": "inApp",
+        "label": "In application",
+        "target": "target-application"
+      },
+      {
+        "key": "dependsOn",
+        "label": "Depends on",
+        "target": "component"
+      },
+      {
+        "key": "realisesCapability",
+        "label": "Realises capability",
+        "target": "capability"
+      }
+    ],
+    "required": [
+      "tech",
+      "inApp"
+    ]
+  },
+  "template": [
+    {
+      "heading": "Responsibility",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "15–60",
+      "purpose": "What this component owns within its application."
+    },
+    {
+      "heading": "Technical detail",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "15–80",
+      "purpose": "Tech choices, data ownership, scaling profile."
+    }
+  ],
+  "examples": [
+    {
+      "path": "wiki/processes/sepa-payments/components/COMP-SP-001.md"
+    },
+    {
+      "path": "wiki/processes/sepa-payments/components/COMP-SP-002.md"
+    }
+  ]
+}

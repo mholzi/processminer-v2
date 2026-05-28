@@ -1,0 +1,85 @@
+{
+  "elementType": "migration-phase",
+  "label": "Migration Phase",
+  "section": "migration-phases",
+  "idPrefix": "MIG",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "phaseStatus",
+        "label": "Status",
+        "hint": "PLANNED / IN-FLIGHT / DONE — current execution state."
+      },
+      {
+        "key": "startQuarter",
+        "label": "Start",
+        "hint": "Calendar quarter the phase begins (e.g. '2026 Q3')."
+      },
+      {
+        "key": "endQuarter",
+        "label": "End",
+        "hint": "Calendar quarter the phase completes."
+      },
+      {
+        "key": "owner",
+        "label": "Owner",
+        "hint": "The accountable delivery owner (a role)."
+      }
+    ],
+    "relations": [
+      {
+        "key": "dependsOn",
+        "label": "Depends on",
+        "target": "migration-phase"
+      },
+      {
+        "key": "delivers",
+        "label": "Delivers",
+        "target": [
+          "capability",
+          "component",
+          "target-application"
+        ]
+      },
+      {
+        "key": "resolvesGap",
+        "label": "Resolves gap",
+        "target": "gap"
+      }
+    ],
+    "required": [
+      "phaseStatus",
+      "startQuarter",
+      "endQuarter"
+    ]
+  },
+  "template": [
+    {
+      "heading": "Scope",
+      "format": "paragraph",
+      "paragraphs": "1–2",
+      "words": "20–100",
+      "purpose": "What this phase delivers and what it explicitly does not."
+    },
+    {
+      "heading": "Acceptance criteria",
+      "format": "bullets",
+      "items": "2–6",
+      "purpose": "What must be true for the phase to be called done."
+    },
+    {
+      "heading": "Risks",
+      "format": "bullets",
+      "items": "1–5",
+      "purpose": "Risks that could push the phase late or break dependent phases."
+    }
+  ],
+  "examples": [
+    {
+      "path": "wiki/processes/sepa-payments/migration-phases/MIG-SP-001.md"
+    },
+    {
+      "path": "wiki/processes/sepa-payments/migration-phases/MIG-SP-002.md"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "elementType": "innovation-risk",
+  "label": "Innovation Risk",
+  "section": "innovation-risks",
+  "idPrefix": "IR",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "severity",
+        "label": "Severity",
+        "hint": "HIGH / MEDIUM / LOW / NONE — the severity of this risk if it materialises.",
+        "enum": [
+          "HIGH",
+          "MEDIUM",
+          "LOW",
+          "NONE"
+        ]
+      }
+    ],
+    "relations": [],
+    "required": [
+      "severity"
+    ]
+  },
+  "template": [
+    {
+      "heading": "The risk",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "12–50",
+      "purpose": "What could go wrong with the innovation."
+    },
+    {
+      "heading": "Likelihood & impact",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–45",
+      "purpose": "How likely the risk is and how severe its effect."
+    },
+    {
+      "heading": "Mitigation",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–45",
+      "purpose": "How the risk can be reduced or managed."
+    }
+  ],
+  "examples": []
+}

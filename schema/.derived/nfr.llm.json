@@ -1,0 +1,87 @@
+{
+  "elementType": "nfr",
+  "label": "Non-Functional Requirement",
+  "section": "nfrs",
+  "idPrefix": "NFR",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "category",
+        "label": "Category",
+        "hint": "PERFORMANCE / AVAILABILITY / SECURITY / COMPLIANCE / SCALABILITY — the NFR family."
+      },
+      {
+        "key": "target",
+        "label": "Target",
+        "hint": "The concrete, testable target (e.g. 'p95 < 1.2s', 'RTO ≤ 4h', '10 years immutable')."
+      },
+      {
+        "key": "owner",
+        "label": "Owner",
+        "hint": "The team accountable for meeting the NFR (a role, not a person)."
+      }
+    ],
+    "relations": [
+      {
+        "key": "satisfiesControl",
+        "label": "Satisfies control",
+        "target": "control"
+      },
+      {
+        "key": "regulatedBy",
+        "label": "Regulated by",
+        "target": "regulation"
+      },
+      {
+        "key": "appliesTo",
+        "label": "Applies to",
+        "target": [
+          "capability",
+          "component",
+          "target-application",
+          "target-integration"
+        ]
+      },
+      {
+        "key": "drivenByADR",
+        "label": "Driven by ADR",
+        "target": "adr"
+      }
+    ],
+    "required": [
+      "category",
+      "target"
+    ]
+  },
+  "template": [
+    {
+      "heading": "Definition",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "15–60",
+      "purpose": "What is being measured and at what threshold."
+    },
+    {
+      "heading": "Measurement",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–50",
+      "purpose": "How the target is observed in production — instrumentation and method."
+    },
+    {
+      "heading": "Verification",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–60",
+      "purpose": "How the NFR is tested before go-live — load test, audit, etc."
+    }
+  ],
+  "examples": [
+    {
+      "path": "wiki/processes/sepa-payments/nfrs/NFR-SP-001.md"
+    },
+    {
+      "path": "wiki/processes/sepa-payments/nfrs/NFR-SP-002.md"
+    }
+  ]
+}

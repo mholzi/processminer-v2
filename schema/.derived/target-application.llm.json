@@ -1,0 +1,70 @@
+{
+  "elementType": "target-application",
+  "label": "Target Application",
+  "section": "target-applications",
+  "idPrefix": "TGTAPP",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "verdict",
+        "label": "Verdict",
+        "hint": "BUILD / BUY / CONFIGURE / KEEP — the disposition of this app in the target state."
+      },
+      {
+        "key": "vendor",
+        "label": "Vendor",
+        "hint": "Vendor name for BUY apps; tech stack for BUILD; vendor + 'configured' for CONFIGURE."
+      },
+      {
+        "key": "owningDomain",
+        "label": "Owning domain",
+        "hint": "The business domain that owns this app."
+      },
+      {
+        "key": "costBand",
+        "label": "Cost band",
+        "hint": "Build / run / annual licence cost band (rough budgeting estimate)."
+      }
+    ],
+    "relations": [
+      {
+        "key": "drivenByADR",
+        "label": "Driven by ADR",
+        "target": "adr"
+      }
+    ],
+    "required": [
+      "verdict"
+    ]
+  },
+  "template": [
+    {
+      "heading": "Rationale",
+      "format": "paragraph",
+      "paragraphs": "1–2",
+      "words": "20–80",
+      "purpose": "Why this app, and why this verdict — what the alternatives were."
+    },
+    {
+      "heading": "Tech stack",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "10–60",
+      "purpose": "Concrete technologies, hosting region, deployment model."
+    },
+    {
+      "heading": "Risks",
+      "format": "bullets",
+      "items": "1–5",
+      "purpose": "Risks introduced or carried by this disposition (vendor lock-in, residency, capacity, etc.)."
+    }
+  ],
+  "examples": [
+    {
+      "path": "wiki/processes/sepa-payments/target-applications/TGTAPP-SP-001.md"
+    },
+    {
+      "path": "wiki/processes/sepa-payments/target-applications/TGTAPP-SP-002.md"
+    }
+  ]
+}

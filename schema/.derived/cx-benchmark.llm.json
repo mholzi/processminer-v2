@@ -1,0 +1,56 @@
+{
+  "elementType": "cx-benchmark",
+  "label": "CX Benchmark",
+  "section": "cx-benchmarks",
+  "idPrefix": "CXB",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "asOf",
+        "label": "Sourced",
+        "hint": "The date this benchmark figure was captured."
+      },
+      {
+        "key": "source",
+        "label": "Source",
+        "hint": "Citation or URL for the benchmark.",
+        "urlKey": "sourceUrl"
+      }
+    ],
+    "relations": [
+      {
+        "key": "bearsOn",
+        "label": "Bears on",
+        "target": "friction-point"
+      }
+    ],
+    "required": [
+      "asOf",
+      "sourceUrl"
+    ]
+  },
+  "template": [
+    {
+      "heading": "The benchmark",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "12–55",
+      "purpose": "The industry CX standard or client expectation, described plainly."
+    },
+    {
+      "heading": "Relevance",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "12–55",
+      "purpose": "How this process measures against it."
+    },
+    {
+      "heading": "Evidence",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–40",
+      "purpose": "The specific figure or signal — survey, study or standard."
+    }
+  ],
+  "examples": []
+}

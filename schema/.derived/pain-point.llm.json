@@ -1,0 +1,70 @@
+{
+  "elementType": "pain-point",
+  "label": "Pain Point",
+  "section": "pain-points",
+  "idPrefix": "PP",
+  "frontmatter": {
+    "fields": [
+      {
+        "key": "category",
+        "label": "Category",
+        "hint": "The kind of pain point (e.g. manual effort, delay, rework, hand-off friction)."
+      },
+      {
+        "key": "severity",
+        "label": "Severity",
+        "hint": "HIGH / MEDIUM / LOW / NONE — how badly this hurts the process.",
+        "enum": [
+          "HIGH",
+          "MEDIUM",
+          "LOW",
+          "NONE"
+        ]
+      },
+      {
+        "key": "priority",
+        "label": "Priority",
+        "hint": "P1 / P2 / P3 — how urgently it should be addressed.",
+        "enum": [
+          "P1",
+          "P2",
+          "P3"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "key": "affects",
+        "label": "Affects",
+        "target": "process-step"
+      }
+    ],
+    "required": [
+      "severity"
+    ]
+  },
+  "template": [
+    {
+      "heading": "Description",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "12–50",
+      "purpose": "What the pain point is, from the staff or process view."
+    },
+    {
+      "heading": "Impact",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–45",
+      "purpose": "How it slows, costs or degrades the process."
+    },
+    {
+      "heading": "Root cause",
+      "format": "paragraph",
+      "paragraphs": "1",
+      "words": "8–45",
+      "purpose": "The underlying reason the pain point exists."
+    }
+  ],
+  "examples": []
+}
