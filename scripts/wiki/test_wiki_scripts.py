@@ -109,7 +109,10 @@ def run() -> None:
     r = script("derive_process_meta.py", "A Brand New Unseen Process")
     chk("derive_process_meta: fresh slug not taken",
         json.loads(r.stdout).get("slugTaken") is False, r.stdout)
-    r = script("derive_process_meta.py", "Cob 003")
+    # Use a process the wiki actually holds today — "Cob 003" used to exist
+    # but the wiki was restructured. sepa-payments is the canonical reference
+    # process and unlikely to be renamed.
+    r = script("derive_process_meta.py", "Sepa Payments")
     chk("derive_process_meta: existing slug flagged",
         json.loads(r.stdout).get("slugTaken") is True, r.stdout)
     r = script("scaffold_process.py", SLUG, PROC, "Self Test", "throwaway")
