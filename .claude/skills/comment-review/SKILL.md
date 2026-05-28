@@ -34,18 +34,22 @@ general process-analyst lens and sign the summary *Process Analyst*.
 
 ## Step 1 — Read the element and its comments
 
-- Read the element file at `wiki/processes/<slug>/<section>/<elementId>.md` —
-  its content, `status`, `confidence` and relations.
+- Run `python3 scripts/wiki/get_context.py --slug <slug> --element <elementId>`
+  — one call returns the focal element verbatim plus the per-type contract
+  (so any edit stays conformant) plus ~30-word summaries of every directly-
+  related element (forward + reverse links, RACI, transitions). That is the
+  picture you need to assess a comment: the element under discussion and
+  what it connects to. The STABLE bucket (type schema + process meta) caches
+  across the per-comment loop in Step 2.
 - Read `wiki/processes/<slug>/notes.json` — the `<elementId>` entry is the
   comment thread. The comments to review are the **unresolved** ones: a note
   *without* `resolved: true`. A note with `resolved: true` is already handled —
   skip it. A note with `replyTo` set is a reply; read it under its parent.
 - If there are no unresolved comments, tell the SME there is nothing to review
   and stop — write nothing.
-- Run `python3 scripts/wiki/show_template.py <type>` for the element's type, so
-  any edit you make keeps every block and field conformant.
-- Read the elements the comments touch on — a comment may reference other steps,
-  controls or systems; pull those in so your assessment is grounded.
+- If a specific comment cites an element that doesn't appear in the
+  get_context summaries, fall back to reading that file directly — but the
+  per-element summaries cover the common case.
 
 ## Step 2 — Work each comment with the SME
 
