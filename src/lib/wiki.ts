@@ -10,6 +10,7 @@ import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { applyFindingDismissals, type FindingDismissals, type LintReport } from "./lint";
 import type { TargetReview } from "./target-review";
+import { buildProcessView, type ProcessView } from "./process-view";
 
 const ROOT = process.cwd();
 const WIKI_DIR = join(ROOT, "wiki", "processes");
@@ -267,6 +268,10 @@ export interface ProcessDoc {
   glossary?: GlossaryTerm[];
   /** Per-section completeness markers — sections.json, keyed by section id. */
   sectionStatus?: Record<string, SectionStatus>;
+  /** Read-side join layer over this process — pre-built RACI grid, flow
+   *  lanes, and `contextFor()` for the LLM context builder. Built in
+   *  getProcess() so every consumer shares the same materialised view. */
+  view: ProcessView;
 }
 
 /** Parse `key: value` frontmatter. `[a, b]` becomes a string array. */
@@ -434,7 +439,7 @@ export function getProcess(slug: string): ProcessDoc | null {
       );
     }
   }
-  return {
+  const base: Omit<ProcessDoc, "view"> = {
     slug,
     process,
     elements,
@@ -449,4 +454,5 @@ export function getProcess(slug: string): ProcessDoc | null {
     glossary: readJson<GlossaryTerm[]>("glossary.json"),
     sectionStatus: readJson<Record<string, SectionStatus>>("sections.json"),
   };
+  return { ...base, view: buildProcessView(base as ProcessDoc, getSchema()) };
 }

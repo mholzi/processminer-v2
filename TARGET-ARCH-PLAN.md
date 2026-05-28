@@ -200,16 +200,24 @@ export interface ProcessView {
   byType: Map<ElementType, WikiPage[]>;
   byId: Map<ElementId, WikiPage>;
 
-  // context slicing for LLM and future orchestrator
-  contextFor(elementId: string, opts?: ContextOpts): ElementContext;
-
-  // deterministic orchestrator state
+  // deterministic orchestrator state — deferred from v0.2.0-beta (the
+  // initial Piece-2 ship); will land when the orchestrator design lands.
   state: {
     sections: SectionStatus[];     // from sections.json
     lintFindings: Finding[];       // from lint.json
     coverage: CoverageReport;      // from src/lib/coverage.ts
   };
 }
+
+// Context slicing for the LLM and future orchestrator is a *free function*
+// over the view, NOT a method on it. Discovered during piece-2
+// implementation (2026-05-28): ProcessDoc.view crosses the React Server
+// Components boundary into client components, and Next.js refuses to
+// serialise functions across that boundary. The original sketch put
+// contextFor as a method; it broke every process page until refactored.
+export function contextFor(
+  view: ProcessView, elementId: string, opts?: ContextOpts,
+): ElementContext | null;
 
 interface ContextOpts {
   depth?: 1;                       // 1 = direct relations only; default 1

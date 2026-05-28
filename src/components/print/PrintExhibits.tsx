@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { WikiPage } from "@/lib/wiki";
+import type { ProcessView } from "@/lib/process-view";
 import ProcessFlow from "@/components/ProcessFlow";
 import RaciMatrix from "@/components/RaciMatrix";
 
@@ -63,6 +64,8 @@ function ScaledExhibit({ children }: { children: ReactNode }) {
 export default function PrintExhibits({
   steps,
   roles,
+  raciGrid,
+  flowAssignment,
   elementIds,
   controlsByStep,
   flow,
@@ -70,6 +73,10 @@ export default function PrintExhibits({
 }: {
   steps: WikiPage[];
   roles: WikiPage[];
+  /** Pre-built RACI grid from ProcessView. */
+  raciGrid: ProcessView["raciGrid"];
+  /** Pre-built lane assignment from ProcessView.flow. */
+  flowAssignment: ProcessView["flow"];
   elementIds: string[];
   controlsByStep: Record<string, string[]>;
   flow: boolean;
@@ -87,6 +94,7 @@ export default function PrintExhibits({
           <ProcessFlow
             steps={steps}
             roles={roles}
+            flow={flowAssignment}
             onGoToElement={noop}
             onDeepDive={noop}
             knownIds={knownIds}
@@ -96,7 +104,12 @@ export default function PrintExhibits({
       )}
       {showRaci && (
         <ScaledExhibit>
-          <RaciMatrix steps={steps} roles={roles} onGoToElement={noop} />
+          <RaciMatrix
+            steps={steps}
+            roles={roles}
+            raciGrid={raciGrid}
+            onGoToElement={noop}
+          />
         </ScaledExhibit>
       )}
     </div>

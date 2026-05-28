@@ -204,6 +204,8 @@ export default function PrintDocument({
                 <PrintExhibits
                   steps={steps}
                   roles={roles}
+                  raciGrid={doc.view.raciGrid}
+                  flowAssignment={doc.view.flow}
                   elementIds={elementIds}
                   controlsByStep={controlsByStep}
                   flow={scope.flow}

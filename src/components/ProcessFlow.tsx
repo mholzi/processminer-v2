@@ -1,24 +1,23 @@
 import type { WikiPage } from "@/lib/wiki";
 import { type Kind, type Transition, orderSteps, transitionsOf } from "@/lib/stepOrder";
+import { UNASSIGNED_ROLE, type FlowAssignment } from "@/lib/process-view";
 import ElementHovercard from "./ElementHovercard";
 
 // The process-step flow — a swimlane strip. Steps are ordered left-to-right by
 // a topological sort of their `transitions` (see lib/stepOrder) and stacked
-// into horizontal lanes by the role that owns them (the Responsible role from
-// the RACI data on each role page, falling back to the Accountable role). An
-// SVG overlay draws those same transitions (`to|kind|when` entries): forward
-// edges, conditional branches, loop-backs to an earlier step, and exception
-// exits to EX-* elements. Geometry is fixed-size so every coordinate is
-// arithmetic — no DOM measurement. The strip scrolls horizontally; the lane
-// label column stays pinned.
+// into horizontal lanes by the role that owns them. Lane assignment is
+// pre-built by ProcessView (`buildFlowLanes`) and passed in; this component
+// renders it. An SVG overlay draws each step's transitions: forward edges,
+// conditional branches, loop-backs to an earlier step, and exception exits to
+// EX-* elements. Geometry is fixed-size so every coordinate is arithmetic —
+// no DOM measurement. The strip scrolls horizontally; the lane label column
+// stays pinned.
 
 // A step's review state — drives the per-node status dot.
 function stepApproval(s: WikiPage): "approved" | "rejected" | "in-progress" {
   const a = String(s.meta.approval ?? "in-progress");
   return a === "approved" || a === "rejected" ? a : "in-progress";
 }
-
-const UNASSIGNED = "__unassigned__";
 
 const NODE_W = 158;
 const NODE_H = 116;
@@ -33,6 +32,7 @@ const EXC_ROW = 40; // height of one stacked exception chip
 export default function ProcessFlow({
   steps,
   roles,
+  flow,
   onGoToElement,
   onDeepDive,
   knownIds,
@@ -41,8 +41,12 @@ export default function ProcessFlow({
   highlight,
 }: {
   steps: WikiPage[];
-  /** Role elements — their RACI frontmatter assigns each step to a lane. */
+  /** Role elements — used to render lane labels. Lane *assignment* comes from
+   *  `flow`; this list is just the lookup table for role titles. */
   roles: WikiPage[];
+  /** Pre-built lane assignment for `steps` (from ProcessView.flow, or
+   *  `buildFlowLanes(orderSteps(steps), raciGrid)` for a synthesised set). */
+  flow: FlowAssignment;
   onGoToElement: (id: string) => void;
   onDeepDive: (id: string, title: string) => void;
   /** Every element id in the process — used to validate transition targets. */
@@ -62,38 +66,11 @@ export default function ProcessFlow({
   const indexOf: Record<string, number> = {};
   sorted.forEach((s, i) => (indexOf[s.id] = i));
 
-  // --- Lane assignment: the role that performs each step. RACI data lives
-  // in the per-process raci.json bundle, joined onto each role at load time.
-  // The Responsible role owns the lane; the Accountable role is the fallback
-  // when no R is set. ---
+  // --- Lane layout: read pre-built assignment from `flow`.
   const roleById = new Map(roles.map((r) => [r.id, r]));
-  const rRole: Record<string, string> = {};
-  const aRole: Record<string, string> = {};
-  for (const role of roles) {
-    for (const entry of role.raci ?? []) {
-      if (entry.level === "R" && !(entry.step in rRole)) rRole[entry.step] = role.id;
-      else if (entry.level === "A" && !(entry.step in aRole)) aRole[entry.step] = role.id;
-    }
-  }
-  const ownerOf = (stepId: string) =>
-    rRole[stepId] ?? aRole[stepId] ?? UNASSIGNED;
-
-  // Lane order follows first appearance along the step spine — so the diagram
-  // reads roughly diagonally. The unassigned lane is always pushed last.
-  const laneOrder: string[] = [];
-  for (const s of sorted) {
-    const k = ownerOf(s.id);
-    if (!laneOrder.includes(k)) laneOrder.push(k);
-  }
-  const ui = laneOrder.indexOf(UNASSIGNED);
-  if (ui >= 0 && ui !== laneOrder.length - 1) {
-    laneOrder.splice(ui, 1);
-    laneOrder.push(UNASSIGNED);
-  }
-  const hasLaneData = laneOrder.some((k) => k !== UNASSIGNED);
-  const laneIndex: Record<string, number> = {};
-  laneOrder.forEach((k, i) => (laneIndex[k] = i));
-  const laneOf = (i: number) => laneIndex[ownerOf(sorted[i].id)];
+  const laneOrder = flow.lanes.map((l) => l.roleId);
+  const hasLaneData = laneOrder.some((k) => k !== UNASSIGNED_ROLE);
+  const laneOf = (i: number) => flow.stepLane.get(sorted[i].id) ?? 0;
 
   // --- Geometry: X by step column, Y by lane. ---
   const nodeX = (i: number) => i * (NODE_W + GAP_X);

@@ -23,6 +23,8 @@ import ElementCard from "@/components/ElementCard";
 import RaciMatrix from "@/components/RaciMatrix";
 import ProcessFlow from "@/components/ProcessFlow";
 import { buildTargetFlowView } from "@/lib/targetFlow";
+import { buildFlowLanes, buildRaciGrid } from "@/lib/process-view";
+import { orderSteps } from "@/lib/stepOrder";
 import SectionSummary from "@/components/SectionSummary";
 import OverviewPanel from "@/components/OverviewPanel";
 import SettingsPanel from "@/components/SettingsPanel";
@@ -2275,6 +2277,7 @@ export default function ProcessDocScreen({
                 <RaciMatrix
                   steps={doc.elements.filter((e) => e.type === "process-step")}
                   roles={doc.elements.filter((e) => e.type === "role")}
+                  raciGrid={doc.view.raciGrid}
                   onGoToElement={goToElement}
                 />
               )}
@@ -2288,12 +2291,17 @@ export default function ProcessDocScreen({
                   );
                   const roles = doc.elements.filter((e) => e.type === "role");
                   const view = buildTargetFlowView(asIs, themes, roles);
+                  const targetFlow = buildFlowLanes(
+                    orderSteps(view.steps),
+                    buildRaciGrid(view.roles),
+                  );
                   return (
                     <>
                       {view.steps.length > 0 && (
                         <ProcessFlow
                           steps={view.steps}
                           roles={view.roles}
+                          flow={targetFlow}
                           onGoToElement={goToElement}
                           onDeepDive={(id, title) =>
                             deepDive({ id, title, kind: "element" })
@@ -2358,6 +2366,7 @@ export default function ProcessDocScreen({
                           (e) => e.type === "process-step",
                         )}
                         roles={doc.elements.filter((e) => e.type === "role")}
+                        flow={doc.view.flow}
                         onGoToElement={goToElement}
                         onDeepDive={(id, title) =>
                           deepDive({ id, title, kind: "element" })
