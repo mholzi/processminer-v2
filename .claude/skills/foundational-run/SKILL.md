@@ -107,11 +107,21 @@ the queue. The deepening is the value, and the value is paid for one exchange
 at a time. A turn that silently reads ten elements before prompting is the
 cursor-0 stall the user reports as "stuck".
 
-**Per-item read budget:** Read only the **current** item's body and the
-**direct neighbours** it references (its `roles`, its `controls`, the
-exception it transitions to). Do not re-read the index or the whole spine —
-Step 1 already gave you that picture. If you find yourself reading a fifth
-file for the current cursor item, stop and present what you have.
+**Per-item read budget — one call.** For the current cursor item, run
+
+```
+python3 scripts/wiki/get_context.py --slug <slug> --element <id>
+```
+
+That single call gives you the focal element verbatim plus every direct
+neighbour (forward + reverse links, RACI, transitions) as ~30-word
+summaries — exactly the per-item picture this step needs. Do not re-read
+the index, the whole spine, or each neighbour file by hand. Output is
+bucketed STABLE (type schema + process meta — cache across this run's
+turns) and VOLATILE (focal element + related summaries — re-read per
+item), so the prompt prefix stays cached as the cursor advances. Reach
+for a separate `Read` only when a summary genuinely isn't enough to
+challenge the item (rare for this step).
 
 1. **Present it.** Show the SME the element — the overview, or the element's
    blocks — and what it links to. The app opens that section in the canvas
