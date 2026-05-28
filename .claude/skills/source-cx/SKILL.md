@@ -54,11 +54,13 @@ full contract — you do **not** read the whole schema file. The scripts in
 
 ## Step 1 — Read the process
 
-Read `wiki/processes/<slug>/index.md` (the domain — what the process does, its
-industry, its scope) and the documented client journey — the `channels`,
-`touchpoints`, `moments` and `friction-points` elements. This tells you what
-client journey to benchmark. Also read any existing `competitor-cx-*` and
-`cx-benchmark` elements: you extend, you never duplicate.
+Run `python3 scripts/wiki/get_context.py --slug <slug> --type cx-channel --channels process-meta`
+to get the process overview (domain, industry, scope) and section progress
+in one call — no need to re-read `index.md` by hand. Then read the
+documented client journey — the `channels`, `touchpoints`, `moments` and
+`friction-points` elements. This tells you what client journey to benchmark.
+Also read any existing `competitor-cx-*` and `cx-benchmark` elements: you
+extend, you never duplicate.
 
 ## Step 2 — Fan out the web scans
 

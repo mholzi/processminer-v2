@@ -83,9 +83,10 @@ full contract — you do **not** read the whole schema file. The scripts in
 
 ## Step 1 — Read the whole process
 
-Read `wiki/processes/<slug>/index.md` (the domain — what the process does, its
-scope), then read **every perspective**, because the target consolidates all of
-them:
+Run `python3 scripts/wiki/get_context.py --slug <slug> --type target-state --channels process-meta`
+to get the process overview (domain, scope) and section progress in one
+call — no need to re-read `index.md` by hand. Then read **every
+perspective**, because the target consolidates all of them:
 
 - **As-Is** — `process-step`, `exception`, `pain-point`, `process-gap`,
   `role`, `metric`. The pain-points and process-gaps are the problems the

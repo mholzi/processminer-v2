@@ -22,11 +22,15 @@ approval loop. This is a silent generation, like `source-cx`.
 
 ## Step 1 — Read the area
 
-Read `schema/process-schema.json`, find the area by its id, and note the
-sections it contains. Read **every element across all of those sections** in
-`wiki/processes/<slug>/`, and `index.md` for the process context — what the
-process is and its domain. An area with no elements gets a summary that
-plainly says it is not yet documented.
+Find the area in `schema/process-schema.json` by its id and note the sections
+it contains (this needs the source schema — the derived files are per-type,
+not per-area). Read **every element across all of those sections** in
+`wiki/processes/<slug>/` — the summary is a synthesis, every element matters.
+For process context (domain, scope, section progress), run
+`python3 scripts/wiki/get_context.py --slug <slug> --type process-step --channels process-meta`
+— one call returns the overview + completeness picture without separately
+reading `index.md`. An area with no elements gets a summary that plainly
+says it is not yet documented.
 
 ## Step 2 — Write it as an Amazon-style narrative memo
 

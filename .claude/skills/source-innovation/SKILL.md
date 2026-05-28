@@ -55,11 +55,13 @@ full contract — you do **not** read the whole schema file. The scripts in
 
 ## Step 1 — Read the process
 
-Read `wiki/processes/<slug>/index.md` (the domain — what the process does, its
-industry, its scope) and the documented As-Is, **especially the pain-points and
-friction-points** — innovation ideas address those. Also read any existing
-`market-trend`, competitor and `innovation-idea` elements: you extend, you
-never duplicate an element the wiki already holds.
+Run `python3 scripts/wiki/get_context.py --slug <slug> --type innovation-idea --channels process-meta`
+to get the process overview (domain, industry, scope) and section progress
+in one call — no need to re-read `index.md` by hand. Then read the
+documented As-Is, **especially the pain-points and friction-points** —
+innovation ideas address those. Also read any existing `market-trend`,
+competitor and `innovation-idea` elements: you extend, you never duplicate
+an element the wiki already holds.
 
 Read **wider than the happy-path spine**. Two things the documented As-Is
 carries that sourcing routinely misses:

@@ -47,16 +47,19 @@ file format; you do the judgement.
 
 ## Step 1 — Read the process
 
-Read `wiki/processes/<slug>/index.md` — what the process does, its industry,
-its jurisdiction and its scope. Read the documented As-Is process: the
-`process-steps`, `roles` and `exceptions`, so you know what activity is being
-regulated. Read the existing `controls` — they tell you what risks the process
-already manages, and let you map a regulation to the control that satisfies it.
+Run `python3 scripts/wiki/get_context.py --slug <slug> --type regulation --channels process-meta`
+to get the process overview (domain, industry, jurisdiction, scope) and
+section progress in one call — no need to re-read `index.md` by hand.
+Then read the documented As-Is process: the `process-steps`, `roles` and
+`exceptions`, so you know what activity is being regulated. Read the
+existing `controls` — they tell you what risks the process already
+manages, and let you map a regulation to the control that satisfies it.
 Read any existing `regulation` elements: you extend, you never duplicate.
 
-Use the process's `jurisdiction` field in `index.md` as the scope hint — the
-regulation that governs the process's home jurisdiction, plus the international
-standards (e.g. Basel for banking) that flow into it.
+Use the process's `jurisdiction` field (visible in the process-meta channel
+above, also stored in `index.md`) as the scope hint — the regulation that
+governs the process's home jurisdiction, plus the international standards
+(e.g. Basel for banking) that flow into it.
 
 ## Step 2 — Pick in-scope regulatory domains
 
