@@ -672,6 +672,63 @@ def run() -> None:
         chk("curated-examples test fixture exists", False,
             f"missing reference element {curated_target}")
 
+    # ---- get_context.py ----
+    # Skill-side context builder (Piece 1 of TARGET-ARCH-PLAN.md). Verifies
+    # the CLI produces a stable / volatile bucketed prompt for an existing
+    # sepa-payments element, that the type-schema channel pulls from the
+    # derived per-type files, and that re-runs are byte-identical.
+    print("\n— skills: get_context.py output ——")
+
+    def get_ctx(*args: str) -> subprocess.CompletedProcess:
+        return subprocess.run(
+            ["python3", str(ROOT / "scripts" / "wiki" / "get_context.py"), *args],
+            capture_output=True, text=True, cwd=ROOT,
+        )
+
+    res = get_ctx("--slug", "sepa-payments", "--element", "PS-SP-001")
+    chk("get_context.py succeeds for an existing element",
+        res.returncode == 0, res.stderr)
+    out = res.stdout
+    chk("output carries the stable-bucket separator",
+        "=== STABLE" in out, out[:120])
+    chk("output carries the volatile-bucket separator",
+        "=== VOLATILE" in out, out[:120])
+    chk("stable bucket precedes volatile",
+        out.index("=== STABLE") < out.index("=== VOLATILE"), "")
+    chk("type-schema channel renders the element-type contract",
+        "Element type: Process Step" in out and "## What happens" in out,
+        out[:200])
+    chk("artifact channel renders the focal element",
+        "Element: PS-SP-001 — Receive instruction" in out, "")
+    chk("related channel renders the Systems forward relation",
+        "### Systems" in out and "SYS-SP-001" in out, "")
+
+    res2 = get_ctx("--slug", "sepa-payments", "--element", "PS-SP-001")
+    chk("get_context.py is deterministic across re-runs",
+        res2.stdout == res.stdout, "")
+
+    # --channels subset: only the requested channels appear.
+    sub = get_ctx(
+        "--slug", "sepa-payments", "--element", "PS-SP-001",
+        "--channels", "type-schema",
+    )
+    chk("--channels type-schema produces only the stable bucket",
+        "=== STABLE" in sub.stdout and "=== VOLATILE" not in sub.stdout,
+        sub.stdout[:120])
+
+    # New-element mode: --type without --element returns type-schema + meta only.
+    new_el = get_ctx("--slug", "sepa-payments", "--type", "process-step")
+    chk("--type without --element returns the new-element default channels",
+        new_el.returncode == 0
+        and "Element type: Process Step" in new_el.stdout
+        and "=== VOLATILE" not in new_el.stdout,
+        new_el.stderr or new_el.stdout[:160])
+
+    # Unknown element id surfaces an error rather than rendering nothing.
+    bad = get_ctx("--slug", "sepa-payments", "--element", "BOGUS-9999")
+    chk("unknown element id exits non-zero",
+        bad.returncode != 0, bad.stdout[:120])
+
 
 def main() -> None:
     shutil.rmtree(PROC_DIR, ignore_errors=True)

@@ -252,8 +252,17 @@ description; state its id only once it has been written.
       flagged, fix the draft and re-write before moving on.
 5. One confirmed element = one file on disk.
 
-**Editing an element already on disk.** To change one block or field of an
-element that has already been written — a refine pass, a correction — use
+**Editing an element already on disk.** Before patching anything, run
+`python3 scripts/wiki/get_context.py --slug <slug> --element <id>` to see
+the element with its type contract, related elements (forward + reverse
+links, RACI, transitions) summarised, and the process meta. One call gets
+the full picture — you do not separately re-read the element, walk its
+relations, or re-pull the type schema. Output is bucketed into STABLE
+(type schema, process meta — cache across turns) and VOLATILE (focal
+element, related summaries — re-read per turn).
+
+To change one block or field of an element — a refine pass, a correction
+— use
 `python3 scripts/wiki/patch_element.py <slug> <id> --block "<heading>" <file>`
 (or `--field "<key>" "<value>"`, or `--list "<key>" "<id1,id2>"`). It changes
 only that part and leaves the rest byte-identical. Never re-emit a whole
