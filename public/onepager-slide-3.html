@@ -32,7 +32,7 @@
   .slide {
     width: 1920px; height: 1080px; background: var(--bg);
     padding: 40px 56px 32px;
-    display: grid; grid-template-rows: 32px 160px 280px 1fr 32px; row-gap: 18px;
+    display: grid; grid-template-rows: 32px 200px 280px 1fr 32px; row-gap: 16px;
     overflow: hidden;
     box-shadow: 0 4px 24px rgba(0,0,0,.06);
   }
@@ -47,9 +47,9 @@
   /* Title */
   .title-block { display: flex; flex-direction: column; justify-content: center; }
   .eyebrow { color: var(--secondary); font-size: 14px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px; }
-  h1 { font-size: 40px; line-height: 1.1; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 12px; max-width: 1700px; }
+  h1 { font-size: 44px; line-height: 1.1; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 14px; max-width: 1700px; }
   h1 em { font-style: normal; color: var(--primary); }
-  .lede { font-size: 17px; color: var(--ink); margin: 0; line-height: 1.45; max-width: 1700px; }
+  .lede { font-size: 18px; color: var(--ink); margin: 0; line-height: 1.45; max-width: 1700px; }
   .lede .muted { color: var(--muted); }
   .lede a { color: var(--secondary); text-decoration: none; border-bottom: 1px solid var(--line); }
   .lede strong { font-weight: 600; }
@@ -161,7 +161,6 @@
     <div class="logo">PROCESSMINER</div>
     <div class="meta">
       <span>The pattern Processminer is built on</span>
-      <span>Onepager <span class="mono">v0.1</span></span>
       <span>Slide 3 of 4</span>
     </div>
   </div>
@@ -171,7 +170,7 @@
     <div class="eyebrow">Karpathy's LLM Wiki — what he proposed</div>
     <h1>Treat knowledge as a <em>structured artifact</em>, not a retrieval target.</h1>
     <p class="lede">
-      In a 2025 gist, <strong>Andrej Karpathy</strong> (ex-Tesla AI director, OpenAI co-founder) sketched an alternative to RAG for knowledge work: let the wiki <em>be</em> the artifact, keep it as typed Markdown on disk, and let the LLM read and write it directly under schema constraints. <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f" target="_blank" rel="noopener">karpathy/442a6bf…</a> · <span class="muted">Processminer applies that pattern to banking process documentation, then adds per-heading provenance and an approval gate on top.</span>
+      In a May 2026 gist, <strong>Andrej Karpathy</strong> (ex-Tesla AI director, OpenAI co-founder) sketched an alternative to RAG for knowledge work: let the wiki <em>be</em> the artifact, keep it as typed Markdown on disk, and let the LLM read and write it directly under schema constraints. <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f" target="_blank" rel="noopener">karpathy/442a6bf…</a> · <span class="muted">Processminer applies that pattern to process documentation, then adds per-heading provenance and an approval gate on top.</span>
     </p>
   </div>
 
@@ -269,10 +268,9 @@
   <!-- Footer -->
   <div class="footer">
     <div class="stack">
-      <span><strong>Citation</strong> Karpathy, "LLM Wiki" — gist published 2025</span>
-      <span>Implementation: <strong>21</strong> SKILL.md · <strong>28</strong> Python writers · <strong>2,200</strong>-line schema</span>
+      <span><strong>Citation</strong> Karpathy, "LLM Wiki" — gist published May 2026</span>
+      <span>Implementation: <strong>21</strong> skills</span>
     </div>
-    <div><span class="mono">processminer.local</span></div>
   </div>
 
 </div>

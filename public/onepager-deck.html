@@ -85,6 +85,43 @@
   body.export-mode .slide:not(.active) { display: none; }
   body.export-mode .nav { display: none; }
 
+  /* Print mode — every slide becomes its own page, native 1920×1080 */
+  @page { size: 1920px 1080px; margin: 0; }
+  html.print-mode, body.print-mode {
+    height: auto !important;
+    overflow: visible !important;
+    background: white;
+  }
+  body.print-mode .deck {
+    display: block !important;
+    position: static !important;
+    inset: auto !important;
+    height: auto !important;
+    width: 1920px;
+  }
+  body.print-mode .nav { display: none !important; }
+  body.print-mode .stage {
+    display: block !important;
+    position: static !important;
+    height: auto !important;
+    width: 1920px;
+    overflow: visible !important;
+  }
+  body.print-mode .slide {
+    position: relative !important;
+    transform: none !important;
+    opacity: 1 !important;
+    pointer-events: auto;
+    box-shadow: none;
+    margin: 0;
+    page-break-after: always;
+    break-after: page;
+  }
+  body.print-mode .slide:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+
   /* ═════════════════════════════════════════════════════════════════════════ */
   /* SHARED SLIDE PRIMITIVES                                                  */
   /* ═════════════════════════════════════════════════════════════════════════ */
@@ -110,11 +147,11 @@
   .footer-strip .stack > span + span { margin-left: 12px; padding-left: 12px; border-left: 1px solid var(--line); }
 
   /* ─────────────────────────────────────── SLIDE 1 specific */
-  #s1 { display: grid; grid-template-rows: 32px 200px 280px 220px 200px 32px; row-gap: 16px; }
+  #s1 { display: grid; grid-template-rows: 32px 200px 248px 216px 200px 32px; row-gap: 16px; }
   #s1 .title-block { max-width: 1600px; }
-  #s1 h1 { font-size: 56px; line-height: 1.08; max-width: 1500px; margin-bottom: 18px; }
-  #s1 .lede { font-size: 20px; max-width: 1300px; }
-  #s1 .hero-shot { border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; background: var(--surface); }
+  #s1 h1 { font-size: 44px; line-height: 1.1; max-width: 1500px; margin-bottom: 14px; }
+  #s1 .lede { font-size: 18px; max-width: 1400px; }
+  #s1 .hero-shot { border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; background: var(--surface); height: 100%; min-height: 0; }
   #s1 .hero-shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
 
   #s1 .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
@@ -137,13 +174,14 @@
   #s1 .chip .dot.b { background: var(--secondary); }
   #s1 .chip .dot.a { background: var(--warning); }
 
-  #s1 .bottom { display: grid; grid-template-columns: 1fr 1fr 320px; gap: 20px; }
+  #s1 .bottom { display: grid; grid-template-columns: 1fr 1fr 320px; grid-template-rows: 100%; gap: 20px; min-height: 0; }
   #s1 .shot {
     border: 1px solid var(--line); border-radius: var(--r-md);
     background: var(--surface); overflow: hidden;
     display: flex; flex-direction: column;
+    height: 100%; min-height: 0;
   }
-  #s1 .shot .frame { flex: 1; overflow: hidden; }
+  #s1 .shot .frame { flex: 1; overflow: hidden; min-height: 0; }
   #s1 .shot .frame img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
   #s1 .shot .cap { padding: 10px 14px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; background: var(--surface); }
   #s1 .shot .cap .kicker { font-family: var(--mono); font-size: 11px; color: var(--secondary); letter-spacing: 0.04em; }
@@ -151,23 +189,32 @@
   #s1 .shot .cap .d { font-size: 12px; color: var(--muted); }
 
   #s1 .stats-col {
-    display: grid; grid-template-rows: auto repeat(2, 1fr) auto;
+    display: flex; flex-direction: column;
     background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md);
-    padding: 16px 18px;
+    padding: 20px 22px;
   }
-  #s1 .stats-col h3 { font-size: 13px; font-weight: 600; margin: 0 0 8px; }
-  #s1 .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; align-content: center; }
-  #s1 .stat { background: var(--bg); border-radius: var(--r-sm); padding: 8px 10px; }
-  #s1 .stat .n { font-family: var(--mono); font-size: 22px; font-weight: 500; color: var(--primary); display: block; line-height: 1; }
-  #s1 .stat .l { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; display: block; }
-  #s1 .stats-col .note { font-size: 11px; color: var(--muted); margin-top: 10px; line-height: 1.45; }
+  #s1 .stats-col h3 { font-size: 13px; font-weight: 600; margin: 0 0 16px; }
+  #s1 .stats-col .benefits {
+    list-style: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 14px;
+    justify-content: center; flex: 1;
+  }
+  #s1 .stats-col .benefits li {
+    display: grid; grid-template-columns: 18px 1fr;
+    gap: 10px; align-items: baseline;
+    font-size: 15px; color: var(--ink); line-height: 1.35; font-weight: 500;
+  }
+  #s1 .stats-col .benefits li::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--primary); transform: translateY(4px);
+  }
 
   /* ─────────────────────────────────────── SLIDE 2 specific */
-  #s2 { display: grid; grid-template-rows: 32px 180px 1fr 64px 32px; row-gap: 20px; }
-  #s2 h1 { font-size: 44px; max-width: 1500px; margin-bottom: 14px; }
+  #s2 { display: grid; grid-template-rows: 32px 200px 1fr 64px 32px; row-gap: 16px; }
+  #s2 h1 { font-size: 44px; line-height: 1.1; max-width: 1500px; margin-bottom: 14px; }
   #s2 h1 .pm { color: var(--primary); }
   #s2 h1 .am { color: var(--secondary); }
-  #s2 .lede { font-size: 18px; max-width: 1500px; }
+  #s2 .lede { font-size: 18px; max-width: 1400px; }
   #s2 .modules { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
   #s2 .module {
     background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md);
@@ -203,7 +250,7 @@
     padding-top: 14px; border-top: 1px solid var(--line);
   }
   #s2 .who strong { color: var(--ink); font-weight: 500; }
-  #s2 .module-shot { border-top: 1px solid var(--line); background: var(--bg); height: 260px; overflow: hidden; }
+  #s2 .module-shot { border-top: 1px solid var(--line); background: var(--bg); height: 220px; overflow: hidden; }
   #s2 .module-shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
   #s2 .handoff {
     display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
@@ -220,10 +267,10 @@
   #s2 .arrow { font-family: var(--mono); color: var(--secondary); font-size: 18px; line-height: 1; }
 
   /* ─────────────────────────────────────── SLIDE 3 specific */
-  #s3 { display: grid; grid-template-rows: 32px 160px 280px 1fr 32px; row-gap: 18px; }
-  #s3 h1 { font-size: 40px; max-width: 1700px; margin-bottom: 12px; }
+  #s3 { display: grid; grid-template-rows: 32px 200px 280px 1fr 32px; row-gap: 16px; }
+  #s3 h1 { font-size: 44px; line-height: 1.1; max-width: 1700px; margin-bottom: 14px; }
   #s3 h1 em { font-style: normal; color: var(--primary); }
-  #s3 .lede { font-size: 17px; max-width: 1700px; }
+  #s3 .lede { font-size: 18px; max-width: 1700px; }
   #s3 .lede a { color: var(--secondary); text-decoration: none; border-bottom: 1px solid var(--line); }
 
   #s3 .narrative { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
@@ -303,48 +350,59 @@
   #s3 .quote-block .a { font-size: 11px; color: var(--muted); font-family: var(--mono); }
 
   /* ─────────────────────────────────────── SLIDE 4 specific */
-  #s4 { display: grid; grid-template-rows: 32px 200px 1fr 32px; row-gap: 20px; }
+  #s4 { display: grid; grid-template-rows: 32px 200px 200px 1fr 32px; row-gap: 16px; }
+  #s4 h1 { font-size: 44px; line-height: 1.1; max-width: 1600px; margin-bottom: 14px; }
+  #s4 .lede { font-size: 18px; max-width: 1400px; }
+  #s4 .shot-strip { display: grid; grid-template-columns: 420px 1fr; gap: 24px; }
+  #s4 .shot-cap { display: flex; flex-direction: column; justify-content: center; padding: 0 4px; }
+  #s4 .shot-cap .kicker { font-family: var(--mono); font-size: 12px; color: var(--secondary); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+  #s4 .shot-cap .t { font-size: 20px; font-weight: 600; color: var(--ink); line-height: 1.25; margin-bottom: 12px; }
+  #s4 .shot-cap .d { font-size: 14px; color: var(--muted); line-height: 1.55; }
+  #s4 .shot-cap .d .mono { color: var(--ink); }
+  #s4 .shot-cap .d strong { color: var(--ink); font-weight: 600; }
+  #s4 .shot-frame { border: 1px solid var(--line); border-radius: var(--r-md); background: var(--bg); overflow: hidden; height: 100%; min-height: 0; }
+  #s4 .shot-frame img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
   #s4 h1 { font-size: 44px; max-width: 1600px; margin-bottom: 14px; }
   #s4 .lede { font-size: 18px; max-width: 1500px; }
 
-  #s4 .bottom-two { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  #s4 .bottom-two { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
   #s4 .panel {
     background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md);
-    padding: 28px 32px; display: flex; flex-direction: column;
+    padding: 20px 24px; display: flex; flex-direction: column;
   }
-  #s4 .panel .ptag { font-family: var(--mono); font-size: 12px; color: var(--secondary); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
-  #s4 .panel h3 { font-size: 26px; font-weight: 600; margin: 0 0 12px; line-height: 1.2; }
-  #s4 .panel > p.intro { font-size: 15px; color: var(--muted); margin: 0 0 20px; line-height: 1.55; }
+  #s4 .panel .ptag { font-family: var(--mono); font-size: 11px; color: var(--secondary); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+  #s4 .panel h3 { font-size: 20px; font-weight: 600; margin: 0 0 8px; line-height: 1.25; }
+  #s4 .panel > p.intro { font-size: 13.5px; color: var(--muted); margin: 0 0 12px; line-height: 1.5; }
   #s4 .panel > p.intro strong { color: var(--ink); font-weight: 600; }
 
-  #s4 .skill-list { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }
+  #s4 .skill-list { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; }
   #s4 .skill-list li {
-    display: grid; grid-template-columns: 220px 1fr; gap: 16px; align-items: baseline;
-    font-size: 14px; padding: 12px 16px;
+    display: grid; grid-template-columns: 180px 1fr; gap: 14px; align-items: baseline;
+    font-size: 12.5px; padding: 7px 12px;
     background: var(--bg); border-radius: var(--r-sm); border: 1px solid var(--line);
   }
   #s4 .skill-list li .name { font-family: var(--mono); color: var(--primary); font-weight: 500; }
-  #s4 .skill-list li .desc { color: var(--muted); line-height: 1.5; }
+  #s4 .skill-list li .desc { color: var(--muted); line-height: 1.45; }
   #s4 .skill-list li .desc strong { color: var(--ink); font-weight: 500; }
   #s4 .auto-note {
     margin-top: auto;
-    padding: 14px 18px;
+    padding: 10px 14px;
     background: var(--bg); border: 1px solid var(--line); border-left: 3px solid var(--success); border-radius: var(--r-md);
-    font-size: 13px; color: var(--muted); line-height: 1.55;
+    font-size: 12px; color: var(--muted); line-height: 1.5;
   }
   #s4 .auto-note strong { color: var(--ink); font-weight: 600; }
   #s4 .auto-note .mono { color: var(--ink); }
-  #s4 .trust-list { display: flex; flex-direction: column; gap: 14px; margin: 0; padding: 0; list-style: none; }
+  #s4 .trust-list { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
   #s4 .trust-list li {
-    display: grid; grid-template-columns: 28px 1fr; gap: 14px; align-items: baseline;
-    font-size: 14.5px; line-height: 1.55;
+    display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: baseline;
+    font-size: 13px; line-height: 1.45;
   }
   #s4 .trust-list li::before {
-    content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--secondary); transform: translateY(4px);
+    content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--secondary); transform: translateY(4px);
   }
   #s4 .trust-list li .t { color: var(--ink); }
   #s4 .trust-list li .t strong { font-weight: 600; }
-  #s4 .trust-list li .d { color: var(--muted); font-size: 13px; display: block; margin-top: 3px; }
+  #s4 .trust-list li .d { color: var(--muted); font-size: 12px; display: block; margin-top: 2px; }
   #s4 .trust-list li .d .mono { color: var(--ink); }
 </style>
 </head>
@@ -357,24 +415,23 @@
       <div class="topbar">
         <div class="logo">PROCESSMINER</div>
         <div class="meta">
-          <span>For transformation, audit &amp; operations teams</span>
-          <span>Onepager <span class="mono">v0.1</span></span>
+          <span>For transformation, operations &amp; process teams</span>
           <span>Slide 1 of 4</span>
         </div>
       </div>
       <div class="title-block">
-        <div class="eyebrow">AI-assisted process documentation for banks</div>
-        <h1>Process documentation banks can finish — and auditors can trust.</h1>
+        <div class="eyebrow">AI-assisted process documentation</div>
+        <h1>Quarters of process documentation in hours of SME time — documented and traceable as you go.</h1>
         <p class="lede">
-          Processminer pairs your subject-matter expert with an AI interviewer, drafts every section as you go, and shows the <strong>source for every sentence</strong>. The SME approves block by block. <span class="muted">What ships is complete, cited, and ready for the next audit.</span>
+          Processminer pairs your subject-matter expert with an AI interviewer, drafts every section as you go, and shows the <strong>source for every sentence</strong>. The SME approves block by block. <span class="muted">The documentation is complete and traceable the moment the session ends — not weeks of write-up later.</span>
         </p>
       </div>
       <div class="hero-shot"><img src="onepager-assets/01-dashboard.png" alt="Processminer dashboard" /></div>
       <div class="cards">
         <div class="card">
           <div class="kicker">THE PROBLEM</div>
-          <h3>Process docs take a quarter — and nobody trusts them when they ship.</h3>
-          <p>Senior SME time is the bottleneck. "Just let AI write it" sounds great until the AI confidently invents the part nobody actually said. Compliance teams notice. Auditors notice.</p>
+          <h3>Process docs take a quarter — and you've got nothing usable until the very end.</h3>
+          <p>Senior SME time is the bottleneck. "Just let AI write it" sounds great until the AI confidently invents the part nobody actually said. By the time you spot it, the wrong draft is already in three downstream decks.</p>
         </div>
         <div class="card">
           <div class="kicker">THE PITCH</div>
@@ -388,8 +445,8 @@
         </div>
         <div class="card">
           <div class="kicker">THE OUTCOME</div>
-          <h3>One source of truth covering six perspectives — ready for audit, transformation, or board.</h3>
-          <p>The same record serves the regulator, the transformation lead, and the operations team. No parallel decks, no stale Confluence pages, no "let me find the latest version."</p>
+          <h3>One source of truth covering six perspectives — ready the moment the SME closes the session.</h3>
+          <p>The same record serves the transformation lead, the operations team, and whoever picks up the process next. No parallel decks, no stale Confluence pages, no "let me find the latest version."</p>
         </div>
       </div>
       <div class="bottom">
@@ -411,22 +468,19 @@
         </div>
         <div class="stats-col">
           <h3>What you get</h3>
-          <div class="stats-grid">
-            <div class="stat"><span class="n">6</span><span class="l">Perspectives covered</span></div>
-            <div class="stat"><span class="n">100%</span><span class="l">Cited on approval</span></div>
-            <div class="stat"><span class="n">1</span><span class="l">SME, no team</span></div>
-            <div class="stat"><span class="n">git</span><span class="l">Local audit trail</span></div>
-          </div>
-          <p class="note">Wiki lives on the analyst's filesystem. <span class="mono">git diff</span> is the audit log. Model inference runs via Anthropic API — see slide 4 for the full trust model.</p>
+          <ul class="benefits">
+            <li>Standardised documentation</li>
+            <li>Live capturing with the SME</li>
+            <li>No endless workshops anymore</li>
+          </ul>
         </div>
       </div>
       <div class="footer-strip">
         <div class="stack">
-          <span><strong>Status</strong> v0.4 — As-Is &amp; target architecture both live</span>
-          <span>Six pilot processes documented end-to-end</span>
-          <span>Next: pilot with two transformation teams</span>
+          <span><strong>Hours</strong> of SME time, not quarters of write-up</span>
+          <span>Documented inline, not weeks later</span>
+          <span>Every claim cited at the heading where it lives</span>
         </div>
-        <div><span class="mono">processminer.local</span></div>
       </div>
     </div>
 
@@ -436,7 +490,6 @@
         <div class="logo">PROCESSMINER</div>
         <div class="meta">
           <span>Two modules, one source of truth</span>
-          <span>Onepager <span class="mono">v0.1</span></span>
           <span>Slide 2 of 4</span>
         </div>
       </div>
@@ -507,7 +560,6 @@
           <span>Same provenance rules apply to both</span>
           <span>Switch modules with the toggle at the top of the dashboard</span>
         </div>
-        <div><span class="mono">processminer.local</span></div>
       </div>
     </div>
 
@@ -517,7 +569,6 @@
         <div class="logo">PROCESSMINER</div>
         <div class="meta">
           <span>The pattern Processminer is built on</span>
-          <span>Onepager <span class="mono">v0.1</span></span>
           <span>Slide 3 of 4</span>
         </div>
       </div>
@@ -525,7 +576,7 @@
         <div class="eyebrow">Karpathy's LLM Wiki — what he proposed</div>
         <h1>Treat knowledge as a <em>structured artifact</em>, not a retrieval target.</h1>
         <p class="lede">
-          In a 2025 gist, <strong>Andrej Karpathy</strong> (ex-Tesla AI director, OpenAI co-founder) sketched an alternative to RAG for knowledge work: let the wiki <em>be</em> the artifact, keep it as typed Markdown on disk, and let the LLM read and write it directly under schema constraints. <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f" target="_blank" rel="noopener">karpathy/442a6bf…</a> · <span class="muted">Processminer applies that pattern to banking process documentation, then adds per-heading provenance and an approval gate on top.</span>
+          In a May 2026 gist, <strong>Andrej Karpathy</strong> (ex-Tesla AI director, OpenAI co-founder) sketched an alternative to RAG for knowledge work: let the wiki <em>be</em> the artifact, keep it as typed Markdown on disk, and let the LLM read and write it directly under schema constraints. <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f" target="_blank" rel="noopener">karpathy/442a6bf…</a> · <span class="muted">Processminer applies that pattern to process documentation, then adds per-heading provenance and an approval gate on top.</span>
         </p>
       </div>
       <div class="narrative">
@@ -608,10 +659,9 @@
       </div>
       <div class="footer-strip">
         <div class="stack">
-          <span><strong>Citation</strong> Karpathy, "LLM Wiki" — gist published 2025</span>
-          <span>Implementation: <strong>21</strong> SKILL.md · <strong>28</strong> Python writers · <strong>2,200</strong>-line schema</span>
+          <span><strong>Citation</strong> Karpathy, "LLM Wiki" — gist published May 2026</span>
+          <span>Implementation: <strong>21</strong> skills</span>
         </div>
-        <div><span class="mono">processminer.local</span></div>
       </div>
     </div>
 
@@ -621,7 +671,6 @@
         <div class="logo">PROCESSMINER</div>
         <div class="meta">
           <span>Auto-research &amp; trust model</span>
-          <span>Onepager <span class="mono">v0.1</span></span>
           <span>Slide 4 of 4</span>
         </div>
       </div>
@@ -629,8 +678,18 @@
         <div class="eyebrow">What runs autonomously — and where the data goes</div>
         <h1>Auto-research pre-fills the obvious. The SME approves the verdict. The wiki stays local.</h1>
         <p class="lede">
-          Four autonomous web-research skills scrape the open web for what's already known about the process — regulation, competitor moves, CX benchmarks. The SME never wastes time on desk research. <span class="muted">Every web finding is gated behind the same approval rules. The bank's process knowledge never leaves the bank's filesystem.</span>
+          Four autonomous web-research skills scrape the open web for what's already known about the process — regulation, competitor moves, CX benchmarks. The SME never wastes time on desk research. <span class="muted">Every web finding is gated behind the same approval rules; the process knowledge never leaves the analyst's filesystem.</span>
         </p>
+      </div>
+      <div class="shot-strip">
+        <div class="shot-cap">
+          <span class="kicker">SAMPLE OUTPUT · /source-cx</span>
+          <span class="t">Real competitor cards, auto-researched.</span>
+          <span class="d">Each card names the competitor, stamps the source URL, and lives in the wiki as <span class="mono">source: web</span> until the SME confirms it. <strong>Auto-research is the runway, never the destination.</strong></span>
+        </div>
+        <div class="shot-frame">
+          <img src="onepager-assets/05-competitor.png" alt="Sample /source-cx output — competitor cards" />
+        </div>
       </div>
       <div class="bottom-two">
         <div class="panel">
@@ -653,7 +712,7 @@
           <p class="intro">Standard LLM tradeoff, made explicit: <strong>files local, inference remote</strong>. The architecture supports swapping to an on-prem model when the bank asks for air-gapped operation.</p>
           <ul class="trust-list">
             <li><div><span class="t"><strong>Wiki + source documents</strong> live as files on the analyst's machine.</span><span class="d">No database, no vector store, no cloud sync. <span class="mono">git</span> tracks every change — that <em>is</em> the audit log.</span></div></li>
-            <li><div><span class="t"><strong>Model inference</strong> runs via Anthropic's API.</span><span class="d">Via Claude Code CLI in a warm pool of long-lived subprocesses (6 by default). Per-turn context is sent on each turn; verify your bank's contract for retention policy.</span></div></li>
+            <li><div><span class="t"><strong>Model inference</strong> runs via an external LLM provider.</span><span class="d">A local AI-agent runtime keeps long-lived sessions warm (6 by default). Per-turn context is sent on each turn; verify your provider's retention policy.</span></div></li>
             <li><div><span class="t"><strong>No RAG, no embeddings.</strong></span><span class="d">The AI reads the wiki directly with <span class="mono">Read</span> / <span class="mono">Grep</span> tools. The wiki is small enough — grep on disk beats vector search at this scale.</span></div></li>
             <li><div><span class="t"><strong>Auth + access control on top.</strong></span><span class="d">Per-user sessions, role-based process ownership, password-gated login. Per-process access lists ship as <span class="mono">data/process-access.json</span>.</span></div></li>
           </ul>
@@ -661,10 +720,9 @@
       </div>
       <div class="footer-strip">
         <div class="stack">
-          <span><strong>Stack</strong> Next.js + Node (UI) · Python stdlib (writers) · Claude Code CLI (warm pool)</span>
-          <span><strong>~2,500</strong> LOC TS · <strong>~4,000</strong> LOC Python · <strong>21</strong> SKILL.md</span>
+          <span><strong>Stack</strong> Next.js + Node (UI) · Python stdlib (writers) · Local AI-agent runtime (warm pool)</span>
+          <span><strong>21</strong> skills</span>
         </div>
-        <div><span class="mono">processminer.local</span></div>
       </div>
     </div>
 
@@ -705,6 +763,12 @@
     document.body.classList.add('export-mode');
     slides.forEach((s, i) => s.classList.toggle('active', i === exportSlide - 1));
     return;
+  }
+
+  if (params.has('print')) {
+    document.body.classList.add('print-mode');
+    document.documentElement.classList.add('print-mode');
+    return; // skip nav setup; let print engine render every slide
   }
 
   // Build dots

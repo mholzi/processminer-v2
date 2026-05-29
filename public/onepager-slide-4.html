@@ -24,10 +24,21 @@
   .slide {
     width: 1920px; height: 1080px; background: var(--bg);
     padding: 40px 56px 32px;
-    display: grid; grid-template-rows: 32px 200px 1fr 32px; row-gap: 20px;
+    display: grid; grid-template-rows: 32px 200px 200px 1fr 32px; row-gap: 16px;
     overflow: hidden;
     box-shadow: 0 4px 24px rgba(0,0,0,.06);
   }
+
+  /* Sample-output strip — competitor cards from /source-cx */
+  .shot-strip { display: grid; grid-template-columns: 420px 1fr; gap: 24px; }
+  .shot-cap { display: flex; flex-direction: column; justify-content: center; padding: 0 4px; }
+  .shot-cap .kicker { font-family: var(--mono); font-size: 12px; color: var(--secondary); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+  .shot-cap .t { font-size: 20px; font-weight: 600; color: var(--ink); line-height: 1.25; margin-bottom: 12px; }
+  .shot-cap .d { font-size: 14px; color: var(--muted); line-height: 1.55; }
+  .shot-cap .d .mono { color: var(--ink); }
+  .shot-cap .d strong { color: var(--ink); font-weight: 600; }
+  .shot-frame { border: 1px solid var(--line); border-radius: var(--r-md); background: var(--bg); overflow: hidden; height: 100%; min-height: 0; }
+  .shot-frame img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
 
   /* Top bar */
   .topbar { display: flex; align-items: center; justify-content: space-between; }
@@ -44,56 +55,56 @@
   .lede .muted { color: var(--muted); }
 
   /* Bottom two-column */
-  .bottom-two { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .bottom-two { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
   .panel {
     background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md);
-    padding: 28px 32px; display: flex; flex-direction: column;
+    padding: 20px 24px; display: flex; flex-direction: column;
   }
-  .panel .ptag { font-family: var(--mono); font-size: 12px; color: var(--secondary); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
-  .panel h3 { font-size: 26px; font-weight: 600; margin: 0 0 12px; line-height: 1.2; }
-  .panel > p.intro { font-size: 15px; color: var(--muted); margin: 0 0 20px; line-height: 1.55; }
+  .panel .ptag { font-family: var(--mono); font-size: 11px; color: var(--secondary); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+  .panel h3 { font-size: 20px; font-weight: 600; margin: 0 0 8px; line-height: 1.25; }
+  .panel > p.intro { font-size: 13.5px; color: var(--muted); margin: 0 0 12px; line-height: 1.5; }
   .panel > p.intro strong { color: var(--ink); font-weight: 600; }
 
   /* Skill list */
-  .skill-list { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }
+  .skill-list { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; }
   .skill-list li {
-    display: grid; grid-template-columns: 220px 1fr;
-    gap: 16px; align-items: baseline;
-    font-size: 14px;
-    padding: 12px 16px;
+    display: grid; grid-template-columns: 180px 1fr;
+    gap: 14px; align-items: baseline;
+    font-size: 12.5px;
+    padding: 7px 12px;
     background: var(--bg); border-radius: var(--r-sm); border: 1px solid var(--line);
   }
   .skill-list li .name { font-family: var(--mono); color: var(--primary); font-weight: 500; }
-  .skill-list li .desc { color: var(--muted); line-height: 1.5; }
+  .skill-list li .desc { color: var(--muted); line-height: 1.45; }
   .skill-list li .desc strong { color: var(--ink); font-weight: 500; }
 
   .auto-note {
     margin-top: auto;
-    padding: 14px 18px;
+    padding: 10px 14px;
     background: var(--bg);
     border: 1px solid var(--line);
     border-left: 3px solid var(--success);
     border-radius: var(--r-md);
-    font-size: 13px; color: var(--muted); line-height: 1.55;
+    font-size: 12px; color: var(--muted); line-height: 1.5;
   }
   .auto-note strong { color: var(--ink); font-weight: 600; }
   .auto-note .mono { color: var(--ink); }
 
   /* Trust list */
-  .trust-list { display: flex; flex-direction: column; gap: 14px; margin: 0; padding: 0; list-style: none; }
+  .trust-list { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
   .trust-list li {
-    display: grid; grid-template-columns: 28px 1fr;
-    gap: 14px; align-items: baseline;
-    font-size: 14.5px; line-height: 1.55;
+    display: grid; grid-template-columns: 22px 1fr;
+    gap: 10px; align-items: baseline;
+    font-size: 13px; line-height: 1.45;
   }
   .trust-list li::before {
-    content: ''; width: 10px; height: 10px; border-radius: 50%;
+    content: ''; width: 8px; height: 8px; border-radius: 50%;
     background: var(--secondary);
     transform: translateY(4px);
   }
   .trust-list li .t { color: var(--ink); }
   .trust-list li .t strong { font-weight: 600; }
-  .trust-list li .d { color: var(--muted); font-size: 13px; display: block; margin-top: 3px; }
+  .trust-list li .d { color: var(--muted); font-size: 12px; display: block; margin-top: 2px; }
   .trust-list li .d .mono { color: var(--ink); }
 
   /* Footer */
@@ -114,7 +125,6 @@
     <div class="logo">PROCESSMINER</div>
     <div class="meta">
       <span>Auto-research &amp; trust model</span>
-      <span>Onepager <span class="mono">v0.1</span></span>
       <span>Slide 4 of 4</span>
     </div>
   </div>
@@ -124,8 +134,20 @@
     <div class="eyebrow">What runs autonomously — and where the data goes</div>
     <h1>Auto-research pre-fills the obvious. The SME approves the verdict. The wiki stays local.</h1>
     <p class="lede">
-      Four autonomous web-research skills scrape the open web for what's already known about the process — regulation, competitor moves, CX benchmarks. The SME never wastes time on desk research. <span class="muted">Every web finding is gated behind the same approval rules. The bank's process knowledge never leaves the bank's filesystem.</span>
+      Four autonomous web-research skills scrape the open web for what's already known about the process — regulation, competitor moves, CX benchmarks. The SME never wastes time on desk research. <span class="muted">Every web finding is gated behind the same approval rules; the process knowledge never leaves the analyst's filesystem.</span>
     </p>
+  </div>
+
+  <!-- Sample output strip — competitor cards from /source-cx -->
+  <div class="shot-strip">
+    <div class="shot-cap">
+      <span class="kicker">SAMPLE OUTPUT · /source-cx</span>
+      <span class="t">Real competitor cards, auto-researched.</span>
+      <span class="d">Each card names the competitor, stamps the source URL, and lives in the wiki as <span class="mono">source: web</span> until the SME confirms it. <strong>Auto-research is the runway, never the destination.</strong></span>
+    </div>
+    <div class="shot-frame">
+      <img src="onepager-assets/05-competitor.png" alt="Sample /source-cx output — competitor cards" />
+    </div>
   </div>
 
   <!-- Bottom two-column -->
@@ -154,7 +176,7 @@
       <p class="intro">Standard LLM tradeoff, made explicit: <strong>files local, inference remote</strong>. The architecture supports swapping to an on-prem model when the bank asks for air-gapped operation.</p>
       <ul class="trust-list">
         <li><div><span class="t"><strong>Wiki + source documents</strong> live as files on the analyst's machine.</span><span class="d">No database, no vector store, no cloud sync. <span class="mono">git</span> tracks every change — that <em>is</em> the audit log.</span></div></li>
-        <li><div><span class="t"><strong>Model inference</strong> runs via Anthropic's API.</span><span class="d">Via Claude Code CLI in a warm pool of long-lived subprocesses (6 by default). Per-turn context is sent on each turn; verify your bank's contract for retention policy.</span></div></li>
+        <li><div><span class="t"><strong>Model inference</strong> runs via an external LLM provider.</span><span class="d">A local AI-agent runtime keeps long-lived sessions warm (6 by default). Per-turn context is sent on each turn; verify your provider's retention policy.</span></div></li>
         <li><div><span class="t"><strong>No RAG, no embeddings.</strong></span><span class="d">The AI reads the wiki directly with <span class="mono">Read</span> / <span class="mono">Grep</span> tools. The wiki is small enough — grep on disk beats vector search at this scale.</span></div></li>
         <li><div><span class="t"><strong>Auth + access control on top.</strong></span><span class="d">Per-user sessions, role-based process ownership, password-gated login. Per-process access lists ship as <span class="mono">data/process-access.json</span>.</span></div></li>
       </ul>
@@ -165,10 +187,9 @@
   <!-- Footer -->
   <div class="footer">
     <div class="stack">
-      <span><strong>Stack</strong> Next.js + Node (UI) · Python stdlib (writers) · Claude Code CLI (warm pool)</span>
-      <span><strong>~2,500</strong> LOC TS · <strong>~4,000</strong> LOC Python · <strong>21</strong> SKILL.md</span>
+      <span><strong>Stack</strong> Next.js + Node (UI) · Python stdlib (writers) · Local AI-agent runtime (warm pool)</span>
+      <span><strong>21</strong> skills</span>
     </div>
-    <div><span class="mono">processminer.local</span></div>
   </div>
 
 </div>
