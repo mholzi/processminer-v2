@@ -1,0 +1,1503 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Processminer AI Governance — Engineering Changeset</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1a1a1a;
+    --muted: #666;
+    --rule: #e5e5e5;
+    --rule-soft: #f0f0f0;
+
+    /* Layer palette */
+    --lA: #475569;   /* Architectural — slate */
+    --lA-bg: #e2e8f0;
+    --lB: #2563eb;   /* Backend — blue */
+    --lB-bg: #dbeafe;
+    --lC: #7c3aed;   /* Schema/writers — purple */
+    --lC-bg: #ede9fe;
+    --lD: #db2777;   /* UI — pink */
+    --lD-bg: #fce7f3;
+    --lE: #16a34a;   /* CI gates — green */
+    --lE-bg: #dcfce7;
+    --lF: #ea580c;   /* Scripts — orange */
+    --lF-bg: #ffedd5;
+
+    /* Severity */
+    --sev-blocker: #dc2626;
+    --sev-blocker-bg: #fee2e2;
+    --sev-high: #d97706;
+    --sev-high-bg: #fef3c7;
+    --sev-medium: #2563eb;
+    --sev-medium-bg: #dbeafe;
+    --sev-low: #65a30d;
+    --sev-low-bg: #ecfccb;
+
+    /* Verbs */
+    --verb-new: #16a34a;
+    --verb-new-bg: #dcfce7;
+    --verb-mod: #d97706;
+    --verb-mod-bg: #fef3c7;
+
+    /* Issue / Solution callouts */
+    --issue-bg: #fff7ed;
+    --issue-rule: #f97316;
+    --issue-fg: #7c2d12;
+    --solution-bg: #ecfeff;
+    --solution-rule: #06b6d4;
+    --solution-fg: #155e75;
+
+    --code-bg: #f5f5f5;
+    --pre-bg: #1e293b;
+    --pre-fg: #e2e8f0;
+    --quote-bg: #fffbeb;
+    --quote-rule: #f59e0b;
+    --quote-fg: #92400e;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    max-width: 1180px;
+    margin: 2.5em auto;
+    padding: 0 1.25em 4em;
+    line-height: 1.55;
+    color: var(--fg);
+    background: var(--bg);
+  }
+  h1 { font-size: 2em; margin: 0 0 0.2em; letter-spacing: -0.015em; }
+  h2 { font-size: 1.4em; margin: 2.5em 0 0.6em; letter-spacing: -0.01em; }
+  h3 { font-size: 1.1em; margin: 1.4em 0 0.4em; }
+  h4 { font-size: 0.85em; margin: 0 0 0.5em; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; }
+  p { margin: 0.5em 0; }
+  .meta { color: var(--muted); font-size: 0.95em; }
+  .lede { font-size: 1.02em; color: var(--fg); margin: 1em 0 1.5em; }
+
+  code { background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace; font-size: 0.86em; }
+  pre {
+    background: var(--pre-bg); color: var(--pre-fg);
+    padding: 1em 1.1em; border-radius: 8px;
+    overflow-x: auto; font-size: 0.82em; line-height: 1.5;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+    margin: 1em 0;
+  }
+  pre code { background: transparent; padding: 0; color: inherit; font-size: inherit; }
+  pre .c { color: #94a3b8; font-style: italic; }
+  pre .k { color: #f472b6; }
+  pre .s { color: #86efac; }
+  pre .n { color: #fde68a; }
+
+  /* Banner */
+  .scope-banner {
+    border: 1px solid var(--lA);
+    background: linear-gradient(to right, var(--lA-bg) 0%, #fff 60%);
+    padding: 1em 1.25em; border-radius: 10px;
+    margin: 1em 0;
+  }
+  .scope-banner .kv {
+    display: grid; grid-template-columns: max-content 1fr; gap: 0.3em 1.2em;
+    font-size: 0.92em;
+  }
+  .scope-banner .kv dt { color: var(--muted); font-weight: 600; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.04em; }
+  .scope-banner .kv dd { margin: 0; }
+
+  .reading-guide {
+    border-left: 4px solid var(--lA);
+    background: #fafafa;
+    padding: 0.85em 1em; border-radius: 6px; margin: 1em 0;
+    font-size: 0.92em;
+  }
+  .reading-guide strong { color: var(--lA); }
+
+  /* TL;DR moves */
+  .moves { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.7em; margin: 1em 0; }
+  @media (max-width: 980px) { .moves { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px) { .moves { grid-template-columns: 1fr; } }
+  .move {
+    border: 1px solid var(--rule); border-radius: 8px; padding: 0.9em 1em;
+    background: #fff; position: relative;
+  }
+  .move .num {
+    position: absolute; top: 0.7em; right: 0.7em;
+    width: 1.6em; height: 1.6em; line-height: 1.6em; border-radius: 50%;
+    background: var(--lA); color: #fff; text-align: center;
+    font-weight: 700; font-size: 0.78em;
+  }
+  .move h4 { color: var(--fg); text-transform: none; letter-spacing: 0; font-size: 0.95em; margin-bottom: 0.3em; padding-right: 2.2em; }
+  .move p { font-size: 0.83em; margin: 0; color: var(--muted); }
+
+  /* Section card */
+  .section { border: 1px solid var(--rule); border-radius: 10px; padding: 1.5em 1.75em; margin: 1.5em 0; background: #fff; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin: 0.8em 0; font-size: 0.9em; }
+  th, td { padding: 0.55em 0.75em; text-align: left; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { background: #fafafa; font-weight: 600; font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  tr:last-child td { border-bottom: none; }
+  td.num { font-variant-numeric: tabular-nums; text-align: right; }
+  td.mono { font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace; font-size: 0.85em; }
+  table.tight th, table.tight td { padding: 0.35em 0.55em; font-size: 0.85em; }
+
+  ul, ol { padding-left: 1.4em; margin: 0.5em 0; }
+  li { margin: 0.25em 0; }
+
+  /* Layer header */
+  .layer-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    flex-wrap: wrap; gap: 0.5em;
+    padding: 1em 1.25em; border-radius: 10px 10px 0 0;
+    border: 1px solid var(--rule); border-bottom: none;
+    margin-top: 2em;
+  }
+  .layer-head h2 { margin: 0; font-size: 1.3em; }
+  .layer-head .count { font-size: 0.85em; color: var(--muted); }
+  .layer-body {
+    border: 1px solid var(--rule); border-top: 0;
+    border-radius: 0 0 10px 10px;
+    padding: 1em 1.25em 1.5em;
+    background: #fff;
+  }
+  .layer-A { background: var(--lA-bg); border-color: var(--lA); }
+  .layer-B { background: var(--lB-bg); border-color: var(--lB); }
+  .layer-C { background: var(--lC-bg); border-color: var(--lC); }
+  .layer-D { background: var(--lD-bg); border-color: var(--lD); }
+  .layer-E { background: var(--lE-bg); border-color: var(--lE); }
+  .layer-F { background: var(--lF-bg); border-color: var(--lF); }
+
+  /* Item card */
+  .item {
+    border: 1px solid var(--rule); border-radius: 8px;
+    padding: 0.9em 1em; background: #fff; margin: 0.7em 0;
+  }
+  .item .head {
+    display: flex; align-items: baseline; gap: 0.5em; margin-bottom: 0.5em; flex-wrap: wrap;
+  }
+  .item .id {
+    display: inline-block; padding: 0.15em 0.5em; border-radius: 4px;
+    font-size: 0.78em; font-weight: 700;
+    color: #fff;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+  }
+  .layer-A-id { background: var(--lA); }
+  .layer-B-id { background: var(--lB); }
+  .layer-C-id { background: var(--lC); }
+  .layer-D-id { background: var(--lD); }
+  .layer-E-id { background: var(--lE); }
+  .layer-F-id { background: var(--lF); }
+
+  .item h3 { font-size: 1em; margin: 0; flex: 1 1 auto; }
+  .item .closes {
+    font-size: 0.78em; color: var(--muted);
+  }
+  .item .closes strong { color: var(--fg); }
+
+  /* Issue / Solution callouts inside item */
+  .issue, .solution {
+    border-radius: 6px;
+    padding: 0.7em 0.9em;
+    margin: 0.6em 0 0.4em;
+    font-size: 0.92em;
+    line-height: 1.55;
+  }
+  .issue {
+    background: var(--issue-bg);
+    border-left: 4px solid var(--issue-rule);
+    color: var(--issue-fg);
+  }
+  .solution {
+    background: var(--solution-bg);
+    border-left: 4px solid var(--solution-rule);
+    color: var(--solution-fg);
+  }
+  .issue .lbl, .solution .lbl {
+    display: inline-block;
+    font-size: 0.72em; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-right: 0.5em;
+    padding: 0.1em 0.45em; border-radius: 3px;
+  }
+  .issue .lbl { background: var(--issue-rule); color: #fff; }
+  .solution .lbl { background: var(--solution-rule); color: #fff; }
+  .tech-detail {
+    margin-top: 0.6em;
+    border-top: 1px dashed var(--rule);
+    padding-top: 0.55em;
+  }
+  .tech-detail-label {
+    font-size: 0.72em; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--muted); font-weight: 600; margin-bottom: 0.3em;
+  }
+
+  /* Verbs */
+  .verb {
+    display: inline-block; padding: 0.05em 0.5em; border-radius: 3px;
+    font-size: 0.72em; font-weight: 700; letter-spacing: 0.05em;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+  }
+  .verb-new { background: var(--verb-new-bg); color: var(--verb-new); }
+  .verb-mod { background: var(--verb-mod-bg); color: var(--verb-mod); }
+
+  /* Severity pills */
+  .sev {
+    display: inline-block; padding: 0.1em 0.5em; border-radius: 3px;
+    font-size: 0.68em; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+  }
+  .sev-blocker { background: var(--sev-blocker-bg); color: var(--sev-blocker); }
+  .sev-high    { background: var(--sev-high-bg);    color: var(--sev-high); }
+  .sev-medium  { background: var(--sev-medium-bg);  color: var(--sev-medium); }
+  .sev-low     { background: var(--sev-low-bg);     color: var(--sev-low); }
+
+  .files {
+    margin-top: 0.5em;
+    font-size: 0.85em;
+  }
+  .file-row {
+    display: grid; grid-template-columns: 4em 1fr;
+    gap: 0.6em; padding: 0.25em 0;
+    align-items: baseline;
+  }
+  .file-row .v { text-align: right; }
+  .file-row .p { font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace; font-size: 0.85em; word-break: break-all; }
+  .file-row .p em { font-style: normal; color: var(--muted); font-size: 0.9em; font-family: -apple-system, sans-serif; margin-left: 0.3em; }
+
+  blockquote, .callout {
+    background: var(--quote-bg);
+    border-left: 4px solid var(--quote-rule);
+    color: var(--quote-fg);
+    padding: 0.85em 1em; border-radius: 6px;
+    margin: 1em 0;
+    font-size: 0.92em;
+  }
+  blockquote p, .callout p { margin: 0.3em 0; }
+
+  .sprints { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6em; margin: 1em 0; }
+  @media (max-width: 980px) { .sprints { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px) { .sprints { grid-template-columns: 1fr; } }
+  .sprint {
+    border: 1px solid var(--rule); border-radius: 8px; padding: 0.85em 1em;
+    background: #fff;
+  }
+  .sprint .when { font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+  .sprint .focus { font-weight: 600; margin: 0.2em 0 0.4em; font-size: 0.92em; }
+  .sprint ul { font-size: 0.82em; padding-left: 1.1em; }
+  .sprint li { margin: 0.15em 0; }
+
+  .effort-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6em; margin: 1em 0; }
+  @media (max-width: 760px) { .effort-grid { grid-template-columns: 1fr; } }
+  .effort-card {
+    border: 1px solid var(--rule); border-radius: 8px; padding: 0.85em 1em;
+    background: #fff;
+  }
+  .effort-card .label { font-size: 0.78em; color: var(--muted); }
+  .effort-card .val { font-weight: 700; font-size: 1.6em; line-height: 1; margin: 0.1em 0 0.3em; }
+  .effort-card .desc { font-size: 0.85em; color: var(--muted); }
+
+  .toc {
+    border: 1px solid var(--rule); border-radius: 8px;
+    padding: 0.9em 1.25em; background: #fafafa;
+    margin: 1.5em 0;
+    font-size: 0.92em;
+  }
+  .toc h4 { color: var(--fg); text-transform: none; letter-spacing: 0; font-size: 1em; margin-bottom: 0.4em; }
+  .toc ol { columns: 2; column-gap: 2em; padding-left: 1.4em; margin: 0.3em 0; }
+  @media (max-width: 760px) { .toc ol { columns: 1; } }
+  .toc li { break-inside: avoid; margin: 0.15em 0; }
+
+  .oos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6em; margin: 1em 0; }
+  @media (max-width: 760px) { .oos { grid-template-columns: 1fr; } }
+  .oos-card {
+    border: 1px solid var(--rule); border-radius: 8px; padding: 0.85em 1em;
+    background: #fafafa;
+  }
+  .oos-card h4 { color: var(--fg); text-transform: none; letter-spacing: 0; font-size: 0.95em; margin-bottom: 0.3em; }
+  .oos-card ul { font-size: 0.82em; margin: 0; padding-left: 1.1em; }
+
+  footer { margin-top: 4em; padding-top: 1.5em; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.88em; }
+  a { color: var(--lB); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<h1>AI Governance — Engineering Changeset</h1>
+<div class="scope-banner">
+  <dl class="kv">
+    <dt>Version</dt><dd>2026-05-28</dd>
+    <dt>Companion to</dt><dd><a href="/AI-GOVERNANCE-ROADMAP.md">AI-GOVERNANCE-ROADMAP.md</a> — the Committee view of all 49 items</dd>
+    <dt>Audience</dt><dd>Engineering team · Tech lead · CI / DevOps · AI Governance Committee (non-technical sections)</dd>
+    <dt>Scope</dt><dd>26 of 49 governance items that require code or UI changes</dd>
+  </dl>
+</div>
+
+<div class="reading-guide">
+  <strong>How to read this doc.</strong> Each item below carries two non-technical paragraphs first —
+  <span style="background:var(--issue-rule);color:#fff;padding:0.05em 0.4em;border-radius:3px;font-size:0.72em;font-weight:700;letter-spacing:0.04em;">ISSUE TODAY</span>
+  describes the real-world problem in plain language, and
+  <span style="background:var(--solution-rule);color:#fff;padding:0.05em 0.4em;border-radius:3px;font-size:0.72em;font-weight:700;letter-spacing:0.04em;">WHAT CHANGES</span>
+  describes what the user / regulator / auditor will see differently. Committee members can read just
+  those two boxes. The technical detail (file list, code shapes) sits below in a dashed-line section
+  for engineers.
+</div>
+
+<p class="lede">
+  Of the 49 items in <a href="/AI-GOVERNANCE-ROADMAP.md">AI-GOVERNANCE-ROADMAP.md</a>,
+  <strong>26 require code or UI changes</strong>; the remaining 23 are documentation, contractual,
+  sign-off, or process workstreams that need to land in parallel but produce no <code>git diff</code>.
+  This doc covers the 26. The non-code items are summarised in the
+  <a href="#oos">Out-of-scope</a> section at the bottom.
+</p>
+
+<!-- ============================================================= -->
+<h2>TL;DR — five architectural moves</h2>
+<p>Everything below collapses into five structural changes:</p>
+
+<div class="moves">
+  <div class="move">
+    <span class="num">1</span>
+    <h4>New <code>governance/</code> directory</h4>
+    <p>Top-level, outside <code>wiki/</code>. Holds audit log, lineage, test sets, GPAI evidence, model version pin, runbooks. Karpathy boundary respected.</p>
+  </div>
+  <div class="move">
+    <span class="num">2</span>
+    <h4>API-call wrapper</h4>
+    <p>Every Anthropic call goes through a wrapper enforcing audit logging + kill switch + model-version pin + region check before the call proceeds.</p>
+  </div>
+  <div class="move">
+    <span class="num">3</span>
+    <h4>Schema + writer additions</h4>
+    <p>Every element must carry <code>modelVersion</code> / <code>skillVersion</code> / <code>promptHash</code> / <code>schemaVersion</code>; contradiction check before approval.</p>
+  </div>
+  <div class="move">
+    <span class="num">4</span>
+    <h4>Raw-source intake gate</h4>
+    <p>PII classification required at upload; <code>meta.json</code> stamped alongside the file; intake rejects unclassified uploads.</p>
+  </div>
+  <div class="move">
+    <span class="num">5</span>
+    <h4>UI surface additions</h4>
+    <p>AI disclosure badges, grounding-score chips, right-to-explanation view, governance dashboard, kill-switch banner, PII classification input.</p>
+  </div>
+</div>
+
+<p>These are accompanied by <strong>9 new Python scripts</strong> and <strong>4 new CI gates</strong>.</p>
+
+<div class="toc">
+  <h4>Jump to</h4>
+  <ol>
+    <li><a href="#layerA">A. New file-system boundaries</a></li>
+    <li><a href="#layerB">B. Backend changes (TS)</a></li>
+    <li><a href="#layerC">C. Schema + writer changes</a></li>
+    <li><a href="#layerD">D. UI changes (React)</a></li>
+    <li><a href="#layerE">E. CI gates</a></li>
+    <li><a href="#layerF">F. New Python scripts</a></li>
+    <li><a href="#inventory">G. Flat file inventory</a></li>
+    <li><a href="#effort">H. Effort estimate</a></li>
+    <li><a href="#mapping">I. Governance ↔ code mapping</a></li>
+    <li><a href="#oos">J. Out-of-scope (non-code)</a></li>
+    <li><a href="#order">K. Implementation order</a></li>
+  </ol>
+</div>
+
+<!-- ============================================================= -->
+<!-- LAYER A -->
+<div class="layer-head layer-A" id="layerA">
+  <h2>A. New file-system boundaries</h2>
+  <span class="count">1 directory · Karpathy boundary enforced by CI</span>
+</div>
+<div class="layer-body">
+  <div class="item">
+    <div class="head"><span class="id layer-A-id">A.1</span><h3><code>governance/</code> directory at repo root</h3></div>
+    <p class="closes"><strong>Closes:</strong> Phase 1 #4, #5, #7, #8 · Phase 2 #7 · Phase 4 #1, #4, #5 · Phase 5 #4 (homes for the artefacts)</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      Today there is no single home for governance evidence. The audit log doesn't exist anywhere.
+      The model card hasn't been written. The incident runbook lives in someone's head. When the
+      regulator or Internal Audit asks "show me X", we'd have to dig through git history, Confluence,
+      shared drives, and prod logs — and we'd still be missing pieces. Worse: governance content
+      risks being placed inside <code>wiki/</code> by accident, where it gets treated as part of the
+      documented process and exposed in published exports.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      One folder at the top of the repository — <code>governance/</code> — that holds every artefact
+      the regulator, Internal Audit, MRM, and the Committee need to read. The wiki stays clean and
+      product-facing; governance evidence is one folder up and clearly separated. CI prevents
+      accidental mixing in either direction. When a regulator asks "show me your model card", we
+      open one file.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+<pre><code><span class="c">governance/</span>
+├── model-version.json             <span class="c"># Pinned Claude version (Phase 7 #2)</span>
+├── model-card-processminer.md     <span class="c"># MRM doc pack (Phase 2 #7)</span>
+├── human-oversight.md             <span class="c"># Art. 14 documentation (Phase 1 #7)</span>
+├── incident-runbook.md            <span class="c"># AI-incident playbook (Phase 4 #4)</span>
+├── retention-policy.md            <span class="c"># Per-element retention (Phase 5 #4)</span>
+├── classification-memo.md         <span class="c"># AIA risk tier (Phase 1 #1)</span>
+├── audit-log/                     <span class="c"># Append-only API call log (Phase 4 #1)</span>
+│   └── 2026-05-28.jsonl
+├── lineage/                       <span class="c"># Per-session lineage records (Phase 5 #5)</span>
+│   └── &lt;run-id&gt;.json
+├── gpai-evidence/                 <span class="c"># Anthropic model + system cards (Phase 1 #4)</span>
+├── test-sets/                     <span class="c"># Hallucination + bias test sets (Phase 6 #1, #2)</span>
+│   └── &lt;skill&gt;/{inputs,expected}/
+├── sla.json                       <span class="c"># Per-skill output quality SLAs (Phase 4 #5)</span>
+└── vendor-sla/                    <span class="c"># Anthropic availability log (Phase 4 #7)</span>
+    └── &lt;YYYY-MM&gt;.jsonl</code></pre>
+      <p style="font-size:0.85em;color:var(--muted);margin-top:0.5em">
+        Boundary enforced by <code>scripts/check_governance_boundary.py</code> (F.9) — CI refuses any
+        PR that places governance artefacts under <code>wiki/</code> or element-writer outputs under
+        <code>governance/</code>.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- LAYER B -->
+<div class="layer-head layer-B" id="layerB">
+  <h2>B. Backend changes (TypeScript)</h2>
+  <span class="count">7 items · audit log · kill switch · version pin · drift · retention · vendor SLA · champion-challenger</span>
+</div>
+<div class="layer-body">
+
+  <!-- B.1 -->
+  <div class="item">
+    <div class="head"><span class="id layer-B-id">B.1</span><h3>Audit-log wrapper around every Anthropic call</h3><span class="sev sev-blocker">Blocker</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 4 #1 · Phase 1 #6 (if high-risk) · Phase 5 #5 input</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      Every interaction between Processminer and Claude is invisible. Nobody can reconstruct
+      "who used Processminer yesterday, with which inputs, getting which outputs?" If a regulator
+      under DORA Article 17 asks for the root cause of an incident, we have no data. If Anthropic
+      later claims they did or didn't process certain data, we can't disprove it. Under EU AI Act
+      Article 12, if Processminer is classified high-risk we need automatic logging retained for the
+      duration the regulator expects (typically 10 years for bank records) — and we have nothing
+      today.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      A thin wrapper sits between Processminer and Anthropic. Every single AI call is recorded —
+      when, by whom, for which process, with what input, what output, which Claude version. Stored
+      as plain-text append-only files, retained 10 years. From this one record, every downstream
+      governance question becomes answerable: incident root cause, GDPR data-flow tracing, MRM
+      monitoring, regulator forensics. The user sees nothing change; the audit team gets everything
+      they need.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+      <div class="files">
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">src/lib/audit-log.ts <em>append-only JSONL writer; one record per Anthropic call</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">src/lib/anthropic-wrapper.ts <em>thin wrapper over @anthropic-ai/sdk enforcing audit + kill-switch + region + version</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">src/lib/session-worker.ts <em>replace direct SDK use with the wrapper</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">governance/audit-log/&lt;YYYY-MM-DD&gt;.jsonl <em>daily-rotated sink</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">scripts/audit/audit_log_schema.json <em>record shape</em></span></div>
+      </div>
+      <p style="margin-top:0.5em;font-size:0.85em"><strong>Record shape:</strong></p>
+<pre><code>{
+  <span class="n">"ts"</span>: <span class="s">"2026-05-28T22:34:00Z"</span>,
+  <span class="n">"user"</span>: <span class="s">"markus.holzhauser"</span>,
+  <span class="n">"processSlug"</span>: <span class="s">"bank-guarantee-issuance"</span>,
+  <span class="n">"skill"</span>: <span class="s">"process-specialist"</span>,
+  <span class="n">"skillVersion"</span>: <span class="s">"sha256:..."</span>,
+  <span class="n">"model"</span>: <span class="s">"claude-opus-4-7"</span>,
+  <span class="n">"modelVersion"</span>: <span class="s">"20260301"</span>,
+  <span class="n">"promptHash"</span>: <span class="s">"sha256:..."</span>,
+  <span class="n">"inputHash"</span>: <span class="s">"sha256:..."</span>,
+  <span class="n">"outputHash"</span>: <span class="s">"sha256:..."</span>,
+  <span class="n">"approvalOutcome"</span>: null,
+  <span class="n">"apiRegion"</span>: <span class="s">"eu-central-1"</span>,
+  <span class="n">"tokensIn"</span>: 12450,
+  <span class="n">"tokensOut"</span>: 3200,
+  <span class="n">"durationMs"</span>: 18432
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- B.2 -->
+  <div class="item">
+    <div class="head"><span class="id layer-B-id">B.2</span><h3>Kill switch feature flag</h3><span class="sev sev-high">High</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 4 #6</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      If something goes seriously wrong — Anthropic has a security incident, a skill starts producing
+      harmful outputs, a regulator orders an immediate pause — there's no way to stop Processminer
+      short of un-deploying the application. EU AI Act Article 14 explicitly requires the operator
+      of an AI system to have an "interrupt" capability. DORA resilience testing assesses whether
+      the bank can disable a critical ICT service quickly. We can do neither today.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      A central switch — flipping a flag in a config file or environment variable — immediately
+      stops every AI call across the bank within seconds. Users see a clear in-app banner explaining
+      that the system is paused. The switch is tested at least once a year so we know it works.
+      When a regulator asks "can you stop?", the answer is "yes, and here's the test log proving
+      it does."
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+      <div class="files">
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">src/lib/feature-flag.ts <em>reads PROCESSMINER_DISABLED env + governance/disabled.flag</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">src/app/api/session/route.ts <em>return 503 + explanation when disabled</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">src/lib/anthropic-wrapper.ts <em>refuse upstream call when disabled</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">src/components/SystemDisabledBanner.tsx <em>bank-wide banner</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">src/app/layout.tsx <em>render banner when flag set</em></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B.3 -->
+  <div class="item">
+    <div class="head"><span class="id layer-B-id">B.3</span><h3>Anthropic region + model version pin check</h3><span class="sev sev-blocker">Blocker</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 5 #2 (residency) · Phase 7 #2 (version pin)</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      Claude has versions and runs in regions. Nothing checks which version we are calling or which
+      region the request goes to. Anthropic could route a request to a US data centre on a Wednesday
+      afternoon — and the bank would have unknowingly transferred internal data outside the EU,
+      a GDPR Chapter V violation. Anthropic could push what they call a "minor" model update that
+      meaningfully changes how skills behave — and we'd only notice when a user reports surprising
+      outputs. Both scenarios are data-protection and model-risk findings.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      A small config file declares upfront: "We use Claude version X, in region Y, and nothing else."
+      Every call checks this before sending. Any mismatch is refused and an alert fires.
+      Planned upgrades go through a documented impact review and MRM sign-off before the pin is
+      changed. From the regulator's perspective: we can prove which model version processed which
+      data, and where it physically went.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+      <div class="files">
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">governance/model-version.json <em>{ "pinned": "claude-opus-4-7", "region": "eu-central-1" }</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">src/lib/anthropic-wrapper.ts <em>refuse call if region or version drifts from pin</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">scripts/wiki/check_model_version_pin.py <em>CI check (see E.3)</em></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B.4 -->
+  <div class="item">
+    <div class="head"><span class="id layer-B-id">B.4</span><h3>Drift / quality signals pipeline</h3><span class="sev sev-high">High</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 4 #3 · Phase 2 #6 input</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      We have no idea whether Processminer is still working well over time. If skill quality
+      silently degrades — Anthropic's model changed, a prompt drifted, a new edge case emerged — we
+      would notice months later through accumulated bad documentation that SMEs have already signed
+      off on. MRM expects monthly evidence that the model still performs within its validated
+      range. We cannot produce that evidence today.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      An automated pipeline calculates quality metrics every day: how often the schema is broken,
+      how often AI-generated citations are missing, how often SMEs heavily rewrite AI output (the
+      best proxy for "the AI got it wrong"). Trends are charted over 30 / 90 / 365 days.
+      Below-threshold values trigger an automatic alert. MRM sees the trend; the Committee sees
+      the trend; the regulator sees the trend.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+      <div class="files">
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">src/lib/quality-metrics.ts <em>schema conformance, citation coverage, edit rate, lint trend, conflict-resolution rate</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">src/app/api/governance/metrics/route.ts <em>rolling 30-day signals</em></span></div>
+      </div>
+      <p style="font-size:0.85em;margin-top:0.3em"><strong>Source data:</strong> <code>governance/audit-log/*.jsonl</code> + existing <code>provenance.json</code> + existing <code>lint.json</code></p>
+    </div>
+  </div>
+
+  <!-- B.5 -->
+  <div class="item">
+    <div class="head"><span class="id layer-B-id">B.5</span><h3>Retention pipeline</h3><span class="sev sev-high">High</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 5 #4</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      The wiki grows forever. Some content needs 10-year retention (regulatory records), some 3-year
+      (operational documentation), some indefinite, some should be deleted to comply with GDPR's
+      storage-limitation principle. There's no enforcement; old content just accumulates. If a
+      customer or employee invokes GDPR Article 17 "delete my data", we can't cleanly comply —
+      we don't know where their data lives or when it should expire.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      A retention policy document declares how long each kind of content stays. A daily automated
+      job applies the policy — moves expired content to a separate "disposed" area with a written
+      disposition log. A legal-hold flag exists so content under investigation is never auto-disposed.
+      When the DPO asks "how do we honour an Article 17 request on this person's data?", the answer
+      is "the retention engine handles it; here's the log of dispositions."
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+      <div class="files">
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">scripts/wiki/apply_retention.py <em>reads retention-policy.md rules; moves expired to governance/disposed/</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">cron entry (host-OS / k8s) <em>daily execution</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">schema/process-schema.json <em>optional legalHold: boolean on every element type; retention skips when set</em></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B.6 -->
+  <div class="item">
+    <div class="head"><span class="id layer-B-id">B.6</span><h3>Vendor SLA monitor</h3><span class="sev sev-medium">Medium</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 4 #7</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      We have no monitoring of whether Anthropic is even up. Outages are discovered through user
+      complaints. There's no historical availability record to feed into the annual DORA Article 29
+      third-party concentration review. If we ever needed to demonstrate to the regulator that
+      Anthropic met (or didn't meet) agreed SLAs, we'd have nothing.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      A small automated job pings the Anthropic API every five minutes from the bank's infrastructure.
+      Each result is logged. From this, we can produce a monthly availability report that feeds vendor
+      risk reviews, the governance dashboard, and any regulatory request about ICT third-party
+      reliability.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+      <div class="files">
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">scripts/audit/probe_anthropic.py <em>periodic health check → governance/vendor-sla/&lt;YYYY-MM&gt;.jsonl</em></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B.7 -->
+  <div class="item">
+    <div class="head"><span class="id layer-B-id">B.7</span><h3>Champion / challenger harness</h3><span class="sev sev-medium">Medium</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 7 #5</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      Today Processminer depends entirely on Anthropic. If Anthropic raises prices 5×, has a
+      structural outage, changes their terms in a way the bank can't accept, or is sanctioned —
+      we have nowhere to go. DORA Article 29 requires the bank to address ICT third-party
+      concentration risk; we can't demonstrate we have an alternative ready.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      The code is restructured so that swapping Anthropic for another LLM provider (e.g. an
+      EU-hosted Mistral or Aleph Alpha) is a configuration change, not a code rewrite. A quarterly
+      job runs identical prompts through both providers and compares outputs. We have decision-grade
+      data on how a switch would behave before we ever need to make one.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+      <div class="files">
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">src/lib/llm-router.ts <em>abstraction over Anthropic / Mistral / EU-hosted alternative</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">src/lib/anthropic-wrapper.ts → src/lib/llm-wrapper.ts <em>accept provider injection</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">scripts/audit/run_champion_challenger.py <em>identical prompts, diff outputs</em></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- LAYER C -->
+<div class="layer-head layer-C" id="layerC">
+  <h2>C. Schema + writer changes (Python + JSON)</h2>
+  <span class="count">5 items · governance frontmatter · PII intake · lineage · contradiction · grounding</span>
+</div>
+<div class="layer-body">
+
+  <!-- C.1 -->
+  <div class="item">
+    <div class="head"><span class="id layer-C-id">C.1</span><h3>Element governance frontmatter</h3><span class="sev sev-high">High</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 7 #6 · enables Phase 2 #6 + Phase 5 #5</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      When an SME, auditor, or regulator looks at a documented process, they cannot tell which
+      version of Claude wrote it, which version of the skill was used, or with which prompt. If the
+      regulator asks "reproduce this output six months later under the same conditions", we cannot.
+      If a skill update later breaks something, we cannot tell which content was authored under the
+      old behaviour versus the new. MRM cannot enforce annual revalidation because we don't know
+      what was generated by what.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      Every documentation element carries a small machine-readable stamp at the top — Claude version,
+      skill version, prompt fingerprint, schema version, generation timestamp. From this stamp, every
+      output is reproducible. "What produced this?" becomes a single query. MRM's annual
+      revalidation has the data it needs.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+      <p style="font-size:0.85em">Every element type gets these fields in its frontmatter contract:</p>
+<pre><code><span class="n">modelVersion</span>: <span class="s">claude-opus-4-7@20260301</span>     <span class="c"># which Claude generated this</span>
+<span class="n">skillVersion</span>: <span class="s">sha256:abc...</span>               <span class="c"># SHA of the skill's SKILL.md</span>
+<span class="n">promptHash</span>: <span class="s">sha256:def...</span>                 <span class="c"># SHA of the rendered prompt</span>
+<span class="n">schemaVersion</span>: <span class="s">0.4.0</span>                        <span class="c"># schema version at write time</span>
+<span class="n">generatedAt</span>: <span class="s">2026-05-28T22:34:00Z</span>           <span class="c"># set once on first author</span>
+<span class="n">disclosureLabel</span>: <span class="s">AI-generated</span>              <span class="c"># transparency surface (Art. 50)</span></code></pre>
+      <div class="files">
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">schema/process-schema.json <em>add to every element type</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">scripts/wiki/write_element.py <em>refuse to write without these</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">scripts/wiki/patch_element.py <em>preserve / update on patch</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">scripts/check_conformance.py <em>ERROR if missing</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">src/lib/conformance.ts <em>same check on TS side (parity test enforces)</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">schema/.derived/*.llm.json <em>regenerated</em></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C.2 -->
+  <div class="item">
+    <div class="head"><span class="id layer-C-id">C.2</span><h3>PII classification on raw-sources</h3><span class="sev sev-blocker">Blocker</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 5 #1</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      Users upload documents — process manuals, audit reports, screenshots, occasionally exports that
+      contain customer or employee personal data. Nothing in the tool today asks "what's in this
+      document?" If a user accidentally uploads a customer-data-laden export, it lands in the
+      system, gets sent to Anthropic, and is now subject to every data-protection finding that
+      follows. GDPR Article 5 data-minimisation requires preventing this proactively, not after
+      the fact.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      At the moment of upload, the user must declare what kind of data the file contains: none /
+      internal / customer PII / special category. The system refuses uploads without a classification.
+      The classification then drives downstream behaviour — which Claude region the file can be sent
+      to, what retention applies, how granular the audit log must be. If a customer-PII file slips
+      through, the DPO has a clear record of who declared what.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+      <div class="files">
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">raw-sources/&lt;slug&gt;/&lt;file&gt;.meta.json <em>{ "piiClass": "none"|"internal"|"customer"|"special" }</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">src/app/api/upload/route.ts <em>reject if missing or invalid</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">scripts/wiki/check_pii_classification.py <em>fails CI if any raw-source lacks meta.json</em></span></div>
+      </div>
+      <p style="font-size:0.85em;margin-top:0.3em">UI side: see <a href="#layerD">D.3</a>.</p>
+    </div>
+  </div>
+
+  <!-- C.3 -->
+  <div class="item">
+    <div class="head"><span class="id layer-C-id">C.3</span><h3>Lineage sidecar (outside wiki tree)</h3><span class="sev sev-high">High</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 5 #5 · Phase 5 #6 input</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      The existing provenance contract tells us "where does this heading come from" at the source-
+      document level. It doesn't show the full chain: who triggered the session, which Claude
+      version, which skill version, which source documents were in scope, which proposals were
+      accepted versus rejected, which approvals were granted. If a customer or employee invokes
+      the GDPR Article 22 right to explanation about an AI-influenced decision, we cannot produce
+      the chain that led to the documentation about them.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      Every Processminer session ends by writing a lineage record — a single file describing the
+      full chain for that session. Six months later we can answer "for this specific element about
+      this specific person's process, here is who generated it, how, when, with what review, and
+      what the human changed." This record is what feeds the right-to-explanation view (D.4) and
+      MRM's reproducibility evidence.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+      <div class="files">
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">governance/lineage/&lt;run-id&gt;.json <em>full reproducibility record per session</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">scripts/wiki/build_lineage.py <em>assembles from provenance + run manifest + audit log</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">src/lib/session-worker.ts <em>emit lineage record at session close</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">src/lib/lineage.ts <em>read-side helper for UI (D.4)</em></span></div>
+      </div>
+      <p style="font-size:0.85em;margin-top:0.5em"><strong>Lineage record shape:</strong></p>
+<pre><code>{
+  <span class="n">"runId"</span>: <span class="s">"2026-05-28-2234"</span>,
+  <span class="n">"user"</span>: <span class="s">"markus.holzhauser"</span>,
+  <span class="n">"process"</span>: <span class="s">"bank-guarantee-issuance"</span>,
+  <span class="n">"skill"</span>: <span class="s">"process-specialist"</span>,
+  <span class="n">"skillVersion"</span>: <span class="s">"sha256:..."</span>,
+  <span class="n">"model"</span>: <span class="s">"claude-opus-4-7@20260301"</span>,
+  <span class="n">"promptHash"</span>: <span class="s">"sha256:..."</span>,
+  <span class="n">"sourceDocIds"</span>: [<span class="s">"doc-1"</span>, <span class="s">"doc-2"</span>],
+  <span class="n">"elementsWritten"</span>: [
+    { <span class="n">"id"</span>: <span class="s">"PS-BGID-001"</span>, <span class="n">"headings"</span>: [<span class="s">"Inputs"</span>, <span class="s">"Outputs"</span>],
+      <span class="n">"auditLogRef"</span>: <span class="s">"2026-05-28T22:34:00Z"</span> }
+  ],
+  <span class="n">"approvals"</span>: [
+    { <span class="n">"id"</span>: <span class="s">"PS-BGID-001"</span>, <span class="n">"approver"</span>: <span class="s">"markus"</span>, <span class="n">"ts"</span>: <span class="s">"..."</span> }
+  ]
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- C.4 -->
+  <div class="item">
+    <div class="head"><span class="id layer-C-id">C.4</span><h3>Contradiction check before approval</h3><span class="sev sev-medium">Medium</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 6 #7</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      Skills can produce content that contradicts other approved content elsewhere in the wiki —
+      for example, the AI proposes "Role X owns step Y" when "Role Z owns step Y" is already
+      approved. There is no automatic check; lint might catch it later but only once explicitly run.
+      If a contradiction slips through approval, the documented process becomes internally
+      inconsistent — which is exactly the kind of finding an external auditor lands on first.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      Before any approval is granted, an automatic check runs against the rest of the wiki for
+      structural contradictions (role assignments, control owners, SLA values). If a contradiction
+      is detected, the approval is refused with a clear explanation of what conflicts with what.
+      The reviewer either reconciles the conflict or explicitly overrides with a documented
+      reason. The inconsistency-finding-by-auditor failure mode is closed.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+      <div class="files">
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">scripts/check_conformance.py <em>add contradiction rules: role assignment conflict, control-owner contradiction, SLA conflict</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">src/lib/conformance.ts <em>parity</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">scripts/wiki/set_approval.py <em>hard-fail if contradiction; require --override &lt;reason&gt;</em></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- C.5 -->
+  <div class="item">
+    <div class="head"><span class="id layer-C-id">C.5</span><h3>Source-grounding score</h3><span class="sev sev-high">High</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 6 #6</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      The provenance contract says "every derived heading must cite an evidence quote from a source
+      document". Today this is an aspiration; nobody actually measures compliance. If the AI
+      hallucinates a citation that doesn't exist in the source, we would only discover it manually,
+      one element at a time. There's no quantified evidence MRM or the regulator could see proving
+      the provenance contract works.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      An automated check walks every element, finds each cited quote, and verifies it actually
+      exists in the source document via deterministic text match. The result is a score (0–100%),
+      shown as a colour-coded chip on each element card (D.2). Low scores trigger investigation;
+      aggregate trends feed the quality dashboard. The aspiration becomes a measurable, auditable
+      number — exactly what AI Act Article 15 evidence requires.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+      <div class="files">
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">scripts/wiki/score_grounding.py <em>% of derived/source headings with citable evidence that survives deterministic match</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">wiki/processes/&lt;slug&gt;/grounding.json <em>derived sidecar; stays inside wiki/ (existing precedent: lint.json, raci.json)</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">src/components/ElementCard.tsx <em>surface chip — see D.2</em></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- LAYER D -->
+<div class="layer-head layer-D" id="layerD">
+  <h2>D. UI changes (React / Next.js)</h2>
+  <span class="count">7 items · disclosure · grounding chip · PII upload · explanation view · dashboard · kill banner · lineage drawer</span>
+</div>
+<div class="layer-body">
+
+  <!-- D.1 -->
+  <div class="item">
+    <div class="head"><span class="id layer-D-id">D.1</span><h3>AI disclosure across surfaces</h3><span class="sev sev-high">High</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 1 #3 (Article 50)</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      Under EU AI Act Article 50, when a user interacts with AI or reads AI-generated content,
+      they have a right to know. Today none of Processminer's surfaces say "this was AI-generated".
+      A user reading an approved element might reasonably assume a human wrote it. A Confluence page
+      produced by Processminer would look like any other Confluence page. This is a clear
+      transparency failure with direct regulatory exposure.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      Every surface that shows AI-generated content displays a clear, persistent label:
+      "AI-generated · reviewed by [SME] on [date]". It appears on element cards, in the chat
+      header, on PDF exports, on published Confluence pages, and as an XML attribute on Sparx
+      exports. Small but unmistakable. When the regulator asks how we comply with Article 50,
+      we point at the badge.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+      <div class="files">
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">src/components/AiDisclosureBadge.tsx <em>"AI-generated · reviewed by [SME]"</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">src/components/ElementCard.tsx <em>render badge in header; pull approver from frontmatter</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">src/components/AgentChat.tsx <em>persistent banner above transcript</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">src/app/print/[slug]/page.tsx <em>disclosure header on PDF export</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">scripts/wiki/publish_confluence.py <em>(when built — Feature ROADMAP P6 #1) disclosure in page header</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">scripts/wiki/export_sparx.py <em>(when built — Feature ROADMAP P1 #3) disclosure in XML attribute</em></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D.2 -->
+  <div class="item">
+    <div class="head"><span class="id layer-D-id">D.2</span><h3>Source-grounding chip on ElementCard</h3><span class="sev sev-high">High</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 6 #6 (surface for C.5)</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      The grounding score (from C.5) is computed but invisible to the reviewing SME. A SME approving
+      an element doesn't see whether its citations actually check out against the source documents.
+      The aspiration is "approve only well-grounded content"; today there's no signal whether the
+      content in front of you is well-grounded or not.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      A small coloured chip on every element card — green when grounding is at least 90%, amber
+      70–89%, red below 70%. The SME sees at a glance which elements are well-grounded and which
+      need attention before approval. The chip is one more cheap quality signal stacked into the
+      reviewer's workflow.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+      <div class="files">
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">src/components/ElementCard.tsx <em>read grounding.json; coloured chip (≥90% green / 70–89 amber / &lt;70 red)</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">src/lib/process-view.ts <em>expose groundingFor(id)</em></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D.3 -->
+  <div class="item">
+    <div class="head"><span class="id layer-D-id">D.3</span><h3>PII classification at upload</h3><span class="sev sev-blocker">Blocker</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 5 #1 (UI surface for C.2)</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      The upload dialog accepts any file with no question about its content. (See C.2 for the
+      regulatory framing — GDPR Article 5 data minimisation requires preventing PII slip-through
+      at intake, not afterwards.)
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      The upload dialog grows a required dropdown: "What kind of data does this file contain?" with
+      options None / Internal / Customer PII / Special Category. Submit is disabled until selected.
+      The classification is stored alongside the file and drives every downstream control. The user
+      who uploads PII has explicitly declared it.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+      <div class="files">
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">src/components/UploadModal.tsx <em>(currently inline in WelcomeScreen.tsx) required &lt;select&gt;: None / Internal / Customer / Special</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">src/app/api/upload/route.ts <em>write meta.json alongside file</em></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D.4 -->
+  <div class="item">
+    <div class="head"><span class="id layer-D-id">D.4</span><h3>Right-to-explanation view</h3><span class="sev sev-high">High</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 5 #6 (GDPR Art. 22 / AIA Art. 86)</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      Under GDPR Article 22 and EU AI Act Article 86, when AI-influenced decisions affect a natural
+      person, the person has a right to a meaningful explanation of how the decision was reached.
+      Even with all the underlying data we collect (provenance, audit log, run manifest), we cannot
+      produce a human-readable explanation today. An audit asking "explain how this element about
+      this employee's role was generated" today requires reading multiple JSON files manually.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      A dedicated page that, for any element, shows the complete narrative: "On [date], [user]
+      uploaded these source documents → skill [X] proposed these headings citing these specific
+      source quotes → SME [Y] reviewed the proposal → made these specific edits → approved on
+      [date]." Accessible to authorised users (Compliance, DPO, Internal Audit, the affected person
+      via the data-subject-access process). One page, plain language, regulator-ready.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+      <div class="files">
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">src/app/explain/[slug]/[id]/page.tsx <em>per-element narrative: sources → proposal → edits → approval</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">src/components/ExplanationChain.tsx <em>visual timeline</em></span></div>
+      </div>
+      <p style="font-size:0.85em;margin-top:0.3em"><strong>Source:</strong> <code>governance/lineage/*.json</code> + <code>provenance.json</code> + run manifest. Access restricted to authorised users via middleware role check.</p>
+    </div>
+  </div>
+
+  <!-- D.5 -->
+  <div class="item">
+    <div class="head"><span class="id layer-D-id">D.5</span><h3>Governance dashboard</h3><span class="sev sev-high">High</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 2 #6 · Phase 4 #2 / #3 / #7 surface</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      The AI Governance Committee, MRM, and Internal Audit have no live view of Processminer's
+      performance. They get ad-hoc reports only when someone manually produces them. There's no
+      living evidence of ongoing monitoring — which is exactly what MRM ongoing-monitoring
+      obligations and the regulator expect to see at every review.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      A single dashboard page showing the headline governance signals: schema-conformance rate,
+      citation coverage, SME-edit-rate (the cleanest proxy for AI quality), hallucination samples
+      from the latest test runs, 30-day drift trend, Anthropic SLA tile, vendor-risk view. Restricted
+      to the governance roles. The Committee opens this once a month and has a real picture in
+      30 seconds — no waiting on someone to compile the data.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+      <div class="files">
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">src/app/governance/page.tsx <em>single-page dashboard</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">src/components/governance/MetricCards.tsx <em>schema conformance, citation coverage, edit rate, hallucination, lint trend</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">src/components/governance/DriftChart.tsx <em>30-day trend</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">src/components/governance/VendorSLATile.tsx <em>Anthropic availability</em></span></div>
+      </div>
+      <p style="font-size:0.85em;margin-top:0.3em"><strong>Source:</strong> B.4 quality-metrics + audit log + vendor-sla. Access restricted to AI Governance / MRM / IA roles.</p>
+    </div>
+  </div>
+
+  <!-- D.6 -->
+  <div class="item">
+    <div class="head"><span class="id layer-D-id">D.6</span><h3>Kill-switch banner</h3></div>
+    <p class="closes"><strong>Cross-reference:</strong> built as part of B.2. Component is <code>SystemDisabledBanner.tsx</code>.</p>
+    <div class="solution"><span class="lbl">What changes</span>
+      Same as B.2 from the user's perspective: when the kill switch is engaged, every user opening
+      Processminer sees a banner at the top of every page explaining the system is paused, who paused
+      it, when, and what to do next.
+    </div>
+  </div>
+
+  <!-- D.7 -->
+  <div class="item">
+    <div class="head"><span class="id layer-D-id">D.7</span><h3>Lineage drawer on ElementCard</h3><span class="sev sev-high">High</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 5 #5 surface (for C.3)</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      Lineage records exist (C.3) but live in JSON files behind the scenes. A reviewing SME or
+      auditor cannot see them through the UI. The chain that produced an element is technically
+      reconstructable but only by someone with command-line access.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      The existing provenance drawer on each ElementCard gains a "Lineage" tab. It shows the
+      lineage record visually — sources used, Claude version, prompt fingerprint, approvals — in
+      a human-readable layout. A reviewer or auditor can answer "what's behind this element" with
+      two clicks.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+      <div class="files">
+        <div class="file-row"><span class="v"><span class="verb verb-mod">MOD</span></span><span class="p">src/components/ElementCard.tsx <em>existing provenance drawer gets a "Lineage" tab</em></span></div>
+        <div class="file-row"><span class="v"><span class="verb verb-new">NEW</span></span><span class="p">src/components/LineageDrawer.tsx <em>reads governance/lineage/* via src/lib/lineage.ts</em></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- LAYER E -->
+<div class="layer-head layer-E" id="layerE">
+  <h2>E. CI gates</h2>
+  <span class="count">4 items · governance frontmatter · CAB · model pin · PII + boundary</span>
+</div>
+<div class="layer-body">
+
+  <!-- E.1 -->
+  <div class="item">
+    <div class="head"><span class="id layer-E-id">E.1</span><h3>Governance frontmatter required</h3><span class="sev sev-high">High</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 7 #6 enforcement (for C.1)</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      Even after we add the governance stamps to every element (C.1), nothing automatically prevents
+      someone from removing them later through a refactor, accident, or manual file edit. Without
+      a gate, the stamping decays over time.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      A CI check fails the build if any element is missing required governance fields. No code or
+      content reaches main without them. The stamping never decays because it can't.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+<pre><code><span class="c"># .github/workflows/ci.yml (existing) — add step</span>
+<span class="k">- name:</span> <span class="s">Governance frontmatter check</span>
+  <span class="k">run:</span> <span class="s">python3 scripts/check_conformance.py --strict-governance</span></code></pre>
+      <p style="font-size:0.85em">Fails: any element missing <code>modelVersion</code> / <code>skillVersion</code> / <code>promptHash</code> / <code>schemaVersion</code>.</p>
+    </div>
+  </div>
+
+  <!-- E.2 -->
+  <div class="item">
+    <div class="head"><span class="id layer-E-id">E.2</span><h3>CAB ticket required on skill / schema changes</h3><span class="sev sev-high">High</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 7 #1</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      A change to a skill or schema is a change to the AI model. MRM treats it as a model change
+      that requires a documented impact review through the bank's Change Advisory Board (CAB)
+      process. Today engineers can change skills with just a code review; the CAB process isn't
+      enforced. MaRisk AT 7.2 expects this enforcement.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      An automatic CI check on every pull request that touches the skills or schema folders requires
+      a CAB-NNNN ticket reference in the PR body. No CAB ticket → no merge. The CAB process is now
+      mechanically enforced rather than relying on engineer memory.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+<pre><code><span class="c"># .github/workflows/cab-gate.yml (new)</span>
+<span class="k">on:</span>
+  <span class="k">pull_request:</span>
+    <span class="k">paths:</span>
+      <span class="k">-</span> <span class="s">'.claude/skills/**'</span>
+      <span class="k">-</span> <span class="s">'schema/**'</span>
+      <span class="k">-</span> <span class="s">'governance/model-version.json'</span>
+<span class="k">jobs:</span>
+  <span class="k">cab-check:</span>
+    <span class="k">runs-on:</span> <span class="s">ubuntu-latest</span>
+    <span class="k">steps:</span>
+      <span class="k">- name:</span> <span class="s">Require CAB-NNNN reference</span>
+        <span class="k">run:</span> |
+          if ! gh pr view --json body -q .body | grep -qE 'CAB-[0-9]+'; then
+            echo "::error::PRs touching skills/schema require a CAB-NNNN reference"
+            exit 1
+          fi</code></pre>
+    </div>
+  </div>
+
+  <!-- E.3 -->
+  <div class="item">
+    <div class="head"><span class="id layer-E-id">E.3</span><h3>Model version pin check</h3><span class="sev sev-high">High</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 7 #2 enforcement (for B.3)</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      Even with the pin file in place (B.3), nothing automatically checks that the runtime is
+      actually obeying it. A drift between "the pin says X" and "the deployed runtime calls Y"
+      could go undetected for weeks.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      A CI check runs on every build, comparing the runtime endpoint configuration against the pin
+      file. Mismatch → build fails. The pin is mechanically enforced, not just documented.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+<pre><code><span class="k">- name:</span> <span class="s">Pinned model version check</span>
+  <span class="k">run:</span> <span class="s">python3 scripts/wiki/check_model_version_pin.py</span></code></pre>
+      <p style="font-size:0.85em">Fails: runtime endpoint configuration doesn't match <code>governance/model-version.json</code>.</p>
+    </div>
+  </div>
+
+  <!-- E.4 -->
+  <div class="item">
+    <div class="head"><span class="id layer-E-id">E.4</span><h3>PII classification + governance/wiki boundary</h3><span class="sev sev-blocker">Blocker</span></div>
+    <p class="closes"><strong>Closes:</strong> Phase 5 #1 enforcement + the Karpathy boundary (A.1)</p>
+
+    <div class="issue"><span class="lbl">Issue today</span>
+      Two related enforcement gaps. (a) Raw-sources without PII classification could slip through —
+      somebody removes the upload-modal check during a UI refactor and PII suddenly flows
+      unclassified. (b) Governance artefacts (audit logs, model cards, runbooks) could be
+      accidentally placed inside <code>wiki/</code>, breaking the Karpathy boundary and exposing
+      sensitive material as documentation.
+    </div>
+    <div class="solution"><span class="lbl">What changes</span>
+      Two CI checks, one per concern. Either failure stops the build. The boundary between PII /
+      no-PII at intake, and between <code>wiki/</code> / <code>governance/</code> in the file system,
+      are now mechanically enforced.
+    </div>
+
+    <div class="tech-detail">
+      <div class="tech-detail-label">Engineering detail</div>
+<pre><code><span class="k">- name:</span> <span class="s">PII classification check</span>
+  <span class="k">run:</span> <span class="s">python3 scripts/wiki/check_pii_classification.py</span>
+<span class="k">- name:</span> <span class="s">Governance boundary</span>
+  <span class="k">run:</span> <span class="s">python3 scripts/check_governance_boundary.py</span></code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- LAYER F -->
+<div class="layer-head layer-F" id="layerF">
+  <h2>F. New Python scripts</h2>
+  <span class="count">9 items · each implements or enforces one of the items above</span>
+</div>
+<div class="layer-body">
+  <p>Each script is the executable form of one of the items above. They are listed here as a
+  separate layer because each is a standalone deliverable engineering can ticket and ship
+  independently.</p>
+  <table class="tight">
+    <thead>
+      <tr><th style="width:6%">#</th><th style="width:32%">Script</th><th style="width:18%">Closes</th><th>Purpose (plain language)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>F.1</strong></td><td class="mono">scripts/wiki/score_grounding.py</td><td>P6 #6</td><td>Per-element grounding score (C.5) — "do the AI's citations check out?"</td></tr>
+      <tr><td><strong>F.2</strong></td><td class="mono">scripts/wiki/build_lineage.py</td><td>P5 #5</td><td>Assembles lineage sidecar (C.3) — "produce the chain for this session"</td></tr>
+      <tr><td><strong>F.3</strong></td><td class="mono">scripts/wiki/check_pii_classification.py</td><td>P5 #1 CI</td><td>CI conformance on raw-source meta (C.2) — "every uploaded file is classified"</td></tr>
+      <tr><td><strong>F.4</strong></td><td class="mono">scripts/wiki/check_model_version_pin.py</td><td>P7 #2 CI</td><td>Verify runtime ↔ pin alignment (B.3) — "runtime obeys the pin"</td></tr>
+      <tr><td><strong>F.5</strong></td><td class="mono">scripts/wiki/apply_retention.py</td><td>P5 #4</td><td>Daily retention enforcement (B.5) — "expire what should expire"</td></tr>
+      <tr><td><strong>F.6</strong></td><td class="mono">scripts/audit/probe_anthropic.py</td><td>P4 #7</td><td>5-minute vendor SLA probe (B.6) — "is Anthropic up right now?"</td></tr>
+      <tr><td><strong>F.7</strong></td><td class="mono">scripts/audit/run_skill_test_set.py</td><td>P6 #1 + #2</td><td>Periodic hallucination + bias evaluation against documented test sets — "does the AI still pass our tests?"</td></tr>
+      <tr><td><strong>F.8</strong></td><td class="mono">scripts/audit/run_champion_challenger.py</td><td>P7 #5</td><td>Side-by-side Claude vs alternative (B.7) — "what happens if we switch providers?"</td></tr>
+      <tr><td><strong>F.9</strong></td><td class="mono">scripts/check_governance_boundary.py</td><td>path guard</td><td>Refuses governance/ vs wiki/ leakage (A.1, E.4) — "don't mix layers"</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============================================================= -->
+<h2 id="inventory">G. Flat file inventory</h2>
+
+<h3>New files (35)</h3>
+<table class="tight">
+  <tbody>
+    <tr><td class="mono">governance/                                          </td><td>directory (A.1)</td></tr>
+    <tr><td class="mono">governance/model-version.json                        </td><td>B.3</td></tr>
+    <tr><td class="mono">governance/model-card-processminer.md                </td><td>P2 #7</td></tr>
+    <tr><td class="mono">governance/human-oversight.md                        </td><td>P1 #7</td></tr>
+    <tr><td class="mono">governance/incident-runbook.md                       </td><td>P4 #4</td></tr>
+    <tr><td class="mono">governance/retention-policy.md                       </td><td>P5 #4</td></tr>
+    <tr><td class="mono">governance/classification-memo.md                    </td><td>P1 #1</td></tr>
+    <tr><td class="mono">governance/sla.json                                  </td><td>P4 #5</td></tr>
+    <tr><td class="mono">governance/disabled.flag                             </td><td>B.2 (runtime)</td></tr>
+    <tr><td class="mono">src/lib/audit-log.ts                                 </td><td>B.1</td></tr>
+    <tr><td class="mono">src/lib/anthropic-wrapper.ts                         </td><td>B.1 + B.3</td></tr>
+    <tr><td class="mono">src/lib/feature-flag.ts                              </td><td>B.2</td></tr>
+    <tr><td class="mono">src/lib/quality-metrics.ts                           </td><td>B.4</td></tr>
+    <tr><td class="mono">src/lib/lineage.ts                                   </td><td>C.3 read-side</td></tr>
+    <tr><td class="mono">src/lib/llm-router.ts                                </td><td>B.7</td></tr>
+    <tr><td class="mono">src/components/AiDisclosureBadge.tsx                 </td><td>D.1</td></tr>
+    <tr><td class="mono">src/components/SystemDisabledBanner.tsx              </td><td>B.2 / D.6</td></tr>
+    <tr><td class="mono">src/components/ExplanationChain.tsx                  </td><td>D.4</td></tr>
+    <tr><td class="mono">src/components/LineageDrawer.tsx                     </td><td>D.7</td></tr>
+    <tr><td class="mono">src/components/governance/MetricCards.tsx            </td><td>D.5</td></tr>
+    <tr><td class="mono">src/components/governance/DriftChart.tsx             </td><td>D.5</td></tr>
+    <tr><td class="mono">src/components/governance/VendorSLATile.tsx          </td><td>D.5</td></tr>
+    <tr><td class="mono">src/app/api/governance/metrics/route.ts              </td><td>B.4</td></tr>
+    <tr><td class="mono">src/app/explain/[slug]/[id]/page.tsx                 </td><td>D.4</td></tr>
+    <tr><td class="mono">src/app/governance/page.tsx                          </td><td>D.5</td></tr>
+    <tr><td class="mono">scripts/wiki/score_grounding.py                      </td><td>F.1</td></tr>
+    <tr><td class="mono">scripts/wiki/build_lineage.py                        </td><td>F.2</td></tr>
+    <tr><td class="mono">scripts/wiki/check_pii_classification.py             </td><td>F.3</td></tr>
+    <tr><td class="mono">scripts/wiki/check_model_version_pin.py              </td><td>F.4</td></tr>
+    <tr><td class="mono">scripts/wiki/apply_retention.py                      </td><td>F.5</td></tr>
+    <tr><td class="mono">scripts/audit/probe_anthropic.py                     </td><td>F.6</td></tr>
+    <tr><td class="mono">scripts/audit/run_skill_test_set.py                  </td><td>F.7</td></tr>
+    <tr><td class="mono">scripts/audit/run_champion_challenger.py             </td><td>F.8</td></tr>
+    <tr><td class="mono">scripts/audit/audit_log_schema.json                  </td><td>B.1</td></tr>
+    <tr><td class="mono">scripts/check_governance_boundary.py                 </td><td>F.9</td></tr>
+    <tr><td class="mono">.github/workflows/cab-gate.yml                       </td><td>E.2</td></tr>
+  </tbody>
+</table>
+
+<h3>Modified files (16)</h3>
+<table class="tight">
+  <tbody>
+    <tr><td class="mono">schema/process-schema.json                           </td><td>C.1 — governance frontmatter on every type</td></tr>
+    <tr><td class="mono">schema/.derived/*.llm.json                           </td><td>C.1 — regenerated</td></tr>
+    <tr><td class="mono">scripts/wiki/write_element.py                        </td><td>C.1 — refuse without governance frontmatter</td></tr>
+    <tr><td class="mono">scripts/wiki/patch_element.py                        </td><td>C.1 — preserve / update</td></tr>
+    <tr><td class="mono">scripts/wiki/set_approval.py                         </td><td>C.4 — contradiction hard-fail</td></tr>
+    <tr><td class="mono">scripts/check_conformance.py                         </td><td>C.1 + C.4</td></tr>
+    <tr><td class="mono">src/lib/conformance.ts                               </td><td>C.1 + C.4 (parity)</td></tr>
+    <tr><td class="mono">src/lib/session-worker.ts                            </td><td>B.1 — use wrapper; emit lineage</td></tr>
+    <tr><td class="mono">src/lib/process-view.ts                              </td><td>D.2 — expose groundingFor</td></tr>
+    <tr><td class="mono">src/components/ElementCard.tsx                       </td><td>D.1 + D.2 + D.7</td></tr>
+    <tr><td class="mono">src/components/AgentChat.tsx                         </td><td>D.1 — banner</td></tr>
+    <tr><td class="mono">src/components/WelcomeScreen.tsx                     </td><td>D.3 — PII classification on upload modal</td></tr>
+    <tr><td class="mono">src/app/layout.tsx                                   </td><td>B.2 — render kill-switch banner</td></tr>
+    <tr><td class="mono">src/app/api/session/route.ts                         </td><td>B.2 — kill-switch 503</td></tr>
+    <tr><td class="mono">src/app/api/upload/route.ts                          </td><td>C.2 — write meta.json</td></tr>
+    <tr><td class="mono">src/app/print/[slug]/page.tsx                        </td><td>D.1 — disclosure header</td></tr>
+    <tr><td class="mono">.github/workflows/ci.yml                             </td><td>E.1 + E.3 + E.4</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================= -->
+<h2 id="effort">H. Effort estimate</h2>
+
+<div class="effort-grid">
+  <div class="effort-card">
+    <div class="label">Total engineering effort</div>
+    <div class="val" style="color: var(--lB)">~14 dev-weeks</div>
+    <div class="desc">across all 26 code/UI items</div>
+  </div>
+  <div class="effort-card">
+    <div class="label">Calendar with 2 engineers in parallel</div>
+    <div class="val" style="color: var(--lE)">~8 weeks</div>
+    <div class="desc">Sprint 1–8 below</div>
+  </div>
+</div>
+
+<table>
+  <thead>
+    <tr><th style="width:40%">Slice</th><th>Items</th><th style="width:16%">Eng effort</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>Architectural + Blocker backend</strong></td><td>A.1 · B.1 · B.2 · B.3 · C.2 · C.3 · C.1</td><td><strong>~6 weeks</strong></td></tr>
+    <tr><td><strong>Blocker UI</strong></td><td>D.1 (partial) · D.3</td><td><strong>~1 week</strong></td></tr>
+    <tr><td><strong>High monitoring + dashboard</strong></td><td>B.4 · D.5 · B.6 · D.7</td><td><strong>~3 weeks</strong></td></tr>
+    <tr><td><strong>High quality controls</strong></td><td>C.4 · C.5 · D.2 · F.1 · F.2</td><td><strong>~2 weeks</strong></td></tr>
+    <tr><td><strong>High UX</strong></td><td>D.4 explanation view · D.1 remaining surfaces</td><td><strong>~1.5 weeks</strong></td></tr>
+    <tr><td><strong>CI gates</strong></td><td>E.1 · E.2 · E.3 · E.4</td><td><strong>~3 days</strong></td></tr>
+    <tr><td><strong>Medium / Low</strong></td><td>B.5 · B.7 · F.7 · F.8</td><td><strong>~1.5 weeks</strong></td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================= -->
+<h2 id="order">K. Implementation order — 8 sprints</h2>
+<p>Sequenced so each step unblocks the next without rework. Blocker B.3 region/version pin is content-blocked on the Anthropic contract (Phase 5 #3, non-code) — engineering can build to a stub.</p>
+
+<div class="sprints">
+  <div class="sprint">
+    <div class="when">Sprint 1–2</div>
+    <div class="focus">Architectural backbone (Blocker)</div>
+    <ul>
+      <li>A.1 governance/ dir + F.9 boundary CI</li>
+      <li>C.1 governance frontmatter + writers + E.1</li>
+      <li>B.1 audit log wrapper</li>
+      <li>B.2 kill switch</li>
+      <li>C.2 + D.3 + F.3 PII intake</li>
+    </ul>
+  </div>
+  <div class="sprint">
+    <div class="when">Sprint 3–4</div>
+    <div class="focus">Blocker close-out + disclosures</div>
+    <ul>
+      <li>B.3 region + version pin + E.3</li>
+      <li>D.1 AI disclosure across surfaces</li>
+      <li>C.3 lineage + F.2</li>
+    </ul>
+  </div>
+  <div class="sprint">
+    <div class="when">Sprint 5–6</div>
+    <div class="focus">Monitoring + dashboard</div>
+    <ul>
+      <li>B.4 quality metrics</li>
+      <li>D.5 governance dashboard</li>
+      <li>B.5 + F.5 retention</li>
+      <li>B.6 vendor SLA</li>
+    </ul>
+  </div>
+  <div class="sprint">
+    <div class="when">Sprint 7</div>
+    <div class="focus">Quality controls</div>
+    <ul>
+      <li>C.5 + F.1 + D.2 grounding</li>
+      <li>C.4 contradiction</li>
+      <li>D.4 + D.7 explanation + lineage drawer</li>
+    </ul>
+  </div>
+  <div class="sprint">
+    <div class="when">Sprint 8</div>
+    <div class="focus">CI + Medium/Low</div>
+    <ul>
+      <li>E.2 + E.4 remaining gates</li>
+      <li>B.7 + F.8 champion-challenger</li>
+      <li>F.7 skill test-set runner</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<h2 id="mapping">I. Governance item ↔ engineering change — mapping</h2>
+<table class="tight">
+  <thead>
+    <tr><th style="width:40%">Governance item</th><th style="width:14%">Severity</th><th>Engineering ID(s)</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>P1 #3</strong> Article 50 transparency</td><td><span class="sev sev-high">High</span></td><td>D.1</td></tr>
+    <tr><td><strong>P1 #4</strong> GPAI deployer evidence</td><td><span class="sev sev-high">High</span></td><td>A.1 (<code>gpai-evidence/</code>)</td></tr>
+    <tr><td><strong>P1 #6</strong> Art. 12 logging <em>(if high-risk)</em></td><td><span class="sev sev-blocker">Blocker</span></td><td>B.1</td></tr>
+    <tr><td><strong>P1 #7</strong> Art. 14 oversight <em>(if high-risk)</em></td><td><span class="sev sev-blocker">Blocker</span></td><td>A.1 (<code>human-oversight.md</code> — gate already exists)</td></tr>
+    <tr><td><strong>P1 #8</strong> Art. 15 robustness pack <em>(if high-risk)</em></td><td><span class="sev sev-blocker">Blocker</span></td><td>F.7 produces evidence; collated in model-card</td></tr>
+    <tr><td><strong>P2 #6</strong> Performance monitoring</td><td><span class="sev sev-high">High</span></td><td>B.4 + D.5</td></tr>
+    <tr><td><strong>P2 #7</strong> Model documentation pack</td><td><span class="sev sev-high">High</span></td><td>A.1 (<code>model-card-processminer.md</code>)</td></tr>
+    <tr><td><strong>P4 #1</strong> Central audit log</td><td><span class="sev sev-blocker">Blocker</span></td><td>B.1</td></tr>
+    <tr><td><strong>P4 #2</strong> Sample-based monitoring</td><td><span class="sev sev-high">High</span></td><td>F.7 + D.5</td></tr>
+    <tr><td><strong>P4 #3</strong> Drift detection</td><td><span class="sev sev-high">High</span></td><td>B.4</td></tr>
+    <tr><td><strong>P4 #5</strong> SLA thresholds</td><td><span class="sev sev-high">High</span></td><td>A.1 (<code>sla.json</code>) + B.4</td></tr>
+    <tr><td><strong>P4 #6</strong> Kill switch</td><td><span class="sev sev-high">High</span></td><td>B.2</td></tr>
+    <tr><td><strong>P4 #7</strong> Vendor SLA monitoring</td><td><span class="sev sev-medium">Medium</span></td><td>B.6</td></tr>
+    <tr><td><strong>P5 #1</strong> PII classification</td><td><span class="sev sev-blocker">Blocker</span></td><td>C.2 + D.3 + F.3</td></tr>
+    <tr><td><strong>P5 #2</strong> EU residency check</td><td><span class="sev sev-blocker">Blocker</span></td><td>B.3</td></tr>
+    <tr><td><strong>P5 #4</strong> Retention pipeline</td><td><span class="sev sev-high">High</span></td><td>B.5 + F.5</td></tr>
+    <tr><td><strong>P5 #5</strong> Lineage</td><td><span class="sev sev-high">High</span></td><td>C.3 + D.7</td></tr>
+    <tr><td><strong>P5 #6</strong> Right-to-explanation</td><td><span class="sev sev-high">High</span></td><td>D.4</td></tr>
+    <tr><td><strong>P6 #1</strong> Hallucination eval</td><td><span class="sev sev-high">High</span></td><td>F.7 + <code>governance/test-sets/</code></td></tr>
+    <tr><td><strong>P6 #2</strong> Bias testing</td><td><span class="sev sev-medium">Medium</span></td><td>F.7 + <code>governance/test-sets/</code></td></tr>
+    <tr><td><strong>P6 #3</strong> Prompt injection defences</td><td><span class="sev sev-high">High</span></td><td>F.7 + detection signals in B.1</td></tr>
+    <tr><td><strong>P6 #6</strong> Source-grounding score</td><td><span class="sev sev-high">High</span></td><td>C.5 + D.2 + F.1</td></tr>
+    <tr><td><strong>P6 #7</strong> Contradiction detection</td><td><span class="sev sev-medium">Medium</span></td><td>C.4</td></tr>
+    <tr><td><strong>P7 #1</strong> CAB approval</td><td><span class="sev sev-high">High</span></td><td>E.2</td></tr>
+    <tr><td><strong>P7 #2</strong> Model version pinning</td><td><span class="sev sev-high">High</span></td><td>B.3 + E.3 + F.4</td></tr>
+    <tr><td><strong>P7 #5</strong> Champion / challenger</td><td><span class="sev sev-medium">Medium</span></td><td>B.7 + F.8</td></tr>
+    <tr><td><strong>P7 #6</strong> Version registry</td><td><span class="sev sev-high">High</span></td><td>C.1 + E.1</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================= -->
+<h2 id="oos">J. Out-of-scope for this doc — 23 non-code items</h2>
+<p>These show up in <a href="/AI-GOVERNANCE-ROADMAP.md">AI-GOVERNANCE-ROADMAP.md</a> and need to land in parallel, but they produce no PR. Listed here so engineering knows what's on the parallel track.</p>
+
+<div class="oos">
+  <div class="oos-card">
+    <h4>Documentation artefacts (5)</h4>
+    <ul>
+      <li>P1 #1 Classification memo</li>
+      <li>P1 #5 Risk Management System doc</li>
+      <li>P2 #3 Validation report</li>
+      <li>P4 #4 Incident runbook (wiring is B.1+B.2)</li>
+      <li>P7 #3 Vendor BCP plan</li>
+    </ul>
+  </div>
+  <div class="oos-card">
+    <h4>Control function sign-offs (7)</h4>
+    <ul>
+      <li>P3 #1 Compliance</li>
+      <li>P3 #2 Operational Risk</li>
+      <li>P3 #3 Legal</li>
+      <li>P3 #4 InfoSec*</li>
+      <li>P3 #5 DPO / DPIA</li>
+      <li>P3 #6 Internal Audit</li>
+      <li>P3 #7 Supervisor notification</li>
+    </ul>
+    <p style="font-size:0.78em;color:var(--muted);margin-top:0.3em">*InfoSec findings could spawn eng work</p>
+  </div>
+  <div class="oos-card">
+    <h4>Decisions / programme items (4)</h4>
+    <ul>
+      <li>P1 #2 AI literacy LMS course</li>
+      <li>P2 #1 Model inventory entry (form)</li>
+      <li>P2 #2 Tier classification (decision)</li>
+      <li>P2 #4 MRO / CRO sign-off</li>
+    </ul>
+  </div>
+  <div class="oos-card">
+    <h4>Contractual (1)</h4>
+    <ul>
+      <li>P5 #3 Anthropic zero-retention + EU residency contract — Legal owns; blocks B.3</li>
+    </ul>
+  </div>
+  <div class="oos-card">
+    <h4>Procedural / scheduled (4)</h4>
+    <ul>
+      <li>P2 #5 Annual revalidation cadence</li>
+      <li>P6 #5 Annual red-team</li>
+      <li>P7 #4 Decommissioning procedure</li>
+      <li>P7 #7 Sunset criteria</li>
+    </ul>
+  </div>
+  <div class="oos-card">
+    <h4>Cross-references (2)</h4>
+    <ul>
+      <li>P1 #1 classification gates Phase 1 #5–#8 conditional applicability</li>
+      <li>P5 #7 DPIA consolidates P5 #1–#6 into a single artefact for DPO</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<h2>Cross-references</h2>
+<ul>
+  <li><a href="/AI-GOVERNANCE-ROADMAP.md">AI-GOVERNANCE-ROADMAP.md</a> · <a href="/ai-governance-roadmap.html">rendered version</a> — Committee view of all 49 items</li>
+  <li><a href="/ORCHESTRATOR-PLAN.md">ORCHESTRATOR-PLAN.md</a> — "Karpathy wiki is sacred" — the rule that puts everything in <code>governance/</code> instead of <code>wiki/</code></li>
+  <li><a href="/HALLUCINATION-PLAN.md">HALLUCINATION-PLAN.md</a> — per-heading provenance contract; C.5 grounding score operationalises it</li>
+  <li><a href="/SKILLS.md">SKILLS.md</a> — skill architecture; C.1 stamping happens at skill execution time</li>
+  <li><a href="/schema/process-schema.json">schema/process-schema.json</a> — where C.1 governance frontmatter lands</li>
+  <li><a href="/ROADMAP.md">ROADMAP.md</a> · <a href="/roadmap.html">rendered version</a> — feature roadmap; Confluence / Sparx export items share D.1 wiring</li>
+  <li><a href="/AI-GOVERNANCE-CHANGESET.md">AI-GOVERNANCE-CHANGESET.md</a> — Markdown source of this page</li>
+</ul>
+
+<footer>
+  Last updated 2026-05-28. Engineering view of <a href="/ai-governance-roadmap.html">AI-GOVERNANCE-ROADMAP.html</a>.
+  Each item carries non-technical "Issue today" + "What changes" callouts plus engineering detail.
+</footer>
+
+</body>
+</html>
