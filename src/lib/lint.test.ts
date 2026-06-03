@@ -10,6 +10,7 @@ import {
   isResolved,
   type LintFinding,
 } from "./lint.ts";
+import { replaceTempKeys, generateNextId } from "./gemini-worker.ts";
 
 function finding(over: Partial<LintFinding> = {}): LintFinding {
   return {
@@ -114,4 +115,68 @@ test("applyFindingDismissals respects a snooze window", () => {
     "2026-05-20",
   );
   assert.equal(f2.status, "dismissed");
+});
+
+test("replaceTempKeys recursively resolves @tempKey references", () => {
+  const tempKeyMap = new Map([
+    ["step1", "PS-COB-100"],
+    ["exception1", "EX-COB-200"]
+  ]);
+
+  const input = {
+    meta: {
+      source: "elicited",
+    },
+    content: {
+      title: "Test Step",
+      transitions: ["@step1", "PS-COB-002"],
+      nested: {
+        ref: "@exception1",
+        other: "@not_found",
+        normal: "just a string"
+      }
+    }
+  };
+
+  const output = replaceTempKeys(input, tempKeyMap);
+
+  assert.deepEqual(output, {
+    meta: {
+      source: "elicited"
+    },
+    content: {
+      title: "Test Step",
+      transitions: ["PS-COB-100", "PS-COB-002"],
+      nested: {
+        ref: "EX-COB-200",
+        other: "@not_found",
+        normal: "just a string"
+      }
+    }
+  });
+});
+
+test("generateNextId generates correct sequential IDs", () => {
+  const mockDoc = {
+    meta: { id: "COB-003" },
+    "process-steps": [
+      { meta: { id: "PS-COB-001", type: "process-step" } },
+      { meta: { id: "PS-COB-003", type: "process-step" } }
+    ],
+    "exceptions": [
+      { meta: { id: "EX-COB-005", type: "exception" } }
+    ]
+  };
+
+  // For process-step (prefix PS) with existing max sequence 003, next should be PS-COB-004
+  const nextStepId = generateNextId(mockDoc, "process-step", "PS");
+  assert.equal(nextStepId, "PS-COB-004");
+
+  // For exception (prefix EX) with existing max sequence 005, next should be EX-COB-006
+  const nextExceptionId = generateNextId(mockDoc, "exception", "EX");
+  assert.equal(nextExceptionId, "EX-COB-006");
+
+  // For role (prefix ROLE) with no existing elements, should use the process abbreviation (COB) and start at 001
+  const nextRoleId = generateNextId(mockDoc, "role", "ROLE");
+  assert.equal(nextRoleId, "ROLE-COB-001");
 });

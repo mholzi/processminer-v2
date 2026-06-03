@@ -2,17 +2,26 @@
 
 import { Fragment, useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import type { BlockSpec, FieldSpec, Note, WikiPage } from "@/lib/wiki";
+import type { BlockSpec, FieldSpec, RelationSpec, Note, WikiPage } from "@/lib/wiki";
 import type { LinkGroup } from "@/lib/relations";
 import type { LintFinding } from "@/lib/lint";
 import { isSourcedType } from "@/lib/element-types";
 import { checkElement, parseProvenance } from "@/lib/conformance";
-import { saveElement, setApproval, setRelevance } from "@/lib/wiki-write";
+import { updateElement, setApproval, setRelevance } from "@/lib/wiki-write";
 import Markdown from "./Markdown";
 import Tooltip from "./Tooltip";
 import ElementHovercard from "./ElementHovercard";
 import RelativeTime from "./RelativeTime";
 import FindingDismiss from "./FindingDismiss";
+import Combobox from "./Combobox";
+import {
+  validateProcessStep,
+  validateRole,
+  validateSystem,
+  validateException,
+  type ValidationError,
+} from "@/lib/schema/process-validator";
+import legacySchema from "../../schema/process-schema.json";
 
 // Which fields and relations a card shows is no longer hand-kept here — it is
 // driven from `schema/process-schema.json` (each type's `frontmatter` block).
@@ -106,6 +115,7 @@ export default function ElementCard({
   template,
   fieldSpecs,
   requiredFields,
+  relationSpecs = [],
   links,
   onGoToElement,
   onDeepDive,
@@ -119,6 +129,9 @@ export default function ElementCard({
   resolveOwner,
   notes,
   onReviewComments,
+  allElements,
+  showMeta = true,
+  asDocument = false,
 }: {
   page: WikiPage;
   slug: string;
@@ -129,6 +142,8 @@ export default function ElementCard({
   fieldSpecs: FieldSpec[];
   /** Keys among `fieldSpecs` the schema marks required — flagged when empty. */
   requiredFields?: string[];
+  /** Type-specific relation fields to display — from the schema. */
+  relationSpecs?: RelationSpec[];
   /** Forward + reverse relation groups, assembled by the parent. */
   links: LinkGroup[];
   onGoToElement?: (id: string) => void;
@@ -153,8 +168,13 @@ export default function ElementCard({
   notes?: Note[];
   /** Run the comment-review skill on this element's discussion thread. */
   onReviewComments?: (id: string, title: string) => void;
+  allElements?: WikiPage[];
+  showMeta?: boolean;
+  asDocument?: boolean;
 }) {
   const [showTemplate, setShowTemplate] = useState(false);
+  const elements = allElements || [];
+  const fieldValuesEnum = legacySchema.fieldValues as Record<string, string[]>;
   // Collapsed cards show only their header row, so a long section is a
   // scannable list. Long sections open collapsed (see `defaultCollapsed`).
   const [collapsed, setCollapsed] = useState(defaultCollapsed ?? false);
@@ -235,14 +255,61 @@ export default function ElementCard({
     });
   }
 
+  // Helper functions for schema-driven generic editor
+  function toCamelCase(str: string): string {
+    const cleaned = str.replace(/[^a-zA-Z0-9 ]/g, "");
+    return cleaned
+      .split(" ")
+      .map((word, index) => {
+        if (index === 0) return word.toLowerCase();
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      })
+      .join("");
+  }
+
+  function parseBulletsOrParagraphToList(text: string): string[] {
+    const trimmed = text.trim();
+    if (!trimmed) return [];
+    const lines = trimmed.split('\n').map(line => line.trim()).filter(Boolean);
+    const hasBullets = lines.some(line => line.startsWith('-') || line.startsWith('*') || line.startsWith('•'));
+    if (hasBullets) {
+      return lines
+        .filter(line => line.startsWith('-') || line.startsWith('*') || line.startsWith('•'))
+        .map(line => line.slice(1).trim())
+        .filter(Boolean);
+    }
+    return trimmed.split(/[;,\n]/).map(item => item.trim()).filter(Boolean);
+  }
+
+  function getWordCount(text: string): number {
+    const t = (text || "").trim();
+    return t ? t.split(/\s+/).length : 0;
+  }
+
+  const parseWordRange = (rangeStr?: string) => {
+    if (!rangeStr) return null;
+    const parts = rangeStr.split(/[-–]/).map(p => parseInt(p.trim(), 10));
+    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+      return { min: parts[0], max: parts[1] };
+    }
+    return null;
+  };
+
   // Inline edit state — initialised from the page each time editing opens, so
   // a refreshed `page` prop is always the source of truth between edits.
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(page.title);
-  const [blocks, setBlocks] = useState(page.blocks);
-  const [body, setBody] = useState(page.body);
+  const [blockValues, setBlockValues] = useState<{ heading: string; text: string }[]>([]);
+  const [bodyValue, setBodyValue] = useState("");
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
-  const [error, setError] = useState<string | null>(null);
+  const [relationValues, setRelationValues] = useState<Record<string, string[]>>({});
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [valErrors, setValErrors] = useState<ValidationError[]>([]);
+
+  // Specifically for process step:
+  const [inputsList, setInputsList] = useState<string[]>([]);
+  const [outputsList, setOutputsList] = useState<string[]>([]);
+  const [transitionsList, setTransitionsList] = useState<{ to: string; kind: string; when: string }[]>([]);
 
   // Editing — and being the foundational run's current element — force the
   // full card open.
@@ -252,7 +319,7 @@ export default function ElementCard({
   // template deviations before saving, not only after (#7).
   const liveChecks =
     editing && template
-      ? checkElement({ ...page, title, blocks, body }, template)
+      ? checkElement({ ...page, title, blocks: blockValues, body: bodyValue }, template)
       : [];
 
   // Per-heading provenance (HALLUCINATION-PLAN.md) — which headings the SME
@@ -261,30 +328,160 @@ export default function ElementCard({
 
   function startEdit() {
     setTitle(page.title);
-    setBlocks(page.blocks.map((b) => ({ ...b })));
-    setBody(page.body);
+    setBlockValues(page.blocks.map((b) => ({ ...b })));
+    setBodyValue(page.body);
+    setSaveError(null);
+    setValErrors([]);
+
     const fv: Record<string, string> = {};
     for (const f of fieldSpecs) fv[f.key] = String(page.meta[f.key] ?? "");
     setFieldValues(fv);
-    setError(null);
+
+    const rv: Record<string, string[]> = {};
+    for (const r of relationSpecs) {
+      const val = page.meta[r.key];
+      if (Array.isArray(val)) {
+        rv[r.key] = [...val];
+      } else if (val) {
+        rv[r.key] = [val];
+      } else {
+        rv[r.key] = [];
+      }
+    }
+    setRelationValues(rv);
+
+    if (page.type === "process-step") {
+      setInputsList(Array.isArray(page.meta.inputs) ? [...page.meta.inputs] : []);
+      setOutputsList(Array.isArray(page.meta.outputs) ? [...page.meta.outputs] : []);
+      
+      const trans = asList(page.meta.transitions).map((entry) => {
+        const parts = entry.split("|");
+        const kind = (parts[1] ?? "normal").trim();
+        return {
+          to: (parts[0] ?? "").trim(),
+          kind: TRANSITION_KINDS.includes(kind) ? kind : "normal",
+          when: parts.slice(2).join("|").trim(),
+        };
+      }).filter(t => t.to);
+      setTransitionsList(trans);
+
+      // Map description & businessValue so they are available in fieldValues
+      setFieldValues({
+        ...fv,
+        description: page.body || "",
+        businessValue: (page.meta.businessValue as string) || "",
+        owner: (page.meta.owner as string) || "",
+        sla: (page.meta.sla as string) || "",
+        condition: (page.meta.condition as string) || "",
+      });
+
+      // Map systems
+      setRelationValues({
+        ...rv,
+        systems: Array.isArray(page.meta.systems) ? [...page.meta.systems] : [],
+      });
+    }
+
     setEditing(true);
   }
 
   function save() {
-    setError(null);
+    setSaveError(null);
+    setValErrors([]);
+
+    const formattedElement: any = {
+      meta: {
+        id: page.id,
+        type: page.type,
+        section: page.section,
+        status: "confirmed",
+        ...page.meta,
+      },
+      content: {
+        title: title.trim(),
+      }
+    };
+
+    // Populate scalar fields
+    for (const [k, v] of Object.entries(fieldValues)) {
+      formattedElement.content[k] = v.trim();
+    }
+    // Populate relation fields (array of strings)
+    for (const [k, v] of Object.entries(relationValues)) {
+      formattedElement.content[k] = v.filter(Boolean);
+    }
+
+    // Populate prose blocks
+    if (page.type !== "process-step") {
+      if (template) {
+        for (const t of template) {
+          const key = toCamelCase(t.heading);
+          const block = blockValues.find(b => b.heading.toLowerCase() === t.heading.toLowerCase());
+          if (t.format === "bullets") {
+            formattedElement.content[key] = block ? parseBulletsOrParagraphToList(block.text) : [];
+          } else {
+            formattedElement.content[key] = block ? block.text.trim() : "";
+          }
+        }
+      }
+    } else {
+      // Process step overrides:
+      formattedElement.content = {
+        title: title.trim(),
+        owner: (fieldValues.owner || "").trim(),
+        sla: (fieldValues.sla || "").trim(),
+        condition: (fieldValues.condition || "").trim() || undefined,
+        description: (fieldValues.description || "").trim(),
+        businessValue: (fieldValues.businessValue || "").trim(),
+        systems: relationValues.systems || [],
+        inputs: inputsList.filter(Boolean),
+        outputs: outputsList.filter(Boolean),
+        transitions: transitionsList.filter(t => t.to),
+      };
+    }
+
+    // Parse stringified provenance back into an object for schema validation and database storage
+    if (typeof formattedElement.meta.provenance === "string") {
+      try {
+        formattedElement.meta.provenance = JSON.parse(formattedElement.meta.provenance);
+      } catch (e) {
+        console.error("Failed to parse provenance from string:", e);
+      }
+    }
+
+    // Validate
+    let validation = { isValid: true, errors: [] as ValidationError[] };
+    if (page.type === "process-step") {
+      validation = validateProcessStep(formattedElement);
+    } else if (page.type === "role") {
+      validation = validateRole(formattedElement);
+    } else if (page.type === "system") {
+      validation = validateSystem(formattedElement);
+    } else if (page.type === "exception") {
+      validation = validateException(formattedElement);
+    }
+
+    if (!validation.isValid) {
+      setValErrors(validation.errors);
+      return;
+    }
+
     startTransition(async () => {
       try {
-        await saveElement(slug, page.id, {
-          title: title.trim(),
-          fields: fieldValues,
-          blocks: blocks.map((b) => ({ heading: b.heading, text: b.text })),
-          body,
-        });
+        const patch = {
+          meta: formattedElement.meta,
+          content: formattedElement.content
+        };
+        const res = await updateElement(slug, page.id, patch);
+        if (!res.ok) {
+          throw new Error(res.error || "Save failed");
+        }
+
         setEditing(false);
         router.refresh();
         onSaved?.();
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Save failed");
+        setSaveError(e instanceof Error ? e.message : "Save failed");
       }
     });
   }
@@ -399,7 +596,9 @@ export default function ElementCard({
     <article
       className={`el${isDraft ? " draft" : ""}${editing ? " editing" : ""}${
         isCollapsed ? " collapsed" : ""
-      }${isCurrent ? " is-current" : ""}`}
+      }${isCurrent ? " is-current" : ""}${asDocument ? " el-document" : ""}${
+        asDocument && !showMeta ? " el-hide-meta" : ""
+      }`}
       id={page.id}
     >
       <div className="el-top">
@@ -520,12 +719,14 @@ export default function ElementCard({
       )}
 
       {editing ? (
-        <input
-          className="el-edit-title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          aria-label="Title"
-        />
+        page.type === "process-step" ? null : (
+          <input
+            className="el-edit-title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            aria-label="Title"
+          />
+        )
       ) : (
         <div className="el-title">{page.title}</div>
       )}
@@ -534,7 +735,7 @@ export default function ElementCard({
         <div className="el-collapsed-preview">{previewLine(page.blocks)}</div>
       )}
 
-      {!editing && (
+      {!editing && (showMeta || asDocument) && (
         <div className="el-provenance">
           <span
             className={`pv-dot ${
@@ -579,113 +780,597 @@ export default function ElementCard({
       {!isCollapsed && (
         <>
           {editing ? (
-            blocks.length > 0 ? (
-              <div className="el-blocks">
-                {blocks.map((b, i) => {
-                  const chk = liveChecks.find((c) => c.heading === b.heading);
-                  const bad = chk ? !chk.ok : false;
-                  return (
-                    <div className="el-block" key={b.heading}>
-                      <div className="el-block-head">{b.heading}</div>
-                      <textarea
-                        className={`el-edit-text${bad ? " has-warn" : ""}`}
-                        value={b.text}
-                        aria-label={b.heading}
-                        onChange={(e) => {
-                          const next = [...blocks];
-                          next[i] = { ...next[i], text: e.target.value };
-                          setBlocks(next);
-                        }}
+            <div className="step-form">
+              {saveError && <div className="admin-error">⚠ {saveError}</div>}
+              {valErrors.length > 0 && (
+                <div className="admin-error" style={{ marginBottom: "16px", padding: "12px", border: "1px solid var(--lo)", borderRadius: "var(--r-sm)", background: "var(--lo-bg)", color: "var(--lo)" }}>
+                  <p style={{ margin: 0, fontWeight: "bold" }}>⚠ Please correct the validation errors before saving:</p>
+                  <ul style={{ margin: "6px 0 0 16px", padding: 0, listStyleType: "disc" }}>
+                    {valErrors.map((err, idx) => (
+                      <li key={idx} style={{ fontSize: "var(--text-xs)", marginTop: "2px" }}>
+                        <strong>{err.path.replace("content.", "")}:</strong> {err.message}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Title Input */}
+              {page.type !== "process-step" && (
+                <div className="form-field">
+                  <label htmlFor="title">Title</label>
+                  <input
+                    id="title"
+                    className="form-input"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Enter title..."
+                  />
+                  {valErrors.find(err => err.path === "content.title") && (
+                    <span className="field-error">{valErrors.find(err => err.path === "content.title")?.message}</span>
+                  )}
+                </div>
+              )}
+
+              {page.type === "process-step" ? (
+                <>
+                  {/* Process Step Fields */}
+                  <div className="step-form-grid">
+                    <div className="form-field">
+                      <label>Owner (Role / System)</label>
+                      <Combobox
+                        value={fieldValues.owner || ""}
+                        onChange={(val) => setFieldValues({ ...fieldValues, owner: val })}
+                        options={[
+                          ...elements.filter((e) => e.type === "role").map((e) => ({
+                            value: e.id,
+                            label: `${e.id} - ${e.title}`,
+                          })),
+                          { value: "System", label: "System" }
+                        ]}
+                        placeholder="Select or type owner..."
+                        className="form-input"
                       />
-                      {bad && chk?.issue && (
-                        <div className="el-edit-warn">⚠ {chk.issue}</div>
+                      {valErrors.find(err => err.path === "content.owner") && (
+                        <span className="field-error">{valErrors.find(err => err.path === "content.owner")?.message}</span>
                       )}
                     </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <textarea
-                className="el-edit-text el-edit-body"
-                value={body}
-                aria-label="Body"
-                onChange={(e) => setBody(e.target.value)}
-              />
-            )
-          ) : page.blocks.length > 0 ? (
-            <div className="el-blocks">
-              {page.blocks.map((b) => {
-                const pv = provenance[b.heading];
-                const src =
-                  pv && typeof pv.source === "string" ? pv.source : undefined;
-                return (
-                  <div
-                    className={`el-block${src ? ` prov-${src}` : ""}`}
-                    key={b.heading}
-                  >
-                    <div className="el-block-head">
-                      <span className="el-block-head-name">{b.heading}</span>
-                      {src && PROV_LABEL[src] && (
-                        <Tooltip label={provTooltip(src, pv?.evidence)}>
-                          <span className={`el-prov-tag prov-${src}`}>
-                            {PROV_LABEL[src]}
-                          </span>
-                        </Tooltip>
+
+                    <div className="form-field">
+                      <label htmlFor="sla">SLA Target</label>
+                      <input
+                        id="sla"
+                        className="form-input"
+                        value={fieldValues.sla || ""}
+                        onChange={(e) => setFieldValues({ ...fieldValues, sla: e.target.value })}
+                        placeholder="e.g. 2-5 business days"
+                      />
+                      {valErrors.find(err => err.path === "content.sla") && (
+                        <span className="field-error">{valErrors.find(err => err.path === "content.sla")?.message}</span>
                       )}
                     </div>
-                    <div className="el-block-text">
-                      <Markdown text={b.text} />
+
+                    <div className="form-field">
+                      <label htmlFor="condition">Entry Condition (Optional)</label>
+                      <input
+                        id="condition"
+                        className="form-input"
+                        value={fieldValues.condition || ""}
+                        onChange={(e) => setFieldValues({ ...fieldValues, condition: e.target.value })}
+                        placeholder="e.g. Triaged application exists"
+                      />
+                      {valErrors.find(err => err.path === "content.condition") && (
+                        <span className="field-error">{valErrors.find(err => err.path === "content.condition")?.message}</span>
+                      )}
                     </div>
                   </div>
-                );
-              })}
+
+                  <div className="form-field">
+                    <div className="field-header">
+                      <label htmlFor="description">What happens (Description)</label>
+                      <span className={`word-counter ${getWordCount(fieldValues.description || "") >= 20 && getWordCount(fieldValues.description || "") <= 95 ? "valid" : "invalid"}`}>
+                        {getWordCount(fieldValues.description || "")} words (20-95 required)
+                      </span>
+                    </div>
+                    <textarea
+                      id="description"
+                      className="form-textarea"
+                      value={fieldValues.description || ""}
+                      onChange={(e) => setFieldValues({ ...fieldValues, description: e.target.value })}
+                      placeholder="Describe concrete actions performed in this step..."
+                    />
+                    {valErrors.find(err => err.path === "content.description") && (
+                      <span className="field-error">{valErrors.find(err => err.path === "content.description")?.message}</span>
+                    )}
+                  </div>
+
+                  <div className="form-field">
+                    <div className="field-header">
+                      <label htmlFor="businessValue">Why it matters (Business Value)</label>
+                      <span className={`word-counter ${getWordCount(fieldValues.businessValue || "") >= 10 && getWordCount(fieldValues.businessValue || "") <= 60 ? "valid" : "invalid"}`}>
+                        {getWordCount(fieldValues.businessValue || "")} words (10-60 required)
+                      </span>
+                    </div>
+                    <textarea
+                      id="businessValue"
+                      className="form-textarea"
+                      value={fieldValues.businessValue || ""}
+                      onChange={(e) => setFieldValues({ ...fieldValues, businessValue: e.target.value })}
+                      placeholder="State the risk controlled or value added by this step..."
+                    />
+                    {valErrors.find(err => err.path === "content.businessValue") && (
+                      <span className="field-error">{valErrors.find(err => err.path === "content.businessValue")?.message}</span>
+                    )}
+                  </div>
+
+                  <div className="array-section">
+                    <div className="array-header">
+                      <span className="array-title">Systems Used</span>
+                      <button
+                        type="button"
+                        className="btn-add"
+                        onClick={() => {
+                          const current = relationValues.systems || [];
+                          setRelationValues({ ...relationValues, systems: [...current, ""] });
+                        }}
+                      >
+                        + Add System
+                      </button>
+                    </div>
+                    <div className="array-list">
+                      {(relationValues.systems || []).map((sys, idx) => (
+                        <div key={idx} className="array-item">
+                          <Combobox
+                            value={sys}
+                            onChange={(val) => {
+                              const current = [...(relationValues.systems || [])];
+                              current[idx] = val;
+                              setRelationValues({ ...relationValues, systems: current });
+                            }}
+                            options={elements.filter((e) => e.type === "system").map((e) => ({
+                              value: e.id,
+                              label: `${e.id} - ${e.title}`,
+                            }))}
+                            placeholder="SYS-COB-001..."
+                            className="form-input"
+                          />
+                          <button
+                            type="button"
+                            className="btn-remove"
+                            onClick={() => {
+                              const current = [...(relationValues.systems || [])];
+                              current.splice(idx, 1);
+                              setRelationValues({ ...relationValues, systems: current });
+                            }}
+                            aria-label="Remove system"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                      {(relationValues.systems || []).length === 0 && (
+                        <span style={{ fontSize: "var(--text-xs)", color: "var(--muted)" }}>
+                          No systems registered yet.
+                        </span>
+                      )}
+                    </div>
+                    {valErrors.find(err => err.path === "content.systems") && (
+                      <span className="field-error">{valErrors.find(err => err.path === "content.systems")?.message}</span>
+                    )}
+                  </div>
+
+                  <div className="array-section">
+                    <div className="array-header">
+                      <span className="array-title">Inputs (Min 2, Max 6)</span>
+                      <button
+                        type="button"
+                        className="btn-add"
+                        onClick={() => setInputsList([...inputsList, ""])}
+                        disabled={inputsList.length >= 6}
+                      >
+                        + Add Input
+                      </button>
+                    </div>
+                    <div className="array-list">
+                      {inputsList.map((inp, idx) => (
+                        <div key={idx} className="array-item">
+                          <input
+                            className="form-input"
+                            value={inp}
+                            onChange={(e) => {
+                              const current = [...inputsList];
+                              current[idx] = e.target.value;
+                              setInputsList(current);
+                            }}
+                            placeholder="Input description..."
+                          />
+                          <button
+                            type="button"
+                            className="btn-remove"
+                            onClick={() => {
+                              const current = [...inputsList];
+                              current.splice(idx, 1);
+                              setInputsList(current);
+                            }}
+                            aria-label="Remove input"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                      {inputsList.length === 0 && (
+                        <span style={{ fontSize: "var(--text-xs)", color: "var(--muted)" }}>
+                          No inputs.
+                        </span>
+                      )}
+                    </div>
+                    {valErrors.find(err => err.path === "content.inputs") && (
+                      <span className="field-error">{valErrors.find(err => err.path === "content.inputs")?.message}</span>
+                    )}
+                  </div>
+
+                  <div className="array-section">
+                    <div className="array-header">
+                      <span className="array-title">Outputs (Min 2, Max 6)</span>
+                      <button
+                        type="button"
+                        className="btn-add"
+                        onClick={() => setOutputsList([...outputsList, ""])}
+                        disabled={outputsList.length >= 6}
+                      >
+                        + Add Output
+                      </button>
+                    </div>
+                    <div className="array-list">
+                      {outputsList.map((out, idx) => (
+                        <div key={idx} className="array-item">
+                          <input
+                            className="form-input"
+                            value={out}
+                            onChange={(e) => {
+                              const current = [...outputsList];
+                              current[idx] = e.target.value;
+                              setOutputsList(current);
+                            }}
+                            placeholder="Output description..."
+                          />
+                          <button
+                            type="button"
+                            className="btn-remove"
+                            onClick={() => {
+                              const current = [...outputsList];
+                              current.splice(idx, 1);
+                              setOutputsList(current);
+                            }}
+                            aria-label="Remove output"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                      {outputsList.length === 0 && (
+                        <span style={{ fontSize: "var(--text-xs)", color: "var(--muted)" }}>
+                          No outputs.
+                        </span>
+                      )}
+                    </div>
+                    {valErrors.find(err => err.path === "content.outputs") && (
+                      <span className="field-error">{valErrors.find(err => err.path === "content.outputs")?.message}</span>
+                    )}
+                  </div>
+
+                  <div className="array-section">
+                    <div className="array-header">
+                      <span className="array-title">Transitions (Outgoing edges)</span>
+                      <button
+                        type="button"
+                        className="btn-add"
+                        onClick={() => setTransitionsList([...transitionsList, { to: "", kind: "normal", when: "" }])}
+                      >
+                        + Add Transition
+                      </button>
+                    </div>
+                    <div className="array-list">
+                      {transitionsList.map((trans, idx) => (
+                        <div
+                          key={idx}
+                          className="array-item"
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "1fr 100px 1.5fr auto",
+                            gap: "var(--space-xs)",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Combobox
+                            value={trans.to}
+                            onChange={(val) => {
+                              const current = [...transitionsList];
+                              current[idx] = { ...current[idx], to: val };
+                              setTransitionsList(current);
+                            }}
+                            options={elements.filter((e) => e.type === "process-step").map((e) => ({
+                              value: e.id,
+                              label: `${e.id} - ${e.title}`,
+                            }))}
+                            placeholder="Next step..."
+                            className="form-input"
+                          />
+                          <select
+                            className="form-input"
+                            value={trans.kind}
+                            onChange={(e) => {
+                              const current = [...transitionsList];
+                              current[idx] = { ...current[idx], kind: e.target.value };
+                              setTransitionsList(current);
+                            }}
+                          >
+                            <option value="normal">Normal</option>
+                            <option value="branch">Branch</option>
+                            <option value="loopback">Loopback</option>
+                            <option value="exception">Exception</option>
+                          </select>
+                          <input
+                            className="form-input"
+                            value={trans.when}
+                            onChange={(e) => {
+                              const current = [...transitionsList];
+                              current[idx] = { ...current[idx], when: e.target.value };
+                              setTransitionsList(current);
+                            }}
+                            placeholder="Condition (when)..."
+                          />
+                          <button
+                            type="button"
+                            className="btn-remove"
+                            onClick={() => {
+                              const current = [...transitionsList];
+                              current.splice(idx, 1);
+                              setTransitionsList(current);
+                            }}
+                            aria-label="Remove transition"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                      {transitionsList.length === 0 && (
+                        <span style={{ fontSize: "var(--text-xs)", color: "var(--muted)" }}>
+                          No outgoing transitions.
+                        </span>
+                      )}
+                    </div>
+                    {valErrors.find(err => err.path === "content.transitions") && (
+                      <span className="field-error">{valErrors.find(err => err.path === "content.transitions")?.message}</span>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Generic Template Blocks (Textareas with Word Counters!) */}
+                  {blockValues.length > 0 && (
+                    <div className="el-blocks">
+                      {blockValues.map((b, i) => {
+                        const templateBlock = template?.find(
+                          (t) => t.heading.toLowerCase() === b.heading.toLowerCase()
+                        );
+                        const wordRange = templateBlock?.words;
+                        const parsedRange = parseWordRange(wordRange);
+                        const currentWords = getWordCount(b.text);
+                        const isValid = parsedRange ? (currentWords >= parsedRange.min && currentWords <= parsedRange.max) : true;
+
+                        return (
+                          <div className="el-block" key={b.heading}>
+                            <div className="field-header">
+                              <label className="el-block-head" style={{ marginBottom: "2px" }}>{b.heading}</label>
+                              {parsedRange && (
+                                <span className={`word-counter ${isValid ? "valid" : "invalid"}`}>
+                                  {currentWords} words ({parsedRange.min}–{parsedRange.max} required)
+                                </span>
+                              )}
+                            </div>
+                            <textarea
+                              className="form-textarea"
+                              value={b.text}
+                              aria-label={b.heading}
+                              onChange={(e) => {
+                                const next = [...blockValues];
+                                next[i] = { ...next[i], text: e.target.value };
+                                setBlockValues(next);
+                              }}
+                              placeholder={templateBlock?.purpose || "Enter text..."}
+                            />
+                            {valErrors.find(err => err.path === `content.${toCamelCase(b.heading)}`) && (
+                              <span className="field-error">{valErrors.find(err => err.path === `content.${toCamelCase(b.heading)}`)?.message}</span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {blockValues.length === 0 && (
+                    <div className="form-field">
+                      <label htmlFor="body">Content</label>
+                      <textarea
+                        id="body"
+                        className="form-textarea"
+                        value={bodyValue}
+                        onChange={(e) => setBodyValue(e.target.value)}
+                        placeholder="Enter markdown body..."
+                      />
+                    </div>
+                  )}
+
+                  {/* Generic Frontmatter Scalar Fields */}
+                  {fieldSpecs.length > 0 && (
+                    <div className="step-form-grid" style={{ marginTop: "12px" }}>
+                      {fieldSpecs.map((f) => {
+                        const isRequired = (requiredFields ?? []).includes(f.key);
+                        const allowedValues = fieldValuesEnum?.[f.key] || 
+                                              fieldValuesEnum?.[f.key.replace("Severity", "")] || 
+                                              null;
+
+                        return (
+                          <div className="form-field" key={f.key}>
+                            <label>
+                              {f.label}
+                              {isRequired && <span className="el-field-req"> *</span>}
+                            </label>
+                            {allowedValues ? (
+                              <select
+                                className="form-input"
+                                value={fieldValues[f.key] ?? ""}
+                                onChange={(e) => setFieldValues({ ...fieldValues, [f.key]: e.target.value })}
+                              >
+                                <option value="">Select...</option>
+                                {allowedValues.map((v: string) => (
+                                  <option key={v} value={v}>
+                                    {v}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              <input
+                                className="form-input"
+                                value={fieldValues[f.key] ?? ""}
+                                onChange={(e) => setFieldValues({ ...fieldValues, [f.key]: e.target.value })}
+                                placeholder={f.hint || ""}
+                              />
+                            )}
+                            {valErrors.find(err => err.path === `content.${f.key}`) && (
+                              <span className="field-error">{valErrors.find(err => err.path === `content.${f.key}`)?.message}</span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Generic Frontmatter Relation Fields (Combobox arrays!) */}
+                  {relationSpecs.length > 0 && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "12px" }}>
+                      {relationSpecs.map((r) => {
+                        const isRequired = (requiredFields ?? []).includes(r.key);
+                        const activeList = relationValues[r.key] || [];
+                        const targets = Array.isArray(r.target) ? r.target : r.target ? [r.target] : [];
+                        const dropdownOptions = elements
+                          .filter((e) => targets.length === 0 || targets.includes(e.type))
+                          .map((e) => ({
+                            value: e.id,
+                            label: `${e.id} - ${e.title}`,
+                          }));
+
+                        return (
+                          <div className="array-section" key={r.key}>
+                            <div className="array-header">
+                              <span className="array-title">
+                                {r.label}
+                                {isRequired && <span className="el-field-req"> *</span>}
+                              </span>
+                              <button
+                                type="button"
+                                className="btn-add"
+                                onClick={() => {
+                                  setRelationValues({
+                                    ...relationValues,
+                                    [r.key]: [...activeList, ""],
+                                  });
+                                }}
+                              >
+                                + Add {r.label.replace("IDs", "").trim()}
+                              </button>
+                            </div>
+                            <div className="array-list">
+                              {activeList.map((relVal, idx) => (
+                                <div key={idx} className="array-item">
+                                  <Combobox
+                                    value={relVal}
+                                    onChange={(val) => {
+                                      const current = [...activeList];
+                                      current[idx] = val;
+                                      setRelationValues({
+                                        ...relationValues,
+                                        [r.key]: current,
+                                      });
+                                    }}
+                                    options={dropdownOptions}
+                                    placeholder={`Select ${r.label.replace("IDs", "").trim()}...`}
+                                    className="form-input"
+                                  />
+                                  <button
+                                    type="button"
+                                    className="btn-remove"
+                                    onClick={() => {
+                                      const current = [...activeList];
+                                      current.splice(idx, 1);
+                                      setRelationValues({
+                                        ...relationValues,
+                                        [r.key]: current,
+                                      });
+                                    }}
+                                    aria-label="Remove item"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              ))}
+                              {activeList.length === 0 && (
+                                <span style={{ fontSize: "var(--text-xs)", color: "var(--muted)" }}>
+                                  No {r.label.toLowerCase()} linked yet.
+                                </span>
+                              )}
+                            </div>
+                            {valErrors.find(err => err.path === `content.${r.key}`) && (
+                              <span className="field-error">{valErrors.find(err => err.path === `content.${r.key}`)?.message}</span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           ) : (
-            page.body && (
-              <div className="el-body">
-                <Markdown text={page.body} />
-              </div>
-            )
-          )}
-
-          {editing
-            ? fieldSpecs.length > 0 && (
-                <div className="el-edit-fields">
-                  {fieldSpecs.map((f) => {
-                    const isRequired = (requiredFields ?? []).includes(f.key);
-                    const empty = !(fieldValues[f.key] ?? "").trim();
+            <>
+              {page.blocks.length > 0 ? (
+                <div className="el-blocks">
+                  {page.blocks.map((b) => {
+                    const pv = provenance[b.heading];
+                    const src =
+                      pv && typeof pv.source === "string" ? pv.source : undefined;
                     return (
-                      <label className="el-edit-field" key={f.key}>
-                        <span>
-                          {f.label}
-                          {isRequired && (
-                            <span className="el-field-req" aria-hidden="true">
-                              {" "}
-                              *
-                            </span>
+                      <div
+                        className={`el-block${src ? ` prov-${src}` : ""}`}
+                        key={b.heading}
+                      >
+                        <div className="el-block-head">
+                          <span className="el-block-head-name">{b.heading}</span>
+                          {src && PROV_LABEL[src] && (
+                            <Tooltip label={provTooltip(src, pv?.evidence)}>
+                              <span className={`el-prov-tag prov-${src}`}>
+                                {PROV_LABEL[src]}
+                              </span>
+                            </Tooltip>
                           )}
-                        </span>
-                        <input
-                          className={
-                            isRequired && empty ? "el-field-input-missing" : ""
-                          }
-                          value={fieldValues[f.key] ?? ""}
-                          onChange={(e) =>
-                            setFieldValues({
-                              ...fieldValues,
-                              [f.key]: e.target.value,
-                            })
-                          }
-                        />
-                        {f.hint && (
-                          <span className="el-field-hint">{f.hint}</span>
-                        )}
-                      </label>
+                        </div>
+                        <div className="el-block-text">
+                          <Markdown text={b.text} />
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
-              )
-            : (fieldSpecs.some((f) => page.meta[f.key]) ||
+              ) : (
+                page.body && (
+                  <div className="el-body">
+                    <Markdown text={page.body} />
+                  </div>
+                )
+              )}
+
+              {(showMeta || asDocument) && (fieldSpecs.some((f) => page.meta[f.key]) ||
                 fieldSpecs.some((f) =>
                   (requiredFields ?? []).includes(f.key),
                 )) && (
@@ -693,8 +1378,6 @@ export default function ElementCard({
                   {fieldSpecs.map((f) => {
                     const val = page.meta[f.key];
                     if (!val) {
-                      // A required field left empty is flagged inline so the
-                      // gap is visible without opening the card (#17).
                       if (!(requiredFields ?? []).includes(f.key)) return null;
                       return (
                         <span className="el-field el-field-flag" key={f.key}>
@@ -707,8 +1390,6 @@ export default function ElementCard({
                     }
                     const text = `${String(val)}${f.suffix ?? ""}`;
                     const url = f.urlKey ? page.meta[f.urlKey] : undefined;
-                    // An `owner` value links to its role element (the RACI
-                    // entry) when it resolves to one.
                     const roleId =
                       f.key === "owner" && resolveOwner
                         ? resolveOwner(String(val))
@@ -748,10 +1429,12 @@ export default function ElementCard({
                   })}
                 </div>
               )}
+            </>
+          )}
 
-          {!editing &&
-            links.map((lg) => (
-              <div className="links" key={lg.label}>
+          {!editing && (showMeta || asDocument) &&
+            links.map((lg, idx) => (
+              <div className="links" key={`${lg.label}-${idx}`}>
                 <span className="link-group-label">{lg.label}:</span>
                 {lg.ids.map((t) => {
                   const ref = getRef?.(t);
@@ -774,10 +1457,10 @@ export default function ElementCard({
               </div>
             ))}
 
-          {!editing && transitions.length > 0 && (
+          {!editing && (showMeta || asDocument) && transitions.length > 0 && (
             <div className="el-transitions">
               <span className="el-transitions-label">Transitions</span>
-              {transitions.map((t) => {
+              {transitions.map((t, idx) => {
                 const label =
                   t.kind === "normal"
                     ? "next"
@@ -787,7 +1470,7 @@ export default function ElementCard({
                 return (
                   <div
                     className={`el-transition el-transition-${t.kind}`}
-                    key={`${t.to}-${t.when}`}
+                    key={`${t.to}-${t.when}-${idx}`}
                   >
                     <ElementHovercard
                       element={getRef?.(t.to)?.page}
@@ -817,7 +1500,7 @@ export default function ElementCard({
                 <span className="cd" /> Confidence: {page.confidence}
               </span>
             )}
-            {editing && error && <span className="el-edit-err">{error}</span>}
+            {editing && saveError && <span className="el-edit-err">{saveError}</span>}
             <div className="el-actions">
               {editing ? (
                 <>

@@ -1,0 +1,4245 @@
+{
+  "meta": {
+    "id": "COB-003",
+    "type": "process",
+    "section": "overview",
+    "status": "confirmed",
+    "confidence": "high",
+    "source": "DTP-BB-ONB-001 v2.3",
+    "docStatus": "As-Is validated"
+  },
+  "content": {
+    "title": "Client Onboarding (BizBanking)",
+    "processOwner": "ROLE-COB-005",
+    "trigger": "Online portal · RM paper application · Branch referral · Partner channel",
+    "frequency": "Continuous during business hours, real-time processing",
+    "scopeIn": "KYC identity verification, regulatory screening (AML/PEP/Sanctions), risk assessment, optional credit facility, account setup, activation",
+    "scopeOut": "Ongoing account servicing, product cross-selling, existing-client changes, offboarding",
+    "processInput": "Client application + required business documents",
+    "processOutput": "Fully operational business account (optionally incl. overdraft facility)",
+    "description": "The Client Onboarding process establishes a new banking relationship with a business client (annual turnover up to €10M). It takes the client from a submitted application through to a fully operational account: collecting and validating their information, verifying identity, screening for regulatory risk, assessing credit where an overdraft is requested, configuring the account, and activating the client.\n\nIt is a revenue-generating and a regulatory process at the same time — every new account is both a commercial relationship and a compliance obligation. That dual nature shapes every step that follows."
+  },
+  "process-steps": [
+    {
+      "meta": {
+        "id": "PS-COB-001",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3",
+        "approval": "in-progress",
+        "approvalBy": "M. Berger",
+        "approvalDate": "2026-05-16",
+        "sequence": 1,
+        "provenance": {
+          "Outputs": {
+            "source": "document",
+            "evidence": "DTP-BB-ONB-001 v2.3"
+          },
+          "Why it matters": {
+            "evidence": "DTP-BB-ONB-001 v2.3",
+            "source": "document"
+          },
+          "Inputs": {
+            "evidence": "DTP-BB-ONB-001 v2.3",
+            "source": "document"
+          },
+          "What happens": {
+            "source": "elicited",
+            "evidence": "it happens in parallel"
+          }
+        },
+        "title": "Application Receipt & Initial Triage",
+        "inputs": [
+          "A submitted client application (online portal, paper, branch referral or partner channel)",
+          "Whatever supporting documents the client attached"
+        ],
+        "outputs": [
+          "A triaged application that has formally entered the pipeline with a CRM case record",
+          "A rejection sent back to the client listing exactly what was missing"
+        ],
+        "owner": "Operations Officer",
+        "sla": "Same business day",
+        "systems": [
+          "SYS-COB-001",
+          "SYS-COB-002",
+          "SYS-COB-007"
+        ],
+        "description": "The Operations Officer receives the incoming application from one of the four intake channels and performs an initial triage. They confirm the mandatory documents are present, that the business is eligible for BizBanking, and that the case is routed to the correct downstream queue. Incomplete applications are flagged and returned to the client before they consume pipeline capacity.",
+        "businessValue": "This is the gate that protects the rest of the process. Catching an incomplete or ineligible application here costs minutes; catching it three steps later costs days of rework and a frustrated client.",
+        "transitions": [
+          "PS-COB-002|normal|",
+          "PS-COB-003|normal|if overdraft requested"
+        ]
+      },
+      "content": {
+        "title": "Application Receipt & Initial Triage",
+        "inputs": [
+          "A submitted client application (online portal, paper, branch referral or partner channel)",
+          "Whatever supporting documents the client attached"
+        ],
+        "outputs": [
+          "A triaged application that has formally entered the pipeline with a CRM case record",
+          "A rejection sent back to the client listing exactly what was missing"
+        ],
+        "owner": "Operations Officer",
+        "sla": "Same business day",
+        "systems": [
+          "SYS-COB-001",
+          "SYS-COB-002",
+          "SYS-COB-007"
+        ],
+        "description": "The Operations Officer receives the incoming application from one of the four intake channels and performs an initial triage. They confirm the mandatory documents are present, that the business is eligible for BizBanking, and that the case is routed to the correct downstream queue. Incomplete applications are flagged and returned to the client before they consume pipeline capacity.",
+        "businessValue": "This is the gate that protects the rest of the process. Catching an incomplete or ineligible application here costs minutes; catching it three steps later costs days of rework and a frustrated client.",
+        "transitions": [
+          {
+            "to": "PS-COB-002",
+            "kind": "normal",
+            "when": ""
+          },
+          {
+            "to": "PS-COB-003",
+            "kind": "normal",
+            "when": "if overdraft requested"
+          }
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "PS-COB-002",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3",
+        "approval": "in-progress",
+        "approvalBy": "run-lint",
+        "approvalDate": "2026-05-17",
+        "sequence": 2,
+        "provenance": {
+          "Why it matters": {
+            "source": "document",
+            "evidence": "DTP-BB-ONB-001 v2.3"
+          },
+          "What happens": {
+            "evidence": "it happens in parallel",
+            "source": "elicited"
+          },
+          "Outputs": {
+            "source": "document",
+            "evidence": "DTP-BB-ONB-001 v2.3"
+          },
+          "Inputs": {
+            "evidence": "DTP-BB-ONB-001 v2.3",
+            "source": "document"
+          }
+        }
+      },
+      "content": {
+        "title": "KYC & Identity Verification",
+        "owner": "KYC Analyst",
+        "sla": "2-5 business days",
+        "description": "The KYC Analyst verifies the identity of the business and its beneficial owners, runs regulatory screening for PEP, sanctions and adverse-media risk, and assigns a customer risk rating. Documents are checked against the KYC platform; any screening match is escalated to Compliance.",
+        "businessValue": "This step carries the bank's regulatory exposure. A missed screening hit or an unverified beneficial owner is a reportable compliance breach, not merely a process error.",
+        "systems": [
+          "SYS-COB-003",
+          "SYS-COB-004",
+          "SYS-COB-001"
+        ],
+        "inputs": [
+          "The triaged application",
+          "Identity documents for directors and ultimate beneficial owners",
+          "The company's ownership structure"
+        ],
+        "outputs": [
+          "A completed KYC file with a risk rating and cleared screening",
+          "An escalation case handed to the Compliance Officer"
+        ],
+        "transitions": [
+          "PS-COB-004|normal|"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "PS-COB-003",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3",
+        "approval": "rejected",
+        "approvalBy": "M. Berger",
+        "approvalDate": "2026-05-16",
+        "sequence": 3,
+        "provenance": {
+          "What happens": {
+            "source": "document",
+            "evidence": "DTP-BB-ONB-001 v2.3"
+          },
+          "Outputs": {
+            "evidence": "DTP-BB-ONB-001 v2.3",
+            "source": "document"
+          },
+          "Why it matters": {
+            "source": "document",
+            "evidence": "DTP-BB-ONB-001 v2.3"
+          },
+          "Inputs": {
+            "evidence": "it happens in parallel",
+            "source": "elicited"
+          }
+        }
+      },
+      "content": {
+        "title": "Credit Assessment",
+        "inputs": [
+          "The triaged application",
+          "The client's requested facility amount and financial information"
+        ],
+        "outputs": [
+          "An approved credit limit",
+          "A decline",
+          "A referral to a higher approval authority"
+        ],
+        "owner": "Credit Analyst",
+        "sla": "3 business days",
+        "systems": [
+          "SYS-COB-006"
+        ],
+        "condition": "If overdraft requested",
+        "description": "When the client has requested an overdraft facility, the Credit Analyst assesses creditworthiness using the credit decisioning system and external bureau data, applies the scorecard, and reaches a decision within their approval authority.",
+        "businessValue": "Responsible lending and credit-risk management. This step runs only when an overdraft is requested — for deposit-only onboarding it is skipped entirely.",
+        "transitions": [
+          "PS-COB-004|normal|"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "PS-COB-004",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3",
+        "sequence": 4
+      },
+      "content": {
+        "title": "Account Setup & Configuration",
+        "inputs": [
+          "The approved KYC file and",
+          "Where applicable",
+          "The credit decision"
+        ],
+        "outputs": [
+          "A live",
+          "Fully configured business account ready to transact",
+          "With debit cards ordered"
+        ],
+        "owner": "Operations Officer",
+        "sla": "1 business day",
+        "systems": [
+          "SYS-COB-005",
+          "SYS-COB-008"
+        ],
+        "description": "The Operations Officer creates the account in the core banking system, configures the agreed products, and triggers debit-card provisioning. A four-eyes check confirms the configuration before the account goes live.",
+        "businessValue": "This is where the relationship becomes real. Configuration errors here surface as transaction failures the client sees on their very first day."
+      }
+    },
+    {
+      "meta": {
+        "id": "PS-COB-005",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3",
+        "sequence": 5
+      },
+      "content": {
+        "title": "Client Communication & Activation",
+        "inputs": [
+          "A live account",
+          "The client's contact details"
+        ],
+        "outputs": [
+          "An activated",
+          "Engaged client who knows how to use their account"
+        ],
+        "owner": "Relationship Manager",
+        "sla": "1 business day",
+        "systems": [
+          "SYS-COB-001"
+        ],
+        "description": "The Relationship Manager tells the client the account is open, shares access credentials, and runs a welcome call to walk through first steps and answer questions.",
+        "businessValue": "A smooth activation sets the tone for the whole relationship. A silent hand-off leaves the client unsure whether onboarding actually finished."
+      }
+    },
+    {
+      "meta": {
+        "id": "PS-COB-006",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "draft",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3",
+        "provenance": {
+          "inputs": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "outputs": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "description": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "businessValue": {
+            "evidence": "",
+            "source": "legacy-approved"
+          }
+        },
+        "sequence": 6
+      },
+      "content": {
+        "title": "Post-Onboarding Quality Check",
+        "inputs": [
+          "Completed onboarding cases from the preceding 10 business days",
+          "The quality and compliance standard the cases are checked against"
+        ],
+        "outputs": [
+          "A quality verdict for each sampled case",
+          "A defect log feeding correction and trend analysis"
+        ],
+        "owner": "Operations Officer",
+        "sla": "Within 10 business days",
+        "systems": [
+          "SYS-COB-002"
+        ],
+        "description": "The Operations Officer samples completed onboarding cases, checks them against the quality and compliance standard, and logs any defects for correction and trend analysis.",
+        "businessValue": "It is the feedback loop. Without it the same defects repeat unnoticed across hundreds of applications."
+      }
+    }
+  ],
+  "roles": [
+    {
+      "meta": {
+        "id": "ROLE-COB-001",
+        "type": "role",
+        "section": "roles",
+        "status": "draft",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3",
+        "provenance": {
+          "inThisProcess": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "responsibility": {
+            "evidence": "",
+            "source": "legacy-approved"
+          }
+        }
+      },
+      "content": {
+        "title": "Operations Officer",
+        "responsibility": "Owns the operational backbone of onboarding — taking applications in, setting accounts up, and keeping cases moving through the pipeline.",
+        "inThisProcess": "Responsible for Application Receipt (PS-COB-001), Account Setup (PS-COB-004) and the Post-Onboarding Quality Check (PS-COB-006), and runs the data-protection consent control.",
+        "raci": [
+          "PS-COB-001:R",
+          "PS-COB-002:I",
+          "PS-COB-004:R",
+          "PS-COB-006:R"
+        ],
+        "controls": [
+          "CP-COB-003",
+          "CP-COB-004"
+        ],
+        "systems": [
+          "SYS-COB-001",
+          "SYS-COB-002",
+          "SYS-COB-005",
+          "SYS-COB-007",
+          "SYS-COB-008"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "ROLE-COB-002",
+        "type": "role",
+        "section": "roles",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "KYC Analyst",
+        "responsibility": "Owns identity verification and the regulatory KYC assessment — the bank's first line of defence against financial crime at onboarding.",
+        "inThisProcess": "Responsible for KYC & Identity Verification (PS-COB-002) and executes the customer- and beneficial-owner-identification controls.",
+        "raci": [
+          "PS-COB-002:R"
+        ],
+        "controls": [
+          "CP-COB-001",
+          "CP-COB-002"
+        ],
+        "systems": [
+          "SYS-COB-003",
+          "SYS-COB-004",
+          "SYS-COB-007"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "ROLE-COB-003",
+        "type": "role",
+        "section": "roles",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Credit Analyst",
+        "responsibility": "Assesses credit risk and decides on requested lending facilities within their approval authority.",
+        "inThisProcess": "Responsible for Credit Assessment (PS-COB-003), which runs only when an overdraft is requested.",
+        "raci": [
+          "PS-COB-003:R"
+        ],
+        "controls": [],
+        "systems": [
+          "SYS-COB-001",
+          "SYS-COB-006"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "ROLE-COB-004",
+        "type": "role",
+        "section": "roles",
+        "status": "draft",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3",
+        "provenance": {
+          "inThisProcess": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "responsibility": {
+            "evidence": "",
+            "source": "proposed"
+          }
+        }
+      },
+      "content": {
+        "title": "Relationship Manager",
+        "responsibility": "Owns the client relationship and the onboarding process end to end — handles client communication and activation, supervises the onboarding team, gives the four-eyes approval on sensitive actions, and is accountable for process quality as process owner.",
+        "inThisProcess": "Performs Client Communication & Activation (PS-COB-005) and delivers product disclosure to the client. As process owner, gives the four-eyes approval on sensitive actions and is accountable for the remaining onboarding steps, including the post-onboarding quality check.",
+        "raci": [
+          "PS-COB-001:A",
+          "PS-COB-003:A",
+          "PS-COB-004:A",
+          "PS-COB-005:R",
+          "PS-COB-005:A",
+          "PS-COB-006:A"
+        ],
+        "controls": [
+          "CP-COB-005"
+        ],
+        "systems": [
+          "SYS-COB-001",
+          "SYS-COB-002"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "ROLE-COB-005",
+        "type": "role",
+        "section": "roles",
+        "title": "Team Lead",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3",
+        "raci": [
+          "PS-COB-001:A",
+          "PS-COB-003:A",
+          "PS-COB-004:A",
+          "PS-COB-005:A",
+          "PS-COB-006:A"
+        ],
+        "controls": [],
+        "systems": [
+          "SYS-COB-002"
+        ]
+      },
+      "content": {
+        "title": "Team Lead",
+        "responsibility": "Supervises the onboarding team, gives the four-eyes approval on sensitive actions, and owns process quality — effectively the process owner.",
+        "inThisProcess": "Accountable for five of the six steps and responsible for the Post-Onboarding Quality Check (PS-COB-006).",
+        "systems": [
+          "SYS-COB-002"
+        ],
+        "controls": [],
+        "raci": [
+          "PS-COB-001:A",
+          "PS-COB-003:A",
+          "PS-COB-004:A",
+          "PS-COB-005:A",
+          "PS-COB-006:A"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "ROLE-COB-006",
+        "type": "role",
+        "section": "roles",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Compliance Officer",
+        "responsibility": "Owns regulatory judgement calls that exceed an analyst's authority.",
+        "inThisProcess": "Accountable for the KYC step's compliance outcome and handles every escalated KYC screening hit (EX-COB-002).",
+        "raci": [
+          "PS-COB-002:A"
+        ],
+        "controls": [],
+        "systems": [
+          "SYS-COB-003",
+          "SYS-COB-004"
+        ]
+      }
+    }
+  ],
+  "systems": [
+    {
+      "meta": {
+        "id": "SYS-COB-001",
+        "type": "system",
+        "section": "systems",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "CRM (Salesforce)",
+        "purpose": "Manages the client relationship and tracks every onboarding case as a record.",
+        "roleInThisProcess": "The case backbone — every step reads and updates the CRM case, from intake through activation and quality check.",
+        "systemType": "CORE",
+        "integrates": [
+          "SYS-COB-002"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "SYS-COB-002",
+        "type": "system",
+        "section": "systems",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "OWS (Onboarding Workflow System)",
+        "purpose": "Orchestrates the onboarding process and tracks SLAs.",
+        "roleInThisProcess": "Drives the step sequence and timing for all six steps; it is where SLA instrumentation would live.",
+        "systemType": "CORE",
+        "integrates": [
+          "SYS-COB-001"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "SYS-COB-003",
+        "type": "system",
+        "section": "systems",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "KYC Platform (Fenergo)",
+        "purpose": "Manages KYC cases and stores identity documentation.",
+        "roleInThisProcess": "The working system for the KYC & Identity Verification step (PS-COB-002).",
+        "systemType": "CORE",
+        "integrates": [
+          "SYS-COB-004"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "SYS-COB-004",
+        "type": "system",
+        "section": "systems",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "World-Check (Refinitiv)",
+        "purpose": "External PEP and sanctions screening database.",
+        "roleInThisProcess": "Called during KYC to screen directors and beneficial owners — an external dependency.",
+        "systemType": "EXTERNAL",
+        "integrates": [
+          "SYS-COB-003"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "SYS-COB-005",
+        "type": "system",
+        "section": "systems",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "CBS (Temenos T24)",
+        "purpose": "The core banking system — creates accounts and processes transactions.",
+        "roleInThisProcess": "Where the account is actually created and configured during Account Setup (PS-COB-004).",
+        "systemType": "CORE",
+        "integrates": [
+          "SYS-COB-008"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "SYS-COB-006",
+        "type": "system",
+        "section": "systems",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "CDS (Credit Decisioning)",
+        "purpose": "Runs credit assessment scorecards.",
+        "roleInThisProcess": "Used only in the conditional Credit Assessment step (PS-COB-003).",
+        "systemType": "SUPPORTING",
+        "integrates": []
+      }
+    },
+    {
+      "meta": {
+        "id": "SYS-COB-007",
+        "type": "system",
+        "section": "systems",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "DMS (OpenText)",
+        "purpose": "Document storage and archival.",
+        "roleInThisProcess": "Holds the application documents from intake through KYC.",
+        "systemType": "SUPPORTING",
+        "integrates": []
+      }
+    },
+    {
+      "meta": {
+        "id": "SYS-COB-008",
+        "type": "system",
+        "section": "systems",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Card Management (Marqeta)",
+        "purpose": "Orders and manages debit cards.",
+        "roleInThisProcess": "Triggered during Account Setup to provision the client's debit card.",
+        "systemType": "SUPPORTING",
+        "integrates": [
+          "SYS-COB-005"
+        ]
+      }
+    }
+  ],
+  "exceptions": [
+    {
+      "meta": {
+        "id": "EX-COB-001",
+        "type": "exception",
+        "section": "exceptions",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3",
+        "approval": "in-progress",
+        "approvalBy": "run-lint",
+        "approvalDate": "2026-05-18"
+      },
+      "content": {
+        "title": "Incomplete Documentation",
+        "description": "Triggered when required documents are missing after submission. It is the most common exception in the process, firing on roughly 30% of applications.",
+        "handling": "The Operations Officer identifies the missing items, contacts the client, and holds the case until the documents arrive. The case does not advance to KYC until it is complete.",
+        "impact": "Medium — mainly cycle-time loss. It is tied directly to pain point PP-COB-001 (manual document chasing).",
+        "category": "Documentation",
+        "frequencyPct": 30,
+        "impactSeverity": "MEDIUM",
+        "handlingOwner": "Operations Officer",
+        "affects": [
+          "PS-COB-001",
+          "PS-COB-002"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "EX-COB-002",
+        "type": "exception",
+        "section": "exceptions",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "KYC Screening Hit",
+        "description": "Triggered when screening returns a match on a director or beneficial owner. It occurs on about 5% of applications.",
+        "handling": "The case is escalated to the Compliance Officer, who reviews the match, decides whether it is a true hit, and either clears it or stops onboarding.",
+        "impact": "High — a genuine hit can mean declining the client and filing a regulatory report.",
+        "category": "Compliance",
+        "frequencyPct": 5,
+        "impactSeverity": "HIGH",
+        "handlingOwner": "Compliance Officer",
+        "affects": [
+          "PS-COB-002"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "EX-COB-003",
+        "type": "exception",
+        "section": "exceptions",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Credit Decline",
+        "description": "Triggered when the credit assessment fails the scorecard or lending policy. It occurs on about 15% of applications that requested an overdraft.",
+        "handling": "The Relationship Manager informs the client, who may proceed with a deposit-only account or withdraw.",
+        "impact": "Medium — the deposit account can still open; only the requested facility is refused.",
+        "category": "Credit",
+        "frequencyPct": 15,
+        "impactSeverity": "MEDIUM",
+        "handlingOwner": "Relationship Manager",
+        "affects": [
+          "PS-COB-003"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "EX-COB-004",
+        "type": "exception",
+        "section": "exceptions",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "System Downtime",
+        "description": "Triggered when the core banking system is unavailable for more than four hours during account setup. Rare — about 1% of applications.",
+        "handling": "The IT Service Desk owns recovery; affected cases are queued and processed once the system is restored.",
+        "impact": "High while it lasts — account setup stops entirely for every in-flight case.",
+        "category": "System",
+        "frequencyPct": 1,
+        "impactSeverity": "HIGH",
+        "handlingOwner": "IT Service Desk",
+        "affects": [
+          "PS-COB-004"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "EX-COB-005",
+        "type": "exception",
+        "section": "exceptions",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Complex Ownership Structure",
+        "description": "Triggered when the business has more than three ownership layers, foreign shareholders or trust structures. It occurs on about 20% of applications.",
+        "handling": "The case is routed to a Senior KYC Analyst for enhanced due diligence rather than standard KYC.",
+        "impact": "Medium — a significantly longer KYC step, but a normal and expected path for complex businesses.",
+        "category": "Compliance",
+        "frequencyPct": 20,
+        "impactSeverity": "MEDIUM",
+        "handlingOwner": "Senior KYC Analyst",
+        "affects": [
+          "PS-COB-002"
+        ]
+      }
+    }
+  ],
+  "audit-findings": [
+    {
+      "meta": {
+        "id": "OAF-COB-001",
+        "type": "audit-finding",
+        "section": "audit-findings",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Internal Audit Q3 2024 — Control Testing",
+        "finding": "Internal Audit tested the COB-003 control framework in Q3 2024 and found no material weaknesses. The documented control points operated as designed across the audit sample.",
+        "recommendation": "No remediation required. Audit suggested keeping an eye on the medium-effectiveness controls (product disclosure, welcome-call quality) and re-testing them in the next cycle.",
+        "auditDate": "2024-Q3",
+        "findingStatus": "closed",
+        "severity": "NONE"
+      }
+    }
+  ],
+  "channels": [
+    {
+      "meta": {
+        "id": "CH-COB-001",
+        "type": "cx-channel",
+        "section": "channels",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Online Portal",
+        "description": "The bank's self-service portal, where the client completes the application and uploads documents.",
+        "usage": "The primary digital intake channel — used at Submit application and Provide missing documents.",
+        "channelType": "DIGITAL",
+        "touchpoints": [
+          "JT-COB-001",
+          "JT-COB-002"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "CH-COB-002",
+        "type": "cx-channel",
+        "section": "channels",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Email",
+        "description": "Asynchronous email between the bank and the client.",
+        "usage": "Carries document requests, KYC follow-ups and the activation confirmation across three touchpoints.",
+        "channelType": "DIGITAL",
+        "touchpoints": [
+          "JT-COB-002",
+          "JT-COB-003",
+          "JT-COB-004"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "CH-COB-003",
+        "type": "cx-channel",
+        "section": "channels",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Phone",
+        "description": "Direct voice contact between bank staff and the client.",
+        "usage": "Used for KYC clarification questions and the welcome call — the assisted, personal moments of the journey.",
+        "channelType": "ASSISTED",
+        "touchpoints": [
+          "JT-COB-003",
+          "JT-COB-005"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "CH-COB-004",
+        "type": "cx-channel",
+        "section": "channels",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Branch",
+        "description": "In-person contact at a bank branch.",
+        "usage": "An alternative intake channel for clients who prefer to apply with face-to-face advice.",
+        "channelType": "ASSISTED",
+        "touchpoints": [
+          "JT-COB-001"
+        ]
+      }
+    }
+  ],
+  "competitor-innovation": [
+    {
+      "meta": {
+        "id": "CEU-COB-001",
+        "type": "competitor-eu",
+        "section": "competitor-innovation",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "BNP Paribas Cash Management - Digital Onboarding",
+        "provenance": {
+          "evidence": {
+            "evidence": "https://cashmanagement.bnpparibas.com/solutions/digital-onboarding - \"Welcome, an in-house digital platform to ease KYC, account-opening and ebanking contracts subscriptions\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "relevance": {
+            "evidence": "https://cashmanagement.bnpparibas.com/solutions/digital-onboarding - \"currently available in Europe and Asia and progressively being made available across the world\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "theMove": {
+            "evidence": "https://cashmanagement.bnpparibas.com/solutions/digital-onboarding - \"BNP Paribas has developed Welcome, an in-house digital platform to ease KYC, account-opening and ebanking contracts subscriptions\" - fetched 2026-05-18",
+            "source": "web"
+          }
+        }
+      },
+      "content": {
+        "title": "BNP Paribas unifies KYC and account opening on its Welcome platform",
+        "theMove": "BNP Paribas built Welcome, an in-house digital platform that streamlines KYC, account opening and e-banking contract subscription into a single onboarding journey, available across Europe and Asia and progressively rolling out worldwide.",
+        "relevance": "A close European peer has unified KYC and account opening on one platform, while COB-003 still spreads onboarding across six-plus disconnected systems with re-keying. The gap is a slower, more error-prone journey than the peer now offers business clients.",
+        "evidence": "BNP Paribas Cash Management describes Welcome as an in-house digital platform easing KYC, account opening and e-banking contract subscription, available in Europe and Asia and being rolled out worldwide.",
+        "competitor": "BNP Paribas",
+        "sourceUrl": "https://cashmanagement.bnpparibas.com/solutions/digital-onboarding",
+        "bearsOn": [
+          "PS-COB-001",
+          "PS-COB-002",
+          "PP-COB-002"
+        ],
+        "asOf": "2026-05-18"
+      }
+    },
+    {
+      "meta": {
+        "id": "CEU-COB-002",
+        "type": "competitor-eu",
+        "section": "competitor-innovation",
+        "status": "draft",
+        "confidence": "low",
+        "source": "ad-hoc-news - Inside ING Groep N.V.: How a Hybrid Banking Platform Is Rewiring European Finance",
+        "provenance": {
+          "evidence": {
+            "evidence": "https://www.ad-hoc-news.de/.../68479221 - \"serving around 1.7 million customers across eight markets\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "relevance": {
+            "evidence": "https://www.ad-hoc-news.de/.../68479221 - \"ING's Business Banking serves three types of customers: self-employed, SMEs and mid-corporates\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "theMove": {
+            "evidence": "https://www.ad-hoc-news.de/.../68479221 - \"ING's digital identity plays well with digitally savvy customers, particularly in retail and SME segments, where user experience and speed can outweigh the breadth of product catalog\" - fetched 2026-05-18",
+            "source": "web"
+          }
+        }
+      },
+      "content": {
+        "title": "ING treats SME onboarding speed as its competitive edge",
+        "theMove": "ING runs a digital-first business-banking platform serving self-employed, SME and mid-corporate clients across eight markets, leaning on a strong digital identity and onboarding speed as the deliberate competitive edge in the SME segment.",
+        "relevance": "ING competes for the same SME clients as BizBanking and treats onboarding speed and user experience as a differentiator that can outweigh product breadth - direct pressure on COB-003's multi-day, multi-system journey.",
+        "evidence": "Analyst coverage notes ING's Business Banking serves around 1.7 million self-employed and SME customers across eight markets, with digital identity and onboarding speed cited as its segment edge.",
+        "competitor": "ING",
+        "sourceUrl": "https://www.ad-hoc-news.de/boerse/news/ueberblick/inside-ing-groep-n-v-how-a-hybrid-banking-platform-is-rewiring-european/68479221",
+        "bearsOn": [
+          "PS-COB-001",
+          "PP-COB-002"
+        ],
+        "asOf": "2026-05-18"
+      }
+    },
+    {
+      "meta": {
+        "id": "CFT-COB-001",
+        "type": "competitor-fintech",
+        "section": "competitor-innovation",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "Monetum - Best Business Accounts in Europe 2025; Qonto - Open a Business Account Online",
+        "provenance": {
+          "evidence": {
+            "evidence": "https://monetum.com/best-business-accounts-europe-comparison-guide/ - \"an IBAN received in just 10 minutes on average\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "relevance": {
+            "evidence": "https://monetum.com/best-business-accounts-europe-comparison-guide/ - \"Qonto is noted for ultra-fast account creation\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "theMove": {
+            "evidence": "https://monetum.com/best-business-accounts-europe-comparison-guide/ - \"Qonto offers account opening with an IBAN received in just 10 minutes on average\" - fetched 2026-05-18",
+            "source": "web"
+          }
+        }
+      },
+      "content": {
+        "title": "Qonto opens a business account and issues an IBAN in ten minutes",
+        "theMove": "Qonto opens a business account fully online and issues an IBAN in about ten minutes on average, with a guided digital flow that validates the client's information as they enter it.",
+        "relevance": "A fintech onboards an SME in minutes while COB-003 runs a multi-day, multi-step journey with repeated document chasing. The expectation gap reframes any delay in BizBanking's flow as a visible competitive weakness.",
+        "evidence": "Business-account comparisons report Qonto issues an IBAN in roughly ten minutes on average through an ultra-fast, fully online account-opening flow.",
+        "competitor": "Qonto",
+        "sourceUrl": "https://monetum.com/best-business-accounts-europe-comparison-guide/",
+        "bearsOn": [
+          "PS-COB-001",
+          "PS-COB-002",
+          "PP-COB-001",
+          "PP-COB-002"
+        ],
+        "asOf": "2026-05-18"
+      }
+    },
+    {
+      "meta": {
+        "id": "CFT-COB-002",
+        "type": "competitor-fintech",
+        "section": "competitor-innovation",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "ANNA Money - Starling vs Tide vs Revolut Business Account: 2026 Comparison",
+        "provenance": {
+          "evidence": {
+            "evidence": "https://anna.money/blog/guides/starling-vs-tide-vs-revolut-business-account/ - \"handling setup entirely in-app ... once completed, the account opened immediately\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "relevance": {
+            "evidence": "https://anna.money/blog/guides/starling-vs-tide-vs-revolut-business-account/ - \"Revolut asked for more information than Tide, but everything felt structured and clear\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "theMove": {
+            "evidence": "https://anna.money/blog/guides/starling-vs-tide-vs-revolut-business-account/ - \"Tide and Revolut handling setup entirely in-app ... once completed, the account opened immediately\" - fetched 2026-05-18",
+            "source": "web"
+          }
+        }
+      },
+      "content": {
+        "title": "Revolut Business runs signature-free onboarding entirely in-app",
+        "theMove": "Revolut Business runs onboarding entirely in-app: the client completes a structured, guided digital flow, and once the steps are finished the account opens immediately, with no paper forms or wet-ink signatures.",
+        "relevance": "A fintech delivers fully digital, signature-free, in-app onboarding while COB-003 still breaks its digital flow with a wet-ink signature and re-keying across systems - friction the challenger has designed out entirely.",
+        "evidence": "Comparative reviews note Revolut and Tide handle business-account setup entirely in-app with a clear, structured flow, and the account opens immediately once the steps are completed.",
+        "competitor": "Revolut Business",
+        "sourceUrl": "https://anna.money/blog/guides/starling-vs-tide-vs-revolut-business-account/",
+        "bearsOn": [
+          "PS-COB-001",
+          "PP-COB-002",
+          "PP-COB-004"
+        ],
+        "asOf": "2026-05-18"
+      }
+    },
+    {
+      "meta": {
+        "id": "CGL-COB-001",
+        "type": "competitor-global",
+        "section": "competitor-innovation",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "Citi - Citi Continues Global Roll Out and Enhancements to CitiDirect Commercial Banking Platform (2025)",
+        "provenance": {
+          "evidence": {
+            "evidence": "https://www.citigroup.com/global/news/press-release/2025/citi-global-roll-out-enhancements-citidirect-commercial-banking-platform - \"Fully digitized onboarding process with real-time status updates that significantly reduced onboarding turnaround times\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "relevance": {
+            "evidence": "https://www.citigroup.com/global/news/press-release/2025/citi-global-roll-out-enhancements-citidirect-commercial-banking-platform - \"a 360 consolidated view across Cash, Loans, Trade, FX, Servicing and Onboarding/KYC\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "theMove": {
+            "evidence": "https://www.citigroup.com/global/news/press-release/2025/citi-global-roll-out-enhancements-citidirect-commercial-banking-platform - \"Fully digitized onboarding process with real-time status updates that significantly reduced onboarding turnaround times\" - fetched 2026-05-18",
+            "source": "web"
+          }
+        }
+      },
+      "content": {
+        "title": "Citi gives commercial clients real-time onboarding status on CitiDirect",
+        "theMove": "Citi rolled out a fully digitized onboarding process on CitiDirect Commercial Banking, with real-time status updates and a 360-degree client view across cash, loans, trade, FX, servicing and onboarding/KYC, plus a Digital Servicing Hub for queries and document submission.",
+        "relevance": "A global competitor gives commercial clients real-time onboarding status and staff a single platform view. COB-003 clients get no status visibility and staff have no single case view - both a client-experience and an efficiency gap.",
+        "evidence": "Citi's 2025 release says CitiDirect Commercial Banking's fully digitized onboarding with real-time status updates significantly reduced onboarding turnaround times, on a platform giving a 360-degree consolidated client view.",
+        "competitor": "Citi",
+        "sourceUrl": "https://www.citigroup.com/global/news/press-release/2025/citi-global-roll-out-enhancements-citidirect-commercial-banking-platform",
+        "bearsOn": [
+          "PS-COB-001",
+          "PS-COB-004",
+          "PP-COB-002"
+        ],
+        "asOf": "2026-05-18"
+      }
+    },
+    {
+      "meta": {
+        "id": "CGL-COB-002",
+        "type": "competitor-global",
+        "section": "competitor-innovation",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "HSBC - Transforming HSBC with AI; HSBC US - Digital Transformation New Onboarding Journey",
+        "provenance": {
+          "evidence": {
+            "evidence": "https://www.hsbc.com/who-we-are/hsbc-and-digital/hsbc-and-ai/transforming-hsbc-with-ai - \"The bank has already enabled 85% of its employees with generative AI productivity tools\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "relevance": {
+            "evidence": "https://www.business.us.hsbc.com/en/campaigns/digital-transformation - \"HSBC offers account opening in under three days with a simplified onboarding journey\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "theMove": {
+            "evidence": "https://kingy.ai/news/hsbc-ai-transformation-digital-banking/ - \"HSBC is investing $1.8B in generative AI, retiring legacy systems and redesigning banking processes\" - fetched 2026-05-18",
+            "source": "web"
+          }
+        }
+      },
+      "content": {
+        "title": "HSBC rebuilds onboarding on a $1.8bn generative-AI foundation",
+        "theMove": "HSBC is investing 1.8 billion dollars in generative AI to retire legacy systems and redesign banking processes, and has simplified its business onboarding journey to open accounts in under three days.",
+        "relevance": "A global competitor is rebuilding onboarding on a generative-AI foundation and advertising sub-three-day account opening. COB-003's KYC step alone runs two to five days, leaving a widening turnaround gap against AI-redesigned peers.",
+        "evidence": "HSBC reports a 1.8 billion-dollar generative-AI investment redesigning banking processes, 85 percent of employees enabled on GenAI tools, and a simplified onboarding journey opening accounts in under three days.",
+        "competitor": "HSBC",
+        "sourceUrl": "https://www.hsbc.com/who-we-are/hsbc-and-digital/hsbc-and-ai/transforming-hsbc-with-ai",
+        "bearsOn": [
+          "PS-COB-002",
+          "PS-COB-004"
+        ],
+        "asOf": "2026-05-18"
+      }
+    }
+  ],
+  "control-gaps": [
+    {
+      "meta": {
+        "id": "CG-COB-001",
+        "type": "compliance-gap",
+        "section": "control-gaps",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Product Disclosure only medium-effective",
+        "theGap": "Control CP-COB-005 (Product Disclosure) is rated only MEDIUM-effective. The disclosure is given, but its consistency and the evidence that the client understood it are weak.",
+        "risk": "A consumer-protection complaint where the bank cannot demonstrate that disclosure was complete and understood.",
+        "remediation": "Standardise the disclosure script, capture an explicit client acknowledgement, and re-rate the control after two quarters.",
+        "severity": "MEDIUM",
+        "gapStatus": "open",
+        "control": [
+          "CP-COB-005"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "CG-COB-002",
+        "type": "compliance-gap",
+        "section": "control-gaps",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Account configuration verification not in the control set",
+        "theGap": "Account configuration is verified in practice during PS-COB-004, but this verification is not captured as a formal, named control.",
+        "risk": "An undocumented control is invisible to audit and can quietly erode — no owner, no testing schedule, no evidence trail.",
+        "remediation": "Formalise account-configuration verification as a control with an owner, a testing cadence and recorded evidence.",
+        "severity": "MEDIUM",
+        "gapStatus": "open"
+      }
+    }
+  ],
+  "controls": [
+    {
+      "meta": {
+        "id": "CP-COB-001",
+        "type": "control",
+        "section": "controls",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Customer Identification",
+        "whatItChecks": "That the identity of the business and the individuals acting for it is established and verified before the relationship proceeds.",
+        "controlActivity": "The KYC Analyst collects identity evidence, validates it against the KYC platform and independent sources, and records the verification outcome in the case file.",
+        "riskAddressed": "Onboarding a client under a false or unverified identity — a direct breach of Customer Due Diligence rules.",
+        "timing": "Performed once per application, during KYC & Identity Verification (PS-COB-002). A manual control.",
+        "controlType": "PREVENTIVE",
+        "execution": "MANUAL",
+        "regulatedBy": [
+          "REG-COB-001"
+        ],
+        "step": "PS-COB-002",
+        "effectiveness": "HIGH",
+        "owner": "KYC Analyst"
+      }
+    },
+    {
+      "meta": {
+        "id": "CP-COB-002",
+        "type": "control",
+        "section": "controls",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Beneficial Owner Identification",
+        "whatItChecks": "That the ultimate beneficial owners behind the business are identified — even where ownership runs through several layers.",
+        "controlActivity": "The KYC Analyst maps the ownership structure, identifies every individual owning or controlling the entity above the regulatory threshold, and verifies each one.",
+        "riskAddressed": "A hidden controlling party — the classic vector for laundering money through corporate structures.",
+        "timing": "Once per application during PS-COB-002, repeated if the ownership structure changes. A manual control.",
+        "controlType": "PREVENTIVE",
+        "execution": "MANUAL",
+        "regulatedBy": [
+          "REG-COB-002"
+        ],
+        "step": "PS-COB-002",
+        "effectiveness": "HIGH",
+        "owner": "KYC Analyst"
+      }
+    },
+    {
+      "meta": {
+        "id": "CP-COB-003",
+        "type": "control",
+        "section": "controls",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Data Protection Consent",
+        "whatItChecks": "That the client has given valid, recorded consent for the bank to process their personal data.",
+        "controlActivity": "The Operations Officer presents the data-protection notice at intake and records the client's consent before any personal data is processed downstream.",
+        "riskAddressed": "Processing personal data without a lawful basis — a GDPR violation with regulatory and reputational consequences.",
+        "timing": "Once, at Application Receipt (PS-COB-001). A manual control.",
+        "controlType": "PREVENTIVE",
+        "execution": "MANUAL",
+        "regulatedBy": [
+          "REG-COB-003"
+        ],
+        "step": "PS-COB-001",
+        "effectiveness": "HIGH",
+        "owner": "Operations Officer"
+      }
+    },
+    {
+      "meta": {
+        "id": "CP-COB-004",
+        "type": "control",
+        "section": "controls",
+        "status": "draft",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Strong Customer Authentication",
+        "whatItChecks": "That access to the new account is protected by strong, multi-factor authentication from the moment it goes live.",
+        "controlActivity": "The system enforces SCA during account setup — no credentials are issued without it.",
+        "riskAddressed": "Unauthorised account access and payment fraud.",
+        "timing": "Applied automatically during Account Setup (PS-COB-004). An automated control.",
+        "controlType": "PREVENTIVE",
+        "execution": "AUTOMATED",
+        "regulatedBy": [
+          "REG-COB-004"
+        ],
+        "step": "PS-COB-004",
+        "effectiveness": "HIGH",
+        "owner": "Operations Officer"
+      }
+    },
+    {
+      "meta": {
+        "id": "CP-COB-005",
+        "type": "control",
+        "section": "controls",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Product Disclosure",
+        "whatItChecks": "That the client is given clear, complete information about the products and terms they are signing up for.",
+        "controlActivity": "The Relationship Manager presents the product disclosure during activation and confirms the client has received it.",
+        "riskAddressed": "Mis-selling and consumer-protection complaints arising from incomplete disclosure.",
+        "timing": "Once, during Client Communication & Activation (PS-COB-005). A manual control — currently only medium-effective; see compliance gap CG-COB-001.",
+        "controlType": "PREVENTIVE",
+        "execution": "MANUAL",
+        "regulatedBy": [
+          "REG-COB-005"
+        ],
+        "step": "PS-COB-005",
+        "effectiveness": "MEDIUM",
+        "owner": "Relationship Manager"
+      }
+    }
+  ],
+  "friction-points": [
+    {
+      "meta": {
+        "id": "FP-COB-001",
+        "type": "friction-point",
+        "section": "friction-points",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Unclear Document Requirements",
+        "description": "At the start of the journey the client is not given a precise, tailored list of the documents their specific business type needs.",
+        "rootCause": "The document checklist is generic — it is not adapted to the client's entity type or the products they requested.",
+        "clientImpact": "The client guesses, submits the wrong or incomplete set, and is then asked for more. An avoidable bad first impression.",
+        "severity": "HIGH",
+        "occursAt": [
+          "PS-COB-001"
+        ],
+        "painPoint": "PP-COB-001",
+        "addressedBy": "II-COB-001"
+      }
+    },
+    {
+      "meta": {
+        "id": "FP-COB-002",
+        "type": "friction-point",
+        "section": "friction-points",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Repeated Document Chasing",
+        "description": "The client is contacted several times for missing documents, often one item at a time.",
+        "rootCause": "There is no single up-front completeness check, so gaps surface piecemeal across several rounds.",
+        "clientImpact": "The client feels the bank is disorganised and that the process has no end in sight.",
+        "severity": "HIGH",
+        "occursAt": [
+          "PS-COB-001",
+          "PS-COB-002"
+        ],
+        "painPoint": "PP-COB-001",
+        "addressedBy": "II-COB-002"
+      }
+    },
+    {
+      "meta": {
+        "id": "FP-COB-003",
+        "type": "friction-point",
+        "section": "friction-points",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Paper Signature Requirement",
+        "description": "After an otherwise digital application the client is asked to provide a physical signature.",
+        "rootCause": "Legacy forms were never moved to an e-signature solution.",
+        "clientImpact": "The digital flow breaks — the client must print, sign and scan or post, friction that feels out of step with a modern bank.",
+        "severity": "MEDIUM",
+        "occursAt": [
+          "PS-COB-001"
+        ],
+        "painPoint": "PP-COB-004",
+        "addressedBy": "II-COB-003"
+      }
+    },
+    {
+      "meta": {
+        "id": "FP-COB-004",
+        "type": "friction-point",
+        "section": "friction-points",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Complex Ownership Questions",
+        "description": "The client is asked detailed questions about their ownership and control structure that are hard to understand without guidance.",
+        "rootCause": "KYC questions are written in regulatory language rather than client language, with no examples.",
+        "clientImpact": "The client struggles to answer, answers incorrectly, and triggers further back-and-forth.",
+        "severity": "MEDIUM",
+        "occursAt": [
+          "PS-COB-002"
+        ],
+        "painPoint": "PP-COB-003"
+      }
+    }
+  ],
+  "gap-resolution": [
+    {
+      "meta": {
+        "id": "VG-COB-001",
+        "type": "gap",
+        "section": "gap-resolution",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Consolidated by source-target from the COB-003 wiki",
+        "provenance": {
+          "resolution": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "status": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "theGap": {
+            "evidence": "",
+            "source": "proposed"
+          }
+        }
+      },
+      "content": {
+        "title": "No integration layer across the legacy systems",
+        "theGap": "Onboarding runs across six-plus systems that were added over time with no integration layer or shared case view. The unified workspace target assumes an orchestration layer the bank does not currently have.",
+        "resolution": "The transformation must deliver an integration layer — built or bought — that lets the systems exchange data and present one case view. This is the foundational capability behind target state TS-COB-002, and the SLA instrumentation and continuous monitoring both depend on it being in place first.",
+        "status": "Open — no integration capability exists today; the build-versus-buy choice in TD-COB-001 must be settled before this gap can close.",
+        "validationArea": "Technology Architecture",
+        "gapStatus": "open"
+      }
+    },
+    {
+      "meta": {
+        "id": "VG-COB-002",
+        "type": "gap",
+        "section": "gap-resolution",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Consolidated by source-target from the COB-003 wiki",
+        "provenance": {
+          "resolution": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "status": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "theGap": {
+            "evidence": "",
+            "source": "proposed"
+          }
+        }
+      },
+      "content": {
+        "title": "No EU Digital Identity Wallet connector or legal readiness",
+        "theGap": "The bank has no connector to the EU Digital Identity Wallet and no legal sign-off for accepting wallet-based credentials, yet eIDAS 2.0 makes acceptance a January 2027 obligation.",
+        "resolution": "The transformation must build a wallet-connector integration and secure legal and compliance sign-off on relying on wallet-issued attributes for KYC. Target state TS-COB-001 depends on this capability; the regulatory deadline sets a fixed sequencing constraint the plan must work back from.",
+        "status": "Open — neither the connector nor the legal assessment has started; the January 2027 mandate makes this time-critical.",
+        "validationArea": "Regulatory Readiness",
+        "gapStatus": "open"
+      }
+    },
+    {
+      "meta": {
+        "id": "VG-COB-003",
+        "type": "gap",
+        "section": "gap-resolution",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Consolidated by source-target from the COB-003 wiki",
+        "provenance": {
+          "resolution": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "status": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "theGap": {
+            "evidence": "",
+            "source": "proposed"
+          }
+        }
+      },
+      "content": {
+        "title": "No explainability and audit layer for automated decisions",
+        "theGap": "AI-assisted screening and open-banking credit decisioning introduce automated risk decisions, but the bank has no explainability and audit layer to evidence how those decisions are reached — which regulators now require.",
+        "resolution": "The transformation must build model-explainability, decision-logging and audit-trail capability alongside the AI screening and open-banking credit changes, so every automated or AI-assisted decision can be reconstructed and defended. Target state TS-COB-003 cannot be approved for production without it.",
+        "status": "Open — the explainability layer is a named dependency of TD-COB-004 and TD-COB-005 but is not yet scoped.",
+        "validationArea": "Risk and Compliance",
+        "gapStatus": "open"
+      }
+    },
+    {
+      "meta": {
+        "id": "VG-COB-004",
+        "type": "gap",
+        "section": "gap-resolution",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Consolidated by source-target from the COB-003 wiki",
+        "provenance": {
+          "resolution": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "status": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "theGap": {
+            "evidence": "",
+            "source": "proposed"
+          }
+        }
+      },
+      "content": {
+        "title": "Workflow system does not capture step-level event timing",
+        "theGap": "The workflow system does not capture step start and end timestamps, so SLA adherence and per-step duration cannot be reported. Both the SLA dashboard and continuous controls monitoring depend on this event data.",
+        "resolution": "The transformation must instrument the workflow system to emit step-level event timestamps, then layer dashboard and process-mining capability over them. This event-data foundation serves target state TS-COB-002 and is also a prerequisite for the continuous monitoring in TS-COB-005.",
+        "status": "Open — no event-timing capture exists today; instrumentation is the first step of TD-COB-006.",
+        "validationArea": "Process Instrumentation",
+        "gapStatus": "open"
+      }
+    },
+    {
+      "meta": {
+        "id": "VG-COB-005",
+        "type": "gap",
+        "section": "gap-resolution",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Consolidated by source-target from the COB-003 wiki",
+        "provenance": {
+          "resolution": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "status": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "theGap": {
+            "evidence": "",
+            "source": "proposed"
+          }
+        }
+      },
+      "content": {
+        "title": "No open-banking aggregation or consent capability",
+        "theGap": "The credit step has no open-banking aggregator integration, no client-consent handling for permissioned bank data, and a scorecard calibrated only on bureau inputs — none of which the bank has in place today.",
+        "resolution": "The transformation must integrate an open-banking aggregator, build consent capture and management, and recalibrate the credit scorecard on cash-flow data before open-banking inputs can be trusted. Target state TS-COB-003 depends on all three being delivered together.",
+        "status": "Open — the aggregator, consent handling and scorecard recalibration are unscoped dependencies of TD-COB-005.",
+        "validationArea": "Technology Capability",
+        "gapStatus": "open"
+      }
+    }
+  ],
+  "innovation-ideas": [
+    {
+      "meta": {
+        "id": "II-COB-004",
+        "type": "innovation-idea",
+        "section": "innovation-ideas",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Derived from market trend TR-COB-004 (web-sourced)"
+      },
+      "content": {
+        "title": "Unified onboarding case workspace",
+        "theIdea": "Build a single onboarding workspace that stitches the six-plus systems, CRM, OWS, KYC, screening, core banking and card management, into one orchestrated case view, so staff see the full state of a case and data is entered once and propagated automatically.",
+        "expectedBenefit": "Removes re-keying errors and slow handovers, gives staff and clients a clear single picture of case progress, and frees Operations Officer capacity for assessment work rather than navigation.",
+        "feasibility": "High complexity, high strategic fit. Needs an integration layer across legacy systems and is the largest of the proposed changes. Addresses pain point PP-COB-002, the bank's core system-fragmentation problem.",
+        "category": "System",
+        "strategicFit": "HIGH",
+        "complexity": "HIGH",
+        "addresses": [
+          "PP-COB-002"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "II-COB-005",
+        "type": "innovation-idea",
+        "section": "innovation-ideas",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Derived from market trend TR-COB-001 (web-sourced)"
+      },
+      "content": {
+        "title": "AI screening triage with false-positive learning loop",
+        "theIdea": "Introduce AI-assisted screening that auto-clears low-risk routine alerts and learns from analyst decisions to suppress repeat false matches, replacing today's conservatively-tuned thresholds that have no learning loop.",
+        "expectedBenefit": "Cuts the 40 percent false-positive load on KYC analysts, shortens the manual-review delay on onboarding, and lets analysts focus on genuine risk; industry platforms report 50 to 66 percent false-positive reductions.",
+        "feasibility": "Medium complexity, high strategic fit. Needs model integration plus the explainability and audit layer regulators now require for automated decisions. Addresses pain point PP-COB-003.",
+        "category": "Technology",
+        "strategicFit": "HIGH",
+        "complexity": "MEDIUM",
+        "addresses": [
+          "PP-COB-003"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "II-COB-006",
+        "type": "innovation-idea",
+        "section": "innovation-ideas",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Derived from market trend TR-COB-003 (web-sourced)"
+      },
+      "content": {
+        "title": "EU Digital Identity Wallet onboarding",
+        "theIdea": "Accept EU Digital Identity Wallet credentials so a client can share pre-verified identity and business attributes directly, instead of sourcing, uploading and re-submitting identity documents that the bank then verifies manually.",
+        "expectedBenefit": "Reduces the documents a client must find and the incomplete-application chasing loop, speeds identity verification, and positions the bank for the January 2027 wallet-acceptance mandate.",
+        "feasibility": "High complexity. Needs a wallet-connector integration and legal sign-off, but the eIDAS 2.0 timeline makes it a near-term requirement rather than an option. Addresses pain point PP-COB-001.",
+        "category": "Technology",
+        "strategicFit": "MEDIUM",
+        "complexity": "HIGH",
+        "addresses": [
+          "PP-COB-001"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "II-COB-007",
+        "type": "innovation-idea",
+        "section": "innovation-ideas",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Derived from market trends TR-COB-001 and TR-COB-004 (web-sourced)"
+      },
+      "content": {
+        "title": "Conversational KYC assistant for ownership questions",
+        "theIdea": "Add a guided, plain-language assistant that walks the client through ownership and control questions with worked examples, translating regulatory KYC language into terms a small-business owner can answer confidently.",
+        "expectedBenefit": "Cuts wrong answers and the back-and-forth they trigger, improves data quality on the KYC step, and removes a frustrating moment in the client journey.",
+        "feasibility": "Medium complexity. Needs content design plus a conversational layer over the existing KYC questionnaire. Addresses friction point FP-COB-004.",
+        "category": "Customer Experience",
+        "strategicFit": "MEDIUM",
+        "complexity": "MEDIUM",
+        "addresses": [
+          "FP-COB-004"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "II-COB-008",
+        "type": "innovation-idea",
+        "section": "innovation-ideas",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "Derived from market trend TR-COB-006 (web-sourced)",
+        "provenance": {
+          "expectedBenefit": {
+            "evidence": "https://planky.com/blog/how-open-banking-is-transforming-credit-decisioning-for-sme-lending - \"Instant access to financial data enables real-time credit decisions, faster onboarding\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "feasibility": {
+            "evidence": "https://enablebanking.com/industries/credit-and-risk - real-time open banking data integrated into credit and risk assessment - fetched 2026-05-18",
+            "source": "web"
+          },
+          "theIdea": {
+            "evidence": "https://planky.com/blog/how-open-banking-is-transforming-credit-decisioning-for-sme-lending - \"real-time financial data directly from SMEs' bank accounts, eliminating the reliance on outdated credit reports\" - fetched 2026-05-18",
+            "source": "web"
+          }
+        }
+      },
+      "content": {
+        "title": "Open-banking cash-flow credit assessment",
+        "theIdea": "Add an open-banking connector to the credit step so a client can permission live bank-account data - cash flow, transaction history, balances - feeding the scorecard alongside or in place of the external bureau pull.",
+        "expectedBenefit": "Removes the unpredictable, invisible bureau wait, gives the Credit Analyst a current cash-flow view rather than a stale report, and speeds the overdraft decision for the client.",
+        "feasibility": "Medium complexity - needs an open-banking aggregator integration into the credit decisioning system, client-consent handling, and scorecard recalibration. Addresses pain point PP-COB-005.",
+        "category": "Technology",
+        "strategicFit": "MEDIUM",
+        "complexity": "MEDIUM",
+        "addresses": [
+          "PP-COB-005"
+        ],
+        "fromTrend": [
+          "TR-COB-006"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "II-COB-009",
+        "type": "innovation-idea",
+        "section": "innovation-ideas",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "Derived from market trend TR-COB-005 and competitor move CGL-COB-001 (web-sourced)",
+        "provenance": {
+          "expectedBenefit": {
+            "evidence": "https://www.celonis.com/blog/5-banking-guide-takeaways - process mining pinpoints \"exactly where time is leaking through long waits, unnecessary handoffs, and reassignments\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "feasibility": {
+            "evidence": "https://www.qpr.com/blog/process-mining-financial-services-benefits - process mining built on captured event data / timestamps - fetched 2026-05-18",
+            "source": "web"
+          },
+          "theIdea": {
+            "evidence": "https://www.servicenow.com/community/process-mining-blog/process-mining-in-minutes-minute-5-sla-breach-analysis/ba-p/3532395 - \"SLA dashboards show what was missed, while process mining reveals why\" - fetched 2026-05-18",
+            "source": "web"
+          }
+        }
+      },
+      "content": {
+        "title": "Real-time SLA and per-step timing dashboard",
+        "theIdea": "Instrument the onboarding workflow to capture step start and end times, and report SLA adherence and per-step duration on a live dashboard, so the slowest step and a slipping week are both visible at a glance.",
+        "expectedBenefit": "Replaces intuition-led improvement with evidence: managers see the real bottleneck step, catch SLA slippage before clients complain, and can give clients a status they can trust.",
+        "feasibility": "Medium complexity - needs event timestamps captured in OWS and a process-mining or dashboard layer over them. Addresses process gaps PG-COB-001 and PG-COB-003.",
+        "category": "Process",
+        "strategicFit": "HIGH",
+        "complexity": "MEDIUM",
+        "addresses": [
+          "PG-COB-001",
+          "PG-COB-003"
+        ],
+        "fromTrend": [
+          "TR-COB-005"
+        ],
+        "fromCompetitor": [
+          "CGL-COB-001"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "II-COB-010",
+        "type": "innovation-idea",
+        "section": "innovation-ideas",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "Derived from market trend TR-COB-008 (web-sourced)",
+        "provenance": {
+          "expectedBenefit": {
+            "evidence": "https://engageware.com/blog/improving-the-customer-experience-in-banking-examples/ - \"the customer is immediately provided with essential next steps and a clear digital welcome package\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "feasibility": {
+            "evidence": "https://visbanking.com/customer-onboarding-best-practices - self-service scheduling described as a standard 2025 onboarding feature - fetched 2026-05-18",
+            "source": "web"
+          },
+          "theIdea": {
+            "evidence": "https://visbanking.com/customer-onboarding-best-practices - \"self-service appointment scheduling with online banking advisors ... automated customer welcome journeys\" - fetched 2026-05-18",
+            "source": "web"
+          }
+        }
+      },
+      "content": {
+        "title": "Client self-scheduling and automated digital welcome",
+        "theIdea": "Let the client book their own welcome-call slot from the Relationship Manager's calendar, and send an automated digital welcome package with access credentials and first-step guidance the moment the account goes live.",
+        "expectedBenefit": "Ends the three-attempt phone-and-email chase, de-fragments the Relationship Manager's time, and gives the client an immediate, self-paced activation rather than waiting for the bank to call.",
+        "feasibility": "Low complexity - a self-scheduling widget linked to RM calendars plus a templated welcome message triggered on activation. Addresses pain point PP-COB-006.",
+        "category": "Customer Experience",
+        "strategicFit": "MEDIUM",
+        "complexity": "LOW",
+        "addresses": [
+          "PP-COB-006"
+        ],
+        "fromTrend": [
+          "TR-COB-008"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "II-COB-011",
+        "type": "innovation-idea",
+        "section": "innovation-ideas",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "Derived from market trend TR-COB-007 (web-sourced)",
+        "provenance": {
+          "expectedBenefit": {
+            "evidence": "https://macpas.com/the-power-of-continuous-auditing-and-monitoring/ - continuous monitoring \"embedding automated analytics into core business processes\" with audit-ready evidence - fetched 2026-05-18",
+            "source": "web"
+          },
+          "feasibility": {
+            "evidence": "https://www.skan.ai/blogs/what-is-continuous-controls-monitoring-a-simple-guide-to-ccm-tools-benefits - CCM tools layered over business processes - fetched 2026-05-18",
+            "source": "web"
+          },
+          "theIdea": {
+            "evidence": "https://www.anaptyss.com/blog/how-continuous-control-monitoring-is-transforming-banking-risk-management/ - automated near-real-time testing of key controls - fetched 2026-05-18",
+            "source": "web"
+          }
+        }
+      },
+      "content": {
+        "title": "Continuous controls monitoring for configuration and disclosure",
+        "theIdea": "Stand up continuous controls monitoring over onboarding: formalise account-configuration verification as a named, automatically-tested control, and instrument product disclosure to capture a recorded client acknowledgement that monitoring checks on every case.",
+        "expectedBenefit": "Closes two control gaps at once - gives account-configuration verification an owner and an evidence trail, and supplies the disclosure proof audit currently lacks, raising the medium-effective rating.",
+        "feasibility": "Medium complexity - needs a controls-monitoring layer over core banking and the disclosure step, plus control-owner assignment. Addresses compliance gaps CG-COB-001 and CG-COB-002.",
+        "category": "Process",
+        "strategicFit": "MEDIUM",
+        "complexity": "MEDIUM",
+        "addresses": [
+          "CG-COB-001",
+          "CG-COB-002"
+        ],
+        "fromTrend": [
+          "TR-COB-007"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "II-COB-001",
+        "type": "innovation-idea",
+        "section": "innovation-ideas",
+        "status": "confirmed",
+        "confidence": "medium",
+        "source": "DTP-BB-ONB-001 v2.3",
+        "relevance": "relevant",
+        "relevanceBy": "marlus",
+        "relevanceDate": "2026-05-18"
+      },
+      "content": {
+        "title": "Smart document checklist",
+        "theIdea": "An interactive checklist that adapts to the client's business type and validates uploads in real time, so the client sees immediately what is still missing or wrong.",
+        "expectedBenefit": "Directly attacks the incomplete-application rate and manual document chasing. Estimated client-effort reduction of -6 on the worst touchpoint.",
+        "feasibility": "Medium complexity, high strategic fit — it addresses friction point FP-COB-001 and the bank's single biggest cycle-time drag.",
+        "category": "Customer Experience",
+        "strategicFit": "HIGH",
+        "complexity": "MEDIUM",
+        "addresses": [
+          "FP-COB-001"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "II-COB-002",
+        "type": "innovation-idea",
+        "section": "innovation-ideas",
+        "status": "confirmed",
+        "confidence": "medium",
+        "source": "DTP-BB-ONB-001 v2.3",
+        "relevance": "relevant",
+        "relevanceBy": "marlus",
+        "relevanceDate": "2026-05-18"
+      },
+      "content": {
+        "title": "Automated document reminder",
+        "theIdea": "Replace manual chasing with an automated reminder sequence that escalates if documents are still missing.",
+        "expectedBenefit": "Frees Operations Officer capacity and gives the client a predictable, less nagging experience. Estimated effort reduction -3.",
+        "feasibility": "Low complexity — a contained automation. Addresses friction point FP-COB-002.",
+        "category": "Process",
+        "strategicFit": "MEDIUM",
+        "complexity": "LOW",
+        "addresses": [
+          "FP-COB-002"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "II-COB-003",
+        "type": "innovation-idea",
+        "section": "innovation-ideas",
+        "status": "confirmed",
+        "confidence": "medium",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "E-signature implementation",
+        "theIdea": "Adopt an e-signature solution (DocuSign / Adobe Sign) so signatures stay inside the digital flow.",
+        "expectedBenefit": "Removes the 1–2 day digitisation delay and the broken paper step. Estimated effort reduction -2.",
+        "feasibility": "Medium complexity — mostly integration and legal sign-off. Addresses friction point FP-COB-003.",
+        "category": "Technology",
+        "strategicFit": "MEDIUM",
+        "complexity": "MEDIUM",
+        "addresses": [
+          "FP-COB-003"
+        ]
+      }
+    }
+  ],
+  "integrations": [
+    {
+      "meta": {
+        "id": "INT-COB-001",
+        "type": "integration",
+        "section": "integrations",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "CRM ↔ OWS",
+        "whatConnects": "The CRM (case management) and OWS (workflow orchestration).",
+        "whatFlows": [
+          "Case and SLA data",
+          "Kept in sync bidirectionally so both systems agree on the case state"
+        ],
+        "systems": [
+          "SYS-COB-001",
+          "SYS-COB-002"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "INT-COB-002",
+        "type": "integration",
+        "section": "integrations",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "KYC Platform ↔ World-Check",
+        "whatConnects": "The Fenergo KYC platform and the World-Check screening database.",
+        "whatFlows": [
+          "The KYC platform sends names for PEP",
+          "Sanctions screening",
+          "Receives match results"
+        ],
+        "systems": [
+          "SYS-COB-003",
+          "SYS-COB-004"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "INT-COB-003",
+        "type": "integration",
+        "section": "integrations",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "CBS ↔ Card Management",
+        "whatConnects": "The core banking system and the card management platform.",
+        "whatFlows": [
+          "Account creation triggers debit-card provisioning downstream",
+          "Required metadata"
+        ],
+        "systems": [
+          "SYS-COB-005",
+          "SYS-COB-008"
+        ]
+      }
+    }
+  ],
+  "market-trends": [
+    {
+      "meta": {
+        "id": "TR-COB-001",
+        "type": "market-trend",
+        "section": "market-trends",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "Anaptyss - AML and KYC Trends 2026; Regula Forensics - The Future of KYC 2025"
+      },
+      "content": {
+        "title": "AI-driven KYC screening cuts false positives",
+        "theTrend": "Banks are replacing conservatively-tuned, rule-based AML and sanctions screening with AI- and machine-learning-driven systems, and moving from periodic checks to perpetual KYC. AI agents now clear routine low-risk alerts automatically, and AI-enhanced platforms report cutting false positives by 50 to 66 percent.",
+        "relevance": "COB-003's screening tool flags around 40 percent of applications as false positives, and KYC analysts spend significant time clearing harmless name matches. AI-driven screening with a learning loop directly targets that waste and the manual-review delay it adds to onboarding cycle time.",
+        "evidence": "Anaptyss' 2026 AML and KYC Trends and Regula Forensics' 2025 KYC Trends report AI cutting false positives by 50 to 66 percent and the industry shift toward perpetual KYC."
+      }
+    },
+    {
+      "meta": {
+        "id": "TR-COB-002",
+        "type": "market-trend",
+        "section": "market-trends",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "Fenergo - 2025 KYC onboarding survey (600 decision-makers); FinTech Global"
+      },
+      "content": {
+        "title": "Onboarding abandonment is rising and costly",
+        "theTrend": "Client onboarding abandonment is rising sharply across financial services. A 2025 survey of 600 senior decision-makers found 70 percent of firms lost clients to inefficient onboarding, up from 48 percent in 2023, with commercial and corporate banks facing the steepest challenges.",
+        "relevance": "COB-003 loses time to incomplete applications, repeated document chasing and multi-system handovers, exactly the poor data management and process delays that 86 and 77 percent of banks blame for abandonment. Each lost business client is forgone revenue and wasted onboarding effort.",
+        "evidence": "Fenergo's 2025 survey of 600 decision-makers and FinTech Global reporting found 70 percent of firms lost clients and that KYC and AML issues drive one in five abandonments, costing an estimated 3.3 billion dollars a year."
+      }
+    },
+    {
+      "meta": {
+        "id": "TR-COB-003",
+        "type": "market-trend",
+        "section": "market-trends",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "EU eIDAS 2.0 Regulation; Zyphe - eIDAS 2.0 & EU Digital Identity Wallet KYC Guide 2026"
+      },
+      "content": {
+        "title": "EU Digital Identity Wallet reshapes KYC onboarding",
+        "theTrend": "Under eIDAS 2.0, every EU member state must offer an EU Digital Identity Wallet by the end of 2026, and regulated businesses including banks must accept wallet-based digital identities for KYC from January 2027. Citizens and companies carry reusable, pre-verified identity attributes.",
+        "relevance": "COB-003 collects and verifies identity and business documents manually, a major source of chasing and delay. Reusable verified credentials from the EU Digital Identity Wallet let the process pre-fill and trust identity data, cutting documents the client must find and the bank must check.",
+        "evidence": "The EU eIDAS 2.0 regulation sets the end-2026 wallet availability and January 2027 acceptance deadlines; Zyphe and Moody's KYC analyses describe the resulting onboarding impact for banks."
+      }
+    },
+    {
+      "meta": {
+        "id": "TR-COB-004",
+        "type": "market-trend",
+        "section": "market-trends",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "Deloitte - Agentic AI in banking; BCG - How retail banks can put agentic AI to work; TCS - Generative AI in banking onboarding"
+      },
+      "content": {
+        "title": "Agentic AI and intelligent document processing on a unified platform",
+        "theTrend": "Banks are deploying agentic AI and generative-AI intelligent document processing in onboarding: systems interpret variable documents, extract and validate data, escalate exceptions and keep audit trails. Front- and back-office systems are being unified into a single connected workflow.",
+        "relevance": "COB-003 staff move across six or more disconnected systems, re-keying data with no single case view, and chase documents manually. Agentic document processing on a unified onboarding platform addresses both the system-switching burden and the incomplete-application loop.",
+        "evidence": "Deloitte and BCG agentic-AI banking analyses, and TCS on generative AI in onboarding, describe unified-platform orchestration and GenAI document processing cutting evaluation time from 30 minutes to seconds."
+      }
+    },
+    {
+      "meta": {
+        "id": "TR-COB-005",
+        "type": "market-trend",
+        "section": "market-trends",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "Celonis - Process Intelligence for Banking; QPR - Process Mining in Financial Services",
+        "provenance": {
+          "evidence": {
+            "evidence": "https://www.servicenow.com/community/process-mining-blog/process-mining-in-minutes-minute-5-sla-breach-analysis/ba-p/3532395 - \"SLA dashboards show what was missed, while process mining reveals why\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "relevance": {
+            "evidence": "https://www.qpr.com/blog/process-mining-financial-services-benefits - \"organizations can continuously and effortlessly monitor and report how well they follow both internal and external agreements based on real-time data\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "theTrend": {
+            "evidence": "https://www.celonis.com/blog/5-banking-guide-takeaways - \"process mining reveals why, helping isolate work with SLA breaches and pinpoint exactly where time is leaking through long waits, unnecessary handoffs, and reassignments\" - fetched 2026-05-18",
+            "source": "web"
+          }
+        }
+      },
+      "content": {
+        "title": "Process mining brings continuous SLA monitoring to onboarding",
+        "theTrend": "Banks are adopting process mining and process intelligence to monitor onboarding workflows from event data, surfacing where time leaks through long waits, handovers and reassignments, and tracking SLA adherence continuously rather than through periodic, look-back reports.",
+        "relevance": "COB-003 defines an SLA on every step but measures adherence nowhere, and only total cycle time is known, not the per-step split. Process mining would expose the real bottleneck step and flag a slipping week before a client ever complains.",
+        "evidence": "SLA dashboards show what was missed while process mining reveals why; banking process-intelligence guides report it isolating SLA breaches and pinpointing the waits, handoffs and reassignments where time leaks.",
+        "horizon": "near-term",
+        "sourceUrl": "https://www.celonis.com/blog/5-banking-guide-takeaways",
+        "bearsOn": [
+          "PS-COB-001",
+          "PS-COB-002",
+          "PS-COB-003",
+          "PS-COB-004",
+          "PS-COB-005",
+          "PS-COB-006"
+        ],
+        "asOf": "2026-05-18"
+      }
+    },
+    {
+      "meta": {
+        "id": "TR-COB-006",
+        "type": "market-trend",
+        "section": "market-trends",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "Planky - How Open Banking is Transforming Credit Decisioning for SME Lending; Marqeta - AI, Open Banking and the Future of SME Lending",
+        "provenance": {
+          "evidence": {
+            "evidence": "https://enablebanking.com/industries/credit-and-risk - \"Molly Wahlstrom, Customer Operations Manager at Qred, shares how their partnership with Enable Banking enables real-time financial data access, improving credit decisions\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "relevance": {
+            "evidence": "https://planky.com/blog/how-open-banking-is-transforming-credit-decisioning-for-sme-lending - \"Instant access to financial data enables real-time credit decisions, faster onboarding, and automated financial assessments\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "theTrend": {
+            "evidence": "https://planky.com/blog/how-open-banking-is-transforming-credit-decisioning-for-sme-lending - \"Open banking provides lenders with real-time financial data directly from SMEs' bank accounts, eliminating the reliance on outdated credit reports or manual document submissions\" - fetched 2026-05-18",
+            "source": "web"
+          }
+        }
+      },
+      "content": {
+        "title": "Open banking gives real-time data for SME credit decisions",
+        "theTrend": "Lenders are using open-banking APIs to pull SMEs' live bank-account data - cash flow, transaction history, balances - with the client's permission, replacing outdated credit reports and manual document submission with a current, comprehensive view that supports real-time credit decisions.",
+        "relevance": "COB-003's credit assessment waits on an external bureau whose response time varies and is invisible to the analyst. Permissioned open-banking data would give a real-time, cash-flow-based view, removing the unpredictable bureau wait on the overdraft step.",
+        "evidence": "Open-banking lenders such as Qred report real-time financial-data access improving credit decisions; analyses describe instant data enabling real-time decisions and faster onboarding for thin-file and self-employed SME borrowers.",
+        "horizon": "near-term",
+        "sourceUrl": "https://planky.com/blog/how-open-banking-is-transforming-credit-decisioning-for-sme-lending",
+        "bearsOn": [
+          "PS-COB-003",
+          "PP-COB-005",
+          "SYS-COB-006"
+        ],
+        "asOf": "2026-05-18"
+      }
+    },
+    {
+      "meta": {
+        "id": "TR-COB-007",
+        "type": "market-trend",
+        "section": "market-trends",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "Anaptyss - How Continuous Control Monitoring is Transforming Banking Risk Management; Skan.ai - What Is Continuous Controls Monitoring",
+        "provenance": {
+          "evidence": {
+            "evidence": "https://digitalxforce.com/why-continuous-controls-monitoring-ccm-is-a-must-have-in-2025/ - \"reduce compliance and audit costs by approximately 75% ... reducing control testing time from 50 hours to less than 10 hours per control annually\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "relevance": {
+            "evidence": "https://www.skan.ai/blogs/what-is-continuous-controls-monitoring-a-simple-guide-to-ccm-tools-benefits - \"maintaining a constant watch over your business processes to ensure you're adhering to all relevant rules\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "theTrend": {
+            "evidence": "https://macpas.com/the-power-of-continuous-auditing-and-monitoring/ - \"automated tests are run on key controls in near real-time\" and DORA \"requires financial institutions to continuously monitor ICT controls\" - fetched 2026-05-18",
+            "source": "web"
+          }
+        }
+      },
+      "content": {
+        "title": "Continuous controls monitoring replaces periodic control testing",
+        "theTrend": "Banks are moving from periodic, sample-based control testing to continuous controls monitoring - automated tests run on key controls in near real time across the full transaction population, generating audit-ready evidence and pushed by resilience rules such as DORA.",
+        "relevance": "COB-003 verifies account configuration in practice but not as a named control, and its product-disclosure control is only medium-effective with weak evidence. Continuous monitoring would test these controls automatically and leave the evidence trail that audit currently lacks.",
+        "evidence": "Continuous controls monitoring is reported to cut compliance and audit costs by around 75 percent and to reduce control-testing time from 50 hours to under 10 hours per control each year.",
+        "horizon": "near-term",
+        "sourceUrl": "https://www.anaptyss.com/blog/how-continuous-control-monitoring-is-transforming-banking-risk-management/",
+        "bearsOn": [
+          "PS-COB-004",
+          "PS-COB-006",
+          "CP-COB-005",
+          "CG-COB-001",
+          "CG-COB-002"
+        ],
+        "asOf": "2026-05-18"
+      }
+    },
+    {
+      "meta": {
+        "id": "TR-COB-008",
+        "type": "market-trend",
+        "section": "market-trends",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "visbanking - Customer Onboarding Best Practices for Banks in 2025; Engageware - Improving the Customer Experience in Banking",
+        "provenance": {
+          "evidence": {
+            "evidence": "https://visbanking.com/customer-onboarding-best-practices - \"self-service appointment scheduling with online banking advisors and digital KYC verification ... with automated customer welcome journeys featuring guided tutorials\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "relevance": {
+            "evidence": "https://engageware.com/blog/improving-the-customer-experience-in-banking-examples/ - \"the customer is immediately provided with essential next steps and a clear digital welcome package\" - fetched 2026-05-18",
+            "source": "web"
+          },
+          "theTrend": {
+            "evidence": "https://visbanking.com/customer-onboarding-best-practices - \"self-service appointment scheduling with online banking advisors ... automated customer welcome journeys featuring guided tutorials\" - fetched 2026-05-18",
+            "source": "web"
+          }
+        }
+      },
+      "content": {
+        "title": "Self-service scheduling and automated welcome journeys",
+        "theTrend": "Banks are adding self-service appointment scheduling with advisors and automated welcome journeys - guided tutorials and a clear digital welcome package delivered the moment an account is provisioned - letting clients book and resume on their own terms across devices.",
+        "relevance": "COB-003's activation relies on the Relationship Manager initiating every contact attempt, averaging three tries to agree a welcome-call slot. Client self-scheduling and an automated welcome package would remove that manual chasing and de-fragment the RM's time.",
+        "evidence": "Banking onboarding best-practice guides for 2025 describe self-service advisor scheduling and automated customer welcome journeys with guided tutorials as standard digital-onboarding features.",
+        "horizon": "near-term",
+        "sourceUrl": "https://visbanking.com/customer-onboarding-best-practices",
+        "bearsOn": [
+          "PS-COB-005",
+          "PP-COB-006"
+        ],
+        "asOf": "2026-05-18"
+      }
+    }
+  ],
+  "metrics": [
+    {
+      "meta": {
+        "id": "M-COB-001",
+        "type": "metric",
+        "section": "metrics",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3",
+        "approval": "in-progress",
+        "approvalBy": "run-lint",
+        "approvalDate": "2026-05-18"
+      },
+      "content": {
+        "title": "Application volume",
+        "definition": "The number of onboarding applications received per month.",
+        "currentReading": "80–120 per month, growing 12–15% year on year. This is roughly 60% of the bank's total onboarding volume.",
+        "whyItMatters": "It sizes the process. Capacity planning, staffing and any automation business case all start from this number.",
+        "value": "80–120 / month",
+        "trend": "+12–15% YoY"
+      }
+    },
+    {
+      "meta": {
+        "id": "M-COB-002",
+        "type": "metric",
+        "section": "metrics",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Cycle time (avg)",
+        "definition": "The average elapsed processing time from application receipt to a live, activated account.",
+        "currentReading": "4–6 hours of processing time on average — though calendar time is longer when documents must be chased.",
+        "whyItMatters": "Cycle time is what the client feels. It is also the headline number any improvement effort will be judged against.",
+        "value": "4–6 hours",
+        "trend": "—"
+      }
+    },
+    {
+      "meta": {
+        "id": "M-COB-003",
+        "type": "metric",
+        "section": "metrics",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Complexity mix",
+        "definition": "The split between standard applications and complex ones (multi-layer ownership, trusts, foreign shareholders).",
+        "currentReading": "Roughly 70% standard, 30% complex.",
+        "whyItMatters": "Complex cases take far longer in KYC. The mix drives where analyst capacity is really spent.",
+        "value": "70% Standard / 30% Complex",
+        "trend": "—"
+      }
+    },
+    {
+      "meta": {
+        "id": "M-COB-004",
+        "type": "metric",
+        "section": "metrics",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "KYC false-positive rate",
+        "definition": "The share of KYC screening hits that turn out to be false alarms.",
+        "currentReading": "About 40% — a large fraction of flagged cases were never real risks.",
+        "whyItMatters": "It quantifies wasted KYC effort and is the clearest target for a screening-tuning improvement.",
+        "value": "40%",
+        "trend": "—"
+      }
+    },
+    {
+      "meta": {
+        "id": "M-COB-005",
+        "type": "metric",
+        "section": "metrics",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Incomplete-application rate",
+        "definition": "The share of applications that arrive missing one or more required documents.",
+        "currentReading": "About 30% of all applications.",
+        "whyItMatters": "It is the root metric behind manual document chasing — the single biggest cycle-time drag in the process.",
+        "value": "30%",
+        "trend": "—"
+      }
+    }
+  ],
+  "moments": [
+    {
+      "meta": {
+        "id": "MT-COB-001",
+        "type": "moment",
+        "section": "moments",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "First response from the bank",
+        "theMoment": "The first time the client hears back after submitting — an acknowledgement, a question, or silence.",
+        "whyItMatters": "It sets the client's expectation for the entire relationship. Speed and clarity here are remembered; so is silence.",
+        "designImplication": "Guarantee a fast, substantive first response — ideally an automated acknowledgement plus a clear next step within hours.",
+        "sentiment": "critical",
+        "touchpoint": "JT-COB-001"
+      }
+    },
+    {
+      "meta": {
+        "id": "MT-COB-002",
+        "type": "moment",
+        "section": "moments",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "The account is ready to use",
+        "theMoment": "The client learns the account is live and they can transact.",
+        "whyItMatters": "This is the peak of the journey — the outcome the client actually wanted. A flat, transactional message wastes the moment.",
+        "designImplication": "Make activation feel like an arrival, not a system notification — confirm clearly, welcome warmly, point to the obvious first action.",
+        "sentiment": "positive",
+        "touchpoint": "JT-COB-004"
+      }
+    },
+    {
+      "meta": {
+        "id": "MT-COB-003",
+        "type": "moment",
+        "section": "moments",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Another document request",
+        "theMoment": "The client is asked, again, for something missing.",
+        "whyItMatters": "It is the journey's recurring low point and the strongest driver of the perception that the bank is slow and disorganised.",
+        "designImplication": "Eliminate the repeat request entirely with up-front completeness validation, rather than just softening the message.",
+        "sentiment": "negative",
+        "touchpoint": "JT-COB-002"
+      }
+    }
+  ],
+  "pain-points": [
+    {
+      "meta": {
+        "id": "PP-COB-001",
+        "type": "pain-point",
+        "section": "pain-points",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Manual document chasing",
+        "description": "When an application arrives incomplete, staff manually contact the client, wait, check what came back, and chase again. There is no automation around this loop.",
+        "impact": "On average 2–3 follow-up rounds per application. Each round adds days to the cycle time and consumes Operations Officer capacity that should be doing assessment work.",
+        "rootCause": "Clients are not told clearly and upfront which documents their specific business needs, so the first submission is routinely incomplete.",
+        "category": "PROCESS",
+        "severity": "HIGH",
+        "priority": "P1",
+        "affects": [
+          "PS-COB-001",
+          "PS-COB-002"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "PP-COB-002",
+        "type": "pain-point",
+        "section": "pain-points",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "System switching / no single client view",
+        "description": "Staff move between six or more systems to complete one onboarding — CRM, OWS, KYC platform, screening, core banking, card management — re-keying the same data along the way.",
+        "impact": "Data-entry errors, slow handovers and visible staff frustration. No single screen shows the full state of a case.",
+        "rootCause": "The systems were added over time without an integration layer or a single case view stitched across them.",
+        "category": "SYSTEM",
+        "severity": "HIGH",
+        "priority": "P1",
+        "affects": [
+          "PS-COB-001",
+          "PS-COB-002",
+          "PS-COB-003",
+          "PS-COB-004",
+          "PS-COB-005"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "PP-COB-003",
+        "type": "pain-point",
+        "section": "pain-points",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "KYC screening false positives",
+        "description": "The screening tool flags a large share of applications for manual review, most of which turn out to be harmless name matches.",
+        "impact": "A 40% false-positive rate. KYC Analysts spend significant time clearing matches that were never real risks.",
+        "rootCause": "Screening thresholds are tuned conservatively and there is no learning loop to suppress repeat false matches.",
+        "category": "SYSTEM",
+        "severity": "MEDIUM",
+        "priority": "P2",
+        "affects": [
+          "PS-COB-002"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "PP-COB-004",
+        "type": "pain-point",
+        "section": "pain-points",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Paper-based signatures",
+        "description": "Parts of onboarding still require a physical, wet-ink signature that must then be scanned and attached to the case.",
+        "impact": "A 1–2 day digitisation delay and a broken digital flow for an otherwise online process.",
+        "rootCause": "Legacy form requirements were never migrated to an e-signature solution.",
+        "category": "PROCESS",
+        "severity": "MEDIUM",
+        "priority": "P2",
+        "affects": [
+          "PS-COB-001"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "PP-COB-005",
+        "type": "pain-point",
+        "section": "pain-points",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Credit bureau delays",
+        "description": "During credit assessment the external bureau response time varies and is not visible to the analyst, who simply waits.",
+        "impact": "Unpredictable delays on the credit step, with no way to set client expectations.",
+        "rootCause": "The bureau integration is fire-and-forget — no SLA, no status polling, no timeout handling.",
+        "category": "SYSTEM",
+        "severity": "LOW",
+        "priority": "P3",
+        "affects": [
+          "PS-COB-003"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "PP-COB-006",
+        "type": "pain-point",
+        "section": "pain-points",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Welcome call scheduling",
+        "description": "Reaching the client for the welcome call takes several attempts across phone and email before a slot is agreed.",
+        "impact": "On average three attempts per client; the activation step drags and the Relationship Manager's time is fragmented.",
+        "rootCause": "There is no client self-scheduling option — the bank initiates every contact attempt manually.",
+        "category": "PROCESS",
+        "severity": "MEDIUM",
+        "priority": "P2",
+        "affects": [
+          "PS-COB-005"
+        ]
+      }
+    }
+  ],
+  "process-gaps": [
+    {
+      "meta": {
+        "id": "PG-COB-001",
+        "type": "process-gap",
+        "section": "process-gaps",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3",
+        "approval": "rejected",
+        "approvalBy": "M. Berger",
+        "approvalDate": "2026-05-17"
+      },
+      "content": {
+        "title": "SLA adherence not measured centrally",
+        "theGap": "Each step has a defined SLA, but whether those SLAs are actually being met is not measured or reported anywhere.",
+        "impact": "The process cannot tell a healthy week from a slipping one. Problems are noticed only when a client complains.",
+        "nextStep": "Instrument OWS to capture step start/end times and report SLA adherence on a dashboard.",
+        "area": "Metrics",
+        "gapStatus": "open"
+      }
+    },
+    {
+      "meta": {
+        "id": "PG-COB-002",
+        "type": "process-gap",
+        "section": "process-gaps",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Org responsibility unclear for the partner channel",
+        "theGap": "The process is triggered through four channels, but for partner-channel submissions the initial-handling responsibility is not documented.",
+        "impact": "Partner-channel applications can sit unassigned; accountability for the first triage is ambiguous.",
+        "nextStep": "Define and document which role owns first-touch handling for partner-channel applications.",
+        "area": "Roles",
+        "gapStatus": "open"
+      }
+    },
+    {
+      "meta": {
+        "id": "PG-COB-003",
+        "type": "process-gap",
+        "section": "process-gaps",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Per-step processing time not captured",
+        "theGap": "Only the total cycle time (4–6 h) is known; how that time splits across the six steps is not measured.",
+        "impact": "Improvement effort is aimed by intuition rather than evidence — the real bottleneck step is unknown.",
+        "nextStep": "Capture per-step durations so the slowest step can be targeted directly.",
+        "area": "Metrics",
+        "gapStatus": "open"
+      }
+    }
+  ],
+  "regulation": [
+    {
+      "meta": {
+        "id": "REG-COB-001",
+        "type": "regulation",
+        "section": "regulation",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "CDD Regulations 2010",
+        "whatItRequires": "That the bank identifies and verifies every customer and understands the nature of the relationship before doing business.",
+        "whyItApplies": "Client onboarding is the point at which a new banking relationship is established — the exact activity Customer Due Diligence rules govern.",
+        "howItIsMet": "Through control CP-COB-001 (Customer Identification) during the KYC step.",
+        "domain": "Customer Due Diligence"
+      }
+    },
+    {
+      "meta": {
+        "id": "REG-COB-002",
+        "type": "regulation",
+        "section": "regulation",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "AML Act 2010",
+        "whatItRequires": "That the bank identifies beneficial owners, screens for money-laundering risk, and reports suspicious activity.",
+        "whyItApplies": "Onboarding businesses through corporate structures is a primary money-laundering risk surface.",
+        "howItIsMet": "Through CP-COB-002 (Beneficial Owner Identification) and the KYC screening performed in PS-COB-002.",
+        "domain": "Anti-Money-Laundering"
+      }
+    },
+    {
+      "meta": {
+        "id": "REG-COB-003",
+        "type": "regulation",
+        "section": "regulation",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "GDPR",
+        "whatItRequires": "A lawful basis for processing personal data, with the data subject informed and consenting.",
+        "whyItApplies": "Onboarding collects and processes the personal data of directors and beneficial owners.",
+        "howItIsMet": "Through CP-COB-003 (Data Protection Consent), captured at application receipt.",
+        "domain": "Data Protection"
+      }
+    },
+    {
+      "meta": {
+        "id": "REG-COB-004",
+        "type": "regulation",
+        "section": "regulation",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "PSD2",
+        "whatItRequires": "Strong Customer Authentication for account access and payments.",
+        "whyItApplies": "The onboarded account is a payment account that falls in scope of PSD2.",
+        "howItIsMet": "Through the automated control CP-COB-004 during account setup.",
+        "domain": "Payment Services Directive 2"
+      }
+    },
+    {
+      "meta": {
+        "id": "REG-COB-005",
+        "type": "regulation",
+        "section": "regulation",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Consumer Protection Code",
+        "whatItRequires": "Clear, fair and complete information to the customer about products and terms.",
+        "whyItApplies": "The bank is selling banking products to a business customer during onboarding.",
+        "howItIsMet": "Through CP-COB-005 (Product Disclosure) at activation.",
+        "domain": "Consumer Protection"
+      }
+    },
+    {
+      "meta": {
+        "id": "REG-COB-006",
+        "type": "regulation",
+        "section": "regulation",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "SoD Policy",
+        "whatItRequires": "That no single person both performs and approves a sensitive action. This is an internal segregation-of-duties policy rather than external law.",
+        "whyItApplies": "Account creation is a sensitive action that must not be both carried out and signed off by the same person.",
+        "howItIsMet": "Through the four-eyes check performed during Account Setup (PS-COB-004).",
+        "domain": "Segregation of Duties (internal policy)"
+      }
+    }
+  ],
+  "to-be-design": [
+    {
+      "meta": {
+        "id": "TS-COB-001",
+        "type": "target-state",
+        "section": "to-be-design",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Consolidated by source-target from the COB-003 wiki",
+        "provenance": {
+          "rationale": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "targetDescription": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "whatChanges": {
+            "evidence": "",
+            "source": "proposed"
+          }
+        }
+      },
+      "content": {
+        "title": "Digital, self-validating application front door",
+        "targetDescription": "The application front door is fully digital and self-validating. The client sees a checklist tailored to their business type and requested products, uploads are validated as they are entered, and any gap is flagged before submission rather than chased afterwards. Signatures are captured electronically inside the same flow, and where the client holds an EU Digital Identity Wallet, verified identity and business attributes are shared directly so fewer documents need sourcing at all.",
+        "whatChanges": [
+          "A generic document checklist becomes one tailored to the client's entity type and requested products",
+          "Uploads are validated in real time, so incomplete applications are caught before submission, not after",
+          "Manual document chasing is replaced by an automated, escalating reminder sequence",
+          "Wet-ink signatures are replaced by e-signature captured inside the digital flow",
+          "EU Digital Identity Wallet credentials let clients share pre-verified identity instead of re-submitting documents"
+        ],
+        "rationale": "Incomplete first submissions and document chasing are the single biggest cycle-time drag on COB-003; moving validation upfront and removing the paper break attacks the problem at its source and matches the minutes-not-days front door fintech challengers already offer.",
+        "replaces": [
+          "PS-COB-001",
+          "PS-COB-002"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "TS-COB-002",
+        "type": "target-state",
+        "section": "to-be-design",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Consolidated by source-target from the COB-003 wiki",
+        "provenance": {
+          "rationale": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "targetDescription": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "whatChanges": {
+            "evidence": "",
+            "source": "proposed"
+          }
+        }
+      },
+      "content": {
+        "title": "Unified, instrumented onboarding case workspace",
+        "targetDescription": "Onboarding runs on a single orchestrated case workspace that stitches CRM, workflow, KYC, screening, core banking and card management into one view. Staff see the full state of a case on one screen, data is entered once and propagated automatically, and step start and end times are captured as events. SLA adherence and per-step duration are reported on a live dashboard, and the client can see real-time onboarding status.",
+        "whatChanges": [
+          "Six-plus disconnected systems are unified behind one orchestrated case view",
+          "Data is entered once and propagated, ending the re-keying between systems",
+          "Step start and end times are captured as events rather than going unmeasured",
+          "SLA adherence and per-step duration appear on a live dashboard, not a periodic look-back",
+          "The client gets real-time onboarding status instead of silence"
+        ],
+        "rationale": "System fragmentation drives re-keying errors and slow handovers, and the process today cannot tell a healthy week from a slipping one. A unified, instrumented workspace removes both blind spots and is what competitor banking platforms now treat as table stakes.",
+        "replaces": [
+          "PS-COB-001",
+          "PS-COB-002",
+          "PS-COB-003",
+          "PS-COB-004",
+          "PS-COB-005",
+          "PS-COB-006"
+        ],
+        "systems": [
+          "SYS-COB-001",
+          "SYS-COB-002"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "TS-COB-003",
+        "type": "target-state",
+        "section": "to-be-design",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Consolidated by source-target from the COB-003 wiki",
+        "provenance": {
+          "rationale": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "targetDescription": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "whatChanges": {
+            "evidence": "",
+            "source": "proposed"
+          }
+        }
+      },
+      "content": {
+        "title": "Data-driven risk and credit decisioning",
+        "targetDescription": "KYC screening and credit assessment both run on current data and intelligent automation. AI-assisted screening auto-clears low-risk routine alerts and learns from analyst decisions to suppress repeat false matches, while a plain-language assistant guides clients through ownership questions. Credit assessment draws on permissioned open-banking cash-flow data, giving the analyst a live financial picture rather than waiting on a stale, invisible bureau response.",
+        "whatChanges": [
+          "Conservatively-tuned screening thresholds gain an AI learning loop that suppresses repeat false positives",
+          "Routine low-risk alerts are auto-cleared instead of every match going to manual review",
+          "Regulatory ownership questions are translated into plain language with worked examples",
+          "Credit assessment uses live open-banking cash-flow data alongside or instead of the external bureau pull",
+          "The unpredictable, invisible bureau wait is removed from the overdraft decision"
+        ],
+        "rationale": "The two assessment steps lose time to a 40% false-positive load and an opaque bureau wait. Moving both onto current data and learning automation cuts that waste, improves data quality, and lets analysts spend their time on genuine risk.",
+        "replaces": [
+          "PS-COB-002",
+          "PS-COB-003"
+        ],
+        "systems": [
+          "SYS-COB-003",
+          "SYS-COB-004",
+          "SYS-COB-006"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "TS-COB-004",
+        "type": "target-state",
+        "section": "to-be-design",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Consolidated by source-target from the COB-003 wiki",
+        "provenance": {
+          "rationale": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "targetDescription": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "whatChanges": {
+            "evidence": "",
+            "source": "proposed"
+          }
+        }
+      },
+      "content": {
+        "title": "Self-service activation and automated welcome",
+        "targetDescription": "Activation is client-paced. The moment the account goes live, an automated digital welcome package with access credentials and first-step guidance reaches the client. Rather than the Relationship Manager chasing a slot across phone and email, the client books their own welcome-call time from the RM's calendar. The relationship still gets a personal call, but the scheduling friction around it is removed.",
+        "whatChanges": [
+          "A templated digital welcome package is triggered automatically on account activation",
+          "The client books their own welcome-call slot from the RM's calendar",
+          "The three-attempt phone-and-email chase to agree a time is eliminated",
+          "The client gets immediate, self-paced activation instead of waiting for the bank to call"
+        ],
+        "rationale": "Welcome-call scheduling takes three attempts on average and fragments the Relationship Manager's time. Letting clients self-schedule and delivering the welcome digitally removes that manual chase while keeping the personal contact that sets the relationship tone.",
+        "replaces": [
+          "PS-COB-005"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "TS-COB-005",
+        "type": "target-state",
+        "section": "to-be-design",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Consolidated by source-target from the COB-003 wiki",
+        "provenance": {
+          "rationale": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "targetDescription": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "whatChanges": {
+            "evidence": "",
+            "source": "proposed"
+          }
+        }
+      },
+      "content": {
+        "title": "Continuous controls assurance",
+        "targetDescription": "Key onboarding controls are monitored continuously rather than tested periodically by sample. Account-configuration verification is a formal, named control with an owner and an automatically generated evidence trail. Product disclosure captures an explicit, recorded client acknowledgement that monitoring checks on every case. The post-onboarding quality check shifts from blind sampling toward exception review of what continuous monitoring has already flagged.",
+        "whatChanges": [
+          "Account-configuration verification becomes a named control with an owner and an evidence trail",
+          "Product disclosure captures a recorded client acknowledgement on every case",
+          "Periodic, sample-based control testing is replaced by near-real-time automated monitoring",
+          "The post-onboarding quality check focuses on exceptions monitoring surfaces rather than blind sampling"
+        ],
+        "rationale": "Two control gaps leave onboarding exposed: an undocumented verification step and a disclosure control rated only medium-effective for want of evidence. Continuous monitoring closes both by testing controls automatically and generating the audit trail today's process lacks.",
+        "replaces": [
+          "PS-COB-004",
+          "PS-COB-006"
+        ],
+        "systems": [
+          "SYS-COB-005"
+        ]
+      }
+    }
+  ],
+  "touchpoints": [
+    {
+      "meta": {
+        "id": "JT-COB-001",
+        "type": "cx-touchpoint",
+        "section": "touchpoints",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Submit application",
+        "whatTheClientDoes": "Completes and submits the onboarding application with supporting documents, via the online portal or in a branch.",
+        "whatTheBankDoes": "Receives the application into the pipeline and begins initial triage.",
+        "experience": "Moderate effort (CES 4). The client invests time gathering documents and filling in forms, often unsure whether they have everything.",
+        "channel": "Online portal / Branch",
+        "occursAt": "PS-COB-001",
+        "ces": "4"
+      }
+    },
+    {
+      "meta": {
+        "id": "JT-COB-002",
+        "type": "cx-touchpoint",
+        "section": "touchpoints",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Provide missing documents",
+        "whatTheClientDoes": "Responds to a request for missing documents — locating and re-submitting them.",
+        "whatTheBankDoes": "Re-checks the submission and either proceeds or asks again.",
+        "experience": "High effort (CES 6) — the worst touchpoint of the journey. Repetition and uncertainty make it feel like the process is stalling.",
+        "channel": "Email / Portal",
+        "occursAt": "PS-COB-001",
+        "ces": "6"
+      }
+    },
+    {
+      "meta": {
+        "id": "JT-COB-003",
+        "type": "cx-touchpoint",
+        "section": "touchpoints",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Answer KYC questions",
+        "whatTheClientDoes": "Answers questions about identity and ownership structure, by phone or email.",
+        "whatTheBankDoes": "Verifies identity and beneficial ownership and records the answers in the KYC file.",
+        "experience": "Notable effort (CES 5). The questions feel intrusive and technical, and complex structures make them harder.",
+        "channel": "Phone / Email",
+        "occursAt": "PS-COB-002",
+        "ces": "5"
+      }
+    },
+    {
+      "meta": {
+        "id": "JT-COB-004",
+        "type": "cx-touchpoint",
+        "section": "touchpoints",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Receive account activation",
+        "whatTheClientDoes": "Receives the confirmation that the account is ready and can start using it.",
+        "whatTheBankDoes": "Sends the activation notice with access details once the account is live.",
+        "experience": "Very low effort (CES 1) — and the emotional high point of the journey. The client finally has what they came for.",
+        "channel": "Email",
+        "occursAt": "PS-COB-004",
+        "ces": "1"
+      }
+    },
+    {
+      "meta": {
+        "id": "JT-COB-005",
+        "type": "cx-touchpoint",
+        "section": "touchpoints",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "DTP-BB-ONB-001 v2.3"
+      },
+      "content": {
+        "title": "Welcome call",
+        "whatTheClientDoes": "Takes a welcome call with the Relationship Manager and asks any first questions.",
+        "whatTheBankDoes": "Walks the client through first steps, confirms understanding, and opens the ongoing relationship.",
+        "experience": "Low effort (CES 3) and reassuring when it lands — but scheduling it often takes several attempts.",
+        "channel": "Phone",
+        "occursAt": "PS-COB-005",
+        "ces": "3"
+      }
+    }
+  ],
+  "transformation-decisions": [
+    {
+      "meta": {
+        "id": "TD-COB-001",
+        "type": "transformation-decision",
+        "section": "transformation-decisions",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Consolidated by source-target from the COB-003 wiki",
+        "provenance": {
+          "optionsConsidered": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "rationale": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "theDecision": {
+            "evidence": "",
+            "source": "proposed"
+          }
+        }
+      },
+      "content": {
+        "title": "Adopt a unified onboarding case platform",
+        "theDecision": "Adopt a single onboarding case platform that orchestrates CRM, workflow, KYC, screening, core banking and card management behind one case view, with data entered once and propagated, replacing today's six-plus disconnected systems.",
+        "optionsConsidered": [
+          "Build an integration layer and unified case view over the existing systems",
+          "Buy a packaged onboarding-orchestration platform and migrate onto it",
+          "Leave the systems separate and add only a read-only consolidated dashboard",
+          "Do nothing and accept the re-keying and handover cost"
+        ],
+        "rationale": "The system-fragmentation pain point is the bank's core efficiency problem and underlies most handover delay and data-entry error. A consolidated dashboard alone would not stop re-keying; only a true orchestration layer removes it. Build-versus-buy is left open for the transformation-agent and the SME to weigh.",
+        "decisionType": "PLATFORM",
+        "decisionStatus": "PROPOSED",
+        "resolves": [
+          "PP-COB-002"
+        ],
+        "realises": [
+          "TS-COB-002"
+        ],
+        "fromIdea": [
+          "II-COB-004"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "TD-COB-002",
+        "type": "transformation-decision",
+        "section": "transformation-decisions",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Consolidated by source-target from the COB-003 wiki",
+        "provenance": {
+          "optionsConsidered": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "rationale": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "theDecision": {
+            "evidence": "",
+            "source": "proposed"
+          }
+        }
+      },
+      "content": {
+        "title": "Digitise the application front door",
+        "theDecision": "Replace the generic, paper-tolerant intake with a digital front door: a checklist tailored to the client's business type, real-time upload validation, an automated escalating reminder sequence, and e-signature captured inside the flow.",
+        "optionsConsidered": [
+          "Deliver the smart checklist, automated reminders and e-signature together as one front-door release",
+          "Sequence them — checklist first, then reminders, then e-signature — as separate increments",
+          "Add only automated reminders and leave the checklist and signatures unchanged",
+          "Keep the current generic checklist and manual chasing"
+        ],
+        "rationale": "Incomplete first submissions cause two to three chasing rounds per application and the worst friction in the client journey. The three changes attack one root cause — the client never knowing upfront what is needed — so delivering them together gives a coherent front door, though phasing remains open.",
+        "decisionType": "AUTOMATION",
+        "decisionStatus": "PROPOSED",
+        "resolves": [
+          "PP-COB-001",
+          "PP-COB-004",
+          "FP-COB-001",
+          "FP-COB-002",
+          "FP-COB-003"
+        ],
+        "realises": [
+          "TS-COB-001"
+        ],
+        "fromIdea": [
+          "II-COB-001",
+          "II-COB-002",
+          "II-COB-003"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "TD-COB-003",
+        "type": "transformation-decision",
+        "section": "transformation-decisions",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Consolidated by source-target from the COB-003 wiki",
+        "provenance": {
+          "optionsConsidered": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "rationale": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "theDecision": {
+            "evidence": "",
+            "source": "proposed"
+          }
+        }
+      },
+      "content": {
+        "title": "Adopt EU Digital Identity Wallet acceptance",
+        "theDecision": "Accept EU Digital Identity Wallet credentials at onboarding, letting clients share pre-verified identity and business attributes directly instead of sourcing, uploading and re-submitting identity documents for manual verification.",
+        "optionsConsidered": [
+          "Build a wallet connector now, ahead of the January 2027 acceptance mandate",
+          "Wait and implement only when the eIDAS 2.0 acceptance deadline forces it",
+          "Accept wallet credentials for identity only, keeping document upload for business attributes",
+          "Decline to support the wallet and rely solely on document-based verification"
+        ],
+        "rationale": "eIDAS 2.0 makes wallet acceptance a January 2027 obligation, not an option, so the decision is about timing and scope rather than whether. Building ahead of the deadline turns a compliance requirement into an onboarding-speed advantage, while the connector and legal sign-off are non-trivial.",
+        "decisionType": "ADOPTION",
+        "decisionStatus": "PROPOSED",
+        "resolves": [
+          "PP-COB-001",
+          "FP-COB-001"
+        ],
+        "realises": [
+          "TS-COB-001"
+        ],
+        "fromIdea": [
+          "II-COB-006"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "TD-COB-004",
+        "type": "transformation-decision",
+        "section": "transformation-decisions",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Consolidated by source-target from the COB-003 wiki",
+        "provenance": {
+          "optionsConsidered": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "rationale": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "theDecision": {
+            "evidence": "",
+            "source": "proposed"
+          }
+        }
+      },
+      "content": {
+        "title": "Modernise KYC screening and ownership capture",
+        "theDecision": "Deploy AI-assisted screening that auto-clears low-risk routine alerts and learns from analyst decisions to suppress repeat false matches, and add a plain-language conversational assistant that guides clients through ownership and control questions.",
+        "optionsConsidered": [
+          "Introduce AI screening and the conversational ownership assistant together as one KYC modernisation",
+          "Tackle AI screening first and add the client-facing assistant later",
+          "Re-tune screening thresholds manually without an AI learning loop",
+          "Keep conservatively-tuned screening and regulatory-language questions unchanged"
+        ],
+        "rationale": "A 40% false-positive rate and ownership questions clients cannot answer both inflate the KYC step. Treating them as one modernisation keeps the screening and the data feeding it improving together, though the explainability layer regulators require must be built alongside.",
+        "decisionType": "TECHNOLOGY",
+        "decisionStatus": "PROPOSED",
+        "resolves": [
+          "PP-COB-003",
+          "FP-COB-004"
+        ],
+        "realises": [
+          "TS-COB-003"
+        ],
+        "fromIdea": [
+          "II-COB-005",
+          "II-COB-007"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "TD-COB-005",
+        "type": "transformation-decision",
+        "section": "transformation-decisions",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Consolidated by source-target from the COB-003 wiki",
+        "provenance": {
+          "optionsConsidered": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "rationale": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "theDecision": {
+            "evidence": "",
+            "source": "proposed"
+          }
+        }
+      },
+      "content": {
+        "title": "Move credit assessment to open-banking data",
+        "theDecision": "Add an open-banking connector to the credit step so a client can permission live bank-account cash-flow data into the scorecard, alongside or in place of the external bureau pull.",
+        "optionsConsidered": [
+          "Use permissioned open-banking data as the primary input and the bureau as fallback",
+          "Run open-banking data alongside the bureau pull and compare before switching",
+          "Keep the bureau pull but add status polling and a timeout to make the wait visible",
+          "Leave the credit step unchanged"
+        ],
+        "rationale": "The bureau integration is fire-and-forget, with a variable response time invisible to the analyst. Open-banking cash-flow data gives a current financial picture and removes the unpredictable wait, but it needs an aggregator integration, consent handling and a scorecard recalibration before it can be trusted as the primary input.",
+        "decisionType": "TECHNOLOGY",
+        "decisionStatus": "PROPOSED",
+        "resolves": [
+          "PP-COB-005"
+        ],
+        "realises": [
+          "TS-COB-003"
+        ],
+        "fromIdea": [
+          "II-COB-008"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "TD-COB-006",
+        "type": "transformation-decision",
+        "section": "transformation-decisions",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Consolidated by source-target from the COB-003 wiki",
+        "provenance": {
+          "optionsConsidered": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "rationale": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "theDecision": {
+            "evidence": "",
+            "source": "proposed"
+          }
+        }
+      },
+      "content": {
+        "title": "Instrument the workflow for SLA and per-step timing",
+        "theDecision": "Instrument the onboarding workflow to capture step start and end times as events, and report SLA adherence and per-step duration on a live dashboard.",
+        "optionsConsidered": [
+          "Capture event timestamps in the workflow system and build a process-mining dashboard over them",
+          "Add a simpler SLA report without per-step timing detail",
+          "Measure timing manually through periodic case reviews",
+          "Continue without per-step measurement"
+        ],
+        "rationale": "Every step has an SLA but adherence is measured nowhere, and only total cycle time is known. Without per-step timing, improvement is aimed by intuition. Event-level instrumentation makes the real bottleneck and a slipping week visible before a client complains, and is a prerequisite for continuous monitoring.",
+        "decisionType": "PROCESS",
+        "decisionStatus": "PROPOSED",
+        "resolves": [
+          "PG-COB-001",
+          "PG-COB-003"
+        ],
+        "realises": [
+          "TS-COB-002"
+        ],
+        "fromIdea": [
+          "II-COB-009"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "TD-COB-007",
+        "type": "transformation-decision",
+        "section": "transformation-decisions",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Consolidated by source-target from the COB-003 wiki",
+        "provenance": {
+          "optionsConsidered": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "rationale": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "theDecision": {
+            "evidence": "",
+            "source": "proposed"
+          }
+        }
+      },
+      "content": {
+        "title": "Introduce client self-scheduling and automated welcome",
+        "theDecision": "Let clients book their own welcome-call slot from the Relationship Manager's calendar, and send an automated digital welcome package with credentials and first-step guidance the moment the account goes live.",
+        "optionsConsidered": [
+          "Add both client self-scheduling and an automated welcome package",
+          "Add only the automated welcome package and keep RM-initiated call scheduling",
+          "Add only self-scheduling and keep manual welcome communication",
+          "Keep the current manual phone-and-email activation"
+        ],
+        "rationale": "Welcome-call scheduling takes three contact attempts on average and fragments the Relationship Manager's time. This is the lowest-complexity change in the set — a scheduling widget and a templated message — and it removes the chase without losing the personal welcome call.",
+        "decisionType": "AUTOMATION",
+        "decisionStatus": "PROPOSED",
+        "resolves": [
+          "PP-COB-006"
+        ],
+        "realises": [
+          "TS-COB-004"
+        ],
+        "fromIdea": [
+          "II-COB-010"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "TD-COB-008",
+        "type": "transformation-decision",
+        "section": "transformation-decisions",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Consolidated by source-target from the COB-003 wiki",
+        "provenance": {
+          "optionsConsidered": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "rationale": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "theDecision": {
+            "evidence": "",
+            "source": "proposed"
+          }
+        }
+      },
+      "content": {
+        "title": "Stand up continuous controls monitoring",
+        "theDecision": "Stand up continuous controls monitoring over onboarding: formalise account-configuration verification as a named, automatically tested control, and instrument product disclosure to capture a recorded client acknowledgement checked on every case.",
+        "optionsConsidered": [
+          "Implement continuous monitoring covering both account configuration and product disclosure",
+          "Formalise the account-configuration control first and add disclosure monitoring later",
+          "Document the missing control and standardise disclosure without automated monitoring",
+          "Leave both control gaps open until the next audit cycle"
+        ],
+        "rationale": "One control is undocumented and invisible to audit; another is rated only medium-effective for want of evidence. Continuous monitoring closes both at once — it gives the verification control an owner and trail and supplies the disclosure proof audit lacks, and resilience rules increasingly expect it.",
+        "decisionType": "COMPLIANCE",
+        "decisionStatus": "PROPOSED",
+        "resolves": [
+          "CG-COB-001",
+          "CG-COB-002"
+        ],
+        "realises": [
+          "TS-COB-005"
+        ],
+        "fromIdea": [
+          "II-COB-011"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "TD-COB-009",
+        "type": "transformation-decision",
+        "section": "transformation-decisions",
+        "status": "draft",
+        "confidence": "low",
+        "source": "Consolidated by source-target from the COB-003 wiki",
+        "provenance": {
+          "optionsConsidered": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "rationale": {
+            "evidence": "",
+            "source": "proposed"
+          },
+          "theDecision": {
+            "evidence": "",
+            "source": "proposed"
+          }
+        }
+      },
+      "content": {
+        "title": "Assign first-touch ownership for the partner channel",
+        "theDecision": "Define and document which role owns first-touch handling of partner-channel applications, so partner submissions are triaged with the same clear accountability as the other three intake channels.",
+        "optionsConsidered": [
+          "Assign partner-channel first-touch to the existing Operations Officer triage role",
+          "Create a dedicated partner-channel intake role",
+          "Route partner submissions through the partner with a defined hand-back point",
+          "Leave first-touch ownership undefined"
+        ],
+        "rationale": "The process runs through four intake channels but only the partner channel has no documented first-handling owner, so applications can sit unassigned. This is a governance decision, not a technology one — the target design needs a single accountable role named before partner volume scales.",
+        "decisionType": "GOVERNANCE",
+        "decisionStatus": "PROPOSED",
+        "resolves": [
+          "PG-COB-002"
+        ]
+      }
+    }
+  ],
+  "reviewState": {
+    "slug": "cob-003",
+    "queue": [
+      "COB-003",
+      "PS-COB-001",
+      "PS-COB-002",
+      "PS-COB-003",
+      "PS-COB-004",
+      "PS-COB-005",
+      "PS-COB-006",
+      "ROLE-COB-001",
+      "ROLE-COB-002",
+      "ROLE-COB-003",
+      "ROLE-COB-004",
+      "ROLE-COB-005",
+      "ROLE-COB-006",
+      "EX-COB-001",
+      "EX-COB-002",
+      "EX-COB-003",
+      "EX-COB-004",
+      "EX-COB-005",
+      "CP-COB-001",
+      "CP-COB-002",
+      "CP-COB-003",
+      "CP-COB-004",
+      "CP-COB-005",
+      "REG-COB-001",
+      "REG-COB-002",
+      "REG-COB-003",
+      "REG-COB-004",
+      "REG-COB-005",
+      "REG-COB-006",
+      "CG-COB-001",
+      "CG-COB-002",
+      "OAF-COB-001",
+      "PP-COB-001",
+      "PP-COB-002",
+      "PP-COB-003",
+      "PP-COB-004",
+      "PP-COB-005",
+      "PP-COB-006",
+      "FP-COB-001",
+      "FP-COB-002",
+      "FP-COB-003",
+      "FP-COB-004",
+      "CH-COB-001",
+      "CH-COB-002",
+      "CH-COB-003",
+      "CH-COB-004",
+      "JT-COB-001",
+      "JT-COB-002",
+      "JT-COB-003",
+      "JT-COB-004",
+      "JT-COB-005",
+      "MT-COB-001",
+      "MT-COB-002",
+      "MT-COB-003",
+      "SYS-COB-001",
+      "SYS-COB-002",
+      "SYS-COB-003",
+      "SYS-COB-004",
+      "SYS-COB-005",
+      "SYS-COB-006",
+      "SYS-COB-007",
+      "SYS-COB-008",
+      "INT-COB-001",
+      "INT-COB-002",
+      "INT-COB-003",
+      "M-COB-001",
+      "M-COB-002",
+      "M-COB-003",
+      "M-COB-004",
+      "M-COB-005",
+      "PG-COB-001",
+      "PG-COB-002",
+      "PG-COB-003"
+    ],
+    "cursor": 0,
+    "total": 73,
+    "done": false,
+    "startedAt": "2026-05-26T19:48:31.143446+00:00",
+    "updatedAt": "2026-05-26T19:48:31.143620+00:00"
+  },
+  "lint": {
+    "generatedAt": "2026-05-19T06:17:07.972163+00:00",
+    "slug": "cob-003",
+    "summary": {
+      "conformance": 78,
+      "discrepancy": 8,
+      "question": 3
+    },
+    "findings": [
+      {
+        "id": "F-001",
+        "kind": "conformance",
+        "title": "Structure: OAF-COB-001 deviates from its audit-finding template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "OAF-COB-001"
+        ]
+      },
+      {
+        "id": "F-002",
+        "kind": "conformance",
+        "title": "Structure: CH-COB-001 deviates from its cx-channel template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "CH-COB-001"
+        ]
+      },
+      {
+        "id": "F-003",
+        "kind": "conformance",
+        "title": "Structure: CH-COB-002 deviates from its cx-channel template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "CH-COB-002"
+        ]
+      },
+      {
+        "id": "F-004",
+        "kind": "conformance",
+        "title": "Structure: CH-COB-003 deviates from its cx-channel template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "CH-COB-003"
+        ]
+      },
+      {
+        "id": "F-005",
+        "kind": "conformance",
+        "title": "Structure: CH-COB-004 deviates from its cx-channel template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "CH-COB-004"
+        ]
+      },
+      {
+        "id": "F-006",
+        "kind": "conformance",
+        "title": "Structure: CG-COB-001 deviates from its compliance-gap template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "CG-COB-001"
+        ]
+      },
+      {
+        "id": "F-007",
+        "kind": "conformance",
+        "title": "Structure: CG-COB-002 deviates from its compliance-gap template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "CG-COB-002"
+        ]
+      },
+      {
+        "id": "F-008",
+        "kind": "conformance",
+        "title": "Structure: CP-COB-001 deviates from its control template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "CP-COB-001"
+        ]
+      },
+      {
+        "id": "F-009",
+        "kind": "conformance",
+        "title": "Structure: CP-COB-002 deviates from its control template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "CP-COB-002"
+        ]
+      },
+      {
+        "id": "F-010",
+        "kind": "conformance",
+        "title": "Structure: CP-COB-003 deviates from its control template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "CP-COB-003"
+        ]
+      },
+      {
+        "id": "F-011",
+        "kind": "conformance",
+        "title": "Structure: CP-COB-004 deviates from its control template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "CP-COB-004"
+        ]
+      },
+      {
+        "id": "F-012",
+        "kind": "conformance",
+        "title": "Structure: CP-COB-005 deviates from its control template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "CP-COB-005"
+        ]
+      },
+      {
+        "id": "F-013",
+        "kind": "conformance",
+        "title": "Structure: EX-COB-001 deviates from its exception template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "EX-COB-001"
+        ]
+      },
+      {
+        "id": "F-014",
+        "kind": "conformance",
+        "title": "Structure: EX-COB-002 deviates from its exception template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "EX-COB-002"
+        ]
+      },
+      {
+        "id": "F-015",
+        "kind": "conformance",
+        "title": "Structure: EX-COB-003 deviates from its exception template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "EX-COB-003"
+        ]
+      },
+      {
+        "id": "F-016",
+        "kind": "conformance",
+        "title": "Structure: EX-COB-004 deviates from its exception template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "EX-COB-004"
+        ]
+      },
+      {
+        "id": "F-017",
+        "kind": "conformance",
+        "title": "Structure: EX-COB-005 deviates from its exception template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "EX-COB-005"
+        ]
+      },
+      {
+        "id": "F-018",
+        "kind": "conformance",
+        "title": "Structure: FP-COB-001 deviates from its friction-point template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "FP-COB-001"
+        ]
+      },
+      {
+        "id": "F-019",
+        "kind": "conformance",
+        "title": "Structure: FP-COB-002 deviates from its friction-point template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "FP-COB-002"
+        ]
+      },
+      {
+        "id": "F-020",
+        "kind": "conformance",
+        "title": "Structure: FP-COB-003 deviates from its friction-point template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "FP-COB-003"
+        ]
+      },
+      {
+        "id": "F-021",
+        "kind": "conformance",
+        "title": "Structure: FP-COB-004 deviates from its friction-point template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "FP-COB-004"
+        ]
+      },
+      {
+        "id": "F-022",
+        "kind": "conformance",
+        "title": "Structure: II-COB-004 deviates from its innovation-idea template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "II-COB-004"
+        ]
+      },
+      {
+        "id": "F-023",
+        "kind": "conformance",
+        "title": "Structure: II-COB-005 deviates from its innovation-idea template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "II-COB-005"
+        ]
+      },
+      {
+        "id": "F-024",
+        "kind": "conformance",
+        "title": "Structure: II-COB-006 deviates from its innovation-idea template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "II-COB-006"
+        ]
+      },
+      {
+        "id": "F-025",
+        "kind": "conformance",
+        "title": "Structure: II-COB-007 deviates from its innovation-idea template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "II-COB-007"
+        ]
+      },
+      {
+        "id": "F-026",
+        "kind": "conformance",
+        "title": "Structure: II-COB-001 deviates from its innovation-idea template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "II-COB-001"
+        ]
+      },
+      {
+        "id": "F-027",
+        "kind": "conformance",
+        "title": "Structure: II-COB-002 deviates from its innovation-idea template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "II-COB-002"
+        ]
+      },
+      {
+        "id": "F-028",
+        "kind": "conformance",
+        "title": "Structure: II-COB-003 deviates from its innovation-idea template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "II-COB-003"
+        ]
+      },
+      {
+        "id": "F-029",
+        "kind": "conformance",
+        "title": "Structure: INT-COB-001 deviates from its integration template",
+        "detail": "“What flows” should be bullets, written as paragraph; provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "INT-COB-001"
+        ]
+      },
+      {
+        "id": "F-030",
+        "kind": "conformance",
+        "title": "Structure: INT-COB-002 deviates from its integration template",
+        "detail": "“What flows” should be bullets, written as paragraph; provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "INT-COB-002"
+        ]
+      },
+      {
+        "id": "F-031",
+        "kind": "conformance",
+        "title": "Structure: INT-COB-003 deviates from its integration template",
+        "detail": "“What flows” should be bullets, written as paragraph; provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "INT-COB-003"
+        ]
+      },
+      {
+        "id": "F-032",
+        "kind": "conformance",
+        "title": "Structure: TR-COB-001 deviates from its market-trend template",
+        "detail": "required frontmatter “horizon” is missing; required frontmatter “asOf” is missing; required frontmatter “sourceUrl” is missing; provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "TR-COB-001"
+        ]
+      },
+      {
+        "id": "F-033",
+        "kind": "conformance",
+        "title": "Structure: TR-COB-002 deviates from its market-trend template",
+        "detail": "required frontmatter “horizon” is missing; required frontmatter “asOf” is missing; required frontmatter “sourceUrl” is missing; provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "TR-COB-002"
+        ]
+      },
+      {
+        "id": "F-034",
+        "kind": "conformance",
+        "title": "Structure: TR-COB-003 deviates from its market-trend template",
+        "detail": "required frontmatter “horizon” is missing; required frontmatter “asOf” is missing; required frontmatter “sourceUrl” is missing; provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "TR-COB-003"
+        ]
+      },
+      {
+        "id": "F-035",
+        "kind": "conformance",
+        "title": "Structure: TR-COB-004 deviates from its market-trend template",
+        "detail": "required frontmatter “horizon” is missing; required frontmatter “asOf” is missing; required frontmatter “sourceUrl” is missing; provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "TR-COB-004"
+        ]
+      },
+      {
+        "id": "F-036",
+        "kind": "conformance",
+        "title": "Structure: M-COB-001 deviates from its metric template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "M-COB-001"
+        ]
+      },
+      {
+        "id": "F-037",
+        "kind": "conformance",
+        "title": "Structure: M-COB-002 deviates from its metric template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "M-COB-002"
+        ]
+      },
+      {
+        "id": "F-038",
+        "kind": "conformance",
+        "title": "Structure: M-COB-003 deviates from its metric template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "M-COB-003"
+        ]
+      },
+      {
+        "id": "F-039",
+        "kind": "conformance",
+        "title": "Structure: M-COB-004 deviates from its metric template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "M-COB-004"
+        ]
+      },
+      {
+        "id": "F-040",
+        "kind": "conformance",
+        "title": "Structure: M-COB-005 deviates from its metric template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "M-COB-005"
+        ]
+      },
+      {
+        "id": "F-041",
+        "kind": "conformance",
+        "title": "Structure: MT-COB-001 deviates from its moment template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "MT-COB-001"
+        ]
+      },
+      {
+        "id": "F-042",
+        "kind": "conformance",
+        "title": "Structure: MT-COB-002 deviates from its moment template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "MT-COB-002"
+        ]
+      },
+      {
+        "id": "F-043",
+        "kind": "conformance",
+        "title": "Structure: MT-COB-003 deviates from its moment template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "MT-COB-003"
+        ]
+      },
+      {
+        "id": "F-044",
+        "kind": "conformance",
+        "title": "Structure: PP-COB-001 deviates from its pain-point template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "PP-COB-001"
+        ]
+      },
+      {
+        "id": "F-045",
+        "kind": "conformance",
+        "title": "Structure: PP-COB-002 deviates from its pain-point template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "PP-COB-002"
+        ]
+      },
+      {
+        "id": "F-046",
+        "kind": "conformance",
+        "title": "Structure: PP-COB-003 deviates from its pain-point template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "PP-COB-003"
+        ]
+      },
+      {
+        "id": "F-047",
+        "kind": "conformance",
+        "title": "Structure: PP-COB-004 deviates from its pain-point template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "PP-COB-004"
+        ]
+      },
+      {
+        "id": "F-048",
+        "kind": "conformance",
+        "title": "Structure: PP-COB-005 deviates from its pain-point template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "PP-COB-005"
+        ]
+      },
+      {
+        "id": "F-049",
+        "kind": "conformance",
+        "title": "Structure: PP-COB-006 deviates from its pain-point template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "PP-COB-006"
+        ]
+      },
+      {
+        "id": "F-050",
+        "kind": "conformance",
+        "title": "Structure: PG-COB-001 deviates from its process-gap template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "PG-COB-001"
+        ]
+      },
+      {
+        "id": "F-051",
+        "kind": "conformance",
+        "title": "Structure: PG-COB-002 deviates from its process-gap template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "PG-COB-002"
+        ]
+      },
+      {
+        "id": "F-052",
+        "kind": "conformance",
+        "title": "Structure: PG-COB-003 deviates from its process-gap template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "PG-COB-003"
+        ]
+      },
+      {
+        "id": "F-053",
+        "kind": "conformance",
+        "title": "Structure: REG-COB-001 deviates from its regulation template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "REG-COB-001"
+        ]
+      },
+      {
+        "id": "F-054",
+        "kind": "conformance",
+        "title": "Structure: REG-COB-002 deviates from its regulation template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "REG-COB-002"
+        ]
+      },
+      {
+        "id": "F-055",
+        "kind": "conformance",
+        "title": "Structure: REG-COB-003 deviates from its regulation template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "REG-COB-003"
+        ]
+      },
+      {
+        "id": "F-056",
+        "kind": "conformance",
+        "title": "Structure: REG-COB-004 deviates from its regulation template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "REG-COB-004"
+        ]
+      },
+      {
+        "id": "F-057",
+        "kind": "conformance",
+        "title": "Structure: REG-COB-005 deviates from its regulation template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "REG-COB-005"
+        ]
+      },
+      {
+        "id": "F-058",
+        "kind": "conformance",
+        "title": "Structure: REG-COB-006 deviates from its regulation template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "REG-COB-006"
+        ]
+      },
+      {
+        "id": "F-059",
+        "kind": "conformance",
+        "title": "Structure: ROLE-COB-002 deviates from its role template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "ROLE-COB-002"
+        ]
+      },
+      {
+        "id": "F-060",
+        "kind": "conformance",
+        "title": "Structure: ROLE-COB-003 deviates from its role template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "ROLE-COB-003"
+        ]
+      },
+      {
+        "id": "F-061",
+        "kind": "conformance",
+        "title": "Structure: ROLE-COB-006 deviates from its role template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "ROLE-COB-006"
+        ]
+      },
+      {
+        "id": "F-062",
+        "kind": "conformance",
+        "title": "Structure: PS-COB-001 deviates from its process-step template",
+        "detail": "“Inputs” should be bullets, written as paragraph; “Outputs” should be bullets, written as paragraph; provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "PS-COB-001"
+        ]
+      },
+      {
+        "id": "F-064",
+        "kind": "conformance",
+        "title": "Structure: PS-COB-003 deviates from its process-step template",
+        "detail": "“Inputs” should be bullets, written as paragraph; “Outputs” should be bullets, written as paragraph; provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "PS-COB-003"
+        ]
+      },
+      {
+        "id": "F-065",
+        "kind": "conformance",
+        "title": "Structure: PS-COB-004 deviates from its process-step template",
+        "detail": "“Inputs” should be bullets, written as paragraph; “Outputs” should be bullets, written as paragraph; provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "PS-COB-004"
+        ]
+      },
+      {
+        "id": "F-066",
+        "kind": "conformance",
+        "title": "Structure: PS-COB-005 deviates from its process-step template",
+        "detail": "“Inputs” should be bullets, written as paragraph; “Outputs” should be bullets, written as paragraph; provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "PS-COB-005"
+        ]
+      },
+      {
+        "id": "F-067",
+        "kind": "conformance",
+        "title": "Structure: SYS-COB-001 deviates from its system template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "SYS-COB-001"
+        ]
+      },
+      {
+        "id": "F-068",
+        "kind": "conformance",
+        "title": "Structure: SYS-COB-002 deviates from its system template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "SYS-COB-002"
+        ]
+      },
+      {
+        "id": "F-069",
+        "kind": "conformance",
+        "title": "Structure: SYS-COB-003 deviates from its system template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "SYS-COB-003"
+        ]
+      },
+      {
+        "id": "F-070",
+        "kind": "conformance",
+        "title": "Structure: SYS-COB-004 deviates from its system template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "SYS-COB-004"
+        ]
+      },
+      {
+        "id": "F-071",
+        "kind": "conformance",
+        "title": "Structure: SYS-COB-005 deviates from its system template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "SYS-COB-005"
+        ]
+      },
+      {
+        "id": "F-072",
+        "kind": "conformance",
+        "title": "Structure: SYS-COB-006 deviates from its system template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "SYS-COB-006"
+        ]
+      },
+      {
+        "id": "F-073",
+        "kind": "conformance",
+        "title": "Structure: SYS-COB-007 deviates from its system template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "SYS-COB-007"
+        ]
+      },
+      {
+        "id": "F-074",
+        "kind": "conformance",
+        "title": "Structure: SYS-COB-008 deviates from its system template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "SYS-COB-008"
+        ]
+      },
+      {
+        "id": "F-075",
+        "kind": "conformance",
+        "title": "Structure: JT-COB-001 deviates from its cx-touchpoint template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "JT-COB-001"
+        ]
+      },
+      {
+        "id": "F-076",
+        "kind": "conformance",
+        "title": "Structure: JT-COB-002 deviates from its cx-touchpoint template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "JT-COB-002"
+        ]
+      },
+      {
+        "id": "F-077",
+        "kind": "conformance",
+        "title": "Structure: JT-COB-003 deviates from its cx-touchpoint template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "JT-COB-003"
+        ]
+      },
+      {
+        "id": "F-078",
+        "kind": "conformance",
+        "title": "Structure: JT-COB-004 deviates from its cx-touchpoint template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "JT-COB-004"
+        ]
+      },
+      {
+        "id": "F-079",
+        "kind": "conformance",
+        "title": "Structure: JT-COB-005 deviates from its cx-touchpoint template",
+        "detail": "provenance map is missing — every heading must record where its content came from",
+        "elements": [
+          "JT-COB-005"
+        ]
+      },
+      {
+        "id": "F-080",
+        "kind": "discrepancy",
+        "title": "Orphan exception: EX-COB-001",
+        "detail": "No process-step `transitions` flow into EX-COB-001 — nothing in the documented flow reaches this exception.",
+        "elements": [
+          "EX-COB-001"
+        ]
+      },
+      {
+        "id": "F-081",
+        "kind": "discrepancy",
+        "title": "Orphan exception: EX-COB-002",
+        "detail": "No process-step `transitions` flow into EX-COB-002 — nothing in the documented flow reaches this exception.",
+        "elements": [
+          "EX-COB-002"
+        ]
+      },
+      {
+        "id": "F-082",
+        "kind": "discrepancy",
+        "title": "Orphan exception: EX-COB-003",
+        "detail": "No process-step `transitions` flow into EX-COB-003 — nothing in the documented flow reaches this exception.",
+        "elements": [
+          "EX-COB-003"
+        ]
+      },
+      {
+        "id": "F-083",
+        "kind": "discrepancy",
+        "title": "Orphan exception: EX-COB-004",
+        "detail": "No process-step `transitions` flow into EX-COB-004 — nothing in the documented flow reaches this exception.",
+        "elements": [
+          "EX-COB-004"
+        ]
+      },
+      {
+        "id": "F-084",
+        "kind": "discrepancy",
+        "title": "Orphan exception: EX-COB-005",
+        "detail": "No process-step `transitions` flow into EX-COB-005 — nothing in the documented flow reaches this exception.",
+        "elements": [
+          "EX-COB-005"
+        ]
+      },
+      {
+        "id": "F-085",
+        "kind": "discrepancy",
+        "title": "PS-COB-003 (Credit Assessment) has no control linked",
+        "detail": "Every other substantive step has at least one named control: PS-COB-001 has CP-COB-003, PS-COB-002 has CP-COB-001 and CP-COB-002, PS-COB-004 has CP-COB-004, PS-COB-005 has CP-COB-005. PS-COB-003 is the only non-quality-check process step with no control, leaving the credit decisioning activity uncontrolled from a formal compliance perspective.",
+        "elements": [
+          "PS-COB-003"
+        ]
+      },
+      {
+        "id": "F-086",
+        "kind": "discrepancy",
+        "title": "PS-COB-001 body contains junk text",
+        "detail": "The 'What happens' section of PS-COB-001 ends with the spurious characters 'fghfh' appended to the final sentence: '...Incomplete applications are flagged and returned to the client before they consume pipeline capacity.fghfh'. This is a data-entry artifact that should be removed.",
+        "elements": [
+          "PS-COB-001"
+        ]
+      },
+      {
+        "id": "F-087",
+        "kind": "discrepancy",
+        "title": "FP-COB-004 missing addressedBy back-link to II-COB-007",
+        "detail": "II-COB-007 (Conversational KYC assistant for ownership questions) declares addresses: [FP-COB-004], but FP-COB-004 (Complex Ownership Questions) has no addressedBy field. The other three friction points all carry a reciprocal addressedBy link; FP-COB-004 is the only one where the back-link is absent.",
+        "elements": [
+          "FP-COB-004",
+          "II-COB-007"
+        ]
+      },
+      {
+        "id": "F-088",
+        "kind": "question",
+        "title": "II-COB-009 and II-COB-011 have no friction-point or pain-point in their addresses list",
+        "detail": "II-COB-009 (Real-time SLA and per-step timing dashboard) addresses only process gaps PG-COB-001 and PG-COB-003; II-COB-011 (Continuous controls monitoring) addresses only control gaps CG-COB-001 and CG-COB-002. Every other innovation idea traces to at least one FP or PP. Is it intentional that these two ideas have no FP/PP link, or should each be associated with a pain-point such as the operational and staff pain behind the missing measurement and the audit-evidence gap?",
+        "elements": [
+          "II-COB-009",
+          "II-COB-011"
+        ]
+      },
+      {
+        "id": "F-089",
+        "kind": "question",
+        "title": "SYS-COB-006 (CDS) and SYS-COB-007 (DMS) have no documented integrations",
+        "detail": "Both systems list integrates: []. CDS is the credit decisioning system used in PS-COB-003; it must receive KYC-cleared data and return a credit decision, yet no integration element captures how. DMS (OpenText) stores application documents from intake through KYC and is referenced in PS-COB-001's systems list, yet has no documented connection to CRM, OWS, or the KYC platform. Are these integrations deliberately omitted (e.g. file-share or manual hand-off), or are INT elements still to be written?",
+        "elements": [
+          "SYS-COB-006",
+          "SYS-COB-007"
+        ]
+      },
+      {
+        "id": "F-090",
+        "kind": "question",
+        "title": "SYS-COB-007 (DMS) not listed in PS-COB-002 systems",
+        "detail": "SYS-COB-007's own description says it 'holds the application documents from intake through KYC', implying it is accessed during both PS-COB-001 and PS-COB-002. However PS-COB-002's systems field lists only SYS-COB-003 and SYS-COB-004. Does the KYC Analyst access DMS during identity verification, or do documents move entirely into the KYC platform (SYS-COB-003) at intake so that DMS plays no active role in PS-COB-002?",
+        "elements": [
+          "SYS-COB-007",
+          "PS-COB-002"
+        ]
+      }
+    ]
+  }
+}

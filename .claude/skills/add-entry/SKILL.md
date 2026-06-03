@@ -15,15 +15,14 @@ You add **one new element** to a section of a process wiki — AI-drafted,
 researched, and refined with the SME before it is written. You are invoked
 with a process `<slug>` and a `<section>` id.
 
-You do the judgement — ask, research, draft, refine — and the Python scripts in
-`scripts/wiki/` do the mechanical write. This is the interactive, single-entry
+You do the judgement — ask, research, draft, refine — and the native tools
+do the mechanical write. This is the interactive, single-entry
 counterpart to the bulk `source-innovation` / `source-cx` skills.
 
 ## Step 1 — Read the section's context
 
 - Read `schema/process-schema.json` for the section — the element type(s) it
-  holds. For each of those types run `python3 scripts/wiki/show_template.py
-  <type>`: it prints the type's `## ` blocks **and** its type-specific
+  holds. For each of those types use the `getElementTemplate({ type })` tool: it prints the type's `## ` blocks **and** its type-specific
   frontmatter fields and relations, so the entry you draft is as complete as
   one the dedicated sourcing skills produce.
 - Read the section's existing elements in `wiki/processes/<slug>/<section>/`
@@ -53,7 +52,7 @@ Research the entry before drafting — never draft from a blank guess:
   do not have. Cite the real source; never invent one.
 
 Then draft the element: every block per its schema `template`, **every
-frontmatter field and relation `show_template.py` listed for the type** (for a
+frontmatter field and relation `getElementTemplate({ type })` listed for the type** (for a
 web-sourced type that means `sourceUrl`, `asOf` and the rest — do not leave
 them off), an honest `confidence`, and a `source` (the SME, the wiki element,
 or the study/URL the research found). If the
@@ -77,12 +76,11 @@ While drafting and presenting (Steps 3–4) the element has no id yet — refer 
 it by description, never guess an id. The id is assigned here, at write time.
 
 On **[Y]**:
-1. `python3 scripts/wiki/next_id.py <slug> <type>` — the id.
-2. Assemble a JSON spec (`slug`, `type`, `id`, `title`, `confidence`,
+1. use the `getNextId({ slug, type })` tool — this provides the id.
+2. Assemble an element object (`slug`, `type`, `id`, `title`, `confidence`,
    `source`, `fields` for scalar frontmatter, `relations` for id-lists,
-   `blocks`), save it to `/tmp/<id>.json`, then
-   `python3 scripts/wiki/write_element.py /tmp/<id>.json` — `status: draft`.
-3. `python3 scripts/wiki/check_conformance.py <slug> <id>` — fix any flag.
+   `blocks`), then use the `createElement({ type, element })` tool — `status: draft`.
+3. use the `checkConformance({ slug, id })` tool — fix any flag.
 
 Then confirm with this **exact** line, substituting the id, title and section:
 

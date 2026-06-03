@@ -8,16 +8,20 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test": "npm run test:lint && npm run test:scripts",
+    "test": "npm run test:lint",
     "test:lint": "node --test --experimental-strip-types src/lib/lint.test.ts",
-    "test:scripts": "python3 scripts/wiki/test_wiki_scripts.py",
     "eval:read-back": "python3 eval/read-back/run.py"
   },
   "dependencies": {
+    "@google/genai": "^2.6.0",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "ajv": "^8.20.0",
     "bcryptjs": "^3.0.3",
     "next": "^16.2.6",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
+    "react-hook-form": "^7.76.1",
+    "react-json-view-lite": "^2.5.0",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1"
   },

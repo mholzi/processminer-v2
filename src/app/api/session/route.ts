@@ -29,6 +29,15 @@ export const maxDuration = 1800;
 // Turn a CLI tool call into a short, human-readable activity line.
 function describeTool(name: string, input: Record<string, unknown>): string {
   const base = (p: unknown) => String(p ?? "").split("/").pop() || "";
+  if (name === "expandElement") {
+    return input.id ? `🔍 Expanding element ${input.id} …` : `🔍 Scanning collection ${input.type} …`;
+  }
+  if (name === "createElement") {
+    return `✏ Creating new element in ${input.type} …`;
+  }
+  if (name === "updateElement") {
+    return `✏ Updating element ${input.id} …`;
+  }
   if (name === "Bash") {
     const cmd = String(input?.command ?? "");
     if (cmd.includes("write_element.py")) return "✏ Writing element …";
@@ -50,7 +59,7 @@ function describeTool(name: string, input: Record<string, unknown>): string {
 }
 
 export async function POST(req: NextRequest) {
-  let body: { message?: unknown; sessionId?: unknown; stream?: unknown };
+  let body: { message?: unknown; sessionId?: unknown; stream?: unknown; skill?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -60,6 +69,7 @@ export async function POST(req: NextRequest) {
   const message = typeof body.message === "string" ? body.message.trim() : "";
   const sessionId =
     typeof body.sessionId === "string" && body.sessionId ? body.sessionId : null;
+  const skill = typeof body.skill === "string" && body.skill ? body.skill.trim() : null;
   if (!message) {
     return Response.json({ error: "A message is required." }, { status: 400 });
   }
@@ -163,6 +173,13 @@ export async function POST(req: NextRequest) {
             sessionId: worker.sessionId,
             isError: Boolean(evt.is_error),
           });
+        } else if (evt.type === "error") {
+          resultSent = true;
+          send({
+            type: "error",
+            error: typeof evt.error === "string" ? evt.error : "Unknown worker error",
+            sessionId: worker.sessionId,
+          });
         } else if (evt.type === "stream_event" && wantStream) {
           // Partial-message chunks — forward each text delta so the reply
           // appears live; a new text block gets a paragraph break from the
@@ -193,7 +210,7 @@ export async function POST(req: NextRequest) {
 
       (async () => {
         try {
-          for await (const evt of worker.runTurn(message)) {
+          for await (const evt of worker.runTurn(message, skill)) {
             handleEvent(evt);
           }
           if (!resultSent) {
@@ -214,6 +231,9 @@ export async function POST(req: NextRequest) {
         }
       })();
     },
+    cancel() {
+      worker.dispose();
+    }
   });
 
   return new Response(stream, {

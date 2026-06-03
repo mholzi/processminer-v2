@@ -1,15 +1,24 @@
 // Server-only. Warm-worker pool for the Process Assistant.
 //
-// Each chat turn used to `spawn("claude")` fresh — paying a full cold start
-// (Node boot, ~20 SKILL.md discovery, MCP init, auth) before any model work.
-// A SessionWorker instead keeps one `claude` process alive in streaming-input
-// mode: that cost is paid once, then each turn is written to its stdin.
+// There are TWO ways this assistant can run (configured by SESSION_PROVIDER):
+// 1. "gemini": In-process Google GenAI integration (src/lib/gemini-worker.ts).
+//    Runs entirely within this Node process, calling native tools directly.
+// 2. "claude": Out-of-process Anthropic Claude CLI integration (this file).
+//    Spawns the local `claude` CLI binary and communicates over stdin/stdout.
+//    NOTE: For the real Claude CLI to enforce the JSON schemas natively, your colleague 
+//    needs to use the MCP server defined in `src/lib/claude-mcp-server.ts`. This server 
+//    exposes the exact same tools to Claude that `gemini-worker.ts` uses internally.
+//
+// A SessionWorker keeps one `claude` process alive in streaming-input mode: 
+// the boot cost (auth, MCP init) is paid once, then each turn is written to its stdin.
 
 import { spawn, type ChildProcess } from "node:child_process";
 import { randomUUID } from "node:crypto";
+import { IProcessWorker, WorkerEvent } from "./worker-interface";
+export { type IProcessWorker, type WorkerEvent } from "./worker-interface";
+import { GeminiWorker } from "./gemini-worker";
 
-export type WorkerEvent = Record<string, unknown> & { type?: string };
-
+const SESSION_PROVIDER = process.env.SESSION_PROVIDER || "claude";
 const MODEL = process.env.SESSION_MODEL || "claude-sonnet-4-6";
 const TURN_TIMEOUT_MS = Number(process.env.SESSION_TURN_TIMEOUT_MS) || 1_800_000;
 const IDLE_TTL_MS = Number(process.env.SESSION_IDLE_TTL_MS) || 30 * 60_000;
@@ -23,7 +32,7 @@ const FAIL = "__worker_fail__";
  * One long-lived `claude` CLI process, driven in streaming-input mode. Holds
  * one conversation; runs one turn at a time.
  */
-export class SessionWorker {
+export class SessionWorker implements IProcessWorker {
   /** Stable handle — known before `claude` assigns a session id. */
   readonly id = randomUUID();
   /** `claude`'s session id, captured from the event stream; stable for life. */
@@ -108,7 +117,7 @@ export class SessionWorker {
    * turn's `result`. Throws if the worker is dead, already busy, the turn
    * times out, or the process exits mid-turn.
    */
-  async *runTurn(message: string): AsyncGenerator<WorkerEvent> {
+  async *runTurn(message: string, skill?: string | null): AsyncGenerator<WorkerEvent> {
     if (!this.alive) {
       throw new Error("This assistant session is no longer running.");
     }
@@ -194,7 +203,7 @@ export class SessionWorker {
  * Node process (it spawns `claude` on the same machine).
  */
 class SessionPool {
-  private readonly workers = new Map<string, SessionWorker>();
+  private readonly workers = new Map<string, IProcessWorker>();
 
   constructor() {
     const sweeper = setInterval(() => this.sweep(), 60_000);
@@ -204,10 +213,10 @@ class SessionPool {
 
   /**
    * The warm worker for `sessionId`, or a new one. A known session with no
-   * warm worker (server restarted, evicted, or crashed) is rehydrated with
-   * `--resume`. A null `sessionId` always starts a fresh session.
+   * warm worker (server restarted, evicted, or crashed) is rehydrated.
+   * A null `sessionId` always starts a fresh session.
    */
-  acquire(sessionId: string | null): SessionWorker {
+  acquire(sessionId: string | null): IProcessWorker {
     for (const [id, w] of this.workers) {
       if (!w.alive) this.workers.delete(id);
     }
@@ -219,13 +228,24 @@ class SessionPool {
           return w;
         }
       }
-      const revived = new SessionWorker(sessionId);
+      
+      let revived: IProcessWorker;
+      if (SESSION_PROVIDER === "gemini") {
+        revived = new GeminiWorker(sessionId);
+      } else {
+        revived = new SessionWorker(sessionId);
+      }
       this.workers.set(revived.id, revived);
       this.enforceCap();
       return revived;
     }
 
-    const fresh = new SessionWorker();
+    let fresh: IProcessWorker;
+    if (SESSION_PROVIDER === "gemini") {
+      fresh = new GeminiWorker();
+    } else {
+      fresh = new SessionWorker();
+    }
     this.workers.set(fresh.id, fresh);
     this.enforceCap();
     return fresh;

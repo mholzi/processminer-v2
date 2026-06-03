@@ -43,17 +43,19 @@ export async function POST(req: NextRequest) {
     ...(typeof replyTo === "string" && replyTo ? { replyTo } : {}),
   };
 
-  const path = join(process.cwd(), "wiki", "processes", slug, "notes.json");
-  let notes: Record<string, unknown[]> = {};
+  const path = join(process.cwd(), "wiki", "processes", `${slug}.json`);
+  let processData: any = {};
   try {
-    notes = JSON.parse(await readFile(path, "utf8"));
-  } catch {
-    // No notes.json yet — start fresh.
+    processData = JSON.parse(await readFile(path, "utf8"));
+  } catch (e) {
+    return Response.json({ error: `Process not found: ${slug}` }, { status: 404 });
   }
-  (notes[elementId] ??= []).push(note);
+  
+  processData.notes ??= {};
+  (processData.notes[elementId] ??= []).push(note);
 
   try {
-    await writeFile(path, `${JSON.stringify(notes, null, 2)}\n`);
+    await writeFile(path, `${JSON.stringify(processData, null, 2)}\n`);
   } catch (e) {
     return Response.json(
       { error: `Could not save: ${e instanceof Error ? e.message : e}` },
@@ -90,15 +92,20 @@ export async function PATCH(req: NextRequest) {
     return Response.json({ error: "Bad or missing note." }, { status: 400 });
   }
 
-  const path = join(process.cwd(), "wiki", "processes", slug, "notes.json");
-  let notes: Record<string, Record<string, unknown>[]>;
+  const path = join(process.cwd(), "wiki", "processes", `${slug}.json`);
+  let processData: any = {};
   try {
-    notes = JSON.parse(await readFile(path, "utf8"));
-  } catch {
+    processData = JSON.parse(await readFile(path, "utf8"));
+  } catch (e) {
+    return Response.json({ error: `Process not found: ${slug}` }, { status: 404 });
+  }
+
+  const notes = processData.notes;
+  if (!notes || !notes[elementId]) {
     return Response.json({ error: "No discussion thread." }, { status: 404 });
   }
 
-  const note = (notes[elementId] ?? []).find((n) => n.id === noteId);
+  const note = (notes[elementId] ?? []).find((n: any) => n.id === noteId);
   if (!note) {
     return Response.json({ error: "No such note." }, { status: 404 });
   }
@@ -113,7 +120,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   try {
-    await writeFile(path, `${JSON.stringify(notes, null, 2)}\n`);
+    await writeFile(path, `${JSON.stringify(processData, null, 2)}\n`);
   } catch (e) {
     return Response.json(
       { error: `Could not save: ${e instanceof Error ? e.message : e}` },

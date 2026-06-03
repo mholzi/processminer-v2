@@ -1,0 +1,3432 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Process Document Schema (v3)",
+  "type": "object",
+  "description": "The golden source JSON Schema representing a full Process Document instance.",
+  "properties": {
+    "meta": {
+      "type": "object",
+      "description": "System-managed metadata for the overall process.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Process ID (e.g. COB-003)"
+        },
+        "type": {
+          "type": "string",
+          "const": "process"
+        },
+        "section": {
+          "type": "string",
+          "const": "overview"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "confirmed",
+            "empty"
+          ]
+        },
+        "confidence": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "docStatus": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "status"
+      ]
+    },
+    "content": {
+      "type": "object",
+      "description": "Authored content for the overall process.",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "processOwner": {
+          "type": "string"
+        },
+        "trigger": {
+          "type": "string"
+        },
+        "frequency": {
+          "type": "string"
+        },
+        "scopeIn": {
+          "type": "string"
+        },
+        "scopeOut": {
+          "type": "string"
+        },
+        "processInput": {
+          "type": "string"
+        },
+        "processOutput": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string",
+          "description": "The markdown body of the process overview."
+        }
+      },
+      "required": [
+        "title",
+        "description"
+      ]
+    },
+    "process-steps": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "description": "The ordered process steps. If null, they have not yet been evaluated by the AI or user.",
+      "items": {
+        "$ref": "#/definitions/ProcessStep"
+      }
+    },
+    "roles": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "description": "The roles involved in the process.",
+      "items": {
+        "$ref": "#/definitions/Role"
+      }
+    },
+    "systems": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "description": "The systems involved in the process.",
+      "items": {
+        "$ref": "#/definitions/System"
+      }
+    },
+    "exceptions": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "description": "The exceptions involved in the process.",
+      "items": {
+        "$ref": "#/definitions/Exception"
+      }
+    },
+    "controls": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/Control"
+      }
+    },
+    "regulation": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/Regulation"
+      }
+    },
+    "control-gaps": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/ComplianceGap"
+      }
+    },
+    "audit-findings": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/AuditFinding"
+      }
+    },
+    "pain-points": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/PainPoint"
+      }
+    },
+    "friction-points": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/FrictionPoint"
+      }
+    },
+    "touchpoints": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/CxTouchpoint"
+      }
+    },
+    "moments": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/Moment"
+      }
+    },
+    "channels": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/CxChannel"
+      }
+    },
+    "competitor-cx": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/CompetitorCxEu"
+      }
+    },
+    "cx-benchmarks": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/CxBenchmark"
+      }
+    },
+    "metrics": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/Metric"
+      }
+    },
+    "process-gaps": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/ProcessGap"
+      }
+    },
+    "market-trends": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/MarketTrend"
+      }
+    },
+    "competitor-innovation": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/CompetitorEu"
+      }
+    },
+    "innovation-ideas": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/InnovationIdea"
+      }
+    },
+    "innovation-risks": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/InnovationRisk"
+      }
+    },
+    "to-be-design": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/TargetState"
+      }
+    },
+    "transformation-decisions": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/TransformationDecision"
+      }
+    },
+    "gap-resolution": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/Gap"
+      }
+    },
+    "integrations": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/Integration"
+      }
+    },
+    "requirements": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/Requirement"
+      }
+    },
+    "dependencies": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/ProcessDependency"
+      }
+    },
+    "assumptions": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/Assumption"
+      }
+    },
+    "capabilities": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/Capability"
+      }
+    },
+    "target-applications": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/TargetApplication"
+      }
+    },
+    "architecture-decisions": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/Adr"
+      }
+    },
+    "target-integrations": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/TargetIntegration"
+      }
+    },
+    "components": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/Component"
+      }
+    },
+    "nfrs": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/Nfr"
+      }
+    },
+    "migration-phases": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/MigrationPhase"
+      }
+    }
+  },
+  "required": [
+    "meta",
+    "content",
+    "process-steps",
+    "roles",
+    "systems",
+    "exceptions",
+    "controls",
+    "regulation",
+    "control-gaps",
+    "audit-findings",
+    "pain-points",
+    "friction-points",
+    "touchpoints",
+    "moments",
+    "channels",
+    "competitor-cx",
+    "cx-benchmarks",
+    "metrics",
+    "process-gaps",
+    "market-trends",
+    "competitor-innovation",
+    "innovation-ideas",
+    "innovation-risks",
+    "to-be-design",
+    "transformation-decisions",
+    "gap-resolution",
+    "integrations",
+    "requirements",
+    "dependencies",
+    "assumptions",
+    "capabilities",
+    "target-applications",
+    "architecture-decisions",
+    "target-integrations",
+    "components",
+    "nfrs",
+    "migration-phases"
+  ],
+  "definitions": {
+    "BaseMeta": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "section": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "confirmed",
+            "empty"
+          ]
+        },
+        "confidence": {
+          "type": "string",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "source": {
+          "type": "string"
+        },
+        "approval": {
+          "type": "string",
+          "enum": [
+            "in-progress",
+            "approved",
+            "rejected"
+          ]
+        },
+        "approvalBy": {
+          "type": "string"
+        },
+        "approvalDate": {
+          "type": "string"
+        },
+        "relevance": {
+          "type": "string",
+          "enum": [
+            "",
+            "relevant",
+            "disregarded"
+          ]
+        },
+        "relevanceBy": {
+          "type": "string"
+        },
+        "relevanceDate": {
+          "type": "string"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "source": {
+                "type": "string",
+                "enum": [
+                  "elicited",
+                  "document",
+                  "proposed",
+                  "web",
+                  "legacy-approved"
+                ]
+              },
+              "evidence": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "source",
+              "evidence"
+            ]
+          }
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "section",
+        "status"
+      ]
+    },
+    "BaseContent": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title"
+      ]
+    },
+    "ProcessStep": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "process-step"
+                },
+                "section": {
+                  "const": "process-steps"
+                },
+                "sequence": {
+                  "type": "number",
+                  "description": "Execution order"
+                }
+              },
+              "required": [
+                "sequence"
+              ]
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "owner": {
+                  "type": "string",
+                  "description": "Who performs this step — a role, or 'system'."
+                },
+                "sla": {
+                  "type": "string",
+                  "description": "Turnaround target."
+                },
+                "condition": {
+                  "type": "string",
+                  "description": "Precondition or entry criterion."
+                },
+                "systems": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "IDs of systems used."
+                },
+                "transitions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "to": {
+                        "type": "string"
+                      },
+                      "kind": {
+                        "type": "string",
+                        "enum": [
+                          "normal",
+                          "branch",
+                          "loopback",
+                          "exception"
+                        ]
+                      },
+                      "when": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "to",
+                      "kind"
+                    ]
+                  },
+                  "description": "Outgoing flow to other steps or exceptions."
+                },
+                "description": {
+                  "type": "string",
+                  "description": "What happens in this step. The concrete actions performed in this step, in plain language. Do not just list inputs and outputs. Stylistic constraint: 20-95 words."
+                },
+                "inputs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 2,
+                  "maxItems": 6,
+                  "description": "What the step consumes."
+                },
+                "outputs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 2,
+                  "maxItems": 6,
+                  "description": "What the step produces."
+                },
+                "businessValue": {
+                  "type": "string",
+                  "description": "Why it matters. The risk this step controls or the value it adds. Be concise and impactful. Stylistic constraint: 10-60 words."
+                }
+              },
+              "required": [
+                "owner",
+                "description",
+                "inputs",
+                "outputs",
+                "businessValue"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "Role": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "role"
+                },
+                "section": {
+                  "const": "roles"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "responsibility": {
+                  "type": "string",
+                  "description": "What the role owns in the process, stated in one clear sentence. Stylistic constraint: 8-45 words."
+                },
+                "inThisProcess": {
+                  "type": "string",
+                  "description": "The specific steps and controls this role performs in this process. Stylistic constraint: 10-50 words."
+                },
+                "systems": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "IDs of systems used."
+                },
+                "controls": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "IDs of controls owned."
+                },
+                "raci": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "RACI assignments in stepId:level format."
+                }
+              },
+              "required": [
+                "responsibility",
+                "inThisProcess"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "System": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "system"
+                },
+                "section": {
+                  "const": "systems"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "systemType": {
+                  "type": "string",
+                  "enum": [
+                    "CORE",
+                    "SUPPORTING",
+                    "EXTERNAL"
+                  ],
+                  "description": "Type of system: CORE, SUPPORTING, or EXTERNAL."
+                },
+                "purpose": {
+                  "type": "string",
+                  "description": "What the system is for. Stylistic constraint: 4-30 words."
+                },
+                "roleInThisProcess": {
+                  "type": "string",
+                  "description": "Which steps use the system and how. Stylistic constraint: 6-40 words."
+                },
+                "integrates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "IDs of systems it integrates with."
+                }
+              },
+              "required": [
+                "systemType",
+                "purpose",
+                "roleInThisProcess"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "Exception": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "exception"
+                },
+                "section": {
+                  "const": "exceptions"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "category": {
+                  "type": "string"
+                },
+                "frequencyPct": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "impactSeverity": {
+                  "type": "string",
+                  "enum": [
+                    "HIGH",
+                    "MEDIUM",
+                    "LOW"
+                  ]
+                },
+                "handlingOwner": {
+                  "type": "string"
+                },
+                "affects": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "description": {
+                  "type": "string",
+                  "description": "What the exception is and the conditions under which it arises. Stylistic constraint: 12-50 words."
+                },
+                "handling": {
+                  "type": "string",
+                  "description": "How the exception is resolved, and by whom. Stylistic constraint: 10-60 words."
+                },
+                "impact": {
+                  "type": "string",
+                  "description": "Effect on cycle time, cost, the client or compliance. Stylistic constraint: 8-40 words."
+                }
+              },
+              "required": [
+                "category",
+                "impactSeverity",
+                "description",
+                "handling",
+                "impact"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "Control": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "control"
+                },
+                "section": {
+                  "const": "controls"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "controlType": {
+                  "type": "string"
+                },
+                "execution": {
+                  "type": "string"
+                },
+                "effectiveness": {
+                  "type": "string"
+                },
+                "owner": {
+                  "type": "string"
+                },
+                "step": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "regulatedBy": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "whatItChecks": {
+                  "type": "string"
+                },
+                "controlActivity": {
+                  "type": "string"
+                },
+                "riskAddressed": {
+                  "type": "string"
+                },
+                "timing": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "controlType",
+                "execution",
+                "owner",
+                "whatItChecks",
+                "controlActivity",
+                "riskAddressed",
+                "timing"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "Regulation": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "regulation"
+                },
+                "section": {
+                  "const": "regulation"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "domain": {
+                  "type": "string"
+                },
+                "asOf": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "whatItRequires": {
+                  "type": "string"
+                },
+                "whyItApplies": {
+                  "type": "string"
+                },
+                "howItIsMet": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "domain",
+                "whatItRequires",
+                "whyItApplies",
+                "howItIsMet"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "ComplianceGap": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "compliance-gap"
+                },
+                "section": {
+                  "const": "control-gaps"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "severity": {
+                  "type": "string"
+                },
+                "gapStatus": {
+                  "type": "string"
+                },
+                "control": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "theGap": {
+                  "type": "string"
+                },
+                "risk": {
+                  "type": "string"
+                },
+                "remediation": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "severity",
+                "gapStatus",
+                "theGap",
+                "risk",
+                "remediation"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "AuditFinding": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "audit-finding"
+                },
+                "section": {
+                  "const": "audit-findings"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "auditDate": {
+                  "type": "string"
+                },
+                "findingStatus": {
+                  "type": "string"
+                },
+                "severity": {
+                  "type": "string"
+                },
+                "finding": {
+                  "type": "string"
+                },
+                "recommendation": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "auditDate",
+                "findingStatus",
+                "severity",
+                "finding",
+                "recommendation"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "PainPoint": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "pain-point"
+                },
+                "section": {
+                  "const": "pain-points"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "category": {
+                  "type": "string"
+                },
+                "severity": {
+                  "type": "string"
+                },
+                "priority": {
+                  "type": "string"
+                },
+                "affects": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "description": {
+                  "type": "string"
+                },
+                "impact": {
+                  "type": "string"
+                },
+                "rootCause": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "severity",
+                "description",
+                "impact",
+                "rootCause"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "FrictionPoint": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "friction-point"
+                },
+                "section": {
+                  "const": "friction-points"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "severity": {
+                  "type": "string"
+                },
+                "occursAt": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "painPoint": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "addressedBy": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "description": {
+                  "type": "string"
+                },
+                "rootCause": {
+                  "type": "string"
+                },
+                "clientImpact": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "severity",
+                "occursAt",
+                "description",
+                "rootCause",
+                "clientImpact"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "CxTouchpoint": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "cx-touchpoint"
+                },
+                "section": {
+                  "const": "touchpoints"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "channel": {
+                  "type": "string"
+                },
+                "ces": {
+                  "type": "string"
+                },
+                "occursAt": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "whatTheClientDoes": {
+                  "type": "string"
+                },
+                "whatTheBankDoes": {
+                  "type": "string"
+                },
+                "experience": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "channel",
+                "occursAt",
+                "whatTheClientDoes",
+                "whatTheBankDoes",
+                "experience"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "Moment": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "moment"
+                },
+                "section": {
+                  "const": "moments"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "sentiment": {
+                  "type": "string"
+                },
+                "touchpoint": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "theMoment": {
+                  "type": "string"
+                },
+                "whyItMatters": {
+                  "type": "string"
+                },
+                "designImplication": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "sentiment",
+                "theMoment",
+                "whyItMatters",
+                "designImplication"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "CxChannel": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "cx-channel"
+                },
+                "section": {
+                  "const": "channels"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "channelType": {
+                  "type": "string"
+                },
+                "touchpoints": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "description": {
+                  "type": "string"
+                },
+                "usage": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "channelType",
+                "description",
+                "usage"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "CompetitorCxEu": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "competitor-cx-eu"
+                },
+                "section": {
+                  "const": "competitor-cx"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "competitor": {
+                  "type": "string"
+                },
+                "asOf": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "bearsOn": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "theJourney": {
+                  "type": "string"
+                },
+                "relevance": {
+                  "type": "string"
+                },
+                "evidence": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "competitor",
+                "asOf",
+                "sourceUrl",
+                "theJourney",
+                "relevance",
+                "evidence"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "CompetitorCxGlobal": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "competitor-cx-global"
+                },
+                "section": {
+                  "const": "competitor-cx"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "competitor": {
+                  "type": "string"
+                },
+                "asOf": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "bearsOn": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "theJourney": {
+                  "type": "string"
+                },
+                "relevance": {
+                  "type": "string"
+                },
+                "evidence": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "competitor",
+                "asOf",
+                "sourceUrl",
+                "theJourney",
+                "relevance",
+                "evidence"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "CompetitorCxFintech": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "competitor-cx-fintech"
+                },
+                "section": {
+                  "const": "competitor-cx"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "competitor": {
+                  "type": "string"
+                },
+                "asOf": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "bearsOn": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "theJourney": {
+                  "type": "string"
+                },
+                "relevance": {
+                  "type": "string"
+                },
+                "evidence": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "competitor",
+                "asOf",
+                "sourceUrl",
+                "theJourney",
+                "relevance",
+                "evidence"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "CxBenchmark": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "cx-benchmark"
+                },
+                "section": {
+                  "const": "cx-benchmarks"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "asOf": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "bearsOn": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "theBenchmark": {
+                  "type": "string"
+                },
+                "relevance": {
+                  "type": "string"
+                },
+                "evidence": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "asOf",
+                "sourceUrl",
+                "theBenchmark",
+                "relevance",
+                "evidence"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "Metric": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "metric"
+                },
+                "section": {
+                  "const": "metrics"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "target": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "trend": {
+                  "type": "string"
+                },
+                "definition": {
+                  "type": "string"
+                },
+                "currentReading": {
+                  "type": "string"
+                },
+                "whyItMatters": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "definition",
+                "currentReading",
+                "whyItMatters"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "ProcessGap": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "process-gap"
+                },
+                "section": {
+                  "const": "process-gaps"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "area": {
+                  "type": "string"
+                },
+                "gapStatus": {
+                  "type": "string"
+                },
+                "affects": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "theGap": {
+                  "type": "string"
+                },
+                "impact": {
+                  "type": "string"
+                },
+                "nextStep": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "area",
+                "gapStatus",
+                "theGap",
+                "impact",
+                "nextStep"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "MarketTrend": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "market-trend"
+                },
+                "section": {
+                  "const": "market-trends"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "horizon": {
+                  "type": "string"
+                },
+                "asOf": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "bearsOn": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "theTrend": {
+                  "type": "string"
+                },
+                "relevance": {
+                  "type": "string"
+                },
+                "evidence": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "horizon",
+                "asOf",
+                "sourceUrl",
+                "theTrend",
+                "relevance",
+                "evidence"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "CompetitorEu": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "competitor-eu"
+                },
+                "section": {
+                  "const": "competitor-innovation"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "competitor": {
+                  "type": "string"
+                },
+                "asOf": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "bearsOn": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "theMove": {
+                  "type": "string"
+                },
+                "relevance": {
+                  "type": "string"
+                },
+                "evidence": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "competitor",
+                "asOf",
+                "sourceUrl",
+                "theMove",
+                "relevance",
+                "evidence"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "CompetitorGlobal": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "competitor-global"
+                },
+                "section": {
+                  "const": "competitor-innovation"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "competitor": {
+                  "type": "string"
+                },
+                "asOf": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "bearsOn": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "theMove": {
+                  "type": "string"
+                },
+                "relevance": {
+                  "type": "string"
+                },
+                "evidence": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "competitor",
+                "asOf",
+                "sourceUrl",
+                "theMove",
+                "relevance",
+                "evidence"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "CompetitorFintech": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "competitor-fintech"
+                },
+                "section": {
+                  "const": "competitor-innovation"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "competitor": {
+                  "type": "string"
+                },
+                "asOf": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "bearsOn": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "theMove": {
+                  "type": "string"
+                },
+                "relevance": {
+                  "type": "string"
+                },
+                "evidence": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "competitor",
+                "asOf",
+                "sourceUrl",
+                "theMove",
+                "relevance",
+                "evidence"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "InnovationIdea": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "innovation-idea"
+                },
+                "section": {
+                  "const": "innovation-ideas"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "category": {
+                  "type": "string"
+                },
+                "strategicFit": {
+                  "type": "string"
+                },
+                "complexity": {
+                  "type": "string"
+                },
+                "addresses": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "fromTrend": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "fromCompetitor": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "theIdea": {
+                  "type": "string"
+                },
+                "expectedBenefit": {
+                  "type": "string"
+                },
+                "feasibility": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "addresses",
+                "theIdea",
+                "expectedBenefit",
+                "feasibility"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "InnovationRisk": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "innovation-risk"
+                },
+                "section": {
+                  "const": "innovation-risks"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "severity": {
+                  "type": "string"
+                },
+                "theRisk": {
+                  "type": "string"
+                },
+                "likelihoodImpact": {
+                  "type": "string"
+                },
+                "mitigation": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "severity",
+                "theRisk",
+                "likelihoodImpact",
+                "mitigation"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "TargetState": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "target-state"
+                },
+                "section": {
+                  "const": "to-be-design"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "replaces": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "systems": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "risks": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "targetDescription": {
+                  "type": "string"
+                },
+                "whatChanges": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "rationale": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "targetDescription",
+                "whatChanges",
+                "rationale"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "TransformationDecision": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "transformation-decision"
+                },
+                "section": {
+                  "const": "transformation-decisions"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "decisionType": {
+                  "type": "string"
+                },
+                "decisionStatus": {
+                  "type": "string"
+                },
+                "resolves": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "realises": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "fromIdea": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "theDecision": {
+                  "type": "string"
+                },
+                "optionsConsidered": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "rationale": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "decisionType",
+                "decisionStatus",
+                "theDecision",
+                "optionsConsidered",
+                "rationale"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "Gap": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "gap"
+                },
+                "section": {
+                  "const": "gap-resolution"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "validationArea": {
+                  "type": "string"
+                },
+                "gapStatus": {
+                  "type": "string"
+                },
+                "theGap": {
+                  "type": "string"
+                },
+                "resolution": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "gapStatus",
+                "theGap",
+                "resolution",
+                "status"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "Integration": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "integration"
+                },
+                "section": {
+                  "const": "integrations"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "systems": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "whatConnects": {
+                  "type": "string"
+                },
+                "whatFlows": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "systems",
+                "whatConnects",
+                "whatFlows"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "Requirement": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "requirement"
+                },
+                "section": {
+                  "const": "requirements"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "reqType": {
+                  "type": "string"
+                },
+                "moscow": {
+                  "type": "string"
+                },
+                "derivedFrom": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "addresses": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "requirement": {
+                  "type": "string"
+                },
+                "rationale": {
+                  "type": "string"
+                },
+                "acceptanceCriteria": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "reqType",
+                "moscow",
+                "derivedFrom",
+                "requirement",
+                "rationale",
+                "acceptanceCriteria"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "ProcessDependency": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "process-dependency"
+                },
+                "section": {
+                  "const": "dependencies"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "direction": {
+                  "type": "string"
+                },
+                "atStep": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "viaSystem": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "theDependency": {
+                  "type": "string"
+                },
+                "whatCrossesTheBoundary": {
+                  "type": "string"
+                },
+                "whyItMatters": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "direction",
+                "atStep",
+                "theDependency",
+                "whatCrossesTheBoundary",
+                "whyItMatters"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "Assumption": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "assumption"
+                },
+                "section": {
+                  "const": "assumptions"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "assumptionStatus": {
+                  "type": "string"
+                },
+                "bearsOn": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "theAssumption": {
+                  "type": "string"
+                },
+                "whyItIsUnconfirmed": {
+                  "type": "string"
+                },
+                "impactIfWrong": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "assumptionStatus",
+                "bearsOn",
+                "theAssumption",
+                "whyItIsUnconfirmed",
+                "impactIfWrong"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "Capability": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "capability"
+                },
+                "section": {
+                  "const": "capabilities"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "criticality": {
+                  "type": "string"
+                },
+                "reuse": {
+                  "type": "string"
+                },
+                "owningDomain": {
+                  "type": "string"
+                },
+                "hostedIn": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "realisesStep": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "resolvesGap": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "description": {
+                  "type": "string"
+                },
+                "inputsAndOutputs": {
+                  "type": "string"
+                },
+                "boundaries": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "criticality",
+                "reuse",
+                "description",
+                "inputsAndOutputs",
+                "boundaries"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "TargetApplication": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "target-application"
+                },
+                "section": {
+                  "const": "target-applications"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "verdict": {
+                  "type": "string"
+                },
+                "vendor": {
+                  "type": "string"
+                },
+                "owningDomain": {
+                  "type": "string"
+                },
+                "costBand": {
+                  "type": "string"
+                },
+                "drivenByADR": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "rationale": {
+                  "type": "string"
+                },
+                "techStack": {
+                  "type": "string"
+                },
+                "risks": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "verdict",
+                "rationale",
+                "techStack",
+                "risks"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "Adr": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "adr"
+                },
+                "section": {
+                  "const": "architecture-decisions"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "adrStatus": {
+                  "type": "string"
+                },
+                "owner": {
+                  "type": "string"
+                },
+                "domain": {
+                  "type": "string"
+                },
+                "decision": {
+                  "type": "string"
+                },
+                "resolvesGap": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "satisfiesControl": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "supersededBy": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "dependsOn": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "context": {
+                  "type": "string"
+                },
+                "alternativesConsidered": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "consequences": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "adrStatus",
+                "owner",
+                "context",
+                "decision",
+                "alternativesConsidered",
+                "consequences"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "TargetIntegration": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "target-integration"
+                },
+                "section": {
+                  "const": "target-integrations"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "pattern": {
+                  "type": "string"
+                },
+                "direction": {
+                  "type": "string"
+                },
+                "contract": {
+                  "type": "string"
+                },
+                "volume": {
+                  "type": "string"
+                },
+                "from": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "to": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "realises": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "drivenByADR": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "purpose": {
+                  "type": "string"
+                },
+                "contractDetails": {
+                  "type": "string"
+                },
+                "failureMode": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pattern",
+                "direction",
+                "purpose",
+                "contractDetails",
+                "failureMode"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "Component": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "component"
+                },
+                "section": {
+                  "const": "components"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "tech": {
+                  "type": "string"
+                },
+                "dataStore": {
+                  "type": "string"
+                },
+                "hosting": {
+                  "type": "string"
+                },
+                "scaling": {
+                  "type": "string"
+                },
+                "inApp": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "dependsOn": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "realisesCapability": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "responsibility": {
+                  "type": "string"
+                },
+                "technicalDetail": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "tech",
+                "inApp",
+                "responsibility",
+                "technicalDetail"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "Nfr": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "nfr"
+                },
+                "section": {
+                  "const": "nfrs"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "category": {
+                  "type": "string"
+                },
+                "target": {
+                  "type": "string"
+                },
+                "owner": {
+                  "type": "string"
+                },
+                "satisfiesControl": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "regulatedBy": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "appliesTo": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "drivenByADR": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "definition": {
+                  "type": "string"
+                },
+                "measurement": {
+                  "type": "string"
+                },
+                "verification": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "category",
+                "target",
+                "definition",
+                "measurement",
+                "verification"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "MigrationPhase": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "migration-phase"
+                },
+                "section": {
+                  "const": "migration-phases"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "phaseStatus": {
+                  "type": "string"
+                },
+                "startQuarter": {
+                  "type": "string"
+                },
+                "endQuarter": {
+                  "type": "string"
+                },
+                "owner": {
+                  "type": "string"
+                },
+                "dependsOn": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "delivers": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "resolvesGap": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "scope": {
+                  "type": "string"
+                },
+                "acceptanceCriteria": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "risks": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "phaseStatus",
+                "startQuarter",
+                "endQuarter",
+                "scope",
+                "acceptanceCriteria",
+                "risks"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    }
+  }
+}

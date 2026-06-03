@@ -1,0 +1,4 @@
+# Project Constraints
+- This project is strictly about porting the existing functionality into the JSON data format + updating all relevant components to support it. 
+- Do NOT add any brand new capabilities or functional features (e.g., no "systems landscape diagrams", no "premium UI editors", no new modules).
+- Limit new functionality solely to UI changes necessary to support structural data entry.

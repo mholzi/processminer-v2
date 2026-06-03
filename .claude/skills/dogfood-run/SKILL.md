@@ -65,18 +65,18 @@ Take screenshots for your own live verification, but record evidence as text.
 
 ## Preconditions and setup
 
-1. **Dev server.** Start it with `preview_start`. The report must be reachable
-   on the Mac Mini's LAN IP, so the server must listen on all interfaces —
-   start it bound to `0.0.0.0` (e.g. command `npm run dev -- -H 0.0.0.0`). If a
-   server is already running on localhost only, stop it and restart bound to
-   `0.0.0.0`.
-2. **LAN IP.** Run `ipconfig getifaddr en0` (fall back to `en1`). Record it —
-   the final report URL is `http://<ip>:<port>/test-report.html`.
-3. **Run id.** Form a run id from the timestamp: `YYYY-MM-DD-HHMM` (use the
-   current date). Everything this run produces is keyed to it.
-4. **Run folder.** All evidence goes under `public/test-report-assets/<run-id>/`
-   — the checkpoint file `state.json`, `walkthrough-tweaks.md`, and any DOM
-   snapshot text files. Create it.
+1.  **Dev server.** Start it with `preview_start`. The report must be reachable
+    on the Mac Mini's LAN IP, so the server must listen on all interfaces —
+    start it bound to `0.0.0.0` (e.g. command `npm run dev -- -H 0.0.0.0`). If a
+    server is already running on localhost only, stop it and restart bound to
+    `0.0.0.0`.
+2.  **LAN IP.** Run `ipconfig getifaddr en0` (fall back to `en1`). Record it —
+    the final report URL is `http://<ip>:<port>/test-report.html`.
+3.  **Run id.** Form a run id from the timestamp: `YYYY-MM-DD-HHMM` (use the
+    current date). Everything this run produces is keyed to it.
+4.  **Run folder.** All evidence goes under `public/test-report-assets/<run-id>/`
+    — the checkpoint file `state.json`, `walkthrough-tweaks.md`, and any DOM
+    snapshot text files. Create it.
 
 ## Resumability
 
@@ -94,7 +94,7 @@ A full run is long (1–3 hours). Make it resumable.
 
 At every `[Y]/[E]/[R]` prompt, every approval bar, every open question from the
 app's assistant, respond as the SME. Read the assistant's actual reply first
-(via `preview_snapshot` of the chat), then decide:
+(via `preview_eval` of the chat), then decide:
 
 - **Mostly `[Y]` / approve** — the draft is fine; move on.
 - **`[E]` edit, deliberately, a few times per run** — give a *specific*
@@ -113,16 +113,16 @@ trade-finance knowledge. Do not invent facts that contradict the fixtures.
 The chat textarea placeholder is `Working…` while a turn runs and
 `Message the assistant…` when it is idle. To run one turn:
 
-1. `preview_fill` the chat textarea with your message.
-2. Submit it — `preview_click` the send control (find its selector with
-   `preview_eval`).
-3. Poll with `preview_eval` until the textarea placeholder returns to
-   `Message the assistant…` — the turn is done. Read it with e.g.
-   `preview_eval`: `document.querySelector('textarea').placeholder`. Turns can
-   take many minutes (an ingest runs for 20+ min); be patient, do not give up
-   early.
-4. Read the assistant's reply from the DOM via `preview_eval` (the chat
-   message list's `innerText`). Decide your SME response.
+1.  `preview_fill` the chat textarea with your message.
+2.  Submit it — `preview_click` the send control (find its selector with
+    `preview_eval`).
+3.  Poll with `preview_eval` until the textarea placeholder returns to
+    `Message the assistant…` — the turn is done. Read it with e.g.
+    `preview_eval`: `document.querySelector('textarea').placeholder`. Turns can
+    take many minutes (an ingest runs for 20+ min); be patient, do not give up
+    early.
+4.  Read the assistant's reply from the DOM via `preview_eval` (the chat
+    message list's `innerText`). Decide your SME response.
 
 After each turn also run `preview_console_logs` and `preview_network`; record
 any error into the current stage's notes — errors are findings, not blockers.
@@ -402,35 +402,35 @@ before styling.
 
 Contents, in order:
 
-1. **Verdict header** — run id, date, overall PASS/FAIL, a health score
-   (percentage of assertions passed), total duration.
-2. **Stage table** — every stage: name, PASS/FAIL, duration, assertion count
-   passed/total, a one-line note.
-3. **Per-stage detail** — for each stage: every assertion with PASS/FAIL and
-   its reason; the DOM snapshot text captured as evidence; any console or
-   network errors caught; notable SME actions taken (which `[E]` edits, which
-   `[R]` reject, which comments).
-4. **Process SME assessment** — the Stage 9 subagent's verdict in full: the
-   per-area 0–10 scores with their justifications, the average area score, the
-   three flagged gaps, and the overall auditor-readiness verdict. Render the
-   per-area scores as a small table. Include the **section inventory** — every
-   schema section marked populated / sparse / empty — as its own table, since
-   empty sections are the primary completeness signal. This section answers
-   "did the skills produce *good* documentation?", distinct from the stage
-   table's "did the app *work*?".
-5. **Walkthrough tuning** — the Stage 10 output: the prioritised tweak list,
-   split into **applied** (`[walkthrough]` tweaks auto-applied to this skill
-   this run — show the `REVISIONS.md` entry for each) and **findings**
-   (`[skill]` items not fixable here). Each entry traces back to the
-   empty/sparse section or low score it addresses and states the expected
-   completeness gain. This is the run's feed-forward — the applied tweaks make
-   the next run score higher on their own.
-6. **Process artifact** — the test process slug and a note that its wiki under
-   `wiki/processes/<slug>/` is kept for inspection; counts of elements created
-   per area.
-7. **Errors and findings** — a consolidated list of every console error,
-   network failure, app exception or unexpected behaviour observed, with the
-   stage it occurred in.
+1.  **Verdict header** — run id, date, overall PASS/FAIL, a health score
+    (percentage of assertions passed), total duration.
+2.  **Stage table** — every stage: name, PASS/FAIL, duration, assertion count
+    passed/total, a one-line note.
+3.  **Per-stage detail** — for each stage: every assertion with PASS/FAIL and
+    its reason; the DOM snapshot text captured as evidence; any console or
+    network errors caught; notable SME actions taken (which `[E]` edits, which
+    `[R]` reject, which comments).
+4.  **Process SME assessment** — the Stage 9 subagent's verdict in full: the
+    per-area 0–10 scores with their justifications, the average area score, the
+    three flagged gaps, and the overall auditor-readiness verdict. Render the
+    per-area scores as a small table. Include the **section inventory** — every
+    schema section marked populated / sparse / empty — as its own table, since
+    empty sections are the primary completeness signal. This section answers
+    "did the skills produce *good* documentation?", distinct from the stage
+    table's "did the app *work*?".
+5.  **Walkthrough tuning** — the Stage 10 output: the prioritised tweak list,
+    split into **applied** (`[walkthrough]` tweaks auto-applied to this skill
+    this run — show the `REVISIONS.md` entry for each) and **findings**
+    (`[skill]` items not fixable here). Each entry traces back to the
+    empty/sparse section or low score it addresses and states the expected
+    completeness gain. This is the run's feed-forward — the applied tweaks make
+    the next run score higher on their own.
+6.  **Process artifact** — the test process slug and a note that its wiki under
+    `wiki/processes/<slug>/` is kept for inspection; counts of elements created
+    per area.
+7.  **Errors and findings** — a consolidated list of every console error,
+    network failure, app exception or unexpected behaviour observed, with the
+    stage it occurred in.
 
 After writing it, tell the user the report URL with the real LAN IP
 substituted: `http://<ip>:<port>/test-report.html`.

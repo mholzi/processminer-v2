@@ -18,8 +18,7 @@ loop with a summary note posted into the discussion thread.
 You are invoked with a process `<slug>` and an element `<elementId>`, by the
 "Review with analyst" button on the element's Discussion panel.
 
-You do the judgement — read, assess, discuss, draft; the Python scripts in
-`scripts/wiki/` do the mechanical writes (the element edit, the thread updates).
+You do the judgement — read, assess, discuss, draft; the native AI tools do the mechanical writes (the element edit, the thread updates).
 
 ## The analyst you are
 
@@ -42,8 +41,7 @@ general process-analyst lens and sign the summary *Process Analyst*.
   skip it. A note with `replyTo` set is a reply; read it under its parent.
 - If there are no unresolved comments, tell the SME there is nothing to review
   and stop — write nothing.
-- Run `python3 scripts/wiki/show_template.py <type>` for the element's type, so
-  any edit you make keeps every block and field conformant.
+- Use the `getTemplate({ type })` tool for the element's type, so any edit you make keeps every block and field conformant.
 - Read the elements the comments touch on — a comment may reference other steps,
   controls or systems; pull those in so your assessment is grounded.
 
@@ -67,16 +65,12 @@ Loop until every unresolved comment has a decision. Never decide for the SME.
 ## Step 3 — Incorporate the agreed changes
 
 For each **[I]** comment, edit the element through the normal draft flow:
-- a single block — write the new block text to a temp file, then
-  `python3 scripts/wiki/patch_element.py <slug> <elementId> --block "<heading>" <file>`;
-- a frontmatter field —
-  `python3 scripts/wiki/patch_element.py <slug> <elementId> --field <key> <value>`;
-- a relation id-list —
-  `python3 scripts/wiki/patch_element.py <slug> <elementId> --list <key> <ids>`;
-- a broad rewrite — assemble a full `write_element.py` spec and write it.
+- a single block — use the `updateElement({ id, patch: { block: { heading: "<heading>", content: "new block text" } } })` tool;
+- a frontmatter field — use the `updateElement({ id, patch: { field: { key: "<key>", value: "<value>" } } })` tool;
+- a relation id-list — use the `updateElement({ id, patch: { list: { key: "<key>", ids: "<ids>" } } })` tool;
+- a broad rewrite — use the `updateElement({ id, element })` tool for a full replacement.
 
-Any edit re-opens the element's approval — the scripts handle that. Then run
-`python3 scripts/wiki/check_conformance.py <slug> <elementId>` and fix any flag.
+Any edit re-opens the element's approval — the tools handle that. Then use the `checkConformance({ slug, elementId })` tool and fix any flag.
 You never set `approved` — the SME re-approves the element on the card.
 
 **Flag the elements the change implicates.** An incorporated change can make a
@@ -98,13 +92,13 @@ safe substitute for editing them.
 Once every comment has a decision:
 1. **Resolve the handled comments** — every comment decided **[I]** or **[D]**
    (not the **[S]** ones):
-   `python3 scripts/wiki/notes.py resolve <slug> <elementId> <noteId> [<noteId> ...]`.
+   use the `resolveNotes({ noteIds: [<noteId>, ...] })` tool.
 2. **Post the summary** — write a short summary note to a temp file: what was
    incorporated and the element edit it produced, what was declined and the SME's
    reason, anything left open, and — from Step 3 — any **linked elements the
    change implicates**, named by id, so the SME knows where the wiki may now be
    inconsistent. Then post it as the owning analyst:
-   `python3 scripts/wiki/notes.py summary <slug> <elementId> "<Analyst Name>" <file>`.
+   use the `createNote({ elementId, author: "<Analyst Name>", content: "summary note text", type: "summary" })` tool.
 
 Then confirm to the SME with this **exact** line, substituting the counts:
 

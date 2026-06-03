@@ -18,7 +18,10 @@ import { buildRelations, type LinkGroup } from "@/lib/relations";
 import { sectionForId } from "@/lib/nav";
 import { isOpen, type LintFinding } from "@/lib/lint";
 import ElementCard from "@/components/ElementCard";
+import WholeDocWordView from "@/components/WholeDocWordView";
+import WholeDocJsonView from "@/components/WholeDocJsonView";
 import RaciMatrix from "@/components/RaciMatrix";
+import SkillsDashboard from "@/components/SkillsDashboard";
 import ProcessFlow from "@/components/ProcessFlow";
 import OverviewPanel from "@/components/OverviewPanel";
 import AgentChat, { type ChatMessage } from "@/components/AgentChat";
@@ -86,6 +89,11 @@ const IconUser = () => (
   <svg viewBox="0 0 24 24">
     <circle cx="12" cy="8" r="3.6" />
     <path d="M5.5 20a6.5 6.5 0 0 1 13 0" />
+  </svg>
+);
+const IconSkills = () => (
+  <svg viewBox="0 0 24 24">
+    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
   </svg>
 );
 const IconHelp = () => (
@@ -466,6 +474,7 @@ export default function ProcessDocScreen({
     const raw = el.meta.transitions;
     const list = !raw ? [] : Array.isArray(raw) ? raw : [raw];
     for (const entry of list) {
+      if (typeof entry !== "string") continue;
       const to = entry.split("|")[0]?.trim();
       if (to && exceptionIds.has(to))
         (affectsByException[to] ??= []).push(el.id);
@@ -592,6 +601,7 @@ export default function ProcessDocScreen({
   const [section, setSection] = useState(
     openingRunDoc ? "__triage" : "process-steps",
   );
+  const [wholeDocMode, setWholeDocMode] = useState<"word" | "word-meta" | "source" | "source-expanded">("word");
   // Element-list view filter for the current section: all, only those a lint
   // finding touches, or only those not yet reviewed. Set by the nav `!` badge
   // and the area progress meter; reset to "all" on a plain section change.
@@ -671,6 +681,7 @@ export default function ProcessDocScreen({
   // chain went silent — e.g. an HMR reload orphaned the fetch's body reader,
   // or the network connection dropped mid-stream and `.finally` never fired.
   const lastTurnEventRef = useRef<number>(0);
+  const abortControllerRef = useRef<AbortController | null>(null);
   useEffect(() => {
     const saved = loadStoredChat(currentSlug);
     if (saved) {
@@ -1097,8 +1108,10 @@ export default function ProcessDocScreen({
     setChatPending(true);
     setChatActivity(null);
     setChatTasks([]);
-    setActiveSkill(opts?.skill ?? null);
-    setActiveSkillEta(opts?.skill ? readSkillEta(opts.skill) : null);
+    if (opts?.skill !== undefined) {
+      setActiveSkill(opts.skill);
+      setActiveSkillEta(opts.skill ? readSkillEta(opts.skill) : null);
+    }
     // Arm the watchdog — bumped on every SSE event below.
     lastTurnEventRef.current = Date.now();
     // Wall-clock for this turn — used to decide whether to fire a
@@ -1106,7 +1119,7 @@ export default function ProcessDocScreen({
     // than `NOTIFY_THRESHOLD_MS`) and to record the duration into the
     // per-skill ETA history.
     const turnStartedAt = Date.now();
-    const turnSkill = opts?.skill ?? null;
+    const turnSkill = opts?.skill !== undefined ? opts.skill : activeSkill;
 
     // The + New-process flow is inherently cross-process, so it runs in its
     // own fresh, unscoped session — otherwise the scope lock would make the
@@ -1126,13 +1139,18 @@ export default function ProcessDocScreen({
       | { type: "done"; reply?: string; sessionId?: string; isError?: boolean }
       | { type: "error"; error: string; sessionId?: string };
 
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     fetch("/api/session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      signal: controller.signal,
       body: JSON.stringify({
         message: wireText,
         sessionId,
         stream: user.streamReplies === true,
+        skill: opts?.skill || turnSkill || null,
       }),
     })
       .then(async (res) => {
@@ -1228,16 +1246,18 @@ export default function ProcessDocScreen({
         }
       })
       .catch((e: unknown) => {
+        const isAbort = e instanceof DOMException && e.name === "AbortError";
         setMessages((m) => [
           ...m,
           {
             id: mid(),
             role: "agent",
-            text: `⚠ ${e instanceof Error ? e.message : "Request failed"}`,
+            text: isAbort ? "⚠ Turn canceled by user." : `⚠ ${e instanceof Error ? e.message : "Request failed"}`,
           },
         ]);
       })
       .finally(() => {
+        abortControllerRef.current = null;
         const durationMs = Date.now() - turnStartedAt;
         // Record the duration so future invocations of the same skill can
         // show an honest median ETA up-front.
@@ -1251,10 +1271,15 @@ export default function ProcessDocScreen({
         setChatPending(false);
         setChatActivity(null);
         setChatTasks([]);
-        setActiveSkill(null);
-        setActiveSkillEta(null);
         opts?.onComplete?.();
       });
+  }
+
+  function handleStop() {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
   }
 
   // Restart the assistant session — clear the transcript and drop the claude
@@ -1869,6 +1894,15 @@ export default function ProcessDocScreen({
               <IconExport />
             </button>
           </Tooltip>
+          <Tooltip label="Agent Skills">
+            <button
+              className={`tb-icon${section === "__skills" ? " active" : ""}`}
+              onClick={() => setSection(section === "__skills" ? "overview" : "__skills")}
+              aria-label="Agent Skills"
+            >
+              <IconSkills />
+            </button>
+          </Tooltip>
           <Tooltip label="Help">
             <button
               className="tb-icon"
@@ -1994,6 +2028,22 @@ export default function ProcessDocScreen({
           {!sectionsCollapsed && (
             <div className="nav-sections">
               <div className="nav-scroll">
+                <div
+                  className="nav-item-wrap"
+                  style={{
+                    borderBottom: "1px solid var(--line)",
+                    paddingBottom: "4px",
+                    marginBottom: "8px",
+                  }}
+                >
+                  <button
+                    className={`nav-item${section === "__wholedoc" ? " active" : ""}`}
+                    onClick={() => setSection("__wholedoc")}
+                  >
+                    <span style={{ fontSize: "14px", marginRight: "4px" }}>📄</span>
+                    View Document
+                  </button>
+                </div>
                 <div className="nav-sec-head">
                   <button
                     className={`nav-sec-title${
@@ -2158,7 +2208,74 @@ export default function ProcessDocScreen({
         </nav>
 
         <main className="canvas">
-          {section === "overview" ? (
+          {section === "__skills" ? (
+            <SkillsDashboard onBack={() => setSection("overview")} />
+          ) : section === "__wholedoc" ? (
+            <>
+              <div className="canvas-head">
+                <h1>{doc.process.title} - {doc.process.id}</h1>
+                <div className="canvas-actions">
+                  <select
+                    className="canvas-act"
+                    value={wholeDocMode}
+                    onChange={(e) => setWholeDocMode(e.target.value as any)}
+                    style={{ padding: "4px 8px" }}
+                  >
+                    <option value="word">Document</option>
+                    <option value="word-meta">Document + Meta</option>
+                    <option value="source">Source</option>
+                    <option value="source-expanded">Source Expanded</option>
+                  </select>
+                </div>
+              </div>
+
+              {wholeDocMode === "word" && (
+                <WholeDocWordView
+                  doc={doc}
+                  schema={schema}
+                  user={user}
+                  elementLinks={elementLinks}
+                  getRef={getRef}
+                  resolveOwner={resolveOwner}
+                  findingsByElement={findingsByElement}
+                  currentRunId={currentRunId ?? undefined}
+                  goToElement={goToElement}
+                  deepDive={deepDive}
+                  reviewComments={reviewComments}
+                  setSelectedThemeId={setSelectedThemeId}
+                  setSection={setSection}
+                  expandMeta={false}
+                />
+              )}
+
+              {wholeDocMode === "word-meta" && (
+                <WholeDocWordView
+                  doc={doc}
+                  schema={schema}
+                  user={user}
+                  elementLinks={elementLinks}
+                  getRef={getRef}
+                  resolveOwner={resolveOwner}
+                  findingsByElement={findingsByElement}
+                  currentRunId={currentRunId ?? undefined}
+                  goToElement={goToElement}
+                  deepDive={deepDive}
+                  reviewComments={reviewComments}
+                  setSelectedThemeId={setSelectedThemeId}
+                  setSection={setSection}
+                  expandMeta={true}
+                />
+              )}
+
+              {wholeDocMode === "source" && (
+                <WholeDocJsonView doc={doc} dark={dark} expanded={false} />
+              )}
+
+              {wholeDocMode === "source-expanded" && (
+                <WholeDocJsonView doc={doc} dark={dark} expanded={true} />
+              )}
+            </>
+          ) : section === "overview" ? (
             <>
               <div className="canvas-head">
                 <h1>Overview</h1>
@@ -2747,6 +2864,10 @@ export default function ProcessDocScreen({
                           schema.elementTypes[el.type]?.frontmatter
                             ?.required ?? []
                         }
+                        relationSpecs={
+                          schema.elementTypes[el.type]?.frontmatter?.relations ??
+                          []
+                        }
                         links={elementLinks(el)}
                         getRef={getRef}
                         resolveOwner={resolveOwner}
@@ -2772,6 +2893,7 @@ export default function ProcessDocScreen({
                         }
                         defaultCollapsed={sectionElements.length > 3}
                         isCurrent={el.id === currentRunId}
+                        allElements={doc.elements}
                       />
                     ))}
                   </section>
@@ -2791,6 +2913,9 @@ export default function ProcessDocScreen({
                     }
                     requiredFields={
                       schema.elementTypes[el.type]?.frontmatter?.required ?? []
+                    }
+                    relationSpecs={
+                      schema.elementTypes[el.type]?.frontmatter?.relations ?? []
                     }
                     links={elementLinks(el)}
                     getRef={getRef}
@@ -2817,6 +2942,7 @@ export default function ProcessDocScreen({
                     }
                     defaultCollapsed={sectionElements.length > 3}
                     isCurrent={el.id === currentRunId}
+                    allElements={doc.elements}
                   />
                 ))
               )}
@@ -2871,6 +2997,7 @@ export default function ProcessDocScreen({
           linting={linting}
           findingCount={openFindings ? openFindings.length : null}
           getRef={getRef}
+          onStop={handleStop}
         />
       </div>
 

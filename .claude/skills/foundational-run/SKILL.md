@@ -27,8 +27,7 @@ name verbatim wherever an approval is stamped — never guess or invent it; if
 the invocation did not give you a name, ask the SME for it before approving
 anything.
 
-You do the judgement — read, challenge, redraft — and the Python scripts in
-`scripts/wiki/` do the mechanical work (the cursor, approvals, element writes).
+You do the judgement — read, challenge, redraft — and the native tools do the mechanical work (the cursor, approvals, element writes).
 
 A freshly-ingested process has **no conflicts** — there was nothing to
 contradict. Conflicts belong to the separate `conflict-resolution` flow.
@@ -58,10 +57,9 @@ one-line orientation, e.g.:
 
 ## Step 2 — Build or resume the queue
 
-Run `python3 scripts/wiki/review_cursor.py status <slug>`.
+Use the `getSessionStatus({ slug })` tool.
 
-- **Error / no state** — this is a fresh run. Run
-  `python3 scripts/wiki/review_cursor.py build <slug>`. It builds the queue —
+- **Error / no state** — this is a fresh run. Use the `buildQueue({ slug })` tool. It builds the queue —
   the overview first, then current-state elements in foundational order
   (process steps, roles, then the rest of the current-state detail) — and
   reports the first item.
@@ -70,120 +68,118 @@ Run `python3 scripts/wiki/review_cursor.py status <slug>`.
   {total}." Continue from the reported `current` item.
 - **State exists, done** — go to Step 4.
 
-The script's output is JSON: `position`, `total`, `done`, `current` (the id of
-the element to work now), and — printed straight from `scripts/wiki/verbatim.py`,
-the single source of truth so they never drift between turns — `outcomes_line`
+The tool's output is JSON: `position`, `total`, `done`, `current` (the id of
+the element to work now), and — the single source of truth so they never drift between turns — `outcomes_line`
 (present while the run is not done) and `closeout_template` (present once it is
-done). Both are SME-facing fixed wording: relay them to the SME exactly as the
-script prints them, never re-typed from memory.
+done). Both are SME-facing fixed wording: relay them to the SME exactly as they are provided, never re-typed from memory.
 
 ## Step 3 — The challenged walk
 
 For the `current` item, one element at a time:
 
-1. **Present it.** Show the SME the element — the overview, or the element's
-   blocks — and what it links to. The app opens that section in the canvas
-   automatically; you do not navigate it.
-2. **Challenge it.** Pose **1–3 sharp, specific questions** designed to expose
-   weakness — a missing detail, an unsupported assumption, an edge case, a
-   "why" that isn't justified, a number that looks off. Challenge with the
-   **owning specialist's lens**:
-   - process-step, role, exception, pain-point, process-gap,
-     metric → the Process lens
-   - control, regulation, compliance-gap, audit-finding → the Control &
-     Compliance lens
-   - friction-point, cx-channel, cx-touchpoint, moment → the Client Journey lens
-   - system, integration → the IT Architect lens
-   - the overview → purpose, trigger, scope — is the frame right and complete?
-   Use the whole-process picture from Step 1: name the elements this one
-   relates to. Prime questions with banking-domain knowledge.
+1.  **Present it.** Show the SME the element — the overview, or the element's
+    blocks — and what it links to. The app opens that section in the canvas
+    automatically; you do not navigate it.
+2.  **Challenge it.** Pose **1–3 sharp, specific questions** designed to expose
+    weakness — a missing detail, an unsupported assumption, an edge case, a
+    "why" that isn't justified, a number that looks off. Challenge with the
+    **owning specialist's lens**:
+    -   process-step, role, exception, pain-point, process-gap,
+        metric → the Process lens
+    -   control, regulation, compliance-gap, audit-finding → the Control &
+        Compliance lens
+    -   friction-point, cx-channel, cx-touchpoint, moment → the Client Journey lens
+    -   system, integration → the IT Architect lens
+    -   the overview → purpose, trigger, scope — is the frame right and complete?
+    Use the whole-process picture from Step 1: name the elements this one
+    relates to. Prime questions with banking-domain knowledge.
 
-   An element from `document-ingest` arrives with its interpretive headings
-   marked `provenance: proposed` — drafted, not yet confirmed (the deterministic
-   blocks are `document`; the "why it matters" / "impact" / "risk" kind are
-   `proposed`). Part of the challenge is to **read each `proposed` heading back
-   to the SME** so they confirm or correct it. This is not optional housekeeping:
-   `set_approval.py` blocks `approved` while any heading is `proposed`, so a
-   `[Y]` is only reachable once every heading has been confirmed (item 4).
-3. **Deepen past the document.** A source document records what *exists* —
-   steps, controls, systems — and the owning-lens challenge in item 2 tests
-   only that. Two things slip through both: the *lived* layer (where the work
-   hurts) and what is *absent* (a step that should have a control but has
-   none). `document-ingest` cannot reach either, so without this beat those
-   sections stay permanently empty. The SME is walking the process with you
-   now — catch both on each process-step:
-   - **Pain points** — put one focused pain-point probe to the SME *in the
-     same message as the challenge questions* (item 2), so the step takes one
-     exchange, not two: is there staff or process pain around this step? A
-     workaround, a recurring delay, manual re-keying, a hand-off that stalls,
-     a frequent frustration. If they name one, create a `pain-point` element
-     (the mid-run create path below). If the step genuinely runs clean, write
-     nothing — an absent pain point is a valid answer; never invent one.
-   - **Control coverage** — you read the whole process in Step 1, so you know
-     which controls link to this step. If the step has **no control linked**,
-     raise it: SKILLS.md §9 calls a step missing a control the Control
-     Specialist's most valuable finding, and the Process-lens challenge in
-     item 2 never asks it. Tell the SME the step has no control and ask — is
-     that an accepted control gap, or should a control exist here? On a
-     confirmed gap, create a `compliance-gap` element (section `control-gaps`)
-     — and in the same exchange ask the SME whether a remediating `control`
-     should be drafted now, or whether this is an **accepted risk** with no
-     control planned. If they want one drafted, create the matching `control`
-     element (low-confidence stub, linked to the same step, `proposed`
-     provenance) — a gap without a paired control or an explicit
-     accepted-risk note is the audit-facing flaw the gap itself documents,
-     and you must not leave it behind. Record the SME's choice in the gap
-     element's `Remediation` block. If a control exists but was never
-     documented, create the missing `control` instead. If the step already
-     has a control, say nothing.
-   This beat is a genuine elicitation, not a challenge: read each drafted
-   pain-point, compliance-gap or control back to the SME and mark only what
-   they confirmed as `elicited` (Provenance block). Hold it to the one probe
-   per step — you are deepening the walk, not turning each step into a full
-   interview. On any other element type (role, control, system, exception,
-   metric, gap) there is no deepening beat; go straight to the outcomes.
-4. **Offer the outcomes.** Present the `outcomes_line` string from the
-   `review_cursor.py` output — reproduce it **character-for-character** on its
-   own line. It is printed by `scripts/wiki/verbatim.py`; do not retype it
-   from memory, re-letter the options, drop the **[D] Deep dive** option, or
-   change its punctuation. The four outcomes it offers:
+    An element from `document-ingest` arrives with its interpretive headings
+    marked `provenance: proposed` — drafted, not yet confirmed (the deterministic
+    blocks are `document`; the "why it matters" / "impact" / "risk" kind are
+    `proposed`). Part of the challenge is to **read each `proposed` heading back
+    to the SME** so they confirm or correct it. This is not optional housekeeping:
+    `setApproval()` blocks `approved` while any heading is `proposed`, so a
+    `[Y]` is only reachable once every heading has been confirmed (item 4).
+3.  **Deepen past the document.** A source document records what *exists* —
+    steps, controls, systems — and the owning-lens challenge in item 2 tests
+    only that. Two things slip through both: the *lived* layer (where the work
+    hurts) and what is *absent* (a step that should have a control but has
+    none). `document-ingest` cannot reach either, so without this beat those
+    sections stay permanently empty. The SME is walking the process with you
+    now — catch both on each process-step:
+    -   **Pain points** — put one focused pain-point probe to the SME *in the
+        same message as the challenge questions* (item 2), so the step takes one
+        exchange, not two: is there staff or process pain around this step? A
+        workaround, a recurring delay, manual re-keying, a hand-off that stalls,
+        a frequent frustration. If they name one, create a `pain-point` element
+        (the mid-run create path below). If the step genuinely runs clean, write
+        nothing — an absent pain point is a valid answer; never invent one.
+    -   **Control coverage** — you read the whole process in Step 1, so you know
+        which controls link to this step. If the step has **no control linked**,
+        raise it: SKILLS.md §9 calls a step missing a control the Control
+        Specialist's most valuable finding, and the Process-lens challenge in
+        item 2 never asks it. Tell the SME the step has no control and ask — is
+        that an accepted control gap, or should a control exist here? On a
+        confirmed gap, create a `compliance-gap` element (section `control-gaps`)
+        — and in the same exchange ask the SME whether a remediating `control`
+        should be drafted now, or whether this is an **accepted risk** with no
+        control planned. If they want one drafted, create the matching `control`
+        element (low-confidence stub, linked to the same step, `proposed`
+        provenance) — a gap without a paired control or an explicit
+        accepted-risk note is the audit-facing flaw the gap itself documents,
+        and you must not leave it behind. Record the SME's choice in the gap
+        element's `Remediation` block. If a control exists but was never
+        documented, create the missing `control` instead. If the step already
+        has a control, say nothing.
+    This beat is a genuine elicitation, not a challenge: read each drafted
+    pain-point, compliance-gap or control back to the SME and mark only what
+    they confirmed as `elicited` (Provenance block). Hold it to the one probe
+    per step — you are deepening the walk, not turning each step into a full
+    interview. On any other element type (role, control, system, exception,
+    metric, gap) there is no deepening beat; go straight to the outcomes.
+4.  **Offer the outcomes.** Present the `outcomes_line` string from the
+    `getSessionStatus()` tool output — reproduce it **character-for-character** on its
+    own line. It is fixed wording; do not retype it
+    from memory, re-letter the options, drop the **[D] Deep dive** option, or
+    change its punctuation. The four outcomes it offers:
 
-   - **[Y]** — the SME is satisfied. **First reconcile provenance:** for every
-     heading still marked `proposed` that the SME confirmed during the
-     challenge (item 2), rewrite the element (`write_element.py`, same id) with
-     that heading marked `elicited` and its `evidence` set to the SME's
-     confirming quote. `set_approval.py` **blocks `approved`** while any heading
-     is `proposed`, so a freshly-ingested element cannot be approved until this
-     is done — skip it and the approve call fails. Then run `python3
-     scripts/wiki/set_approval.py <slug> <id> approved "<SME name>"` — the SME
-     name from the invocation. If a `proposed` heading was *not* confirmed, it
-     stays `proposed` and the element cannot be `[Y]` — take it as **[E]**
-     rework or **Move on** instead.
-   - **[E]** — the challenge found rework. Redraft with the SME, then write:
-     for a fix to one block or field, `python3 scripts/wiki/patch_element.py
-     <slug> <id> --block "<heading>" /tmp/<id>-block.md` (or `--field` /
-     `--list`); for a genuine multi-block redraft, `python3
-     scripts/wiki/write_element.py /tmp/<id>.json` (same id). Then approve it
-     as in [Y] — but first echo one
-     line of **what changed** so the SME approves with eyes open, e.g.
-     "Reworked PS-FR-002 — validation is now automated-first, analyst-on-
-     exception; the STP branch is named. Approved." Never approve a rework
-     silently; the echo is how the SME catches a mis-applied change.
+    > **[Y] Yes — accept** · **[E] Edit — I have corrections** · **[D] Deep dive — full elicitation** · **Move on — defer approval**
 
-     **Keep frontmatter relation lists in sync with prose.** If your rework
-     names a `SYS-*` (or any element id) in body text that is not already
-     listed in the element's `systems` / `relations` field, patch the
-     frontmatter field in the same write — use `patch_element.py --list
-     systems "<SYS-*>"` to add it. Same for `roles`, `controls` and other
-     relation lists. Lint catches the drift afterwards as a discrepancy
-     finding; better to not create the drift.
-   - **[D]** — the element needs a full elicitation. Read the owning
-     specialist's `SKILL.md` and run a deep dive on this element, here, in this
-     session. Then approve it.
-   - **Move on** — the SME wants to advance without approving. Leave the
-     element as it is (`in-progress`); do not set approval.
-5. **Advance.** Run `python3 scripts/wiki/review_cursor.py advance <slug>`. If
-   it reports `done`, go to Step 4; otherwise present the next `current` item.
+    -   **[Y]** — the SME is satisfied. **First reconcile provenance:** for every
+        heading still marked `proposed` that the SME confirmed during the
+        challenge (item 2), rewrite the element (use the `updateElement({ slug, element: { id: '<id>', ... } })` tool, same id) with
+        that heading marked `elicited` and its `evidence` set to the SME's
+        confirming quote. `setApproval()` **blocks `approved`** while any heading
+        is `proposed`, so a freshly-ingested element cannot be approved until this
+        is done — skip it and the approve call fails. Then use the
+        `setApproval({ slug, id, status: 'approved', approver: '<SME name>' })` tool — the SME
+        name from the invocation. If a `proposed` heading was *not* confirmed, it
+        stays `proposed` and the element cannot be `[Y]` — take it as **[E]**
+        rework or **Move on** instead.
+    -   **[E]** — the challenge found rework. Redraft with the SME, then write:
+        for a fix to one block or field, use the `updateElement({ slug, id, patch: { block: '<heading>', content: '...' } })` tool (or `field` /
+        `list`); for a genuine multi-block redraft, use the `updateElement({ slug, element: { id: '<id>', ... } })` tool (same id). Then approve it
+        as in [Y] — but first echo one
+        line of **what changed** so the SME approves with eyes open, e.g.
+        "Reworked PS-FR-002 — validation is now automated-first, analyst-on-
+        exception; the STP branch is named. Approved." Never approve a rework
+        silently; the echo is how the SME catches a mis-applied change.
+
+        **Keep frontmatter relation lists in sync with prose.** If your rework
+        names a `SYS-*` (or any element id) in body text that is not already
+        listed in the element's `systems` / `relations` field, patch the
+        frontmatter field in the same write — use the `updateElement({ slug, id, patch: { list: 'systems', add: '<SYS-*>' } })` tool
+        to add it. Same for `roles`, `controls` and other
+        relation lists. Lint catches the drift afterwards as a discrepancy
+        finding; better to not create the drift.
+    -   **[D]** — the element needs a full elicitation. Read the owning
+        specialist's `SKILL.md` and run a deep dive on this element, here, in this
+        session. Then approve it.
+    -   **Move on** — the SME wants to advance without approving. Leave the
+        element as it is (`in-progress`); do not set approval.
+5.  **Advance.** Use the `advanceSession({ slug })` tool. If
+    it reports `done`, go to Step 4; otherwise present the next `current` item.
 
 Work one element per exchange. Never batch the challenged walk — the challenge
 *is* the value, and a batched challenge earns a batched, shallow answer. The
@@ -201,18 +197,18 @@ one exchange, not a full multi-session elicitation of the topic — a pain point
 is the SME's account of where this step hurts, a compliance-gap is the missing
 control they just confirmed, neither an exhaustive root-cause study.
 
-1. **Reserve the id before you name it.** Never tell the SME the new element's
-   id until `next_id.py` has assigned it — a guessed id ("this will be
-   PG-FR-005") is often wrong, because the real id depends on creation order.
-   Refer to it by description until it is written.
-2. **Draft only what the SME actually said.** Do not inflate a passing remark
-   into a confident, fully-detailed element — that is the hallucination the
-   Provenance block guards against. Every heading the SME did not state stays
-   `proposed`; mark a heading `elicited` only for what they explicitly
-   confirmed.
-3. **One-line read-back, then write.** State plainly what you drafted beyond
-   the SME's words, then write the element with `write_element.py` and verify
-   it with `check_conformance.py` — the same write path every element uses.
+1.  **Reserve the id before you name it.** Never tell the SME the new element's
+    id until you have used the `generateNextId({ type })` tool to assign it — a guessed id ("this will be
+    PG-FR-005") is often wrong, because the real id depends on creation order.
+    Refer to it by description until it is written.
+2.  **Draft only what the SME actually said.** Do not inflate a passing remark
+    into a confident, fully-detailed element — that is the hallucination the
+    Provenance block guards against. Every heading the SME did not state stays
+    `proposed`; mark a heading `elicited` only for what they explicitly
+    confirmed.
+3.  **One-line read-back, then write.** State plainly what you drafted beyond
+    the SME's words, then use the `createElement({ slug, element: { ... } })` tool and verify
+    it with the `checkConformance({ slug, elementId })` tool — the same write path every element uses.
 
 The new element is **not** in the cursor queue: it is never challenged in this
 run and stays `in-progress`. Keep a running list of everything you create
@@ -223,39 +219,44 @@ The close-out reports both.
 
 ## Step 4 — Close-out
 
-When the cursor is done, `review_cursor.py status` reports `done: true` and a
-`closeout_template` field — the canonical close-out, printed straight from
-`scripts/wiki/verbatim.py`. Count the current-state elements that are
+When the cursor is done, `getSessionStatus()` reports `done: true` and a `closeout_template` field — the canonical close-out. Count the current-state elements that are
 `approved` and those still `in-progress` (deferred), then present the
-`closeout_template` **exactly as the script prints it**: fill in every `{…}`
+`closeout_template` **exactly as provided**: fill in every `{…}`
 placeholder, but reproduce every fixed word, bullet and the closing sentence
 character-for-character. Do not author the close-out from memory.
+
+> Process Analyst perspective documented — **{process}**:
+>
+> - **Documented:** {n} element(s)
+> - **By type:** {type} {n} · {type} {n} · …
+>
+> Elements you approved during this session are signed off; any left `in-progress` are yours to review and approve on their cards in the app. Approval is always your decision there.
 
 The template carries three `{if …}` blocks — keep a block when its condition
 holds, omit the whole block when it does not.
 
-1. **Created mid-run** — name the mid-run current-state elements explicitly; a
-   generic "pick them off the cards" hides a role or exception that genuinely
-   was never challenged. Omit the block if nothing was created mid-run.
-2. **Gaps created mid-run** — omit the gap line if no gaps were created.
-3. **Still to document** — you read the whole process in Step 1, so you know
-   which sections are still empty. List each empty section with the skill that
-   fills it, mapped per §4 / §11 of `SKILLS.md`:
-   - Channels, Touchpoints, Moments of Truth, Friction Points →
-     `client-journey-specialist`; Stakeholders → `process-specialist`;
-     Audit Findings → `control-compliance-specialist`; Innovation Risks →
-     `innovation-analyst`; Integrations → `it-architect` — "run the **{skill}**
-     skill".
-   - Regulation, Competitor CX, CX Benchmarks, Market Trends, Competitor
-     Innovation, Innovation Ideas → "use the **✦ Source from the web** button
-     on the section".
-   - For the Client Experience sections, if the walk passed process-steps that
-     carry an undocumented client interaction (a portal, a callback, a
-     client confirmation), name those step ids in the line — the Client
-     Journey specialist places touchpoints against them.
-   Do **not** list the Target Process sections — that area is built last, from
-   the finished perspectives, and has its own start action in the app. Omit
-   the whole block if every section already has content.
+1.  **Created mid-run** — name the mid-run current-state elements explicitly; a
+    generic "pick them off the cards" hides a role or exception that genuinely
+    was never challenged. Omit the block if nothing was created mid-run.
+2.  **Gaps created mid-run** — omit the gap line if no gaps were created.
+3.  **Still to document** — you read the whole process in Step 1, so you know
+    which sections are still empty. List each empty section with the skill that
+    fills it, mapped per §4 / §11 of `SKILLS.md`:
+    -   Channels, Touchpoints, Moments of Truth, Friction Points →
+        `client-journey-specialist`; Stakeholders → `process-specialist`;
+        Audit Findings → `control-compliance-specialist`; Innovation Risks →
+        `innovation-analyst`; Integrations → `it-architect` — "run the **{skill}**
+        skill".
+    -   Regulation, Competitor CX, CX Benchmarks, Market Trends, Competitor
+        Innovation, Innovation Ideas → "use the **✦ Source from the web** button
+        on the section".
+    -   For the Client Experience sections, if the walk passed process-steps that
+        carry an undocumented client interaction (a portal, a callback, a
+        client confirmation), name those step ids in the line — the Client
+        Journey specialist places touchpoints against them.
+    Do **not** list the Target Process sections — that area is built last, from
+    the finished perspectives, and has its own start action in the app. Omit
+    the whole block if every section already has content.
 
 ## Scope
 
@@ -266,62 +267,10 @@ foundational run. "Current-state" spans the As-Is Process, Risk & Compliance,
 Client Experience and IT Architecture areas, not just the "As-Is Process" nav
 area. Everything stays the
 SME's call: you challenge and redraft, the SME approves. You never set
-`approved` yourself by judgement — only `set_approval.py` on the SME's explicit
+`approved` yourself by judgement — only `setApproval()` on the SME's explicit
 [Y].
 
 An `assumption` is never a queue item of its own. If a challenge surfaces an
 assumption, or you meet one already written, challenge it through the
 specialist that owns the element its `bearsOn` points at — resolve that with
 `assumption_owner()` in `wiki_lib.py`; do not guess the owning lens.
-
-<!-- PROVENANCE-BLOCK:start -->
-## Provenance — separate what the SME said from what you added
-
-This block is identical in every specialist skill and in `foundational-run`
-(HALLUCINATION-PLAN.md). Do not edit one copy — a drift check fails CI.
-
-Every element heading records where its content came from. The danger this
-guards against is not an invented fact — it is **you inflating a thin SME
-comment into a confident, detailed paragraph**, adding plausible operational
-detail the SME never said. A tidy draft reads right and gets approved, and the
-made-up part rides in on the back of the real part.
-
-**Read-back is mandatory.** When you turn something the SME said into a fuller
-block, state plainly what you added beyond their words before they accept it:
-
-> "You told me the analyst checks the limit. I also wrote that it is automated,
-> runs at validation, and reads the facility system — you did not say those.
-> True, or cut them?"
-
-This converts a rubber-stamp into a real check. Never present an inflated draft
-as if the SME had said all of it.
-
-**Mark each heading's provenance.** When you write an element, include a
-`provenance` map in the `write_element.py` spec — one entry per block heading:
-
-    "provenance": {
-      "What it checks":   { "source": "elicited",
-                            "evidence": "<verbatim SME quote>" },
-      "Control activity": { "source": "proposed", "evidence": "" }
-    }
-
-`source` is one of:
-- **elicited** — the SME stated this content and confirmed it in read-back.
-  `evidence` is the verbatim SME quote. Use this *only* after the SME has
-  explicitly confirmed this specific heading.
-- **document** — taken from an uploaded source document. `evidence` is the
-  verbatim quote from that document.
-- **proposed** — you drafted or inflated it and the SME has not yet confirmed
-  it. `evidence` is empty. **This is the default** — a heading you do not list,
-  or any content the SME has not explicitly confirmed, is `proposed`.
-
-A heading left `proposed` is honest, not a failure: it tells the SME and the
-app exactly which content still needs confirming. An element with any
-`proposed` heading **cannot be approved** — `set_approval.py` blocks it. When
-the SME confirms a `proposed` heading in read-back, rewrite the element with
-that heading marked `elicited` and its evidence quote filled in.
-
-**Editing re-opens a heading.** `patch_element.py --block` automatically resets
-the edited heading to `proposed` — reworked prose is unconfirmed until the SME
-approves it again. Do not fight this; it is the safety net.
-<!-- PROVENANCE-BLOCK:end -->

@@ -42,16 +42,6 @@ You do **not** produce innovation-risks — those are `innovation-analyst`'s —
 nor the Target Process: target-state, transformation-decision and gap elements
 are the `transformation-agent`'s. All need the SME.
 
-## The wiki you write into
-
-**Get your element templates up front.** Run
-`python3 scripts/wiki/show_template.py <type> …`, passing the `type` of every
-element you draft (the types listed under "What you produce"). For each it
-prints — from `schema/process-schema.json` — the `section`, the `idPrefix`, the
-frontmatter (fields with their allowed values, the required keys, the
-relations) and the `## ` blocks with their format and word range. That is the
-full contract — you do **not** read the whole schema file. The scripts in
-`scripts/wiki/` own the file format; you do the judgement.
 
 ## Step 1 — Read the process
 
@@ -76,7 +66,7 @@ carries that sourcing routinely misses:
 draft the `innovation-analyst` wrote but could not cite — it is waiting for
 exactly this skill. Before sourcing anything fresh, for each pending element:
 web-search to verify its claim, then attach the real `source` and `sourceUrl`
-with `python3 scripts/wiki/patch_element.py`, and raise `confidence` from `low`
+with `use the updateElement({ id, patch }) tool`, and raise `confidence` from `low`
 if the web confirms it. If the web does not support the claim, leave it
 `pending` and say so in the Step 6 report. Never duplicate a pending element
 with a freshly-sourced one — fill it in place.
@@ -96,8 +86,7 @@ knowledge solidly supports, at `low` confidence, and say so in the summary —
 
 ## Step 3 — Draft market trends
 
-Before the first write, clear the run manifest —
-`python3 scripts/wiki/reset_manifest.py <slug>`. Every element you write is
+Before the first write, clear the run manifest. Every element you write is
 logged to it; Step 6's report counts are read back from the manifest, not
 tallied from memory.
 
@@ -110,19 +99,19 @@ for this process; *Evidence* — the **specific figure or statistic** behind it
 (*"abandonment 70%, up from 48% in 2023"*), the data point, not a re-listing of
 who published it.
 
-Each element's frontmatter — `show_template.py market-trend` lists every field
+Each element's frontmatter — refer to the `market-trend` schema template for every field
 and the allowed values for the enumerated ones (e.g. `horizon`). Notes
 specific to sourcing:
 - `source:` / `sourceUrl:` — the study or publication and its URL; a reviewer
   must be able to click through.
-- `asOf:` — leave it out; `write_element.py` auto-stamps today's date.
+- `asOf:` — leave it out; `use the createElement({ type, element }) tool` auto-stamps today's date.
 - `bearsOn:` the ids of the process elements the trend bears on — steps
   (manual *and* automated/STP branches), systems, pain-points, and any
   `control` or `control-gap` the trend speaks to. A trend about automated
   controls or agentic AI bears on the STP branch and the control gaps, not
   just the manual steps — link those, not only the happy path.
 
-Draft each material trend as a `write_element.py` spec (`status: draft`,
+Draft each material trend as a `use the createElement({ type, element }) tool` spec (`status: draft`,
 `confidence: medium` — web-sourced, not yet SME-validated; `low` if thinly
 supported) and **give it a `tempKey`** (e.g. `"trend-1"`) so an idea can
 reference it later. Hold the drafts — the whole run is written in one batch in
@@ -146,10 +135,10 @@ Give each sub-agent this brief, filling in its tier:
 > You are sourcing competitor moves for process `<slug>`, tier **{tier}**
 > (element type `{type}`). Read `wiki/processes/<slug>/index.md` and the
 > documented As-Is for context, and the existing `{type}` elements so you do
-> not duplicate one. Run `python3 scripts/wiki/show_template.py {type}` for
-> the element's shape. Web-search for **named** {who}'s moves in this
+> not duplicate one. Refer to the `{type}` schema template
+> for the element's shape. Web-search for **named** {who}'s moves in this
 > process's domain — product launches, platform investments, announcements,
-> analyst write-ups. Draft one `write_element.py` spec per material move:
+> analyst write-ups. Draft one `use the createElement({ type, element }) tool` spec per material move:
 > blocks *The move* / *Relevance* / *Evidence*; frontmatter `competitor:`,
 > `source:`, `sourceUrl:`, and `bearsOn:` the process elements it bears on;
 > `status: draft`, `confidence: medium` (`low` if thinly evidenced); a
@@ -184,36 +173,49 @@ these are unvalidated proposals). Then write the **whole run in one batch**:
 assemble a manifest `{ "slug": "<slug>", "elements": [ … ] }` of every trend
 from Step 3, every competitor move from Step 4 and every idea here — each spec
 omitting `id`, each carrying its `tempKey`, ideas referencing trends and moves
-by `"@<tempKey>"` — and run `python3 scripts/wiki/write_elements.py
-/tmp/<slug>-elements.json`, then `python3 scripts/wiki/check_conformance.py
-<slug>`. The batch writer assigns every id and resolves every `@<tempKey>`.
+by `"@<tempKey>"` — and `use the createElements({ elements }) tool`, then `use the checkConformance() tool`. The batch writer assigns every id and resolves every `@<tempKey>`.
 
 **Completeness check — every documented problem gets an idea.** Once the ideas
-are written, run `python3 scripts/wiki/idea_coverage.py <slug>`. It enumerates
+are written, check the idea coverage for the process. It enumerates
 every pain-point, friction-point, process-gap and control-gap in the process
-and checks each is named by some idea's `addresses` list, printing `covered`
-and `uncovered` ids as JSON — set arithmetic, not your recollection. While it
-reports `"complete": false`, work the `uncovered` ids: a control gap with no
+and checks each is named by some idea's `addresses` list, reporting `covered`
+and `uncovered` ids. While it reports `"complete": false`, work the `uncovered` ids: a control gap with no
 idea against it is exactly the omission to catch. For each, either write an
 idea that `addresses` it, or — if no improvement genuinely applies — leave it
 and note the deliberate gap in the Step 6 report. Do not leave Step 5 until
-`idea_coverage.py` reports `"complete": true`, or every still-`uncovered` id is
+the idea coverage check reports `"complete": true`, or every still-`uncovered` id is
 a conscious decision.
 
 ## Step 6 — Report
 
-Run `python3 scripts/wiki/source_report.py <slug>` — it reads the run manifest
+Get the innovation source report for the process — it reads the run manifest
 and prints how many elements were written, per type. Map those counts into the
 template: `market-trend` → Market trends; `competitor-eu` / `-global` /
 `-fintech` → the Competitor moves total and its European / global / fintech
 split; `innovation-idea` → Innovation ideas. Do not recount from memory.
 
-Report with the canonical template: run `python3 scripts/wiki/verbatim.py
-source-innovation-report` and present what it prints, substituting the
-counts. The two `{if …}` blocks are conditional — keep a block (its fixed
+Report with the canonical template:
+```
+Innovation sourced for **{process}** from the web:
+
+- **Market trends:** {n} drafted
+- **Competitor moves:** {n} drafted — {e} European, {g} global, {f} fintech
+- **Innovation ideas:** {n} drafted — each linked to the pain or friction it addresses
+
+{if web search was unavailable:}
+Web search was unavailable this run — the drafts above rest on domain knowledge only, written at `confidence: low`.
+
+{if any `sourceUrl: pending` element was filled or left pending:}
+Pending citations: {n} filled — {ids}; {n} still pending — {ids} — the web did not support them.
+
+Sources: {comma-separated list of the studies / reports used}
+
+All are `status: draft` — review and approve them in the app, or run the innovation-analyst for the deeper forward-looking work.
+```
+The two `{if …}` blocks are conditional — keep a block (its fixed
 wording exactly as printed) when its condition holds, omit the whole block
-when it does not. Reproduce every other character exactly; `verbatim.py` is
-the single source of truth, never write the report from memory.
+when it does not. Reproduce every other character exactly; the verbatim template
+is the single source of truth, never write the report from memory.
 
 ## Scope
 
@@ -231,7 +233,7 @@ Do not edit one copy — a drift check fails CI.
 
 You source from the web with no SME present. Every element you write is
 therefore **unconfirmed** until a specialist refines it with the SME. Record
-that honestly in the `provenance` map of the `write_element.py` spec — one
+that honestly in the `provenance` map of the `use the createElement({ type, element }) tool` spec — one
 entry per block heading, every entry `source: web`:
 
     "provenance": {
@@ -243,8 +245,8 @@ entry per block heading, every entry `source: web`:
 
 `evidence` is the page URL, the verbatim snippet you drew the claim from, and
 the date you fetched it — a web page mutates, so the snippet is the durable
-record. A `web` heading carries no SME confirmation, so `set_approval.py`
-**blocks approval** of the element until the owning specialist walks it through
+record. A `web` heading carries no SME confirmation, so approval of the element
+is blocked until the owning specialist walks it through
 the SME, at which point each confirmed heading flips to `elicited`. Do not try
 to approve a web-sourced element yourself.
 <!-- WEB-PROVENANCE-BLOCK:end -->

@@ -24,8 +24,7 @@ proposed target state from their own lens, and you write their feedback to
 The target itself is the `transformation-agent`'s work; the council is every
 *other* perspective sense-checking it.
 
-This is Processminer v2. The wiki under `wiki/` *is* the source of truth
-(Karpathy LLM-Wiki, layer 2). This is the cross-perspective review of the
+This is the cross-perspective review of the
 transformation — the lint "council" (SKILLS.md §9) pointed specifically at the
 Target Process area.
 
@@ -95,8 +94,7 @@ For each feedback item capture:
                "targets": ["TD-…", "TS-…"] }, … ] }
 ```
 
-Save it to a temp file, then run
-`python3 scripts/wiki/write_target_review.py <slug> <result.json>`. The script
+Save it to a temp file, then use the `writeTargetReview({ slug, reviewData })` tool. The tool
 id-stamps the items (`R-001`…), stamps each `triage: pending`, and writes
 `wiki/processes/<slug>/target-review.json`. It is deterministic — it owns the
 file format; you own the judgement.

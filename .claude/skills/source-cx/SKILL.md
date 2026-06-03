@@ -41,16 +41,6 @@ You do **not** produce channels, touchpoints, moments or friction-points —
 those are the process's own journey, `client-journey-specialist`'s and
 `document-ingest`'s.
 
-## The wiki you write into
-
-**Get your element templates up front.** Run
-`python3 scripts/wiki/show_template.py <type> …`, passing the `type` of every
-element you draft (the types listed under "What you produce"). For each it
-prints — from `schema/process-schema.json` — the `section`, the `idPrefix`, the
-frontmatter (fields with their allowed values, the required keys, the
-relations) and the `## ` blocks with their format and word range. That is the
-full contract — you do **not** read the whole schema file. The scripts in
-`scripts/wiki/` own the file format; you do the judgement.
 
 ## Step 1 — Read the process
 
@@ -62,8 +52,7 @@ client journey to benchmark. Also read any existing `competitor-cx-*` and
 
 ## Step 2 — Scan competitor CX
 
-Before the first write, clear the run manifest —
-`python3 scripts/wiki/reset_manifest.py <slug>`. Every element you write is
+Before the first write, use the resetManifest() tool. Every element you write is
 logged to it; Step 4's report counts are read back from the manifest, not
 tallied from memory.
 
@@ -83,17 +72,17 @@ Give each sub-agent this brief, filling in its tier:
 > **{tier}** (element type `{type}`). Read `wiki/processes/<slug>/index.md`
 > and the documented client journey (`channels`, `touchpoints`, `moments`,
 > `friction-points`) for context, and the existing `{type}` elements so you
-> do not duplicate one. Run `python3 scripts/wiki/show_template.py {type}`
+> do not duplicate one. Use the getElementTemplate({ type }) tool
 > for the element's shape. Web-search for **named** {who}'s client experience
 > in this domain — onboarding journey, channels, speed, self-service, reviews,
-> case studies. Draft one `write_element.py` spec per material example:
+> case studies. Draft one `createElement({ type, element })` tool spec per material example:
 > blocks *The journey* / *Relevance* / *Evidence*; frontmatter `competitor:`,
 > `source:`, `sourceUrl:`; `status: draft`, `confidence: medium` (`low` if
 > thinly evidenced); a `provenance` map, one entry per block heading, every
 > entry `{ "source": "web", "evidence": "<url> — \"<snippet>\" — fetched
 > <date>" }`. Name **real** competitors and cite **real** sources; never
 > invent one. A handful of material examples, not a dump. You are
-> **read-only** — do not write or run any write script. Return **only** a
+> **read-only** — do not write or call any write tool. Return **only** a
 > JSON array of the draft specs.
 
 Collect the three arrays and hold the drafts for the Step 3 batch write.
@@ -108,14 +97,13 @@ corporate clients expect (status visibility, digital self-service). Write a
   process measures against it; *Evidence* — the specific figure or survey.
 - Frontmatter: `source:` and `sourceUrl:`. (`asOf:` is auto-stamped — leave
   it out.)
-- Draft each `cx-benchmark` as a `write_element.py` spec (`status: draft`,
+- Draft each `cx-benchmark` as a `createElement({ type, element })` tool spec (`status: draft`,
   `confidence: medium`; `low` if thinly evidenced).
 
 Then write the **whole run in one batch** — assemble a manifest
 `{ "slug": "<slug>", "elements": [ … ] }` of every competitor-CX example from
-Step 2 and every benchmark drafted here, each spec omitting `id`, and run
-`python3 scripts/wiki/write_elements.py /tmp/<slug>-elements.json`, then
-`python3 scripts/wiki/check_conformance.py <slug>`.
+Step 2 and every benchmark drafted here, each spec omitting `id`, and use the createElements({ elements }) tool, then
+use the checkConformance() tool.
 
 Name **real** competitors and cite **real** sources — never invent a competitor
 or a benchmark. If web search is unavailable, write only what you can solidly
@@ -123,15 +111,25 @@ support and say so in the report.
 
 ## Step 4 — Report
 
-Run `python3 scripts/wiki/source_report.py <slug>` — it reads the run manifest
+Use the generateSourceReport() tool — it reads the run manifest
 and prints how many elements were written, per type. Map those counts into the
 template: `competitor-cx-eu` / `-global` / `-fintech` → the Competitor CX total
 and its European / global / fintech split; `cx-benchmark` → CX benchmarks. Do
 not recount from memory.
 
-Report with the canonical template: run `python3 scripts/wiki/verbatim.py
-source-cx-report` and present what it prints, substituting the counts.
-Reproduce every other character exactly; `verbatim.py` is the single source
+Report with the canonical template:
+```
+Client-experience scan complete for **{process}** from the web:
+
+- **Competitor CX:** {n} drafted — {e} European, {g} global, {f} fintech
+- **CX benchmarks:** {n} drafted
+
+Sources: {comma-separated list of the studies / reports used}
+
+All are `status: draft` — review and approve them in the app, or run the client-journey-specialist to refine them and document the journey itself.
+```
+and present what it prints, substituting the counts.
+Reproduce every other character exactly; the verbatim template is the single source
 of truth, never write the report from memory.
 
 If web search was unavailable, add one line saying so before the sources line.
@@ -164,7 +162,7 @@ Do not edit one copy — a drift check fails CI.
 
 You source from the web with no SME present. Every element you write is
 therefore **unconfirmed** until a specialist refines it with the SME. Record
-that honestly in the `provenance` map of the `write_element.py` spec — one
+that honestly in the `provenance` map of the `createElement({ type, element })` tool spec — one
 entry per block heading, every entry `source: web`:
 
     "provenance": {
@@ -176,7 +174,7 @@ entry per block heading, every entry `source: web`:
 
 `evidence` is the page URL, the verbatim snippet you drew the claim from, and
 the date you fetched it — a web page mutates, so the snippet is the durable
-record. A `web` heading carries no SME confirmation, so `set_approval.py`
+record. A `web` heading carries no SME confirmation, so the setApproval({ id, approved }) tool
 **blocks approval** of the element until the owning specialist walks it through
 the SME, at which point each confirmed heading flips to `elicited`. Do not try
 to approve a web-sourced element yourself.

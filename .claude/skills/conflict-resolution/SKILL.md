@@ -45,33 +45,34 @@ Take the conflicts in order. For each, present it plainly:
 > **[E] Edit — write a merged version**
 
 - **[W]** — keep the wiki as it is. Nothing is written.
-- **[D]** — the document wins. Apply the document's version with
-  `patch_element.py` — it changes only the conflicted part and leaves the rest
+- **[D]** — the document wins. Apply the document's version with the `updateElement` tool — it changes only the conflicted part and leaves the rest
   of the element byte-identical, so you never re-type the whole element:
-  - a block conflict — `python3 scripts/wiki/patch_element.py <slug> <id>
-    --block "<heading>" <textfile>`
-  - a frontmatter field — `python3 scripts/wiki/patch_element.py <slug> <id>
-    --field "<key>" "<value>"`, or `--list "<key>" "<id1,id2>"` for an
-    id-list / relation.
+  - a block conflict — `use the updateElement({ id, patch }) tool` (where `patch` specifies the block heading and new content)
+  - a frontmatter field — `use the updateElement({ id, patch }) tool` (where `patch` specifies the field key and new value, or a list of IDs for relations)
 - **[E]** — neither is right alone. Work the merged value out with the SME,
-  then apply it with `patch_element.py` exactly as in [D].
+  then apply it with the `updateElement` tool exactly as in [D].
 
 Apply each decision before moving to the next conflict — never batch. After a
-[D] or [E] write, run `python3 scripts/wiki/check_conformance.py <slug> <id>`
-and fix any flag.
+[D] or [E] write, `use the checkConformance({ elementId }) tool` and fix any flag.
 
 ## Step 3 — Clear the resolved conflicts
 
-When every conflict has been decided, run
-`python3 scripts/wiki/clear_conflicts.py <slug>` — it empties the `conflicts`
+When every conflict has been decided, `use the clearConflicts() tool` — it empties the `conflicts`
 array in `ingest.json` so the triage screen no longer flags them.
 
 ## Step 4 — Report
 
-Report with the canonical template: run `python3 scripts/wiki/verbatim.py
-conflict-report` and present what it prints, substituting the `{process}` and
-`{n}` counts. Reproduce every other character exactly; `verbatim.py` is the
-single source of truth, never write the report from memory.
+Report with the canonical template:
+```
+Conflict resolution complete — **{process}**:
+
+- **Document version taken:** {n}
+- **Wiki version kept:** {n}
+- **Merged:** {n}
+
+The conflicts are cleared. Review any changed elements on the cards.
+```
+Substitute the `{process}` and `{n}` counts. Reproduce every other character exactly; this is the single source of truth, never write the report from memory.
 
 ## Scope
 

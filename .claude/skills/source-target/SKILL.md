@@ -70,16 +70,6 @@ transformation-agent's territory — you write nothing there. You also do
 innovation ideas, innovation risks or systems — those belong to the five
 perspective specialists. You only consolidate what they wrote into a target.
 
-## The wiki you write into
-
-**Get your element templates up front.** Run
-`python3 scripts/wiki/show_template.py <type> …`, passing the `type` of every
-element you draft (the types listed under "What you produce"). For each it
-prints — from `schema/process-schema.json` — the `section`, the `idPrefix`, the
-frontmatter (fields with their allowed values, the required keys, the
-relations) and the `## ` blocks with their format and word range. That is the
-full contract — you do **not** read the whole schema file. The scripts in
-`scripts/wiki/` own the file format; you do the judgement.
 
 ## Step 1 — Read the whole process
 
@@ -115,8 +105,7 @@ yields a thin first stub, and that is honest.
 
 ## Step 2 — Draft the target states
 
-Before the first write, clear the run manifest —
-`python3 scripts/wiki/reset_manifest.py <slug>`. Every element you write is
+Before the first write, clear the run manifest — use the resetManifest({ slug }) tool. Every element you write is
 logged to it; Step 5's report counts are read back from the manifest, not
 tallied from memory.
 
@@ -126,7 +115,7 @@ innovation-ideas, addressing a cluster of related problems, points to. Group
 the innovation-ideas by the part of the process they reshape; each genuine
 cluster is one `target-state`.
 
-Draft each as a `write_element.py` spec (`status: draft`, `confidence: low` —
+Draft each as a `createElement` spec (`status: draft`, `confidence: low` —
 consolidated, not yet SME-validated). Capture `replaces` — the As-Is
 `process-step` ids the theme touches; it drives the As-Is↔To-Be overlay in the
 app. Give each target-state a `tempKey` (e.g. `"ts-1"`) so a decision or gap
@@ -153,7 +142,7 @@ For each decision capture two relations:
   `"@<tempKey>"` from Step 2 (optional; a governance or sequencing decision
   may realise none).
 
-Draft each decision as a `write_element.py` spec (`status: draft`,
+Draft each decision as a `createElement` spec (`status: draft`,
 `confidence: low`) and give it a `tempKey`. Hold the drafts for the Step 4
 batch write.
 
@@ -194,19 +183,29 @@ Then write the **whole Target Process in one batch** — assemble a manifest
 `{ "slug": "<slug>", "elements": [ … ] }` of every target-state,
 transformation-decision, gap, requirement, process-dependency and assumption,
 each spec omitting `id`, each carrying its `tempKey`, every `realises`,
-target-state link and decision link written as `"@<tempKey>"` — and run
-`python3 scripts/wiki/write_elements.py /tmp/<slug>-elements.json`, then
-`python3 scripts/wiki/check_conformance.py <slug>`. The batch writer assigns
+target-state link and decision link written as `"@<tempKey>"` — and use the createElements({ elements }) tool, then
+use the checkConformance({ slug }) tool. The batch writer assigns
 every id and resolves every `@<tempKey>`.
 
 ## Step 5 — Report
 
-Run `python3 scripts/wiki/source_report.py <slug>` — it reads the run manifest
+Retrieve the source report data for the process `<slug>` — it reads the run manifest
 and prints how many elements were written, per type. Do not recount from memory.
 
-Report with the canonical template: run `python3 scripts/wiki/verbatim.py
-source-target-report` and present what it prints, substituting the counts.
-Reproduce every other character exactly; `verbatim.py` is the single source
+Report with the canonical template:
+"""
+Source Target stubbing complete for **{process}** by consolidating the documented work:
+
+- **Target states:** {n} drafted — each linked to the As-Is steps it replaces
+- **Transformation decisions:** {n} drafted — each linked to the problems it resolves
+- **Gaps:** {n} drafted
+
+Consolidated from: {n} pain/process gaps, {n} compliance gaps / audit findings, {n} friction points, {n} innovation ideas.
+
+All are `status: draft`, `confidence: low` — a first stub. Run the **transformation-agent** to refine it with the SME, then approve in the app.
+"""
+and present what it prints, substituting the counts.
+Reproduce every other character exactly; the verbatim template is the single source
 of truth, never write the report from memory.
 
 If a perspective was empty (no innovation ideas, no documented As-Is), add one
@@ -225,7 +224,7 @@ invent a problem, an idea or a capability the wiki does not document.
 You synthesise the target from the wiki with no SME present. Every element you
 write is therefore a **proposal the SME has not confirmed** — you grouped the
 ideas, you named the decisions, you judged the gaps. Record that honestly in
-the `provenance` map of the `write_element.py` spec — one entry per block
+the `provenance` map of the `createElement` spec — one entry per block
 heading, every entry `source: proposed`, `evidence: ""`:
 
     "provenance": {
@@ -235,7 +234,7 @@ heading, every entry `source: proposed`, `evidence: ""`:
 
 `proposed` is the honest default — it tells the SME and the app exactly which
 content still needs confirming. A `proposed` heading **cannot be approved** —
-`set_approval.py` blocks it. The `transformation-agent` walks each element
+the system blocks it. The `transformation-agent` walks each element
 through the SME and flips every confirmed heading to `elicited`. Do not mark a
 heading `elicited` yourself — no SME spoke to you — and do not try to approve a
 consolidated element.

@@ -8,8 +8,8 @@
 // agent guess — it is pure structure arithmetic over the wiki.
 //
 // The twin of scripts/wiki/check_conformance.py — keep the two in step.
-import type { BlockSpec, ElementType, Schema, WikiPage } from "./wiki";
-import type { LintFinding } from "./lint";
+import type { BlockSpec, ElementType, Schema, WikiPage } from "./wiki.ts";
+import type { LintFinding } from "./lint.ts";
 
 function wordCount(text: string): number {
   const t = text.trim();

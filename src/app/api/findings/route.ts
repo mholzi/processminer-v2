@@ -56,15 +56,17 @@ export async function PATCH(req: NextRequest) {
     process.cwd(),
     "wiki",
     "processes",
-    slug,
-    "finding-dismissals.json",
+    `${slug}.json`,
   );
-  let dismissals: FindingDismissals = {};
+  let processData: any = {};
   try {
-    dismissals = JSON.parse(await readFile(path, "utf8"));
-  } catch {
-    // No sidecar yet — start fresh.
+    processData = JSON.parse(await readFile(path, "utf8"));
+  } catch (e) {
+    return Response.json({ error: `Process not found: ${slug}` }, { status: 404 });
   }
+
+  processData.findingDismissals ??= {};
+  const dismissals = processData.findingDismissals;
 
   if (action === "restore") {
     delete dismissals[signature];
@@ -82,7 +84,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   try {
-    await writeFile(path, `${JSON.stringify(dismissals, null, 2)}\n`);
+    await writeFile(path, `${JSON.stringify(processData, null, 2)}\n`);
   } catch (e) {
     return Response.json(
       { error: `Could not save: ${e instanceof Error ? e.message : e}` },

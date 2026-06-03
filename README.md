@@ -1,136 +1,76 @@
-# Processminer
+# Processminer v3 — Web Application & AI Discovery Engine
 
-> AI-native process documentation. Claude Code skills elicit a subject-matter
-> expert's process knowledge through interactive brainstorming, write it into a
-> file-backed wiki, and develop it into a target state.
+Processminer v3 is a Next.js web application and AI-driven process discovery tool designed to help capture, document, and refine operational processes.
 
-Processminer applies [Karpathy's LLM Wiki pattern][karpathy] to process
-documentation: raw uploaded sources are immutable, a typed Markdown wiki is
-incrementally elaborated by Claude Code skills, and every heading carries
-provenance so the human can see exactly what the SME said vs. what the AI
-added.
+This repository supports dual-track AI execution:
+1. **Gemini Integration (GenAI)**: Runs in-process via the Google GenAI SDK.
+2. **Claude Integration**: Runs via the local Claude CLI, connecting to a custom schema-enforced Model Context Protocol (MCP) server.
 
-> **Reviewing the codebase?** Start with [ARCHITECTURE.md](ARCHITECTURE.md) —
-> it has a cold-start reading guide (2 hours / 2 days / 2 weeks tracks), an
-> end-to-end flow walkthrough, the data model, and the invariants the system
-> depends on.
+---
 
-[karpathy]: https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
+## 1. Quick Start Local Setup
 
-## What it does
-
-- **Elicit** — five perspective specialists (As-Is process, control & compliance,
-  client experience, innovation, IT architecture) interview an SME in chat and
-  write each answer into the wiki as a typed element.
-- **Source from the web** — `source-cx`, `source-innovation`, `source-regulation`
-  and `source-target` skills autonomously scan competitor moves, market trends,
-  regulatory landscape and target-state ideas.
-- **Ingest documents** — drop a DTP, memo or transcript into `raw-sources/<slug>/`
-  and `/document-ingest` extracts it into the wiki, flagging conflicts against
-  existing content.
-- **Lint** — `/run-lint` re-checks every element against its schema template and
-  sweeps the wiki for cross-section discrepancies, writing findings to a Review
-  panel.
-- **Approve** — every heading carries `provenance: { source, evidence }`. The app
-  blocks approval until each heading is `elicited` (SME confirmed) or
-  `document` (verbatim from an uploaded source).
-- **Develop target state** — `/transformation-agent` takes the As-Is wiki and the
-  risk / innovation perspectives and develops a target design with explicit
-  transformation decisions, requirements, dependencies and gap-resolution.
-
-## Architecture
-
-Three layers, after Karpathy:
-
-| Layer | Where | What |
-|---|---|---|
-| Raw sources | `raw-sources/<slug>/` | Immutable uploaded documents (DTPs, memos, transcripts) |
-| Wiki | `wiki/processes/<slug>/` | Typed Markdown elements, one folder per section, with `index.md` + JSON sidecars (`sections.json`, `glossary.json`, `lint.json`, etc.) |
-| Schema | `schema/process-schema.json` + `CLAUDE.md` + `SKILLS.md` + design docs | Element types, section order, approval rules, agent instructions |
-
-Key extensions over the gist pattern:
-
-- **Per-heading provenance** ([HALLUCINATION-PLAN.md](HALLUCINATION-PLAN.md))
-  — every template heading is tagged `elicited | document | proposed | web |
-  legacy-approved` with verbatim evidence. Heading-level approval gate.
-- **Schema-driven element types** with required typed relations (e.g.
-  `requirement.derivedFrom` is required, multi-target-typed).
-- **Deterministic Python writers** — Claude emits element specs;
-  [`scripts/wiki/write_element.py`](scripts/wiki/write_element.py) /
-  [`patch_element.py`](scripts/wiki/patch_element.py) /
-  [`set_approval.py`](scripts/wiki/set_approval.py) validate against the schema
-  and write the Markdown. Claude never edits frontmatter directly.
-- **Read-back eval** — graded fixtures in [`eval/read-back/`](eval/read-back/)
-  verify the anti-hallucination block actually fires.
-
-## Stack
-
-- **App** — Next.js 16 (App Router, React 19), TypeScript, server components.
-- **Skills** — 21 Claude Code skills under `.claude/skills/` (SKILL.md files).
-  See [SKILLS.md](SKILLS.md) for the full architecture.
-- **Scripts** — Python 3 helpers under `scripts/wiki/` for schema-validated
-  wiki mutations. No external deps.
-
-## Quickstart
-
+### Step 1: Install Dependencies
+Run the following command to install the required Node modules:
 ```bash
-git clone https://github.com/<you>/processminer.git
-cd processminer
 npm install
+```
 
-# Seed a demo process (Corporate Client Onboarding, ~76 elements)
-node scripts/seed-cob-003.mjs
+### Step 2: Configure Environment Variables
+Copy `.env.example` to `.env.local`:
+```bash
+cp .env.example .env.local
+```
 
+> [!IMPORTANT]
+> `.env.local` is listed in `.gitignore` under the rule `.env.*` and will never be committed to git. This keeps your API keys and admin secrets safe on your local machine.
+
+Open `.env.local` in your editor and configure the variables:
+
+1. **Session Secret**: Generate a secure random signing secret:
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+   Set it to `PM_SESSION_SECRET`.
+
+2. **Bootstrap Admin**:
+   Set `PM_BOOTSTRAP_ADMIN_PASS` to a secure initial password. On first launch, Processminer will bootstrap an admin account in `data/users.json` using these details.
+
+---
+
+## 2. Choosing and Configuring your AI Session Provider
+
+You can configure the model settings in `.env.local` using `SESSION_PROVIDER` and `SESSION_MODEL`.
+
+### Option A: Gemini / GenAI Setup (In-Process)
+Use this option if you want to test or run the application using Google's Gemini models.
+- Set `SESSION_PROVIDER=gemini`
+- Set `SESSION_MODEL` to your chosen Gemini model, e.g., `gemini-2.5-flash` or `gemini-2.5-pro`.
+- Set `GEMINI_API_KEY` to your Google AI Studio API key.
+
+### Option B: Claude CLI Setup (via MCP Server)
+Use this option if you are testing using Anthropic's Claude CLI.
+- Set `SESSION_PROVIDER=claude`
+- Set `SESSION_MODEL` to your chosen Claude model, e.g., `claude-sonnet-4-6`.
+- **Install Claude CLI**: Ensure you have the `claude` command line utility installed and authenticated on your machine (`claude login`).
+- **MCP Server Registration**: The local Claude CLI will automatically discover the custom MCP server via the `claude.json` configuration file in the project root. It executes `src/lib/claude-mcp-server.ts` to provide strict schema enforcement and tools.
+
+---
+
+## 3. Running the App Locally
+
+Start the Next.js development server:
+```bash
 npm run dev
-# → http://localhost:3000
 ```
 
-Open the app, pick the seeded process, and run `/foundational-run` in the chat
-to walk through it.
+Open [http://localhost:3000](http://localhost:3000) in your browser. The app will prompt you to log in. Use the bootstrap credentials defined in your `.env.local`.
 
-To start from scratch with your own process:
+---
 
+## 4. Verification & Testing
+
+To run typescript check and verify types:
 ```bash
-# In the chat: invoke /new-process and follow the prompts.
-# Or scaffold by hand:
-python3 scripts/wiki/scaffold_process.py <slug> "<Process Name>"
+npm run typecheck
 ```
-
-## Repository layout
-
-```
-processminer/
-├── src/                            Next.js app (App Router + components)
-├── schema/process-schema.json      Canonical content schema
-├── scripts/wiki/                   Python toolkit (write_element, set_approval, …)
-├── .claude/skills/                 21 Claude Code skills
-├── wiki/processes/<slug>/          File-backed content store, one folder per process
-├── raw-sources/<slug>/             Immutable uploaded source documents
-├── feedback/                       App-feedback tree (FB-NNN.md)
-├── eval/read-back/                 Read-back / anti-hallucination eval
-├── CLAUDE.md                       Project guide for Claude Code
-├── DESIGN.md                       Design system
-├── SKILLS.md                       Agent / skill architecture
-├── CONTENT-MODEL-PLAN.md           Schema decisions (D1–D6)
-└── HALLUCINATION-PLAN.md           Per-heading provenance contract
-```
-
-## Running checks
-
-```bash
-npm run typecheck         # tsc --noEmit
-npm test                  # node:test + scripts/wiki/test_wiki_scripts.py
-npm run eval:read-back    # graded anti-hallucination eval
-```
-
-## Requirements
-
-- Node ≥ 20
-- Python ≥ 3.10
-- [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) — the
-  skills run inside the CLI, not the app. The app calls the CLI through a
-  warm-worker pool defined in [`src/lib/session-worker.ts`](src/lib/session-worker.ts).
-
-## License
-
-MIT — see [LICENSE](LICENSE).

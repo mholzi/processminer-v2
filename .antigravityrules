@@ -1,0 +1,17 @@
+# Antigravity AI Working Agreements & Preferences
+
+## 1. Engineering Philosophy (Agile "Tracer Bullet")
+- **Value-Driven Execution:** No waterfall planning. Use vertical slicing. Build a thin, fully-functional slice across all layers of the stack (Data -> UI -> LLM) for a minimal subset of the domain first. Prove it works end-to-end, then scale up complexity.
+- **Get the Fundamentals Right:** Do not carry over technical debt for the sake of easy reconciliation. If naming conventions or data models are bad for the long-term React UI, refactor them immediately while the domain is small.
+- **Always Backup Legacy Code:** Before performing massive code deletions or ripping out complex legacy implementations, always copy the legacy files into a `src/legacy/` directory so they can be referenced later for feature reconciliation.
+- **Test Assumptions Early:** Before building massive features (like the UI), write quick 15-line scratch scripts (e.g., `test-genai.ts`) to definitively prove that the underlying tools, SDKs, or APIs behave exactly the way we assume they do.
+
+## 2. Architecture Management
+- **Living Architecture:** The `target_architecture_spec.md` is a living document. Every time a major design decision is made (e.g., Zod vs JSON Schema, Nullable Arrays), it must be immediately logged in the Architecture Decision Records (ADR) table at the bottom of the spec.
+- **Consult the ADR First:** Always check the ADR table in `target_architecture_spec.md` before suggesting or proposing any implementation plan. This prevents proposing components (e.g. Zod validation) that contradict established architectural agreements (such as standardizing on Pure JSON Schema).
+- **JSON-Native Stack:** The project is migrating away from the legacy Python/Markdown CLI agents to a Next.js / TypeScript / JSON-Native architecture. 
+- **The Golden Source:** `process-schema.json` is the strict single source of truth for the domain model.
+
+## 3. Communication
+- Present clean, concise data structures to validate assumptions before writing bulk code.
+- Wait for explicit user sign-off on schema or UI changes before performing massive batch updates.

@@ -68,14 +68,10 @@ area has no elements, say so plainly, in the same narrative voice.
 
 ## Step 3 — Store it
 
-Save the summary markdown to a temp file, then run:
-
-```
-python3 scripts/wiki/write_summary.py <slug> <area> <summary.md>
-```
+Save the summary markdown to a temp file, then use the writeSummary({ slug, area, summary }) tool.
 
 It stores the summary in `summaries.json`, keyed by area — the file the app's
-summary panel reads. The script checks the memo has exactly the four headings
+summary panel reads. The tool checks the memo has exactly the four headings
 above, in order; if it errors, fix the headings and run it again.
 
 Then report exactly one line:

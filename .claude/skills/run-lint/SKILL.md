@@ -14,7 +14,7 @@ description: >-
 
 You run the lint pass over one process: the consistency checkpoint that keeps
 the wiki's "approved" set honest. You do the judgement — the cross-perspective
-sweep — and the Python scripts do the mechanics. **Use the fixed wording below
+sweep — and the native tools do the mechanics. **Use the fixed wording below
 verbatim**, so every run reads the same to the user.
 
 You are invoked with a process `<slug>`. Lint covers that one process only.
@@ -22,26 +22,26 @@ You are invoked with a process `<slug>`. Lint covers that one process only.
 ## Step 1 — Load the process
 
 Take the process title from `wiki/processes/<slug>/index.md`. You orchestrate
-the lint pass — the deterministic scripts (Step 2) and the per-lens sub-agents
+the lint pass — the deterministic tools (Step 2) and the per-lens sub-agents
 (Step 3) each read the elements they need, so you do not have to read every
 element yourself.
 
 ## Step 2 — Deterministic checks
 
-Run `python3 scripts/wiki/check_conformance.py <slug> --json`. It compares
+Use the `checkConformance({ slug })` tool. It compares
 every element against its element type's schema template **and its required
-frontmatter**, and prints a **JSON array of conformance findings** — one
+frontmatter**, and returns a **JSON array of conformance findings** — one
 object per non-conforming element, each already shaped
 `{kind: "conformance", title, detail, elements}`.
 
-Then run `python3 scripts/wiki/check_transitions.py <slug> --json`. It checks
+Then use the `checkTransitions({ slug })` tool. It checks
 exception wiring — the single source of truth is each process-step's
-`transitions`. It prints a **JSON array of `discrepancy` findings**: one per
+`transitions`. It returns a **JSON array of `discrepancy` findings**: one per
 orphan exception (no process-step `transitions` into it) and one per
 process-step transition pointing at an exception id that does not exist.
 
-Keep both arrays exactly as printed. You do not author, reshape or re-type
-these findings — they are fully deterministic; a clean process prints `[]`.
+Keep both arrays exactly as returned. You do not author, reshape or re-type
+these findings — they are fully deterministic; a clean process returns `[]`.
 Together they are the deterministic half of Step 4's input.
 
 ## Step 3 — Cross-perspective sweep (five parallel lenses)
@@ -88,7 +88,7 @@ that skipped a lens.
 
 Assemble the full findings array: the conformance array and the
 transitions-reconciliation array from Step 2 — **both kept exactly as the
-scripts printed them** — followed by the discrepancy and question findings
+tools returned them** — followed by the discrepancy and question findings
 from the five lens sub-agents in Step 3 (concatenate their five arrays). Each
 finding is an object:
 
@@ -96,13 +96,9 @@ finding is an object:
 { "kind": "discrepancy", "title": "...", "detail": "...", "elements": ["PS-COB-004", "CP-COB-004"] }
 ```
 
-Write the array to `/tmp/run-lint-<slug>.json`, then run:
+Then use the `applyLint({ slug, findings })` tool.
 
-```
-python3 scripts/wiki/apply_lint.py <slug> /tmp/run-lint-<slug>.json
-```
-
-The script assigns finding ids, writes `wiki/processes/<slug>/lint.json` (the
+This tool assigns finding ids, writes `wiki/processes/<slug>/lint.json` (the
 file the app's Review panel reads), and re-opens every approved element a
 finding implicates — setting it back to `in-progress`, stamped `run-lint`.
 **Always run it, even when you found nothing** — an empty pass writes an
@@ -110,19 +106,26 @@ all-clear `lint.json`. Relay any warning it prints about unknown element ids.
 
 ## Step 5 — Summarise
 
-Report with the canonical template: run `python3 scripts/wiki/verbatim.py
-lint-report` and present what it prints, substituting the process title and
-the counts from `apply_lint.py`'s output. Reproduce every other character
-exactly.
+Report with the canonical template. If there were findings, present the following, substituting the process title and the counts from `applyLint`'s output:
+```
+Lint pass complete — **{process}**:
 
-If there were no findings at all, use the clean variant instead — run
-`python3 scripts/wiki/verbatim.py lint-report-clean` and present that,
-substituting `{process}`. `verbatim.py` is the single source of truth for
-both; never write either from memory.
+- **Discrepancies:** {n}
+- **Structure issues:** {n}
+- **Clarifying questions:** {n}
+- **Approvals re-opened:** {n}
+
+The findings are in the Review panel — click any element ID to jump to it.
+```
+
+If there were no findings at all, use the clean variant instead, presenting the following and substituting `{process}`:
+```
+Lint pass complete — **{process}**: no findings. Every element conforms to its template and the wiki is consistent across all five perspectives.
+```
 
 ## Scope
 
 You lint one process and report. You never resolve a finding, never edit an
 element's content, and never change an element's approval yourself — re-opening
-approvals is `apply_lint.py`'s deterministic job. The SME resolves findings in
+approvals is `applyLint`'s deterministic job. The SME resolves findings in
 the app.

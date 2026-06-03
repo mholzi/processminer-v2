@@ -8,8 +8,8 @@
 // `key: value`, where a value wrapped in [ ] is a comma-separated list.
 import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { applyFindingDismissals, type FindingDismissals, type LintReport } from "./lint";
-import type { TargetReview } from "./target-review";
+import { applyFindingDismissals, type FindingDismissals, type LintReport } from "./lint.ts";
+import type { TargetReview } from "./target-review.ts";
 
 const ROOT = process.cwd();
 const WIKI_DIR = join(ROOT, "wiki", "processes");
@@ -233,10 +233,11 @@ export interface ProcessDoc {
   glossary?: GlossaryTerm[];
   /** Per-section completeness markers — sections.json, keyed by section id. */
   sectionStatus?: Record<string, SectionStatus>;
+  rawJson?: any;
 }
 
 /** Parse `key: value` frontmatter. `[a, b]` becomes a string array. */
-function parseFrontmatter(raw: string): { meta: Record<string, string | string[]>; body: string } {
+export function parseFrontmatter(raw: string): { meta: Record<string, string | string[]>; body: string } {
   const match = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
   if (!match) return { meta: {}, body: raw.trim() };
   const meta: Record<string, string | string[]> = {};
@@ -260,7 +261,7 @@ function str(v: string | string[] | undefined, fallback = ""): string {
 }
 
 /** Split a body into `## Heading` prose blocks. Empty if there are none. */
-function parseBlocks(body: string): ProseBlock[] {
+export function parseBlocks(body: string): ProseBlock[] {
   if (!/^## /m.test(body)) return [];
   return body
     .split(/^## /m)
@@ -299,10 +300,11 @@ export function getSchema(): Schema {
 export function listProcesses(): { slug: string; title: string }[] {
   if (!existsSync(WIKI_DIR)) return [];
   return readdirSync(WIKI_DIR, { withFileTypes: true })
-    .filter((d) => d.isDirectory() && existsSync(join(WIKI_DIR, d.name, "index.md")))
-    .map((d) => {
-      const page = toPage(readFileSync(join(WIKI_DIR, d.name, "index.md"), "utf8"));
-      return { slug: d.name, title: page.title };
+    .filter((f) => f.isFile() && f.name.endsWith(".json"))
+    .map((f) => {
+      const slug = f.name.replace(".json", "");
+      const data = JSON.parse(readFileSync(join(WIKI_DIR, f.name), "utf8"));
+      return { slug, title: data.content?.title || slug };
     });
 }
 
@@ -339,40 +341,127 @@ export function listSources(slug: string): SourceFile[] {
     .sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt));
 }
 
-/** Read a full process: the index page plus every element page. */
-export function getProcess(slug: string): ProcessDoc | null {
-  const dir = join(WIKI_DIR, slug);
-  if (!existsSync(join(dir, "index.md"))) return null;
-  const process = toPage(readFileSync(join(dir, "index.md"), "utf8"));
-  let mostRecent = statSync(join(dir, "index.md")).mtimeMs;
-  const elements: WikiPage[] = [];
-  for (const sub of readdirSync(dir, { withFileTypes: true })) {
-    if (!sub.isDirectory()) continue;
-    for (const file of readdirSync(join(dir, sub.name))) {
-      if (file.endsWith(".md")) {
-        const p = join(dir, sub.name, file);
-        elements.push(toPage(readFileSync(p, "utf8")));
-        const m = statSync(p).mtimeMs;
-        if (m > mostRecent) mostRecent = m;
-      }
+export function toCamelCase(str: string): string {
+  const cleaned = str.replace(/[^a-zA-Z0-9 ]/g, "");
+  return cleaned
+    .split(" ")
+    .map((word, index) => {
+      if (index === 0) return word.toLowerCase();
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join("");
+}
+
+export function jsonElementToWikiPage(item: any, info: ElementType): WikiPage {
+  const meta: Record<string, any> = { ...(item.meta || {}) };
+  if (meta.provenance && typeof meta.provenance === "object") {
+    meta.provenance = JSON.stringify(meta.provenance);
+  }
+  
+  if (item.content) {
+    for (const [k, v] of Object.entries(item.content)) {
+      meta[k] = v;
     }
   }
-  // Sidecar JSON artifacts the skills write — lint pass, ingest result,
-  // foundational-run cursor. Each is optional and read defensively.
+
+  // Bridge transitions from { to, kind, when }[] to string[] format expected by the frontend
+  if (meta.transitions && Array.isArray(meta.transitions)) {
+    meta.transitions = meta.transitions.map((t: any) => {
+      if (typeof t === "object" && t !== null) {
+        return `${t.to || ""}|${t.kind || "normal"}|${t.when || ""}`;
+      }
+      return String(t);
+    });
+  }
+
+  const blocks: { heading: string; text: string }[] = [];
+  if (info.template) {
+    for (const t of info.template) {
+      const heading = t.heading;
+      let camelKey = toCamelCase(heading);
+      if (item.meta?.type === "process-step") {
+        if (heading === "What happens") camelKey = "description";
+        if (heading === "Why it matters") camelKey = "businessValue";
+      }
+      const rawVal = item.content?.[camelKey];
+      let blockText = "";
+      if (Array.isArray(rawVal)) {
+        blockText = rawVal.map((i: string) => `- ${i}`).join("\n");
+      } else {
+        blockText = String(rawVal || "");
+      }
+      blocks.push({ heading, text: blockText });
+    }
+  }
+
+  let bodyText = item.content?.description || "";
+  if (item.meta?.type !== "process-step" && blocks.length > 0) {
+    bodyText = blocks[0].text;
+  }
+
+  return {
+    id: item.meta?.id || "",
+    type: item.meta?.type || "",
+    section: item.meta?.section || info.section || "",
+    title: item.content?.title || "",
+    status: (item.meta?.status || "draft") as ElementStatus,
+    confidence: item.meta?.confidence,
+    source: item.meta?.source,
+    meta,
+    body: bodyText,
+    blocks: blocks,
+  };
+}
+
+/** Read a full process: the index page plus every element page. */
+export function getProcess(slug: string): ProcessDoc | null {
+  const path = join(WIKI_DIR, `${slug}.json`);
+  if (!existsSync(path)) return null;
+  const data = JSON.parse(readFileSync(path, "utf8"));
+  let mostRecent = statSync(path).mtimeMs;
+
   const readJson = <T>(name: string): T | undefined => {
-    const path = join(dir, name);
-    if (!existsSync(path)) return undefined;
+    const p = join(WIKI_DIR, slug, name);
+    if (!existsSync(p)) return undefined;
     try {
-      return JSON.parse(readFileSync(path, "utf8")) as T;
+      return JSON.parse(readFileSync(p, "utf8")) as T;
     } catch {
       return undefined;
     }
   };
-  // The lint report, with the dismissal sidecar re-applied — so a finding the
-  // SME set aside stays dismissed even after run-lint rewrites lint.json.
-  const lint = readJson<LintReport>("lint.json");
+
+  const process: WikiPage = {
+    id: data.meta?.id || "",
+    type: data.meta?.type || "",
+    section: "overview",
+    title: data.content?.title || "",
+    status: "draft",
+    meta: { ...data.meta, ...data.content },
+    body: data.content?.description || "",
+    blocks: [],
+  };
+
+  const elements: WikiPage[] = [];
+  const schema = getSchema();
+
+  for (const [key, val] of Object.entries(data)) {
+    if (key === "meta" || key === "content" || !Array.isArray(val)) continue;
+    
+    for (const item of val as any[]) {
+      const type = item.meta?.type;
+      if (!type) continue;
+      
+      const info = schema.elementTypes[type];
+      if (!info) continue;
+      
+      const page = jsonElementToWikiPage(item, info);
+      elements.push(page);
+    }
+  }
+
+  const lint = data.lint;
   if (lint) {
-    const dismissals = readJson<FindingDismissals>("finding-dismissals.json");
+    const dismissals = data.findingDismissals;
     if (dismissals) {
       applyFindingDismissals(
         lint.findings,
@@ -381,6 +470,7 @@ export function getProcess(slug: string): ProcessDoc | null {
       );
     }
   }
+
   return {
     slug,
     process,
@@ -388,12 +478,13 @@ export function getProcess(slug: string): ProcessDoc | null {
     lastModified: new Date(mostRecent).toISOString(),
     sources: listSources(slug),
     lint,
-    targetReview: readJson<TargetReview>("target-review.json"),
-    ingest: readJson<IngestReport>("ingest.json"),
-    reviewState: readJson<ReviewState>("review-state.json"),
-    summaries: readJson<SectionSummaries>("summaries.json"),
-    notes: readJson<Record<string, Note[]>>("notes.json"),
-    glossary: readJson<GlossaryTerm[]>("glossary.json"),
-    sectionStatus: readJson<Record<string, SectionStatus>>("sections.json"),
+    targetReview: data.targetReview,
+    ingest: data.ingest,
+    reviewState: data.reviewState,
+    summaries: data.summaries,
+    notes: data.notes,
+    glossary: data.glossary,
+    sectionStatus: data.sectionStatus,
+    rawJson: data,
   };
 }

@@ -133,6 +133,7 @@ export default function AgentChat({
   linting,
   findingCount,
   getRef,
+  onStop,
   title = "ProcessMiner",
   subtitle = "Documents this process with you",
   emptyText,
@@ -159,6 +160,7 @@ export default function AgentChat({
   linting: boolean;
   findingCount: number | null;
   getRef: GetRef;
+  onStop?: () => void;
   /** Brand title rendered in the chat header. Default "ProcessMiner". */
   title?: string;
   /** One-line subtitle under the title. */
@@ -377,11 +379,11 @@ export default function AgentChat({
           }}
         />
         <button
-          className="chat-send"
-          onClick={send}
-          disabled={!draft.trim() || pending}
+          className={pending ? "chat-stop" : "chat-send"}
+          onClick={pending ? onStop : send}
+          disabled={pending ? !onStop : !draft.trim()}
         >
-          Send
+          {pending ? "Stop" : "Send"}
         </button>
       </div>
     </aside>

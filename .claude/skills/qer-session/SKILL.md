@@ -92,12 +92,10 @@ Otherwise greet the SME and either:
   SKILL.md` and follow it) to scaffold the process folder, the section folders
   and a skeleton `index.md`.
 
-**Read the cursor** — `python3 scripts/wiki/qer_cursor.py status <slug>`:
-- **`exists: false`, or `done: true`** — a fresh session. Run `python3
-  scripts/wiki/qer_cursor.py start <slug>`. The SME's **name** and **role** are
+**Read the cursor** — `use the getSessionStatus() tool`:
+- **`exists: false`, or `done: true`** — a fresh session. `use the startSession({ slug }) tool`. The SME's **name** and **role** are
   already handed over by the session-scope preamble — use those verbatim for
-  the human-in-the-loop record and `source` context; do not ask. Then run
-  `python3 scripts/wiki/qer_cursor.py advance <slug>` and go to Step 2.
+  the human-in-the-loop record and `source` context; do not ask. Then `use the advanceSession() tool` and go to Step 2.
 - **`exists: true`, `done: false`** — a session is already in flight. Tell the
   SME: "Resuming the QER session for **{process}** — at step {current}." Jump
   straight to the step the cursor names; do not re-run the completed steps.
@@ -117,9 +115,8 @@ these three choices, verbatim, never just two:
 - **[E] Edit** — apply the SME's corrections, show the result, ask again.
 - **[R] Rewrite** — the draft missed; redraft together, then re-present.
 
-On **[Y]**, write the overview with the script — never hand-edit `index.md`.
-Assemble a JSON spec, save it to `/tmp/<slug>-overview.json`, and run
-`python3 scripts/wiki/write_overview.py /tmp/<slug>-overview.json`:
+On **[Y]**, write the overview with the tool — never hand-edit `index.md`.
+Assemble a JSON spec and `use the updateProcessOverview({ slug, overview }) tool`:
 ```json
 {
   "slug": "<slug>",
@@ -134,28 +131,27 @@ Assemble a JSON spec, save it to `/tmp/<slug>-overview.json`, and run
   "purpose": "<a two-paragraph Purpose: what the process does, and why it matters to the bank>"
 }
 ```
-The script preserves the process identity (`id`, `type`, `title`, `status`)
+The tool preserves the process identity (`id`, `type`, `title`, `status`)
 from the scaffolded `index.md` and owns the frontmatter format — the overview
 cannot come out malformed.
 
-When the overview is written, run `python3 scripts/wiki/qer_cursor.py advance
-<slug>` to move to Step 3.
+When the overview is written, `use the advanceSession() tool` to move to Step 3.
 
 ## Step 3 — PERSPECTIVE PASSES
 
 This step is six cursor positions — one per perspective, in registry order.
 Loop, driven by the cursor:
 
-1. Run `python3 scripts/wiki/qer_cursor.py status <slug>`. While `currentKey`
+1. `use the getSessionStatus() tool`. While `currentKey`
    names a perspective (the `skill` field is set):
 2. If `skillBuilt` is `false`, tell the SME that specialist is not built yet,
-   run `qer_cursor.py advance <slug>`, and continue the loop.
+   `use the advanceSession() tool`, and continue the loop.
 3. Tell the SME which perspective is starting and why ("Next we document the
    Process perspective — the steps, who does them, where it breaks").
 4. Dispatch the `skill` in **`orchestrated` mode**: read its `SKILL.md` and run
    its perspective phases for this process. `orchestrated` mode tells the
    specialist to skip its own setup, overview and validation.
-5. When the perspective is done, run `qer_cursor.py advance <slug>`, then
+5. When the perspective is done, `use the advanceSession() tool`, then
    **checkpoint with the SME**: "{Perspective} done — N elements drafted.
    Continue to the next perspective, or pause here?" The SME may stop at any
    point — the cursor holds the place for a later session.
@@ -176,13 +172,12 @@ flag as clarifying questions for the SME.
 With only one perspective documented, state "cross-perspective review needs at
 least two perspectives — skipping" and move on.
 
-When the review pass is done, run `python3 scripts/wiki/qer_cursor.py advance
-<slug>`.
+When the review pass is done, `use the advanceSession() tool`.
 
 ## Step 5 — VALIDATION
 
 First run the deterministic conformance check —
-`python3 scripts/wiki/check_conformance.py <slug>` — which lists every element
+`use the checkConformance({ slug }) tool` — which lists every element
 whose blocks don't match its schema template.
 
 Then do a judgement gap-analysis pass over everything written this session:
@@ -191,15 +186,22 @@ elements, anything that reads thin. Surface each finding — and each conformanc
 issue from the script — as a short clarifying question the SME can answer now,
 defer, or skip. Apply any answers through the owning specialist.
 
-When validation is done, run `python3 scripts/wiki/qer_cursor.py advance
-<slug>`.
+When validation is done, `use the advanceSession() tool`.
 
 ## Step 6 — DONE
 
-Run `python3 scripts/wiki/qer_cursor.py advance <slug>` — that marks the
-session `done`. Then close with the canonical close-out: run `python3
-scripts/wiki/verbatim.py qer-closeout` and present what it prints, filling the
+`use the advanceSession() tool` — that marks the
+session `done`. Then close with the canonical close-out, filling the
 `{process}` / `{n}` / `{type}` placeholders from the counts. Reproduce every
 other character — the bullet labels, the `status: draft` line, the closing
-sentence — exactly; `verbatim.py` is the single source of truth, never write
+sentence — exactly; the following verbatim text is the single source of truth, never write
 it from memory. You never set `approved` — that is the SME's call, in the app.
+
+```
+QER session complete — **{process}**:
+
+- **Documented:** {n} element(s) across {n} perspective(s)
+- **By type:** {type} {n} · {type} {n} · …
+
+Elements you approved during this session are signed off; any left `in-progress` are yours to review and approve in the web app. Approval is your decision there, not mine here.
+```
