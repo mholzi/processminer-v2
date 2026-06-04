@@ -2,7 +2,11 @@
 
 **Purpose.** After replacing `main` with the JSON-native baseline (`b6f7b64`), this document triages every code-touching commit that the old main line carried but the new baseline dropped (see [`SUPERSEDED-MAIN-COMMITS.md`](SUPERSEDED-MAIN-COMMITS.md)), and turns the still-relevant ones into candidate requirements.
 
-**Status of this doc.** Every requirement below is **Proposed — pending your cross-read and prioritization.** Nothing is scheduled or accepted yet. The phase grouping in §3 is my *recommendation*, not a commitment. Use the requirement IDs (R1…Rn) to accept / reject / reorder.
+**Status of this doc — ✅ COMPLETE (2026-06-04).** Every requirement was triaged and worked through. The **entire Processminer scope is delivered** across **17 PRs**, and **both product decisions are settled** (R15 = yes, R16 = yes). Individual requirement entries below carry a ✅ **FIXED** / decision note. The original "Proposed — pending prioritization" framing is kept for the requirements text; the per-item status lines record what shipped.
+
+**Delivered (PR #):** A1 (#2) · A3 (#4) · R6a (#5) · R6b (#6) · schema drift-guard (#7) · R7+R8 (#8) · R9 (#9) · R11 (#10) · A4 + R14 a/b (#11) · R12a (#12) · R5 (#13) · R13 + R14c (#14) · R12b (#15) · R15 (#16) · R16 (#17).
+
+**Not done — parked by choice:** **ArchitectMiner (Theme A — R1–R4)**, the whole module is still view-only (dead chat, mock Diagram/Library, no architect specialists) — the largest remaining *functional* gap, set aside as a separate workspace. Optional: R10 (orchestrator consumer), R17–R19 (verify-then-decide loose ends), and the schema generator (option A).
 
 **Method.** All 41 commits were assessed against the actual files on the current baseline. Each was classed:
 - **PRESENT** — the functionality already exists on the new baseline → no action.
