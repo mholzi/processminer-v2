@@ -15,16 +15,17 @@ function approvalGateError(id: string, provenance: any): string | null {
 
 /** R6 — the author of an in-app write is the signed-in user, resolved from the
  *  session cookie on the server. Never trust a client-supplied author string: a
- *  client could forge it to attribute an action to someone else. Falls back to
- *  "SME" when there is no valid session. (Imports are dynamic so this module
- *  stays importable outside a Next request context, e.g. in unit tests.) */
+ *  client could forge it to attribute an action to someone else. Stores the
+ *  stable `username` (R6b — display names are resolved at read time so renames
+ *  propagate); falls back to "SME" when there is no valid session. (Imports are
+ *  dynamic so this module stays importable outside a Next request context.) */
 async function sessionAuthor(): Promise<string> {
   try {
     const { cookies } = await import("next/headers");
     const { COOKIE_NAME, verifySession } = await import("./auth-server.ts");
     const store = await cookies();
     const user = verifySession(store.get(COOKIE_NAME)?.value);
-    return user?.name || "SME";
+    return user?.username || "SME";
   } catch {
     return "SME";
   }

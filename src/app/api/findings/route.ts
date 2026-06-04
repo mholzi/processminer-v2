@@ -5,9 +5,10 @@ import type { FindingDismissals } from "@/lib/lint";
 import { COOKIE_NAME, verifySession } from "@/lib/auth-server";
 
 // R6: the author of a dismissal is the signed-in user, resolved from the
-// session cookie — never a client-supplied value.
+// session cookie — never a client-supplied value. Stores the stable username
+// (R6b); display names are resolved at read time.
 function sessionAuthor(req: NextRequest): string {
-  return verifySession(req.cookies.get(COOKIE_NAME)?.value)?.name || "SME";
+  return verifySession(req.cookies.get(COOKIE_NAME)?.value)?.username || "SME";
 }
 
 // Records a lint-finding dismissal in

@@ -10,6 +10,7 @@ import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { applyFindingDismissals, type FindingDismissals, type LintReport } from "./lint.ts";
 import type { TargetReview } from "./target-review.ts";
+import { getUsers } from "./auth-server.ts";
 
 const ROOT = process.cwd();
 const WIKI_DIR = join(ROOT, "wiki", "processes");
@@ -413,6 +414,31 @@ export function jsonElementToWikiPage(item: any, info: ElementType): WikiPage {
   };
 }
 
+/** R6b — author fields are stored as the stable `username`. Resolve one to the
+ *  current display name using a username→name roster, so a rename propagates
+ *  everywhere it is shown. Falls back to the stored value, which transparently
+ *  covers legacy records that stored a display name rather than a username. */
+export function resolveAuthor(
+  handle: unknown,
+  roster: Map<string, string>,
+): unknown {
+  return typeof handle === "string" && roster.has(handle)
+    ? roster.get(handle)
+    : handle;
+}
+
+/** Build a resolver bound to the current user roster (cheap — `getUsers()` is
+ *  memoised). Returns an identity passthrough if the roster can't be read. */
+function nameResolver(): (v: any) => any {
+  let roster: Map<string, string>;
+  try {
+    roster = new Map(getUsers().map((u) => [u.username, u.name]));
+  } catch {
+    roster = new Map();
+  }
+  return (v) => resolveAuthor(v, roster);
+}
+
 /** Read a full process: the index page plus every element page. */
 export function getProcess(slug: string): ProcessDoc | null {
   const path = join(WIKI_DIR, `${slug}.json`);
@@ -459,6 +485,17 @@ export function getProcess(slug: string): ProcessDoc | null {
     }
   }
 
+  // R6b — resolve stored author handles (usernames) to current display names.
+  const resolveName = nameResolver();
+  process.meta.approvalBy = resolveName(process.meta.approvalBy);
+  for (const page of elements) {
+    page.meta.approvalBy = resolveName(page.meta.approvalBy);
+    page.meta.relevanceBy = resolveName(page.meta.relevanceBy);
+  }
+
+  const sources = listSources(slug);
+  for (const s of sources) s.uploadedBy = resolveName(s.uploadedBy);
+
   const lint = data.lint;
   if (lint) {
     const dismissals = data.findingDismissals;
@@ -469,6 +506,27 @@ export function getProcess(slug: string): ProcessDoc | null {
         new Date().toISOString().slice(0, 10),
       );
     }
+    if (Array.isArray(lint.findings)) {
+      for (const f of lint.findings) {
+        if (f.resolvedBy) f.resolvedBy = resolveName(f.resolvedBy);
+        if (f.dismissedBy) f.dismissedBy = resolveName(f.dismissedBy);
+      }
+    }
+  }
+
+  // Notes are cloned so the resolved names don't leak into rawJson.
+  let notes = data.notes as Record<string, Note[]> | undefined;
+  if (notes) {
+    notes = Object.fromEntries(
+      Object.entries(notes).map(([eid, arr]) => [
+        eid,
+        arr.map((n) => ({
+          ...n,
+          author: resolveName(n.author),
+          ...(n.resolvedBy ? { resolvedBy: resolveName(n.resolvedBy) } : {}),
+        })),
+      ]),
+    );
   }
 
   return {
@@ -476,13 +534,13 @@ export function getProcess(slug: string): ProcessDoc | null {
     process,
     elements,
     lastModified: new Date(mostRecent).toISOString(),
-    sources: listSources(slug),
+    sources,
     lint,
     targetReview: data.targetReview,
     ingest: data.ingest,
     reviewState: data.reviewState,
     summaries: data.summaries,
-    notes: data.notes,
+    notes,
     glossary: data.glossary,
     sectionStatus: data.sectionStatus,
     rawJson: data,
