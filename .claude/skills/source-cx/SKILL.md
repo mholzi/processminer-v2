@@ -44,11 +44,13 @@ those are the process's own journey, `client-journey-specialist`'s and
 
 ## Step 1 — Read the process
 
-Read `wiki/processes/<slug>/index.md` (the domain — what the process does, its
-industry, its scope) and the documented client journey — the `channels`,
-`touchpoints`, `moments` and `friction-points` elements. This tells you what
-client journey to benchmark. Also read any existing `competitor-cx-*` and
-`cx-benchmark` elements: you extend, you never duplicate.
+Read the process overview (root meta/content in the Document Map — the domain,
+what the process does, its industry, its scope) and the documented client
+journey — the `channels`, `touchpoints`, `moments` and `friction-points`
+elements. This tells you what client journey to benchmark. Also read any
+existing `competitor-cx-*` and `cx-benchmark` elements (`expandElement({ type })`
+to list a collection, then `expandElement({ type, id })` for a specific
+element): you extend, you never duplicate.
 
 ## Step 2 — Scan competitor CX
 
@@ -69,10 +71,11 @@ Task tool — one per tier — and wait for all three.
 Give each sub-agent this brief, filling in its tier:
 
 > You are sourcing competitor client experience for process `<slug>`, tier
-> **{tier}** (element type `{type}`). Read `wiki/processes/<slug>/index.md`
-> and the documented client journey (`channels`, `touchpoints`, `moments`,
-> `friction-points`) for context, and the existing `{type}` elements so you
-> do not duplicate one. Use the getElementTemplate({ type }) tool
+> **{tier}** (element type `{type}`). Read the process overview (root
+> meta/content in the Document Map) and the documented client journey
+> (`channels`, `touchpoints`, `moments`, `friction-points`) for context, and
+> the existing `{type}` elements (`expandElement({ type })`) so you do not
+> duplicate one. Use the getElementTemplate({ type }) tool
 > for the element's shape. Web-search for **named** {who}'s client experience
 > in this domain — onboarding journey, channels, speed, self-service, reviews,
 > case studies. Draft one `createElement({ type, element })` tool spec per material example:

@@ -4,7 +4,7 @@ description: >-
   Run a lint pass over a process wiki — the consistency checkpoint. Check
   every element against its schema template, then sweep the whole process
   from all five perspectives for cross-section discrepancies and clarifying
-  questions. Write the findings to lint.json for the app's Review panel and
+  questions. Write the findings to the runtime store for the app's Review panel and
   re-open any approved element a finding implicates. Use this whenever the
   user asks to lint, run a lint pass, check the wiki for consistency, or
   review a process for issues.
@@ -21,7 +21,7 @@ You are invoked with a process `<slug>`. Lint covers that one process only.
 
 ## Step 1 — Load the process
 
-Take the process title from `wiki/processes/<slug>/index.md`. You orchestrate
+Take the process title from the process overview (root `meta`/`content`) in the Document Map. You orchestrate
 the lint pass — the deterministic tools (Step 2) and the per-lens sub-agents
 (Step 3) each read the elements they need, so you do not have to read every
 element yourself.
@@ -54,7 +54,7 @@ Give each sub-agent this brief, with `{Lens}` and `{what to check}` filled
 from the table below:
 
 > You are the **{Lens}** lens of a lint pass on process `<slug>`. Read every
-> element under `wiki/processes/<slug>/`. Looking only through your lens,
+> element in the process (use `expandElement({ type })` to list each collection, then `expandElement({ type, id })` for the bodies). Looking only through your lens,
 > check: {what to check}. The council looks at every element, including ones
 > it has no relation to — "a step with no control" is found by looking at
 > steps that link to nothing. Record a finding for every real issue: use
@@ -98,11 +98,11 @@ finding is an object:
 
 Then use the `applyLint({ slug, findings })` tool.
 
-This tool assigns finding ids, writes `wiki/processes/<slug>/lint.json` (the
-file the app's Review panel reads), and re-opens every approved element a
+This tool assigns finding ids, writes the `lint` field in the runtime store
+`data/runtime/<slug>.json` (which the app's Review panel reads), and re-opens every approved element a
 finding implicates — setting it back to `in-progress`, stamped `run-lint`.
 **Always run it, even when you found nothing** — an empty pass writes an
-all-clear `lint.json`. Relay any warning it prints about unknown element ids.
+all-clear `lint` report. Relay any warning it prints about unknown element ids.
 
 ## Step 5 — Summarise
 

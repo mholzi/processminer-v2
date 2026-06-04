@@ -139,7 +139,7 @@ mode from anything else in the invocation wording.
 that as the `source` context and the human-in-the-loop record; do not re-ask
 it. Only if the invocation supplies no SME identity, ask for it. Identify the
 process: list the slugs under `wiki/processes/`, let them pick; read its
-`index.md`.
+overview (root `meta`/`content` in the Document Map).
 
 **Phase 1 — Orientation.** Read the documented As-Is — especially the
 pain-points and friction-points — and the existing `market-trend` and

@@ -1,0 +1,1456 @@
+{
+  "meta": {
+    "id": "FRL-001",
+    "type": "process",
+    "section": "overview",
+    "status": "draft",
+    "confidence": "high",
+    "source": "funds-release-dtp-mockup.md",
+    "docStatus": "As-Is draft"
+  },
+  "content": {
+    "title": "Funds Release",
+    "description": "Controls the release of funds held in a blocked or pending state, once all verification, approval, and compliance conditions have been satisfied.",
+    "processOwner": "Head of Payment Operations",
+    "trigger": "Drawdown request from front office for approved facility · Held payment reaching scheduled release date · Manual analyst initiation",
+    "frequency": null,
+    "scopeIn": "Release of funds held against an approved corporate credit facility; release following completed beneficiary and sanctions verification; manual and straight-through (STP) release paths",
+    "scopeOut": "Origination and approval of the underlying credit facility; retail customer payments; cross-border settlement mechanics (covered by PRC-OPS-0151)",
+    "processInput": "Facility ID, amount, currency, value date, beneficiary details, supporting documents",
+    "processOutput": "Posted fund movement, front-office confirmation, completed audit trail"
+  },
+  "process-steps": [
+    {
+      "meta": {
+        "id": "PS-FRL-001",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "funds-release-dtp-mockup.md",
+        "sequence": 1,
+        "owner": "Ops Analyst",
+        "sla": null,
+        "provenance": {
+          "What happens": {
+            "source": "document",
+            "evidence": "§5.1 step 1: 'The release request arrives in the Operations queue via the payments workflow tool. Each item carries a facility ID, amount, currency, value date, and beneficiary details.'"
+          },
+          "Inputs": {
+            "source": "document",
+            "evidence": "§5.1 step 1: 'Each item carries a facility ID, amount, currency, value date, and beneficiary details.' §8 Key inputs: 'facility ID, amount, currency, value date, beneficiary details, supporting documents.'"
+          },
+          "Outputs": {
+            "source": "proposed",
+            "evidence": ""
+          },
+          "Why it matters": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        },
+        "title": "Receive Request",
+        "description": "The release request arrives in the Operations queue via the Payments Workflow Tool. Each item carries a facility ID, amount, currency, value date, and beneficiary details.",
+        "businessValue": "Centralises all incoming release requests in a single, auditable queue, ensuring no request is lost, duplicated, or processed outside the controlled workflow.",
+        "inputs": [
+          "Release request arriving in Operations queue via Payments Workflow Tool",
+          "Facility ID",
+          "Requested amount and currency",
+          "Value date",
+          "Beneficiary details"
+        ],
+        "outputs": [
+          "Workflow item present in Operations queue, ready for Ops Analyst action"
+        ],
+        "systems": [
+          "SYS-FRL-001"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRL-002",
+            "kind": "normal",
+            "when": ""
+          }
+        ]
+      },
+      "content": {
+        "title": "Receive Request",
+        "description": "The release request arrives in the Operations queue via the Payments Workflow Tool. Each item carries a facility ID, amount, currency, value date, and beneficiary details.",
+        "businessValue": "Centralises all incoming release requests in a single, auditable queue, ensuring no request is lost, duplicated, or processed outside the controlled workflow.",
+        "inputs": [
+          "Release request arriving in Operations queue via Payments Workflow Tool",
+          "Facility ID",
+          "Requested amount and currency",
+          "Value date",
+          "Beneficiary details"
+        ],
+        "outputs": [
+          "Workflow item present in Operations queue, ready for Ops Analyst action"
+        ],
+        "owner": "Ops Analyst",
+        "sla": null,
+        "systems": [
+          "SYS-FRL-001"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRL-002",
+            "kind": "normal",
+            "when": ""
+          }
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "PS-FRL-002",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md",
+        "sequence": 2,
+        "owner": "Ops Analyst",
+        "sla": null,
+        "provenance": {
+          "What happens": {
+            "source": "document",
+            "evidence": "§5.1 step 2: 'Facility ID exists and is in \"Active\" status. Requested amount does not exceed the available (undrawn) limit. Value date is a valid business day for the currency. Supporting documents (drawdown notice, invoice) are attached. If validation fails → see Exception E-1.'"
+          },
+          "Inputs": {
+            "source": "document",
+            "evidence": "§5.1 step 2: four validation criteria; §8: Facility Management System for 'facility status and available limit'; §8 Key inputs: 'supporting documents'."
+          },
+          "Outputs": {
+            "source": "document",
+            "evidence": "§6 E-1: 'Item returned to front office with reason code; resubmission required. SLA clock pauses.' §5.2 D-1: 'Continue to D-2' or 'Exception E-1'."
+          },
+          "Why it matters": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        },
+        "title": "Validate Request",
+        "description": "The Ops Analyst validates the request against four criteria: the facility ID exists and is Active; the requested amount does not exceed the available undrawn limit; the value date is a valid business day for the relevant currency; and all required supporting documents (drawdown notice, invoice) are attached. A failed check triggers Exception E-1.",
+        "businessValue": "Prevents erroneous or incomplete releases from entering the approval chain, protecting the bank from limit breaches, invalid value dates, and missing legal documentation.",
+        "inputs": [
+          "Workflow item from step 1",
+          "Facility record from Facility Management System",
+          "Available undrawn limit",
+          "Supporting documents (drawdown notice, invoice)"
+        ],
+        "outputs": [
+          "Validation result (pass or fail)",
+          "If failed: exception E-1 raised — item returned to front office with reason code; SLA clock pauses"
+        ],
+        "systems": [
+          "SYS-FRL-001",
+          "SYS-FRL-005"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRL-003",
+            "kind": "normal",
+            "when": "Validation passes on all four criteria"
+          },
+          {
+            "to": "EX-FRL-001",
+            "kind": "exception",
+            "when": "Any validation check fails"
+          }
+        ]
+      },
+      "content": {
+        "title": "Validate Request",
+        "description": "The Ops Analyst validates the request against four criteria: the facility ID exists and is Active; the requested amount does not exceed the available undrawn limit; the value date is a valid business day for the relevant currency; and all required supporting documents (drawdown notice, invoice) are attached. A failed check triggers Exception E-1.",
+        "businessValue": "Prevents erroneous or incomplete releases from entering the approval chain, protecting the bank from limit breaches, invalid value dates, and missing legal documentation.",
+        "inputs": [
+          "Workflow item from step 1",
+          "Facility record from Facility Management System",
+          "Available undrawn limit",
+          "Supporting documents (drawdown notice, invoice)"
+        ],
+        "outputs": [
+          "Validation result (pass or fail)",
+          "If failed: exception E-1 raised — item returned to front office with reason code; SLA clock pauses"
+        ],
+        "owner": "Ops Analyst",
+        "sla": null,
+        "systems": [
+          "SYS-FRL-001",
+          "SYS-FRL-005"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRL-003",
+            "kind": "normal",
+            "when": "Validation passes on all four criteria"
+          },
+          {
+            "to": "EX-FRL-001",
+            "kind": "exception",
+            "when": "Any validation check fails"
+          }
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "PS-FRL-003",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md",
+        "sequence": 3,
+        "owner": "Compliance",
+        "sla": null,
+        "provenance": {
+          "What happens": {
+            "source": "document",
+            "evidence": "§5.1 step 3: 'The item is screened for sanctions and AML hits. Clean items pass automatically. Potential hits are routed to Compliance for adjudication. If a hit is confirmed → see Exception E-2.' §8: Sanctions Screening Engine — 'Real-time sanctions / AML screening'."
+          },
+          "Inputs": {
+            "source": "document",
+            "evidence": "§5.1 step 3: item is screened; beneficiary details carried from step 1 (§5.1 step 1). §8: Sanctions Screening Engine performs screening."
+          },
+          "Outputs": {
+            "source": "document",
+            "evidence": "§5.1 step 3: clean items pass automatically; potential hits routed to Compliance; confirmed hit → E-2. §6 E-2: 'Item frozen; escalated to Compliance and Financial Crime; release blocked pending investigation.'"
+          },
+          "Why it matters": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        },
+        "title": "Compliance Screening",
+        "description": "The validated item is screened for sanctions and AML hits via the Sanctions Screening Engine. Clean items pass automatically. Items generating a potential hit are routed to Compliance for adjudication. A confirmed hit triggers Exception E-2 and the release is halted.",
+        "businessValue": "Ensures the bank does not facilitate payments to sanctioned parties or support money laundering, meeting mandatory regulatory obligations and protecting the institution from legal and reputational risk.",
+        "inputs": [
+          "Validated workflow item from step 2",
+          "Beneficiary details and counterparty identifiers"
+        ],
+        "outputs": [
+          "Screening result (clean or potential hit)",
+          "If clean: item automatically advanced",
+          "If potential hit: item routed to Compliance for adjudication",
+          "If hit confirmed: exception E-2 raised — item frozen; escalated to Compliance and Financial Crime; release blocked"
+        ],
+        "systems": [
+          "SYS-FRL-003"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRL-004",
+            "kind": "normal",
+            "when": "Screening returns clean result"
+          },
+          {
+            "to": "EX-FRL-002",
+            "kind": "exception",
+            "when": "Compliance confirms a sanctions or AML hit"
+          }
+        ]
+      },
+      "content": {
+        "title": "Compliance Screening",
+        "description": "The validated item is screened for sanctions and AML hits via the Sanctions Screening Engine. Clean items pass automatically. Items generating a potential hit are routed to Compliance for adjudication. A confirmed hit triggers Exception E-2 and the release is halted.",
+        "businessValue": "Ensures the bank does not facilitate payments to sanctioned parties or support money laundering, meeting mandatory regulatory obligations and protecting the institution from legal and reputational risk.",
+        "inputs": [
+          "Validated workflow item from step 2",
+          "Beneficiary details and counterparty identifiers"
+        ],
+        "outputs": [
+          "Screening result (clean or potential hit)",
+          "If clean: item automatically advanced",
+          "If potential hit: item routed to Compliance for adjudication",
+          "If hit confirmed: exception E-2 raised — item frozen; escalated to Compliance and Financial Crime; release blocked"
+        ],
+        "owner": "Compliance",
+        "sla": null,
+        "systems": [
+          "SYS-FRL-003"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRL-004",
+            "kind": "normal",
+            "when": "Screening returns clean result"
+          },
+          {
+            "to": "EX-FRL-002",
+            "kind": "exception",
+            "when": "Compliance confirms a sanctions or AML hit"
+          }
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "PS-FRL-004",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "funds-release-dtp-mockup.md",
+        "sequence": 4,
+        "owner": "Ops Analyst",
+        "sla": null,
+        "provenance": {
+          "What happens": {
+            "source": "document",
+            "evidence": "§5.1 step 4: 'The Ops Analyst approves the release after confirming validation and screening results.' §4 RACI: First-line approval — Ops Analyst = R."
+          },
+          "Inputs": {
+            "source": "document",
+            "evidence": "§5.1 step 4: Ops Analyst confirms validation and screening results before approving."
+          },
+          "Outputs": {
+            "source": "proposed",
+            "evidence": ""
+          },
+          "Why it matters": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        },
+        "title": "First-line Approval",
+        "description": "The Ops Analyst approves the release after confirming validation and screening results.",
+        "businessValue": "Creates a documented first-line control point, ensuring an accountable human sign-off is captured before funds are committed to the release pipeline.",
+        "inputs": [
+          "Validated and screened workflow item",
+          "Validation result from step 2",
+          "Compliance screening result from step 3"
+        ],
+        "outputs": [
+          "First-line approval recorded in workflow item"
+        ],
+        "systems": [
+          "SYS-FRL-001"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRL-005",
+            "kind": "branch",
+            "when": "Release amount is >= EUR 5,000,000 equivalent"
+          },
+          {
+            "to": "PS-FRL-006",
+            "kind": "branch",
+            "when": "Release amount is < EUR 5,000,000 equivalent"
+          }
+        ]
+      },
+      "content": {
+        "title": "First-line Approval",
+        "description": "The Ops Analyst approves the release after confirming validation and screening results.",
+        "businessValue": "Creates a documented first-line control point, ensuring an accountable human sign-off is captured before funds are committed to the release pipeline.",
+        "inputs": [
+          "Validated and screened workflow item",
+          "Validation result from step 2",
+          "Compliance screening result from step 3"
+        ],
+        "outputs": [
+          "First-line approval recorded in workflow item"
+        ],
+        "owner": "Ops Analyst",
+        "sla": null,
+        "systems": [
+          "SYS-FRL-001"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRL-005",
+            "kind": "branch",
+            "when": "Release amount is >= EUR 5,000,000 equivalent"
+          },
+          {
+            "to": "PS-FRL-006",
+            "kind": "branch",
+            "when": "Release amount is < EUR 5,000,000 equivalent"
+          }
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "PS-FRL-005",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md",
+        "sequence": 5,
+        "owner": "Treasury",
+        "sla": null,
+        "provenance": {
+          "What happens": {
+            "source": "document",
+            "evidence": "§5.1 step 5: 'For amounts at or above the Treasury threshold (currently EUR 5,000,000 equivalent), Treasury confirms funding availability for the value date. If funding is unavailable → see Exception E-3.' §5.2 D-3: 'Amount ≥ EUR 5m threshold? Treasury confirmation required | Skip to 4-eyes approval.'"
+          },
+          "Inputs": {
+            "source": "document",
+            "evidence": "§5.1 step 5: release amount, currency, value date are carried from step 1; Treasury / Liquidity Platform used (§8)."
+          },
+          "Outputs": {
+            "source": "document",
+            "evidence": "§5.1 step 5: funding availability confirmed; §6 E-3: 'Release deferred; Treasury and front office notified; rescheduled to next available value date.'"
+          },
+          "Why it matters": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        },
+        "title": "Liquidity Confirmation",
+        "description": "For release amounts at or above EUR 5,000,000 equivalent, Treasury confirms that sufficient funding is available for the specified value date using the Treasury / Liquidity Platform. If funding is unavailable for the value date, Exception E-3 is raised. This step is bypassed entirely for amounts below the threshold.",
+        "businessValue": "Prevents same-day funding shortfalls for material releases, protecting the bank's intraday liquidity position and avoiding failed settlement obligations.",
+        "inputs": [
+          "First-line approved workflow item from step 4",
+          "Release amount and currency",
+          "Value date",
+          "Funding availability check via Treasury / Liquidity Platform"
+        ],
+        "outputs": [
+          "Funding availability confirmed",
+          "If funding unavailable: exception E-3 raised — release deferred; Treasury and front office notified; rescheduled to next available value date"
+        ],
+        "systems": [
+          "SYS-FRL-004"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRL-006",
+            "kind": "normal",
+            "when": "Treasury confirms funding available for value date"
+          },
+          {
+            "to": "EX-FRL-003",
+            "kind": "exception",
+            "when": "Funding unavailable for the value date"
+          }
+        ]
+      },
+      "content": {
+        "title": "Liquidity Confirmation",
+        "description": "For release amounts at or above EUR 5,000,000 equivalent, Treasury confirms that sufficient funding is available for the specified value date using the Treasury / Liquidity Platform. If funding is unavailable for the value date, Exception E-3 is raised. This step is bypassed entirely for amounts below the threshold.",
+        "businessValue": "Prevents same-day funding shortfalls for material releases, protecting the bank's intraday liquidity position and avoiding failed settlement obligations.",
+        "inputs": [
+          "First-line approved workflow item from step 4",
+          "Release amount and currency",
+          "Value date",
+          "Funding availability check via Treasury / Liquidity Platform"
+        ],
+        "outputs": [
+          "Funding availability confirmed",
+          "If funding unavailable: exception E-3 raised — release deferred; Treasury and front office notified; rescheduled to next available value date"
+        ],
+        "owner": "Treasury",
+        "sla": null,
+        "systems": [
+          "SYS-FRL-004"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRL-006",
+            "kind": "normal",
+            "when": "Treasury confirms funding available for value date"
+          },
+          {
+            "to": "EX-FRL-003",
+            "kind": "exception",
+            "when": "Funding unavailable for the value date"
+          }
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "PS-FRL-006",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md",
+        "sequence": 6,
+        "owner": "Ops Approver",
+        "sla": null,
+        "provenance": {
+          "What happens": {
+            "source": "document",
+            "evidence": "§5.1 step 6: 'A separate Ops Approver independently reviews and authorises the release. The approver must not be the same person who performed step 4.' §5.2 D-5: '4-eyes approval granted? Execute release | Return to Ops Analyst.' §4 RACI: Second-line approval — Ops Approver = A/R."
+          },
+          "Inputs": {
+            "source": "document",
+            "evidence": "§5.1 step 6: Ops Approver reviews the release item; all prior results are part of the workflow item."
+          },
+          "Outputs": {
+            "source": "document",
+            "evidence": "§5.2 D-5: 'Execute release | Return to Ops Analyst.'"
+          },
+          "Why it matters": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        },
+        "title": "Second-line Approval (4-eyes)",
+        "description": "A separate Ops Approver, who must not be the same individual who performed step 4, independently reviews and authorises the release. If the approver withholds authorisation, the item is returned to the Ops Analyst.",
+        "businessValue": "Enforces mandatory segregation of duties, reducing the risk of fraud or error by requiring a second independent human authorisation before any funds move.",
+        "inputs": [
+          "First-line approved workflow item",
+          "Validation, screening, and (if applicable) liquidity confirmation results"
+        ],
+        "outputs": [
+          "Second-line approval recorded in workflow item",
+          "If withheld: item returned to Ops Analyst"
+        ],
+        "systems": [
+          "SYS-FRL-001"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRL-007",
+            "kind": "normal",
+            "when": "Approver grants authorisation"
+          },
+          {
+            "to": "PS-FRL-004",
+            "kind": "loopback",
+            "when": "Approver withholds authorisation"
+          }
+        ]
+      },
+      "content": {
+        "title": "Second-line Approval (4-eyes)",
+        "description": "A separate Ops Approver, who must not be the same individual who performed step 4, independently reviews and authorises the release. If the approver withholds authorisation, the item is returned to the Ops Analyst.",
+        "businessValue": "Enforces mandatory segregation of duties, reducing the risk of fraud or error by requiring a second independent human authorisation before any funds move.",
+        "inputs": [
+          "First-line approved workflow item",
+          "Validation, screening, and (if applicable) liquidity confirmation results"
+        ],
+        "outputs": [
+          "Second-line approval recorded in workflow item",
+          "If withheld: item returned to Ops Analyst"
+        ],
+        "owner": "Ops Approver",
+        "sla": null,
+        "systems": [
+          "SYS-FRL-001"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRL-007",
+            "kind": "normal",
+            "when": "Approver grants authorisation"
+          },
+          {
+            "to": "PS-FRL-004",
+            "kind": "loopback",
+            "when": "Approver withholds authorisation"
+          }
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "PS-FRL-007",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md",
+        "sequence": 7,
+        "owner": "Ops Analyst",
+        "sla": "STP release: same business day, within 2 hours of receipt. Manual release (no exception): same business day. Cut-off for same-day value: 14:00 CET.",
+        "provenance": {
+          "What happens": {
+            "source": "document",
+            "evidence": "§5.1 step 7: 'The approved item is posted in the core banking system. Funds move from the held account to the beneficiary instruction.' §9 SLA: 'STP release (clean item) — same business day, within 2 hours of receipt. Manual release (no exception) — same business day. Cut-off for same-day value — 14:00 CET.'"
+          },
+          "Inputs": {
+            "source": "document",
+            "evidence": "§5.1 step 7: approved item; beneficiary instruction and held account referenced in 'Funds move from the held account to the beneficiary instruction.'"
+          },
+          "Outputs": {
+            "source": "document",
+            "evidence": "§5.1 step 7: item posted in core banking system; funds move from held account to beneficiary instruction. §8 Key outputs: 'posted fund movement'."
+          },
+          "Why it matters": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        },
+        "title": "Execute Release",
+        "description": "The fully approved workflow item is posted in the Core Banking System. Funds move from the held account to the beneficiary instruction, completing the financial transaction. STP releases must complete within 2 hours of receipt; same-day value requires execution by 14:00 CET.",
+        "businessValue": "Delivers the actual fund transfer, fulfilling the bank's contractual obligation to the borrower and generating the revenue associated with the drawdown.",
+        "inputs": [
+          "Dual-approved workflow item from step 6",
+          "Beneficiary payment instruction details",
+          "Held account reference"
+        ],
+        "outputs": [
+          "Payment posted in Core Banking System",
+          "Funds transferred from held account to beneficiary"
+        ],
+        "systems": [
+          "SYS-FRL-002",
+          "SYS-FRL-001"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRL-008",
+            "kind": "normal",
+            "when": ""
+          }
+        ]
+      },
+      "content": {
+        "title": "Execute Release",
+        "description": "The fully approved workflow item is posted in the Core Banking System. Funds move from the held account to the beneficiary instruction, completing the financial transaction. STP releases must complete within 2 hours of receipt; same-day value requires execution by 14:00 CET.",
+        "businessValue": "Delivers the actual fund transfer, fulfilling the bank's contractual obligation to the borrower and generating the revenue associated with the drawdown.",
+        "inputs": [
+          "Dual-approved workflow item from step 6",
+          "Beneficiary payment instruction details",
+          "Held account reference"
+        ],
+        "outputs": [
+          "Payment posted in Core Banking System",
+          "Funds transferred from held account to beneficiary"
+        ],
+        "owner": "Ops Analyst",
+        "sla": "STP release: same business day, within 2 hours of receipt. Manual release (no exception): same business day. Cut-off for same-day value: 14:00 CET.",
+        "systems": [
+          "SYS-FRL-002",
+          "SYS-FRL-001"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRL-008",
+            "kind": "normal",
+            "when": ""
+          }
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "PS-FRL-008",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md",
+        "sequence": 8,
+        "owner": "Ops Analyst",
+        "sla": null,
+        "provenance": {
+          "What happens": {
+            "source": "document",
+            "evidence": "§5.1 step 8: 'A confirmation is sent to the front office and the workflow item is closed. The audit log records all actors and timestamps.' §8 Key outputs: 'front-office confirmation, completed audit trail.'"
+          },
+          "Inputs": {
+            "source": "document",
+            "evidence": "§5.1 step 8: executed workflow item; audit log covering all actors and timestamps."
+          },
+          "Outputs": {
+            "source": "document",
+            "evidence": "§5.1 step 8: 'A confirmation is sent to the front office and the workflow item is closed. The audit log records all actors and timestamps.' §8 Key outputs: 'front-office confirmation, completed audit trail.'"
+          },
+          "Why it matters": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        },
+        "title": "Confirm & Close",
+        "description": "A release confirmation is sent to front office via the Payments Workflow Tool. The workflow item is closed. The audit log records all actors and timestamps across the release lifecycle.",
+        "businessValue": "Closes the communication loop with front office and ensures a complete, auditable record is preserved for regulatory review, internal audit, and dispute resolution.",
+        "inputs": [
+          "Executed workflow item from step 7",
+          "Audit trail of all actors and timestamps from steps 1–7"
+        ],
+        "outputs": [
+          "Release confirmation sent to front office",
+          "Workflow item closed in Payments Workflow Tool",
+          "Audit log finalised with all actors and timestamps"
+        ],
+        "systems": [
+          "SYS-FRL-001"
+        ],
+        "transitions": []
+      },
+      "content": {
+        "title": "Confirm & Close",
+        "description": "A release confirmation is sent to front office via the Payments Workflow Tool. The workflow item is closed. The audit log records all actors and timestamps across the release lifecycle.",
+        "businessValue": "Closes the communication loop with front office and ensures a complete, auditable record is preserved for regulatory review, internal audit, and dispute resolution.",
+        "inputs": [
+          "Executed workflow item from step 7",
+          "Audit trail of all actors and timestamps from steps 1–7"
+        ],
+        "outputs": [
+          "Release confirmation sent to front office",
+          "Workflow item closed in Payments Workflow Tool",
+          "Audit log finalised with all actors and timestamps"
+        ],
+        "owner": "Ops Analyst",
+        "sla": null,
+        "systems": [
+          "SYS-FRL-001"
+        ],
+        "transitions": []
+      }
+    }
+  ],
+  "roles": [
+    {
+      "meta": {
+        "id": "ROLE-FRL-001",
+        "type": "role",
+        "section": "roles",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "funds-release-dtp-mockup.md",
+        "provenance": {
+          "responsibility": {
+            "source": "document",
+            "evidence": "Section 3 Trigger: 'A drawdown request is received from the front office for an approved facility'; Section 5.2 step 2: 'Supporting documents (drawdown notice, invoice) are attached'; Section 4 RACI: Front Office A/R on Submit release request."
+          },
+          "inThisProcess": {
+            "source": "document",
+            "evidence": "Section 4 RACI: Front Office A/R at Submit release request (step 1); I at all steps 2–8. Section 5 step 8: 'A confirmation is sent to the front office.'"
+          }
+        }
+      },
+      "content": {
+        "title": "Front Office",
+        "responsibility": "Originates and submits funds-release requests, ensuring all required documentation (drawdown notice, invoice) and details accompany each submission.",
+        "inThisProcess": "Accountable for initiating and submitting release requests at step 1; kept informed throughout the remaining processing steps and receives the final confirmation when the release has been executed.",
+        "raci": [
+          "PS-FRL-001:A/R",
+          "PS-FRL-002:I",
+          "PS-FRL-003:I",
+          "PS-FRL-004:I",
+          "PS-FRL-005:I",
+          "PS-FRL-006:I",
+          "PS-FRL-007:I",
+          "PS-FRL-008:I"
+        ],
+        "controls": [],
+        "systems": []
+      }
+    },
+    {
+      "meta": {
+        "id": "ROLE-FRL-002",
+        "type": "role",
+        "section": "roles",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md",
+        "provenance": {
+          "responsibility": {
+            "source": "document",
+            "evidence": "Section 4 RACI: Ops Analyst R at Verify request & documents, First-line approval, Execute release in core system, Confirmation to front office; C at Sanctions/AML screening, C at Submit release request."
+          },
+          "inThisProcess": {
+            "source": "document",
+            "evidence": "Section 4 RACI: Ops Analyst C at Submit release request (step 1), R at Verify request & documents (step 2), C at Sanctions/AML screening (step 3), R at First-line approval (step 4), I at steps 5–6, R at Execute release (step 7), R at Confirmation to front office (step 8)."
+          }
+        }
+      },
+      "content": {
+        "title": "Ops Analyst",
+        "responsibility": "Verifies completeness and accuracy of release requests, performs first-line operational approval, executes the release in the core system, and issues confirmation to the front office.",
+        "inThisProcess": "Consulted on request submission at step 1; responsible for verifying requests and documents at step 2; consulted on sanctions screening at step 3; responsible for first-line approval at step 4; executes the release in the core system at step 7; and sends the confirmation to the front office at step 8.",
+        "raci": [
+          "PS-FRL-001:C",
+          "PS-FRL-002:R",
+          "PS-FRL-003:C",
+          "PS-FRL-004:R",
+          "PS-FRL-005:I",
+          "PS-FRL-006:I",
+          "PS-FRL-007:R",
+          "PS-FRL-008:R"
+        ],
+        "controls": [],
+        "systems": []
+      }
+    },
+    {
+      "meta": {
+        "id": "ROLE-FRL-003",
+        "type": "role",
+        "section": "roles",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "funds-release-dtp-mockup.md",
+        "provenance": {
+          "responsibility": {
+            "source": "document",
+            "evidence": "Section 4 RACI: Ops Approver A/R at Second-line approval (4-eyes). Section 5 step 6: 'A separate Ops Approver independently reviews and authorises the release. The approver must not be the same person who performed step 4.' Section 7 Control C-3: 'Segregation of duties (4-eyes) | Preventive / manual | Every item.'"
+          },
+          "inThisProcess": {
+            "source": "document",
+            "evidence": "Section 4 RACI: Ops Approver A/R at Second-line approval (step 6); C at Confirm liquidity/funding (step 5); I at all other steps."
+          }
+        }
+      },
+      "content": {
+        "title": "Ops Approver",
+        "responsibility": "Provides the mandatory second-line approval under the four-eyes control principle, ensuring independent oversight of every release before it proceeds to execution.",
+        "inThisProcess": "Accountable and responsible for the second-line four-eyes approval at step 6; consulted at the liquidity-confirmation step (step 5) and kept informed of all other steps.",
+        "raci": [
+          "PS-FRL-001:I",
+          "PS-FRL-002:I",
+          "PS-FRL-003:I",
+          "PS-FRL-004:I",
+          "PS-FRL-005:C",
+          "PS-FRL-006:A/R",
+          "PS-FRL-007:I",
+          "PS-FRL-008:I"
+        ],
+        "controls": [],
+        "systems": []
+      }
+    },
+    {
+      "meta": {
+        "id": "ROLE-FRL-004",
+        "type": "role",
+        "section": "roles",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "funds-release-dtp-mockup.md",
+        "provenance": {
+          "responsibility": {
+            "source": "document",
+            "evidence": "Section 4 RACI: Compliance A/R at Sanctions/AML screening. Section 5 step 3: 'The item is screened for sanctions and AML hits. Clean items pass automatically. Potential hits are routed to Compliance for adjudication.' Section 7 Control C-2: 'Sanctions & AML screening | Preventive / automated | Every item.'"
+          },
+          "inThisProcess": {
+            "source": "document",
+            "evidence": "Section 4 RACI: Compliance A/R at Sanctions/AML screening (step 3); I at all other steps 1–2 and 4–8."
+          }
+        }
+      },
+      "content": {
+        "title": "Compliance",
+        "responsibility": "Owns and executes sanctions and AML screening controls for every funds-release transaction.",
+        "inThisProcess": "Accountable and responsible for conducting sanctions and AML screening at step 3, which is the sole step this role owns in the RACI; informed of the request submission and all subsequent steps in the process.",
+        "raci": [
+          "PS-FRL-001:I",
+          "PS-FRL-002:I",
+          "PS-FRL-003:A/R",
+          "PS-FRL-004:I",
+          "PS-FRL-005:I",
+          "PS-FRL-006:I",
+          "PS-FRL-007:I",
+          "PS-FRL-008:I"
+        ],
+        "controls": [],
+        "systems": []
+      }
+    },
+    {
+      "meta": {
+        "id": "ROLE-FRL-005",
+        "type": "role",
+        "section": "roles",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md",
+        "provenance": {
+          "responsibility": {
+            "source": "document",
+            "evidence": "Section 4 RACI: Treasury A/R at Confirm liquidity/funding. Section 5 step 5: 'For amounts at or above the Treasury threshold (currently EUR 5,000,000 equivalent), Treasury confirms funding availability for the value date.'"
+          },
+          "inThisProcess": {
+            "source": "document",
+            "evidence": "Section 4 RACI: Treasury A/R at Confirm liquidity/funding (step 5); I at all other steps 1–4 and 6–8."
+          }
+        }
+      },
+      "content": {
+        "title": "Treasury",
+        "responsibility": "Confirms that sufficient liquidity and funding are available on the required value date before a release is approved.",
+        "inThisProcess": "Accountable and responsible for confirming liquidity and funding availability at step 5; kept informed of all other steps including submission, screening, approvals, execution, and final confirmation.",
+        "raci": [
+          "PS-FRL-001:I",
+          "PS-FRL-002:I",
+          "PS-FRL-003:I",
+          "PS-FRL-004:I",
+          "PS-FRL-005:A/R",
+          "PS-FRL-006:I",
+          "PS-FRL-007:I",
+          "PS-FRL-008:I"
+        ],
+        "controls": [],
+        "systems": []
+      }
+    }
+  ],
+  "systems": [
+    {
+      "meta": {
+        "id": "SYS-FRL-001",
+        "type": "system",
+        "section": "systems",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Payments Workflow Tool",
+        "purpose": "Provides queue management, routing, approvals, and audit log for payment processing.",
+        "roleInThisProcess": "Receives and queues incoming requests, routes items through validation, screening, and approval steps, enforces the 4-eyes segregation-of-duties rule, and records the audit log.",
+        "systemType": "WORKFLOW",
+        "integrates": []
+      }
+    },
+    {
+      "meta": {
+        "id": "SYS-FRL-002",
+        "type": "system",
+        "section": "systems",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Core Banking System",
+        "purpose": "Performs account postings and fund movement.",
+        "roleInThisProcess": "Receives the final approved instruction and executes the account postings that effect the fund movement.",
+        "systemType": "CORE",
+        "integrates": []
+      }
+    },
+    {
+      "meta": {
+        "id": "SYS-FRL-003",
+        "type": "system",
+        "section": "systems",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Sanctions Screening Engine",
+        "purpose": "Performs real-time sanctions and AML screening.",
+        "roleInThisProcess": "Screens every funds-release item in real time at the compliance-screening step; confirmed hits freeze the item and trigger the EX-FRL-002 exception-handling workflow.",
+        "systemType": "SCREENING",
+        "integrates": []
+      }
+    },
+    {
+      "meta": {
+        "id": "SYS-FRL-004",
+        "type": "system",
+        "section": "systems",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Treasury / Liquidity Platform",
+        "purpose": "Provides funding availability confirmation.",
+        "roleInThisProcess": "Consulted by Treasury during the liquidity-confirmation step to verify that sufficient funding is available on the requested value date for above-threshold releases.",
+        "systemType": "TREASURY",
+        "integrates": []
+      }
+    },
+    {
+      "meta": {
+        "id": "SYS-FRL-005",
+        "type": "system",
+        "section": "systems",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Facility Management System",
+        "purpose": "Maintains facility status and available limit.",
+        "roleInThisProcess": "Queried in real time during the limit-check control (CP-FRL-001) at the validation step to confirm the counterparty's facility status and available limit.",
+        "systemType": "LENDING",
+        "integrates": []
+      }
+    }
+  ],
+  "exceptions": [
+    {
+      "meta": {
+        "id": "EX-FRL-001",
+        "type": "exception",
+        "section": "exceptions",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Incomplete or Invalid Request",
+        "description": "Arises when a funds-release request submitted by the front office is missing mandatory fields or contains invalid data that prevents straight-through processing during the validation step.",
+        "handling": "Item is returned to the front office with a reason code; resubmission is required. The SLA clock is paused.",
+        "impact": null,
+        "category": "Validation",
+        "frequencyPct": null,
+        "impactSeverity": "MEDIUM",
+        "handlingOwner": "Ops Analyst",
+        "affects": [
+          "PS-FRL-002"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "EX-FRL-002",
+        "type": "exception",
+        "section": "exceptions",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Confirmed Sanctions / AML Hit",
+        "description": "Occurs when the sanctions and AML screening step returns a confirmed match, requiring escalation and blocking further release.",
+        "handling": "Item is frozen and escalated to Compliance and Financial Crime; release is blocked pending investigation.",
+        "impact": null,
+        "category": "Compliance",
+        "frequencyPct": null,
+        "impactSeverity": "HIGH",
+        "handlingOwner": "Compliance",
+        "affects": [
+          "PS-FRL-003"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "EX-FRL-003",
+        "type": "exception",
+        "section": "exceptions",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Insufficient Funding for Value Date",
+        "description": "Occurs during the liquidity confirmation step when Treasury determines that available funding is inadequate to cover the release amount on the requested value date.",
+        "handling": "Release is deferred; Treasury and front office are notified; release is rescheduled to the next available value date.",
+        "impact": null,
+        "category": "Liquidity",
+        "frequencyPct": null,
+        "impactSeverity": "MEDIUM",
+        "handlingOwner": "Treasury",
+        "affects": [
+          "PS-FRL-005"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "EX-FRL-004",
+        "type": "exception",
+        "section": "exceptions",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Approver Unavailable / 4-Eyes Breach",
+        "description": "Arises at the second-line approval step when the designated approver is unavailable or when segregation-of-duties requirements cannot be met.",
+        "handling": "Item is parked and escalated to the Ops Team Lead for reassignment.",
+        "impact": null,
+        "category": "Governance",
+        "frequencyPct": null,
+        "impactSeverity": "MEDIUM",
+        "handlingOwner": "Ops Approver",
+        "affects": [
+          "PS-FRL-006"
+        ]
+      }
+    }
+  ],
+  "audit-findings": [],
+  "channels": [],
+  "competitor-innovation": [],
+  "control-gaps": [],
+  "controls": [
+    {
+      "meta": {
+        "id": "CP-FRL-001",
+        "type": "control",
+        "section": "controls",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Limit Check Against Available Facility",
+        "whatItChecks": "Verifies that the requested release amount does not exceed the available facility limit before the item advances past validation.",
+        "controlActivity": "At the point of request validation, the available facility limit is confirmed. Items that breach the limit are rejected and returned to the front office.",
+        "riskAddressed": "Prevents over-limit releases that would exceed the approved facility.",
+        "timing": "Every item.",
+        "controlType": "PREVENTIVE",
+        "execution": "AUTOMATED",
+        "effectiveness": "HIGH",
+        "owner": "Payment Operations",
+        "step": "PS-FRL-002",
+        "regulatedBy": []
+      }
+    },
+    {
+      "meta": {
+        "id": "CP-FRL-002",
+        "type": "control",
+        "section": "controls",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Sanctions & AML Screening",
+        "whatItChecks": "Screens transaction parties against sanctions lists and AML rules.",
+        "controlActivity": "The Sanctions Screening Engine performs an automated real-time check on every item. Hits generate an alert that freezes the item and routes it to Compliance for review (see EX-FRL-002).",
+        "riskAddressed": "Prevents release of funds to sanctioned entities or in support of money-laundering activity.",
+        "timing": "Every item.",
+        "controlType": "PREVENTIVE",
+        "execution": "AUTOMATED",
+        "effectiveness": "HIGH",
+        "owner": "Compliance",
+        "step": "PS-FRL-003",
+        "regulatedBy": []
+      }
+    },
+    {
+      "meta": {
+        "id": "CP-FRL-003",
+        "type": "control",
+        "section": "controls",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Segregation of Duties (4-Eyes)",
+        "whatItChecks": "Ensures that the individual performing second-line approval is different from the individual who performed first-line approval.",
+        "controlActivity": "The Payments Workflow Tool enforces a system-level block preventing the first-line approver from also acting as second-line approver. If no qualifying second approver is available, the item is parked and escalated per EX-FRL-004.",
+        "riskAddressed": "Prevents unilateral authorisation of fund releases.",
+        "timing": "Every item.",
+        "controlType": "PREVENTIVE",
+        "execution": "MANUAL",
+        "effectiveness": "HIGH",
+        "owner": "Payment Operations",
+        "step": "PS-FRL-006",
+        "regulatedBy": []
+      }
+    },
+    {
+      "meta": {
+        "id": "CP-FRL-004",
+        "type": "control",
+        "section": "controls",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Treasury Funding Confirmation Above Threshold",
+        "whatItChecks": "Confirms that sufficient liquidity is available for releases that meet or exceed the defined monetary threshold.",
+        "controlActivity": "For items at or above the threshold, Treasury manually reviews the Treasury/Liquidity Platform and provides an explicit funding confirmation before the item can proceed to second-line approval. Items below threshold advance without this step.",
+        "riskAddressed": "Prevents large-value releases when funding is insufficient for the value date.",
+        "timing": "Per threshold.",
+        "controlType": "PREVENTIVE",
+        "execution": "MANUAL",
+        "effectiveness": "HIGH",
+        "owner": "Treasury",
+        "step": "PS-FRL-005",
+        "regulatedBy": []
+      }
+    },
+    {
+      "meta": {
+        "id": "CP-FRL-005",
+        "type": "control",
+        "section": "controls",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Daily Reconciliation of Held vs. Released Balances",
+        "whatItChecks": "Compares the aggregate balance of items still held against items released and posted at end of each business day.",
+        "controlActivity": "Payment Operations runs a daily end-of-day reconciliation, matching the Payments Workflow Tool's held-item register against Core Banking System postings. Breaks are investigated and resolved before the next business day's opening.",
+        "riskAddressed": "Detects posting errors or missed releases not caught by preventive controls during the day.",
+        "timing": "Daily.",
+        "controlType": "DETECTIVE",
+        "execution": "MANUAL",
+        "effectiveness": "MEDIUM",
+        "owner": "Payment Operations",
+        "step": null,
+        "regulatedBy": []
+      }
+    },
+    {
+      "meta": {
+        "id": "CP-FRL-006",
+        "type": "control",
+        "section": "controls",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Audit Log Completeness Review",
+        "whatItChecks": "Reviews the audit log to confirm that processing actions have been recorded for all items in the review period.",
+        "controlActivity": "A monthly review of the audit log is performed, checking for gaps or anomalies. Unexplained gaps are escalated for investigation and remediation.",
+        "riskAddressed": "Detects incomplete audit trails that could mask control failures or procedural breaches.",
+        "timing": "Monthly.",
+        "controlType": "DETECTIVE",
+        "execution": "MANUAL",
+        "effectiveness": "MEDIUM",
+        "owner": "Payment Operations",
+        "step": null,
+        "regulatedBy": []
+      }
+    }
+  ],
+  "friction-points": [],
+  "gap-resolution": [],
+  "innovation-ideas": [],
+  "integrations": [],
+  "market-trends": [],
+  "metrics": [
+    {
+      "meta": {
+        "id": "M-FRL-001",
+        "type": "metric",
+        "section": "metrics",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "STP Release Time",
+        "definition": "Time elapsed from receipt of a clean, straight-through-processable release request to completion of the fund release without manual intervention.",
+        "currentReading": "SLA target only; no measured actuals are recorded in this document.",
+        "whyItMatters": "Clean items processed within 2 hours preserve same-day value for counterparties and demonstrate operational efficiency on the straight-through path.",
+        "target": "Same business day, within 2 hours of receipt",
+        "value": "Not measured",
+        "trend": null
+      }
+    },
+    {
+      "meta": {
+        "id": "M-FRL-002",
+        "type": "metric",
+        "section": "metrics",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Manual Release Time",
+        "definition": "Time from receipt of a release request requiring human review and approval steps to completion, where no exception has been raised.",
+        "currentReading": "SLA target only; no measured actuals are recorded in this document.",
+        "whyItMatters": "Same-day completion on manual items prevents value-date slippage and avoids client dissatisfaction caused by delayed fund availability.",
+        "target": "Same business day",
+        "value": "Not measured",
+        "trend": null
+      }
+    },
+    {
+      "meta": {
+        "id": "M-FRL-003",
+        "type": "metric",
+        "section": "metrics",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Exception Resolution Time",
+        "definition": "Time from identification of a release exception — such as a validation failure, sanctions hit, or funding shortfall — to its final resolution or escalation outcome.",
+        "currentReading": "SLA target only; no measured actuals are recorded in this document.",
+        "whyItMatters": "Prompt exception closure limits the window in which funds remain in an unresolved state, reducing operational and compliance exposure.",
+        "target": "Within 1 business day of identification",
+        "value": "Not measured",
+        "trend": null
+      }
+    },
+    {
+      "meta": {
+        "id": "M-FRL-004",
+        "type": "metric",
+        "section": "metrics",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Same-Day Value Cut-Off",
+        "definition": "The latest clock time by which a release instruction must be executed in the core banking system to achieve same-day economic value for the beneficiary.",
+        "currentReading": "SLA target only; no measured actuals are recorded in this document.",
+        "whyItMatters": "Missing the 14:00 CET cut-off pushes value date to the next business day, breaching client commitments and potentially triggering penalty interest.",
+        "target": "14:00 CET",
+        "value": "Not measured",
+        "trend": null
+      }
+    }
+  ],
+  "moments": [],
+  "pain-points": [],
+  "process-gaps": [
+    {
+      "meta": {
+        "id": "PG-FRL-001",
+        "type": "process-gap",
+        "section": "process-gaps",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Treasury Threshold Currency Specificity",
+        "theGap": "The document states the Treasury liquidity-confirmation threshold as EUR 5,000,000 but does not clarify whether this is a fixed EUR equivalent applied to all currencies or a per-currency denomination.",
+        "impact": "Without clarity, Ops Analysts cannot consistently determine which non-EUR transactions require Treasury confirmation, creating a risk of under-controls on large-value foreign-currency releases.",
+        "nextStep": "Obtain a written confirmation from Treasury whether the EUR 5m threshold is a hard EUR equivalent converted at spot rate or a separate per-currency limit table.",
+        "area": "Controls",
+        "gapStatus": "open",
+        "affects": [
+          "PS-FRL-005"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "PG-FRL-002",
+        "type": "process-gap",
+        "section": "process-gaps",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Backup Approver Coverage",
+        "theGap": "The process requires a 4-eyes second-line approval but does not define who assumes the approver role when both nominated Ops Approvers are simultaneously absent.",
+        "impact": "Dual absence creates an approval bottleneck that can halt all releases, breach same-day SLA commitments, and potentially force segregation-of-duties workarounds.",
+        "nextStep": "Document a named escalation path — including at minimum one Ops Team Lead with temporary approver rights — and capture it in the RACI and exception register.",
+        "area": "Governance",
+        "gapStatus": "open",
+        "affects": [
+          "PS-FRL-006"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "PG-FRL-003",
+        "type": "process-gap",
+        "section": "process-gaps",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Partial Releases Permitted",
+        "theGap": "The document describes releases at the full request amount but does not state whether an Ops Analyst may release a partial amount against a single drawdown request, leaving this scenario unaddressed in both validation and execution steps.",
+        "impact": "Without a defined rule, partial releases may either be blocked unnecessarily or processed inconsistently, creating reconciliation discrepancies and potential facility-limit errors.",
+        "nextStep": "Confirm with the process owner whether partial releases are permitted, and if so, add validation rules and an audit-trail requirement for the residual amount.",
+        "area": "Process Design",
+        "gapStatus": "open",
+        "affects": [
+          "PS-FRL-002",
+          "PS-FRL-007"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "PG-FRL-004",
+        "type": "process-gap",
+        "section": "process-gaps",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dtp-mockup.md"
+      },
+      "content": {
+        "title": "Weekend and Holiday Value Date Handling",
+        "theGap": "The validation step checks that value dates are valid business days, but the document contains no rule for how a request carrying a weekend or public-holiday value date is currently adjusted or rejected.",
+        "impact": "Ambiguous value-date handling risks posting fund movements on non-settlement days, causing failed payments, incorrect interest calculations, and core-banking posting errors.",
+        "nextStep": "Document the current convention — roll to next business day, prior business day, or reject and return — and encode it as an explicit validation rule in step 2.",
+        "area": "Process Design",
+        "gapStatus": "open",
+        "affects": [
+          "PS-FRL-002",
+          "PS-FRL-007"
+        ]
+      }
+    }
+  ],
+  "regulation": [],
+  "to-be-design": [],
+  "touchpoints": [],
+  "transformation-decisions": [],
+  "reviewState": {
+    "slug": "funds-release",
+    "queue": [
+      "FRL-001",
+      "ROLE-FRL-001",
+      "ROLE-FRL-002",
+      "ROLE-FRL-003",
+      "ROLE-FRL-004",
+      "ROLE-FRL-005",
+      "PS-FRL-001",
+      "PS-FRL-002",
+      "PS-FRL-003",
+      "PS-FRL-004",
+      "PS-FRL-005",
+      "PS-FRL-006",
+      "PS-FRL-007",
+      "PS-FRL-008",
+      "EX-FRL-001",
+      "EX-FRL-002",
+      "EX-FRL-003",
+      "EX-FRL-004",
+      "CP-FRL-001",
+      "CP-FRL-002",
+      "CP-FRL-003",
+      "CP-FRL-004",
+      "CP-FRL-005",
+      "CP-FRL-006",
+      "SYS-FRL-001",
+      "SYS-FRL-002",
+      "SYS-FRL-003",
+      "SYS-FRL-004",
+      "SYS-FRL-005",
+      "M-FRL-001",
+      "M-FRL-002",
+      "M-FRL-003",
+      "M-FRL-004",
+      "PG-FRL-001",
+      "PG-FRL-002",
+      "PG-FRL-003",
+      "PG-FRL-004"
+    ],
+    "cursor": 0,
+    "total": 37,
+    "done": false,
+    "startedAt": null,
+    "updatedAt": null
+  },
+  "lint": {
+    "generatedAt": null,
+    "slug": "funds-release",
+    "summary": {
+      "conformance": 0,
+      "discrepancy": 0,
+      "question": 0
+    },
+    "findings": []
+  },
+  "sources": [
+    {
+      "file": "funds-release-dtp-mockup.md",
+      "path": "raw-sources/funds-release/funds-release-dtp-mockup.md",
+      "addedAt": "2026-06-04",
+      "type": "DTP"
+    }
+  ]
+}

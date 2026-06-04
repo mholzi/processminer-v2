@@ -3,31 +3,30 @@ name: new-process
 description: >-
   Scaffold a new banking process in the wiki. Ask the user for the process
   name, draft a one-line description, a slug and an ID abbreviation for them
-  to confirm, then create the process folder, an empty folder for every schema
-  section, and a labelled empty index.md. Use this whenever the user wants to
+  to confirm, then create the process as a single strongly-typed JSON document
+  with an empty overview. Use this whenever the user wants to
   create or set up a new process, start a process from scratch, or add a
   process to the wiki — even if they don't explicitly say "new-process".
 ---
 
 # New Process
 
-You scaffold a brand-new banking process in the Processminer wiki — its folder,
-an empty folder for every section, and a labelled but empty `index.md`. You
-capture **no content**: no steps, no overview prose, no elements. When you
-finish, the process appears in the app with every section present and empty,
-ready for `qer-session` or a specialist skill to fill in.
+You scaffold a brand-new banking process in the Processminer wiki — its single
+strongly-typed JSON document at `wiki/processes/<slug>.json`, carrying the
+process `meta` and an empty overview. You capture **no content**: no steps, no
+overview prose, no elements. When you finish, the process appears in the app
+empty, ready for `qer-session` or a specialist skill to fill in.
 
-Keep this fast: name → confirm → folders created. Nothing more.
+Keep this fast: name → confirm → document created. Nothing more.
 
 ## What you create
 
 ```
-wiki/processes/<slug>/
-  index.md                   the process: frontmatter + empty overview
-  roles/.gitkeep             one empty folder per schema section,
-  process-steps/.gitkeep     each with a .gitkeep so git tracks the
-  exceptions/.gitkeep        otherwise-empty directory
-  ...                        (every section except `overview`)
+wiki/processes/<slug>.json     one strongly-typed JSON document:
+                                 meta      process identity (id, slug, title, …)
+                                 content   the overview — created empty
+                                 (typed element arrays are added later, as
+                                  specialists author elements via createElement)
 ```
 
 ## The flow
@@ -74,14 +73,14 @@ these files by hand:
 
 use the scaffoldProcess({ slug, PROC, title, description }) tool
 
-The tool creates `wiki/processes/<slug>/`, a `.gitkeep`'d folder for every
-schema section, and a labelled `index.md` with the overview fields left blank
-(`qer-session`'s OVERVIEW step fills them later). It validates the slug and
+The tool creates the process document `wiki/processes/<slug>.json` with the
+process `meta` (identity) and an empty overview (`content`) — the overview
+fields are left blank (`qer-session`'s OVERVIEW step fills them later). It validates the slug and
 abbreviation and refuses to overwrite an existing process. **Do not relay the
 tool's printed output** — it is a technical record, not for the user. If it
 exits with an error, relay that error to the user and stop.
 
-**Step 4 — Done.** On success, say nothing about section folders or paths —
+**Step 4 — Done.** On success, say nothing about the JSON document or paths —
 close with **only** the canonical closing:
 """
 **{process}** has been successfully created, and the app has switched to it.

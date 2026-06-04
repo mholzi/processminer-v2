@@ -1,97 +1,109 @@
-# Bank Guarantee Issuance — Process Description (v2, revised)
+# Funds Release — Process Description (v2, revised)
 
-*Operations handbook extract. Corporate Trade Finance. Internal use only.
+*Operations handbook extract. Payment Operations. Internal use only.
 This revision supersedes the earlier version and records process changes
 agreed in the last operations review.*
 
 ## Purpose and scope
 
-This process covers the issuance of a Bank Guarantee (BG) on behalf of a
-corporate client in favour of a third-party beneficiary. It begins when a
-client submits a guarantee application and ends when the executed guarantee is
-delivered to the beneficiary and the client's facility is updated.
+This process covers the controlled release of funds held in a blocked or
+pending state, once all verification, approval and compliance conditions have
+been satisfied. It begins when a release is triggered and ends when the funds
+are posted and the front office is confirmed.
 
 ## Trigger
 
-A corporate client submits a Bank Guarantee application through the Corporate
-Portal, or via a relationship manager who keys it into the portal on the
-client's behalf.
+The process is triggered when one of the following occurs: a drawdown request
+is received from the front office for an approved facility; a held payment
+reaches its scheduled release date; or an Operations Analyst manually initiates
+release of a flagged item.
 
 ## Process steps
 
-1. **Application intake.** The Trade Finance Officer receives the application
-   and checks it is complete: beneficiary details, guarantee amount, currency,
-   wording type, validity period and the underlying commercial contract
-   reference.
+1. **Receive request.** The release request arrives in the Operations queue via
+   the Payments Workflow Tool. Each item carries a facility ID, amount,
+   currency, value date and beneficiary details.
 
-2. **Credit and facility check.** The Trade Finance Officer confirms the client
-   holds an approved guarantee facility with sufficient available limit.
+2. **Validate request.** The Operations Analyst checks completeness of the
+   facility ID, amount, value date and supporting documents.
 
-3. **Wording review.** Standard-wording guarantees proceed directly. Bespoke
-   wording is sent to the Legal team for review and sign-off.
+3. **Compliance screening.** The item is screened for sanctions and AML hits.
+   Clean items pass automatically; potential hits are routed to Compliance.
 
-4. **Sanctions and compliance screening.** The Compliance Analyst screens the
-   beneficiary and the beneficiary's country against the sanctions list.
+4. **First-line approval.** The Operations Analyst approves the release after
+   confirming validation and screening results.
 
-5. **Collateral confirmation.** *(New mandatory step.)* For guarantees not
-   fully covered by an approved facility, the Trade Finance Officer confirms
-   that cash collateral has been received and blocked before issuance can
-   proceed. This step is now mandatory for every partially-secured guarantee.
+5. **Beneficiary callback verification.** *(New mandatory step.)* For every
+   manual release, and for any release to a beneficiary used for the first
+   time, the Operations Analyst must perform an independent callback to confirm
+   the beneficiary account details before the release can proceed. This step is
+   now mandatory and must be evidenced in the workflow item.
 
-6. **Issuance approval.** A Trade Finance Manager reviews the assembled package
-   and approves issuance. Guarantees above **EUR 2 million** additionally
-   require sign-off by the Head of Trade Finance.
+6. **Liquidity confirmation.** For amounts at or above the Treasury threshold
+   (now **EUR 2,000,000** equivalent), Treasury confirms funding availability
+   for the value date.
 
-7. **Guarantee generation and delivery.** The Trade Finance Officer generates
-   the guarantee instrument in the Trade Finance System and the guarantee is
-   transmitted to the beneficiary's bank via SWIFT. The client's facility
-   utilisation is updated.
+7. **Second-line approval (4-eyes).** A separate Operations Approver
+   independently reviews and authorises the release.
+
+8. **Execute release.** The approved item is posted in the Core Banking System.
+   Funds move from the held account to the beneficiary instruction.
+
+9. **Confirm and close.** A confirmation is sent to the front office and the
+   workflow item is closed.
 
 ## Standard service level
 
-The target turnaround is **5 business days** from a complete application to
-guarantee delivery. The previous 3-day target was found to be unrealistic once
-collateral confirmation is included.
+The target for a clean STP release is **same business day, within 4 hours** of
+receipt. The previous 2-hour target was found to be unrealistic once callback
+verification is included. Exception resolution targets within 1 business day.
+The cut-off for same-day value is now **12:00 CET**.
 
 ## Roles
 
-- **Trade Finance Officer** — intake, checks, collateral confirmation,
-  generation and delivery.
-- **Trade Finance Manager** — issuance approval.
-- **Head of Trade Finance** — additional approval for guarantees above
-  EUR 2 million.
-- **Compliance Analyst** — sanctions and compliance screening.
-- **Credit team** — limit increases when the facility is insufficient.
-- **Legal team** — bespoke wording review.
+- **Operations Analyst** — intake, validation, callback verification,
+  first-line approval, execution and confirmation.
+- **Operations Approver** — independent second-line (4-eyes) authorisation.
+- **Treasury** — funding availability confirmation above the threshold.
+- **Compliance** — sanctions and AML adjudication.
+- **Front Office** — submits drawdown requests; receives confirmation.
+- **Operations Team Lead** — reassignment and escalation.
 
 ## Controls
 
-- **C1 — Four-eyes issuance approval.** No guarantee is issued without a Trade
-  Finance Manager's approval, recorded in the Trade Finance System. Control
-  owner: **Head of Trade Finance**.
-- **C2 — Sanctions screening.** Every beneficiary is screened before issuance.
-  Control owner: **Compliance Analyst**.
-- **C3 — Facility limit check.** Issuance is blocked in the Trade Finance
-  System unless available facility limit covers the guarantee amount.
-- **C4 — Collateral block confirmation.** For partially-secured guarantees,
-  cash collateral must be confirmed received and blocked before issuance.
-  Control owner: **Trade Finance Officer**.
+- **C-1 — Facility limit check.** Release is blocked unless the available
+  facility limit covers the requested amount. Preventive / automated. Control
+  owner: **Operations Analyst**.
+- **C-2 — Sanctions and AML screening.** Every item is screened before release.
+  Preventive / automated. Control owner: **Compliance**.
+- **C-3 — Segregation of duties (4-eyes).** First-line and second-line approval
+  must be performed by different people. Preventive / manual. Control owner:
+  **Head of Payment Operations**.
+- **C-4 — Treasury funding confirmation.** For amounts above the threshold,
+  Treasury confirms funding before release. Preventive / manual. Control owner:
+  **Treasury**.
+- **C-5 — Daily reconciliation of held vs. released balances.** Detective /
+  manual. Control owner: **Operations Team Lead**.
+- **C-6 — Beneficiary callback verification.** For manual releases and
+  first-time beneficiaries, an independent callback confirms account details
+  before release. Preventive / manual. Control owner: **Operations Analyst**.
 
 ## Regulatory context
 
 The process is subject to anti-money-laundering and sanctions obligations
-(EU sanctions regulations, AML directives). Bank guarantees follow the ICC
-Uniform Rules for Demand Guarantees (URDG 758).
+(EU sanctions regulations, AML directives). Payment execution and operational
+resilience expectations apply (e.g. the EU Funds Transfer Regulation for payer
+/ payee information, and operational-risk controls).
 
 ## Systems
 
-- **Corporate Portal** — client-facing application capture.
-- **Trade Finance System** — the system of record for guarantee instruments,
-  approvals and facility utilisation.
-- **Sanctions Screening Tool** — used by Compliance for beneficiary screening.
-- **SWIFT** — transmission of the executed guarantee to the beneficiary's bank.
+- **Payments Workflow Tool** — queue, routing, approvals and audit log.
+- **Core Banking System** — account postings and fund movement.
+- **Sanctions Screening Engine** — real-time sanctions / AML screening.
+- **Treasury / Liquidity Platform** — funding availability confirmation.
+- **Facility Management System** — facility status and available limit.
 
 ## Known pain points
 
-Applications frequently stall at the credit and facility check when the client
-has not pre-arranged enough limit.
+Items frequently stall at validation when the front office submits an
+incomplete request or an inactive facility ID.

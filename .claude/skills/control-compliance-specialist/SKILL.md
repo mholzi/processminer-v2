@@ -119,8 +119,8 @@ mode from anything else in the invocation wording.
 that as the `source` context and the human-in-the-loop record; do not re-ask
 it. Only if the invocation supplies no SME identity, ask for it. Identify the
 process: list the slugs under `wiki/processes/`, let them pick; read its
-`index.md` and the existing elements — especially the `process-step`s — so you
-extend, not duplicate.
+overview (root `meta`/`content` in the Document Map) and the existing
+elements — especially the `process-step`s — so you extend, not duplicate.
 
 **Phase 1 — Orientation.** Read the documented process steps. You do not
 re-document them; you confirm with the SME which steps carry regulatory or

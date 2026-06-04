@@ -45,11 +45,13 @@ are the `transformation-agent`'s. All need the SME.
 
 ## Step 1 — Read the process
 
-Read `wiki/processes/<slug>/index.md` (the domain — what the process does, its
-industry, its scope) and the documented As-Is, **especially the pain-points and
-friction-points** — innovation ideas address those. Also read any existing
-`market-trend`, competitor and `innovation-idea` elements: you extend, you
-never duplicate an element the wiki already holds.
+Read the process overview (root meta/content in the Document Map — the domain,
+what the process does, its industry, its scope) and the documented As-Is,
+**especially the pain-points and friction-points** — innovation ideas address
+those. Also read any existing `market-trend`, competitor and `innovation-idea`
+elements (`expandElement({ type })` to list a collection, then
+`expandElement({ type, id })` for a specific element): you extend, you never
+duplicate an element the wiki already holds.
 
 Read **wider than the happy-path spine**. Two things the documented As-Is
 carries that sourcing routinely misses:
@@ -133,9 +135,9 @@ Task tool — one per tier — and wait for all three.
 Give each sub-agent this brief, filling in its tier:
 
 > You are sourcing competitor moves for process `<slug>`, tier **{tier}**
-> (element type `{type}`). Read `wiki/processes/<slug>/index.md` and the
-> documented As-Is for context, and the existing `{type}` elements so you do
-> not duplicate one. Refer to the `{type}` schema template
+> (element type `{type}`). Read the process overview (root meta/content in the
+> Document Map) and the documented As-Is for context, and the existing `{type}`
+> elements (`expandElement({ type })`) so you do not duplicate one. Refer to the `{type}` schema template
 > for the element's shape. Web-search for **named** {who}'s moves in this
 > process's domain — product launches, platform investments, announcements,
 > analyst write-ups. Draft one `use the createElement({ type, element }) tool` spec per material move:

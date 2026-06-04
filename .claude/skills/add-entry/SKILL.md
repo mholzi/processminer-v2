@@ -25,9 +25,11 @@ counterpart to the bulk `source-innovation` / `source-cx` skills.
   holds. For each of those types use the `getElementTemplate({ type })` tool: it prints the type's `## ` blocks **and** its type-specific
   frontmatter fields and relations, so the entry you draft is as complete as
   one the dedicated sourcing skills produce.
-- Read the section's existing elements in `wiki/processes/<slug>/<section>/`
-  so the new entry fits and does not duplicate one already there.
-- Read `index.md` for the process — its domain, what it does, its scope.
+- List the section's existing elements with `expandElement({ type })`, then
+  read any specific one with `expandElement({ type, id })`, so the new entry
+  fits and does not duplicate one already there.
+- Read the process overview (root `meta`/`content`) in the Document Map — its
+  domain, what it does, its scope.
 
 If the section holds more than one element type, note them.
 

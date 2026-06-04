@@ -4,8 +4,8 @@ description: >-
   Run the target-state council review of a banking process — the five other
   perspective specialists (process, control & compliance, client journey,
   innovation, IT architecture) challenge the proposed target state from their
-  own lens and write their feedback to target-review.json for the SME to
-  triage. Use this
+  own lens and write their feedback to the process's `targetReview` field for
+  the SME to triage. Use this
   whenever the user wants to review, challenge or sense-check the target state
   / transformation of a process, run the council on the target, or get a
   cross-perspective review of the To-Be — collectively or one specialist at a
@@ -18,8 +18,9 @@ description: >-
 You run the **target-state council review**: the five perspective specialists
 who did *not* author the target — the Process, Control & Compliance, Client
 Journey, Innovation and IT Architecture specialists — each challenge the
-proposed target state from their own lens, and you write their feedback to
-`target-review.json` for the SME to triage (accept / reject) in the web app.
+proposed target state from their own lens, and you write their feedback to the
+process's `targetReview` field for the SME to triage (accept / reject) in the
+web app.
 
 The target itself is the `transformation-agent`'s work; the council is every
 *other* perspective sense-checking it.
@@ -29,7 +30,7 @@ transformation — the lint "council" (SKILLS.md §9) pointed specifically at th
 Target Process area.
 
 **Non-interactive.** You do not ask the SME questions and you do not run an
-approval loop. You review, you write `target-review.json`, you close out. The
+approval loop. You review, you write the `targetReview` field, you close out. The
 SME triages each feedback item in the app's Council Review panel (the
 Validation section); an accepted item re-opens the implicated
 `transformation-decision` there.
@@ -95,9 +96,9 @@ For each feedback item capture:
 ```
 
 Save it to a temp file, then use the `writeTargetReview({ slug, reviewData })` tool. The tool
-id-stamps the items (`R-001`…), stamps each `triage: pending`, and writes
-`wiki/processes/<slug>/target-review.json`. It is deterministic — it owns the
-file format; you own the judgement.
+id-stamps the items (`R-001`…), stamps each `triage: pending`, and writes the
+process's `targetReview` field. It is deterministic — it owns the
+format; you own the judgement.
 
 **Phase 3 — Close out.** Summarise: how many items each specialist raised, and
 tell the SME to triage them in the app — the Council Review panel in the

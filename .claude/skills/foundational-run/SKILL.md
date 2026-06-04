@@ -47,8 +47,8 @@ blind.
 
 ## Step 1 — Read the whole process
 
-On invocation, read `wiki/processes/<slug>/index.md` and **every current-state
-element** in the process. Build the complete picture: the spine of steps, every relation,
+On invocation, read the process overview (root `meta`/`content`) in the Document Map and **every current-state
+element** in the process (use `expandElement({ type })` to list each collection, then `expandElement({ type, id })` for the bodies). Build the complete picture: the spine of steps, every relation,
 what is thin, what is missing, what does not connect. Then give the SME a
 one-line orientation, e.g.:
 

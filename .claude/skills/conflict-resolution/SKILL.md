@@ -20,7 +20,7 @@ present and decides every conflict; you never resolve one yourself.
 
 ## Step 1 — Read the conflicts
 
-Read `wiki/processes/<slug>/ingest.json`. Its `conflicts` array holds each
+Read the `ingest` field in the process JSON `wiki/processes/<slug>.json`. Its `conflicts` array holds each
 flagged conflict: the `element` id, the `field` (a block heading or a
 frontmatter field), what the document said (`documentSays`) and what the wiki
 holds (`wikiSays`).
@@ -58,7 +58,7 @@ Apply each decision before moving to the next conflict — never batch. After a
 ## Step 3 — Clear the resolved conflicts
 
 When every conflict has been decided, `use the clearConflicts() tool` — it empties the `conflicts`
-array in `ingest.json` so the triage screen no longer flags them.
+array in the process JSON's `ingest` field so the triage screen no longer flags them.
 
 ## Step 4 — Report
 
@@ -76,7 +76,7 @@ Substitute the `{process}` and `{n}` counts. Reproduce every other character exa
 
 ## Scope
 
-You resolve the conflicts in `ingest.json` and nothing else. You change only
+You resolve the conflicts in the process JSON's `ingest` field and nothing else. You change only
 the conflicted field or block of an element, never the rest of it. Everything
 you write stays `status: draft` — the SME approves it in the app. You never
 invent a resolution; the SME decides every conflict.
