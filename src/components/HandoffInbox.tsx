@@ -12,6 +12,13 @@ import {
   PatternLibrary,
 } from "./LibraryViews";
 import { AllProcesses, MyAdrs, MigrationPlans } from "./PersonalViews";
+import {
+  adrQueue,
+  applicationRegister,
+  capabilityCatalog,
+  migrationPlan,
+  nfrCatalog,
+} from "@/lib/architect-portfolio";
 
 // Sidebar sections beyond the default Handoff inbox view. null = inbox.
 type SidebarSection =
@@ -171,6 +178,19 @@ export default function HandoffInbox({
     return c;
   }, [rows]);
 
+  // Real portfolio counts for the Library / Personal sidebar badges (R4).
+  const archCounts = useMemo(
+    () => ({
+      processes: docs.length,
+      adrs: adrQueue(docs).length,
+      migrations: migrationPlan(docs).length,
+      caps: capabilityCatalog(docs).length,
+      apps: applicationRegister(docs).length,
+      nfrs: nfrCatalog(docs).length,
+    }),
+    [docs],
+  );
+
   const initials = user.name
     .split(/\s+/)
     .map((n) => n[0])
@@ -222,21 +242,21 @@ export default function HandoffInbox({
             onClick={() => setSidebarSection("all-processes")}
           >
             All processes
-            <span className="am-navitem-n">9</span>
+            <span className="am-navitem-n">{archCounts.processes}</span>
           </div>
           <div
             className={`am-navitem${sidebarSection === "my-adrs" ? " am-navitem-on" : ""}`}
             onClick={() => setSidebarSection("my-adrs")}
           >
-            My ADRs
-            <span className="am-navitem-n">23</span>
+            Architecture decisions
+            <span className="am-navitem-n">{archCounts.adrs}</span>
           </div>
           <div
             className={`am-navitem${sidebarSection === "migration-plans" ? " am-navitem-on" : ""}`}
             onClick={() => setSidebarSection("migration-plans")}
           >
             Migration plans
-            <span className="am-navitem-n">3</span>
+            <span className="am-navitem-n">{archCounts.migrations}</span>
           </div>
 
           <div className="am-side-group">Library</div>
@@ -245,38 +265,38 @@ export default function HandoffInbox({
             onClick={() => setSidebarSection("capabilities")}
           >
             Capability catalog
-            <span className="am-navitem-n">47</span>
+            <span className="am-navitem-n">{archCounts.caps}</span>
           </div>
           <div
             className={`am-navitem${sidebarSection === "applications" ? " am-navitem-on" : ""}`}
             onClick={() => setSidebarSection("applications")}
           >
             Application register
-            <span className="am-navitem-n">28</span>
+            <span className="am-navitem-n">{archCounts.apps}</span>
           </div>
           <div
             className={`am-navitem${sidebarSection === "nfrs" ? " am-navitem-on" : ""}`}
             onClick={() => setSidebarSection("nfrs")}
           >
-            NFR templates
-            <span className="am-navitem-n">22</span>
+            NFR catalog
+            <span className="am-navitem-n">{archCounts.nfrs}</span>
           </div>
           <div
             className={`am-navitem${sidebarSection === "patterns" ? " am-navitem-on" : ""}`}
             onClick={() => setSidebarSection("patterns")}
           >
             Pattern library
-            <span className="am-navitem-n">14</span>
+            <span className="am-navitem-n">—</span>
           </div>
         </aside>
 
         <main className="am-main">
-        {sidebarSection === "all-processes" && <AllProcesses />}
-        {sidebarSection === "my-adrs" && <MyAdrs user={user} />}
-        {sidebarSection === "migration-plans" && <MigrationPlans />}
-        {sidebarSection === "capabilities" && <CapabilityCatalog />}
-        {sidebarSection === "applications" && <ApplicationRegister />}
-        {sidebarSection === "nfrs" && <NfrTemplates />}
+        {sidebarSection === "all-processes" && <AllProcesses docs={docs} />}
+        {sidebarSection === "my-adrs" && <MyAdrs docs={docs} user={user} />}
+        {sidebarSection === "migration-plans" && <MigrationPlans docs={docs} />}
+        {sidebarSection === "capabilities" && <CapabilityCatalog docs={docs} />}
+        {sidebarSection === "applications" && <ApplicationRegister docs={docs} />}
+        {sidebarSection === "nfrs" && <NfrTemplates docs={docs} />}
         {sidebarSection === "patterns" && <PatternLibrary />}
         {sidebarSection === null && (
           <>
