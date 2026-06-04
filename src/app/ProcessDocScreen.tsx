@@ -28,6 +28,16 @@ import SectionSummary from "@/components/SectionSummary";
 import ProcessFlow from "@/components/ProcessFlow";
 import OverviewPanel from "@/components/OverviewPanel";
 import AgentChat, { type ChatMessage } from "@/components/AgentChat";
+import {
+  NOTIFY_THRESHOLD_MS,
+  clearStoredChat,
+  loadStoredChat,
+  notifyTurnComplete,
+  readSkillEta,
+  recordSkillDuration,
+  runSession,
+  saveStoredChat,
+} from "@/lib/agent-chat";
 import ReviewPanel from "@/components/ReviewPanel";
 import TriagePanel from "@/components/TriagePanel";
 import SummaryPanel from "@/components/SummaryPanel";
@@ -191,114 +201,14 @@ const SPECIALIST: Record<string, { label: string; blurb: string }> = {
     blurb: "designs the target state with you",
   },
 };
+// The long-turn UX helpers (per-skill ETA history, the completion
+// notification) and the sessionStorage transcript codec now live in the
+// shared agent-chat core (src/lib/agent-chat.ts) — imported above and reused
+// by the ArchitectMiner canvas via useAgentChat.
+
 // Friendly name for each chat-driven skill — shown in the assistant's
 // active-skill chip while a turn runs. Covers the elicitation specialists
 // plus the non-specialist skills the run-* wrappers invoke.
-// Long-turn UX helpers — ETA from past runs and a browser notification on
-// completion when the user has tabbed away. Both are best-effort: storage
-// failures and a missing Notification API are silent no-ops.
-
-/** Don't fire a Notification for short turns — they were never painful. */
-const NOTIFY_THRESHOLD_MS = 2 * 60 * 1000;
-/** Cap per-skill history so a runaway log never bloats localStorage. */
-const ETA_HISTORY_CAP = 10;
-const ETA_STORAGE_KEY = "pm.skillDurationsMs.v1";
-const NOTIFY_ASKED_KEY = "pm.notifyPermissionAsked.v1";
-
-function readSkillHistory(): Record<string, number[]> {
-  if (typeof window === "undefined") return {};
-  try {
-    const raw = window.localStorage.getItem(ETA_STORAGE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw) as unknown;
-    return parsed && typeof parsed === "object"
-      ? (parsed as Record<string, number[]>)
-      : {};
-  } catch {
-    return {};
-  }
-}
-
-function recordSkillDuration(skill: string, ms: number) {
-  if (typeof window === "undefined" || !Number.isFinite(ms) || ms <= 0) return;
-  try {
-    const all = readSkillHistory();
-    const list = Array.isArray(all[skill]) ? all[skill].slice() : [];
-    list.push(Math.round(ms));
-    while (list.length > ETA_HISTORY_CAP) list.shift();
-    all[skill] = list;
-    window.localStorage.setItem(ETA_STORAGE_KEY, JSON.stringify(all));
-  } catch {
-    /* storage full or blocked — silently skip */
-  }
-}
-
-function readSkillEta(skill: string): { medianMs: number; runs: number } | null {
-  const list = readSkillHistory()[skill];
-  if (!list || list.length === 0) return null;
-  const sorted = [...list].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  const medianMs =
-    sorted.length % 2 === 0
-      ? Math.round((sorted[mid - 1] + sorted[mid]) / 2)
-      : sorted[mid];
-  return { medianMs, runs: list.length };
-}
-
-/** Render `ms` as a tight human label like "12 min" or "45 s". */
-function formatEta(ms: number): string {
-  if (ms < 60_000) return `${Math.round(ms / 1000)} s`;
-  const min = Math.round(ms / 60_000);
-  return `${min} min`;
-}
-
-/**
- * Browser notification on long-turn completion. Best-effort:
- *   - never asks until the first long turn actually completes (no permission
- *     prompt on first page load);
- *   - asks at most once — declines are remembered;
- *   - silent if the API is unavailable or the tab is currently focused.
- */
-function notifyTurnComplete(durationMs: number, skill: string | null) {
-  if (typeof window === "undefined") return;
-  if (typeof Notification === "undefined") return;
-  // If the user is looking at the tab right now, they don't need a ping.
-  if (!document.hidden) return;
-  const label = skill ? SKILL_LABEL[skill] || skill : "Assistant";
-  const body = `${label} finished after ${formatEta(durationMs)}.`;
-  const fire = () => {
-    try {
-      new Notification("Processminer — done", { body, tag: "pm-turn-done" });
-    } catch {
-      /* user-agent quirk — drop silently */
-    }
-  };
-  if (Notification.permission === "granted") {
-    fire();
-  } else if (Notification.permission === "default") {
-    // Only ask once per browser. A decline isn't asked again.
-    let asked = false;
-    try {
-      asked = window.localStorage.getItem(NOTIFY_ASKED_KEY) === "1";
-    } catch {
-      /* storage blocked — assume not asked */
-    }
-    if (asked) return;
-    try {
-      window.localStorage.setItem(NOTIFY_ASKED_KEY, "1");
-    } catch {
-      /* storage blocked — proceed without remembering */
-    }
-    Notification.requestPermission()
-      .then((p) => {
-        if (p === "granted") fire();
-      })
-      .catch(() => {
-        /* user dismissed — ignore */
-      });
-  }
-}
-
 const SKILL_LABEL: Record<string, string> = {
   "process-specialist": "Process Specialist",
   "control-compliance-specialist": "Control & Compliance Specialist",
@@ -387,34 +297,11 @@ function resumeMessage(d: ProcessDoc): ChatMessage | null {
   };
 }
 
-// The chat transcript + claude session id are persisted to sessionStorage
-// per process, so a page reload (or dev hot-reload) restores the conversation
-// instead of dropping it — a foundational run can span hours. sessionStorage
-// is deliberate: it survives a reload but clears when the tab closes, so a
-// transcript never goes stale across days.
-const chatStoreKey = (slug: string) => `pm-chat-${slug}`;
-function loadStoredChat(
-  slug: string,
-): { messages: ChatMessage[]; sessionId: string | null } | null {
-  try {
-    const raw = sessionStorage.getItem(chatStoreKey(slug));
-    if (!raw) return null;
-    const saved = JSON.parse(raw) as {
-      messages?: ChatMessage[];
-      sessionId?: string | null;
-    };
-    if (!Array.isArray(saved.messages) || saved.messages.length === 0) {
-      return null;
-    }
-    return {
-      messages: saved.messages,
-      sessionId:
-        typeof saved.sessionId === "string" ? saved.sessionId : null,
-    };
-  } catch {
-    return null;
-  }
-}
+// The chat transcript + claude session id are persisted to sessionStorage per
+// process (codec in src/lib/agent-chat.ts) under the "pm" namespace, so a
+// reload restores the conversation. The ArchitectMiner canvas uses the same
+// codec under "am".
+const PM = "pm";
 
 // The one main screen. Left rail is a numbered 1..6 area spine — always
 // visible so the process sequence never scrolls away — plus a collapsible
@@ -686,7 +573,7 @@ export default function ProcessDocScreen({
   const lastTurnEventRef = useRef<number>(0);
   const abortControllerRef = useRef<AbortController | null>(null);
   useEffect(() => {
-    const saved = loadStoredChat(currentSlug);
+    const saved = loadStoredChat(PM, currentSlug);
     if (saved) {
       setMessages(saved.messages);
       setChatSessionId(saved.sessionId);
@@ -699,14 +586,7 @@ export default function ProcessDocScreen({
       chatPersistReady.current = true;
       return;
     }
-    try {
-      sessionStorage.setItem(
-        chatStoreKey(currentSlug),
-        JSON.stringify({ messages, sessionId: chatSessionId }),
-      );
-    } catch {
-      /* storage full or unavailable — persistence is best-effort */
-    }
+    saveStoredChat(PM, currentSlug, messages, chatSessionId);
   }, [messages, chatSessionId, currentSlug]);
   const [chatPending, setChatPending] = useState(false);
   // Live activity line while a turn runs — updated from the SSE stream.
@@ -1134,120 +1014,83 @@ export default function ProcessDocScreen({
     const wireText =
       !unscoped && sessionId === null ? scopePreamble(doc, user) + text : text;
 
-    type SessionEvent =
-      | { type: "progress"; text: string }
-      | { type: "delta"; text: string }
-      | { type: "task_start"; id: string; label: string }
-      | { type: "task_end"; id: string }
-      | { type: "done"; reply?: string; sessionId?: string; isError?: boolean }
-      | { type: "error"; error: string; sessionId?: string };
-
     const controller = new AbortController();
     abortControllerRef.current = controller;
 
-    fetch("/api/session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      signal: controller.signal,
-      body: JSON.stringify({
+    // Id of the live agent message while reply text streams in — null until
+    // the first delta (and for the whole turn if not streaming).
+    let streamingId: string | null = null;
+
+    runSession(
+      {
         message: wireText,
         sessionId,
         stream: user.streamReplies === true,
         skill: opts?.skill || turnSkill || null,
-      }),
-    })
-      .then(async (res) => {
-        if (!res.body) throw new Error("Keine Antwort vom Server.");
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-        let buf = "";
-        // Id of the live agent message while reply text streams in — null
-        // until the first delta (and for the whole turn if not streaming).
-        let streamingId: string | null = null;
-
-        const apply = (evt: SessionEvent) => {
-          // Bump the watchdog every time we see life from the server.
+        signal: controller.signal,
+      },
+      {
+        // Bump the watchdog every time we see life from the server.
+        onAnyEvent: () => {
           lastTurnEventRef.current = Date.now();
-          if (evt.type === "progress") {
-            setChatActivity(evt.text);
-          } else if (evt.type === "task_start") {
-            setChatTasks((ts) =>
-              ts.some((t) => t.id === evt.id)
-                ? ts
-                : [...ts, { id: evt.id, label: evt.label, status: "running" }],
+        },
+        onProgress: (t) => setChatActivity(t),
+        onTaskStart: (id, label) =>
+          setChatTasks((ts) =>
+            ts.some((t) => t.id === id)
+              ? ts
+              : [...ts, { id, label, status: "running" }],
+          ),
+        onTaskEnd: (id) =>
+          setChatTasks((ts) =>
+            ts.map((t) => (t.id === id ? { ...t, status: "done" } : t)),
+          ),
+        onDelta: (t) => {
+          // Reply text arriving live — append to the streaming message,
+          // creating it on the first delta.
+          if (streamingId === null) {
+            const id = mid();
+            streamingId = id;
+            setMessages((m) => [...m, { id, role: "agent", text: t }]);
+          } else {
+            const id = streamingId;
+            setMessages((m) =>
+              m.map((msg) =>
+                msg.id === id ? { ...msg, text: msg.text + t } : msg,
+              ),
             );
-          } else if (evt.type === "task_end") {
-            setChatTasks((ts) =>
-              ts.map((t) => (t.id === evt.id ? { ...t, status: "done" } : t)),
+          }
+        },
+        onDone: (reply, sid) => {
+          if (sid) setChatSessionId(sid);
+          if (streamingId !== null) {
+            // The reply already streamed in — keep what was shown; only fall
+            // back to the result text if nothing actually streamed.
+            const id = streamingId;
+            setMessages((m) =>
+              m.map((msg) =>
+                msg.id === id && !msg.text ? { ...msg, text: reply } : msg,
+              ),
             );
-          } else if (evt.type === "delta") {
-            // Reply text arriving live — append to the streaming message,
-            // creating it on the first delta.
-            if (streamingId === null) {
-              const id = mid();
-              streamingId = id;
-              setMessages((m) => [
-                ...m,
-                { id, role: "agent", text: evt.text },
-              ]);
-            } else {
-              const id = streamingId;
-              setMessages((m) =>
-                m.map((msg) =>
-                  msg.id === id ? { ...msg, text: msg.text + evt.text } : msg,
-                ),
-              );
-            }
-          } else if (evt.type === "done") {
-            if (evt.sessionId) setChatSessionId(evt.sessionId);
-            if (streamingId !== null) {
-              // The reply already streamed in — keep what was shown; only
-              // fall back to the result text if nothing actually streamed.
-              const id = streamingId;
-              const reply = evt.reply || "";
-              setMessages((m) =>
-                m.map((msg) =>
-                  msg.id === id && !msg.text ? { ...msg, text: reply } : msg,
-                ),
-              );
-              streamingId = null;
-            } else {
-              setMessages((m) => [
-                ...m,
-                { id: mid(), role: "agent", text: evt.reply || "(no reply)" },
-              ]);
-            }
-            // a skill may have written wiki files — re-read the doc view
-            router.refresh();
-          } else if (evt.type === "error") {
-            if (evt.sessionId) setChatSessionId(evt.sessionId);
+            streamingId = null;
+          } else {
             setMessages((m) => [
               ...m,
-              { id: mid(), role: "agent", text: `⚠ ${evt.error}` },
+              { id: mid(), role: "agent", text: reply || "(no reply)" },
             ]);
           }
-        };
-
-        for (;;) {
-          const { value, done } = await reader.read();
-          if (done) break;
-          buf += decoder.decode(value, { stream: true });
-          let sep: number;
-          while ((sep = buf.indexOf("\n\n")) !== -1) {
-            const frame = buf.slice(0, sep);
-            buf = buf.slice(sep + 2);
-            const line = frame.startsWith("data:")
-              ? frame.slice(5).trim()
-              : frame.trim();
-            if (!line) continue;
-            try {
-              apply(JSON.parse(line) as SessionEvent);
-            } catch {
-              /* partial / non-JSON frame — ignore */
-            }
-          }
-        }
-      })
+          // a skill may have written wiki files — re-read the doc view
+          router.refresh();
+        },
+        onError: (err, sid) => {
+          if (sid) setChatSessionId(sid);
+          setMessages((m) => [
+            ...m,
+            { id: mid(), role: "agent", text: `⚠ ${err}` },
+          ]);
+        },
+      },
+    )
       .catch((e: unknown) => {
         const isAbort = e instanceof DOMException && e.name === "AbortError";
         setMessages((m) => [
@@ -1269,7 +1112,7 @@ export default function ProcessDocScreen({
         // they've tabbed away. We ask for permission lazily on the first
         // long turn so first-load doesn't show a permission prompt.
         if (durationMs >= NOTIFY_THRESHOLD_MS) {
-          notifyTurnComplete(durationMs, turnSkill);
+          notifyTurnComplete(durationMs, turnSkill, SKILL_LABEL);
         }
         setChatPending(false);
         setChatActivity(null);
@@ -1300,11 +1143,7 @@ export default function ProcessDocScreen({
     setChatSessionId(null);
     setDraftingNewProcess(false);
     // Drop the persisted transcript too — a restart is a deliberate clear.
-    try {
-      sessionStorage.removeItem(chatStoreKey(currentSlug));
-    } catch {
-      /* storage unavailable — nothing to clear */
-    }
+    clearStoredChat(PM, currentSlug);
   }
 
   // Lint — invoke the run-lint skill via the chat. It checks conformance,
@@ -1396,7 +1235,7 @@ export default function ProcessDocScreen({
     setSection(resume ? "__triage" : "process-steps");
     // If this process has a persisted transcript from earlier in the tab
     // session, restore it (and its claude session) rather than starting over.
-    const saved = loadStoredChat(slug);
+    const saved = loadStoredChat(PM, slug);
     if (saved) {
       setChatSessionId(saved.sessionId);
       setMessages(saved.messages);
