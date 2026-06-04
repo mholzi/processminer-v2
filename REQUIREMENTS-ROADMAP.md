@@ -6,7 +6,20 @@
 
 **Delivered (PR #):** A1 (#2) · A3 (#4) · R6a (#5) · R6b (#6) · schema drift-guard (#7) · R7+R8 (#8) · R9 (#9) · R11 (#10) · A4 + R14 a/b (#11) · R12a (#12) · R5 (#13) · R13 + R14c (#14) · R12b (#15) · R15 (#16) · R16 (#17) · R10 (#18) · R1 (#19) · R2 (#20) · R17 (#21) · R20–R22 (#22) · R3 (#24) · R18 (#25) · R4 (#26).
 
-**Remaining:** only **R19** (slim per-type schema slices) — assessed and kept, but deferred (see its entry) — and the optional schema generator (option A — derive the Draft-07 schema from the custom schema, retiring the dual-edit + drift-guard). No functional gaps remain.
+---
+
+## 🔓 Open items
+
+**No functional gaps remain.** Everything below is optional / deferred — the product and ArchitectMiner are feature-complete against this backlog. Two items are open:
+
+| Item | What | Status | Effort | Owner |
+|---|---|---|---|---|
+| **R19** | Slim per-type schema slices (token optimization) — stop injecting/​reading the full ~23k-token schema; serve only the type(s) a skill needs | 🔎 **Assessed — still relevant, deferred.** Not blocking. Recommended shape: a runtime `describeType(type)` slice (progressive disclosure), **not** the old static `.derived` files. See the [R19 entry](#r19--slim-per-type-schema-slices-token-optimization). | M (full slicer) · S (Gemini-path dedup quick win) | unassigned |
+| **Schema generator** (option A) | Derive the Draft-07 JSON Schema from the custom schema, retiring the dual-edit + the `schema-consistency` drift-guard | Optional cleanup. Overlaps with R19 (both derive from the custom schema). | ~M | unassigned |
+
+_Everything else (R1–R18, R20–R22, A1–A4, both product decisions) is delivered — see **Delivered (PR #)** above and the per-item ✅ status lines below._
+
+---
 
 **Method.** All 41 commits were assessed against the actual files on the current baseline. Each was classed:
 - **PRESENT** — the functionality already exists on the new baseline → no action.
