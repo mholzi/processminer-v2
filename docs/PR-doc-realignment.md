@@ -7,12 +7,18 @@ what it changes, behaviour/scope, and how it was verified.
 | PR | Title | Branch → base | Type | Status |
 |---|---|---|---|---|
 | **#1** | Architecture documentation realignment | `docs/architecture-doc-realignment` → `main` | Docs only | **Merged** (`d331e3a`) |
-| **#2** | Enforce the provenance approval gate (A1) | `fix/approval-gate-a1` → `main` | Code + tests + docs | **Open** (`ac61a80`) |
-| **#3** | Decouple metadata-only writes from content conformance (A3) | `fix/metadata-conformance-decouple` → `fix/approval-gate-a1` | Code + tests + docs | **Open, stacked on #2** (`478ac3b`) |
+| **#2** | Enforce the provenance approval gate (A1) | `fix/approval-gate-a1` → `main` | Code + tests + docs | **Merged** (`f93e878`) |
+| **#3** | Decouple metadata-only writes (A3) — *first attempt* | `fix/metadata-conformance-decouple` → `fix/approval-gate-a1` | Code + tests + docs | **Closed** — auto-closed when #2's branch was deleted; superseded by #4 |
+| **#4** | Decouple metadata-only writes from content conformance (A3) | `fix/metadata-conformance-decouple` → `main` | Code + tests + docs | **Merged** (`b487d3d`) |
+| **#5** | Server-derived write authorship (R6a) | `fix/stable-user-ids-r6` → `main` | Code + docs | **Open** (`563c8ca`) |
 
-> **Merge order for the stack:** #2 must merge into `main` before #3 (the A3
-> change is only safe with the A1 gate present). GitHub auto-retargets #3 to
-> `main` once #2 merges and its branch is deleted.
+> **What happened with #3 → #4 (the stacking lesson):** #3 was opened *stacked*
+> on #2's branch (the A3 change is only safe with the A1 gate present). When #2
+> merged into `main` and its branch was deleted, GitHub **auto-closed** #3 — it
+> closes a stacked PR whose base branch disappears rather than retargeting it.
+> The same commits (`478ac3b`, `a1e6f1d`) were re-opened as **#4 → `main`** and
+> merged cleanly (A1 was by then on `main`). Lesson applied since: later PRs
+> target `main` directly.
 
 ---
 
@@ -144,11 +150,14 @@ fixed in PR #3.
 
 ---
 
-# PR #3 — Decouple metadata-only writes from content conformance (A3)
+# PR #3 → #4 — Decouple metadata-only writes from content conformance (A3)
 
-**Branch:** `fix/metadata-conformance-decouple` → `fix/approval-gate-a1`
-(**stacked on PR #2**) · **Date:** 2026-06-04 · **Type:** Code fix + tests +
-docs.
+**Branch:** `fix/metadata-conformance-decouple` · **Date:** 2026-06-04 ·
+**Type:** Code fix + tests + docs. **Merged as PR #4 → `main`** (`b487d3d`).
+
+> Opened first as **PR #3**, stacked on PR #2's branch. GitHub auto-closed #3
+> when #2's branch was deleted on merge; the identical commits were re-opened as
+> **PR #4 → `main`** and merged. See the stacking note at the top of this log.
 
 ## Why this PR exists
 
@@ -186,13 +195,52 @@ documented warn-and-allow model (`SKILLS.md §10`).
 
 ---
 
-# Open follow-ups (as of PR #3)
+# PR #5 — Server-derived write authorship (R6a)
 
-Fixed so far: **A1** (PR #2), **A3** (PR #3). Still open, from
+**Branch:** `fix/stable-user-ids-r6` → `main` · **Date:** 2026-06-04 ·
+**Type:** Code fix + docs.
+
+## Why this PR exists
+
+Closes the impersonation hole from roadmap **R6** (security half, **R6a**). The
+in-app write paths trusted a **client-supplied** author, so any client could
+attribute an action to anyone: `setApproval`/`setRelevance` took the author from
+the caller, and the `notes`, `findings`, `upload` and `feedback` routes read it
+from the request body/form.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/lib/wiki-write.ts` | **edit** | `setApproval`/`setRelevance` resolve the author from the session cookie via a server-only `sessionAuthor()` helper (dynamic imports keep the module unit-test-importable); the client `by` argument is ignored. |
+| `src/app/api/notes/route.ts` | **edit** | POST author + PATCH `resolvedBy` from `verifySession`. |
+| `src/app/api/findings/route.ts` | **edit** | PATCH `by` from `verifySession`. |
+| `src/app/api/upload/route.ts` | **edit** | `uploadedBy` from `verifySession`. |
+| `src/app/api/feedback/route.ts` | **edit** | author + role from `verifySession`. |
+| `REQUIREMENTS-ROADMAP.md` | **edit** | R6 split: **R6a fixed**, **R6b** deferred. |
+
+## Scope
+
+This is the **security** half (R6a). **R6b** — storing the stable `username` and
+resolving display names at render so renames propagate — is deferred; authorship
+is currently stored as the server-derived display name.
+
+## Verification
+
+- **End-to-end:** `POST /api/notes` with a forged `author: "Hacker McEvil"`
+  stored the authenticated session user ("Markus Holzhäuser") instead.
+- No client-trusted `author`/`by`/`uploadedBy` left in any `src/app/api` route.
+- `npm run typecheck` clean; `npm test` → 17/17; app boots clean.
+
+---
+
+# Open follow-ups (as of PR #5)
+
+Fixed so far: **A1** (PR #2), **A3** (PR #4), **R6a** (PR #5). Still open, from
 `REQUIREMENTS-ROADMAP.md`:
 
-1. **R6** — stable user IDs + server-side author injection (security; the
-   recommended next PR).
+1. **R6b** — store the stable `username` + resolve display names at render so
+   renames propagate (the integrity half of R6).
 2. **R9** — lift runtime state (`reviewState`/`lint`) out of the process JSON.
 3. **Schema consolidation** — merge the two `process-schema.json` copies into one
    source of truth.

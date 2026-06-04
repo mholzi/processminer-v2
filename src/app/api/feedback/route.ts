@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { isFeedbackCategory, isFeedbackStatus } from "@/lib/feedback";
 import { updateFeedbackStatus, writeFeedback } from "@/lib/feedback-store";
+import { COOKIE_NAME, verifySession } from "@/lib/auth-server";
 
 // Read/write API for the app-feedback tree (feedback/ at the repo root). POST
 // files a new feedback item as feedback/FB-NNN.md; PATCH changes an item's
@@ -25,8 +26,11 @@ export async function POST(req: NextRequest) {
   const title = typeof body.title === "string" ? body.title.trim() : "";
   const text = typeof body.body === "string" ? body.body.trim() : "";
   const page = typeof body.page === "string" ? body.page.trim() : "";
-  const author = typeof body.author === "string" ? body.author.trim() : "";
-  const role = typeof body.role === "string" ? body.role.trim() : "";
+  // R6: the feedback author/role come from the signed-in user (session cookie),
+  // never the client-supplied body fields.
+  const sessionUser = verifySession(req.cookies.get(COOKIE_NAME)?.value);
+  const author = sessionUser?.name ?? "";
+  const role = sessionUser?.role ?? "";
   const category = body.category;
 
   if (!title) {

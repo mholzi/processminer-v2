@@ -13,6 +13,23 @@ function approvalGateError(id: string, provenance: any): string | null {
   return `Cannot approve ${id} — these headings are not yet confirmed by the SME (still proposed/web): ${unconfirmed.join(", ")}. Confirm them in the read-back first.`;
 }
 
+/** R6 — the author of an in-app write is the signed-in user, resolved from the
+ *  session cookie on the server. Never trust a client-supplied author string: a
+ *  client could forge it to attribute an action to someone else. Falls back to
+ *  "SME" when there is no valid session. (Imports are dynamic so this module
+ *  stays importable outside a Next request context, e.g. in unit tests.) */
+async function sessionAuthor(): Promise<string> {
+  try {
+    const { cookies } = await import("next/headers");
+    const { COOKIE_NAME, verifySession } = await import("./auth-server.ts");
+    const store = await cookies();
+    const user = verifySession(store.get(COOKIE_NAME)?.value);
+    return user?.name || "SME";
+  } catch {
+    return "SME";
+  }
+}
+
 let revalidatePath = (path: string) => {};
 import("next/cache")
   .then((m) => {
@@ -166,16 +183,17 @@ export async function setApproval(
   slug: string,
   id: string,
   approval: string,
-  by: string,
+  _by?: string, // R6: ignored — the author is derived from the session server-side
 ): Promise<{ ok: true }> {
   if (!APPROVAL_VALUES.includes(approval)) {
     throw new Error(`Invalid approval value: ${approval}`);
   }
+  const author = await sessionAuthor();
   const date = new Date().toISOString().slice(0, 10);
   const patch = {
     meta: {
       approval,
-      approvalBy: by,
+      approvalBy: author,
       approvalDate: date
     }
   };
@@ -213,16 +231,17 @@ export async function setRelevance(
   slug: string,
   id: string,
   relevance: string,
-  by: string,
+  _by?: string, // R6: ignored — the author is derived from the session server-side
 ): Promise<{ ok: true }> {
   if (!RELEVANCE_VALUES.includes(relevance)) {
     throw new Error(`Invalid relevance value: ${relevance}`);
   }
+  const author = await sessionAuthor();
   const date = new Date().toISOString().slice(0, 10);
   const patch = {
     meta: {
       relevance,
-      relevanceBy: by,
+      relevanceBy: author,
       relevanceDate: date
     }
   };
