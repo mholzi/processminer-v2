@@ -6,6 +6,7 @@
 // how applyLint is implemented in both.
 
 import type { TargetReview } from "./target-review.ts";
+import type { IngestReport } from "./wiki.ts";
 
 /** The four headings an area-summary memo must carry, in order. */
 export const SUMMARY_HEADINGS = [
@@ -73,4 +74,44 @@ export function parseSummaryParts(
     );
   }
   return parts;
+}
+
+/**
+ * Build the document-ingest result (`doc.ingest`) from the skill's payload —
+ * the file ingested, the created/updated element ids, and the `conflicts` /
+ * `corrections` the SME triages in the app. Normalises every array (a missing
+ * one becomes `[]`) and stamps `generatedAt` + `slug` so the report can't come
+ * out malformed. The triage screen (`TriagePanel`) reads this field.
+ */
+export function buildIngestReport(
+  slug: string,
+  report: Record<string, unknown> | null | undefined,
+): IngestReport {
+  const r = report ?? {};
+  const arr = (v: unknown) => (Array.isArray(v) ? v : []);
+  return {
+    generatedAt: new Date().toISOString(),
+    slug,
+    file: typeof r.file === "string" ? r.file : "",
+    created: arr(r.created) as string[],
+    updated: arr(r.updated) as string[],
+    conflicts: arr(r.conflicts) as IngestReport["conflicts"],
+    corrections: arr(r.corrections) as IngestReport["corrections"],
+  };
+}
+
+/**
+ * Empty the `conflicts` array on an ingest report once the SME has resolved
+ * every conflict (the conflict-resolution skill's close-out), so the triage
+ * screen stops flagging them. Returns whether there was anything to clear.
+ * Mutates `doc.ingest` in place; a no-op when no ingest report exists.
+ */
+export function clearIngestConflicts(doc: any): { cleared: number } {
+  const before = Array.isArray(doc?.ingest?.conflicts)
+    ? doc.ingest.conflicts.length
+    : 0;
+  if (doc?.ingest && Array.isArray(doc.ingest.conflicts)) {
+    doc.ingest.conflicts = [];
+  }
+  return { cleared: before };
 }

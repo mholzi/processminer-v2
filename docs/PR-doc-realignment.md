@@ -46,7 +46,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#38** | Reference `CORE_SYSTEM_PROMPT.md` from the 6 perspective specialists | `chore/specialists-reference-core` → `main` | Skills only | **Merged** (`082b92b`) |
 | **#39** | `scaffoldProcess` tool — make `new-process` functional | `feat/scaffold-process-tool` → `main` | Code + docs | **Merged** (`91114d3`) |
 | **#40** | `createElements` batch tool — kill the source/ingest run-manifest | `feat/create-elements-batch` → `main` | Code + 5 skills + docs | **Merged** (`969d7bc`) |
-| **#41** | Phantom-tool rewrites onto existing tools (overview / id / template / evidence) | `feat/skill-tool-rewrites` → `main` | 5 skills + docs | **Open** (`pending`) |
+| **#41** | Phantom-tool rewrites onto existing tools (overview / id / template / evidence) | `feat/skill-tool-rewrites` → `main` | 5 skills + docs | **Merged** (`e9a8d18`) |
+| **#42** | Root-field tools — `writeIngestReport` + `clearConflicts`; drop `addSource` | `feat/ingest-report-tools` → `main` | Code + 1 skill + docs | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1461,6 +1462,40 @@ references to the four phantoms remain in any skill.
 - **Root-field tools:** `writeIngestReport` / `clearConflicts` / `addSource` (document-ingest, conflict-resolution).
 - **Notes subsystem:** `createNote` / `resolveNotes` (comment-review).
 - **Session-cursor API** (biggest): `getSessionStatus` / `startSession` / `advanceSession` / `buildQueue` (qer-session, foundational-run).
+
+---
+
+# PR #42 — Root-field tools (`writeIngestReport` + `clearConflicts`; drop `addSource`)
+
+**Branch:** `feat/ingest-report-tools` → `main` · **Date:** 2026-06-04 ·
+**Type:** Code + 1 skill + docs. **Third slice of the phantom-tool program** —
+the "root-field writes" group. *(Touches the providers — the concurrent session
+had started `writeIngestReport` itself; user said continue.)*
+
+## What
+
+- **`src/lib/session-writes.ts`** — two shared, pure, unit-tested helpers:
+  `buildIngestReport(slug, report)` (normalises every array, stamps
+  `slug`/`generatedAt`, returns the `IngestReport` the triage screen reads) and
+  `clearIngestConflicts(doc)` (empties `doc.ingest.conflicts`, returns the
+  count cleared; no-op without an ingest report). **+4 tests.**
+- **`writeIngestReport` + `clearConflicts`** — declared + handled in **both**
+  providers (gemini-worker + claude-mcp-server). 12 tools each now, drift-free.
+- **`addSource` dropped** — sources are derived from `raw-sources/<slug>/` +
+  `uploads.json` by `listSources` (written by `/api/upload`), **not** the
+  process JSON. The skill's claim ("records in the overview") contradicted the
+  model, so there was no valid write. `document-ingest` Step 1 rewritten: the
+  file is already uploaded by the app; just identify it.
+
+## Verification
+
+`npm run typecheck` clean · `npm test` **82/82** (+4). Both registries match.
+Transient `.lock` + runtime JSON churn left out.
+
+## Remaining (last two groups)
+
+- **Notes subsystem:** `createNote` / `resolveNotes` (comment-review) — `/api/notes` exists in-app.
+- **Session-cursor API:** `getSessionStatus` / `startSession` / `advanceSession` / `buildQueue` (qer-session, foundational-run) — the biggest/riskiest.
 
 ---
 

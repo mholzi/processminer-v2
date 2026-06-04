@@ -66,8 +66,12 @@ does: the main agent plans an **outline** of every candidate element, then
 dispatches one drafter sub-agent per element-type group, then one verifier per
 group. The 315k-token main-agent output of the legacy flow becomes ~30k.
 
-1.  **Reference it as an upload.** use the addSource({ slug, file }) tool — this records the
-    document in the process overview (root `meta`/`content`) so the wiki references the upload.
+1.  **Identify the source document.** The file you are ingesting was already
+    uploaded to `raw-sources/<slug>/` (and recorded in that folder's
+    `uploads.json`) by the app's upload flow before this skill was invoked — the
+    wiki's Source Documents list is derived from there, so there is **no
+    register step to run**. Just confirm which uploaded file is the one to
+    ingest; carry its filename as `file` through to the Step 3.8 ingest report.
 
 2.  **Outline — plan every element up front.** Read
     `schema/process-schema.json` for the element types, their sections and
