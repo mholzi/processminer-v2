@@ -23,8 +23,9 @@ export async function POST(req: NextRequest) {
   const file = form.get("file");
   const slug = form.get("slug");
   // R6: the uploader is the signed-in user, resolved from the session cookie —
-  // never the client-supplied "uploadedBy" form field.
-  const uploadedBy = verifySession(req.cookies.get(COOKIE_NAME)?.value)?.name;
+  // never the client-supplied "uploadedBy" form field. Stores the stable
+  // username (R6b); the display name is resolved at read time.
+  const uploadedBy = verifySession(req.cookies.get(COOKIE_NAME)?.value)?.username;
   if (!(file instanceof File)) {
     return Response.json({ error: "No file in the upload." }, { status: 400 });
   }

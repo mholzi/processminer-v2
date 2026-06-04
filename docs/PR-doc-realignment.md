@@ -10,7 +10,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#2** | Enforce the provenance approval gate (A1) | `fix/approval-gate-a1` → `main` | Code + tests + docs | **Merged** (`f93e878`) |
 | **#3** | Decouple metadata-only writes (A3) — *first attempt* | `fix/metadata-conformance-decouple` → `fix/approval-gate-a1` | Code + tests + docs | **Closed** — auto-closed when #2's branch was deleted; superseded by #4 |
 | **#4** | Decouple metadata-only writes from content conformance (A3) | `fix/metadata-conformance-decouple` → `main` | Code + tests + docs | **Merged** (`b487d3d`) |
-| **#5** | Server-derived write authorship (R6a) | `fix/stable-user-ids-r6` → `main` | Code + docs | **Open** (`563c8ca`) |
+| **#5** | Server-derived write authorship (R6a) | `fix/stable-user-ids-r6` → `main` | Code + docs | **Merged** (`8353927`) |
+| **#6** | Store stable usernames, resolve display names at read (R6b) | `fix/stable-user-ids-r6b` → `main` | Code + tests + docs | **Open** (`5280eeb`) |
 
 > **What happened with #3 → #4 (the stacking lesson):** #3 was opened *stacked*
 > on #2's branch (the A3 change is only safe with the A1 gate present). When #2
@@ -234,16 +235,50 @@ is currently stored as the server-derived display name.
 
 ---
 
-# Open follow-ups (as of PR #5)
+# PR #6 — Store stable usernames, resolve display names at read (R6b)
 
-Fixed so far: **A1** (PR #2), **A3** (PR #4), **R6a** (PR #5). Still open, from
-`REQUIREMENTS-ROADMAP.md`:
+**Branch:** `fix/stable-user-ids-r6b` → `main` · **Date:** 2026-06-04 ·
+**Type:** Code + tests + docs.
 
-1. **R6b** — store the stable `username` + resolve display names at render so
-   renames propagate (the integrity half of R6).
-2. **R9** — lift runtime state (`reviewState`/`lint`) out of the process JSON.
-3. **Schema consolidation** — merge the two `process-schema.json` copies into one
+## Why this PR exists
+
+Completes **R6**. After R6a (PR #5) closed impersonation, the wiki still stored
+author **display names**, so a rename never propagated to existing approvals/
+notes. R6b stores the stable `username` and resolves it to the current display
+name at read time.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/lib/wiki.ts` | **edit** | `resolveAuthor(handle, roster)` (pure, exported) + `nameResolver()` bound to the `getUsers()` roster. `getProcess` resolves element/overview `approvalBy`/`relevanceBy`, note `author`/`resolvedBy` (notes cloned so `rawJson` keeps the username), source `uploadedBy`, lint `resolvedBy`/`dismissedBy`. Falls back to the stored value for legacy display-name records. |
+| `src/lib/wiki-write.ts`, `api/notes`, `api/findings`, `api/upload` | **edit** | Write paths store `username` instead of `name`. |
+| `src/lib/wiki.test.ts` | **new** | Unit tests for `resolveAuthor`. |
+| `REQUIREMENTS-ROADMAP.md` | **edit** | R6b marked fixed (R6 complete). |
+
+## Scope
+
+Feedback authorship is intentionally left as a display name — separate non-wiki
+store with its own render path.
+
+## Verification
+
+- **End-to-end:** a note POST stored `admin` (username) on disk; `getProcess`
+  resolved it to "Markus Holzhäuser"; `rawJson` kept `admin`.
+- `npm run typecheck` clean; `npm test` → **20/20** (3 new); app boots clean.
+
+---
+
+# Open follow-ups (as of PR #6)
+
+Fixed so far: **A1** (PR #2), **A3** (PR #4), **R6a** (PR #5), **R6b** (PR #6) —
+**R6 complete**. Still open, from `REQUIREMENTS-ROADMAP.md`:
+
+1. **R9** — lift runtime state (`reviewState`/`lint`) out of the process JSON
+   (the guardrail violation).
+2. **Schema consolidation** — merge the two `process-schema.json` copies into one
    source of truth.
+3. **R7 / R8** — typed transitions (`to|kind|when`) and RACI (`step:level`).
 4. **Product decisions** — R15 (country-variations element type) and R16
    (per-process access control).
 5. Cross-read `REQUIREMENTS-ROADMAP.md` and prioritize the remaining R1–R22.

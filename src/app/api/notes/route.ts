@@ -4,9 +4,10 @@ import type { NextRequest } from "next/server";
 import { COOKIE_NAME, verifySession } from "@/lib/auth-server";
 
 // R6: the author of a write is the signed-in user, resolved from the session
-// cookie — never a client-supplied value (which could forge authorship).
+// cookie — never a client-supplied value (which could forge authorship). Stores
+// the stable username (R6b); display names are resolved at read time.
 function sessionAuthor(req: NextRequest): string {
-  return verifySession(req.cookies.get(COOKIE_NAME)?.value)?.name || "SME";
+  return verifySession(req.cookies.get(COOKIE_NAME)?.value)?.username || "SME";
 }
 
 // Appends an SME note to wiki/processes/<slug>/notes.json — the note-thread
