@@ -15,7 +15,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#7** | Schema drift-guard (consolidation, option C) | `chore/consolidate-schema` → `main` | Code + tests + docs | **Merged** (`498c762`) |
 | **#8** | Typed transitions + RACI (R7 + R8, scope A) | `feat/typed-transitions-raci-r7-r8` → `main` | Code + tests + docs | **Merged** (`f41ea00`) |
 | **#9** | Runtime state above the wiki (R9) | `refactor/runtime-state-above-wiki-r9` → `main` | Code + tests + docs | **Merged** (`94b92bf`) |
-| **#10** | Delete a process, in-app (R11) | `feat/delete-process-r11` → `main` | Code + docs | **Open** (`pending`) |
+| **#10** | Delete a process, in-app (R11) | `feat/delete-process-r11` → `main` | Code + docs | **Merged** (`7d1035c`) |
+| **#11** | Quick wins — applyLint bug + chat overlay + clickable chat refs (R14 a/b) | `fix/quick-wins-r13-r14` → `main` | Code + docs | **Open** (`pending`) |
 
 > **What happened with #3 → #4 (the stacking lesson):** #3 was opened *stacked*
 > on #2's branch (the A3 change is only safe with the A1 gate present). When #2
@@ -425,14 +426,41 @@ There was no in-app way to delete a process — orphaned `<slug>.json` +
 
 ---
 
-# Open follow-ups (as of PR #10)
+# PR #11 — Quick wins: applyLint bug + chat overlay + clickable chat refs
+
+**Branch:** `fix/quick-wins-r13-r14` → `main` · **Date:** 2026-06-04 ·
+**Type:** Code + docs.
+
+## What this PR adds / changes
+
+A bundle of three small, high-confidence fixes:
+
+| Item | File | Summary |
+|---|---|---|
+| **applyLint bug (A4)** | `src/lib/claude-mcp-server.ts` | The MCP `applyLint` re-opened implicated elements via `meta.status === "approved"`, but approval lives in `meta.approval` — so it **never fired**. Now mirrors the Gemini path (`meta.approval` → `in-progress` + `run-lint` stamp). |
+| **Chat overlay (R14a)** | `src/app/globals.css` | The expanded chat panel now **floats** over the canvas (`position:absolute`; the grid keeps the 56px rail column) instead of taking a column and narrowing the document. |
+| **Clickable chat refs (R14b)** | `src/components/AgentChat.tsx`, `src/app/ProcessDocScreen.tsx`, `globals.css` | Element-id refs in chat are clickable → `goToElement` (threaded `onRefClick` through the linkify chain; `cursor:pointer`). |
+
+## Deferred (not in this bundle)
+
+- **R13** (shared-helper dedup) — a broad multi-file refactor; better as its own PR.
+- **R14c** (`runSourcing` via `handleSend`) — verify-then-decide; the progress banner works today.
+
+## Verification
+
+- `npm run typecheck` clean; `npm test` → 26/26 (unchanged).
+- App: opening the chat no longer reflows the canvas (canvas width identical open vs closed; panel `position:absolute`); the **Danger Zone is fully visible** (was obscured before). No server/console errors. (`applyLint` fix verified by mirroring the correct Gemini path; chat-ref click wired + `cursor:pointer`.)
+
+---
+
+# Open follow-ups (as of PR #11)
 
 Fixed so far: **A1** (#2), **A3** (#4), **R6a** (#5), **R6b** (#6), **schema
-drift-guard** (#7), **R7 + R8** (#8), **R9** (#9), **R11** (#10). Still open,
-from `REQUIREMENTS-ROADMAP.md` (Processminer focus):
+drift-guard** (#7), **R7 + R8** (#8), **R9** (#9), **R11** (#10), **A4 + R14 a/b**
+(#11). Still open, from `REQUIREMENTS-ROADMAP.md` (Processminer focus):
 
 1. **R12** — per-section summary UIs + editable Overview.
 2. **R5** — attribution + contributors/activity feed.
-3. **Quick-wins** — R13 (helper dedup) + R14 (clickable chat-refs, runSourcing→handleSend) + the `applyLint` reopen bug (`meta.status` vs `meta.approval`).
+3. **R13** — shared-helper dedup; **R14c** — `runSourcing` via `handleSend`.
 4. **Product decisions** — R15 (country-variations) and R16 (per-process access control).
 5. **Parked:** ArchitectMiner Theme A (R1–R4); R10 / schema-generator (optional).

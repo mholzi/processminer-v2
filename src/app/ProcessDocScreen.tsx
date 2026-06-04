@@ -3022,6 +3022,7 @@ export default function ProcessDocScreen({
           linting={linting}
           findingCount={openFindings ? openFindings.length : null}
           getRef={getRef}
+          onRefClick={goToElement}
           onStop={handleStop}
         />
       </div>

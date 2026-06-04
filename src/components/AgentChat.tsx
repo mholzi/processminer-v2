@@ -34,22 +34,33 @@ const ELEMENT_ID = /\b[A-Z]{1,4}-[A-Z]{2,4}-\d{3}\b/g;
 
 // Split a plain text run, wrapping every resolvable element id in a hovercard
 // so it previews on hover. Ids that don't resolve are left as plain text.
-function linkifyText(text: string, getRef: GetRef): ReactNode {
+function linkifyText(
+  text: string,
+  getRef: GetRef,
+  onRefClick?: (id: string) => void,
+): ReactNode {
   const out: ReactNode[] = [];
   let last = 0;
   let m: RegExpExecArray | null;
   ELEMENT_ID.lastIndex = 0;
   while ((m = ELEMENT_ID.exec(text))) {
-    const ref = getRef(m[0]);
+    const id = m[0];
+    const ref = getRef(id);
     if (!ref) continue;
     if (m.index > last) out.push(text.slice(last, m.index));
     out.push(
       <ElementHovercard
-        key={`${m[0]}-${m.index}`}
+        key={`${id}-${m.index}`}
         element={ref.page}
         typeLabel={ref.typeLabel}
       >
-        <span className="chat-ref">{m[0]}</span>
+        <span
+          className="chat-ref"
+          role={onRefClick ? "button" : undefined}
+          onClick={onRefClick ? () => onRefClick(id) : undefined}
+        >
+          {id}
+        </span>
       </ElementHovercard>,
     );
     last = m.index + m[0].length;
@@ -61,17 +72,21 @@ function linkifyText(text: string, getRef: GetRef): ReactNode {
 
 // Recurse through rendered markdown children, linkifying text runs. Code and
 // pre blocks are left untouched — ids inside literal code aren't references.
-function linkify(node: ReactNode, getRef: GetRef): ReactNode {
-  if (typeof node === "string") return linkifyText(node, getRef);
+function linkify(
+  node: ReactNode,
+  getRef: GetRef,
+  onRefClick?: (id: string) => void,
+): ReactNode {
+  if (typeof node === "string") return linkifyText(node, getRef, onRefClick);
   if (Array.isArray(node))
     return node.map((n, i) => (
-      <Fragment key={i}>{linkify(n, getRef)}</Fragment>
+      <Fragment key={i}>{linkify(n, getRef, onRefClick)}</Fragment>
     ));
   if (isValidElement(node)) {
     if (node.type === "code" || node.type === "pre") return node;
     const children = (node.props as { children?: ReactNode }).children;
     if (children == null) return node;
-    return cloneElement(node, undefined, linkify(children, getRef));
+    return cloneElement(node, undefined, linkify(children, getRef, onRefClick));
   }
   return node;
 }
@@ -102,14 +117,17 @@ const LINKABLE = [
   "p", "li", "td", "th", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote",
 ] as const;
 
-function buildComponents(getRef: GetRef): Components {
+function buildComponents(
+  getRef: GetRef,
+  onRefClick?: (id: string) => void,
+): Components {
   const out: Record<
     string,
     (props: { node?: unknown; children?: ReactNode }) => ReactNode
   > = {};
   for (const tag of LINKABLE) {
     out[tag] = ({ node: _node, children, ...rest }) =>
-      createElement(tag, rest, linkify(children, getRef));
+      createElement(tag, rest, linkify(children, getRef, onRefClick));
   }
   return out as Components;
 }
@@ -133,6 +151,7 @@ export default function AgentChat({
   linting,
   findingCount,
   getRef,
+  onRefClick,
   onStop,
   title = "ProcessMiner",
   subtitle = "Documents this process with you",
@@ -160,6 +179,7 @@ export default function AgentChat({
   linting: boolean;
   findingCount: number | null;
   getRef: GetRef;
+  onRefClick?: (id: string) => void;
   onStop?: () => void;
   /** Brand title rendered in the chat header. Default "ProcessMiner". */
   title?: string;
@@ -176,7 +196,10 @@ export default function AgentChat({
 }) {
   const [draft, setDraft] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
-  const mdComponents = useMemo(() => buildComponents(getRef), [getRef]);
+  const mdComponents = useMemo(
+    () => buildComponents(getRef, onRefClick),
+    [getRef, onRefClick],
+  );
 
   // Long-wait perspective footer — a dry one-liner shown once the turn has
   // been running for >2 min. We tick elapsed every 5s (minute-precision is
