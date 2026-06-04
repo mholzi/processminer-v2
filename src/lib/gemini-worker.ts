@@ -6,6 +6,7 @@ import * as os from "node:os";
 import { execSync } from "node:child_process";
 import { getSchema, toCamelCase, jsonElementToWikiPage, transitionTarget, type WikiPage } from "./wiki.ts";
 import { writeRuntime } from "./runtime-store.ts";
+import { buildTargetReview, parseSummaryParts } from "./session-writes.ts";
 import { checkElement, checkProvenance, checkFrontmatter, checkFieldValues, checkConformance } from "./conformance.ts";
 import { updateElement } from "./wiki-write.ts";
 
@@ -156,6 +157,49 @@ const toolDeclarations: any[] = [
         }
       },
       required: ["slug", "findings"]
+    }
+  },
+  {
+    name: "writeTargetReview",
+    description: "Write the council-review result (the target-state review feedback) to the process. Id-stamps the items (R-001…) and marks each triage: pending. Used by the council-review skill.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        reviewData: {
+          type: "OBJECT",
+          description: "{ ran: string[], items: [{ specialist, title, detail, targets: string[] }] }",
+          properties: {
+            ran: { type: "ARRAY", items: { type: "STRING" } },
+            items: {
+              type: "ARRAY",
+              items: {
+                type: "OBJECT",
+                properties: {
+                  specialist: { type: "STRING" },
+                  title: { type: "STRING" },
+                  detail: { type: "STRING" },
+                  targets: { type: "ARRAY", items: { type: "STRING" } }
+                },
+                required: ["specialist", "title", "detail", "targets"]
+              }
+            }
+          },
+          required: ["ran", "items"]
+        }
+      },
+      required: ["reviewData"]
+    }
+  },
+  {
+    name: "writeSummary",
+    description: "Write one area's executive summary (an Amazon-style memo with exactly four ## headings: Introduction, Current state, What stands out, Recommendation) into the process's `summaries`, keyed by area. Used by the area-summary skill.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        area: { type: "STRING", description: "The area id, e.g. 'as-is-process'." },
+        summary: { type: "STRING", description: "The memo markdown with exactly the four headings in order." }
+      },
+      required: ["area", "summary"]
     }
   }
 ];
@@ -852,6 +896,18 @@ export class GeminiWorker implements IProcessWorker {
                   reopenedCount: reopens.length,
                   summary: lintReport.summary
                 }, null, 2);
+              } else if (originalName === "writeTargetReview") {
+                if (!doc) throw new Error("Process document context not loaded or slug is missing.");
+                doc.targetReview = buildTargetReview(this.slug!, args.reviewData);
+                fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+                resultText = JSON.stringify({ ok: true, items: doc.targetReview.items.length }, null, 2);
+              } else if (originalName === "writeSummary") {
+                if (!doc) throw new Error("Process document context not loaded or slug is missing.");
+                const parts = parseSummaryParts(args.summary || "");
+                if (!doc.summaries || typeof doc.summaries !== "object") doc.summaries = {};
+                doc.summaries[args.area] = { parts, generatedAt: new Date().toISOString() };
+                fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+                resultText = JSON.stringify({ ok: true, area: args.area, parts: parts.length }, null, 2);
               } else {
                 throw new Error(`Unsupported tool: ${originalName}`);
               }

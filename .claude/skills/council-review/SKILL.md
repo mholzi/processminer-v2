@@ -95,7 +95,7 @@ For each feedback item capture:
                "targets": ["TD-…", "TS-…"] }, … ] }
 ```
 
-Save it to a temp file, then use the `writeTargetReview({ slug, reviewData })` tool. The tool
+Pass it to the `writeTargetReview({ slug, reviewData })` tool. The tool
 id-stamps the items (`R-001`…), stamps each `triage: pending`, and writes the
 process's `targetReview` field. It is deterministic — it owns the
 format; you own the judgement.
