@@ -154,6 +154,7 @@ Each requirement: source commit(s), what's missing, impact, effort (S/M/L), reco
 - **Source:** `80f764a` (only sub-feature without a confirmed successor)
 - **Gap:** The old context CLI flagged dangling relation targets as "(target not found in this process)". Unclear whether the Document Map or `lint.ts` surfaces unresolved relation targets.
 - **Effort:** S · **Recommendation:** Verify; add a small lint check if missing.
+- ✅ **FIXED (verified — gap was real).** `buildRelations` (`relations.ts`) never checked that relation target ids resolve, and the only deterministic dangling-ref check (`coverage.ts`) covers *only* `transformation-decision.resolves`/`.realises`. Every other schema relation (control→step, regulation→control, country-variation→affects, role→systems/controls, system integrations, …) rendered a chip that silently no-op'd on click. `ElementCard` now flags any relation chip whose `getRef` returns no element as a non-navigable **"⟨id⟩ not found"** chip in the `--lo` error palette (`link-chip-dangling`), auto-covering all generic relations. Verified on `cob-003`: 297 valid chips unchanged + navigable; injected-id case computes to the error tokens / non-button. *(Transitions + RACI step refs share the same `getRef` pattern and have their own write-time validators — left as a possible extension.)*
 
 #### R18 — ProcessView join layer (RACI pivot + flow lanes)
 - **Source:** `318d817`
