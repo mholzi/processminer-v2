@@ -11,6 +11,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { getSchema, jsonElementToWikiPage, transitionTarget } from "./wiki.ts";
 import { writeRuntime } from "./runtime-store.ts";
+import { buildTargetReview, parseSummaryParts } from "./session-writes.ts";
 import { checkElement, checkProvenance, checkFrontmatter, checkFieldValues, checkConformance } from "./conformance.ts";
 import { updateElement } from "./wiki-write.ts";
 import { replaceTempKeys, generateNextId } from "./gemini-worker.ts";
@@ -161,6 +162,51 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             }
           },
           required: ["slug", "findings"]
+        }
+      },
+      {
+        name: "writeTargetReview",
+        description: "Write the council-review result (the target-state review feedback) to the process. Id-stamps the items (R-001…) and marks each triage: pending. Used by the council-review skill.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            slug: { type: "string", description: "The process slug." },
+            reviewData: {
+              type: "object",
+              description: "{ ran: string[], items: [{ specialist, title, detail, targets: string[] }] }",
+              properties: {
+                ran: { type: "array", items: { type: "string" } },
+                items: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      specialist: { type: "string" },
+                      title: { type: "string" },
+                      detail: { type: "string" },
+                      targets: { type: "array", items: { type: "string" } }
+                    },
+                    required: ["specialist", "title", "detail", "targets"]
+                  }
+                }
+              },
+              required: ["ran", "items"]
+            }
+          },
+          required: ["slug", "reviewData"]
+        }
+      },
+      {
+        name: "writeSummary",
+        description: "Write one area's executive summary (an Amazon-style memo with exactly four ## headings: Introduction, Current state, What stands out, Recommendation) into the process's `summaries`, keyed by area. Used by the area-summary skill.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            slug: { type: "string", description: "The process slug." },
+            area: { type: "string", description: "The area id, e.g. 'as-is-process'." },
+            summary: { type: "string", description: "The memo markdown with exactly the four headings in order." }
+          },
+          required: ["slug", "area", "summary"]
         }
       }
     ]
@@ -378,7 +424,23 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
       return { content: [{ type: "text", text: JSON.stringify({ ok: true, implicatedCount: implicated.size }, null, 2) }] };
     }
-    
+
+    else if (name === "writeTargetReview") {
+      // Council-review result — a durable root field of the process JSON.
+      doc.targetReview = buildTargetReview(slug, args?.reviewData as any);
+      fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+      return { content: [{ type: "text", text: JSON.stringify({ ok: true, items: doc.targetReview.items.length }, null, 2) }] };
+    }
+
+    else if (name === "writeSummary") {
+      const area = args?.area as string;
+      const parts = parseSummaryParts((args?.summary as string) || "");
+      if (!doc.summaries || typeof doc.summaries !== "object") doc.summaries = {};
+      doc.summaries[area] = { parts, generatedAt: new Date().toISOString() };
+      fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+      return { content: [{ type: "text", text: JSON.stringify({ ok: true, area, parts: parts.length }, null, 2) }] };
+    }
+
     else {
       throw new McpError(ErrorCode.MethodNotFound, `Unknown tool: ${name}`);
     }

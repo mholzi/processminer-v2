@@ -40,7 +40,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#32** | Enrich the product ROADMAP with the open backlog items (Phase 0) | `docs/roadmap-enrich-open-items` → `main` | Docs only | **Merged** (`5dfe2dc`) |
 | **#33** | Reconcile + reprioritise the product ROADMAP (remove shipped items; trust-first H1) | `docs/roadmap-reprioritise` → `main` | Docs only | **Merged** (`6b375d7`) |
 | **#34** | Sync the working tree to main (skill edits, doc/data, dogfood content) | `chore/sync-working-tree-to-main` → `main` | Skills + docs + data | **Merged** (`6b1732d`) |
-| **#35** | Purge stale references to the pre-rewrite Markdown-wiki model | `chore/purge-md-wiki-references` → `main` | Code + docs | **Open** (`pending`) |
+| **#35** | Purge stale references to the pre-rewrite Markdown-wiki model | `chore/purge-md-wiki-references` → `main` | Code + docs | **Merged** (`35f758d`) |
+| **#36** | Register the `writeTargetReview` + `writeSummary` AI tools (fix council-review + area-summary) | `feat/council-summary-tools` → `main` | Code + tests + skills | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1233,6 +1234,54 @@ sidecars lingered — including one genuine bug.
 - `npm run typecheck` clean. `npm test` → **64/64** (the removed functions were
   truly dead). A final grep sweep confirms **zero** MD-wiki / `scripts/wiki` /
   separate-sidecar references remain in active code.
+
+---
+
+# PR #36 — Register the `writeTargetReview` + `writeSummary` AI tools
+
+**Branch:** `feat/council-summary-tools` → `main` · **Date:** 2026-06-04 ·
+**Type:** Code + tests + skills.
+
+## Why this PR exists
+
+A per-skill architecture review found that **two skills called AI tools that
+didn't exist** in the JSON-native tool registry (only 6 tools were registered:
+`createElement` / `updateElement` / `expandElement` / `checkConformance` /
+`checkTransitions` / `applyLint`):
+- **`council-review`** called `writeTargetReview({ slug, reviewData })` — absent.
+- **`area-summary`** called `writeSummary({ slug, area, summary })` — absent.
+
+`targetReview` and `summaries` are root fields of the process JSON (not element
+types), so there was no `createElement`/`updateElement` fallback either — both
+features were effectively non-functional when run as an AI session. (The
+in-app `saveSummaryPart` / `triageTargetReview` server actions only edit one
+existing part/item from the UI; they can't create the object and aren't
+AI-callable.)
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/lib/session-writes.ts` | **new** | Pure builders, no I/O / no Next deps: `buildTargetReview(slug, reviewData)` (id-stamps items `R-001…`, marks each `triage: pending`) and `parseSummaryParts(summary)` (splits the memo into its four `## ` headings, errors otherwise). |
+| `src/lib/session-writes.test.ts` | **new** | 6 tests (id-stamping, empty/garbage payloads, heading split + the two error cases). |
+| `src/lib/claude-mcp-server.ts` | **edit** | Registered + handled both tools (write the root field to `<slug>.json`), mirroring `applyLint`. |
+| `src/lib/gemini-worker.ts` | **edit** | Same two tool declarations + handlers in the in-process Gemini path. |
+| `.claude/skills/{council-review,area-summary}/SKILL.md` | **edit** | Dropped the vestigial "save it to a temp file first" step — the tools take the data inline. |
+| `package.json` | **edit** | Wired `session-writes.test.ts` into `npm test`. |
+
+## Scope notes
+
+- Both providers register all tools with no per-skill allowlist (`claude.json`
+  registers only the MCP server; the Gemini worker uses all declarations), so
+  the two skills now see the tools.
+- The handlers are faithful 3-line wrappers around the unit-tested builders.
+  No live AI session was fired against real process data to verify.
+
+## Verification
+
+- `npm run typecheck` clean. `npm test` → **70/70** (64 + 6 new). Both tools
+  confirmed registered (definition + handler) in `claude-mcp-server.ts` **and**
+  `gemini-worker.ts`.
 
 ---
 

@@ -70,7 +70,7 @@ area has no elements, say so plainly, in the same narrative voice.
 
 ## Step 3 — Store it
 
-Save the summary markdown to a temp file, then use the writeSummary({ slug, area, summary }) tool.
+Pass the summary markdown to the writeSummary({ slug, area, summary }) tool.
 
 It stores the summary in the process's `summaries` field, keyed by area — what
 the app's summary panel reads. The tool checks the memo has exactly the four headings
