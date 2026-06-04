@@ -22,6 +22,7 @@ import WholeDocWordView from "@/components/WholeDocWordView";
 import WholeDocJsonView from "@/components/WholeDocJsonView";
 import RaciMatrix from "@/components/RaciMatrix";
 import SkillsDashboard from "@/components/SkillsDashboard";
+import SettingsPanel from "@/components/SettingsPanel";
 import ProcessFlow from "@/components/ProcessFlow";
 import OverviewPanel from "@/components/OverviewPanel";
 import AgentChat, { type ChatMessage } from "@/components/AgentChat";
@@ -1903,6 +1904,17 @@ export default function ProcessDocScreen({
               <IconSkills />
             </button>
           </Tooltip>
+          {user.isAdmin && (
+            <Tooltip label="Process settings">
+              <button
+                className={`tb-icon${section === "__settings" ? " active" : ""}`}
+                onClick={() => setSection(section === "__settings" ? "overview" : "__settings")}
+                aria-label="Process settings"
+              >
+                ⚙
+              </button>
+            </Tooltip>
+          )}
           <Tooltip label="Help">
             <button
               className="tb-icon"
@@ -2208,7 +2220,20 @@ export default function ProcessDocScreen({
         </nav>
 
         <main className="canvas">
-          {section === "__skills" ? (
+          {section === "__settings" ? (
+            <SettingsPanel
+              slug={currentSlug}
+              title={doc.process.title}
+              id={doc.process.id}
+              elementCount={doc.elements.length}
+              sourceCount={doc.sources.length}
+              onDeleted={() => {
+                setSection("overview");
+                router.refresh();
+                onReturnToSplash?.();
+              }}
+            />
+          ) : section === "__skills" ? (
             <SkillsDashboard onBack={() => setSection("overview")} />
           ) : section === "__wholedoc" ? (
             <>

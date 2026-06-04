@@ -14,7 +14,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#6** | Store stable usernames, resolve display names at read (R6b) | `fix/stable-user-ids-r6b` → `main` | Code + tests + docs | **Merged** (`e3f27ac`) |
 | **#7** | Schema drift-guard (consolidation, option C) | `chore/consolidate-schema` → `main` | Code + tests + docs | **Merged** (`498c762`) |
 | **#8** | Typed transitions + RACI (R7 + R8, scope A) | `feat/typed-transitions-raci-r7-r8` → `main` | Code + tests + docs | **Merged** (`f41ea00`) |
-| **#9** | Runtime state above the wiki (R9) | `refactor/runtime-state-above-wiki-r9` → `main` | Code + tests + docs | **Open** (`pending`) |
+| **#9** | Runtime state above the wiki (R9) | `refactor/runtime-state-above-wiki-r9` → `main` | Code + tests + docs | **Merged** (`94b92bf`) |
+| **#10** | Delete a process, in-app (R11) | `feat/delete-process-r11` → `main` | Code + docs | **Open** (`pending`) |
 
 > **What happened with #3 → #4 (the stacking lesson):** #3 was opened *stacked*
 > on #2's branch (the A3 change is only safe with the A1 gate present). When #2
@@ -397,17 +398,41 @@ this state remain **R10** (optional).
 
 ---
 
-# Open follow-ups (as of PR #9)
+# PR #10 — Delete a process, in-app (R11)
+
+**Branch:** `feat/delete-process-r11` → `main` · **Date:** 2026-06-04 ·
+**Type:** Code + docs.
+
+## Why this PR exists
+
+There was no in-app way to delete a process — orphaned `<slug>.json` +
+`raw-sources/` had to be removed by hand.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/app/api/processes/[slug]/route.ts` | **new** | `DELETE` (admin-only) — removes the wiki JSON, `raw-sources/<slug>/`, the runtime store, and `.sessions.json` entries for the slug. |
+| `src/components/SettingsPanel.tsx` | **new** | Per-process Settings: process facts + a Danger Zone with a slug-typed confirm. |
+| `src/app/ProcessDocScreen.tsx` | **edit** | Admin-only ⚙ top-bar button → `__settings` view; on delete, return to the welcome screen + refresh. |
+| `src/app/globals.css` | **edit** | Settings / Danger-Zone styles (design tokens; `--lo` for danger). |
+
+## Verification
+
+- `npm run typecheck` clean; `npm test` → 26/26 (unchanged).
+- **API (throwaway process):** admin `DELETE` returned 200 and removed the wiki JSON, `raw-sources/`, runtime file, and the `.sessions.json` entry; 404 for a missing slug; admin-gated (401/403).
+- **UI:** the ⚙ button shows the Settings panel with facts + Danger Zone; the Delete button arms **only** when the exact slug is typed, and disarms on reset. No real process deleted; no errors.
+
+---
+
+# Open follow-ups (as of PR #10)
 
 Fixed so far: **A1** (#2), **A3** (#4), **R6a** (#5), **R6b** (#6), **schema
-drift-guard** (#7), **R7 + R8** (#8), **R9** (#9). Still open, from
-`REQUIREMENTS-ROADMAP.md`:
+drift-guard** (#7), **R7 + R8** (#8), **R9** (#9), **R11** (#10). Still open,
+from `REQUIREMENTS-ROADMAP.md` (Processminer focus):
 
-1. **R10 (optional)** — restore `ORCHESTRATOR-PLAN.md` + the read-only
-   orchestrator that consumes the lifted runtime state.
-2. **Schema generator (optional)** — derive the JSON Schema from the custom
-   schema to remove the dual edit entirely (only if it proves painful).
-3. **Product decisions** — R15 (country-variations element type) and R16
-   (per-process access control).
-4. Cross-read `REQUIREMENTS-ROADMAP.md` and prioritize the remaining R1–R22
-   (ArchitectMiner Theme A, R5, R11, R12, polish).
+1. **R12** — per-section summary UIs + editable Overview.
+2. **R5** — attribution + contributors/activity feed.
+3. **Quick-wins** — R13 (helper dedup) + R14 (clickable chat-refs, runSourcing→handleSend) + the `applyLint` reopen bug (`meta.status` vs `meta.approval`).
+4. **Product decisions** — R15 (country-variations) and R16 (per-process access control).
+5. **Parked:** ArchitectMiner Theme A (R1–R4); R10 / schema-generator (optional).
