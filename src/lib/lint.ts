@@ -3,9 +3,10 @@
 // and clarifying questions for the SME to resolve.
 //
 // The pass itself is the `run-lint` skill (.claude/skills/run-lint/): it does
-// the cross-perspective judgement and the deterministic apply_lint.py writes
-// wiki/processes/<slug>/lint.json. The app reads that file (see wiki.ts) and
-// renders it in the Review panel — these are the shapes of what it reads.
+// the cross-perspective judgement and the deterministic `applyLint` tool writes
+// the report to the runtime store (data/runtime/<slug>.json, R9). The app reads
+// it (see wiki.ts / runtime-store.ts) and renders it in the Review panel —
+// these are the shapes of what it reads.
 
 export type FindingKind = "question" | "discrepancy" | "conformance";
 
@@ -23,7 +24,7 @@ export interface LintFinding {
    * finding is resolved the moment a chat deep-dive fixes the discrepancy and
    * the SME approves the change; it is dismissed when the SME judges it not
    * worth acting on and records a reason. The next `run-lint` pass rewrites
-   * lint.json from scratch, so either state holds only until the next run.
+   * the report from scratch, so either state holds only until the next run.
    */
   status?: "open" | "resolved" | "dismissed";
   /** Resolved only — who closed it (the deep-dive specialist / SME). */
@@ -55,7 +56,7 @@ export function isOpen(f: LintFinding): boolean {
   return !isResolved(f) && !isDismissed(f);
 }
 
-/** A whole lint pass result — one per process, written to lint.json. */
+/** A whole lint pass result — one per process, stored in the runtime store. */
 export interface LintReport {
   /** ISO timestamp the pass was run. */
   generatedAt: string;
@@ -63,21 +64,21 @@ export interface LintReport {
   summary: { conformance: number; discrepancy: number; question: number };
   /**
    * Element ids the lint pass reverted from `approved` to `in-progress`.
-   * Older lint.json files written before this field existed will be missing
-   * it — treat as the empty list.
+   * Older reports written before this field existed will be missing it —
+   * treat as the empty list.
    */
   reopens?: string[];
   findings: LintFinding[];
 }
 
 // ---- Durable dismissals -------------------------------------------------
-// `run-lint` rewrites lint.json from scratch, and finding ids (F-001…) are
+// `run-lint` rewrites the report from scratch, and finding ids (F-001…) are
 // re-numbered each pass — so a dismissal keyed to an id would not survive a
-// re-lint. Dismissals are therefore stored in a separate app-owned sidecar,
-// finding-dismissals.json, keyed by a *content* signature that is stable
-// across re-lints. The app re-applies them whenever it loads a lint report.
+// re-lint. Dismissals are therefore stored in the runtime store (R9), keyed by
+// a *content* signature that is stable across re-lints. The app re-applies them
+// whenever it loads a lint report.
 
-/** One dismissal record in finding-dismissals.json. */
+/** One dismissal record (runtime store `findingDismissals`). */
 export interface FindingDismissal {
   /** Why the SME judged the finding not worth acting on. */
   reason: string;
@@ -89,7 +90,7 @@ export interface FindingDismissal {
   until?: string;
 }
 
-/** finding-dismissals.json — signature → dismissal. */
+/** Runtime-store `findingDismissals` — signature → dismissal. */
 export type FindingDismissals = Record<string, FindingDismissal>;
 
 /** A content signature for a finding — stable across re-lints (unlike its id),

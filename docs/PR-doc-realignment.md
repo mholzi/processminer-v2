@@ -39,7 +39,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#31** | Reference all of today's PRs in the PR log + roadmap | `docs/pr-log-reference-all-today` → `main` | Docs only | **Merged** (`3d00316`) |
 | **#32** | Enrich the product ROADMAP with the open backlog items (Phase 0) | `docs/roadmap-enrich-open-items` → `main` | Docs only | **Merged** (`5dfe2dc`) |
 | **#33** | Reconcile + reprioritise the product ROADMAP (remove shipped items; trust-first H1) | `docs/roadmap-reprioritise` → `main` | Docs only | **Merged** (`6b375d7`) |
-| **#34** | Sync the working tree to main (skill edits, doc/data, dogfood content) | `chore/sync-working-tree-to-main` → `main` | Skills + docs + data | **Open** (`pending`) |
+| **#34** | Sync the working tree to main (skill edits, doc/data, dogfood content) | `chore/sync-working-tree-to-main` → `main` | Skills + docs + data | **Merged** (`6b1732d`) |
+| **#35** | Purge stale references to the pre-rewrite Markdown-wiki model | `chore/purge-md-wiki-references` → `main` | Code + docs | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1197,6 +1198,41 @@ run, so several of its candidate features had already shipped, and its proposed
   `CommandPalette`, `notifyTurnComplete`, `data-theme` toggle, `buildTraceability`,
   orchestrator `ActionKind`). Counts re-derived from the doc; root and
   `public/ROADMAP.md` verified identical.
+
+---
+
+# PR #35 — Purge stale references to the pre-rewrite Markdown-wiki model
+
+**Branch:** `chore/purge-md-wiki-references` → `main` · **Date:** 2026-06-04 ·
+**Type:** Code + docs.
+
+## Why this PR exists
+
+A deep-dive sweep found the data path was fully JSON-native but stale references
+to the old per-`.md`-file wiki + `scripts/wiki/*.py` toolkit + separate
+sidecars lingered — including one genuine bug.
+
+## What this PR changes
+
+| Tier | Change |
+|---|---|
+| **Functional bug** | `ProcessDocScreen.tsx` finding-resolution directive told the assistant to run `python3 scripts/wiki/resolve_finding.py` — a **deleted** script (`scripts/wiki/` doesn't exist). Replaced with JSON-native guidance (edit via `updateElement`; the finding clears on the next run-lint / can be dismissed in the Review panel). |
+| **Functional bug** | `api/session/route.ts` — the live-progress **element counter** keyed on the deleted `write_element.py` Bash command (never fired for the MCP write path); re-pointed at `createElement`. Removed the six dead Python command matchers in `describeTool`. |
+| **Dead code** | `wiki.ts` — removed `parseFrontmatter` / `parseBlocks` / `toPage` (the Markdown-page parsers) and the unused `readJson` subfolder-sidecar helper. All had zero callers (confirmed; typecheck + tests still green). |
+| **Deleted file** | `scripts/seed-cob-003.mjs` — wrote the old Markdown/subfolder model (`index.md`, `---frontmatter---`); broken against JSON-native. Only `legacy-docs/` referenced it. |
+| **Stale comments / strings** | Refreshed ~20 comments across `wiki.ts`, `lint.ts`, `conformance.ts`, `target-review.ts`, `ElementCard.tsx`, `FindingDismiss.tsx`, `globals.css`, `api/{notes,sources,upload,findings}/route.ts`, and the schema's `_provenanceComment` / `_fieldValuesComment` — the consolidated `<slug>.json` + the R9 runtime store, not separate sidecar files or Python scripts. |
+
+## Scope notes
+
+- `src/legacy/*` (the archived pre-rewrite copies) and the historical
+  `scripts/migrate_*` migration scripts are **left as-is** — they're intentional
+  history, not imported by the app.
+
+## Verification
+
+- `npm run typecheck` clean. `npm test` → **64/64** (the removed functions were
+  truly dead). A final grep sweep confirms **zero** MD-wiki / `scripts/wiki` /
+  separate-sidecar references remain in active code.
 
 ---
 

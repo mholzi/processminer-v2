@@ -7,7 +7,7 @@ import { COOKIE_NAME, verifySession } from "@/lib/auth-server";
 // Receives a document uploaded from the chat's upload modal and saves it into
 // raw-sources/<slug>/ — Karpathy LLM-Wiki layer 1, the immutable imported
 // documents. The document-ingest skill then reads it from there. Recording it
-// in the process index.md is the skill's job (its first extraction step).
+// as a source in the process JSON is the skill's job (its first extraction step).
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

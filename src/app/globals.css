@@ -3113,7 +3113,7 @@ body {
 }
 .flow-themepick-note { font-size: var(--text-xs); color: var(--muted); }
 
-/* ---- Council Review panel (target-review.json) ---- */
+/* ---- Council Review panel (process JSON `targetReview`) ---- */
 .trv-panel { display: flex; flex-direction: column; gap: 12px; }
 .trv-head {
   display: flex; justify-content: space-between; align-items: baseline;
