@@ -41,7 +41,7 @@ general process-analyst lens and sign the summary *Process Analyst*.
   skip it. A note with `replyTo` set is a reply; read it under its parent.
 - If there are no unresolved comments, tell the SME there is nothing to review
   and stop — write nothing.
-- Use the `getTemplate({ type })` tool for the element's type, so any edit you make keeps every block and field conformant.
+- Read the element type's schema template (its blocks and frontmatter fields, from the schema / Document Map), so any edit you make keeps every block and field conformant.
 - Read the elements the comments touch on — a comment may reference other steps,
   controls or systems; pull those in so your assessment is grounded.
 

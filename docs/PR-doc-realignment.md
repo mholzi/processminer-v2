@@ -45,7 +45,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#37** | Purge dead script / legacy-doc pointers from 6 skills | `chore/purge-skill-stale-pointers` → `main` | Skills only | **Merged** (`162a853`) |
 | **#38** | Reference `CORE_SYSTEM_PROMPT.md` from the 6 perspective specialists | `chore/specialists-reference-core` → `main` | Skills only | **Merged** (`082b92b`) |
 | **#39** | `scaffoldProcess` tool — make `new-process` functional | `feat/scaffold-process-tool` → `main` | Code + docs | **Merged** (`91114d3`) |
-| **#40** | `createElements` batch tool — kill the source/ingest run-manifest | `feat/create-elements-batch` → `main` | Code + 5 skills + docs | **Open** (`pending`) |
+| **#40** | `createElements` batch tool — kill the source/ingest run-manifest | `feat/create-elements-batch` → `main` | Code + 5 skills + docs | **Merged** (`969d7bc`) |
+| **#41** | Phantom-tool rewrites onto existing tools (overview / id / template / evidence) | `feat/skill-tool-rewrites` → `main` | 5 skills + docs | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1428,6 +1429,38 @@ other groups land later, done properly.
 tool registries match (drift-free). The transient `.claude/scheduled_tasks.lock`,
 the parallel `scripts/cc-specialist-frd001.mjs`, and the runtime
 `funds-release-dogfood.json` churn were left out.
+
+---
+
+# PR #41 — Phantom-tool rewrites onto existing tools
+
+**Branch:** `feat/skill-tool-rewrites` → `main` · **Date:** 2026-06-04 ·
+**Type:** 5 skills + docs. **Second slice of the phantom-tool program** — the
+"rewrite onto existing tools" group (no new tool surface, **no provider files
+touched**, so zero collision with the active concurrent session).
+
+## What
+
+Four phantom tools the skills called did not need to exist — the capability was
+already there. Rewritten:
+
+| Phantom | Now | Skills |
+|---|---|---|
+| `writeOverview` / `updateProcessOverview` | `updateElement` on the overview's **root id** (it already patches root `meta`/`content` when `doc.meta.id === id`) | document-ingest, qer-session |
+| `getNextId` / `generateNextId` | **dropped** — `createElement` assigns the id and returns it; the skill refers to the element by description until write time | add-entry, foundational-run |
+| `getElementTemplate` / `getTemplate` | refer to the **schema template** (Document Map / output schema) | add-entry, comment-review |
+| `checkEvidence` | `checkConformance` — its provenance check already verifies every `document` heading carries a traceable `evidence` quote | document-ingest |
+
+## Verification
+
+No code changed (skill prompts only); `npm test` still **78/78**. Confirmed zero
+references to the four phantoms remain in any skill.
+
+## Remaining phantom-tool groups (need real backend work)
+
+- **Root-field tools:** `writeIngestReport` / `clearConflicts` / `addSource` (document-ingest, conflict-resolution).
+- **Notes subsystem:** `createNote` / `resolveNotes` (comment-review).
+- **Session-cursor API** (biggest): `getSessionStatus` / `startSession` / `advanceSession` / `buildQueue` (qer-session, foundational-run).
 
 ---
 

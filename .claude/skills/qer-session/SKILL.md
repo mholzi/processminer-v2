@@ -117,24 +117,29 @@ these three choices, verbatim, never just two:
 - **[R] Rewrite** — the draft missed; redraft together, then re-present.
 
 On **[Y]**, write the overview with the tool — never hand-edit the process JSON.
-Assemble a JSON spec and `use the updateProcessOverview({ slug, overview }) tool`:
+The overview **is the process page**, not an element in a collection, so you
+write it with the **updateElement** tool, addressing it by the process's **root
+id** (the root `meta.id` in the Document Map). `use the updateElement({ id, patch }) tool`
+with that root id and:
 ```json
 {
-  "slug": "<slug>",
-  "processOwner": "<role or ROLE id>",
-  "trigger": "<what starts the process>",
-  "frequency": "<how often>",
-  "scopeIn": "<what the process covers>",
-  "scopeOut": "<what it explicitly excludes>",
-  "processInput": "<what comes in>",
-  "processOutput": "<what comes out>",
-  "docStatus": "As-Is draft",
-  "purpose": "<a two-paragraph Purpose: what the process does, and why it matters to the bank>"
+  "meta": { "docStatus": "As-Is draft" },
+  "content": {
+    "processOwner": "<role or ROLE id>",
+    "trigger": "<what starts the process>",
+    "frequency": "<how often>",
+    "scopeIn": "<what the process covers>",
+    "scopeOut": "<what it explicitly excludes>",
+    "processInput": "<what comes in>",
+    "processOutput": "<what comes out>",
+    "description": "<a two-paragraph Purpose: what the process does, and why it matters to the bank>"
+  }
 }
 ```
-The tool preserves the process identity (`id`, `type`, `title`, `status`)
-from the scaffolded process document and owns the frontmatter format — the
-overview cannot come out malformed.
+updateElement merges the patch into the root `meta`/`content`, preserving the
+process identity (`id`, `type`, `title`, `status`) from the scaffolded
+document — the overview cannot come out malformed. (The `description` field is
+the Purpose body shown on the process page.)
 
 When the overview is written, `use the advanceSession() tool` to move to Step 3.
 

@@ -197,10 +197,11 @@ one exchange, not a full multi-session elicitation of the topic — a pain point
 is the SME's account of where this step hurts, a compliance-gap is the missing
 control they just confirmed, neither an exhaustive root-cause study.
 
-1.  **Reserve the id before you name it.** Never tell the SME the new element's
-    id until you have used the `generateNextId({ type })` tool to assign it — a guessed id ("this will be
-    PG-FR-005") is often wrong, because the real id depends on creation order.
-    Refer to it by description until it is written.
+1.  **Never name an id before it is written.** The id is assigned by
+    `createElement` at write time (Step 3) and returned in the result — a guessed
+    id ("this will be PG-FR-005") is often wrong, because the real id depends on
+    creation order. Refer to the element by description until it is written, then
+    use the id the tool returns.
 2.  **Draft only what the SME actually said.** Do not inflate a passing remark
     into a confident, fully-detailed element — that is the hallucination the
     Provenance block guards against. Every heading the SME did not state stays
