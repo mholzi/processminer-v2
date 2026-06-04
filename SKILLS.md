@@ -200,11 +200,10 @@ Human-driven. The machine informs; it never declares the work finished.
 - **Approved reverts to `in-progress`** when a pillar of "done" breaks: an edit
   (SME *or* skill) at save, or a `run-lint` finding that implicates the element.
 
-> ⚠️ **Known regression (roadmap A1).** The provenance contract says an element
-> with any `proposed`/`web` heading cannot be approved
-> (`CORE_SYSTEM_PROMPT.md §4`), but that gate is currently **not enforced** —
-> `UNCONFIRMED_SOURCES` in `conformance.ts` is dead code and `setApproval` does
-> not block on it. Until A1 is fixed, unconfirmed content can be approved.
+- **The provenance gate is enforced** — an element with any `proposed`/`web`
+  heading cannot be set to `approved` (`CORE_SYSTEM_PROMPT.md §4`); the write
+  path returns which headings are still unconfirmed. This is a hard block,
+  distinct from the warn-and-allow model for conformance/lint findings.
 
 ## 11. How skills are invoked
 
