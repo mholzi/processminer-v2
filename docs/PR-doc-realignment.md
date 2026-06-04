@@ -30,7 +30,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#22** | Recover docs & standalone artifacts (R20–R22) | `feat/docs-artifacts-r20-r22` → `main` | Docs / artifacts only | **Merged** (`ea052d5`) |
 | **#23** | Refresh roadmap status header | `docs/roadmap-refresh` → `main` | Docs only | **Merged** (`8377486`) |
 | **#24** | Diagram + Traceability real-data wiring (R3) | `feat/architect-diagram-traceability-r3` → `main` | Code + tests + docs | **Merged** (`9e82c4c`) |
-| **#25** | Personal + Library tiers from real data (R4) | `feat/architect-personal-library-r4` → `main` | Code + tests + docs | **Open** (`pending`) |
+| **#25** | Extract RACI-pivot + flow-lane joins into process-view (R18) | `refactor/process-view-r18` → `main` | Code + tests | **Open** — parallel track |
+| **#26** | Personal + Library tiers from real data (R4) | `feat/architect-personal-library-r4` → `main` | Code + tests + docs | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -940,7 +941,7 @@ architect analysis views were decorative mockups.
 
 ---
 
-# PR #25 — Personal + Library tiers from real data (R4)
+# PR #26 — Personal + Library tiers from real data (R4)
 
 **Branch:** `feat/architect-personal-library-r4` → `main` · **Date:**
 2026-06-04 · **Type:** Code + tests + docs. **Final PR of Theme A (R1–R4).**
@@ -982,7 +983,7 @@ rendered fiction.
 
 ---
 
-# Open follow-ups (as of PR #25)
+# Open follow-ups (as of PR #26)
 
 **ArchitectMiner Theme A (R1–R4) is complete**: chat (#19), specialists (#20),
 Diagram + Traceability (#24), Personal + Library tiers (#25). With R10, R15–R17
