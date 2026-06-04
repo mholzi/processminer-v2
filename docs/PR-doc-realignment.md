@@ -30,7 +30,7 @@ what it changes, behaviour/scope, and how it was verified.
 | **#22** | Recover docs & standalone artifacts (R20–R22) | `feat/docs-artifacts-r20-r22` → `main` | Docs / artifacts only | **Merged** (`ea052d5`) |
 | **#23** | Refresh roadmap status header | `docs/roadmap-refresh` → `main` | Docs only | **Merged** (`8377486`) |
 | **#24** | Diagram + Traceability real-data wiring (R3) | `feat/architect-diagram-traceability-r3` → `main` | Code + tests + docs | **Merged** (`9e82c4c`) |
-| **#25** | Extract RACI-pivot + flow-lane joins into process-view (R18) | `refactor/process-view-r18` → `main` | Code + tests | **Open** — parallel track |
+| **#25** | Extract RACI-pivot + flow-lane joins into process-view (R18) | `refactor/process-view-r18` → `main` | Code + tests | **Merged** (`ebdf9fa`) — parallel track |
 | **#26** | Personal + Library tiers from real data (R4) | `feat/architect-personal-library-r4` → `main` | Code + tests + docs | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work

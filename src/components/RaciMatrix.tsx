@@ -1,4 +1,5 @@
 import { orderSteps } from "@/lib/stepOrder";
+import { buildRaciGrid } from "@/lib/process-view";
 import type { WikiPage } from "@/lib/wiki";
 
 // RACI matrix — rows = process steps, columns = roles, cells = R/A/C/I.
@@ -11,8 +12,6 @@ const LEVEL_CLASS: Record<string, string> = {
   C: "raci-c",
   I: "raci-i",
 };
-
-import { asList } from "@/lib/meta";
 
 // RACI rule check for the levels assigned to one step. A valid activity has
 // at least one Responsible and exactly one Accountable.
@@ -35,15 +34,9 @@ export default function RaciMatrix({
   roles: WikiPage[];
   onGoToElement: (id: string) => void;
 }) {
-  // grid[stepId][roleId] = "R" | "A" | "C" | "I"
-  const grid: Record<string, Record<string, string>> = {};
-  for (const role of roles) {
-    for (const entry of asList(role.meta.raci)) {
-      const [stepId, level] = entry.split(":");
-      if (!stepId || !level) continue;
-      (grid[stepId] ??= {})[role.id] = level;
-    }
-  }
+  // grid[stepId][roleId] = "R" | "A" | "C" | "I" — pivoted from role RACI
+  // (shared with ProcessFlow's lane assignment, see lib/process-view).
+  const grid = buildRaciGrid(roles);
 
   // Rows follow the process spine — the same transition-graph order the
   // ProcessFlow strip uses.
