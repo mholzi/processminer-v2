@@ -1,12 +1,27 @@
-# PR — Architecture documentation realignment (JSON-native)
+# Post-migration PR log — JSON-native baseline
 
-**Branch:** `docs/architecture-doc-realignment` → `main`
-**Date:** 2026-06-04
-**Type:** Documentation only — **no application code changes.**
+A running record of the PRs that follow the JSON-native (v3) `main` replacement
+(`b6f7b64`). Each entry documents one PR in the same structure: why it exists,
+what it changes, behaviour/scope, and how it was verified.
+
+| PR | Title | Branch → base | Type | Status |
+|---|---|---|---|---|
+| **#1** | Architecture documentation realignment | `docs/architecture-doc-realignment` → `main` | Docs only | **Merged** (`d331e3a`) |
+| **#2** | Enforce the provenance approval gate (A1) | `fix/approval-gate-a1` → `main` | Code + tests + docs | **Open** (`ac61a80`) |
+| **#3** | Decouple metadata-only writes from content conformance (A3) | `fix/metadata-conformance-decouple` → `fix/approval-gate-a1` | Code + tests + docs | **Open, stacked on #2** (`478ac3b`) |
+
+> **Merge order for the stack:** #2 must merge into `main` before #3 (the A3
+> change is only safe with the A1 gate present). GitHub auto-retargets #3 to
+> `main` once #2 merges and its branch is deleted.
 
 ---
 
-## 1. Why this PR exists
+# PR #1 — Architecture documentation realignment (JSON-native)
+
+**Branch:** `docs/architecture-doc-realignment` → `main` · **Date:** 2026-06-04
+· **Type:** Documentation only — **no application code changes.**
+
+## Why this PR exists
 
 `main` was replaced with the **JSON-native (v3) rewrite** (`b6f7b64`): the
 per-Markdown-file wiki and the `scripts/wiki/*.py` toolkit were removed in
@@ -28,7 +43,7 @@ This PR restores an accurate, current documentation baseline and captures the
 triage of work that the migration dropped, so future work is grounded in what
 the code actually does today.
 
-## 2. What this PR adds / changes
+## What this PR adds / changes
 
 | File | Change | Summary |
 |---|---|---|
@@ -38,54 +53,149 @@ the code actually does today.
 | `REQUIREMENTS-ROADMAP.md` | **new** | Triage of all 41 superseded commits into 22 candidate requirements (R1–R22) grouped into themes, with a proposed phasing. The basis for prioritizing what to re-port onto the new baseline. |
 | `SUPERSEDED-MAIN-COMMITS.md` | **new** | Audit of the 41 code-touching commits that the old `main` carried but the JSON-native baseline dropped (wiki-only commits excluded), each with its commit body and non-wiki diffstat. |
 | `legacy-docs/LEGACY-SKILLS.md` | **new** | The pre-rewrite `SKILLS.md`, archived to preserve its prompt-engineering research (mirrors how `LEGACY-CLAUDE.md`, `LEGACY-DESIGN.md` etc. were handled). |
-| `docs/PR-doc-realignment.md` | **new** | This document. |
+| `docs/PR-doc-realignment.md` | **new** | This document (subsequently expanded into the PR log above). |
 
 > **Not included:** `.claude/launch.json` (personal local dev config) is left
 > out of this PR.
 
-## 3. Known issues documented (not fixed here)
+## Known issues documented (not fixed in this PR)
 
 While realigning the docs, two architectural problems in the JSON-native
-baseline were confirmed and are now recorded prominently in `CLAUDE.md`,
-`SKILLS.md`, and `REQUIREMENTS-ROADMAP.md` so they are not forgotten. **This PR
-does not fix them — it documents them.**
+baseline were confirmed and recorded prominently in `CLAUDE.md`, `SKILLS.md`,
+and `REQUIREMENTS-ROADMAP.md`. **PR #1 documented them; PR #2 fixes the first.**
 
 - **A1 — the approval gate is dead code.** The provenance contract states that
   an element with any `proposed`/`web` heading cannot be approved, but
   `UNCONFIRMED_SOURCES` in `src/lib/conformance.ts` is defined and referenced
-  nowhere, so `setApproval` does not enforce the gate. Unconfirmed,
-  AI-proposed content can currently be marked `approved`.
+  nowhere, so `setApproval` does not enforce the gate. → **Fixed in PR #2.**
 - **R9 — runtime state lives inside the wiki.** `reviewState` and `lint` are
   top-level keys inside `wiki/processes/cob-003.json`, contradicting the
   project's guardrail that runtime/orchestration state lives *above* the wiki
-  layer.
+  layer. → still open.
 
-Also recorded: **only `cob-003` was migrated** — every other process's content
-was dropped (roadmap A2), and **the JSON schema currently exists in two copies**
-(`schema/process-schema.json` and `src/lib/schema/process-schema.json`) that
-must be kept in sync.
+Also recorded: **only `cob-003` was migrated** (roadmap A2), and **the JSON
+schema exists in two copies** (`schema/process-schema.json` and
+`src/lib/schema/process-schema.json`) that must be kept in sync.
 
-## 4. Cross-doc consistency
-
-`CLAUDE.md` is the hub and now links the corrected set: `TARGET-ARCHITECTURE.md`
-(authoritative architecture), `SKILLS.md`, `DESIGN.md`,
-`.claude/skills/CORE_SYSTEM_PROMPT.md` (the shared per-skill contract),
-`docs/BRIDGES_AND_TODOS.md`, and `REQUIREMENTS-ROADMAP.md`. Stale references to
-the deleted Python toolkit were removed from the active docs; the historical
-versions remain under `legacy-docs/` and are explicitly marked "do not follow."
-
-## 5. Verification
+## Verification
 
 - No code changed; the running app is unaffected.
 - All file paths, tool names, schema locations, server-action names, and design
   tokens referenced in the new docs were checked against the actual baseline
   source (not the legacy docs) before writing.
 
-## 6. Follow-ups (separate work, not in this PR)
+---
 
-1. Cross-read `REQUIREMENTS-ROADMAP.md` and prioritize R1–R22.
-2. Fix A1 (wire `UNCONFIRMED_SOURCES` into `setApproval`).
-3. Address R9 (lift `reviewState`/`lint` out of the process JSON).
-4. Consolidate the two schema files.
-5. Decide on the product-decision items (R15 country-variations, R16 per-process
-   access control).
+# PR #2 — Enforce the provenance approval gate (A1)
+
+**Branch:** `fix/approval-gate-a1` → `main` · **Date:** 2026-06-04 · **Type:**
+Code fix + tests + docs.
+
+## Why this PR exists
+
+Restores the **approval gate** the JSON-native rewrite silently dropped (roadmap
+**A1**, documented in PR #1). The anti-hallucination contract requires that an
+element with any heading still `proposed`/`web` — AI-drafted and **not yet
+confirmed by the SME** — cannot be marked `approved`. That gate was dead code:
+`UNCONFIRMED_SOURCES` in `conformance.ts` was defined but referenced nowhere, so
+`setApproval` would stamp `approved` on unconfirmed content.
+
+In an audit tool, "approved" = ground truth — so the missing gate let
+AI-proposed text enter the official record wearing an approval stamp. This is
+the single worst silent failure mode for the product.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/lib/conformance.ts` | **edit** | New pure helper `unconfirmedHeadings(provenance)` returning the headings whose source is `proposed`/`web`. |
+| `src/lib/wiki-write.ts` | **edit** | `updateElement` (both the process-overview and element branches) refuses to set `approval: "approved"` while any heading is unconfirmed, naming the blocking headings. Runs **before** the generic conformance check so the message is specific; `setApproval` surfaces it. |
+| `src/lib/conformance.test.ts` | **new** | Unit tests for `unconfirmedHeadings`; `npm test` now runs it alongside the lint tests. |
+| `package.json` | **edit** | `test` script includes the new test file. |
+| `CLAUDE.md`, `SKILLS.md`, `REQUIREMENTS-ROADMAP.md` | **edit** | A1 marked **fixed** so the docs stay truthful. |
+
+## Behaviour & scope
+
+- A **hard block**, specifically for unconfirmed provenance — distinct from the
+  warn-and-allow model for conformance/lint findings.
+- `legacy-approved` is exempt (the grandfather source).
+- **Not retroactive** — it only gates new approval actions; existing data is not
+  re-validated.
+- Editing a heading already resets it to `proposed`, so re-approval requires
+  re-confirmation (unchanged behaviour).
+
+## Verification
+
+- **Integration (real data):** on `cob-003` — which carries **63 `proposed` +
+  42 `web` headings across 36 elements** — approving `PS-COB-006` is blocked
+  with `Cannot approve PS-COB-006 — these headings are not yet confirmed by the
+  SME (still proposed/web): inputs, outputs, description.` and **no write
+  occurs**.
+- App boots clean (`GET /` → 200, no server errors).
+- `npm run typecheck` clean; `npm test` green.
+
+## Issue surfaced (led to PR #3)
+
+While integration-testing, a pre-existing bug was found: `updateElement` ran the
+full content-conformance check on **every** write, so a metadata-only state
+change (approve / **reject** / relevance / status) was blocked whenever the
+element's existing content wasn't conformant. Recorded as roadmap **A3** and
+fixed in PR #3.
+
+---
+
+# PR #3 — Decouple metadata-only writes from content conformance (A3)
+
+**Branch:** `fix/metadata-conformance-decouple` → `fix/approval-gate-a1`
+(**stacked on PR #2**) · **Date:** 2026-06-04 · **Type:** Code fix + tests +
+docs.
+
+## Why this PR exists
+
+Fixes the bug surfaced by PR #2 (roadmap **A3**): `updateElement` validated
+content conformance on **every** write, so a **metadata-only** state change —
+approve, **reject**, relevance triage, status — was blocked whenever the
+element's *existing content* wasn't fully conformant. On the largely
+non-conformant migrated data this left the approval/relevance controls
+effectively dead (you couldn't even *reject* an element), contradicting the
+documented warn-and-allow model (`SKILLS.md §10`).
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/lib/wiki-write.ts` | **edit** | The conformance hard-block now runs only when the patch actually changes content (`isContentEdit`). Metadata-only writes proceed without it. |
+| `src/lib/wiki-write.test.ts` | **new** | Covers: metadata-only reject succeeds on a non-conformant element, metadata-only relevance triage succeeds, and the A1 gate still blocks approval of unconfirmed content. Uses a throwaway fixture and cleans up. |
+| `package.json` | **edit** | `test` script includes the new test file. |
+| `CLAUDE.md`, `SKILLS.md` | **edit** | Clarified: content edits block on conformance; metadata-only state changes do not. |
+| `REQUIREMENTS-ROADMAP.md` | **edit** | A3 recorded **fixed** in the appendix. |
+
+## Safety preserved
+
+- The **A1 approval gate is unaffected** — it runs *before* the conformance
+  block, so approving content with any `proposed`/`web` heading is still
+  hard-blocked.
+- **Content edits are unchanged** — still validated and blocked on conformance
+  failure (the schema-validated-writer guard).
+
+## Verification
+
+- `npm run typecheck` clean; `npm test` → **17/17 pass** (3 new in
+  `wiki-write.test.ts`); no leftover fixture.
+- App boots clean (`GET /` → 200, no server errors).
+
+---
+
+# Open follow-ups (as of PR #3)
+
+Fixed so far: **A1** (PR #2), **A3** (PR #3). Still open, from
+`REQUIREMENTS-ROADMAP.md`:
+
+1. **R6** — stable user IDs + server-side author injection (security; the
+   recommended next PR).
+2. **R9** — lift runtime state (`reviewState`/`lint`) out of the process JSON.
+3. **Schema consolidation** — merge the two `process-schema.json` copies into one
+   source of truth.
+4. **Product decisions** — R15 (country-variations element type) and R16
+   (per-process access control).
+5. Cross-read `REQUIREMENTS-ROADMAP.md` and prioritize the remaining R1–R22.
