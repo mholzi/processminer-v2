@@ -6,7 +6,7 @@ import * as os from "node:os";
 import { execSync } from "node:child_process";
 import { getSchema, toCamelCase, jsonElementToWikiPage, transitionTarget, type WikiPage } from "./wiki.ts";
 import { writeRuntime } from "./runtime-store.ts";
-import { buildTargetReview, parseSummaryParts } from "./session-writes.ts";
+import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts } from "./session-writes.ts";
 import { checkConformance } from "./conformance.ts";
 import { updateElement } from "./wiki-write.ts";
 import {
@@ -258,6 +258,38 @@ const toolDeclarations: any[] = [
         description: { type: "STRING", description: "One-line process description." }
       },
       required: ["slug", "PROC", "title"]
+    }
+  },
+  {
+    name: "writeIngestReport",
+    description: "Write the document-ingest result into the process JSON's `ingest` field (the file ingested, created/updated element ids, and the conflicts/corrections the SME triages in the app). Stamps slug + generatedAt. The app's triage screen reads this. Used by the document-ingest skill.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        report: {
+          type: "OBJECT",
+          description: "The ingest result.",
+          properties: {
+            file: { type: "STRING", description: "The source filename ingested." },
+            created: { type: "ARRAY", items: { type: "STRING" }, description: "Ids of newly created elements." },
+            updated: { type: "ARRAY", items: { type: "STRING" }, description: "Ids of updated elements." },
+            conflicts: { type: "ARRAY", items: { type: "OBJECT" }, description: "{ element, field, documentSays, wikiSays } entries." },
+            corrections: { type: "ARRAY", items: { type: "OBJECT" }, description: "{ element, field, removed } entries." }
+          }
+        }
+      },
+      required: ["report"]
+    }
+  },
+  {
+    name: "clearConflicts",
+    description: "Empty the `conflicts` array on the process JSON's `ingest` report once every conflict has been resolved, so the triage screen stops flagging them. No-op if there is no ingest report. Used by the conflict-resolution skill's close-out.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        slug: { type: "STRING", description: "The process slug." }
+      },
+      required: ["slug"]
     }
   },
 ];
@@ -937,6 +969,16 @@ export class GeminiWorker implements IProcessWorker {
                 doc.summaries[args.area] = { parts, generatedAt: new Date().toISOString() };
                 fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
                 resultText = JSON.stringify({ ok: true, area: args.area, parts: parts.length }, null, 2);
+              } else if (originalName === "writeIngestReport") {
+                if (!doc) throw new Error("Process document context not loaded or slug is missing.");
+                doc.ingest = buildIngestReport(this.slug!, args.report);
+                fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+                resultText = JSON.stringify({ ok: true, created: doc.ingest.created.length, updated: doc.ingest.updated.length, conflicts: doc.ingest.conflicts.length, corrections: doc.ingest.corrections.length }, null, 2);
+              } else if (originalName === "clearConflicts") {
+                if (!doc) throw new Error("Process document context not loaded or slug is missing.");
+                const { cleared } = clearIngestConflicts(doc);
+                fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+                resultText = JSON.stringify({ ok: true, cleared }, null, 2);
               } else {
                 throw new Error(`Unsupported tool: ${originalName}`);
               }

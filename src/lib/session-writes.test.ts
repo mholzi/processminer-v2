@@ -1,7 +1,12 @@
-// Tests for the session root-field writers (council-review + area-summary).
+// Tests for the session root-field writers (council-review + area-summary + ingest).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildTargetReview, parseSummaryParts } from "./session-writes.ts";
+import {
+  buildTargetReview,
+  parseSummaryParts,
+  buildIngestReport,
+  clearIngestConflicts,
+} from "./session-writes.ts";
 
 test("buildTargetReview: id-stamps items R-001… and marks each pending", () => {
   const r = buildTargetReview("cob-003", {
@@ -60,4 +65,45 @@ test("parseSummaryParts: rejects the wrong number of headings", () => {
 
 test("parseSummaryParts: rejects a memo with no headings", () => {
   assert.throws(() => parseSummaryParts("just prose, no headings"), /must use/);
+});
+
+test("buildIngestReport: normalises arrays and stamps slug", () => {
+  const r = buildIngestReport("cob-003", {
+    file: "policy.pdf",
+    created: ["PS-COB-001"],
+    conflicts: [{ element: "PS-COB-002", field: "title", documentSays: "x", wikiSays: "y" }],
+  });
+  assert.equal(r.slug, "cob-003");
+  assert.equal(r.file, "policy.pdf");
+  assert.deepEqual(r.created, ["PS-COB-001"]);
+  assert.deepEqual(r.updated, []); // missing array -> []
+  assert.deepEqual(r.corrections, []);
+  assert.equal(r.conflicts.length, 1);
+  assert.equal(typeof r.generatedAt, "string");
+});
+
+test("buildIngestReport: a null payload yields an empty-but-valid report", () => {
+  const r = buildIngestReport("cob-003", null);
+  assert.equal(r.file, "");
+  assert.deepEqual(r.created, []);
+  assert.deepEqual(r.conflicts, []);
+});
+
+test("clearIngestConflicts: empties conflicts and reports how many were cleared", () => {
+  const doc: any = {
+    ingest: {
+      conflicts: [{ element: "A" }, { element: "B" }],
+      corrections: [{ element: "C" }],
+    },
+  };
+  const res = clearIngestConflicts(doc);
+  assert.equal(res.cleared, 2);
+  assert.deepEqual(doc.ingest.conflicts, []);
+  assert.equal(doc.ingest.corrections.length, 1); // corrections untouched
+});
+
+test("clearIngestConflicts: no-op when there is no ingest report", () => {
+  const doc: any = { meta: { id: "COB-003" } };
+  const res = clearIngestConflicts(doc);
+  assert.equal(res.cleared, 0);
 });

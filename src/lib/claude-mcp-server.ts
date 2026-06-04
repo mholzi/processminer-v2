@@ -11,7 +11,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { getSchema, jsonElementToWikiPage, transitionTarget } from "./wiki.ts";
 import { writeRuntime } from "./runtime-store.ts";
-import { buildTargetReview, parseSummaryParts } from "./session-writes.ts";
+import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts } from "./session-writes.ts";
 import { checkConformance } from "./conformance.ts";
 import { updateElement } from "./wiki-write.ts";
 import { buildProcessDoc } from "./gemini-worker.ts";
@@ -261,6 +261,39 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
           required: ["slug", "PROC", "title"]
         }
+      },
+      {
+        name: "writeIngestReport",
+        description: "Write the document-ingest result into the process JSON's `ingest` field (file, created/updated ids, conflicts/corrections). Stamps slug + generatedAt. The app's triage screen reads this. Used by document-ingest.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            slug: { type: "string", description: "The process slug." },
+            report: {
+              type: "object",
+              description: "The ingest result.",
+              properties: {
+                file: { type: "string" },
+                created: { type: "array", items: { type: "string" } },
+                updated: { type: "array", items: { type: "string" } },
+                conflicts: { type: "array", items: { type: "object" } },
+                corrections: { type: "array", items: { type: "object" } }
+              }
+            }
+          },
+          required: ["slug", "report"]
+        }
+      },
+      {
+        name: "clearConflicts",
+        description: "Empty the `conflicts` array on the process JSON's `ingest` report once every conflict is resolved, so the triage screen stops flagging them. No-op if there is no ingest report. Used by conflict-resolution.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            slug: { type: "string", description: "The process slug." }
+          },
+          required: ["slug"]
+        }
       }
     ]
   };
@@ -507,6 +540,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       doc.summaries[area] = { parts, generatedAt: new Date().toISOString() };
       fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
       return { content: [{ type: "text", text: JSON.stringify({ ok: true, area, parts: parts.length }, null, 2) }] };
+    }
+
+    else if (name === "writeIngestReport") {
+      doc.ingest = buildIngestReport(slug, args?.report as any);
+      fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+      return { content: [{ type: "text", text: JSON.stringify({ ok: true, created: doc.ingest.created.length, updated: doc.ingest.updated.length, conflicts: doc.ingest.conflicts.length, corrections: doc.ingest.corrections.length }, null, 2) }] };
+    }
+
+    else if (name === "clearConflicts") {
+      const { cleared } = clearIngestConflicts(doc);
+      fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+      return { content: [{ type: "text", text: JSON.stringify({ ok: true, cleared }, null, 2) }] };
     }
 
     else {
