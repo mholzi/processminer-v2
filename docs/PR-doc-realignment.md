@@ -13,7 +13,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#5** | Server-derived write authorship (R6a) | `fix/stable-user-ids-r6` → `main` | Code + docs | **Merged** (`8353927`) |
 | **#6** | Store stable usernames, resolve display names at read (R6b) | `fix/stable-user-ids-r6b` → `main` | Code + tests + docs | **Merged** (`e3f27ac`) |
 | **#7** | Schema drift-guard (consolidation, option C) | `chore/consolidate-schema` → `main` | Code + tests + docs | **Merged** (`498c762`) |
-| **#8** | Typed transitions + RACI (R7 + R8, scope A) | `feat/typed-transitions-raci-r7-r8` → `main` | Code + tests + docs | **Open** (`pending`) |
+| **#8** | Typed transitions + RACI (R7 + R8, scope A) | `feat/typed-transitions-raci-r7-r8` → `main` | Code + tests + docs | **Merged** (`f41ea00`) |
+| **#9** | Runtime state above the wiki (R9) | `refactor/runtime-state-above-wiki-r9` → `main` | Code + tests + docs | **Open** (`pending`) |
 
 > **What happened with #3 → #4 (the stacking lesson):** #3 was opened *stacked*
 > on #2's branch (the A3 change is only safe with the A1 gate present). When #2
@@ -357,15 +358,56 @@ B) is a low-value, higher-risk follow-up.
 
 ---
 
-# Open follow-ups (as of PR #8)
+# PR #9 — Runtime state above the wiki (R9)
+
+**Branch:** `refactor/runtime-state-above-wiki-r9` → `main` · **Date:**
+2026-06-04 · **Type:** Code + tests + docs.
+
+## Why this PR exists
+
+The Karpathy guardrail: the wiki holds only durable process knowledge. But
+runtime/derived state — the foundational-run cursor (`reviewState`), the `lint`
+report, `findingDismissals` — lived **inside** `wiki/processes/cob-003.json`,
+co-mingled with the documented process. This is the project's sacred guardrail,
+and it was violated.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/lib/runtime-store.ts` | **new** | The runtime layer above the wiki: `getRuntime`/`writeRuntime` over `data/runtime/<slug>.json` (gitignored — transient, per-environment). |
+| `src/lib/wiki.ts` | **edit** | `getProcess` reads `reviewState`/`lint`/`findingDismissals` from the runtime store, not the process JSON. |
+| `src/lib/claude-mcp-server.ts`, `src/lib/gemini-worker.ts` | **edit** | `applyLint` writes the report to the runtime store + `delete doc.lint` (guardrail); the element re-opens still mutate the wiki JSON. |
+| `src/app/api/findings/route.ts` | **edit** | dismissals read/written via the runtime store. |
+| `wiki/processes/cob-003.json` | **edit** | `reviewState` + `lint` removed (moved to `data/runtime/cob-003.json`, local/gitignored). |
+| `src/lib/runtime-store.test.ts` | **new** | round-trip + merge tests. |
+
+## Verification
+
+- `npm run typecheck` clean; `npm test` → **26/26** (2 new).
+- Guardrail: `cob-003.json` now has **zero** runtime keys; the runtime store holds them.
+- App: the welcome screen still shows **Resume Foundational Run** (reviewState) and lint findings — now sourced from the runtime store; no errors.
+
+## Note
+
+There's no active `reviewState` *writer* in the current tools (it's seeded/read
+state); a future foundational-run cursor writer would write to the runtime
+store. The `ORCHESTRATOR-PLAN.md` doc + the read-only orchestrator that consumes
+this state remain **R10** (optional).
+
+---
+
+# Open follow-ups (as of PR #9)
 
 Fixed so far: **A1** (#2), **A3** (#4), **R6a** (#5), **R6b** (#6), **schema
-drift-guard** (#7), **R7 + R8** (#8). Still open, from `REQUIREMENTS-ROADMAP.md`:
+drift-guard** (#7), **R7 + R8** (#8), **R9** (#9). Still open, from
+`REQUIREMENTS-ROADMAP.md`:
 
-1. **R9** — lift runtime state (`reviewState`/`lint`) out of the process JSON
-   (the guardrail violation).
+1. **R10 (optional)** — restore `ORCHESTRATOR-PLAN.md` + the read-only
+   orchestrator that consumes the lifted runtime state.
 2. **Schema generator (optional)** — derive the JSON Schema from the custom
-   schema to remove the dual edit entirely (option A; only if it proves painful).
+   schema to remove the dual edit entirely (only if it proves painful).
 3. **Product decisions** — R15 (country-variations element type) and R16
    (per-process access control).
-4. Cross-read `REQUIREMENTS-ROADMAP.md` and prioritize the remaining R1–R22.
+4. Cross-read `REQUIREMENTS-ROADMAP.md` and prioritize the remaining R1–R22
+   (ArchitectMiner Theme A, R5, R11, R12, polish).

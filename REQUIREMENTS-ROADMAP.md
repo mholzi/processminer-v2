@@ -96,7 +96,7 @@ Each requirement: source commit(s), what's missing, impact, effort (S/M/L), reco
 - **Source:** `8a6f355` (ORCHESTRATOR-PLAN.md) + the live guardrail violation
 - **Gap:** `reviewState` and `lint` are top-level keys **inside** `wiki/processes/cob-003.json`. The design doc that ruled "persistence lives outside `wiki/processes/`" is gone.
 - **Impact:** Direct violation of the project's sacred Karpathy-wiki guardrail; runtime/orchestration state co-mingled with durable knowledge.
-- **Effort:** S (restore + update doc) + M (lift state out) · **Recommendation:** Re-port the doc (update file-path refs sidecars→JSON keys, add an explicit ruling on where `reviewState`/`lint` belong), then move runtime state into a runtime layer above the wiki.
+- ✅ **FIXED.** Runtime state (`reviewState`, `lint`, `findingDismissals`) now lives in a sibling **runtime store** (`src/lib/runtime-store.ts` → `data/runtime/<slug>.json`, gitignored). `getProcess` reads it; `applyLint` (MCP + Gemini) and `/api/findings` write it (and `delete doc.lint` as a guardrail so the wiki JSON can never carry it). `cob-003` migrated; `cob-003.json` now holds zero runtime keys. Verified: the welcome screen still shows the resume-run widget + lint findings, sourced from the runtime store. *(The full `ORCHESTRATOR-PLAN.md` doc + the read-only orchestrator consumer remain R10, optional.)*
 
 #### R10 — Read-only orchestrator layer
 - **Source:** `947ee0d`

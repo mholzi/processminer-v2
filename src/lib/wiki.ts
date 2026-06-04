@@ -11,6 +11,7 @@ import { join } from "node:path";
 import { applyFindingDismissals, type FindingDismissals, type LintReport } from "./lint.ts";
 import type { TargetReview } from "./target-review.ts";
 import { getUsers } from "./auth-server.ts";
+import { getRuntime } from "./runtime-store.ts";
 
 const ROOT = process.cwd();
 const WIKI_DIR = join(ROOT, "wiki", "processes");
@@ -514,9 +515,12 @@ export function getProcess(slug: string): ProcessDoc | null {
   const sources = listSources(slug);
   for (const s of sources) s.uploadedBy = resolveName(s.uploadedBy);
 
-  const lint = data.lint;
+  // R9 — runtime state (review cursor, lint, dismissals) lives above the wiki,
+  // in the runtime store, not in the process JSON.
+  const runtime = getRuntime(slug);
+  const lint = runtime.lint;
   if (lint) {
-    const dismissals = data.findingDismissals;
+    const dismissals = runtime.findingDismissals;
     if (dismissals) {
       applyFindingDismissals(
         lint.findings,
@@ -556,7 +560,7 @@ export function getProcess(slug: string): ProcessDoc | null {
     lint,
     targetReview: data.targetReview,
     ingest: data.ingest,
-    reviewState: data.reviewState,
+    reviewState: runtime.reviewState,
     summaries: data.summaries,
     notes,
     glossary: data.glossary,
