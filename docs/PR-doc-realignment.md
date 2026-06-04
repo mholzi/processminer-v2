@@ -32,7 +32,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#24** | Diagram + Traceability real-data wiring (R3) | `feat/architect-diagram-traceability-r3` → `main` | Code + tests + docs | **Merged** (`9e82c4c`) |
 | **#25** | Extract RACI-pivot + flow-lane joins into process-view (R18) | `refactor/process-view-r18` → `main` | Code + tests | **Merged** (`ebdf9fa`) — parallel track |
 | **#26** | Personal + Library tiers from real data (R4) | `feat/architect-personal-library-r4` → `main` | Code + tests + docs | **Merged** (`bf77fe3`) |
-| **#27** | Architect section detail views from real elements | `feat/architect-section-detail-views` → `main` | Code | **Open** (`pending`) |
+| **#27–#29** | Roadmap-doc reconciliation (status, open-items, R3/R4/R18/R19) | `docs/roadmap-*` → `main` | Docs only — parallel track | **Merged** |
+| **#30** | Architect section detail views from real elements | `feat/architect-section-detail-views` → `main` | Code | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -984,7 +985,7 @@ rendered fiction.
 
 ---
 
-# PR #27 — Architect section detail views from real elements
+# PR #30 — Architect section detail views from real elements
 
 **Branch:** `feat/architect-section-detail-views` → `main` · **Date:**
 2026-06-04 · **Type:** Code. Follow-up to Theme A (beyond R1–R4).
@@ -1023,7 +1024,7 @@ Net **−1,185 lines** in the canvas — the file shrank from ~2,100 to ~1,000 l
 
 ---
 
-# Open follow-ups (as of PR #27)
+# Open follow-ups (as of PR #30)
 
 **The entire ArchitectMiner module is now free of fabricated content** — every
 view reads from `doc.elements`. With Theme A (R1–R4) + this follow-up done, and
