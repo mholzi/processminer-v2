@@ -53,10 +53,6 @@ standards (e.g. Basel for banking) that flow into it.
 
 ## Step 2 — Scan the regulatory landscape
 
-Before the first write, use the resetManifest() tool. Every element you write is
-logged to it; Step 3's report counts are read back from the manifest, not
-tallied from memory.
-
 Web-search for the regulation, supervisory rules and guidance that govern this
 process. Work across the regulatory domains that bear on it — for a banking
 process that typically means some of:
@@ -84,12 +80,12 @@ obligation that genuinely applies to *this* process:
   link on the **control**: patch that control's `regulatedBy` to add this
   regulation's id (use the updateElement({ id, patch }) tool). A regulation has no `controls`
   field — its control list is the derived reverse of `control.regulatedBy`.
-- Write all the regulations **in one batch** — a manifest
-  `{ "slug": "<slug>", "elements": [ … ] }` of createElement({ type, element }) tool specs
-  (`status: draft`, `confidence: medium`; `low` if thinly evidenced) — with
-  use the createElements({ elements }) tool, then
-  use the checkConformance() tool; fix any flagged element
-  and re-run it.
+- Write all the regulations **in one batch** — an `elements` array of specs
+  (each `{ type: "regulation", element: { … } }`, `status: draft`,
+  `confidence: medium`; `low` if thinly evidenced) — with the
+  createElements({ elements }) tool, then the checkConformance() tool; fix any
+  flagged element and re-run it. The tool returns `created` (the assigned ids)
+  and per-type `counts` — read your Step 3 report count from `counts`.
 
 Name **real** regulations and cite **real** sources — never invent a regulation
 or a citation. If web search is unavailable, write only what you can solidly
@@ -97,9 +93,8 @@ support and say so in the report.
 
 ## Step 3 — Report
 
-Use the getSourceReport() tool — it reads the run manifest
-and prints how many elements were written, per type. Read the `regulation`
-count from it; do not recount from memory.
+Read the `regulation` count from the `counts` the createElements call returned
+(`counts["regulation"]`); do not recount from memory.
 
 Report with the canonical template:
 """

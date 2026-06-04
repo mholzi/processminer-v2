@@ -44,7 +44,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#36** | Register the `writeTargetReview` + `writeSummary` AI tools (fix council-review + area-summary) | `feat/council-summary-tools` → `main` | Code + tests + skills | **Merged** (`f12dd62`) |
 | **#37** | Purge dead script / legacy-doc pointers from 6 skills | `chore/purge-skill-stale-pointers` → `main` | Skills only | **Merged** (`162a853`) |
 | **#38** | Reference `CORE_SYSTEM_PROMPT.md` from the 6 perspective specialists | `chore/specialists-reference-core` → `main` | Skills only | **Merged** (`082b92b`) |
-| **#39** | `scaffoldProcess` tool — make `new-process` functional | `feat/scaffold-process-tool` → `main` | Code + docs | **Open** (`pending`) |
+| **#39** | `scaffoldProcess` tool — make `new-process` functional | `feat/scaffold-process-tool` → `main` | Code + docs | **Merged** (`91114d3`) |
+| **#40** | `createElements` batch tool — kill the source/ingest run-manifest | `feat/create-elements-batch` → `main` | Code + 5 skills + docs | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1381,6 +1382,52 @@ parallel `BRIDGES_AND_TODOS` audit.
 > `writeIngestReport`, `clearConflicts`, …). My earlier skill review (#36–#38)
 > caught `writeTargetReview`/`writeSummary` but not this batch — they're the next
 > real bug to fix.
+
+---
+
+# PR #40 — `createElements` batch tool (kill the source/ingest run-manifest)
+
+**Branch:** `feat/create-elements-batch` → `main` · **Date:** 2026-06-04 ·
+**Type:** Code + 5 skills + docs. **First slice of the phantom-tool program**
+(the #39 BRIDGES audit's "next real bug"). Scope chosen with the user:
+*batch authoring + kill the manifest*.
+
+## Why
+
+The 4 `source-*` skills and `document-ingest` instructed the AI to call
+`createElements` / `writeElements` plus a family of "run manifest" tools
+(`resetManifest`, `mergeManifests`, `getSourceReport`, `generateSourceReport`)
+to batch-write elements and tally their report — **none of which existed**. So
+their write+report path was non-functional under the real backend (the
+`/tmp`-scratch improvisation seen in the dogfood run).
+
+## What this PR does
+
+| File | Change |
+|---|---|
+| `src/lib/session-create.ts` **(new)** | Shared, pure, unit-tested authoring core: `buildElement` (resolve `@tempKey` → validate → assign id, no I/O), `applyElement`, `createElementsBatch` (loops, shared tempKeyMap, returns `created` + per-type `counts` + isolated `errors`). The `replaceTempKeys` / `generateNextId` helpers moved here (re-exported from `gemini-worker` for existing importers). |
+| `src/lib/session-create.test.ts` **(new)** | 8 tests — id sequencing, intra-batch `@tempKey` cross-refs, per-type counts, error isolation. |
+| `src/lib/gemini-worker.ts`, `src/lib/claude-mcp-server.ts` | `createElements` tool **declared + handled in both providers**; the single `createElement` handler migrated onto the shared `buildElement`/`applyElement` (DRY — both paths now share tested code). |
+| `.claude/skills/{source-cx,source-innovation,source-regulation,source-target,document-ingest}/SKILL.md` | Rewritten to call `createElements` and read report counts from its `counts` return. **All manifest tooling removed** (`resetManifest`/`mergeManifests`/`getSourceReport`/`generateSourceReport`/`writeElements`) — the manifest was runtime state, so killing it honours the Karpathy "no runtime state in the wiki" guardrail. Incidental rewrites: `getElementTemplate`→schema template (source-cx). |
+| `docs/BRIDGES_AND_TODOS.md` | Tool surface now **10**; batch authoring marked DONE; remaining phantom-tool groups regrouped by fix (rewrite-onto-existing vs. new root-field tools vs. the session-cursor API). |
+| `package.json` | `session-create.test.ts` added to the test script. |
+
+## Reconciliation note
+
+A concurrent session had independently begun the same feature directly in
+`gemini-worker.ts` (a duplicate `createElements`/`writeElements` handler + a
+`writeIngestReport` handler + their declarations — gemini-only, **undeclared
+where it counted / non-invokable**, untested, not on `main`). Per the user's
+call ("ship my clean PR only"), those were stripped so this PR carries a single
+tested, declared, dual-provider `createElements`. `writeIngestReport` and the
+other groups land later, done properly.
+
+## Verification
+
+`npm run typecheck` clean · `npm test` **78/78** (was 70; +8). Both providers'
+tool registries match (drift-free). The transient `.claude/scheduled_tasks.lock`,
+the parallel `scripts/cc-specialist-frd001.mjs`, and the runtime
+`funds-release-dogfood.json` churn were left out.
 
 ---
 
