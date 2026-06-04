@@ -1,5 +1,6 @@
 import type { WikiPage } from "@/lib/wiki";
 import { type Kind, type Transition, orderSteps, parseTransitions } from "@/lib/stepOrder";
+import { buildRaciGrid, buildFlowLanes } from "@/lib/process-view";
 import ElementHovercard from "./ElementHovercard";
 
 // The process-step flow — a swimlane strip. Steps are ordered left-to-right by
@@ -17,10 +18,6 @@ function stepApproval(s: WikiPage): "approved" | "rejected" | "in-progress" {
   const a = String(s.meta.approval ?? "in-progress");
   return a === "approved" || a === "rejected" ? a : "in-progress";
 }
-
-import { asList } from "@/lib/meta";
-
-const UNASSIGNED = "__unassigned__";
 
 const NODE_W = 158;
 const NODE_H = 116;
@@ -66,39 +63,14 @@ export default function ProcessFlow({
 
   // --- Lane assignment: the role that performs each step. RACI data lives on
   // role pages (`raci: [STEP:LEVEL]`); the Responsible role owns the lane, with
-  // the Accountable role as fallback when no R is set. ---
+  // the Accountable role as fallback when no R is set. The RACI pivot + lane
+  // assignment are shared with the RACI matrix — see lib/process-view. ---
   const roleById = new Map(roles.map((r) => [r.id, r]));
-  const rRole: Record<string, string> = {};
-  const aRole: Record<string, string> = {};
-  for (const role of roles) {
-    for (const entry of asList(role.meta.raci)) {
-      const [sid, lvl] = entry.split(":");
-      if (!sid || !lvl) continue;
-      const id = sid.trim();
-      const level = lvl.trim().toUpperCase();
-      if (level === "R" && !(id in rRole)) rRole[id] = role.id;
-      else if (level === "A" && !(id in aRole)) aRole[id] = role.id;
-    }
-  }
-  const ownerOf = (stepId: string) =>
-    rRole[stepId] ?? aRole[stepId] ?? UNASSIGNED;
-
-  // Lane order follows first appearance along the step spine — so the diagram
-  // reads roughly diagonally. The unassigned lane is always pushed last.
-  const laneOrder: string[] = [];
-  for (const s of sorted) {
-    const k = ownerOf(s.id);
-    if (!laneOrder.includes(k)) laneOrder.push(k);
-  }
-  const ui = laneOrder.indexOf(UNASSIGNED);
-  if (ui >= 0 && ui !== laneOrder.length - 1) {
-    laneOrder.splice(ui, 1);
-    laneOrder.push(UNASSIGNED);
-  }
-  const hasLaneData = laneOrder.some((k) => k !== UNASSIGNED);
-  const laneIndex: Record<string, number> = {};
-  laneOrder.forEach((k, i) => (laneIndex[k] = i));
-  const laneOf = (i: number) => laneIndex[ownerOf(sorted[i].id)];
+  const { ownerOf, laneOrder, laneIndex, hasLaneData } = buildFlowLanes(
+    sorted,
+    buildRaciGrid(roles),
+  );
+  const laneOf = (i: number) => laneIndex.get(ownerOf.get(sorted[i].id)!)!;
 
   // --- Geometry: X by step column, Y by lane. ---
   const nodeX = (i: number) => i * (NODE_W + GAP_X);
