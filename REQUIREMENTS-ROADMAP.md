@@ -125,14 +125,14 @@ Each requirement: source commit(s), what's missing, impact, effort (S/M/L), reco
 - **Source:** `1a42d19`
 - **Gap:** `src/lib/linkify.tsx`, `src/lib/meta.ts`, `SectionSummary.tsx`, perspective-rotation hook all missing; `asList`/`str`/`linkify` re-duplicated across 11+ files.
 - **Impact:** Maintainability debt; copies drift. No correctness impact.
-- **Effort:** S · **Recommendation:** Re-port concept — extract helpers, repoint imports (old file contents cherry-pickable as a starting point).
+- ✅ **FIXED (asList/str).** Extracted `asList` (was copy-pasted **identically into 8 files**) and `str` into a shared, dependency-free `src/lib/meta.ts`; repointed all 8 `asList` consumers. Verified the consumers (RaciMatrix, ProcessFlow, ElementCard) still render. *(`linkify`/`SectionSummary`/perspective-rotation are component-specific and left as-is — low-value to share.)*
 
 #### R14 — Small UX polish
 - **Source:** `711f6f1` (chat overlay), `b262fa1` (clickable chat refs), `641078f` (runSourcing via handleSend)
 - **Gaps:** (a) Chat panel is a grid column that narrows the canvas instead of floating over it (pure CSS). (b) Element-id refs in chat are hoverable but **not** clickable — `goToElement` exists everywhere else, just not wired to `.chat-ref`. (c) `runSourcing` uses a raw `fetch` again so web-sourcing runs bypass the chat transcript/active-skill chip/watchdog (partly mitigated by a separate progress banner).
 - **Impact:** Minor each.
 - ✅ **(a) + (b) FIXED.** Chat panel now floats over the canvas when expanded (`position:absolute` + the grid keeps the 56px rail column, so opening the chat no longer reflows/narrows the document — verified: canvas width identical open vs closed). Chat element-id refs are clickable → `goToElement` (threaded `onRefClick` through `AgentChat`'s linkify chain; `cursor:pointer`).
-- ⏳ **(c) still open** — `runSourcing` via `handleSend` (verify-then-decide; there's a working progress banner).
+- ✅ **(c) FIXED.** `runSourcing` now routes through `handleSend` (the chat pipeline) instead of a raw `fetch` — the web-sourcing run shows in the transcript with the active-skill chip + watchdog, and opens the chat. The section's `sourcing` "running" indicator is kept and cleared by `handleSend`'s `onComplete` (fires on done + error); `handleSend` refreshes the doc on completion.
 
 ### Theme F — Product decisions (not technical givens)
 

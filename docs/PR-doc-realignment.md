@@ -18,7 +18,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#10** | Delete a process, in-app (R11) | `feat/delete-process-r11` → `main` | Code + docs | **Merged** (`7d1035c`) |
 | **#11** | Quick wins — applyLint bug + chat overlay + clickable chat refs (R14 a/b) | `fix/quick-wins-r13-r14` → `main` | Code + docs | **Merged** (`7df0b5f`) |
 | **#12** | Editable Overview (R12a) | `feat/overview-edit-summaries-r12` → `main` | Code + docs | **Merged** (`b742eb1`) |
-| **#13** | Contributors + per-edit attribution (R5) | `feat/contributors-activity-r5` → `main` | Code + docs | **Open** (`pending`) |
+| **#13** | Contributors + per-edit attribution (R5) | `feat/contributors-activity-r5` → `main` | Code + docs | **Merged** (`51abb5c`) |
+| **#14** | Cleanup — asList dedup (R13) + runSourcing via handleSend (R14c) | `fix/dedup-runsourcing-r13-r14c` → `main` | Code + docs | **Open** (`pending`) |
 
 > **What happened with #3 → #4 (the stacking lesson):** #3 was opened *stacked*
 > on #2's branch (the A3 change is only safe with the A1 gate present). When #2
@@ -517,14 +518,37 @@ Per-process (uses the loaded doc). Deferred: lint resolved/dismissed events and 
 
 ---
 
-# Open follow-ups (as of PR #13)
+# PR #14 — Cleanup: asList dedup (R13) + runSourcing via handleSend (R14c)
+
+**Branch:** `fix/dedup-runsourcing-r13-r14c` → `main` · **Date:** 2026-06-04 ·
+**Type:** Code + docs.
+
+## What this PR adds / changes
+
+| Item | Files | Summary |
+|---|---|---|
+| **R13** | `src/lib/meta.ts` (new) + 8 consumers | Extracted `asList` (copy-pasted **identically into 8 files**) and `str` into a shared, dependency-free `meta.ts`; repointed all 8 `asList` consumers (ElementCard, ProcessFlow, RaciMatrix, TargetSynthesis, ControlsInTarget, print/PrintElement, lib/coverage, lib/relations). |
+| **R14c** | `src/app/ProcessDocScreen.tsx` | `runSourcing` routes through `handleSend` (the chat pipeline) instead of a raw `fetch` + manual SSE — the run shows in the transcript with the active-skill chip + watchdog, opens the chat, keeps the section "running" indicator (cleared by `handleSend`'s `onComplete`), and refreshes the doc on completion. Deletes ~70 lines of duplicated SSE handling. |
+
+## Scope
+
+`linkify` / `SectionSummary` (the other R13 candidates) are component-specific and left as-is — low value to share.
+
+## Verification
+
+- `npm run typecheck` clean; `npm test` → 26/26 (unchanged).
+- **R13:** the shared `asList`'s consumers render — RaciMatrix (21 badges), ProcessFlow (17 paths), 6 element cards; no errors. No local `asList` defs remain.
+- **R14c:** typecheck-clean swap to the proven `handleSend` pipeline (`onComplete` fires in a `finally`, so the indicator clears on done **and** error). Not triggered live to avoid an LLM run.
+
+---
+
+# Open follow-ups (as of PR #14)
 
 Fixed so far: **A1** (#2), **A3** (#4), **R6a** (#5), **R6b** (#6), **schema
 drift-guard** (#7), **R7 + R8** (#8), **R9** (#9), **R11** (#10), **A4 + R14 a/b**
-(#11), **R12a** (#12), **R5** (#13). Still open, from `REQUIREMENTS-ROADMAP.md`
-(Processminer focus):
+(#11), **R12a** (#12), **R5** (#13), **R13 + R14c** (#14). Still open, from
+`REQUIREMENTS-ROADMAP.md`:
 
-1. **R12b** — the 8 section-summary widgets.
-2. **R13** — shared-helper dedup; **R14c** — `runSourcing` via `handleSend`.
-3. **Product decisions** — R15 (country-variations) and R16 (per-process access control).
-4. **Parked:** ArchitectMiner Theme A (R1–R4); R10 / schema-generator (optional).
+1. **R12b** — the 8 section-summary widgets (the remaining half of R12).
+2. **Product decisions** — R15 (country-variations) and R16 (per-process access control).
+3. **Parked:** ArchitectMiner Theme A (R1–R4); R10 / schema-generator (optional).

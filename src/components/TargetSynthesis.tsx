@@ -11,10 +11,7 @@ import ElementHovercard from "./ElementHovercard";
 // that change it — a derived As-Is → To-Be diff. Steps no theme touches show
 // "Unchanged", so the stable part of the process is visible too.
 
-function asList(v: string | string[] | undefined): string[] {
-  if (!v) return [];
-  return Array.isArray(v) ? v : [v];
-}
+import { asList } from "@/lib/meta";
 
 export default function TargetSynthesis({
   steps,

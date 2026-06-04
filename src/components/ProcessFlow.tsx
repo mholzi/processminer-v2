@@ -18,10 +18,7 @@ function stepApproval(s: WikiPage): "approved" | "rejected" | "in-progress" {
   return a === "approved" || a === "rejected" ? a : "in-progress";
 }
 
-function asList(v: string | string[] | undefined): string[] {
-  if (!v) return [];
-  return Array.isArray(v) ? v : [v];
-}
+import { asList } from "@/lib/meta";
 
 const UNASSIGNED = "__unassigned__";
 
