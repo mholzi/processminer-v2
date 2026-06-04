@@ -47,24 +47,28 @@ Each requirement: source commit(s), what's missing, impact, effort (S/M/L), reco
 - **Impact:** ArchitectMiner has no agent interaction at all — can't add/elicit ADRs, capabilities, integrations, NFRs. The functional heart of the workspace is dead.
 - **Effort:** M–L · **Recommendation:** Redesign for JSON model (extract shared chat hook; target the new dual-track backend + `wiki-write.ts`/MCP write path, not the old Python skills).
 - **Dependency:** Unblocks R2; R2 unblocks the rest of Theme A.
+- ✅ **FIXED (#19).** The inlined SME chat pipeline was extracted into a shared, provider-agnostic core (`src/lib/agent-chat.ts`) + a React hook (`src/components/useAgentChat.ts`). `ArchitectureCanvas` chat is now the live architect agent (own `am` sessionStorage namespace + architect preamble), every "+ Add X" / "Elicit with …architect" button seeds a scoped turn, and `ProcessDocScreen` drives its turns through the same shared core.
 
 #### R2 — Domain-architect + solution-architect specialists
 - **Source:** `98faa19`
 - **Gap:** The two architect-side perspective specialists (domain-architect: capability/target-application/ADR; solution-architect: integration/component/NFR/migration-phase) don't exist as skills. No architect authoring intelligence.
 - **Impact:** Even with R1 done, there's no agent to elicit architecture content.
 - **Effort:** M · **Recommendation:** Redesign — mine the old SKILL.md prose for elicitation logic, reframe as pure reasoning prompts under `CORE_SYSTEM_PROMPT.md`. Drop the old verbatim BATCHING/WRITING-PROCEDURE/PROVENANCE blocks and `check_skill_blocks.py` (those were the Python-toolkit contract; provenance is now enforced by `conformance.ts`).
+- ✅ **FIXED (#20).** Both architect specialists exist as pure reasoning skills — `.claude/skills/domain-architect/SKILL.md` (capability / target-application / ADR) and `.claude/skills/solution-architect/SKILL.md` (integration / component / NFR / migration-phase), routed through `CORE_SYSTEM_PROMPT.md` and the schema-enforced tools. The architect Elicit buttons (R1) invoke them.
 
 #### R3 — Diagram + Traceability real data wiring
 - **Source:** `db525cf` (part 1 of 2)
 - **Gap:** The ArchitectMiner Diagram is hardcoded SVG paths; Traceability shows a hardcoded "63 / illustrative" stat. Neither derives from `doc.elements`.
 - **Impact:** The two headline architect analysis views are decorative mockups.
 - **Effort:** M · **Recommendation:** Redesign — mostly mechanical; retarget relation-reading code at `doc.elements[].relations` inside `<slug>.json` (no schema change). Auto-position caps/apps, draw hostedIn + integration edges, bucket relations OK/partial/orphan.
+- ✅ **FIXED (#24).** New `src/lib/architecture-view.ts` (+ `architecture-view.test.ts`) derives the Diagram + Traceability views from `doc.elements` — node positions, hostedIn/integration edges, and relation bucketing (OK / partial / orphan). `ArchitectureCanvas` was rewired off the hardcoded SVG and the "illustrative" stat.
 
 #### R4 — Personal-work + Library tiers from real data
 - **Source:** `de91eef`
 - **Gap:** `PersonalViews.tsx` and `LibraryViews.tsx` are entirely mock (capability catalog, application register w/ BUILD/BUY verdicts, NFR templates, ADR ownership, migration plans, cross-process reuse).
 - **Impact:** Personal/Library tiers show fabricated numbers; the cross-process-intelligence pitch doesn't function.
 - **Effort:** M · **Recommendation:** Redesign — aggregate across all `<slug>.json` docs. ⚠️ Cross-process reuse will look empty until more than `cob-003` is migrated.
+- ✅ **FIXED (#26).** New `src/lib/architect-portfolio.ts` (+ `architect-portfolio.test.ts`) aggregates capabilities / applications / NFRs / ADRs / migration plans across every `<slug>.json`; `PersonalViews.tsx` and `LibraryViews.tsx` (and `HandoffInbox`) now render that real data instead of mock fixtures. *(Cross-process reuse stays sparse until more than `cob-003` is migrated — a data-coverage matter, not a code one.)*
 
 #### R5 — Per-edit attribution + contributors/activity feed
 - **Source:** `27d68e4` + `08bbc07`
@@ -107,6 +111,7 @@ Each requirement: source commit(s), what's missing, impact, effort (S/M/L), reco
 - **Gap:** `src/lib/orchestrator.ts` (`buildOrchestratorState`, `buildAttentionFeed`) + 13 tests are gone. The attention weight formula (`conflicts*100 + lint*5 + comments`) survives **byte-identically inlined** in `WelcomeScreen.tsx:47`, at risk of drift; the typed action vocabulary and cross-process `attentionRows`/`cleanProcesses` split are lost.
 - **Impact:** Low functional impact today (dashboard still renders) but no single tested home for routing logic; nothing for the chat router / TriagePanel to share.
 - **Effort:** M · **Recommendation:** Redesign — re-establish as the canonical read layer over the JSON `ProcessDoc`, delete the inline `pmAttentionForDoc`. Pairs with R9 (the orchestrator is the natural consumer of the lifted runtime state).
+- ✅ **FIXED (#18).** `src/lib/orchestrator.ts` restored as the canonical read layer over `ProcessDoc` — `buildOrchestratorState(doc)` → ranked typed `ActionSpec[]` + `OrchestratorHealth`, and `buildAttentionFeed(docs)` → `{ attentionRows, cleanProcesses }`; 13 tests in `orchestrator.test.ts` (incl. byte-identical legacy weight formula + reasons to guard drift). `WelcomeScreen` dropped the inline `pmAttentionForDoc` and maps `buildAttentionFeed`. Reads runtime inputs off the R9-hydrated doc, never the wiki JSON. *(Scoped to read off `ProcessDoc`; the unused `ProcessView` arg / R18 was not pulled in here.)*
 
 ### Theme D — Core PM feature gaps
 
