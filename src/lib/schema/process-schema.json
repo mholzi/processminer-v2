@@ -725,9 +725,27 @@
                 "raci": {
                   "type": "array",
                   "items": {
-                    "type": "string"
+                    "type": "object",
+                    "properties": {
+                      "step": {
+                        "type": "string"
+                      },
+                      "level": {
+                        "type": "string",
+                        "enum": [
+                          "R",
+                          "A",
+                          "C",
+                          "I"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "step",
+                      "level"
+                    ]
                   },
-                  "description": "RACI assignments in stepId:level format."
+                  "description": "RACI assignments: each { step: <process-step id>, level: R|A|C|I }."
                 }
               },
               "required": [

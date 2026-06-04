@@ -82,13 +82,13 @@ Each requirement: source commit(s), what's missing, impact, effort (S/M/L), reco
 - **Source:** `bbcf8f0` (transitions half; provenance half is already DONE)
 - **Gap:** Transitions are still a pipe-DSL inside `meta` (`"PS-COB-002|normal|"`), parsed with `split("|")` in `ElementCard.tsx`/`ProcessFlow.tsx`, with no AJV validation of target/kind and a `when` clause that must avoid commas.
 - **Impact:** Fragile, unvalidated; reintroduces the brittleness the original refactor removed.
-- **Effort:** S–M · **Recommendation:** Re-port concept — model as `{to, kind, when}[]`, AJV-validate, update the 4–5 `split("|")` sites.
+- ✅ **FIXED (scope A).** Transitions are now stored as `{to, kind, when}` objects (canonical) and validated by the AJV schema. The read-DTO bridge stringifies them to `"to|kind|when"` so display/flow stay unchanged (`transitionToString`/`transitionTarget` in `wiki.ts` accept either form). Fixed a latent bug: MCP/Gemini `checkTransitions` did `if (typeof t !== "string") continue`, silently skipping object-form transitions; now they read either form. `cob-003` data migrated; custom-schema note describes the object shape (guides the LLM). Display-side `split("|")` is retained (it parses the bridge's generated, schema-valid strings — safe).
 
 #### R8 — Typed RACI (`step:level` → structured)
 - **Source:** `5d85738`
 - **Gap:** Roles carry `raci: ["PS-COB-001:A", …]` string DSL, parsed with `split(":")` in `RaciMatrix.tsx`/`ProcessFlow.tsx`, no validation that step resolves or level ∈ {R,A,C,I}.
 - **Impact:** Same brittleness class as R7.
-- **Effort:** S–M · **Recommendation:** Re-port concept — model `meta.raci` as `{step, level}[]`, AJV-validate, update 2 `split(":")` sites. *(R7+R8 are siblings; do together.)*
+- ✅ **FIXED (scope A, with R7).** RACI is now stored as `{step, level}` objects and the AJV schema validates `level ∈ {R,A,C,I}` (was `array of string`). The bridge stringifies to `"step:level"` via `raciToString`, so `RaciMatrix`/`ProcessFlow` are unchanged. `cob-003` data migrated; custom-schema note describes the object shape. Verified: the RACI matrix renders 44 badges (R/A/C/I) from the structured data.
 
 ### Theme C — Architectural integrity (the guardrail)
 

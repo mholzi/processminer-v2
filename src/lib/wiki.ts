@@ -353,6 +353,24 @@ export function toCamelCase(str: string): string {
     .join("");
 }
 
+// R7/R8 — transitions and RACI are stored as structured objects
+// (`{ to, kind, when }` and `{ step, level }`). Older data and the read-DTO use
+// the string forms "to|kind|when" and "step:level". These helpers accept either
+// form so every consumer is form-agnostic.
+export function transitionToString(t: any): string {
+  if (t && typeof t === "object")
+    return `${t.to ?? ""}|${t.kind ?? "normal"}|${t.when ?? ""}`;
+  return String(t ?? "");
+}
+export function transitionTarget(t: any): string {
+  if (t && typeof t === "object") return String(t.to ?? "");
+  return String(t ?? "").split("|")[0] ?? "";
+}
+export function raciToString(r: any): string {
+  if (r && typeof r === "object") return `${r.step ?? ""}:${r.level ?? ""}`;
+  return String(r ?? "");
+}
+
 export function jsonElementToWikiPage(item: any, info: ElementType): WikiPage {
   const meta: Record<string, any> = { ...(item.meta || {}) };
   if (meta.provenance && typeof meta.provenance === "object") {
@@ -365,14 +383,14 @@ export function jsonElementToWikiPage(item: any, info: ElementType): WikiPage {
     }
   }
 
-  // Bridge transitions from { to, kind, when }[] to string[] format expected by the frontend
+  // Bridge structured transitions/RACI to the string forms the frontend parses
+  // ("to|kind|when", "step:level"). The helpers accept the legacy string form
+  // too, so display works regardless of how the element was stored.
   if (meta.transitions && Array.isArray(meta.transitions)) {
-    meta.transitions = meta.transitions.map((t: any) => {
-      if (typeof t === "object" && t !== null) {
-        return `${t.to || ""}|${t.kind || "normal"}|${t.when || ""}`;
-      }
-      return String(t);
-    });
+    meta.transitions = meta.transitions.map(transitionToString);
+  }
+  if (meta.raci && Array.isArray(meta.raci)) {
+    meta.raci = meta.raci.map(raciToString);
   }
 
   const blocks: { heading: string; text: string }[] = [];

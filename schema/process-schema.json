@@ -289,9 +289,9 @@
         ],
         "required": [],
         "raci": {
-          "format": "step:level",
+          "format": "{ step, level }",
           "levels": ["R", "A", "C", "I"],
-          "note": "How this role participates in each process step — the RACI assignment that drives the RACI matrix. Frontmatter key `raci` — a list, each entry `<stepId>:<level>`: the process-step id and the level (R responsible, A accountable, C consulted, I informed). A role carries an entry only for the steps it participates in. Across all roles, every step needs at least one R and exactly one A."
+          "note": "How this role participates in each process step — the RACI assignment that drives the RACI matrix. Field `raci` — a list of objects, each `{ \"step\": <process-step id>, \"level\": <R|A|C|I> }`: R responsible, A accountable, C consulted, I informed. A role carries an entry only for the steps it participates in. Across all roles, every step needs at least one R and exactly one A."
         }
       },
       "template": [
@@ -345,14 +345,14 @@
           "owner"
         ],
         "transitions": {
-          "format": "to|kind|when",
+          "format": "{ to, kind, when }",
           "kinds": [
             "normal",
             "branch",
             "loopback",
             "exception"
           ],
-          "note": "Outgoing flow from this step. Frontmatter key `transitions` — a list, each entry `<targetId>|<kind>|<when>`: the element it flows to (a process-step or exception id), the transition kind, and the condition under which it fires. Keep the `when` clause free of commas (the list is comma-delimited)."
+          "note": "Outgoing flow from this step. Field `transitions` — a list of objects, each `{ \"to\": <target id>, \"kind\": <normal|branch|loopback|exception>, \"when\": <condition> }`: the element it flows to (a process-step or exception id), the transition kind, and the condition under which it fires."
         }
       },
       "template": [

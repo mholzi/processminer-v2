@@ -1,7 +1,12 @@
 // Tests for the R6b author display-name resolver — run with:  npm test
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { resolveAuthor } from "./wiki.ts";
+import {
+  resolveAuthor,
+  transitionToString,
+  transitionTarget,
+  raciToString,
+} from "./wiki.ts";
 
 const roster = new Map([
   ["m.berger", "M. Berger"],
@@ -23,4 +28,25 @@ test("resolveAuthor passes through non-strings and empties", () => {
   assert.equal(resolveAuthor(undefined, roster), undefined);
   assert.equal(resolveAuthor(null, roster), null);
   assert.equal(resolveAuthor("", roster), "");
+});
+
+// R7/R8 — transition/RACI form-agnostic helpers
+test("transitionToString renders both the object and string forms", () => {
+  assert.equal(
+    transitionToString({ to: "PS-2", kind: "branch", when: "if overdraft" }),
+    "PS-2|branch|if overdraft",
+  );
+  assert.equal(transitionToString({ to: "PS-3" }), "PS-3|normal|"); // defaults kind
+  assert.equal(transitionToString("PS-4|normal|"), "PS-4|normal|"); // legacy string passes through
+});
+
+test("transitionTarget extracts the target id from either form", () => {
+  assert.equal(transitionTarget({ to: "EX-1", kind: "exception", when: "" }), "EX-1");
+  assert.equal(transitionTarget("EX-2|exception|fraud"), "EX-2");
+  assert.equal(transitionTarget(""), "");
+});
+
+test("raciToString renders both the object and string forms", () => {
+  assert.equal(raciToString({ step: "PS-1", level: "A" }), "PS-1:A");
+  assert.equal(raciToString("PS-2:R"), "PS-2:R"); // legacy string passes through
 });

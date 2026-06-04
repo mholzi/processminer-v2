@@ -12,7 +12,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#4** | Decouple metadata-only writes from content conformance (A3) | `fix/metadata-conformance-decouple` → `main` | Code + tests + docs | **Merged** (`b487d3d`) |
 | **#5** | Server-derived write authorship (R6a) | `fix/stable-user-ids-r6` → `main` | Code + docs | **Merged** (`8353927`) |
 | **#6** | Store stable usernames, resolve display names at read (R6b) | `fix/stable-user-ids-r6b` → `main` | Code + tests + docs | **Merged** (`e3f27ac`) |
-| **#7** | Schema drift-guard (consolidation, option C) | `chore/consolidate-schema` → `main` | Code + tests + docs | **Open** (`pending`) |
+| **#7** | Schema drift-guard (consolidation, option C) | `chore/consolidate-schema` → `main` | Code + tests + docs | **Merged** (`498c762`) |
+| **#8** | Typed transitions + RACI (R7 + R8, scope A) | `feat/typed-transitions-raci-r7-r8` → `main` | Code + tests + docs | **Open** (`pending`) |
 
 > **What happened with #3 → #4 (the stacking lesson):** #3 was opened *stacked*
 > on #2's branch (the A3 change is only safe with the A1 gate present). When #2
@@ -310,17 +311,61 @@ force a merge.
 
 ---
 
-# Open follow-ups (as of PR #7)
+# PR #8 — Typed transitions + RACI (R7 + R8, scope A)
 
-Fixed so far: **A1** (PR #2), **A3** (PR #4), **R6a** (PR #5), **R6b** (PR #6),
-**schema drift-guard** (PR #7). Still open, from `REQUIREMENTS-ROADMAP.md`:
+**Branch:** `feat/typed-transitions-raci-r7-r8` → `main` · **Date:** 2026-06-04 ·
+**Type:** Code + tests + docs.
 
-1. **R7 / R8** — typed transitions (`to|kind|when`) and RACI (`step:level`).
-   Now unblocked: the drift-guard catches any schema mismatch while you edit both.
-2. **R9** — lift runtime state (`reviewState`/`lint`) out of the process JSON
+## Why this PR exists
+
+Transitions and RACI were a stringly-typed DSL (`"to|kind|when"`, `"step:level"`)
+with no validation — and the area was **half-migrated**: the edit UI and the AJV
+schema already used structured transitions, but storage was strings, RACI was
+string everywhere, and **MCP/Gemini `checkTransitions` silently skipped
+object-form transitions** (`if (typeof t !== "string") continue`), so
+reconciliation quietly stopped working on edited/migrated data.
+
+## Scope A (chosen)
+
+Make storage canonical structured objects + AJV-validate; keep the read-DTO
+bridge emitting the string forms so display/flow/RACI-matrix stay unchanged.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/lib/wiki.ts` | **edit** | `transitionToString` / `transitionTarget` / `raciToString` (form-agnostic); the bridge stringifies transitions **and** RACI for the read-DTO. |
+| `src/lib/claude-mcp-server.ts`, `src/lib/gemini-worker.ts` | **edit** | `checkTransitions` reads either form via `transitionTarget` (fixes the silent-skip bug). |
+| `src/lib/schema/process-schema.json` (AJV) | **edit** | `Role.content.raci`: `string[]` → `{ step, level: R\|A\|C\|I }[]`. |
+| `schema/process-schema.json` (custom) | **edit** | transitions + RACI notes describe the object shape (guides the LLM). |
+| `wiki/processes/cob-003.json` | **edit** | data migrated strings → objects (2 steps, 6 roles). |
+| `src/lib/wiki.test.ts` | **edit** | tests for the three helpers. |
+
+## Verification
+
+- `npm run typecheck` clean; `npm test` → **24/24** (3 new).
+- Read layer: `getProcess` returns structured `rawJson` and bridged display
+  strings.
+- App: transitions render (14 labels), flow diagram has 16 edges, **RACI matrix
+  renders 44 badges** (R/A/C/I) across 5 roles × 8 steps; no errors.
+
+## Scope note
+
+Display-side `split("|")`/`split(":")` is intentionally retained — it parses the
+bridge's generated, schema-valid strings (safe). Removing it everywhere (scope
+B) is a low-value, higher-risk follow-up.
+
+---
+
+# Open follow-ups (as of PR #8)
+
+Fixed so far: **A1** (#2), **A3** (#4), **R6a** (#5), **R6b** (#6), **schema
+drift-guard** (#7), **R7 + R8** (#8). Still open, from `REQUIREMENTS-ROADMAP.md`:
+
+1. **R9** — lift runtime state (`reviewState`/`lint`) out of the process JSON
    (the guardrail violation).
-3. **Schema generator (optional)** — derive the JSON Schema from the custom
+2. **Schema generator (optional)** — derive the JSON Schema from the custom
    schema to remove the dual edit entirely (option A; only if it proves painful).
-4. **Product decisions** — R15 (country-variations element type) and R16
+3. **Product decisions** — R15 (country-variations element type) and R16
    (per-process access control).
-5. Cross-read `REQUIREMENTS-ROADMAP.md` and prioritize the remaining R1–R22.
+4. Cross-read `REQUIREMENTS-ROADMAP.md` and prioritize the remaining R1–R22.

@@ -158,7 +158,11 @@
           "An escalation case handed to the Compliance Officer"
         ],
         "transitions": [
-          "PS-COB-004|normal|"
+          {
+            "to": "PS-COB-004",
+            "kind": "normal",
+            "when": ""
+          }
         ]
       }
     },
@@ -213,7 +217,11 @@
         "description": "When the client has requested an overdraft facility, the Credit Analyst assesses creditworthiness using the credit decisioning system and external bureau data, applies the scorecard, and reaches a decision within their approval authority.",
         "businessValue": "Responsible lending and credit-risk management. This step runs only when an overdraft is requested — for deposit-only onboarding it is skipped entirely.",
         "transitions": [
-          "PS-COB-004|normal|"
+          {
+            "to": "PS-COB-004",
+            "kind": "normal",
+            "when": ""
+          }
         ]
       }
     },
@@ -351,10 +359,22 @@
         "responsibility": "Owns the operational backbone of onboarding — taking applications in, setting accounts up, and keeping cases moving through the pipeline.",
         "inThisProcess": "Responsible for Application Receipt (PS-COB-001), Account Setup (PS-COB-004) and the Post-Onboarding Quality Check (PS-COB-006), and runs the data-protection consent control.",
         "raci": [
-          "PS-COB-001:R",
-          "PS-COB-002:I",
-          "PS-COB-004:R",
-          "PS-COB-006:R"
+          {
+            "step": "PS-COB-001",
+            "level": "R"
+          },
+          {
+            "step": "PS-COB-002",
+            "level": "I"
+          },
+          {
+            "step": "PS-COB-004",
+            "level": "R"
+          },
+          {
+            "step": "PS-COB-006",
+            "level": "R"
+          }
         ],
         "controls": [
           "CP-COB-003",
@@ -383,7 +403,10 @@
         "responsibility": "Owns identity verification and the regulatory KYC assessment — the bank's first line of defence against financial crime at onboarding.",
         "inThisProcess": "Responsible for KYC & Identity Verification (PS-COB-002) and executes the customer- and beneficial-owner-identification controls.",
         "raci": [
-          "PS-COB-002:R"
+          {
+            "step": "PS-COB-002",
+            "level": "R"
+          }
         ],
         "controls": [
           "CP-COB-001",
@@ -410,7 +433,10 @@
         "responsibility": "Assesses credit risk and decides on requested lending facilities within their approval authority.",
         "inThisProcess": "Responsible for Credit Assessment (PS-COB-003), which runs only when an overdraft is requested.",
         "raci": [
-          "PS-COB-003:R"
+          {
+            "step": "PS-COB-003",
+            "level": "R"
+          }
         ],
         "controls": [],
         "systems": [
@@ -443,12 +469,30 @@
         "responsibility": "Owns the client relationship and the onboarding process end to end — handles client communication and activation, supervises the onboarding team, gives the four-eyes approval on sensitive actions, and is accountable for process quality as process owner.",
         "inThisProcess": "Performs Client Communication & Activation (PS-COB-005) and delivers product disclosure to the client. As process owner, gives the four-eyes approval on sensitive actions and is accountable for the remaining onboarding steps, including the post-onboarding quality check.",
         "raci": [
-          "PS-COB-001:A",
-          "PS-COB-003:A",
-          "PS-COB-004:A",
-          "PS-COB-005:R",
-          "PS-COB-005:A",
-          "PS-COB-006:A"
+          {
+            "step": "PS-COB-001",
+            "level": "A"
+          },
+          {
+            "step": "PS-COB-003",
+            "level": "A"
+          },
+          {
+            "step": "PS-COB-004",
+            "level": "A"
+          },
+          {
+            "step": "PS-COB-005",
+            "level": "R"
+          },
+          {
+            "step": "PS-COB-005",
+            "level": "A"
+          },
+          {
+            "step": "PS-COB-006",
+            "level": "A"
+          }
         ],
         "controls": [
           "CP-COB-005"
@@ -489,11 +533,26 @@
         ],
         "controls": [],
         "raci": [
-          "PS-COB-001:A",
-          "PS-COB-003:A",
-          "PS-COB-004:A",
-          "PS-COB-005:A",
-          "PS-COB-006:A"
+          {
+            "step": "PS-COB-001",
+            "level": "A"
+          },
+          {
+            "step": "PS-COB-003",
+            "level": "A"
+          },
+          {
+            "step": "PS-COB-004",
+            "level": "A"
+          },
+          {
+            "step": "PS-COB-005",
+            "level": "A"
+          },
+          {
+            "step": "PS-COB-006",
+            "level": "A"
+          }
         ]
       }
     },
@@ -511,7 +570,10 @@
         "responsibility": "Owns regulatory judgement calls that exceed an analyst's authority.",
         "inThisProcess": "Accountable for the KYC step's compliance outcome and handles every escalated KYC screening hit (EX-COB-002).",
         "raci": [
-          "PS-COB-002:A"
+          {
+            "step": "PS-COB-002",
+            "level": "A"
+          }
         ],
         "controls": [],
         "systems": [
