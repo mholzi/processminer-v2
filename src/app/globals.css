@@ -5678,4 +5678,37 @@ body {
 .danger-btn:disabled { opacity: .45; cursor: not-allowed; }
 [data-theme="dark"] .danger-btn { color: #101216; }
 
+/* ---- Editable Overview (R12) ---- */
+.ovw-edit-btn {
+  margin-left: auto; padding: var(--space-2xs) var(--space-md);
+  font-size: var(--text-sm); color: var(--accent);
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-sm); cursor: pointer;
+}
+.ovw-edit-btn:hover { border-color: var(--accent); background: var(--accent-soft); }
+.ovw-edit { display: flex; flex-direction: column; gap: var(--space-md); max-width: 640px; }
+.ovw-field { display: flex; flex-direction: column; gap: var(--space-2xs); }
+.ovw-field-label { font-size: var(--text-sm); color: var(--muted); }
+.ovw-field input, .ovw-field textarea {
+  font: inherit; font-size: var(--text-sm); color: var(--ink);
+  padding: var(--space-sm); border: 1px solid var(--line);
+  border-radius: var(--r-sm); background: var(--surface); resize: vertical;
+}
+.ovw-field input:focus-visible, .ovw-field textarea:focus-visible {
+  outline: none; border-color: var(--accent);
+}
+.ovw-edit-actions { display: flex; gap: var(--space-sm); margin-top: var(--space-xs); }
+.ovw-save-btn {
+  padding: var(--space-sm) var(--space-lg); font-size: var(--text-sm);
+  font-weight: 500; color: #fff; background: var(--accent);
+  border: none; border-radius: var(--r-sm); cursor: pointer;
+}
+.ovw-save-btn:disabled { opacity: .5; cursor: progress; }
+.ovw-cancel-btn {
+  padding: var(--space-sm) var(--space-lg); font-size: var(--text-sm);
+  color: var(--muted); background: var(--surface);
+  border: 1px solid var(--line); border-radius: var(--r-sm); cursor: pointer;
+}
+.ovw-error { color: var(--lo); font-size: var(--text-sm); margin: 0; }
+
 

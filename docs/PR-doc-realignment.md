@@ -16,7 +16,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#8** | Typed transitions + RACI (R7 + R8, scope A) | `feat/typed-transitions-raci-r7-r8` → `main` | Code + tests + docs | **Merged** (`f41ea00`) |
 | **#9** | Runtime state above the wiki (R9) | `refactor/runtime-state-above-wiki-r9` → `main` | Code + tests + docs | **Merged** (`94b92bf`) |
 | **#10** | Delete a process, in-app (R11) | `feat/delete-process-r11` → `main` | Code + docs | **Merged** (`7d1035c`) |
-| **#11** | Quick wins — applyLint bug + chat overlay + clickable chat refs (R14 a/b) | `fix/quick-wins-r13-r14` → `main` | Code + docs | **Open** (`pending`) |
+| **#11** | Quick wins — applyLint bug + chat overlay + clickable chat refs (R14 a/b) | `fix/quick-wins-r13-r14` → `main` | Code + docs | **Merged** (`7df0b5f`) |
+| **#12** | Editable Overview (R12a) | `feat/overview-edit-summaries-r12` → `main` | Code + docs | **Open** (`pending`) |
 
 > **What happened with #3 → #4 (the stacking lesson):** #3 was opened *stacked*
 > on #2's branch (the A3 change is only safe with the A1 gate present). When #2
@@ -453,13 +454,45 @@ A bundle of three small, high-confidence fixes:
 
 ---
 
-# Open follow-ups (as of PR #11)
+# PR #12 — Editable Overview (R12a)
+
+**Branch:** `feat/overview-edit-summaries-r12` → `main` · **Date:** 2026-06-04 ·
+**Type:** Code + docs.
+
+## Why this PR exists
+
+The process **Overview** was read-only — facts like trigger / scope / I-O and
+the Purpose couldn't be edited in-app. (R12 also bundles 8 section-summary
+widgets; those are deferred — see below.)
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/components/OverviewPanel.tsx` | **edit** | An **Edit** mode: a Purpose textarea + inputs for the 7 fact fields (processOwner, trigger, frequency, scopeIn/Out, processInput/Output), saved via `updateElement(slug, processId, { content })`; Save / Cancel. |
+| `src/lib/wiki-write.ts` | **edit** | `updateElement`'s root (overview) branch re-opens approval on a content edit (`approved → in-progress`), consistent with elements. |
+| `src/app/globals.css` | **edit** | Edit-form styles (design tokens). |
+
+## Deferred
+
+- **R12b** — the 8 bespoke section-summary widgets (matrix/heatmap/severity). A sizeable presentational build; its own PR.
+
+## Verification
+
+- `npm run typecheck` clean; `npm test` → 26/26 (unchanged).
+- **Save (throwaway):** `updateElement` content edit persisted the fields **and** reset approval `approved → in-progress`.
+- **UI:** the Edit button opens the form (Purpose textarea + 7 fact inputs); Save / Cancel present; Cancel reverts to the read view. No real process edited; no errors.
+
+---
+
+# Open follow-ups (as of PR #12)
 
 Fixed so far: **A1** (#2), **A3** (#4), **R6a** (#5), **R6b** (#6), **schema
 drift-guard** (#7), **R7 + R8** (#8), **R9** (#9), **R11** (#10), **A4 + R14 a/b**
-(#11). Still open, from `REQUIREMENTS-ROADMAP.md` (Processminer focus):
+(#11), **R12a** (#12). Still open, from `REQUIREMENTS-ROADMAP.md` (Processminer
+focus):
 
-1. **R12** — per-section summary UIs + editable Overview.
+1. **R12b** — the 8 section-summary widgets.
 2. **R5** — attribution + contributors/activity feed.
 3. **R13** — shared-helper dedup; **R14c** — `runSourcing` via `handleSend`.
 4. **Product decisions** — R15 (country-variations) and R16 (per-process access control).

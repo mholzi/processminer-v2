@@ -65,6 +65,16 @@ export async function updateElement(
         doc[k] = v;
       }
     }
+    // Editing the overview's content re-opens its approval (like an element).
+    if (
+      patch.content &&
+      Object.keys(patch.content).length > 0 &&
+      doc.meta?.approval === "approved"
+    ) {
+      doc.meta.approval = "in-progress";
+      doc.meta.approvalBy = "";
+      doc.meta.approvalDate = "";
+    }
     writeFileSync(filePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
     revalidatePath("/");
     return { ok: true, element: { meta: doc.meta, content: doc.content } };
