@@ -8,6 +8,7 @@ import Tooltip from "./Tooltip";
 import Markdown from "./Markdown";
 import AgentChat from "./AgentChat";
 import { useAgentChat } from "./useAgentChat";
+import { buildDiagramModel, buildTraceability } from "@/lib/architecture-view";
 
 // Frame-03 of the ArchitectMiner mockup. Inputs from Processminer (left nav,
 // top group) use REAL counts from the open process; the architect-side
@@ -21,6 +22,22 @@ import { useAgentChat } from "./useAgentChat";
 const AM_SKILL_LABELS: Record<string, string> = {
   "domain-architect": "Domain Architect",
   "solution-architect": "Solution Architect",
+};
+
+/** Trim a node label so it fits inside its diagram box. */
+function truncate(s: string, max: number): string {
+  return s.length > max ? `${s.slice(0, max - 1)}…` : s;
+}
+
+/** Display label for a traceability row's element type. */
+const TRACE_TYPE_LABEL: Record<string, string> = {
+  capability: "Capability",
+  "target-application": "Target App",
+  adr: "ADR",
+  "target-integration": "Integration",
+  component: "Component",
+  nfr: "NFR",
+  "migration-phase": "Migration phase",
 };
 
 // Architect session scope — prepended to the first turn of a chat session,
@@ -151,6 +168,28 @@ export default function ArchitectureCanvas({
       adrDraft: adrsReal.filter((a) => upperEq(a.meta.adrStatus, "DRAFT")).length,
     };
   }, [doc]);
+
+  // R3 — the Diagram and Traceability views are derived from the authored
+  // architecture elements (and their relations), not hardcoded. Both read empty
+  // until the architect authors capabilities / apps / integrations via the
+  // domain- and solution-architect specialists.
+  const diagram = useMemo(
+    () => buildDiagramModel(archData.caps, archData.apps, archData.integrations),
+    [archData],
+  );
+  const trace = useMemo(
+    () =>
+      buildTraceability({
+        capabilities: archData.caps,
+        applications: archData.apps,
+        adrs: archData.adrsReal,
+        integrations: archData.integrations,
+        components: archData.components,
+        nfrs: archData.nfrsReal,
+        migrations: archData.migrations,
+      }),
+    [archData],
+  );
 
   const pid = doc.process.id || "PR";
   const initials = user.name
@@ -379,21 +418,21 @@ export default function ArchitectureCanvas({
             onClick={() => setView("capabilities")}
           >
             <span>Capabilities</span>
-            <span className="am-canvas-n">7</span>
+            <span className="am-canvas-n">{archData.caps.length}</span>
           </div>
           <div
             className={`am-canvas-secrow${view === "applications" ? " am-canvas-secrow-on" : ""}`}
             onClick={() => setView("applications")}
           >
             <span>Target Applications</span>
-            <span className="am-canvas-n">6</span>
+            <span className="am-canvas-n">{archData.apps.length}</span>
           </div>
           <div
             className={`am-canvas-secrow${view === "adrs" ? " am-canvas-secrow-on" : ""}`}
             onClick={() => setView("adrs")}
           >
             <span>Architecture Decisions</span>
-            <span className="am-canvas-n">12</span>
+            <span className="am-canvas-n">{archData.adrsReal.length}</span>
           </div>
 
           <h4 className="am-canvas-grouph">Solution Architecture</h4>
@@ -402,28 +441,28 @@ export default function ArchitectureCanvas({
             onClick={() => setView("integrations")}
           >
             <span>Target Integrations</span>
-            <span className="am-canvas-n">8</span>
+            <span className="am-canvas-n">{archData.integrations.length}</span>
           </div>
           <div
             className={`am-canvas-secrow${view === "components" ? " am-canvas-secrow-on" : ""}`}
             onClick={() => setView("components")}
           >
             <span>Components</span>
-            <span className="am-canvas-n">17</span>
+            <span className="am-canvas-n">{archData.components.length}</span>
           </div>
           <div
             className={`am-canvas-secrow${view === "nfrs" ? " am-canvas-secrow-on" : ""}`}
             onClick={() => setView("nfrs")}
           >
             <span>NFRs</span>
-            <span className="am-canvas-n">8</span>
+            <span className="am-canvas-n">{archData.nfrsReal.length}</span>
           </div>
           <div
             className={`am-canvas-secrow${view === "migration" ? " am-canvas-secrow-on" : ""}`}
             onClick={() => setView("migration")}
           >
             <span>Migration Phases</span>
-            <span className="am-canvas-n">4</span>
+            <span className="am-canvas-n">{archData.migrations.length}</span>
           </div>
 
           <h4 className="am-canvas-grouph">Cross-cutting</h4>
@@ -438,7 +477,7 @@ export default function ArchitectureCanvas({
             onClick={() => setView("traceability")}
           >
             <span>Traceability</span>
-            <span className="am-canvas-n">88%</span>
+            <span className="am-canvas-n">{trace.total === 0 ? "—" : `${trace.tracedPct}%`}</span>
           </div>
           <div className="am-canvas-secrow am-canvas-secrow-locked">
             <span>Comments</span>
@@ -627,200 +666,122 @@ export default function ArchitectureCanvas({
               <div className="am-canvas-diagram-toolbar">
                 <h2>Target architecture</h2>
                 <span className="am-canvas-secmeta">
-                  v3 · auto-generated from approved elements · illustrative
+                  derived from {archData.caps.length} capabilit
+                  {archData.caps.length === 1 ? "y" : "ies"} ·{" "}
+                  {archData.apps.length} application
+                  {archData.apps.length === 1 ? "" : "s"} ·{" "}
+                  {archData.integrations.length} integration
+                  {archData.integrations.length === 1 ? "" : "s"}
                 </span>
                 <span style={{ flex: 1 }} />
-                <button type="button" className="am-canvas-toggle am-canvas-toggle-on">
-                  Capabilities
-                </button>
-                <button type="button" className="am-canvas-toggle">Apps only</button>
-                <button type="button" className="am-canvas-toggle">Integrations</button>
-                <button type="button" className="am-canvas-toggle">Data flow</button>
-                <div style={{ width: 16 }} />
                 <div className="am-canvas-legend">
-                  <span><i className="am-canvas-legend-sync" />sync</span>
-                  <span><i className="am-canvas-legend-async" />async</span>
-                  <span><i className="am-canvas-legend-event" />event</span>
+                  <span><i className="am-canvas-legend-sync" />hosted in</span>
+                  <span><i className="am-canvas-legend-async" />integration</span>
                 </div>
               </div>
 
-              <svg viewBox="0 0 880 540" className="am-canvas-diagram-svg">
-                {/* swim-lane separators */}
-                <line x1="0" y1="120" x2="880" y2="120" stroke="#dde0e5" strokeDasharray="2 4" />
-                <line x1="0" y1="310" x2="880" y2="310" stroke="#dde0e5" strokeDasharray="2 4" />
-                <text className="am-svg-swim" x="16" y="32">Channels</text>
-                <text className="am-svg-swim" x="16" y="152">Business capabilities</text>
-                <text className="am-svg-swim" x="16" y="342">Systems &amp; data</text>
+              {diagram.isEmpty ? (
+                <div className="am-canvas-banner">
+                  No target architecture yet for <b>{doc.process.title}</b>. Author
+                  capabilities and target applications with the domain architect,
+                  and integrations with the solution architect — the diagram draws
+                  itself from their <code>hostedIn</code> and integration relations.
+                </div>
+              ) : (
+                <svg
+                  viewBox={`0 0 ${diagram.width} ${diagram.height}`}
+                  className="am-canvas-diagram-svg"
+                >
+                  <text className="am-svg-swim" x="16" y="28">
+                    Business capabilities
+                  </text>
+                  <text
+                    className="am-svg-swim"
+                    x="16"
+                    y={(diagram.appNodes[0]?.y ?? 350) - 16}
+                  >
+                    Target applications
+                  </text>
 
-                {/* channels */}
-                <g>
-                  <rect className="am-svg-app" x="40" y="50" width="170" height="50" rx="6" />
-                  <text className="am-svg-lbl" x="58" y="76">Online Banking</text>
-                  <text className="am-svg-sub" x="58" y="92">channel · sync</text>
+                  {/* hostedIn edges (capability → application) */}
+                  {diagram.hostEdges.map((e, i) => (
+                    <path
+                      key={`h${i}`}
+                      className="am-svg-edge-sync"
+                      d={`M${e.x1} ${e.y1} L ${e.x2} ${e.y2}`}
+                    />
+                  ))}
+                  {/* integration edges (application → application) */}
+                  {diagram.intEdges.map((e, i) => (
+                    <path
+                      key={`i${i}`}
+                      className={
+                        e.kind === "async" || e.kind === "batch"
+                          ? "am-svg-edge-async"
+                          : e.kind === "event"
+                            ? "am-svg-edge-event"
+                            : "am-svg-edge-sync"
+                      }
+                      d={`M${e.x1} ${e.y1} C ${e.x1} ${e.y1 + 40}, ${e.x2} ${e.y2 + 40}, ${e.x2} ${e.y2}`}
+                    />
+                  ))}
 
-                  <rect className="am-svg-app" x="230" y="50" width="170" height="50" rx="6" />
-                  <text className="am-svg-lbl" x="248" y="76">Mobile App</text>
-                  <text className="am-svg-sub" x="248" y="92">channel · sync</text>
-
-                  <rect className="am-svg-app" x="420" y="50" width="170" height="50" rx="6" />
-                  <text className="am-svg-lbl" x="438" y="76">Branch Frontend</text>
-                  <text className="am-svg-sub" x="438" y="92">channel · sync</text>
-
-                  <rect className="am-svg-app" x="610" y="50" width="220" height="50" rx="6" />
-                  <text className="am-svg-lbl" x="628" y="76">Document upload (PDF)</text>
-                  <text className="am-svg-sub" x="628" y="92">channel · async</text>
-                </g>
-
-                {/* capability boxes */}
-                <g>
-                  <rect className="am-svg-cap am-svg-cap-sel" x="40" y="180" width="200" height="80" rx="6" />
-                  <text className="am-svg-lbl" x="58" y="206">CAP-{pid}-002</text>
-                  <text className="am-svg-lbl am-svg-lbl-strong" x="58" y="224">Case capture &amp; validation</text>
-                  <text className="am-svg-sub" x="58" y="244">hosted in: Case Hub (new)</text>
-
-                  <rect className="am-svg-cap" x="260" y="180" width="200" height="80" rx="6" />
-                  <text className="am-svg-lbl" x="278" y="206">CAP-{pid}-005</text>
-                  <text className="am-svg-lbl am-svg-lbl-strong" x="278" y="224">Case lifecycle</text>
-                  <text className="am-svg-sub" x="278" y="244">hosted in: Case Hub</text>
-
-                  <rect className="am-svg-cap" x="480" y="180" width="200" height="80" rx="6" />
-                  <text className="am-svg-lbl" x="498" y="206">CAP-{pid}-008</text>
-                  <text className="am-svg-lbl am-svg-lbl-strong" x="498" y="224">Backend processing</text>
-                  <text className="am-svg-sub" x="498" y="244">hosted in: Core Platform</text>
-
-                  <rect className="am-svg-cap" x="700" y="180" width="140" height="80" rx="6" />
-                  <text className="am-svg-lbl" x="716" y="206">CAP-{pid}-009</text>
-                  <text className="am-svg-lbl am-svg-lbl-strong" x="716" y="224">Outbound</text>
-                  <text className="am-svg-sub" x="716" y="244">Gateway</text>
-                </g>
-
-                {/* systems */}
-                <g>
-                  <rect className="am-svg-app" x="40" y="360" width="200" height="60" rx="6" />
-                  <text className="am-svg-lbl am-svg-lbl-strong" x="58" y="386">Case Hub</text>
-                  <text className="am-svg-sub" x="58" y="402">BUILD · Camunda 8 + Postgres</text>
-
-                  <rect className="am-svg-app" x="260" y="360" width="200" height="60" rx="6" />
-                  <text className="am-svg-lbl am-svg-lbl-strong" x="278" y="386">Customer Master</text>
-                  <text className="am-svg-sub" x="278" y="402">existing · authoritative party</text>
-
-                  <rect className="am-svg-app" x="480" y="360" width="200" height="60" rx="6" />
-                  <text className="am-svg-lbl am-svg-lbl-strong" x="498" y="386">Core Platform</text>
-                  <text className="am-svg-sub" x="498" y="402">existing · keep</text>
-
-                  <rect className="am-svg-ext" x="700" y="360" width="140" height="60" rx="6" />
-                  <text className="am-svg-lbl am-svg-lbl-strong" x="716" y="386">External scheme</text>
-                  <text className="am-svg-sub" x="716" y="402">external</text>
-
-                  <rect className="am-svg-app" x="40" y="450" width="200" height="60" rx="6" />
-                  <text className="am-svg-lbl am-svg-lbl-strong" x="58" y="476">Hyland ECM</text>
-                  <text className="am-svg-sub" x="58" y="492">existing · document store</text>
-
-                  <rect className="am-svg-app" x="480" y="450" width="200" height="60" rx="6" />
-                  <text className="am-svg-lbl am-svg-lbl-strong" x="498" y="476">DWH (Snowflake)</text>
-                  <text className="am-svg-sub" x="498" y="492">reporting · risk score</text>
-                </g>
-
-                {/* edges channels -> capabilities */}
-                <path className="am-svg-edge-sync" d="M125 100 C 125 140, 140 150, 140 180" />
-                <path className="am-svg-edge-sync" d="M315 100 C 315 140, 200 150, 200 180" />
-                <path className="am-svg-edge-sync" d="M505 100 C 505 140, 360 150, 360 180" />
-                <path className="am-svg-edge-async" d="M720 100 C 720 130, 140 150, 140 180" />
-
-                {/* edges capabilities -> systems */}
-                <path className="am-svg-edge-sync" d="M140 260 L 140 360" />
-                <path className="am-svg-edge-sync" d="M360 260 L 360 360" />
-                <path className="am-svg-edge-sync" d="M580 260 L 580 360" />
-                <path className="am-svg-edge-sync" d="M770 260 L 770 360" />
-
-                {/* inter-capability edges */}
-                <path className="am-svg-edge-event" d="M240 220 L 260 220" />
-                <text className="am-svg-edge-lbl" x="244" y="214">event</text>
-                <path className="am-svg-edge-event" d="M460 220 L 480 220" />
-                <text className="am-svg-edge-lbl" x="464" y="214">event</text>
-                <path className="am-svg-edge-sync" d="M680 220 L 700 220" />
-
-                {/* system to system */}
-                <path className="am-svg-edge-async" d="M140 420 L 140 450" />
-                <text className="am-svg-edge-lbl" x="146" y="442">PDF</text>
-                <path className="am-svg-edge-async" d="M360 420 C 360 440, 280 450, 480 470" />
-                <path className="am-svg-edge-async" d="M580 420 L 580 450" />
-                <text className="am-svg-edge-lbl" x="586" y="442">nightly</text>
-              </svg>
-
-              <div className="am-canvas-banner">
-                Illustrative diagram — ArchitectMiner authoring is still being built.
-                Capabilities, target apps and integrations will be derived from
-                approved architecture elements once the data model lands.
-              </div>
+                  {/* capability nodes */}
+                  {diagram.capNodes.map((n) => (
+                    <g key={n.id}>
+                      <rect className="am-svg-cap" x={n.x} y={n.y} width={n.w} height={n.h} rx="6" />
+                      <text className="am-svg-lbl" x={n.x + 14} y={n.y + 22}>{n.id}</text>
+                      <text className="am-svg-lbl am-svg-lbl-strong" x={n.x + 14} y={n.y + 40}>{truncate(n.title, 22)}</text>
+                      {n.sub && <text className="am-svg-sub" x={n.x + 14} y={n.y + 56}>{n.sub}</text>}
+                    </g>
+                  ))}
+                  {/* application nodes */}
+                  {diagram.appNodes.map((n) => (
+                    <g key={n.id}>
+                      <rect className="am-svg-app" x={n.x} y={n.y} width={n.w} height={n.h} rx="6" />
+                      <text className="am-svg-lbl am-svg-lbl-strong" x={n.x + 14} y={n.y + 26}>{truncate(n.title, 22)}</text>
+                      {n.sub && <text className="am-svg-sub" x={n.x + 14} y={n.y + 46}>{n.sub}</text>}
+                    </g>
+                  ))}
+                </svg>
+              )}
             </main>
 
             <aside className="am-canvas-details">
-              <h3>Capability — Case capture &amp; validation</h3>
-              <div className="am-canvas-details-id">CAP-{pid}-002</div>
+              <h3>Architecture summary</h3>
+              <div className="am-canvas-details-id">{doc.process.title}</div>
 
               <div className="am-canvas-details-block">
                 <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Hosted in</span>
-                  <span>
-                    Case Hub <span className="am-pill am-pill-acc">BUILD</span>
-                  </span>
+                  <span className="am-canvas-details-k">Capabilities</span>
+                  <span>{archData.caps.length}</span>
                 </div>
                 <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Criticality</span>
-                  <span><span className="am-pill am-pill-mid">High</span></span>
+                  <span className="am-canvas-details-k">Target applications</span>
+                  <span>{archData.apps.length}</span>
                 </div>
                 <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Reuse</span>
-                  <span>new capability — no existing analog in catalog</span>
+                  <span className="am-canvas-details-k">Integrations</span>
+                  <span>{archData.integrations.length}</span>
                 </div>
                 <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Owning domain</span>
-                  <span>Case &amp; lifecycle management</span>
-                </div>
-                <div className="am-canvas-details-row">
-                  <span className="am-canvas-details-k">Status</span>
-                  <span><span className="am-pill am-pill-hi">Accepted</span> · today</span>
+                  <span className="am-canvas-details-k">Hosted edges drawn</span>
+                  <span>{diagram.hostEdges.length}</span>
                 </div>
               </div>
 
               <div className="am-canvas-details-block">
-                <h4>Realises</h4>
+                <h4>Traceability</h4>
                 <div className="am-canvas-traces">
                   <span className="am-canvas-trace">
-                    <span className="am-canvas-trace-lbl">target step</span>TS-{pid}-002
+                    <span className="am-canvas-trace-lbl">traced</span>{trace.traced}
                   </span>
                   <span className="am-canvas-trace">
-                    <span className="am-canvas-trace-lbl">target step</span>TS-{pid}-003
+                    <span className="am-canvas-trace-lbl">partial</span>{trace.partial}
                   </span>
                   <span className="am-canvas-trace">
-                    <span className="am-canvas-trace-lbl">resolves gap</span>G-{pid}-004
+                    <span className="am-canvas-trace-lbl">orphan</span>{trace.orphan}
                   </span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Realised by ADRs</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">ADR-{pid}-002 schema</span>
-                  <span className="am-canvas-trace">ADR-{pid}-007 orchestration</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>NFRs</h4>
-                <div className="am-canvas-traces">
-                  <span className="am-canvas-trace">NFR-{pid}-001 p95 &lt; 1.2s</span>
-                  <span className="am-canvas-trace">NFR-{pid}-003 audit-log 10y</span>
-                </div>
-              </div>
-
-              <div className="am-canvas-details-block">
-                <h4>Provenance</h4>
-                <div className="am-canvas-details-prov">
-                  <div><span className="am-canvas-verified">✓</span> Hosted in — human-confirmed</div>
-                  <div><span className="am-canvas-verified">✓</span> Criticality — derived from transformation decision</div>
-                  <div><span className="am-canvas-machine">▲</span> NFRs — drafted by solution-architect agent · review</div>
                 </div>
               </div>
             </aside>
@@ -834,179 +795,103 @@ export default function ArchitectureCanvas({
             <div className="am-canvas-trace-head">
               <h2>Traceability — {doc.process.title}</h2>
               <span className="am-canvas-secmeta">
-                last scanned today · run-lint architecture · illustrative
+                derived from {trace.total} architecture element
+                {trace.total === 1 ? "" : "s"}
               </span>
             </div>
 
             <div className="am-canvas-stats">
               <div className="am-canvas-stat">
-                <div className="am-canvas-stat-v">63</div>
+                <div className="am-canvas-stat-v">{trace.total}</div>
                 <div className="am-canvas-stat-l">architecture elements</div>
               </div>
               <div className="am-canvas-stat">
-                <div className="am-canvas-stat-v am-canvas-stat-ok">87%</div>
+                <div className="am-canvas-stat-v am-canvas-stat-ok">
+                  {trace.total === 0 ? "—" : `${trace.tracedPct}%`}
+                </div>
                 <div className="am-canvas-stat-l">fully traced</div>
               </div>
               <div className="am-canvas-stat">
-                <div className="am-canvas-stat-v am-canvas-stat-warn">5</div>
+                <div className="am-canvas-stat-v am-canvas-stat-warn">{trace.partial}</div>
                 <div className="am-canvas-stat-l">partial traces</div>
               </div>
               <div className="am-canvas-stat">
-                <div className="am-canvas-stat-v am-canvas-stat-bad">3</div>
+                <div className="am-canvas-stat-v am-canvas-stat-bad">{trace.orphan}</div>
                 <div className="am-canvas-stat-l">orphans</div>
               </div>
-              <div className="am-canvas-stat">
-                <div className="am-canvas-stat-v">2</div>
-                <div className="am-canvas-stat-l">stale (upstream changed)</div>
+            </div>
+
+            {trace.total === 0 ? (
+              <div className="am-canvas-banner">
+                No architecture elements to trace yet for <b>{doc.process.title}</b>.
+                As the domain and solution architects author capabilities,
+                applications, ADRs, integrations, components, NFRs and migration
+                phases, each is checked here for whether its relations connect it to
+                the rest of the architecture.
               </div>
-            </div>
-
-            <table className="am-canvas-trace-table">
-              <thead>
-                <tr>
-                  <th style={{ width: 100 }}>ID</th>
-                  <th>Element</th>
-                  <th style={{ width: 130 }}>Type</th>
-                  <th>Traces to upstream</th>
-                  <th style={{ width: 90, textAlign: "right" }}>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="am-canvas-trace-id">CAP-{pid}-002</td>
-                  <td className="am-canvas-trace-title">Case capture &amp; validation</td>
-                  <td className="am-canvas-trace-type">Capability</td>
-                  <td>
-                    <span className="am-canvas-trace">TS-{pid}-002</span>{" "}
-                    <span className="am-canvas-trace">TS-{pid}-003</span>{" "}
-                    <span className="am-canvas-trace">G-{pid}-004</span>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <span className="am-pill am-pill-hi">OK</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="am-canvas-trace-id">CAP-{pid}-005</td>
-                  <td className="am-canvas-trace-title">Case lifecycle</td>
-                  <td className="am-canvas-trace-type">Capability</td>
-                  <td>
-                    <span className="am-canvas-trace">TS-{pid}-005</span>{" "}
-                    <span className="am-canvas-trace">TD-{pid}-003</span>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <span className="am-pill am-pill-hi">OK</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="am-canvas-trace-id">ADR-{pid}-007</td>
-                  <td className="am-canvas-trace-title">Case orchestration via Camunda 8</td>
-                  <td className="am-canvas-trace-type">ADR</td>
-                  <td>
-                    <span className="am-canvas-trace">TD-{pid}-002</span>{" "}
-                    <span className="am-canvas-trace">G-{pid}-003</span>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <span className="am-pill am-pill-hi">OK</span>
-                  </td>
-                </tr>
-                <tr className="am-canvas-trace-row-partial">
-                  <td className="am-canvas-trace-id">ADR-{pid}-011</td>
-                  <td className="am-canvas-trace-title">Async revocation via Kafka topic</td>
-                  <td className="am-canvas-trace-type">ADR</td>
-                  <td>
-                    <span className="am-canvas-trace">TD-{pid}-006</span>{" "}
-                    <span className="am-canvas-trace am-canvas-trace-warn">
-                      G-{pid}-?? missing
-                    </span>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <span className="am-pill am-pill-mid">Partial</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="am-canvas-trace-id">NFR-{pid}-003</td>
-                  <td className="am-canvas-trace-title">Audit-log retention 10y</td>
-                  <td className="am-canvas-trace-type">NFR</td>
-                  <td>
-                    <span className="am-canvas-trace">CP-{pid}-004</span>{" "}
-                    <span className="am-canvas-trace">REG-{pid}-002</span>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <span className="am-pill am-pill-hi">OK</span>
-                  </td>
-                </tr>
-                <tr className="am-canvas-trace-row-partial">
-                  <td className="am-canvas-trace-id">NFR-{pid}-006</td>
-                  <td className="am-canvas-trace-title">RTO ≤ 4h for Case Hub</td>
-                  <td className="am-canvas-trace-type">NFR</td>
-                  <td>
-                    <span className="am-canvas-trace">ADR-{pid}-007</span>{" "}
-                    <span className="am-canvas-trace am-canvas-trace-warn">
-                      no control reference
-                    </span>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <span className="am-pill am-pill-mid">Partial</span>
-                  </td>
-                </tr>
-                <tr className="am-canvas-trace-row-orphan">
-                  <td className="am-canvas-trace-id">ADR-{pid}-013</td>
-                  <td className="am-canvas-trace-title">Custom retry queue in Case Hub</td>
-                  <td className="am-canvas-trace-type">ADR</td>
-                  <td>
-                    <span className="am-canvas-trace am-canvas-trace-bad">no upstream link</span>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <span className="am-pill am-pill-lo">Orphan</span>
-                  </td>
-                </tr>
-                <tr className="am-canvas-trace-row-orphan">
-                  <td className="am-canvas-trace-id">MIG-{pid}-003</td>
-                  <td className="am-canvas-trace-title">Phase 3 — branch network rollout</td>
-                  <td className="am-canvas-trace-type">Migration phase</td>
-                  <td>
-                    <span className="am-canvas-trace am-canvas-trace-bad">
-                      no transformation-decision link
-                    </span>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <span className="am-pill am-pill-lo">Orphan</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="am-canvas-trace-id">MIG-{pid}-001</td>
-                  <td className="am-canvas-trace-title">Phase 1 — case hub live, dual-write to legacy</td>
-                  <td className="am-canvas-trace-type">Migration phase</td>
-                  <td>
-                    <span className="am-canvas-trace">TD-{pid}-007</span>{" "}
-                    <span className="am-canvas-trace">G-{pid}-009</span>{" "}
-                    <span className="am-canvas-trace">ADR-{pid}-002</span>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <span className="am-pill am-pill-hi">OK</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="am-canvas-trace-id">TGTAPP-{pid}-001</td>
-                  <td className="am-canvas-trace-title">Case Hub</td>
-                  <td className="am-canvas-trace-type">Target App</td>
-                  <td>
-                    <span className="am-canvas-trace">CAP-{pid}-002</span>{" "}
-                    <span className="am-canvas-trace">CAP-{pid}-005</span>{" "}
-                    <span className="am-canvas-trace">TD-{pid}-001</span>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <span className="am-pill am-pill-hi">OK</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-
-            <div className="am-canvas-banner">
-              Illustrative matrix — ArchitectMiner authoring is still being built.
-              Traces will be derived from real architecture elements once the data
-              model lands.
-            </div>
+            ) : (
+              <table className="am-canvas-trace-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: 120 }}>ID</th>
+                    <th>Element</th>
+                    <th style={{ width: 150 }}>Type</th>
+                    <th>Trace check</th>
+                    <th style={{ width: 90, textAlign: "right" }}>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {trace.rows.map((r) => (
+                    <tr
+                      key={r.id}
+                      className={
+                        r.status === "partial"
+                          ? "am-canvas-trace-row-partial"
+                          : r.status === "orphan"
+                            ? "am-canvas-trace-row-orphan"
+                            : undefined
+                      }
+                    >
+                      <td className="am-canvas-trace-id">{r.id}</td>
+                      <td className="am-canvas-trace-title">{r.title}</td>
+                      <td className="am-canvas-trace-type">
+                        {TRACE_TYPE_LABEL[r.type] ?? r.type}
+                      </td>
+                      <td>
+                        <span
+                          className={
+                            r.status === "orphan"
+                              ? "am-canvas-trace am-canvas-trace-bad"
+                              : r.status === "partial"
+                                ? "am-canvas-trace am-canvas-trace-warn"
+                                : "am-canvas-trace"
+                          }
+                        >
+                          {r.reason}
+                        </span>
+                      </td>
+                      <td style={{ textAlign: "right" }}>
+                        <span
+                          className={
+                            r.status === "traced"
+                              ? "am-pill am-pill-hi"
+                              : r.status === "partial"
+                                ? "am-pill am-pill-mid"
+                                : "am-pill am-pill-lo"
+                          }
+                        >
+                          {r.status === "traced"
+                            ? "OK"
+                            : r.status === "partial"
+                              ? "Partial"
+                              : "Orphan"}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </main>
           {chatSidebar}
           </>
