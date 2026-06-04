@@ -4,7 +4,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
 import { execSync } from "node:child_process";
-import { getSchema, toCamelCase, jsonElementToWikiPage, type WikiPage } from "./wiki.ts";
+import { getSchema, toCamelCase, jsonElementToWikiPage, transitionTarget, type WikiPage } from "./wiki.ts";
 import { checkElement, checkProvenance, checkFrontmatter, checkFieldValues, checkConformance } from "./conformance.ts";
 import { updateElement } from "./wiki-write.ts";
 
@@ -759,10 +759,8 @@ export class GeminiWorker implements IProcessWorker {
                 for (const step of steps) {
                   const transitions = step.content?.transitions || [];
                   for (const t of transitions) {
-                    if (typeof t !== "string") continue;
-                    const parts = t.split("|");
-                    if (parts.length > 0) {
-                      const targetId = parts[0];
+                    const targetId = transitionTarget(t); // R7: accepts object or string form
+                    if (targetId) {
                       if (targetId.startsWith("EX-")) {
                         targetedExceptions.add(targetId);
                         if (!exceptionIds.has(targetId)) {

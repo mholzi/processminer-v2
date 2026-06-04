@@ -9,7 +9,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { getSchema, jsonElementToWikiPage } from "./wiki.ts";
+import { getSchema, jsonElementToWikiPage, transitionTarget } from "./wiki.ts";
 import { checkElement, checkProvenance, checkFrontmatter, checkFieldValues, checkConformance } from "./conformance.ts";
 import { updateElement } from "./wiki-write.ts";
 import { replaceTempKeys, generateNextId } from "./gemini-worker.ts";
@@ -316,10 +316,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       for (const step of steps) {
         const transitions = step.content?.transitions || [];
         for (const t of transitions) {
-          if (typeof t !== "string") continue;
-          const parts = t.split("|");
-          if (parts.length > 0) {
-            const targetId = parts[0];
+          const targetId = transitionTarget(t); // R7: accepts object or string form
+          if (targetId) {
             if (targetId.startsWith("EX-")) {
               targetedExceptions.add(targetId);
               if (!exceptionIds.has(targetId)) {
