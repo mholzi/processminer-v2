@@ -201,6 +201,20 @@ const toolDeclarations: any[] = [
       },
       required: ["area", "summary"]
     }
+  },
+  {
+    name: "scaffoldProcess",
+    description: "Create a brand-new, empty process document (root meta + an empty overview). Used only by the new-process skill, in an unscoped session, before any content exists. Refuses to overwrite an existing process.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        slug: { type: "STRING", description: "Deterministic kebab-case slug — the file name." },
+        PROC: { type: "STRING", description: "Uppercase process abbreviation for element IDs, e.g. 'FRL'." },
+        title: { type: "STRING", description: "The process title." },
+        description: { type: "STRING", description: "One-line process description." }
+      },
+      required: ["slug", "PROC", "title"]
+    }
   }
 ];
 
@@ -393,6 +407,38 @@ export function generateNextId(data: any, elementType: string, idPrefix: string)
   const nextSeq = maxSeq + 1;
   const nextSeqStr = String(nextSeq).padStart(3, "0");
   return `${idPrefix}-${procAbbrev}-${nextSeqStr}`;
+}
+
+/**
+ * Build a fresh process JSON document — root `meta` plus an empty `overview`
+ * `content` — for the new-process scaffolding step. The overview id is
+ * `${PROC}-001`; `generateNextId` derives the PROC abbreviation from it, so
+ * every later element gets `<prefix>-${PROC}-<seq>` ids without storing PROC
+ * separately. Shared by both providers (gemini-worker + claude-mcp-server).
+ */
+export function buildProcessDoc(PROC: string, title: string, description: string): any {
+  return {
+    meta: {
+      id: `${PROC}-001`,
+      type: "process",
+      section: "overview",
+      status: "draft",
+      confidence: "low",
+      source: null,
+      docStatus: "empty",
+    },
+    content: {
+      title,
+      description: description || null,
+      processOwner: null,
+      trigger: null,
+      frequency: null,
+      scopeIn: null,
+      scopeOut: null,
+      processInput: null,
+      processOutput: null,
+    },
+  };
 }
 
 export class GeminiWorker implements IProcessWorker {
@@ -650,7 +696,23 @@ export class GeminiWorker implements IProcessWorker {
               console.log(`[gemini-worker] Executing tool sequentially: ${originalName}`, call.args);
               const args = (call.args || {}) as any;
 
-              if (isExpandElement) {
+              if (originalName === "scaffoldProcess") {
+                const newSlug = String(args.slug || "").trim();
+                const PROC = String(args.PROC || "").toUpperCase().trim();
+                const title = String(args.title || "").trim();
+                const description = String(args.description || "");
+                if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(newSlug)) throw new Error("slug must be kebab-case.");
+                if (!/^[A-Z]{2,6}$/.test(PROC)) throw new Error("PROC must be 2–6 uppercase letters.");
+                if (!title) throw new Error("title is required.");
+                const newPath = path.join(process.cwd(), "wiki", "processes", `${newSlug}.json`);
+                if (fs.existsSync(newPath)) throw new Error(`A process already exists for slug: ${newSlug}`);
+                const newDoc = buildProcessDoc(PROC, title, description);
+                fs.writeFileSync(newPath, JSON.stringify(newDoc, null, 2) + "\n", "utf8");
+                // Scope this session to the freshly created process for subsequent turns.
+                this.slug = newSlug;
+                if (this.sessionId) saveSessionSlug(this.sessionId, this.slug, this.activeSkill);
+                resultText = JSON.stringify({ ok: true, slug: newSlug, id: newDoc.meta.id, created: true }, null, 2);
+              } else if (isExpandElement) {
                 const type = args.type;
                 const id = args.id;
                 if (!doc) {
