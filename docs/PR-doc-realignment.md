@@ -29,7 +29,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#21** | Flag dangling relation targets in the element card (R17) | `fix/dangling-relation-chips-r17` → `main` | Code + docs | **Merged** (`be7fe91`) |
 | **#22** | Recover docs & standalone artifacts (R20–R22) | `feat/docs-artifacts-r20-r22` → `main` | Docs / artifacts only | **Merged** (`ea052d5`) |
 | **#23** | Refresh roadmap status header | `docs/roadmap-refresh` → `main` | Docs only | **Merged** (`8377486`) |
-| **#24** | Diagram + Traceability real-data wiring (R3) | `feat/architect-diagram-traceability-r3` → `main` | Code + tests + docs | **Open** (`pending`) |
+| **#24** | Diagram + Traceability real-data wiring (R3) | `feat/architect-diagram-traceability-r3` → `main` | Code + tests + docs | **Merged** (`9e82c4c`) |
+| **#25** | Personal + Library tiers from real data (R4) | `feat/architect-personal-library-r4` → `main` | Code + tests + docs | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -939,15 +940,57 @@ architect analysis views were decorative mockups.
 
 ---
 
-# Open follow-ups (as of PR #24)
+# PR #25 — Personal + Library tiers from real data (R4)
 
-Both product decisions (R15, R16) are **closed**, R10 is **done**, R17 is
-**fixed** (#21), the docs track (R20–R22) is **recovered** (#22), and the
-**entire Processminer roadmap is delivered**. Remaining:
+**Branch:** `feat/architect-personal-library-r4` → `main` · **Date:**
+2026-06-04 · **Type:** Code + tests + docs. **Final PR of Theme A (R1–R4).**
 
-1. **In progress: ArchitectMiner (Theme A — R1–R4).** R1 (#19) chat, R2 (#20) specialists and R3 (#24) Diagram + Traceability are done. Remaining:
-   - **R4** — Personal + Library tiers from real data (aggregate across all `<slug>.json` docs). *Next.*
-   - **Follow-up (beyond R1–R4):** wire the seven section *detail* views to real element rendering — still illustrative mock after R3.
-2. **Optional:** the schema generator (derive the Draft-07 JSON Schema from the custom schema, retiring the dual-edit + drift-guard).
-3. **Refresh the recovered artifacts (follow-up to R20/R22):** re-point `pm-shot*.mjs` at the current UI, regenerate the onepager screenshots + PDF, and update the v0.x deck framing.
-4. **R18 / R19** — remaining verify-then-decide loose ends (ProcessView join layer; slim per-type schema slices).
+## Why this PR exists
+
+Roadmap **R4**. `PersonalViews.tsx` and `LibraryViews.tsx` were **entirely
+mock** — a fabricated 9-process portfolio, a 23-ADR queue, a Gantt of invented
+migration phases, a 47-capability catalog with fake reuse, a 28-app register,
+22 NFR "templates" and 14 patterns. The cross-process-intelligence pitch
+rendered fiction.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/lib/architect-portfolio.ts` | **new** | Pure cross-process aggregation over every `ProcessDoc`: `collectArchitecture` (flatten + tag every architecture element with its process), `processPortfolio` (per-process counts + derived stage), `capabilityCatalog` (grouped by name, **cross-process reuse** = distinct processes sharing a capability), `applicationRegister`, `nfrCatalog`, `adrQueue`, `migrationPlan`. |
+| `src/lib/architect-portfolio.test.ts` | **new** | 6 tests — flatten/tag, per-process stage, cross-process reuse counting, verdict/category normalisation, empty portfolio. |
+| `src/components/PersonalViews.tsx` | **rewrite** | `AllProcesses` / `MyAdrs` (→ "Architecture decisions") / `MigrationPlans` now take `docs` and render real aggregates with empty states. The fabricated Gantt SVG and resource-alert are gone. |
+| `src/components/LibraryViews.tsx` | **rewrite** | `CapabilityCatalog` (real reuse), `ApplicationRegister`, `NfrTemplates` (→ "NFR catalog") take `docs`. `PatternLibrary` shows an honest empty state — patterns aren't a tracked element type, so there's nothing to aggregate. |
+| `src/components/HandoffInbox.tsx` | **edit** | Passes `docs` to all six data views; the Library / Personal **sidebar badge counts** are real (`archCounts`), not hardcoded. |
+| `package.json` | **edit** | Wires `architect-portfolio.test.ts` into `npm test`. |
+
+## Scope notes
+
+- Like R3, the portfolio reads **thin/empty** today — only 3 processes exist and
+  none has architecture authored — so every tier shows honest counts (0 / "none
+  yet") and empty states. The aggregation (incl. cross-process reuse) is proven
+  by the unit tests. It populates as processes are architected via R1 + R2.
+- `PatternLibrary` has no schema backing; rather than fabricate, it states so.
+
+## Verification
+
+- `npm run typecheck` clean. `npm test` → **54/54** (48 prior + 6 new).
+- AM Handoff inbox: sidebar counts real (All processes **3**, everything else
+  **0**, Pattern library **—**); "All processes" lists the 3 real processes
+  (all UPSTREAM, "none yet"); Capability catalog / ADRs / etc. show real empty
+  states. The mock portfolios are gone. Zero console errors; screenshot verified.
+
+---
+
+# Open follow-ups (as of PR #25)
+
+**ArchitectMiner Theme A (R1–R4) is complete**: chat (#19), specialists (#20),
+Diagram + Traceability (#24), Personal + Library tiers (#25). With R10, R15–R17
+and R20–R22 also done, the **entire triaged roadmap is delivered.** Remaining,
+all optional / beyond the original R1–R22 scope:
+
+1. **Wire the seven ArchitectMiner section *detail* views** (Capabilities, Target Applications, ADRs, Integrations, Components, NFRs, Migration) to real element rendering — still illustrative mock after R3/R4. The largest remaining cosmetic gap.
+2. **A first-class pattern catalog** — a `pattern` element type + the Pattern Library view (currently an honest empty state).
+3. **Schema generator** — derive the Draft-07 JSON Schema from the custom schema, retiring the dual-edit + drift-guard.
+4. **Refresh the recovered artifacts (R20/R22):** re-point `pm-shot*.mjs` at the current UI, regenerate the onepager screenshots + PDF, update the v0.x deck framing.
+5. **R18 / R19** — verify-then-decide loose ends (ProcessView join layer; slim per-type schema slices).
