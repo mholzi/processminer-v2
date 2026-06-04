@@ -43,6 +43,8 @@ fixed-message buttons (§11).
 - **Perspective specialists (interactive):** `process-specialist`,
   `control-compliance-specialist`, `client-journey-specialist`,
   `innovation-analyst`, `transformation-agent`, `it-architect`
+- **Architect specialists (interactive, ArchitectMiner):** `domain-architect`,
+  `solution-architect`
 - **Web-sourcing (non-interactive):** `source-regulation`, `source-cx`,
   `source-innovation`, `source-target`
 - **Single-element & review:** `add-entry`, `comment-review`, `run-lint`,
@@ -61,6 +63,8 @@ question bank, the functional pattern (§5), and the slice of the schema it owns
 | **Innovation Analyst** | forward-looking — refine sourced trends/competitors/ideas, weigh risk | market-trend, competitor-innovation, innovation-idea, innovation-risk |
 | **Transformation Agent** | the forward synthesis — target state, the decisions to reach it, the gaps to close | to-be-design, transformation-decision, gap-resolution |
 | **IT Architect** | the systems landscape | system, integration |
+| **Domain Architect** (ArchitectMiner) | the business-architecture layer of the target state | capability, target-application, adr |
+| **Solution Architect** (ArchitectMiner) | the technical layer of the target architecture | target-integration, component, nfr, migration-phase |
 
 Mapped to the six schema areas: **As-Is Process** (Process Specialist),
 **Risk & Compliance** (Control & Compliance), **Client Experience** (Client
@@ -70,11 +74,17 @@ Journey), **Innovation** (Innovation Analyst), **Target Process**
 Note: **pain-points** are staff/process pain (→ As-Is); **friction-points** are
 client-facing pain (→ Client Experience).
 
-> **ArchitectMiner specialists (not yet present).** The architect workspace is
-> meant to have its own `domain-architect` + `solution-architect` specialists
-> (capabilities/ADRs and integrations/components/NFRs/migration-phases). These
-> were dropped in the migration and are a roadmap item — see
-> [`REQUIREMENTS-ROADMAP.md`](REQUIREMENTS-ROADMAP.md) R2.
+> **ArchitectMiner specialists.** The architect workspace has its own
+> `domain-architect` (capabilities, target-applications, ADRs) and
+> `solution-architect` (target-integrations, components, NFRs, migration-phases)
+> specialists, authored against the JSON-native `CORE_SYSTEM_PROMPT` contract
+> (roadmap R2). They run on the ArchitectMiner canvas — the "Elicit with domain
+> / solution architect" buttons (R1) invoke them — and write the seven
+> target-architecture element types into the same process JSON via the same
+> schema-enforced tools and approval gate as the Processminer specialists. Both
+> are **downstream synthesis**: they read the documented target process,
+> requirements, gaps, controls, regulation and systems as their inputs and
+> never author upstream elements.
 
 ## 5. The functional pattern
 

@@ -216,6 +216,8 @@ const SKILL_LABEL: Record<string, string> = {
   "it-architect": "IT Architect",
   "innovation-analyst": "Innovation Analyst",
   "transformation-agent": "Transformation Agent",
+  "domain-architect": "Domain Architect",
+  "solution-architect": "Solution Architect",
   "run-lint": "Quality Check",
   "foundational-run": "Foundational Run",
   "council-review": "Target Council Review",

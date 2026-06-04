@@ -24,7 +24,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#16** | Country-variations element type (R15) | `feat/country-variations-r15` → `main` | Schema + code + docs | **Merged** (`e7361e9`) |
 | **#17** | Per-process access control (R16) | `feat/process-access-r16` → `main` | Code + docs | **Merged** (`bd30d67`) |
 | **#18** | Read-only orchestrator layer (R10) | `feat/orchestrator-read-layer-r10` → `main` | Code + tests + docs | **Merged** (`1e3ad18`) |
-| **#19** | Live architect chat via shared `useAgentChat` (R1) | `feat/architect-chat-r1` → `main` | Code + docs | **Open** (`pending`) |
+| **#19** | Live architect chat via shared `useAgentChat` (R1) | `feat/architect-chat-r1` → `main` | Code + docs | **Merged** (`de1eb98`) |
+| **#20** | Domain + solution architect specialists (R2) | `feat/architect-specialists-r2` → `main` | Skills + docs | **Open** (`pending`) |
 
 > **Numbering note.** A "Recover docs & standalone artifacts (R20–R22)" PR was
 > pre-logged here as #19 but never opened on GitHub; its work is still staged
@@ -730,6 +731,53 @@ Elicit buttons invoke) and the rest of Theme A.
 
 ---
 
+# PR #20 — Domain + solution architect specialists (R2)
+
+**Branch:** `feat/architect-specialists-r2` → `main` · **Date:** 2026-06-04 ·
+**Type:** Skills + docs. Second PR of **Theme A — ArchitectMiner (R1–R4)**.
+
+## Why this PR exists
+
+Roadmap **R2**. R1 made the architect canvas chat live and wired the "Elicit
+with domain / solution architect" buttons — but the specialists they invoke
+didn't exist. There was no architect authoring intelligence.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `.claude/skills/domain-architect/SKILL.md` | **new** | The business-architecture specialist — owns **capability**, **target-application**, **adr**. Derives capabilities from the target process + requirements, decides the application landscape (build / buy / configure / keep), records ADRs with alternatives + consequences, and wires the relations (`hostedIn`, `realisesStep`, `resolvesGap`, `decision`, `satisfiesControl`, `drivenByADR`). |
+| `.claude/skills/solution-architect/SKILL.md` | **new** | The technical-architecture specialist — owns **target-integration**, **component**, **nfr**, **migration-phase**. Connects applications, decomposes them, sets measurable NFRs, and sequences the migration; wires `from`/`to`, `inApp`, `appliesTo`, `delivers`, etc. |
+| `SKILLS.md` | **edit** | Adds both to the specialist list + table; rewrites the "not yet present" ArchitectMiner note to describe the shipped specialists. |
+| `CLAUDE.md` | **edit** | Two new rows in the skills routing table. |
+| `src/app/ProcessDocScreen.tsx` | **edit** | Adds `domain-architect` / `solution-architect` to `SKILL_LABEL` (friendly active-skill chip). |
+
+## Design notes
+
+- **No schema work.** All 7 target-architecture element types already exist in
+  both schema representations (`capability`, `target-application`, `adr`,
+  `target-integration`, `component`, `nfr`, `migration-phase`) with their
+  sections, id prefixes, required frontmatter and relations — and the schema
+  already names `domain-architect` / `solution-architect` as their specialists.
+  The drift-guard is untouched.
+- **JSON-native style.** Authored against `CORE_SYSTEM_PROMPT.md` —
+  `createElement` / `updateElement` / `expandElement`, Y/E/R, per-heading
+  provenance, the approval gate. No Python / `verbatim.py` references (the
+  legacy specialists still carry those; the new ones don't).
+- Both are framed as **downstream synthesis**: they read the documented target
+  process, requirements, gaps, controls, regulation and systems as inputs and
+  never author upstream elements ("stay in your lane").
+
+## Verification
+
+- Both skills are auto-discovered (appear in the available-skills list) with
+  valid frontmatter (`name` matches dir).
+- `npm run typecheck` clean. `npm test` → **39/39**.
+- The R1 "Elicit with domain / solution architect" buttons now resolve to real
+  specialists. (No live CLI turn fired against real process data.)
+
+---
+
 # PR (planned, not yet opened) — Recover docs & standalone artifacts (R20–R22)
 
 > Pre-logged as #19 but never opened on GitHub; the ArchitectMiner R1 PR took
@@ -783,9 +831,8 @@ Both product decisions (R15, R16) are **closed**, R10 is **done**, the docs
 track (R20–R22) is **recovered**, and the **entire Processminer roadmap is
 delivered**. Remaining:
 
-1. **In progress: ArchitectMiner (Theme A — R1–R4).** R1 (this PR) makes the architect canvas chat live. Remaining:
-   - **R2** — `domain-architect` + `solution-architect` specialist skills (the Elicit buttons invoke them). *Next.*
-   - **R3** — Diagram + Traceability real data wiring (replace the hardcoded SVG + the "illustrative" stat with reads off `doc.elements[].relations`).
+1. **In progress: ArchitectMiner (Theme A — R1–R4).** R1 (chat) and R2 (specialists) are done. Remaining:
+   - **R3** — Diagram + Traceability real data wiring (replace the hardcoded SVG + the "illustrative" stat with reads off `doc.elements[].relations`). *Next.*
    - **R4** — Personal + Library tiers from real data (aggregate across all `<slug>.json` docs).
 2. **Optional:** the schema generator (derive the Draft-07 JSON Schema from the custom schema, retiring the dual-edit + drift-guard).
 3. **Open docs/artifacts PR (R20–R22):** staged locally on `feat/docs-artifacts-r20-r22`, not yet opened (see the numbering note above). Re-point `pm-shot*.mjs` at the current UI before regenerating.

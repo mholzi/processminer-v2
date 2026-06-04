@@ -147,6 +147,8 @@ request matches a skill, invoke it via the Skill tool.
 | Develop the target state | `/transformation-agent` |
 | Council-review the target state | `/council-review` |
 | Refine the systems landscape | `/it-architect` |
+| Architect the target business layer (capabilities / apps / ADRs) | `/domain-architect` |
+| Architect the target technical layer (integrations / components / NFRs / migration) | `/solution-architect` |
 | Web-source competitor CX / CX benchmarks | `/source-cx` |
 | Web-source market trends / competitor moves | `/source-innovation` |
 | Web-source the regulatory landscape | `/source-regulation` |
