@@ -5711,6 +5711,35 @@ body {
 }
 .ovw-error { color: var(--lo); font-size: var(--text-sm); margin: 0; }
 
+/* ---- Per-process Access (R16) ---- */
+.settings-access { max-width: 520px; margin-bottom: var(--space-2xl); }
+.settings-access h2 { font-size: var(--text-md); margin: 0 0 var(--space-sm); }
+.settings-access p { font-size: var(--text-sm); margin: 0 0 var(--space-sm); }
+.settings-dim { color: var(--muted); }
+.access-row { display: flex; gap: var(--space-sm); align-items: center; margin-top: var(--space-sm); }
+.access-row select {
+  flex: 1; font: inherit; font-size: var(--text-sm); padding: var(--space-xs) var(--space-sm);
+  border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface); color: var(--ink);
+}
+.access-btn {
+  padding: var(--space-xs) var(--space-md); font-size: var(--text-sm); font-weight: 500;
+  color: #fff; background: var(--accent); border: none; border-radius: var(--r-sm); cursor: pointer;
+}
+.access-btn:disabled { opacity: .45; cursor: not-allowed; }
+.access-grants { list-style: none; margin: 0 0 var(--space-sm); padding: 0; }
+.access-grants li {
+  display: flex; align-items: center; gap: var(--space-sm);
+  font-size: var(--text-sm); padding: var(--space-2xs) 0;
+}
+.access-revoke {
+  font-size: var(--text-xs); color: var(--lo); background: none; border: 0; cursor: pointer;
+}
+.access-open {
+  margin-top: var(--space-md); padding: var(--space-xs) var(--space-md); font-size: var(--text-sm);
+  color: var(--muted); background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-sm); cursor: pointer;
+}
+
 /* ---- Contributors & activity (R5) ---- */
 .contrib { max-width: 760px; padding: 0 var(--space-xl) var(--space-2xl); }
 .contrib-empty { color: var(--muted); font-size: var(--text-sm); }

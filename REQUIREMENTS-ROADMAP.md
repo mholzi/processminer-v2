@@ -2,7 +2,11 @@
 
 **Purpose.** After replacing `main` with the JSON-native baseline (`b6f7b64`), this document triages every code-touching commit that the old main line carried but the new baseline dropped (see [`SUPERSEDED-MAIN-COMMITS.md`](SUPERSEDED-MAIN-COMMITS.md)), and turns the still-relevant ones into candidate requirements.
 
-**Status of this doc.** Every requirement below is **Proposed — pending your cross-read and prioritization.** Nothing is scheduled or accepted yet. The phase grouping in §3 is my *recommendation*, not a commitment. Use the requirement IDs (R1…Rn) to accept / reject / reorder.
+**Status of this doc — ✅ COMPLETE (2026-06-04).** Every requirement was triaged and worked through. The **entire Processminer scope is delivered** across **17 PRs**, and **both product decisions are settled** (R15 = yes, R16 = yes). Individual requirement entries below carry a ✅ **FIXED** / decision note. The original "Proposed — pending prioritization" framing is kept for the requirements text; the per-item status lines record what shipped.
+
+**Delivered (PR #):** A1 (#2) · A3 (#4) · R6a (#5) · R6b (#6) · schema drift-guard (#7) · R7+R8 (#8) · R9 (#9) · R11 (#10) · A4 + R14 a/b (#11) · R12a (#12) · R5 (#13) · R13 + R14c (#14) · R12b (#15) · R15 (#16) · R16 (#17).
+
+**Not done — parked by choice:** **ArchitectMiner (Theme A — R1–R4)**, the whole module is still view-only (dead chat, mock Diagram/Library, no architect specialists) — the largest remaining *functional* gap, set aside as a separate workspace. Optional: R10 (orchestrator consumer), R17–R19 (verify-then-decide loose ends), and the schema generator (option A).
 
 **Method.** All 41 commits were assessed against the actual files on the current baseline. Each was classed:
 - **PRESENT** — the functionality already exists on the new baseline → no action.
@@ -140,10 +144,9 @@ Each requirement: source commit(s), what's missing, impact, effort (S/M/L), reco
 - **Source:** `ecc57f1` (3rd feature)
 - **Decision:** Add it. ✅ **DONE.** New `country-variation` element type (idPrefix `CV`; field `country`; `affects → process-step`; template **What differs / Why it differs / Impact**) added to **both** schema files (custom + AJV — drift-guard parity holds), plus a **Country Variations** section in the As-Is area. Verified: the section shows in the As-Is nav with an Add-entry CTA; the generic ElementCard + a per-country `SectionSummary` breakdown render it. SMEs document jurisdictional differences as first-class elements.
 
-#### R16 — Per-process access control (grant / owner / contributors / Settings access summary) — **product decision**
+#### R16 — Per-process access control — **product decision: YES**
 - **Source:** `db525cf` (part 2), `1772a5c` (grant-access UI), `3b51a56` (Settings access summary)
-- **Question:** Today **every authenticated user sees every process** (gating is only `isAdmin` + module entitlement `pm`/`am`). Do you want per-process need-to-know access? The old file-based implementation (`process-access.ts`) is gone and should **not** be ported as-is.
-- **Effort:** L · **Recommendation:** Redesign only if accepted — access state would live in a `meta.access` block of `<slug>.json` or a separate store. *(`7a84443`, the old admin-visibility fix, is OBSOLETE either way.)*
+- **Decision:** Add it. ✅ **DONE.** New `src/lib/process-access.ts` store (`data/process-access.json`, gitignored — authz config, never in the wiki). A process is **ungoverned** (visible to all) until an admin gives it an **owner**; then only the owner, granted users, and admins see it. **Enforced server-side** in `page.tsx` (`canAccess` filters the process list before it reaches the browser); `AuthGate` does `router.refresh()` on login/logout so the list re-filters. Endpoints: `GET/POST /api/processes/[slug]/access` (set-owner/ungovern = admin; grant/revoke = owner-or-admin) + `GET /api/users/roster`. UI: an **Access** section in the Settings panel (restrict / share / revoke / make-open). Delete cleans the access record. Verified: `canAccess` correct across owner/granted/other/admin × governed/ungoverned; the full restrict→share→open round-trip works in the app. *(`7a84443`, the old admin-visibility fix, stays OBSOLETE — `page.tsx` reads the disk fresh each request.)*
 
 ### Theme G — Verify-then-decide (low-priority loose ends)
 

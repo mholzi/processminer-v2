@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Schema, ProcessDoc } from "@/lib/wiki";
 import type { FeedbackItem } from "@/lib/feedback";
 import type { User } from "@/lib/user";
@@ -25,6 +26,7 @@ export default function AuthGate({
   docs: ProcessDoc[];
   feedback: FeedbackItem[];
 }) {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [workspace, setWorkspace] = useState<Workspace>("splash");
@@ -57,6 +59,9 @@ export default function AuthGate({
 
   function handleSignedIn(next: User) {
     setUser(next);
+    // Re-run the server component so the process list is rebuilt with this
+    // user's access (R16) — page.tsx filters by the session cookie.
+    router.refresh();
   }
 
   async function handleSignOut() {
@@ -69,6 +74,7 @@ export default function AuthGate({
     setWorkspace("splash");
     setInitialSlug(undefined);
     setArchitectSlug(undefined);
+    router.refresh(); // drop the (now inaccessible) docs server-side
   }
 
   function enterProcessminer(slug?: string) {

@@ -3,6 +3,7 @@ import { join } from "node:path";
 import type { NextRequest } from "next/server";
 import { revalidatePath } from "next/cache";
 import { COOKIE_NAME, verifySession } from "@/lib/auth-server";
+import { ungovern } from "@/lib/process-access";
 
 // DELETE /api/processes/<slug> — permanently remove a process. Admin-only.
 // Removes everything the process owns: the wiki JSON, its immutable source
@@ -41,6 +42,7 @@ export async function DELETE(
     rmSync(wikiFile, { force: true }); // the process document (wiki layer 2)
     rmSync(join(root, "raw-sources", slug), { recursive: true, force: true }); // sources (layer 1)
     rmSync(join(root, "data", "runtime", `${slug}.json`), { force: true }); // runtime state (R9)
+    ungovern(slug); // access record (R16)
 
     // Drop any chat sessions that point at the deleted slug. Entries are either
     // a bare slug string (legacy) or { slug, activeSkill }.
