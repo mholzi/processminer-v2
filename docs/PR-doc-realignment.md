@@ -42,7 +42,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#34** | Sync the working tree to main (skill edits, doc/data, dogfood content) | `chore/sync-working-tree-to-main` → `main` | Skills + docs + data | **Merged** (`6b1732d`) |
 | **#35** | Purge stale references to the pre-rewrite Markdown-wiki model | `chore/purge-md-wiki-references` → `main` | Code + docs | **Merged** (`35f758d`) |
 | **#36** | Register the `writeTargetReview` + `writeSummary` AI tools (fix council-review + area-summary) | `feat/council-summary-tools` → `main` | Code + tests + skills | **Merged** (`f12dd62`) |
-| **#37** | Purge dead script / legacy-doc pointers from 6 skills | `chore/purge-skill-stale-pointers` → `main` | Skills only | **Open** (`pending`) |
+| **#37** | Purge dead script / legacy-doc pointers from 6 skills | `chore/purge-skill-stale-pointers` → `main` | Skills only | **Merged** (`162a853`) |
+| **#38** | Reference `CORE_SYSTEM_PROMPT.md` from the 6 perspective specialists | `chore/specialists-reference-core` → `main` | Skills only | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1310,6 +1311,36 @@ content was fine, the pointers were dead.
 - Skills only — typecheck / test unaffected. A grep sweep confirms **zero**
   `*.py` / `scripts/wiki` / legacy-plan-doc / "drift check fails CI" references
   remain in any skill.
+
+---
+
+
+# PR #38 — Reference CORE_SYSTEM_PROMPT.md from the 6 perspective specialists
+
+**Branch:** `chore/specialists-reference-core` → `main` · **Date:** 2026-06-04 ·
+**Type:** Skills only.
+
+## Why this PR exists
+
+The skill-architecture review's one remaining (non-bug) consistency note: only
+the two architect specialists (`domain-architect` / `solution-architect`)
+explicitly pointed at the shared contract `CORE_SYSTEM_PROMPT.md`; the six
+perspective specialists re-inlined the same generic **Y / E / R** + provenance
+boilerplate — double maintenance.
+
+## What this PR changes
+
+| File | Change |
+|---|---|
+| `process-specialist`, `control-compliance-specialist`, `client-journey-specialist`, `innovation-analyst`, `transformation-agent`, `it-architect` | Replaced the inline `### Y / E / R — the capture loop` boilerplate with one consistent paragraph pointing at `CORE_SYSTEM_PROMPT.md` (the shared per-skill contract), matching the architect skills. The specialist-specific patterns (narrative-/brainstorm-first capture, the `[A]/[E]/[N]` entry idiom, phases, close-out, stay-in-your-lane) are untouched. |
+
+Now **all 8** interactive specialists reference the shared contract exactly once.
+
+## Verification
+
+- Skills only — typecheck / test unaffected. Confirmed: all 8 specialists carry
+  one `CORE_SYSTEM_PROMPT` reference; no orphaned `### Y / E / R` headers remain;
+  the Interaction-patterns sections read cleanly.
 
 ---
 
