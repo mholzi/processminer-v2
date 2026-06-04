@@ -1119,6 +1119,12 @@ body {
   background: var(--surface); cursor: pointer;
 }
 .link-chip-nav:hover { background: var(--accent-soft); border-color: var(--accent); }
+/* dangling relation target — the id resolves to no element in this process */
+.link-chip-dangling {
+  background: var(--lo-bg); border-color: var(--lo); color: var(--lo);
+  cursor: help;
+}
+.link-chip-dangling-tag { font-size: var(--text-xs); opacity: 0.8; }
 .el-transitions { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
 .el-transitions-label { font-size: var(--text-xs); color: var(--muted); }
 .el-transition { display: flex; align-items: center; gap: 8px; }

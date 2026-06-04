@@ -1,0 +1,894 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Processminer AI Governance Roadmap — EU AI Act + Bank MRM</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1a1a1a;
+    --muted: #666;
+    --rule: #e5e5e5;
+    --rule-soft: #f0f0f0;
+    --card-bg: #fafafa;
+
+    /* Phase palette — governance flavour */
+    --p1: #2563eb;        /* EU AI Act — blue */
+    --p1-bg: #dbeafe;
+    --p2: #7c3aed;        /* MRM — purple */
+    --p2-bg: #ede9fe;
+    --p3: #0d9488;        /* Control functions — teal */
+    --p3-bg: #ccfbf1;
+    --p4: #ea580c;        /* Operational controls — orange */
+    --p4-bg: #ffedd5;
+    --p5: #16a34a;        /* Data governance — green */
+    --p5-bg: #dcfce7;
+    --p6: #db2777;        /* Output quality — pink */
+    --p6-bg: #fce7f3;
+    --p7: #475569;        /* Lifecycle — slate */
+    --p7-bg: #e2e8f0;
+
+    /* Severity */
+    --sev-blocker: #dc2626;
+    --sev-blocker-bg: #fee2e2;
+    --sev-high: #d97706;
+    --sev-high-bg: #fef3c7;
+    --sev-medium: #2563eb;
+    --sev-medium-bg: #dbeafe;
+    --sev-low: #65a30d;
+    --sev-low-bg: #ecfccb;
+
+    --code-bg: #f5f5f5;
+    --quote-bg: #fffbeb;
+    --quote-rule: #f59e0b;
+    --quote-fg: #92400e;
+
+    --warn-bg: #fef2f2;
+    --warn-rule: #dc2626;
+    --warn-fg: #991b1b;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    max-width: 1180px;
+    margin: 2.5em auto;
+    padding: 0 1.25em 4em;
+    line-height: 1.55;
+    color: var(--fg);
+    background: var(--bg);
+  }
+  h1 { font-size: 2em; margin: 0 0 0.2em; letter-spacing: -0.015em; }
+  h2 { font-size: 1.4em; margin: 2.5em 0 0.6em; letter-spacing: -0.01em; }
+  h3 { font-size: 1.15em; margin: 1.4em 0 0.4em; }
+  h4 { font-size: 0.85em; margin: 0 0 0.5em; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; }
+  p { margin: 0.5em 0; }
+  .meta { color: var(--muted); font-size: 0.95em; }
+  .lede { font-size: 1.02em; color: var(--fg); margin: 1em 0 1.5em; }
+
+  .scope-banner {
+    border: 1px solid var(--p1);
+    background: linear-gradient(to right, var(--p1-bg) 0%, #fff 60%);
+    padding: 1em 1.25em; border-radius: 10px;
+    margin: 1em 0;
+  }
+  .scope-banner .kv {
+    display: grid; grid-template-columns: max-content 1fr; gap: 0.3em 1.2em;
+    font-size: 0.92em;
+  }
+  .scope-banner .kv dt { color: var(--muted); font-weight: 600; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.04em; }
+  .scope-banner .kv dd { margin: 0; }
+
+  /* Section card */
+  .section { border: 1px solid var(--rule); border-radius: 10px; padding: 1.5em 1.75em; margin: 1.5em 0; background: #fff; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin: 0.8em 0; font-size: 0.92em; }
+  th, td { padding: 0.6em 0.85em; text-align: left; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { background: #fafafa; font-weight: 600; font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  tr:last-child td { border-bottom: none; }
+  td.num { font-variant-numeric: tabular-nums; text-align: right; }
+  table.tight th, table.tight td { padding: 0.4em 0.6em; }
+
+  code { background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace; font-size: 0.86em; }
+
+  ul, ol { padding-left: 1.4em; margin: 0.5em 0; }
+  li { margin: 0.25em 0; }
+
+  /* Two columns for the "have / have-not" current state */
+  .state-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1em; margin: 1em 0; }
+  @media (max-width: 760px) { .state-grid { grid-template-columns: 1fr; } }
+  .state-have, .state-gap { border-radius: 8px; padding: 1em 1.25em; }
+  .state-have { background: #ecfdf5; border-left: 4px solid #10b981; }
+  .state-gap { background: var(--warn-bg); border-left: 4px solid var(--warn-rule); color: var(--warn-fg); }
+  .state-gap strong { color: var(--warn-fg); }
+  .state-have h4, .state-gap h4 { margin: 0 0 0.4em; font-size: 0.78em; color: inherit; }
+  .state-have h4 { color: #065f46; }
+  .state-gap h4 { color: var(--warn-fg); }
+  .state-have ul, .state-gap ul { margin: 0; padding-left: 1.2em; font-size: 0.9em; }
+  .state-have li, .state-gap li { margin: 0.2em 0; }
+
+  /* Severity pills */
+  .sev {
+    display: inline-block; padding: 0.12em 0.6em; border-radius: 3px;
+    font-size: 0.72em; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+  }
+  .sev-blocker { background: var(--sev-blocker-bg); color: var(--sev-blocker); }
+  .sev-high    { background: var(--sev-high-bg);    color: var(--sev-high); }
+  .sev-medium  { background: var(--sev-medium-bg);  color: var(--sev-medium); }
+  .sev-low     { background: var(--sev-low-bg);     color: var(--sev-low); }
+
+  .effort {
+    display: inline-block; padding: 0.08em 0.45em; border-radius: 4px;
+    background: #f1f5f9; color: #334155;
+    font-size: 0.72em; font-weight: 700; letter-spacing: 0.04em;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+  }
+  .effort-xs { background: #e0f2fe; color: #075985; }
+  .effort-s  { background: #d1fae5; color: #065f46; }
+  .effort-m  { background: #fef3c7; color: #92400e; }
+  .effort-l  { background: #fed7aa; color: #9a3412; }
+  .effort-xl { background: #fee2e2; color: #991b1b; }
+
+  /* Phase header + body */
+  .phase-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    flex-wrap: wrap; gap: 0.5em;
+    padding: 1em 1.25em; border-radius: 10px 10px 0 0;
+    border: 1px solid var(--rule); border-bottom: none;
+    margin-top: 2em;
+  }
+  .phase-head h2 { margin: 0; font-size: 1.3em; }
+  .phase-head .count { font-size: 0.85em; color: var(--muted); }
+  .phase-body {
+    border: 1px solid var(--rule); border-top: 0;
+    border-radius: 0 0 10px 10px;
+    padding: 1em 1.25em 1.5em;
+    background: #fff;
+  }
+  .phase-1 { background: var(--p1-bg); border-color: var(--p1); }
+  .phase-2 { background: var(--p2-bg); border-color: var(--p2); }
+  .phase-3 { background: var(--p3-bg); border-color: var(--p3); }
+  .phase-4 { background: var(--p4-bg); border-color: var(--p4); }
+  .phase-5 { background: var(--p5-bg); border-color: var(--p5); }
+  .phase-6 { background: var(--p6-bg); border-color: var(--p6); }
+  .phase-7 { background: var(--p7-bg); border-color: var(--p7); }
+
+  .phase-cell { display: flex; align-items: center; gap: 0.55em; }
+  .phase-dot { width: 0.65em; height: 0.65em; border-radius: 50%; flex: 0 0 auto; }
+
+  .group-head {
+    font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--muted); font-weight: 600; margin: 1.5em 0 0.5em;
+    padding-bottom: 0.3em; border-bottom: 1px solid var(--rule-soft);
+  }
+
+  /* Candidate cards */
+  .candidates { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.85em; margin: 0.5em 0; }
+  @media (max-width: 880px) { .candidates { grid-template-columns: 1fr; } }
+  .candidates.one-col { grid-template-columns: 1fr; }
+  .candidate {
+    border: 1px solid var(--rule); border-radius: 8px;
+    padding: 0.9em 1em; background: #fff;
+    position: relative;
+  }
+  .candidate.conditional {
+    background: #fffbeb; border-left: 3px solid var(--quote-rule);
+  }
+  .candidate .head {
+    display: flex; align-items: baseline; gap: 0.5em; margin-bottom: 0.4em; flex-wrap: wrap;
+  }
+  .candidate .num {
+    display: inline-block; min-width: 1.6em; height: 1.6em; line-height: 1.6em;
+    border-radius: 4px; text-align: center; font-weight: 700; font-size: 0.78em;
+    color: #fff; padding: 0 0.35em;
+    font-variant-numeric: tabular-nums;
+  }
+  .phase-1-num { background: var(--p1); }
+  .phase-2-num { background: var(--p2); }
+  .phase-3-num { background: var(--p3); }
+  .phase-4-num { background: var(--p4); }
+  .phase-5-num { background: var(--p5); }
+  .phase-6-num { background: var(--p6); }
+  .phase-7-num { background: var(--p7); }
+
+  .candidate h3 { font-size: 0.98em; margin: 0; flex: 1 1 auto; }
+  .candidate .row { font-size: 0.85em; margin: 0.35em 0; }
+  .candidate .row .label {
+    display: inline-block; min-width: 4.6em;
+    font-size: 0.72em; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--muted); font-weight: 600;
+  }
+  .candidate .row.what    .label { color: #1e3a8a; }
+  .candidate .row.why     .label { color: #166534; }
+  .candidate .row.owner   .label { color: #7c2d12; }
+  .candidate .row.touches { font-size: 0.78em; color: var(--muted); }
+
+  blockquote, .callout {
+    background: var(--quote-bg);
+    border-left: 4px solid var(--quote-rule);
+    color: var(--quote-fg);
+    padding: 0.85em 1em; border-radius: 6px;
+    margin: 1em 0;
+    font-size: 0.92em;
+  }
+  blockquote p, .callout p { margin: 0.3em 0; }
+
+  .deadline-banner {
+    background: var(--warn-bg);
+    border-left: 4px solid var(--warn-rule);
+    color: var(--warn-fg);
+    padding: 0.85em 1em; border-radius: 6px; margin: 1em 0;
+    font-size: 0.92em;
+  }
+
+  /* Regulatory grid */
+  .regs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.85em; margin: 1em 0; }
+  @media (max-width: 760px) { .regs { grid-template-columns: 1fr; } }
+  .reg {
+    border: 1px solid var(--rule); border-radius: 8px;
+    padding: 0.9em 1em; background: #fff;
+  }
+  .reg h4 { color: var(--fg); font-size: 1em; text-transform: none; letter-spacing: 0; margin-bottom: 0.3em; }
+  .reg .sub { font-size: 0.82em; color: var(--muted); margin-bottom: 0.4em; }
+  .reg p { font-size: 0.88em; margin: 0.3em 0 0; }
+
+  /* Sequencing summary boxes */
+  .seq-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.6em; margin: 1em 0; }
+  @media (max-width: 980px) { .seq-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px) { .seq-grid { grid-template-columns: 1fr; } }
+  .seq {
+    border-radius: 8px; padding: 0.9em 1em; border: 1px solid var(--rule);
+    background: #fff;
+  }
+  .seq.sev-blocker-bx { border-top: 4px solid var(--sev-blocker); }
+  .seq.sev-high-bx    { border-top: 4px solid var(--sev-high); }
+  .seq.sev-medium-bx  { border-top: 4px solid var(--sev-medium); }
+  .seq.sev-low-bx     { border-top: 4px solid var(--sev-low); }
+  .seq .label { font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; }
+  .seq .count { font-size: 1.8em; font-weight: 700; line-height: 1; margin: 0.2em 0 0.3em; }
+  .seq ul { font-size: 0.8em; padding-left: 1.1em; margin: 0; }
+  .seq li { margin: 0.1em 0; }
+
+  /* TOC */
+  .toc {
+    border: 1px solid var(--rule); border-radius: 8px;
+    padding: 0.9em 1.25em; background: #fafafa;
+    margin: 1.5em 0;
+    font-size: 0.92em;
+  }
+  .toc h4 { color: var(--fg); text-transform: none; letter-spacing: 0; font-size: 1em; margin-bottom: 0.4em; }
+  .toc ol { columns: 2; column-gap: 2em; padding-left: 1.4em; margin: 0.3em 0; }
+  @media (max-width: 760px) { .toc ol { columns: 1; } }
+  .toc li { break-inside: avoid; margin: 0.15em 0; }
+
+  .questions { padding-left: 1.4em; }
+  .questions li { margin: 0.5em 0; }
+  .questions li strong { color: #92400e; }
+
+  footer { margin-top: 4em; padding-top: 1.5em; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.88em; }
+  a { color: var(--p1); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<h1>Processminer AI Governance Roadmap</h1>
+<div class="scope-banner">
+  <dl class="kv">
+    <dt>Version</dt><dd>2026-05-28</dd>
+    <dt>Scope</dt><dd>Bank AI Governance + EU AI Act compliance for Processminer</dd>
+    <dt>Status</dt><dd>Gap analysis + remediation backlog</dd>
+    <dt>Audience</dt><dd>AI Governance Committee · Model Risk Management (2LoD) · Compliance · Operational Risk · Legal · InfoSec · DPO · Internal Audit</dd>
+  </dl>
+</div>
+
+<p class="lede">
+  Processminer is an LLM-powered banking-process documentation engine (Claude API + skill orchestration → file-backed wiki). Outputs flow into bank-internal artifacts and, indirectly via Sparx / Confluence / EPM aggregation, into regulator-facing material. Under the bank's AI Governance framework and the EU AI Act, this footprint requires <strong>formal registration, independent validation, control-function sign-off, and ongoing monitoring</strong> — none of which the system has today.
+</p>
+
+<div class="state-grid">
+  <div class="state-have">
+    <h4>✓ What we have</h4>
+    <ul>
+      <li><strong>Per-heading provenance contract</strong> (HALLUCINATION-PLAN.md) — every output heading carries <code>source</code> / <code>derived</code> / <code>proposed</code> classification with evidence quotes.</li>
+      <li><strong>Schema-validated writers</strong> — the only mutation path; bypasses are CI-prevented.</li>
+      <li><strong>Human-in-the-loop approval gate</strong> (<code>set_approval.py</code>) — no element approved without explicit SME sign-off.</li>
+      <li><strong>Wiki integrity contracts</strong> — Python + TypeScript conformance twins.</li>
+      <li><strong>Run-time orchestrator</strong> — pure-data state machine that proposes, never executes.</li>
+    </ul>
+  </div>
+  <div class="state-gap">
+    <h4>✗ What we don't have</h4>
+    <ul>
+      <li>No entry in the bank's <strong>model inventory</strong>; no MRM tier classification.</li>
+      <li>No <strong>2LoD validation report</strong> before production use.</li>
+      <li>No formal <strong>AI Act risk classification</strong> on file.</li>
+      <li>No central <strong>audit log of Claude API calls</strong>.</li>
+      <li>No documented <strong>bias / robustness / adversarial-input testing</strong>.</li>
+      <li>No documented <strong>DPIA</strong> for PII in raw-sources.</li>
+      <li>No <strong>incident-reporting playbook</strong> for AI-driven harm.</li>
+      <li>No <strong>vendor-risk assessment</strong> of Anthropic as a critical ICT third-party under DORA.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Severity legend -->
+<div class="section">
+  <h2 style="margin-top:0">Severity tiers — used throughout</h2>
+  <p>These indicate regulatory criticality, not implementation difficulty. Effort is tracked separately.</p>
+  <table class="tight">
+    <thead><tr><th style="width:14%">Tier</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td><span class="sev sev-blocker">Blocker</span></td><td>Go-live not permitted without this. Regulatory hard requirement or MRM framework gate.</td></tr>
+      <tr><td><span class="sev sev-high">High</span></td><td>Required within first quarter of operation; finding-grade for Internal Audit / regulator if missing.</td></tr>
+      <tr><td><span class="sev sev-medium">Medium</span></td><td>Required for production maturity; finding-grade for 2LoD.</td></tr>
+      <tr><td><span class="sev sev-low">Low</span></td><td>Best-practice; not finding-grade but expected by mature control environment.</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top:1em"><strong>Effort sizing:</strong>
+    <span class="effort effort-xs">XS</span> 1–2 days ·
+    <span class="effort effort-s">S</span> ~1 week ·
+    <span class="effort effort-m">M</span> 2–3 weeks ·
+    <span class="effort effort-l">L</span> ~1 month ·
+    <span class="effort effort-xl">XL</span> multi-month
+  </p>
+
+  <div class="toc">
+    <h4>Jump to</h4>
+    <ol>
+      <li><a href="#landscape">Regulatory landscape</a></li>
+      <li><a href="#phase1">Phase 1 — EU AI Act (deadlines)</a></li>
+      <li><a href="#phase2">Phase 2 — MRM onboarding</a></li>
+      <li><a href="#phase3">Phase 3 — Control function sign-offs</a></li>
+      <li><a href="#phase4">Phase 4 — Operational controls</a></li>
+      <li><a href="#phase5">Phase 5 — Data governance</a></li>
+      <li><a href="#phase6">Phase 6 — Output quality / bias / robustness</a></li>
+      <li><a href="#phase7">Phase 7 — Lifecycle &amp; change management</a></li>
+      <li><a href="#summary">Severity &amp; sequencing summary</a></li>
+      <li><a href="#questions">Open questions</a></li>
+      <li><a href="#refs">Cross-references</a></li>
+    </ol>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<h2 id="landscape">Regulatory landscape — what applies, by when</h2>
+
+<h3>EU AI Act — Regulation (EU) 2024/1689</h3>
+<table>
+  <thead>
+    <tr><th style="width:16%">Date</th><th style="width:38%">Obligations</th><th>Relevance to Processminer</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><strong>2025-02-02</strong></td><td>Article 4 (AI literacy) · Article 5 (prohibited practices)</td><td><strong>In force.</strong> Every user needs documented AI literacy training proportionate to their role.</td></tr>
+    <tr><td><strong>2025-08-02</strong></td><td>GPAI provider obligations (Articles 51–55) · GPAI Code of Practice</td><td>Anthropic (Claude) is the GPAI provider. Processminer is a <strong>downstream deployer</strong>; Article 26 deployer obligations apply if high-risk.</td></tr>
+    <tr><td><strong>2026-08-02</strong></td><td>High-risk AI system obligations (Articles 6–49)</td><td>If classified high-risk under Annex III, the <strong>full Article 9–15 stack applies</strong> (risk mgmt, data governance, technical docs, logging, transparency, human oversight, robustness).</td></tr>
+    <tr><td><strong>2027-08-02</strong></td><td>High-risk AI systems embedded in regulated products</td><td>Likely not applicable.</td></tr>
+  </tbody>
+</table>
+
+<div class="deadline-banner">
+  <strong>Initial risk classification (working assumption — must be formally confirmed by AI Governance Committee):</strong>
+  <ul style="margin:0.4em 0 0;">
+    <li><strong>Most uses → limited-risk under Article 50.</strong> Internal process documentation; outputs flow to humans who decide. Transparency obligation applies.</li>
+    <li><strong>Tips into high-risk (Annex III)</strong> if used for HR processes (§4), credit-scoring (§5b), critical infrastructure (§2), or producing material the bank submits as regulatory evidence (§6).</li>
+    <li><strong>Phase 1 #1 below makes this formal.</strong></li>
+  </ul>
+</div>
+
+<div class="regs">
+  <div class="reg">
+    <h4>DORA — Reg (EU) 2022/2554</h4>
+    <p class="sub">Applies since 2025-01-17</p>
+    <p><strong>Art. 28</strong> ICT third-party risk (Anthropic register, pre-contractual assessment, concentration risk). <strong>Art. 17–23</strong> incident management. <strong>Art. 24–27</strong> resilience testing.</p>
+  </div>
+  <div class="reg">
+    <h4>Bank MRM framework</h4>
+    <p class="sub">SR 11-7 / European MRM practice</p>
+    <p>Model inventory · tier classification (Tier 2 or 3 likely for Processminer) · independent 2LoD validation · MRO/CRO sign-off pre-go-live · annual revalidation · ongoing monitoring.</p>
+  </div>
+  <div class="reg">
+    <h4>GDPR + national DP</h4>
+    <p class="sub">Applies where personal data flows</p>
+    <p>Article 5 minimisation, Article 35 DPIA, Chapter V cross-border transfer (Anthropic API region), Article 22 right to explanation.</p>
+  </div>
+  <div class="reg">
+    <h4>National supervisor</h4>
+    <p class="sub">e.g. BaFin MaRisk · ECB SSM / SREP</p>
+    <p>AT 7.2 IT systems · AT 9 outsourcing notification thresholds · MaRisk AT 4.3.2 OpRisk · SREP expectations on AI/ML use cases.</p>
+  </div>
+  <div class="reg">
+    <h4>Internal codes</h4>
+    <p class="sub">Bank policies</p>
+    <p>Information Security Policy · Outsourcing / Third-Party Policy · Records Management Policy · Code of Conduct (mis-statement risk on AI-drafted material).</p>
+  </div>
+  <div class="reg">
+    <h4>Outsourcing oversight</h4>
+    <p class="sub">EBA Guidelines on Outsourcing</p>
+    <p>Critical-or-important function determination · pre-contractual due diligence · monitoring framework · register of all outsourcing arrangements.</p>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- PHASE 1 — EU AI Act -->
+<div class="phase-head phase-1" id="phase1">
+  <h2>Phase 1 — EU AI Act compliance (hard deadlines)</h2>
+  <span class="count">8 items · regulatory dates govern · AI Governance Committee owns sequencing</span>
+</div>
+<div class="phase-body">
+  <p>Each item traces to a specific AI Act article. Items #5–#8 are <strong>conditional</strong> on Phase 1 #1's classification outcome.</p>
+
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-1-num">1</span><h3>AI Act risk classification — formal determination on file</h3><span class="sev sev-blocker">Blocker</span><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Committee issues formal classification (limited-risk vs Annex III high-risk) with reasoning. Re-issued if scope of use changes.</p>
+      <p class="row why"><span class="label">Why</span> Every downstream obligation in this phase and Phase 4/5/6 depends on whether high-risk Articles 9–15 apply.</p>
+      <p class="row owner"><span class="label">Owner</span> AI Governance Committee + Legal</p>
+      <p class="row touches"><span class="label">Touches</span> Classification memo (new); link from <code>wiki/processes/*/index.md</code> frontmatter.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-1-num">2</span><h3>Article 4 — AI literacy programme for users</h3><span class="sev sev-blocker">Blocker</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Training: what the tool is/isn't, how to read provenance, how the approval gate works, escalation paths. Refreshed annually; completion tracked.</p>
+      <p class="row why"><span class="label">Why</span> Article 4 in force since <strong>2025-02-02</strong>. Applies to all staff using AI regardless of risk tier. <strong>Deadline already past.</strong></p>
+      <p class="row owner"><span class="label">Owner</span> Learning &amp; Development + AI Governance</p>
+      <p class="row touches"><span class="label">Touches</span> New LMS module; access-gate hooked to completion record.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-1-num">3</span><h3>Article 50 — AI-output transparency</h3><span class="sev sev-high">High</span><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Every UI surface labels content "AI-generated, reviewed by [SME]". Wiki exports (Confluence/Sparx/PDF) carry the disclosure header. Chat responses unambiguously machine-authored.</p>
+      <p class="row why"><span class="label">Why</span> Art. 50(2) — providers ensure outputs marked artificially generated. Art. 50(4) — deployer disclosure to natural persons.</p>
+      <p class="row touches"><span class="label">Touches</span> <code>ElementCard.tsx</code> (badge); <code>AgentChat.tsx</code> (header); export pipelines.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-1-num">4</span><h3>GPAI deployer obligations (Art. 25, 26, 53)</h3><span class="sev sev-high">High</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Keep Anthropic's GPAI docs on file; ensure use stays within documented intended-use envelope; maintain own technical documentation layered on top; monitor for upstream model changes.</p>
+      <p class="row why"><span class="label">Why</span> Art. 25 deployer chain responsibility; Art. 53 GPAI provider documentation deployer must consume.</p>
+      <p class="row touches"><span class="label">Touches</span> New <code>governance/gpai-evidence/</code> folder; Anthropic model cards + system cards; Claude-version-change runbook.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Conditional on high-risk classification (Phase 1 #1)</div>
+  <div class="candidates">
+    <div class="candidate conditional">
+      <div class="head"><span class="num phase-1-num">5</span><h3>Article 9 — Risk Management System</h3><span class="sev sev-blocker">Blocker</span><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">What</span> Continuous risk-management process: hazard identification, residual risk assessment, mitigation, post-market monitoring. Annual review.</p>
+      <p class="row why"><span class="label">Why</span> Triggered IF Phase 1 #1 lands as high-risk.</p>
+      <p class="row owner"><span class="label">Owner</span> 2LoD Operational Risk + AI Governance</p>
+    </div>
+    <div class="candidate conditional">
+      <div class="head"><span class="num phase-1-num">6</span><h3>Article 12 — Record-keeping / logging</h3><span class="sev sev-blocker">Blocker</span><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">What</span> Automatic logging of every AI interaction: user, time, inputs, outputs, model+version, skill, approval decisions. Retention 10y bank-records standard.</p>
+      <p class="row why"><span class="label">Why</span> Art. 12 + Annex IV-2(g). Also feeds Phase 4 #1 — worth building once for both.</p>
+      <p class="row touches"><span class="label">Touches</span> See Phase 4 #1.</p>
+    </div>
+    <div class="candidate conditional">
+      <div class="head"><span class="num phase-1-num">7</span><h3>Article 14 — Human oversight, documented</h3><span class="sev sev-blocker">Blocker</span><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Documented design: who has oversight, what they see, what they can stop, training. Processminer's approval gate IS the mechanism; this is the documentation around it.</p>
+      <p class="row why"><span class="label">Why</span> Art. 14 — deployer assigns oversight competently. Mechanism exists (<code>set_approval.py</code>); obligation is documentation.</p>
+      <p class="row touches"><span class="label">Touches</span> New <code>governance/human-oversight.md</code>.</p>
+    </div>
+    <div class="candidate conditional">
+      <div class="head"><span class="num phase-1-num">8</span><h3>Article 15 — Robustness, accuracy, cybersecurity</h3><span class="sev sev-blocker">Blocker</span><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">What</span> Documented testing of accuracy (quantified hallucination rate per skill), robustness (adversarial inputs), cybersecurity (prompt injection, data exfiltration). Reported in technical documentation.</p>
+      <p class="row why"><span class="label">Why</span> Art. 15 technical depth obligation. Phase 6 items produce the evidence.</p>
+      <p class="row owner"><span class="label">Owner</span> Model Risk Management + InfoSec</p>
+      <p class="row touches"><span class="label">Touches</span> Phase 6 #1, #3, #5 fold into Art. 15 evidence pack.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- PHASE 2 — MRM -->
+<div class="phase-head phase-2" id="phase2">
+  <h2>Phase 2 — Model Risk Management onboarding (2LoD)</h2>
+  <span class="count">7 items · the bank's MRM framework gates production use</span>
+</div>
+<div class="phase-body">
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">1</span><h3>Model inventory entry</h3><span class="sev sev-blocker">Blocker</span><span class="effort effort-xs">XS</span></div>
+      <p class="row what"><span class="label">What</span> Register Processminer in central inventory: ID, owner, purpose, model class (LLM with prompt-orchestrated skills), upstream model (Claude), business unit, risk classification, validation status.</p>
+      <p class="row why"><span class="label">Why</span> Without inventory entry the model formally does not exist for governance purposes; any production use is a finding.</p>
+      <p class="row owner"><span class="label">Owner</span> Model Owner (1LoD) + MRM (2LoD)</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">2</span><h3>Tier classification per bank MRM framework</h3><span class="sev sev-blocker">Blocker</span><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Likely <strong>Tier 2</strong> (high materiality — feeds regulator-facing artifacts via Sparx aggregation) or <strong>Tier 3</strong> (medium — internal documentation aid only). Drives validation depth.</p>
+      <p class="row why"><span class="label">Why</span> Depth of independent validation, revalidation frequency, monitoring intensity all scale with tier.</p>
+      <p class="row owner"><span class="label">Owner</span> MRM</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">3</span><h3>Pre-go-live independent validation (2LoD)</h3><span class="sev sev-blocker">Blocker</span><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">What</span> MRM validates design (skill architecture, prompt patterns, provenance contract), implementation (code review of writers, gate, conformance), outcomes (sample review ≥30 elements per skill vs ground-truth SME authoring). Validation report with findings, ratings, effective-challenge log.</p>
+      <p class="row why"><span class="label">Why</span> Standard MRM gate. No production use without passing rating.</p>
+      <p class="row owner"><span class="label">Owner</span> MRM (likely 4–8 weeks)</p>
+      <p class="row touches"><span class="label">Touches</span> Validation report (new); finding remediation backlog.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">4</span><h3>Model Risk Officer / CRO sign-off</h3><span class="sev sev-blocker">Blocker</span><span class="effort effort-xs">XS</span></div>
+      <p class="row what"><span class="label">What</span> Formal sign-off on validation report with documented residual-risk acceptance. Communicated to AI Governance Committee.</p>
+      <p class="row why"><span class="label">Why</span> Standard MRM gate.</p>
+      <p class="row owner"><span class="label">Owner</span> Model Risk Officer + CRO</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">5</span><h3>Annual revalidation cycle</h3><span class="sev sev-high">High</span><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Scheduled re-validation in inventory; trigger events documented (Claude version ≥ minor, skill/schema change, material incident, ≥X% drift).</p>
+      <p class="row why"><span class="label">Why</span> Standard MRM expectation.</p>
+      <p class="row owner"><span class="label">Owner</span> MRM</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">6</span><h3>Model performance monitoring — quantified output quality</h3><span class="sev sev-high">High</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Monthly sample-based scoring of generated elements vs SME ground truth. Hallucination rate, source-grounding rate, schema-conformance rate, post-approval edit distance. Trend dashboard.</p>
+      <p class="row why"><span class="label">Why</span> Ongoing monitoring obligation. Stage-9 dogfood SME assessment already produces ad-hoc scores — institutionalises them.</p>
+      <p class="row touches"><span class="label">Touches</span> New sampling pipeline; dashboard; depends on Phase 4 #1 audit log.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">7</span><h3>Model documentation pack</h3><span class="sev sev-high">High</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Standard MRM doc pack: purpose, intended use, scope, not-intended-use, data inputs, architecture, key assumptions, limitations, validation summary, monitoring plan, change history.</p>
+      <p class="row why"><span class="label">Why</span> Consumed by Internal Audit, regulator, new business users.</p>
+      <p class="row touches"><span class="label">Touches</span> New <code>governance/model-card-processminer.md</code>.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- PHASE 3 — Control functions -->
+<div class="phase-head phase-3" id="phase3">
+  <h2>Phase 3 — Control function sign-offs (2LoD / 3LoD)</h2>
+  <span class="count">7 items · each control function maintains an independent view</span>
+</div>
+<div class="phase-body">
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">1</span><h3>Compliance — content &amp; conduct review</h3><span class="sev sev-high">High</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Outputs cannot generate market-manipulation statements; do not constitute unauthorised investment advice; tool does not enable code-of-conduct circumvention. Documented sign-off.</p>
+      <p class="row why"><span class="label">Why</span> Standard 2LoD sign-off; MaRisk AT 4.3.4.</p>
+      <p class="row owner"><span class="label">Owner</span> Compliance</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">2</span><h3>Operational Risk — assessment + incident classification</h3><span class="sev sev-high">High</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Inherent-risk assessment; controls and residual risk; incident classification thresholds (when does an AI error become a reportable OpRisk event?). Integrated into OpRisk reporting.</p>
+      <p class="row why"><span class="label">Why</span> MaRisk AT 4.3.2 / Basel OpRisk; feeds DORA Art. 17 incident management.</p>
+      <p class="row owner"><span class="label">Owner</span> Operational Risk</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">3</span><h3>Legal — vendor, IP, contractual review</h3><span class="sev sev-blocker">Blocker</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> (a) Anthropic ToS vs bank requirements (zero retention, EU residency, audit rights); (b) IP of generated content; (c) liability apportionment if AI causes harm.</p>
+      <p class="row why"><span class="label">Why</span> Standard outsourcing review; DORA Art. 28 contractual requirements.</p>
+      <p class="row owner"><span class="label">Owner</span> Legal + Procurement</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">4</span><h3>Information Security — threat model, pen test, secure SDLC</h3><span class="sev sev-high">High</span><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">What</span> Threat model (STRIDE); pen test report; SDLC conformance review; secrets-handling audit (Anthropic API keys); supply-chain dependency scan.</p>
+      <p class="row why"><span class="label">Why</span> Standard InfoSec sign-off; DORA Art. 9.</p>
+      <p class="row owner"><span class="label">Owner</span> Information Security</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">5</span><h3>DPO — DPIA (GDPR Art. 35)</h3><span class="sev sev-blocker">Blocker</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> DPIA covering personal data flow (raw-sources may contain employee/customer PII), cross-border transfer (Anthropic API location), lawful basis, retention, data-subject rights, residual risk.</p>
+      <p class="row why"><span class="label">Why</span> GDPR Art. 35 — DPIA mandatory for new technologies processing personal data at scale.</p>
+      <p class="row owner"><span class="label">Owner</span> DPO</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">6</span><h3>Internal Audit — annual review cycle</h3><span class="sev sev-medium">Medium</span><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Scheduled inclusion in IA plan; first audit within 12 months of go-live; thereafter risk-based cadence.</p>
+      <p class="row why"><span class="label">Why</span> 3LoD oversight; standard audit-universe addition.</p>
+      <p class="row owner"><span class="label">Owner</span> Internal Audit</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">7</span><h3>National supervisor — notification (if thresholds met)</h3><span class="sev sev-blocker">Blocker*</span><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Assess MaRisk AT 9 outsourcing notification thresholds (Anthropic); assess BaFin AI/ML use-case reporting expectations. File where required.</p>
+      <p class="row why"><span class="label">Why</span> Statutory notification; failure is a regulatory finding. (*Blocker only if threshold actually met.)</p>
+      <p class="row owner"><span class="label">Owner</span> Regulatory Reporting + Legal</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- PHASE 4 — Operational controls -->
+<div class="phase-head phase-4" id="phase4">
+  <h2>Phase 4 — Operational controls</h2>
+  <span class="count">7 items · instrumentation that makes Phase 1–3 obligations auditable on an ongoing basis</span>
+</div>
+<div class="phase-body">
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-4-num">1</span><h3>Central audit log of every AI interaction</h3><span class="sev sev-blocker">Blocker</span><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">What</span> Every Anthropic call logged: timestamp, user, process/skill, model+version, input hash, output hash, prompt template version, approval-gate outcome. Append-only. Retention 10y.</p>
+      <p class="row why"><span class="label">Why</span> AI Act Art. 12 (if high-risk); MRM monitoring; OpRisk forensics; DORA Art. 17; GDPR Art. 30 records of processing.</p>
+      <p class="row owner"><span class="label">Owner</span> Model Owner + InfoSec</p>
+      <p class="row touches"><span class="label">Touches</span> New logging pipeline upstream of <code>session-worker.ts</code>; central sink (likely SIEM); retention enforcement.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-4-num">2</span><h3>Output sample-based monitoring (quarterly)</h3><span class="sev sev-high">High</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Quarterly random sample (N≈50) per skill; SME re-grading vs ground truth; trend report to MRM + AI Governance Committee. Material drift triggers re-validation.</p>
+      <p class="row why"><span class="label">Why</span> Ongoing-monitoring obligation; produces evidence the model still performs.</p>
+      <p class="row owner"><span class="label">Owner</span> MRM + business-unit SMEs</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-4-num">3</span><h3>Quality / drift detection signals</h3><span class="sev sev-high">High</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Continuous automated metrics: schema-conformance rate, citation-coverage rate, approval-gate edit rate (SME disagreement proxy), lint-failure rate, conflict-resolution invocation. Threshold alerts.</p>
+      <p class="row why"><span class="label">Why</span> Quantitative early-warning; cheaper than manual quarterly sampling at catching gross drift.</p>
+      <p class="row touches"><span class="label">Touches</span> New metrics pipeline; depends on Phase 4 #1; feeds Phase 4 #2 cadence.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-4-num">4</span><h3>Incident response runbook for AI-driven harm</h3><span class="sev sev-high">High</span><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Documented procedure: what counts as an AI incident, who declares, classification, internal notifications (OpRisk, AI Governance, BU), DORA Art. 17 reporting decision, containment, remediation, post-incident review.</p>
+      <p class="row why"><span class="label">Why</span> DORA Art. 17 + OpRisk + AI Act Art. 73 (serious incident reporting if high-risk).</p>
+      <p class="row touches"><span class="label">Touches</span> New <code>governance/incident-runbook.md</code>; integration with bank incident management system.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-4-num">5</span><h3>SLA on output quality — defined acceptance criteria</h3><span class="sev sev-high">High</span><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Per-skill thresholds: e.g. ≥95% schema conformance; ≥90% derived headings carry evidence; hallucination rate ≤2%. Below threshold → halt.</p>
+      <p class="row why"><span class="label">Why</span> Acceptance criteria precondition for monitoring; cannot monitor against an unstated baseline.</p>
+      <p class="row owner"><span class="label">Owner</span> Model Owner + MRM</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-4-num">6</span><h3>Kill switch — emergency disable</h3><span class="sev sev-high">High</span><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Central feature flag disables all skill invocations bank-wide; rolled-back access; UI banner explaining suspension. Tested annually.</p>
+      <p class="row why"><span class="label">Why</span> AI Act Art. 14(4)(e) — oversight requirement to stop the system; DORA Art. 24 resilience-testing input.</p>
+      <p class="row touches"><span class="label">Touches</span> New feature-flag middleware at <code>/api/session</code> boundary.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-4-num">7</span><h3>Vendor SLA monitoring (Anthropic)</h3><span class="sev sev-medium">Medium</span><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Anthropic API availability monitored; incidents categorised per third-party-incident playbook; concentration-risk review annually (DORA Art. 29).</p>
+      <p class="row why"><span class="label">Why</span> DORA third-party risk; standard outsourcing oversight.</p>
+      <p class="row owner"><span class="label">Owner</span> Vendor Management + InfoSec</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- PHASE 5 — Data governance -->
+<div class="phase-head phase-5" id="phase5">
+  <h2>Phase 5 — Data governance</h2>
+  <span class="count">7 items · personal data, contractual data, MNPI — the bank's data-governance regime applies</span>
+</div>
+<div class="phase-body">
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">1</span><h3>PII classification of raw-sources</h3><span class="sev sev-blocker">Blocker</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Classify every uploaded raw-source at intake (no PII / internal PII / customer PII / special-category). Intake blocks unclassified uploads. Stamped on <code>raw-sources/&lt;slug&gt;/&lt;file&gt;.meta.json</code>.</p>
+      <p class="row why"><span class="label">Why</span> GDPR Art. 5 data minimisation; upstream of every Phase-5 control.</p>
+      <p class="row touches"><span class="label">Touches</span> Upload modal; new <code>meta.json</code> per raw-source; conformance check.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">2</span><h3>Data residency — EU containment</h3><span class="sev sev-blocker">Blocker</span><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Confirm Anthropic API region EU; if not available, formal derogation with Transfer Impact Assessment. Audit log records the endpoint per call.</p>
+      <p class="row why"><span class="label">Why</span> GDPR Chapter V (transfers); bank-internal EU-only policy where applicable.</p>
+      <p class="row owner"><span class="label">Owner</span> DPO + InfoSec</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">3</span><h3>Zero-retention contractual guarantee with Anthropic</h3><span class="sev sev-blocker">Blocker</span><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Contractual zero-retention on Anthropic side; no training-use of bank inputs; no human-review of bank traffic. Documented and audit-tested.</p>
+      <p class="row why"><span class="label">Why</span> Confidentiality of bank-internal process documentation; IP of generated content; banking-secrecy obligations.</p>
+      <p class="row owner"><span class="label">Owner</span> Legal + Procurement</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">4</span><h3>Retention policy on wiki content</h3><span class="sev sev-high">High</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Per element-type retention period; automated expiry / archival pipeline; legal-hold override; disposition log.</p>
+      <p class="row why"><span class="label">Why</span> Records-management policy; GDPR storage-limitation principle.</p>
+      <p class="row touches"><span class="label">Touches</span> New <code>governance/retention-policy.md</code>; archival pipeline; legal-hold flag in frontmatter.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">5</span><h3>Data lineage — what produced each output</h3><span class="sev sev-high">High</span><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Every generated element traceable to source-document IDs, skill version, model version, prompt template hash, user, timestamp. Most pieces already exist; consolidate into a single auditable lineage record.</p>
+      <p class="row why"><span class="label">Why</span> AI Act Art. 13 transparency; GDPR Art. 22 explanation right; MRM reproducibility.</p>
+      <p class="row touches"><span class="label">Touches</span> New lineage sidecar (outside wiki tree per Karpathy principle); aggregator over existing provenance + run-manifest.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">6</span><h3>Right-to-explanation chain</h3><span class="sev sev-high">High</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> For any output influencing a decision about a natural person: which sources drove which headings, what the SME approved, what the AI proposed vs the human changed. UI-accessible to authorised users.</p>
+      <p class="row why"><span class="label">Why</span> GDPR Art. 22; AI Act Art. 86 (right to explanation of individual decision-making, high-risk).</p>
+      <p class="row touches"><span class="label">Touches</span> Depends on Phase 5 #5 lineage; new explanation view in UI.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">7</span><h3>DPIA — see Phase 3 #5</h3><span class="sev sev-blocker">Blocker</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Cross-reference. The DPIA is the artifact capturing items #1–#6 in a single document for the DPO.</p>
+      <p class="row owner"><span class="label">Owner</span> DPO</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- PHASE 6 — Output quality -->
+<div class="phase-head phase-6" id="phase6">
+  <h2>Phase 6 — Output quality, robustness, bias</h2>
+  <span class="count">7 items · evidence pack for AI Act Art. 15 + MRM monitoring obligations</span>
+</div>
+<div class="phase-body">
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-6-num">1</span><h3>Quantified hallucination rate per skill</h3><span class="sev sev-high">High</span><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">What</span> Per-skill test set; periodic measurement of: fabricated facts (claims with no source), source-misattribution (correct claim wrongly cited), provenance-class misclassification. Reported quarterly.</p>
+      <p class="row why"><span class="label">Why</span> Art. 15 accuracy; MRM monitoring; provenance contract effectiveness.</p>
+      <p class="row owner"><span class="label">Owner</span> Model Owner + MRM</p>
+      <p class="row touches"><span class="label">Touches</span> New <code>governance/test-sets/&lt;skill&gt;/</code>; periodic evaluation pipeline; audit-log dashboard.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-6-num">2</span><h3>Bias testing across roles, hierarchies, cultures</h3><span class="sev sev-medium">Medium*</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Structured prompt/input variations testing whether the same process described under different role names / hierarchies / cultural framings produces materially different outputs. Reviewed annually. (*High if classified high-risk.)</p>
+      <p class="row why"><span class="label">Why</span> AI Act Art. 10 (data governance — bias); Art. 15 accuracy; bank fairness principles.</p>
+      <p class="row owner"><span class="label">Owner</span> Model Risk + D&amp;I advisor</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-6-num">3</span><h3>Prompt injection / adversarial input defences</h3><span class="sev sev-high">High</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Threat model covers: malicious source documents overriding prompts, cross-context exfiltration, coercion of approval gate. CI test cases. Detection signals in audit log.</p>
+      <p class="row why"><span class="label">Why</span> AI Act Art. 15(5) cybersecurity; DORA Art. 24 resilience testing.</p>
+      <p class="row owner"><span class="label">Owner</span> InfoSec + Model Owner</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-6-num">4</span><h3>2LoD sample review of generated outputs</h3><span class="sev sev-high">High</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> See Phase 4 #2. Cross-reference. The sample-review pipeline generates bias / hallucination evidence on a continuous basis.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-6-num">5</span><h3>Red-team exercise — annual adversarial test</h3><span class="sev sev-medium">Medium</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Annual exercise: red team attempts to produce harmful / misleading / non-compliant outputs using realistic adversarial inputs. Findings logged and remediated.</p>
+      <p class="row why"><span class="label">Why</span> DORA Art. 26 (advanced testing — TIBER-EU where qualifying); AI Act Art. 15.</p>
+      <p class="row owner"><span class="label">Owner</span> InfoSec + Model Risk</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-6-num">6</span><h3>Source-grounding score per element</h3><span class="sev sev-high">High</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Per-element score: % of derived/source headings with cited evidence quote that survives deterministic match against raw-source. Surfaced as a chip; aggregated for trend.</p>
+      <p class="row why"><span class="label">Why</span> Operationalises HALLUCINATION-PLAN contract; makes contract auditable rather than aspirational.</p>
+      <p class="row touches"><span class="label">Touches</span> New <code>scripts/wiki/score_grounding.py</code>; surface in <code>ElementCard.tsx</code>.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-6-num">7</span><h3>Disagreement / contradiction detection</h3><span class="sev sev-medium">Medium</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> When AI proposes output contradicting approved content elsewhere in the same wiki (role assignment conflict, control-owner contradiction), proposal flagged for explicit reconciliation before approval.</p>
+      <p class="row why"><span class="label">Why</span> Consistency obligation; lint covers some — make it a hard gate, not a finding.</p>
+      <p class="row touches"><span class="label">Touches</span> Extension of <code>check_conformance.py</code> + <code>conformance.ts</code>; hard-fail in approval gate.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- PHASE 7 — Lifecycle -->
+<div class="phase-head phase-7" id="phase7">
+  <h2>Phase 7 — Lifecycle &amp; change management</h2>
+  <span class="count">7 items · every skill / prompt / schema change is a model change</span>
+</div>
+<div class="phase-body">
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-7-num">1</span><h3>CAB approval for skill changes</h3><span class="sev sev-high">High</span><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Every skill change (prompt edit, new skill, new element type, schema modification) goes through Change Advisory Board with risk impact assessment. CI gate enforces.</p>
+      <p class="row why"><span class="label">Why</span> IT change management; MaRisk AT 7.2; MRM expectation that material model changes trigger re-validation.</p>
+      <p class="row touches"><span class="label">Touches</span> New CI gate on <code>.claude/skills/**</code> and <code>schema/**</code>; CAB ticket linkage.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-7-num">2</span><h3>Claude model version pinning + change-impact runbook</h3><span class="sev sev-high">High</span><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Explicit pin to tested Claude version. Upstream updates trigger documented impact assessment before rollout (regression test, sample-output comparison, MRM sign-off on material changes).</p>
+      <p class="row why"><span class="label">Why</span> Phase 2 #5 trigger; AI Act Art. 25 deployer obligation to monitor upstream model changes.</p>
+      <p class="row touches"><span class="label">Touches</span> New <code>governance/model-version.json</code>; CI gate; runbook.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-7-num">3</span><h3>Vendor BCP — Anthropic API outage scenario</h3><span class="sev sev-high">High</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Documented continuity plan: graceful degradation when Anthropic unreachable, user-facing communication, manual fallback for time-critical processes, RTO/RPO documented.</p>
+      <p class="row why"><span class="label">Why</span> DORA Art. 11 ICT business continuity; outsourcing resilience.</p>
+      <p class="row owner"><span class="label">Owner</span> BCP / Resilience + Vendor Management</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-7-num">4</span><h3>Decommissioning procedure</h3><span class="sev sev-low">Low</span><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Documented sunset: data archival, user communication, audit-log retention beyond decommissioning, model-inventory closure entry.</p>
+      <p class="row why"><span class="label">Why</span> Records management; MRM lifecycle.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-7-num">5</span><h3>Champion / challenger evaluation</h3><span class="sev sev-medium">Medium</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Periodic side-by-side test of an alternative LLM (e.g. data-residency or concentration-risk reasons). Documented; informs concentration-risk view.</p>
+      <p class="row why"><span class="label">Why</span> Concentration-risk mitigation; DORA Art. 29.</p>
+      <p class="row owner"><span class="label">Owner</span> Architecture + Model Risk</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-7-num">6</span><h3>Version registry — every output stamped</h3><span class="sev sev-high">High</span><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Every wiki element carries skill version, prompt template hash, model version, schema version. Already partially present in frontmatter; consolidate.</p>
+      <p class="row why"><span class="label">Why</span> Lineage + reproducibility for MRM and audit.</p>
+      <p class="row touches"><span class="label">Touches</span> Frontmatter additions; conformance check enforces presence.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-7-num">7</span><h3>Sunset criteria — when does Processminer get retired</h3><span class="sev sev-low">Low</span><span class="effort effort-xs">XS</span></div>
+      <p class="row what"><span class="label">What</span> Documented retirement triggers: successor system, structural regulatory blocker, sustained quality failure below threshold. Documented so the option exists.</p>
+      <p class="row why"><span class="label">Why</span> Governance hygiene; avoids "zombie system" pattern.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<h2 id="summary">Severity &amp; sequencing summary</h2>
+
+<div class="seq-grid">
+  <div class="seq sev-blocker-bx">
+    <div class="label">Blocker</div>
+    <div class="count">14</div>
+    <p style="font-size:0.85em;margin:0 0 0.4em">no production use without these</p>
+    <ul>
+      <li>P1 #1 · #2</li>
+      <li>P1 #5–#8 <em>(if high-risk)</em></li>
+      <li>P2 #1–#4</li>
+      <li>P3 #3 · #5 · #7*</li>
+      <li>P4 #1</li>
+      <li>P5 #1–#3 · #7</li>
+    </ul>
+  </div>
+  <div class="seq sev-high-bx">
+    <div class="label">High</div>
+    <div class="count">22</div>
+    <p style="font-size:0.85em;margin:0 0 0.4em">first quarter of operation</p>
+    <ul>
+      <li>P1 #3 · #4</li>
+      <li>P2 #5 · #6 · #7</li>
+      <li>P3 #1 · #2 · #4</li>
+      <li>P4 #2–#6</li>
+      <li>P5 #4 · #5 · #6</li>
+      <li>P6 #1 · #3 · #4 · #6</li>
+      <li>P7 #1 · #2 · #3 · #6</li>
+    </ul>
+  </div>
+  <div class="seq sev-medium-bx">
+    <div class="label">Medium</div>
+    <div class="count">7</div>
+    <p style="font-size:0.85em;margin:0 0 0.4em">production maturity</p>
+    <ul>
+      <li>P3 #6</li>
+      <li>P4 #7</li>
+      <li>P6 #2 · #5 · #7</li>
+      <li>P7 #5</li>
+    </ul>
+  </div>
+  <div class="seq sev-low-bx">
+    <div class="label">Low</div>
+    <div class="count">2</div>
+    <p style="font-size:0.85em;margin:0 0 0.4em">best-practice</p>
+    <ul>
+      <li>P7 #4</li>
+      <li>P7 #7</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section">
+  <h3 style="margin-top:0">Suggested sequencing</h3>
+  <ol>
+    <li><strong>Pre-go-live (≈3–6 months):</strong> Blockers only. Earliest production use is gated on completing all 14.</li>
+    <li><strong>First quarter post-go-live:</strong> the 22 High items.</li>
+    <li><strong>First year:</strong> Medium items + first Internal Audit cycle (Phase 3 #6).</li>
+    <li><strong>Steady state:</strong> Low items + annual cadence on revalidation, bias testing, red-team, DPIA refresh.</li>
+  </ol>
+</div>
+
+<!-- ============================================================= -->
+<h2 id="questions">Open questions for the AI Governance Committee</h2>
+<p>Decisions that gate sequencing. Must be resolved before the Blocker list can be costed precisely.</p>
+
+<ol class="questions">
+  <li><strong>High-risk classification under Annex III.</strong> Does Processminer's actual use envelope cross into HR-decision, credit-relevant, or regulator-evidence territory? Phase 1 #5–#8 are conditional on this.</li>
+  <li><strong>Bank MRM tier.</strong> Tier 2 vs Tier 3 changes Phase 2 #3 validation depth by an order of magnitude.</li>
+  <li><strong>PII envelope.</strong> Are raw-sources allowed to contain customer PII at all? If no, Phase 5 #1 becomes a hard intake filter rather than a classification step.</li>
+  <li><strong>Anthropic terms — zero retention + EU residency.</strong> What's currently contractually available? If neither can be guaranteed, Phase 7 #5 champion/challenger may become mandatory.</li>
+  <li><strong>GPAI Code of Practice signature status.</strong> Is Anthropic a signatory? Drives evidence the bank can rely on for Phase 1 #4.</li>
+  <li><strong>National supervisor notification thresholds.</strong> Has the bank triggered MaRisk AT 9 outsourcing notification by adopting Processminer? (Likely no for internal-only documentation; Legal to confirm.)</li>
+  <li><strong>Internal Audit cadence.</strong> First audit within 6 / 12 / 18 months — driven by tier classification and the first material incident (or its absence).</li>
+</ol>
+
+<!-- ============================================================= -->
+<h2 id="refs">Cross-references</h2>
+<ul>
+  <li><a href="/HALLUCINATION-PLAN.md">HALLUCINATION-PLAN.md</a> — the per-heading provenance contract that Article 15 + MRM monitoring obligations build on</li>
+  <li><a href="/ORCHESTRATOR-PLAN.md">ORCHESTRATOR-PLAN.md</a> — the "Karpathy wiki is sacred" principle, relevant to data-lineage / immutability arguments in Phase 5</li>
+  <li><a href="/SKILLS.md">SKILLS.md</a> — the skill architecture; every skill is a Phase 7 #1 change-management object</li>
+  <li><a href="/schema/process-schema.json">schema/process-schema.json</a> — the schema; every modification is a Phase 7 #1 change</li>
+  <li><a href="/ROADMAP.md">ROADMAP.md</a> — the feature roadmap; several items here (Phase 4 #1 audit log, Phase 5 #5 lineage, Phase 6 #6 source-grounding score) are prerequisites for feature items there</li>
+  <li><a href="/roadmap.html">roadmap.html</a> — the feature roadmap rendered version</li>
+  <li><a href="/AI-GOVERNANCE-ROADMAP.md">AI-GOVERNANCE-ROADMAP.md</a> — the Markdown source of this page</li>
+</ul>
+
+<footer>
+  Last updated 2026-05-28 · Living document — revise after every material regulatory development,
+  every AI Governance Committee decision, and every Phase 3 control-function sign-off.
+</footer>
+
+</body>
+</html>

@@ -1435,11 +1435,25 @@ export default function ElementCard({
                 <span className="link-group-label">{lg.label}:</span>
                 {lg.ids.map((t) => {
                   const ref = getRef?.(t);
+                  // Dangling relation target — the id resolves to no element in
+                  // this process. Flag it inline (non-navigable) rather than
+                  // render a chip that silently does nothing on click.
+                  if (!ref) {
+                    return (
+                      <span
+                        key={t}
+                        className="link-chip link-chip-dangling"
+                        title="Target not found in this process"
+                      >
+                        {t} <span className="link-chip-dangling-tag">not found</span>
+                      </span>
+                    );
+                  }
                   return (
                     <ElementHovercard
                       key={t}
-                      element={ref?.page}
-                      typeLabel={ref?.typeLabel}
+                      element={ref.page}
+                      typeLabel={ref.typeLabel}
                     >
                       <button
                         type="button"

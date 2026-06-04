@@ -26,13 +26,17 @@ what it changes, behaviour/scope, and how it was verified.
 | **#18** | Read-only orchestrator layer (R10) | `feat/orchestrator-read-layer-r10` → `main` | Code + tests + docs | **Merged** (`1e3ad18`) |
 | **#19** | Live architect chat via shared `useAgentChat` (R1) | `feat/architect-chat-r1` → `main` | Code + docs | **Merged** (`de1eb98`) |
 | **#20** | Domain + solution architect specialists (R2) | `feat/architect-specialists-r2` → `main` | Skills + docs | **Merged** (`ced2bc6`) |
-| **#21** | Diagram + Traceability real-data wiring (R3) | `feat/architect-diagram-traceability-r3` → `main` | Code + tests + docs | **Open** (`pending`) |
+| **#21** | Flag dangling relation targets in the element card (R17) | `fix/dangling-relation-chips-r17` → `main` | Code + docs | **Merged** (`be7fe91`) |
+| **#22** | Recover docs & standalone artifacts (R20–R22) | `feat/docs-artifacts-r20-r22` → `main` | Docs / artifacts only | **Merged** (`ea052d5`) |
+| **#23** | Refresh roadmap status header | `docs/roadmap-refresh` → `main` | Docs only | **Merged** (`8377486`) |
+| **#24** | Diagram + Traceability real-data wiring (R3) | `feat/architect-diagram-traceability-r3` → `main` | Code + tests + docs | **Open** (`pending`) |
 
-> **Numbering note.** A "Recover docs & standalone artifacts (R20–R22)" PR was
-> pre-logged here as #19 but never opened on GitHub; its work is still staged
-> locally on `feat/docs-artifacts-r20-r22`. The next real GitHub number went to
-> the ArchitectMiner R1 work above, so that docs/artifacts PR will take a later
-> number when it is actually opened.
+> **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
+> was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
+> the docs/artifacts PR was opened later as **#22**. **#20** is the R2
+> architect-specialists PR (opened separately by the ArchitectMiner track).
+> #21 + #22 were developed concurrently with R2 in isolated git worktrees off
+> `main`, so the PR numbers are not in requirement order.
 
 > **What happened with #3 → #4 (the stacking lesson):** #3 was opened *stacked*
 > on #2's branch (the A3 change is only safe with the A1 gate present). When #2
@@ -779,50 +783,6 @@ didn't exist. There was no architect authoring intelligence.
 
 ---
 
-# PR #21 — Diagram + Traceability real-data wiring (R3)
-
-**Branch:** `feat/architect-diagram-traceability-r3` → `main` · **Date:**
-2026-06-04 · **Type:** Code + tests + docs. Third PR of **Theme A (R1–R4)**.
-
-## Why this PR exists
-
-Roadmap **R3**. The ArchitectMiner Diagram was a hardcoded SVG (channels, named
-systems, fixed edges) and Traceability showed a hardcoded "63 elements · 87% ·
-illustrative" stat — neither derived from `doc.elements`. The two headline
-architect analysis views were decorative mockups.
-
-## What this PR adds / changes
-
-| File | Change | Summary |
-|---|---|---|
-| `src/lib/architecture-view.ts` | **new** | Pure derivations: `relIds` (normalises a relation field to an id list), `buildDiagramModel` (positions capabilities + applications in two lanes, draws `hostedIn` capability→app edges and `from`/`to` app→app integration edges styled by pattern), `buildTraceability` (classifies every architecture element **traced / partial / orphan** by whether its relations connect it). No React, no I/O. |
-| `src/lib/architecture-view.test.ts` | **new** | 9 tests — relation normalisation, diagram edges (incl. dropping a `hostedIn` to an unknown app), and the traceability classifier across all 7 element types. |
-| `src/components/ArchitectureCanvas.tsx` | **edit** | Diagram view renders `buildDiagramModel` (with an empty state); Traceability view renders `buildTraceability` stats + per-element rows (empty state); the left-nav section counts and the Traceability % are real (`archData` / `trace`). The mock SVG, the mock capability detail aside, the "63 / illustrative" stat and the fabricated trace rows are gone. |
-| `package.json` | **edit** | Wires `architecture-view.test.ts` into `npm test`. |
-
-## Scope notes
-
-- cob-003 currently has **zero** authored architecture elements, so both views
-  correctly read **empty** — the honest state. They populate as the architect
-  authors capabilities / apps / integrations via R1 + R2. The derivation logic
-  is proven by the unit tests (synthetic elements), not by cob-003.
-- **Out of scope (flagged):** the seven section *detail* views (Capabilities,
-  Target Applications, ADRs, Integrations, Components, NFRs, Migration) are
-  still illustrative mock and carry their own "illustrative" banners. R3's
-  roadmap scope is Diagram + Traceability; wiring those seven detail views to
-  real element rendering is a natural follow-up.
-
-## Verification
-
-- `npm run typecheck` clean. `npm test` → **48/48** (39 prior + 9 new).
-- App: the AM canvas left-nav counts read real (all 0 for cob-003); the Diagram
-  shows "derived from 0 capabilities · 0 applications · 0 integrations" + empty
-  state (mock SVG gone); Traceability shows "derived from 0 architecture
-  elements" + empty state (mock "63 / Case capture / Custom retry queue" rows
-  gone). Zero console errors.
-
----
-
 # PR (planned, not yet opened) — Recover docs & standalone artifacts (R20–R22)
 
 > Pre-logged as #19 but never opened on GitHub; the ArchitectMiner R1 PR took
@@ -870,14 +830,124 @@ set authored in the same era.
 
 ---
 
-# Open follow-ups (as of PR #19)
+# PR #21 — Flag dangling relation targets in the element card (R17)
 
-Both product decisions (R15, R16) are **closed**, R10 is **done**, the docs
-track (R20–R22) is **recovered**, and the **entire Processminer roadmap is
-delivered**. Remaining:
+**Branch:** `fix/dangling-relation-chips-r17` → `main` · **Date:** 2026-06-04
+· **Type:** Code + docs.
 
-1. **In progress: ArchitectMiner (Theme A — R1–R4).** R1 (chat), R2 (specialists) and R3 (Diagram + Traceability) are done. Remaining:
+## Why this PR exists
+
+Roadmap **R17** ("broken-relation visibility"). Verified the gap was real
+first: `buildRelations` (`src/lib/relations.ts`) renders forward/reverse
+relation chips straight from each element's schema relations but never checks
+the target id resolves. The only deterministic dangling-ref check
+(`src/lib/coverage.ts`) covers **only** `transformation-decision.resolves` /
+`.realises`, so every other relation (control→step, regulation→control,
+country-variation→affects, role→systems/controls, system integrations, …)
+rendered a chip that silently no-op'd on click. `lint.ts` is just data shapes —
+the real lint pass is the LLM `run-lint` skill (non-deterministic).
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/components/ElementCard.tsx` | **edit** | A dangling branch in the relation-chip render: when `getRef` resolves no element, emit a non-navigable `<span class="link-chip link-chip-dangling">⟨id⟩ not found</span>` instead of a clickable chip. Auto-covers all generic relations (the chip list comes from `buildRelations`). |
+| `src/app/globals.css` | **edit** | `.link-chip-dangling` styling — `--lo`/`--lo-bg` error palette, `cursor: help`. |
+| `REQUIREMENTS-ROADMAP.md` | **edit** | R17 marked ✅ FIXED. |
+
+## Verification
+
+- `npm run typecheck` clean (against current `main`, incl. R1).
+- Live on `cob-003`: **297 valid relation chips unchanged + navigable** (no
+  regression); the dangling markup computes to the `--lo`/`--lo-bg` error tokens
+  and renders as a non-button `<span>`. *(Transitions + RACI step refs share the
+  same `getRef` pattern and have their own write-time validators — left as a
+  possible extension.)*
+
+---
+
+# PR #22 — Recover docs & standalone artifacts (R20–R22)
+
+**Branch:** `feat/docs-artifacts-r20-r22` → `main` · **Date:** 2026-06-04
+· **Type:** Docs / standalone artifacts only — **no application code changes.**
+
+## Why this PR exists
+
+Roadmap **Theme H (R20–R22)** — three clusters of standalone artifacts dropped
+in the JSON-native migration. None is imported by `src/`; all were fully
+recoverable from their source commits.
+
+## What this PR adds / changes
+
+| Req | Files | Source |
+|---|---|---|
+| **R20** | `pm-pdf.mjs`, `pm-shot-competitor.mjs`, the full `public/onepager*` set (4 HTML slides, `onepager-deck.html`/`.pdf`, 5 screenshots) | `b858dff` |
+| **R21** | `ROADMAP.md`, `AI-GOVERNANCE-ROADMAP.md`, `AI-GOVERNANCE-CHANGESET.md` + byte-identical `public/` copies + HTML renders | `1e347a6` |
+| **R22** | `pm-shot.mjs`, `pm-shot-architect.mjs` | `7899697` |
+
+## Design notes / scope
+
+- **Restore-as-is, by decision.** Pre-rewrite screenshots, v0.x deck framing,
+  and old-UI `pm-shot` selectors are left intact; refreshing them is a follow-up.
+- `AI-GOVERNANCE-CHANGESET.md` (root + `public/` copy) carries a banner flagging
+  it targets the pre-rewrite codebase — reference only.
+- No `src/` imports touch the restored files, so typecheck/test are unaffected.
+- Built in an isolated git worktree off `main`, concurrent with the R1/R2
+  ArchitectMiner work, to avoid colliding in the shared working tree.
+
+---
+
+# PR #24 — Diagram + Traceability real-data wiring (R3)
+
+**Branch:** `feat/architect-diagram-traceability-r3` → `main` · **Date:**
+2026-06-04 · **Type:** Code + tests + docs. Third PR of **Theme A (R1–R4)**.
+(Cut before #21–#23 landed; merged `main` in — the previously-staged docs/
+artifacts pile is now on `main` via #22.)
+
+## Why this PR exists
+
+Roadmap **R3**. The ArchitectMiner Diagram was a hardcoded SVG (channels, named
+systems, fixed edges) and Traceability showed a hardcoded "63 elements · 87% ·
+illustrative" stat — neither derived from `doc.elements`. The two headline
+architect analysis views were decorative mockups.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/lib/architecture-view.ts` | **new** | Pure derivations: `relIds` (normalises a relation field to an id list), `buildDiagramModel` (positions capabilities + applications in two lanes, draws `hostedIn` capability→app edges and `from`/`to` app→app integration edges styled by pattern), `buildTraceability` (classifies every architecture element **traced / partial / orphan** by whether its relations connect it). No React, no I/O. |
+| `src/lib/architecture-view.test.ts` | **new** | 9 tests — relation normalisation, diagram edges (incl. dropping a `hostedIn` to an unknown app), and the traceability classifier across all 7 element types. |
+| `src/components/ArchitectureCanvas.tsx` | **edit** | Diagram + Traceability render from the model (with empty states); the left-nav section counts and the Traceability % are real. The mock SVG, mock capability detail aside, "63 / illustrative" stat and fabricated trace rows are gone (net −332 lines). |
+| `package.json` | **edit** | Wires `architecture-view.test.ts` into `npm test`. |
+
+## Scope notes
+
+- cob-003 has **zero** authored architecture elements, so both views correctly
+  read **empty** — the honest state. They populate as the architect authors via
+  R1 + R2; the derivation logic is proven by the unit tests.
+- **Out of scope (flagged):** the seven section *detail* views (Capabilities,
+  Target Applications, ADRs, Integrations, Components, NFRs, Migration) are still
+  illustrative mock. Wiring them is a follow-up beyond R3's scope.
+
+## Verification
+
+- `npm run typecheck` clean. `npm test` → **48/48** (39 prior + 9 new).
+- AM canvas: left-nav counts real (all 0 for cob-003); Diagram shows "derived
+  from 0 capabilities · 0 applications · 0 integrations" + empty state (mock SVG
+  gone); Traceability shows "derived from 0 architecture elements" + empty state
+  (mock rows gone). Zero console errors; screenshot verified.
+
+---
+
+# Open follow-ups (as of PR #24)
+
+Both product decisions (R15, R16) are **closed**, R10 is **done**, R17 is
+**fixed** (#21), the docs track (R20–R22) is **recovered** (#22), and the
+**entire Processminer roadmap is delivered**. Remaining:
+
+1. **In progress: ArchitectMiner (Theme A — R1–R4).** R1 (#19) chat, R2 (#20) specialists and R3 (#24) Diagram + Traceability are done. Remaining:
    - **R4** — Personal + Library tiers from real data (aggregate across all `<slug>.json` docs). *Next.*
-   - **Follow-up (beyond R1–R4):** wire the seven section *detail* views (Capabilities, Target Applications, ADRs, Integrations, Components, NFRs, Migration) to real element rendering — still illustrative mock after R3.
+   - **Follow-up (beyond R1–R4):** wire the seven section *detail* views to real element rendering — still illustrative mock after R3.
 2. **Optional:** the schema generator (derive the Draft-07 JSON Schema from the custom schema, retiring the dual-edit + drift-guard).
-3. **Open docs/artifacts PR (R20–R22):** staged locally on `feat/docs-artifacts-r20-r22`, not yet opened (see the numbering note above). Re-point `pm-shot*.mjs` at the current UI before regenerating.
+3. **Refresh the recovered artifacts (follow-up to R20/R22):** re-point `pm-shot*.mjs` at the current UI, regenerate the onepager screenshots + PDF, and update the v0.x deck framing.
+4. **R18 / R19** — remaining verify-then-decide loose ends (ProcessView join layer; slim per-type schema slices).

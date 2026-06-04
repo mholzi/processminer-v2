@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Processminer — Slide 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --primary: #1e40af;
+    --secondary: #2563eb;
+    --soft: #e9eaf6;
+    --bg: #f7f8f8;
+    --surface: #ffffff;
+    --ink: #16181d;
+    --muted: #6b7280;
+    --line: #e2e4e8;
+    --success: #3f7d5c;
+    --warning: #9a7b32;
+    --r-sm: 4px;
+    --r-md: 6px;
+    --r-pill: 9999px;
+    --font: "Geist", -apple-system, system-ui, sans-serif;
+    --mono: "Geist Mono", ui-monospace, "SF Mono", monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    color: var(--ink);
+    background: #e5e7eb;
+    -webkit-font-smoothing: antialiased;
+    display: flex; justify-content: center; align-items: flex-start;
+  }
+  .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  .slide {
+    width: 1920px;
+    height: 1080px;
+    background: var(--bg);
+    padding: 40px 56px 32px;
+    display: grid;
+    grid-template-rows: 32px 200px 1fr 64px 32px;
+    row-gap: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,.06);
+  }
+
+  /* ── Top bar */
+  .topbar { display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-weight: 600; letter-spacing: 0.10em; font-size: 14px; text-transform: uppercase; }
+  .topbar .meta { color: var(--muted); font-size: 13px; }
+  .topbar .meta .mono { color: var(--ink); }
+  .topbar .meta span + span { margin-left: 16px; padding-left: 16px; border-left: 1px solid var(--line); }
+
+  /* ── Title block */
+  .title-block { display: flex; flex-direction: column; justify-content: center; }
+  .eyebrow { color: var(--secondary); font-size: 14px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px; }
+  h1 { font-size: 44px; line-height: 1.1; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 14px; max-width: 1500px; }
+  h1 .pm { color: var(--primary); }
+  h1 .am { color: var(--secondary); }
+  .lede { font-size: 18px; color: var(--ink); margin: 0; line-height: 1.45; max-width: 1400px; }
+  .lede .muted { color: var(--muted); }
+
+  /* ── Two modules */
+  .modules { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .module {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+  }
+  .module-head {
+    padding: 22px 26px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .module-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+    color: var(--muted); text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .module-tag .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .module.pm .module-tag .dot { background: var(--primary); }
+  .module.am .module-tag .dot { background: var(--secondary); }
+  .module-name { font-size: 26px; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 4px; }
+  .module-tagline { font-size: 14px; color: var(--muted); margin: 0; }
+
+  .module-body { padding: 18px 26px 18px; }
+  .module-body p.what {
+    font-size: 15px; line-height: 1.5; margin: 0 0 16px;
+  }
+  .module-body p.what strong { font-weight: 600; }
+  .section-list-label {
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+    letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .section-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+  .sec-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px;
+    font-size: 12px;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--line);
+    background: var(--bg);
+  }
+  .sec-chip .n {
+    font-family: var(--mono); color: var(--muted); font-size: 11px;
+  }
+  .module.pm .sec-chip { border-color: rgba(30,64,175,.18); }
+  .module.am .sec-chip { border-color: rgba(37,99,235,.20); background: var(--soft); }
+
+  .who {
+    font-size: 13px; color: var(--muted); margin: 0;
+    padding-top: 14px; border-top: 1px solid var(--line);
+  }
+  .who strong { color: var(--ink); font-weight: 500; }
+
+  .module-shot {
+    border-top: 1px solid var(--line);
+    background: var(--bg);
+    height: 220px;
+    overflow: hidden;
+  }
+  .module-shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+
+  /* ── Handoff strip */
+  .handoff {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+    align-items: center;
+    gap: 12px;
+    padding: 0 8px;
+  }
+  .step-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 12px 18px;
+    text-align: center;
+  }
+  .step-card .lbl {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em;
+    color: var(--muted); text-transform: uppercase; margin-bottom: 4px;
+  }
+  .step-card .name { font-size: 14px; font-weight: 600; }
+  .step-card.pm { border-top: 2px solid var(--primary); }
+  .step-card.am { border-top: 2px solid var(--secondary); }
+  .arrow { font-family: var(--mono); color: var(--secondary); font-size: 18px; line-height: 1; }
+
+  /* ── Footer */
+  .footer {
+    border-top: 1px solid var(--line); padding-top: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: var(--muted); font-size: 12px;
+  }
+  .footer strong { color: var(--ink); font-weight: 600; }
+  .footer .stack > span + span { margin-left: 12px; padding-left: 12px; border-left: 1px solid var(--line); }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="logo">PROCESSMINER</div>
+    <div class="meta">
+      <span>Two modules, one source of truth</span>
+      <span>Slide 2 of 2</span>
+    </div>
+  </div>
+
+  <!-- Title — full width -->
+  <div class="title-block">
+    <div class="eyebrow">How the tool is organized</div>
+    <h1><span class="pm">ProcessMiner</span> documents what is. <span class="am">ArchitectMiner</span> designs what should be.</h1>
+    <p class="lede">
+      One platform, two specialist modules. They share the same wiki, the same SME, and the same audit trail — but they answer different questions and serve different roles. <span class="muted">A documented process flows from the first module straight into the second; nothing is re-keyed.</span>
+    </p>
+  </div>
+
+  <!-- Two modules -->
+  <div class="modules">
+
+    <!-- ProcessMiner -->
+    <div class="module pm">
+      <div class="module-head">
+        <div class="module-tag"><span class="dot"></span>Module 1 · The process</div>
+        <h2 class="module-name">ProcessMiner</h2>
+        <p class="module-tagline">The business view — how the process runs today, and what it should look like.</p>
+      </div>
+      <div class="module-body">
+        <p class="what">Pairs the SME with an AI interviewer to <strong>document the process end-to-end across six perspectives</strong>, then develops the target state with the same SME — controls, regulations, customer experience, innovation, transformation.</p>
+        <div class="section-list-label">Six sections it owns</div>
+        <div class="section-chips">
+          <span class="sec-chip"><span class="n">01</span>Process &amp; operations</span>
+          <span class="sec-chip"><span class="n">02</span>Risk &amp; compliance</span>
+          <span class="sec-chip"><span class="n">03</span>Client experience</span>
+          <span class="sec-chip"><span class="n">04</span>Innovation</span>
+          <span class="sec-chip"><span class="n">05</span>Target process</span>
+          <span class="sec-chip"><span class="n">06</span>IT landscape (As-Is)</span>
+        </div>
+        <p class="who"><strong>Run by</strong> · process specialists, compliance officers, client-journey designers, innovation analysts, transformation leads.</p>
+      </div>
+      <div class="module-shot">
+        <img src="onepager-assets/03-steps.png" alt="ProcessMiner process steps" />
+      </div>
+    </div>
+
+    <!-- ArchitectMiner -->
+    <div class="module am">
+      <div class="module-head">
+        <div class="module-tag"><span class="dot"></span>Module 2 · The architecture</div>
+        <h2 class="module-name">ArchitectMiner</h2>
+        <p class="module-tagline">The IT view — the target architecture that will support the target process.</p>
+      </div>
+      <div class="module-body">
+        <p class="what">Takes the documented process and the target state, then <strong>develops a seven-section target architecture</strong> — capabilities, target applications, ADRs, integrations, components, NFRs and the migration phases to get there.</p>
+        <div class="section-list-label">Seven sections it owns</div>
+        <div class="section-chips">
+          <span class="sec-chip"><span class="n">01</span>Capabilities</span>
+          <span class="sec-chip"><span class="n">02</span>Target applications</span>
+          <span class="sec-chip"><span class="n">03</span>Architecture decisions</span>
+          <span class="sec-chip"><span class="n">04</span>Target integrations</span>
+          <span class="sec-chip"><span class="n">05</span>Components</span>
+          <span class="sec-chip"><span class="n">06</span>Non-functional requirements</span>
+          <span class="sec-chip"><span class="n">07</span>Migration phases</span>
+        </div>
+        <p class="who"><strong>Run by</strong> · domain architects, solution architects, enterprise architects.</p>
+      </div>
+      <div class="module-shot">
+        <img src="onepager-assets/04-target-arch.png" alt="ArchitectMiner target architecture" />
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Handoff strip -->
+  <div class="handoff">
+    <div class="step-card"><div class="lbl">Input</div><div class="name">Document + SME</div></div>
+    <div class="arrow">→</div>
+    <div class="step-card pm"><div class="lbl">ProcessMiner</div><div class="name">As-Is &amp; target process</div></div>
+    <div class="arrow">→</div>
+    <div class="step-card am"><div class="lbl">ArchitectMiner</div><div class="name">Target architecture</div></div>
+    <div class="arrow">→</div>
+    <div class="step-card"><div class="lbl">Output</div><div class="name">Audit · transformation · board</div></div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="stack">
+      <span><strong>Shared wiki</strong> — both modules read and write the same per-process record</span>
+      <span>Same provenance rules apply to both</span>
+      <span>Switch modules with the toggle at the top of the dashboard</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

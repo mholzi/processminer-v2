@@ -2,11 +2,11 @@
 
 **Purpose.** After replacing `main` with the JSON-native baseline (`b6f7b64`), this document triages every code-touching commit that the old main line carried but the new baseline dropped (see [`SUPERSEDED-MAIN-COMMITS.md`](SUPERSEDED-MAIN-COMMITS.md)), and turns the still-relevant ones into candidate requirements.
 
-**Status of this doc — ✅ COMPLETE (2026-06-04).** Every requirement was triaged and worked through. The **entire Processminer scope is delivered** across **17 PRs**, and **both product decisions are settled** (R15 = yes, R16 = yes). Individual requirement entries below carry a ✅ **FIXED** / decision note. The original "Proposed — pending prioritization" framing is kept for the requirements text; the per-item status lines record what shipped.
+**Status of this doc — ✅ COMPLETE (updated 2026-06-04).** Every requirement was triaged and worked through. The **entire core Processminer scope is delivered**, **both product decisions are settled** (R15 = yes, R16 = yes), and the previously-parked items (R10 orchestrator, R17 broken-relation visibility) plus the docs track (R20–R22) have now shipped. **ArchitectMiner (Theme A)** is being built out: R1 + R2 delivered, R3 in progress. Individual requirement entries below carry a ✅ **FIXED** / decision note. The original "Proposed — pending prioritization" framing is kept for the requirements text; the per-item status lines record what shipped.
 
-**Delivered (PR #):** A1 (#2) · A3 (#4) · R6a (#5) · R6b (#6) · schema drift-guard (#7) · R7+R8 (#8) · R9 (#9) · R11 (#10) · A4 + R14 a/b (#11) · R12a (#12) · R5 (#13) · R13 + R14c (#14) · R12b (#15) · R15 (#16) · R16 (#17).
+**Delivered (PR #):** A1 (#2) · A3 (#4) · R6a (#5) · R6b (#6) · schema drift-guard (#7) · R7+R8 (#8) · R9 (#9) · R11 (#10) · A4 + R14 a/b (#11) · R12a (#12) · R5 (#13) · R13 + R14c (#14) · R12b (#15) · R15 (#16) · R16 (#17) · R10 (#18) · R1 (#19) · R2 (#20) · R17 (#21) · R20–R22 (#22).
 
-**Not done — parked by choice:** **ArchitectMiner (Theme A — R1–R4)**, the whole module is still view-only (dead chat, mock Diagram/Library, no architect specialists) — the largest remaining *functional* gap, set aside as a separate workspace. Optional: R10 (orchestrator consumer), R17–R19 (verify-then-decide loose ends), and the schema generator (option A).
+**In progress / remaining:** **ArchitectMiner R3** (Diagram + Traceability real-data wiring) and **R4** (Personal + Library tiers from real data) — the last functional build-out of Theme A. Optional / verify-then-decide loose ends: **R18** (ProcessView join layer) and **R19** (slim per-type schema slices), plus the schema generator (option A — derive the Draft-07 schema from the custom schema, retiring the dual-edit + drift-guard).
 
 **Method.** All 41 commits were assessed against the actual files on the current baseline. Each was classed:
 - **PRESENT** — the functionality already exists on the new baseline → no action.
@@ -154,6 +154,7 @@ Each requirement: source commit(s), what's missing, impact, effort (S/M/L), reco
 - **Source:** `80f764a` (only sub-feature without a confirmed successor)
 - **Gap:** The old context CLI flagged dangling relation targets as "(target not found in this process)". Unclear whether the Document Map or `lint.ts` surfaces unresolved relation targets.
 - **Effort:** S · **Recommendation:** Verify; add a small lint check if missing.
+- ✅ **FIXED (verified — gap was real).** `buildRelations` (`relations.ts`) never checked that relation target ids resolve, and the only deterministic dangling-ref check (`coverage.ts`) covers *only* `transformation-decision.resolves`/`.realises`. Every other schema relation (control→step, regulation→control, country-variation→affects, role→systems/controls, system integrations, …) rendered a chip that silently no-op'd on click. `ElementCard` now flags any relation chip whose `getRef` returns no element as a non-navigable **"⟨id⟩ not found"** chip in the `--lo` error palette (`link-chip-dangling`), auto-covering all generic relations. Verified on `cob-003`: 297 valid chips unchanged + navigable; injected-id case computes to the error tokens / non-button. *(Transitions + RACI step refs share the same `getRef` pattern and have their own write-time validators — left as a possible extension.)*
 
 #### R18 — ProcessView join layer (RACI pivot + flow lanes)
 - **Source:** `318d817`
@@ -171,16 +172,19 @@ Each requirement: source commit(s), what's missing, impact, effort (S/M/L), reco
 - **Source:** `b858dff` (supersedes `44f8ffa`)
 - **Gap:** The finished 4-slide product deck + print-ready PDF + `pm-pdf.mjs` are gone. Standalone `public/` artifacts, never imported by app code.
 - **Effort:** S restore-as-is / M regenerate · **Recommendation:** Verify-then-decide — narrative still holds but slide 4 screenshots + v0.x framing predate the rewrite. Fully recoverable from the tag.
+- ✅ **RECOVERED (restore-as-is).** `pm-pdf.mjs`, `pm-shot-competitor.mjs`, and the full `public/onepager*` set (4 HTML slides + `onepager-deck.html`/`.pdf` + 5 screenshots) restored verbatim from `b858dff`. Screenshots + v0.x framing remain pre-rewrite; refreshing them is a follow-up (needs the screenshot helpers re-pointed at the current UI).
 
 #### R21 — Phase-2 product roadmap + AI-governance docs
 - **Source:** `1e347a6`
 - **Gap:** `ROADMAP.md`, `AI-GOVERNANCE-ROADMAP.md`, `AI-GOVERNANCE-CHANGESET.md` — no new doc covers these, and governance is a live concern (referenced in project memory).
 - **Effort:** S recover · **Recommendation:** Recover roadmap + governance-roadmap for reference; treat the changeset (targets old codebase) as Update-or-Skip.
+- ✅ **RECOVERED.** `ROADMAP.md`, `AI-GOVERNANCE-ROADMAP.md`, `AI-GOVERNANCE-CHANGESET.md` (+ their byte-identical `public/` copies and `public/*.html` renders) restored from `1e347a6`. The changeset is included as-is with a banner noting it targets the pre-rewrite codebase (reference only).
 
 #### R22 — pm-shot screenshot helpers
 - **Source:** `7899697` (+ `pm-shot-competitor.mjs` from `b858dff`)
 - **Gap:** CDP/cookie screenshot harness gone. Selectors target the old UI.
 - **Effort:** S restore / M re-point · **Recommendation:** Only if R20 is accepted.
+- ✅ **RECOVERED (restore-as-is).** `pm-shot.mjs` + `pm-shot-architect.mjs` restored from `7899697` (`pm-shot-competitor.mjs` came in with R20). Selectors still target the old UI — re-pointing to the current UI is a follow-up if/when the screenshots are regenerated.
 
 ---
 
