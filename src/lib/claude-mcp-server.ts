@@ -14,7 +14,7 @@ import { writeRuntime } from "./runtime-store.ts";
 import { buildTargetReview, parseSummaryParts } from "./session-writes.ts";
 import { checkElement, checkProvenance, checkFrontmatter, checkFieldValues, checkConformance } from "./conformance.ts";
 import { updateElement } from "./wiki-write.ts";
-import { replaceTempKeys, generateNextId } from "./gemini-worker.ts";
+import { replaceTempKeys, generateNextId, buildProcessDoc } from "./gemini-worker.ts";
 
 /**
  * CLAUDE NATIVE MCP SERVER
@@ -208,6 +208,20 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
           required: ["slug", "area", "summary"]
         }
+      },
+      {
+        name: "scaffoldProcess",
+        description: "Create a brand-new, empty process document (root meta + an empty overview). Used only by the new-process skill before any content exists. Refuses to overwrite an existing process.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            slug: { type: "string", description: "Deterministic kebab-case slug — the file name." },
+            PROC: { type: "string", description: "Uppercase process abbreviation for element IDs, e.g. 'FRL'." },
+            title: { type: "string", description: "The process title." },
+            description: { type: "string", description: "One-line process description." }
+          },
+          required: ["slug", "PROC", "title"]
+        }
       }
     ]
   };
@@ -222,6 +236,30 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 
   const processFilePath = path.join(process.cwd(), "wiki", "processes", `${slug}.json`);
+
+  // scaffoldProcess is the one tool that CREATES the document, so it runs
+  // before the "must already exist" guard below.
+  if (name === "scaffoldProcess") {
+    const PROC = String(args?.PROC || "").toUpperCase().trim();
+    const title = String(args?.title || "").trim();
+    const description = String(args?.description || "");
+    if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) {
+      throw new McpError(ErrorCode.InvalidParams, "slug must be kebab-case (lowercase letters, digits and single hyphens).");
+    }
+    if (!/^[A-Z]{2,6}$/.test(PROC)) {
+      throw new McpError(ErrorCode.InvalidParams, "PROC must be 2–6 uppercase letters.");
+    }
+    if (!title) {
+      throw new McpError(ErrorCode.InvalidParams, "title is required.");
+    }
+    if (fs.existsSync(processFilePath)) {
+      throw new McpError(ErrorCode.InvalidParams, `A process already exists for slug: ${slug}`);
+    }
+    const newDoc = buildProcessDoc(PROC, title, description);
+    fs.writeFileSync(processFilePath, JSON.stringify(newDoc, null, 2) + "\n", "utf8");
+    return { content: [{ type: "text", text: JSON.stringify({ ok: true, slug, id: newDoc.meta.id, created: true }, null, 2) }] };
+  }
+
   let doc: any = null;
   if (fs.existsSync(processFilePath)) {
     try {

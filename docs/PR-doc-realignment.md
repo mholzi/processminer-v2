@@ -43,7 +43,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#35** | Purge stale references to the pre-rewrite Markdown-wiki model | `chore/purge-md-wiki-references` → `main` | Code + docs | **Merged** (`35f758d`) |
 | **#36** | Register the `writeTargetReview` + `writeSummary` AI tools (fix council-review + area-summary) | `feat/council-summary-tools` → `main` | Code + tests + skills | **Merged** (`f12dd62`) |
 | **#37** | Purge dead script / legacy-doc pointers from 6 skills | `chore/purge-skill-stale-pointers` → `main` | Skills only | **Merged** (`162a853`) |
-| **#38** | Reference `CORE_SYSTEM_PROMPT.md` from the 6 perspective specialists | `chore/specialists-reference-core` → `main` | Skills only | **Open** (`pending`) |
+| **#38** | Reference `CORE_SYSTEM_PROMPT.md` from the 6 perspective specialists | `chore/specialists-reference-core` → `main` | Skills only | **Merged** (`082b92b`) |
+| **#39** | `scaffoldProcess` tool — make `new-process` functional | `feat/scaffold-process-tool` → `main` | Code + docs | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1341,6 +1342,45 @@ Now **all 8** interactive specialists reference the shared contract exactly once
 - Skills only — typecheck / test unaffected. Confirmed: all 8 specialists carry
   one `CORE_SYSTEM_PROMPT` reference; no orphaned `### Y / E / R` headers remain;
   the Interaction-patterns sections read cleanly.
+
+---
+
+
+# PR #39 — `scaffoldProcess` tool (make `new-process` functional)
+
+**Branch:** `feat/scaffold-process-tool` → `main` · **Date:** 2026-06-04 ·
+**Type:** Code + docs. (Parallel-session work, landed on request.)
+
+## Why this PR exists
+
+The `new-process` skill calls a `scaffoldProcess({ slug, PROC, title, description })`
+tool to create a brand-new empty process document — but that tool didn't exist
+in the AI registry (the MCP server threw `Process document not found` for any
+absent slug). So **new-process was non-functional end-to-end** (and `/dogfood-run`
+Stage 1 failed). This is the same phantom-tool class as #36, found by the
+parallel `BRIDGES_AND_TODOS` audit.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/lib/gemini-worker.ts` | **edit** | New exported `buildProcessDoc(PROC, title, description)` (root meta + empty overview, id `${PROC}-001`) + the `scaffoldProcess` tool declaration + handler (scopes the session to the new slug). |
+| `src/lib/claude-mcp-server.ts` | **edit** | Imports `buildProcessDoc`; adds the `scaffoldProcess` tool def + a handler that runs **before** the "process must already exist" guard, validates the slug/PROC, refuses to overwrite, and writes the file. |
+| `docs/BRIDGES_AND_TODOS.md` | **edit** | Corrects the documented AI tool surface (now 9: the 6 + `writeTargetReview` + `writeSummary` + `scaffoldProcess`); marks process-creation **done**; lists the *remaining* phantom tools (`addSource`/`createElements`/`writeIngestReport`/`clearConflicts`/… still called by document-ingest, source-\*, conflict-resolution). |
+
+## Verification
+
+- `npm run typecheck` clean. `npm test` → **70/70**. The scaffolded doc
+  round-trips through `listProcesses` / `getProcess`.
+- The transient `.claude/scheduled_tasks.lock` and runtime `funds-release-dogfood.json`
+  churn were left out of this PR.
+
+> **Note (deeper gap surfaced):** `BRIDGES_AND_TODOS` documents that
+> `document-ingest`, the `source-*` skills and `conflict-resolution` still call
+> several **non-existent** tools (`addSource`, `createElements`,
+> `writeIngestReport`, `clearConflicts`, …). My earlier skill review (#36–#38)
+> caught `writeTargetReview`/`writeSummary` but not this batch — they're the next
+> real bug to fix.
 
 ---
 
