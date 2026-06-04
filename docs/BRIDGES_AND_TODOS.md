@@ -46,10 +46,12 @@ While the read path works cleanly, several half-migrated writing and schema path
 * **The Problem:** For `process-step` elements, saving is done via a client POST to `/api/process/save` (which natively parses and updates the `[slug].json` file). But for `role`, `system`, and `exception` elements, saving is done by calling `saveElement` directly from `wiki-write.ts` (which triggers the broken `.md` file check).
 * **The Symptom:** Only process step edits succeed; other element edits fail.
 
-### C. Duplicated Process Schemas
-* **Location:** `schema/process-schema.json` vs. `schema/process-schema.legacy.json`
-* **The Problem:** The system maintains two separate schemas. `wiki.ts` still loads `process-schema.legacy.json` to drive templates and fields, while newer modules load the standard `process-schema.json`.
-* **The Symptom:** Double maintenance. Changes to the schema fields or templates must be mirrored across both JSON files.
+### C. Two schema representations  — *drift-guarded*
+* **Location:** `schema/process-schema.json` (custom app schema — source of truth) vs. `src/lib/schema/process-schema.json` (Draft-07 JSON Schema, the "LLM output schema").
+* **Corrected understanding:** these are **not** duplicate copies (the earlier `process-schema.legacy.json` was an empty leftover, now removed). They are two *different* representations of the same element-type model — a custom schema (templates/fields, drives the UI + conformance + tool schemas) and a JSON Schema (AJV validation + LLM output contract). They can't be merged into one file.
+* **The Symptom:** Double maintenance — add/rename an element type and you must update both, in two formats.
+* **Mitigation (shipped):** a drift-guard test (`src/lib/schema/schema-consistency.test.ts`, run by `npm test`) fails if the two files' element-type sets diverge, so the dangerous case (silent drift) is caught. It does **not** check per-field parity.
+* **Possible future step:** generate the JSON Schema from the custom schema (removing the dual edit entirely) — see TODO 3.
 
 ---
 
@@ -68,6 +70,6 @@ Convert the following actions to be completely JSON-native:
 ### 2. Standardize Saving in `ElementCard.tsx`
 * Update [ElementCard.tsx](file:///Users/devuser/processminer-v2/src/components/ElementCard.tsx) to save all element types (`process-step`, `role`, `system`, `exception`) through the same unified pathway (either a unified JSON-native API route or a unified `saveElement` server action).
 
-### 3. Consolidate Schemas
-* Merge the definitions of `schema/process-schema.legacy.json` into `schema/process-schema.json` (or vice-versa).
-* Point all schema loaders (e.g. `getSchema` in `wiki.ts`) to use a single source of truth file: `schema/process-schema.json`.
+### 3. Schemas — drift-guarded (done); generator (optional, not done)
+* ✅ **Done:** removed the empty `src/lib/schema/process-schema.legacy.json`; added a drift-guard test that fails if the custom schema and the JSON Schema disagree on their element-type sets (see §2C).
+* ⏳ **Optional next:** the two are different representations and can't simply be merged. To remove the dual edit entirely, derive the JSON Schema (`src/lib/schema/process-schema.json`) from the custom schema (`schema/process-schema.json`) via a build-time generator + a freshness check. Only worth it if the dual maintenance proves painful.
