@@ -110,7 +110,7 @@ Each requirement: source commit(s), what's missing, impact, effort (S/M/L), reco
 - **Source:** `3b51a56` + `b262fa1` (onDeleted)
 - **Gap:** No in-app way to delete a process — orphaned `<slug>.json` + `raw-sources/` must be removed by hand. No Settings surface.
 - **Impact:** Biggest user-facing functional hole after ArchitectMiner.
-- **Effort:** M (simpler now) · **Recommendation:** Redesign — delete = remove one `wiki/processes/<slug>.json` + its `raw-sources/<slug>/` + persisted chat. New `DELETE /api/processes/[slug]` + lightweight Settings panel + slug-typed confirm. *(Drop the old owner/grantee access summary unless R16 is accepted.)*
+- ✅ **FIXED.** New `DELETE /api/processes/[slug]` (admin-only) removes the wiki JSON, `raw-sources/<slug>/`, the runtime store (`data/runtime/<slug>.json`), and any `.sessions.json` entries for the slug. A per-process **Settings** view (admin-only ⚙ in the top bar) shows process facts + a **Danger Zone** with a slug-typed confirm; on delete it returns to the welcome screen and refreshes. Verified end-to-end against a throwaway process (all artifacts removed; 200/404/403 paths; the confirm button arms only on the exact slug). *(Owner/grantee access summary dropped — no per-process access model; see R16.)*
 
 #### R12 — Per-section summary UIs + Overview editing
 - **Source:** `ecc57f1` (2 of its 3 features; the 3rd, country-variations, is R15)
