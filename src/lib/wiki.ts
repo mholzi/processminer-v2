@@ -181,6 +181,9 @@ export interface Note {
   ts: string;
   /** Set when this note replies to another note (that note's id). */
   replyTo?: string;
+  /** Note kind — defaults to a plain comment; the comment-review skill posts
+   *  its closing analyst note as `summary`. */
+  type?: string;
   /** Set true once the comment-review skill has triaged this comment with
    *  the SME — incorporated, declined or otherwise handled — or once it is
    *  resolved by hand in the app. */

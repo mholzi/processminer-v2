@@ -47,7 +47,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#39** | `scaffoldProcess` tool — make `new-process` functional | `feat/scaffold-process-tool` → `main` | Code + docs | **Merged** (`91114d3`) |
 | **#40** | `createElements` batch tool — kill the source/ingest run-manifest | `feat/create-elements-batch` → `main` | Code + 5 skills + docs | **Merged** (`969d7bc`) |
 | **#41** | Phantom-tool rewrites onto existing tools (overview / id / template / evidence) | `feat/skill-tool-rewrites` → `main` | 5 skills + docs | **Merged** (`e9a8d18`) |
-| **#42** | Root-field tools — `writeIngestReport` + `clearConflicts`; drop `addSource` | `feat/ingest-report-tools` → `main` | Code + 1 skill + docs | **Open** (`pending`) |
+| **#42** | Root-field tools — `writeIngestReport` + `clearConflicts`; drop `addSource` | `feat/ingest-report-tools` → `main` | Code + 1 skill + docs | **Merged** (`2921b19`) |
+| **#43** | Notes tools — `createNote` + `resolveNotes` | `feat/notes-tools` → `main` | Code + 1 skill + docs | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1496,6 +1497,40 @@ Transient `.lock` + runtime JSON churn left out.
 
 - **Notes subsystem:** `createNote` / `resolveNotes` (comment-review) — `/api/notes` exists in-app.
 - **Session-cursor API:** `getSessionStatus` / `startSession` / `advanceSession` / `buildQueue` (qer-session, foundational-run) — the biggest/riskiest.
+
+---
+
+# PR #43 — Notes tools (`createNote` + `resolveNotes`)
+
+**Branch:** `feat/notes-tools` → `main` · **Date:** 2026-06-04 ·
+**Type:** Code + 1 skill + docs. **Fourth slice of the phantom-tool program** —
+the "notes subsystem" group. Only the session-cursor group remains after this.
+
+## What
+
+- **`src/lib/session-notes.ts` (new)** — pure, unit-tested helpers: `buildNote`
+  (assembles a `Note` from the skill input + a backend id/ts, rejects empty
+  text), `appendNote` (pushes onto `doc.notes[elementId]`), `resolveNotesInDoc`
+  (marks ids resolved across every thread, returns `resolved` / `notFound`).
+  **+7 tests.** Mirrors the in-app `/api/notes` (POST/PATCH) so a skill-written
+  note is indistinguishable from one written in the app.
+- **`createNote` + `resolveNotes`** — declared + handled in **both** providers
+  (14 tools each, drift-free). The id + timestamp are backend-assigned.
+- **`Note` interface** gains an optional `type?` (the comment-review close-out
+  posts its summary as `type: "summary"`) — additive, no UI change.
+- **comment-review** Step 4: `resolveNotes` now passes `resolvedBy`; the summary
+  note is composed and posted directly (the dead "write to a temp file" step is
+  gone).
+
+## Verification
+
+`npm run typecheck` clean · `npm test` **89/89** (+7). Both registries match.
+
+## Remaining (last group)
+
+**Session-cursor API:** `getSessionStatus` / `startSession` / `advanceSession` /
+`buildQueue` (qer-session, foundational-run) — a real cursor over `reviewState`.
+The biggest and riskiest; touches orchestration, not just a root field.
 
 ---
 

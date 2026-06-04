@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test": "node --test --experimental-strip-types src/lib/lint.test.ts src/lib/conformance.test.ts src/lib/wiki-write.test.ts src/lib/wiki.test.ts src/lib/schema/schema-consistency.test.ts src/lib/runtime-store.test.ts src/lib/orchestrator.test.ts src/lib/architecture-view.test.ts src/lib/process-view.test.ts src/lib/architect-portfolio.test.ts src/lib/session-writes.test.ts src/lib/session-create.test.ts",
+    "test": "node --test --experimental-strip-types src/lib/lint.test.ts src/lib/conformance.test.ts src/lib/wiki-write.test.ts src/lib/wiki.test.ts src/lib/schema/schema-consistency.test.ts src/lib/runtime-store.test.ts src/lib/orchestrator.test.ts src/lib/architecture-view.test.ts src/lib/process-view.test.ts src/lib/architect-portfolio.test.ts src/lib/session-writes.test.ts src/lib/session-create.test.ts src/lib/session-notes.test.ts",
     "test:lint": "node --test --experimental-strip-types src/lib/lint.test.ts",
     "eval:read-back": "python3 eval/read-back/run.py"
   },

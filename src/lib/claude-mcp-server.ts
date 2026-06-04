@@ -12,6 +12,7 @@ import * as path from "node:path";
 import { getSchema, jsonElementToWikiPage, transitionTarget } from "./wiki.ts";
 import { writeRuntime } from "./runtime-store.ts";
 import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts } from "./session-writes.ts";
+import { buildNote, appendNote, resolveNotesInDoc } from "./session-notes.ts";
 import { checkConformance } from "./conformance.ts";
 import { updateElement } from "./wiki-write.ts";
 import { buildProcessDoc } from "./gemini-worker.ts";
@@ -294,6 +295,35 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
           required: ["slug"]
         }
+      },
+      {
+        name: "createNote",
+        description: "Post a note onto an element's discussion thread (the process JSON's `notes`). Used by comment-review to post its closing analyst summary. The id + timestamp are backend-assigned.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            slug: { type: "string", description: "The process slug." },
+            elementId: { type: "string", description: "The element the note is attached to." },
+            author: { type: "string", description: "Who is posting — the analyst / SME name." },
+            content: { type: "string", description: "The note text." },
+            type: { type: "string", description: "Optional note kind, e.g. 'summary'." },
+            replyTo: { type: "string", description: "Optional id of the note this replies to." }
+          },
+          required: ["slug", "elementId", "content"]
+        }
+      },
+      {
+        name: "resolveNotes",
+        description: "Mark the given note ids resolved across the process's discussion threads. Used by comment-review once each comment has a decision.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            slug: { type: "string", description: "The process slug." },
+            noteIds: { type: "array", items: { type: "string" }, description: "The note ids to resolve." },
+            resolvedBy: { type: "string", description: "Optional — who resolved them; defaults to 'SME'." }
+          },
+          required: ["slug", "noteIds"]
+        }
       }
     ]
   };
@@ -552,6 +582,24 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const { cleared } = clearIngestConflicts(doc);
       fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
       return { content: [{ type: "text", text: JSON.stringify({ ok: true, cleared }, null, 2) }] };
+    }
+
+    else if (name === "createNote") {
+      const id = `n-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      const note = buildNote(
+        { author: args?.author as string, text: args?.content as string, type: args?.type as string, replyTo: args?.replyTo as string },
+        { id, ts: new Date().toISOString() }
+      );
+      appendNote(doc, args?.elementId as string, note);
+      fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+      return { content: [{ type: "text", text: JSON.stringify({ ok: true, note }, null, 2) }] };
+    }
+
+    else if (name === "resolveNotes") {
+      const noteIds = Array.isArray(args?.noteIds) ? (args!.noteIds as string[]) : [];
+      const res = resolveNotesInDoc(doc, noteIds, args?.resolvedBy as string, new Date().toISOString().slice(0, 10));
+      fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+      return { content: [{ type: "text", text: JSON.stringify({ ok: true, ...res }, null, 2) }] };
     }
 
     else {

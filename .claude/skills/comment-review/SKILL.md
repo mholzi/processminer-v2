@@ -92,12 +92,12 @@ safe substitute for editing them.
 Once every comment has a decision:
 1. **Resolve the handled comments** — every comment decided **[I]** or **[D]**
    (not the **[S]** ones):
-   use the `resolveNotes({ noteIds: [<noteId>, ...] })` tool.
-2. **Post the summary** — write a short summary note to a temp file: what was
-   incorporated and the element edit it produced, what was declined and the SME's
-   reason, anything left open, and — from Step 3 — any **linked elements the
-   change implicates**, named by id, so the SME knows where the wiki may now be
-   inconsistent. Then post it as the owning analyst:
+   use the `resolveNotes({ noteIds: [<noteId>, ...], resolvedBy: "<Analyst Name>" })` tool.
+2. **Post the summary** — compose a short summary note: what was incorporated and
+   the element edit it produced, what was declined and the SME's reason, anything
+   left open, and — from Step 3 — any **linked elements the change implicates**,
+   named by id, so the SME knows where the wiki may now be inconsistent. Post it
+   as the owning analyst:
    use the `createNote({ elementId, author: "<Analyst Name>", content: "summary note text", type: "summary" })` tool.
 
 Then confirm to the SME with this **exact** line, substituting the counts:
