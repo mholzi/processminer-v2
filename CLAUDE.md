@@ -76,11 +76,12 @@ resets provenance to `proposed`" — is in
 [`.claude/skills/CORE_SYSTEM_PROMPT.md`](.claude/skills/CORE_SYSTEM_PROMPT.md)
 and enforced by `checkProvenance`.
 
-> ⚠️ **Known regression (roadmap A1).** The contract says an element with any
-> `proposed`/`web` heading cannot be approved, but the gate is currently dead
-> code: `UNCONFIRMED_SOURCES` in `conformance.ts` is defined and never used, so
-> `setApproval` does **not** block approval of unconfirmed content. Treat the
-> gate as not-yet-enforced until A1 is fixed.
+The **approval gate is enforced**: `updateElement`/`setApproval`
+(`src/lib/wiki-write.ts`) refuse to set `approved` while any heading's source is
+`proposed`/`web`, returning which headings are blocking
+(`unconfirmedHeadings()` in `conformance.ts`). Editing a heading resets it to
+`proposed`, so re-approval requires re-confirmation. *(This was the roadmap A1
+regression — fixed.)*
 
 > ⚠️ **Known guardrail issue (roadmap R9).** Runtime/orchestration state
 > (`reviewState`, `lint`) currently lives **inside** the process JSON,

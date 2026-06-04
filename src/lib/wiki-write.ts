@@ -3,7 +3,15 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { getSchema, jsonElementToWikiPage, toCamelCase } from "./wiki.ts";
-import { checkElement, checkFrontmatter, checkFieldValues, checkProvenance } from "./conformance.ts";
+import { checkElement, checkFrontmatter, checkFieldValues, checkProvenance, unconfirmedHeadings } from "./conformance.ts";
+
+/** A1 approval gate — an element may not be set to `approved` while any heading
+ *  is still `proposed`/`web` (unconfirmed by the SME). HALLUCINATION-PLAN.md. */
+function approvalGateError(id: string, provenance: any): string | null {
+  const unconfirmed = unconfirmedHeadings(provenance);
+  if (unconfirmed.length === 0) return null;
+  return `Cannot approve ${id} — these headings are not yet confirmed by the SME (still proposed/web): ${unconfirmed.join(", ")}. Confirm them in the read-back first.`;
+}
 
 let revalidatePath = (path: string) => {};
 import("next/cache")
@@ -28,6 +36,10 @@ export async function updateElement(
   const doc = JSON.parse(readFileSync(filePath, "utf8"));
   
   if (doc.meta?.id === id) {
+    if (patch.meta?.approval === "approved") {
+      const gate = approvalGateError(id, doc.meta?.provenance);
+      if (gate) return { ok: false, error: gate };
+    }
     if (patch.meta) doc.meta = { ...doc.meta, ...patch.meta };
     if (patch.content) doc.content = { ...doc.content, ...patch.content };
     for (const [k, v] of Object.entries(patch)) {
@@ -87,6 +99,13 @@ export async function updateElement(
       }
     }
     newMeta.provenance = newProv;
+  }
+
+  // A1 approval gate: block approval while any heading is still proposed/web.
+  // Runs before the generic conformance check so the reason is specific.
+  if (patch.meta?.approval === "approved") {
+    const gate = approvalGateError(id, newMeta.provenance);
+    if (gate) return { ok: false, error: gate };
   }
 
   const fullElement = { meta: newMeta, content: newContent };

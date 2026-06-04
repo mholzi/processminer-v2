@@ -138,6 +138,26 @@ export const UNCONFIRMED_SOURCES = new Set(["proposed", "web"]);
 /** Sources whose claim must be backed by a verbatim quote / snippet. */
 const EVIDENCE_REQUIRED = new Set(["elicited", "document", "web"]);
 
+/** Headings whose provenance source is still unconfirmed by the SME
+ *  (`proposed` / `web`). An element with any of these must not be approved —
+ *  the hallucination countermeasure's approval gate (HALLUCINATION-PLAN.md).
+ *  Takes the raw provenance object stored on `meta.provenance` in the process
+ *  JSON (keyed by heading title), not the string-encoded `WikiPage` form. */
+export function unconfirmedHeadings(
+  provenance: Record<string, { source?: string }> | undefined | null,
+): string[] {
+  if (!provenance || typeof provenance !== "object") return [];
+  return Object.entries(provenance)
+    .filter(
+      ([, entry]) =>
+        entry &&
+        typeof entry === "object" &&
+        typeof entry.source === "string" &&
+        UNCONFIRMED_SOURCES.has(entry.source),
+    )
+    .map(([heading]) => heading);
+}
+
 /** The element's provenance map, decoded. {} if absent or malformed.
  *  The value is stored JSON-encoded on one frontmatter line. */
 export function parseProvenance(
