@@ -31,7 +31,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#23** | Refresh roadmap status header | `docs/roadmap-refresh` → `main` | Docs only | **Merged** (`8377486`) |
 | **#24** | Diagram + Traceability real-data wiring (R3) | `feat/architect-diagram-traceability-r3` → `main` | Code + tests + docs | **Merged** (`9e82c4c`) |
 | **#25** | Extract RACI-pivot + flow-lane joins into process-view (R18) | `refactor/process-view-r18` → `main` | Code + tests | **Merged** (`ebdf9fa`) — parallel track |
-| **#26** | Personal + Library tiers from real data (R4) | `feat/architect-personal-library-r4` → `main` | Code + tests + docs | **Open** (`pending`) |
+| **#26** | Personal + Library tiers from real data (R4) | `feat/architect-personal-library-r4` → `main` | Code + tests + docs | **Merged** (`bf77fe3`) |
+| **#27** | Architect section detail views from real elements | `feat/architect-section-detail-views` → `main` | Code | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -983,15 +984,53 @@ rendered fiction.
 
 ---
 
-# Open follow-ups (as of PR #26)
+# PR #27 — Architect section detail views from real elements
 
-**ArchitectMiner Theme A (R1–R4) is complete**: chat (#19), specialists (#20),
-Diagram + Traceability (#24), Personal + Library tiers (#25). With R10, R15–R17
-and R20–R22 also done, the **entire triaged roadmap is delivered.** Remaining,
-all optional / beyond the original R1–R22 scope:
+**Branch:** `feat/architect-section-detail-views` → `main` · **Date:**
+2026-06-04 · **Type:** Code. Follow-up to Theme A (beyond R1–R4).
 
-1. **Wire the seven ArchitectMiner section *detail* views** (Capabilities, Target Applications, ADRs, Integrations, Components, NFRs, Migration) to real element rendering — still illustrative mock after R3/R4. The largest remaining cosmetic gap.
-2. **A first-class pattern catalog** — a `pattern` element type + the Pattern Library view (currently an honest empty state).
-3. **Schema generator** — derive the Draft-07 JSON Schema from the custom schema, retiring the dual-edit + drift-guard.
-4. **Refresh the recovered artifacts (R20/R22):** re-point `pm-shot*.mjs` at the current UI, regenerate the onepager screenshots + PDF, update the v0.x deck framing.
-5. **R18 / R19** — verify-then-decide loose ends (ProcessView join layer; slim per-type schema slices).
+## Why this PR exists
+
+After R3 (Diagram + Traceability) and R4 (Personal + Library), the **seven
+ArchitectMiner section *detail* views** — Capabilities, Target Applications,
+ADRs, Integrations, Components, NFRs, Migration — were still the only
+illustrative mock left: hardcoded `CAP-{pid}-002` cards, a 5-row mock ADR list,
+an invented integration table, etc. This was the last fabricated surface in the
+module.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/components/ArchitectureCanvas.tsx` | **edit** | One shared renderer (`archSectionMain` + a module-level `ArchElementCard`) replaces all seven bespoke mock blocks. Each view now renders the real `doc.elements` for its section as Processminer-style cards (id, status, type, key frontmatter as pills, the template blocks via `Markdown`), with the real element count, the Add / Elicit buttons (seeding the right specialist), and an empty state. The top-bar breadcrumbs drop their fabricated element ids. All the dead mock data + helper components (`adrs`/`openAdr`, `IntegrationRow`, `ComponentCard`, `NfrRow`, `CapCard`, `pid`) are removed. |
+
+Net **−1,185 lines** in the canvas — the file shrank from ~2,100 to ~1,000 lines.
+
+## Scope notes
+
+- cob-003 has no authored architecture elements, so every section reads
+  **empty** — the honest state — and populates as the architect authors via the
+  R1/R2 chat. The rendering reuses the proven `inputs`-view element-card pattern.
+- The R3 Diagram + Traceability and the `inputs` views are untouched.
+
+## Verification
+
+- `npm run typecheck` clean. `npm test` → **64/64** (unchanged — pure UI).
+- AM canvas: Capabilities / ADRs / Migration (spot-checked) each render the real
+  header ("0 elements · authored here"), the right Add/Elicit buttons, and the
+  empty state; every mock id (`CAP-COB-003-002`, `Case capture & validation`,
+  `MIG-…`, the Quantexa rows) is gone. Zero console errors; screenshot verified.
+
+---
+
+# Open follow-ups (as of PR #27)
+
+**The entire ArchitectMiner module is now free of fabricated content** — every
+view reads from `doc.elements`. With Theme A (R1–R4) + this follow-up done, and
+R10 / R15–R18 / R20–R22 delivered, the triaged roadmap and its main cosmetic
+gap are closed. Remaining, all optional:
+
+1. **A first-class pattern catalog** — a `pattern` element type + the Pattern Library view (currently an honest empty state).
+2. **Schema generator** — derive the Draft-07 JSON Schema from the custom schema, retiring the dual-edit + drift-guard.
+3. **Refresh the recovered artifacts (R20/R22):** re-point `pm-shot*.mjs` at the current UI, regenerate the onepager screenshots + PDF, update the v0.x deck framing.
+4. **R19** — slim per-type schema slices (token optimization).
