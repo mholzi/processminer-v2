@@ -4,7 +4,9 @@
 
 **Status of this doc — ✅ COMPLETE (updated 2026-06-04).** Every requirement was triaged and worked through. The **entire Processminer scope is delivered**, **both product decisions are settled** (R15 = yes, R16 = yes), the previously-parked items (R10 orchestrator, R17 broken-relation visibility, R18 ProcessView joins) plus the docs track (R20–R22) have shipped, and **ArchitectMiner (Theme A — R1–R4) is fully delivered**. Individual requirement entries below carry a ✅ **FIXED** / decision note. The original "Proposed — pending prioritization" framing is kept for the requirements text; the per-item status lines record what shipped.
 
-**Delivered (PR #):** A1 (#2) · A3 (#4) · R6a (#5) · R6b (#6) · schema drift-guard (#7) · R7+R8 (#8) · R9 (#9) · R11 (#10) · A4 + R14 a/b (#11) · R12a (#12) · R5 (#13) · R13 + R14c (#14) · R12b (#15) · R15 (#16) · R16 (#17) · R10 (#18) · R1 (#19) · R2 (#20) · R17 (#21) · R20–R22 (#22) · R3 (#24) · R18 (#25) · R4 (#26).
+**Delivered (PR #):** A1 (#2) · A3 (#4) · R6a (#5) · R6b (#6) · schema drift-guard (#7) · R7+R8 (#8) · R9 (#9) · R11 (#10) · A4 + R14 a/b (#11) · R12a (#12) · R5 (#13) · R13 + R14c (#14) · R12b (#15) · R15 (#16) · R16 (#17) · R10 (#18) · R1 (#19) · R2 (#20) · R17 (#21) · R20–R22 (#22) · R3 (#24) · R18 (#25) · R4 (#26) · ArchitectMiner section detail views (#30).
+
+_Roadmap/PR bookkeeping (docs-only) shipped in #23 and #27–#29; the complete PR index is in [`docs/PR-doc-realignment.md`](docs/PR-doc-realignment.md)._
 
 ---
 
