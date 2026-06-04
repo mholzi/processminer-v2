@@ -169,8 +169,8 @@ question, then close with the canonical close-out:
 > Elements you approved during this session are signed off; any left `in-progress` are yours to review and approve on their cards in the app. Approval is always your decision there.
 and present what it prints, with `{Perspective}` = **Client Experience** and the `{n}` / `{type}` placeholders
 filled from the counts. Reproduce every other character — the bullet labels,
-the `status: draft` line, the closing sentence — exactly; `verbatim.py` is the
-single source of truth, never write the close-out from memory.
+the `status: draft` line, the closing sentence — exactly. The close-out block
+above is the single source of truth; never write it from memory.
 
 
 ## Stay in your lane

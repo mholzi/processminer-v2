@@ -41,7 +41,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#33** | Reconcile + reprioritise the product ROADMAP (remove shipped items; trust-first H1) | `docs/roadmap-reprioritise` → `main` | Docs only | **Merged** (`6b375d7`) |
 | **#34** | Sync the working tree to main (skill edits, doc/data, dogfood content) | `chore/sync-working-tree-to-main` → `main` | Skills + docs + data | **Merged** (`6b1732d`) |
 | **#35** | Purge stale references to the pre-rewrite Markdown-wiki model | `chore/purge-md-wiki-references` → `main` | Code + docs | **Merged** (`35f758d`) |
-| **#36** | Register the `writeTargetReview` + `writeSummary` AI tools (fix council-review + area-summary) | `feat/council-summary-tools` → `main` | Code + tests + skills | **Open** (`pending`) |
+| **#36** | Register the `writeTargetReview` + `writeSummary` AI tools (fix council-review + area-summary) | `feat/council-summary-tools` → `main` | Code + tests + skills | **Merged** (`f12dd62`) |
+| **#37** | Purge dead script / legacy-doc pointers from 6 skills | `chore/purge-skill-stale-pointers` → `main` | Skills only | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1282,6 +1283,33 @@ AI-callable.)
 - `npm run typecheck` clean. `npm test` → **70/70** (64 + 6 new). Both tools
   confirmed registered (definition + handler) in `claude-mcp-server.ts` **and**
   `gemini-worker.ts`.
+
+---
+
+
+# PR #37 — Purge dead script / legacy-doc pointers from 6 skills
+
+**Branch:** `chore/purge-skill-stale-pointers` → `main` · **Date:** 2026-06-04 ·
+**Type:** Skills only. Part 2 of the skill-architecture cleanup.
+
+## Why this PR exists
+
+The per-skill review found six skills still pointing at deleted artifacts — the
+content was fine, the pointers were dead.
+
+## What this PR changes
+
+| Skill(s) | Stale pointer | Fix |
+|---|---|---|
+| `it-architect`, `client-journey-specialist` | "`verbatim.py` is the single source of truth" for the close-out | The close-out block is in the skill itself → "the close-out block above is the single source of truth; never write it from memory." |
+| `foundational-run` | "resolve the owning lens with `assumption_owner()` in `wiki_lib.py`" | "the owning lens is the `specialist` the schema assigns to that element's section; do not guess it." |
+| `source-cx`, `source-innovation`, `source-regulation` | "identical … (HALLUCINATION-PLAN.md). Do not edit one copy — a drift check fails CI." (the plan doc is archived in `legacy-docs/`; the `check_skill_blocks.py` drift check is deleted) | "keep them in sync by hand … the provenance contract is in `CORE_SYSTEM_PROMPT.md`." |
+
+## Verification
+
+- Skills only — typecheck / test unaffected. A grep sweep confirms **zero**
+  `*.py` / `scripts/wiki` / legacy-plan-doc / "drift check fails CI" references
+  remain in any skill.
 
 ---
 
