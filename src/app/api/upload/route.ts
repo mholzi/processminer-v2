@@ -2,6 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import type { NextRequest } from "next/server";
+import { COOKIE_NAME, verifySession } from "@/lib/auth-server";
 
 // Receives a document uploaded from the chat's upload modal and saves it into
 // raw-sources/<slug>/ — Karpathy LLM-Wiki layer 1, the immutable imported
@@ -21,7 +22,9 @@ export async function POST(req: NextRequest) {
 
   const file = form.get("file");
   const slug = form.get("slug");
-  const uploadedBy = form.get("uploadedBy");
+  // R6: the uploader is the signed-in user, resolved from the session cookie —
+  // never the client-supplied "uploadedBy" form field.
+  const uploadedBy = verifySession(req.cookies.get(COOKIE_NAME)?.value)?.name;
   if (!(file instanceof File)) {
     return Response.json({ error: "No file in the upload." }, { status: 400 });
   }
@@ -56,7 +59,7 @@ export async function POST(req: NextRequest) {
       }
     }
     manifest[name] = {
-      by: typeof uploadedBy === "string" && uploadedBy ? uploadedBy : undefined,
+      by: uploadedBy || undefined,
       at: new Date().toISOString(),
     };
     await writeFile(manifestPath, JSON.stringify(manifest, null, 2));

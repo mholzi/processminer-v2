@@ -1,6 +1,13 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { NextRequest } from "next/server";
+import { COOKIE_NAME, verifySession } from "@/lib/auth-server";
+
+// R6: the author of a write is the signed-in user, resolved from the session
+// cookie — never a client-supplied value (which could forge authorship).
+function sessionAuthor(req: NextRequest): string {
+  return verifySession(req.cookies.get(COOKIE_NAME)?.value)?.name || "SME";
+}
 
 // Appends an SME note to wiki/processes/<slug>/notes.json — the note-thread
 // sidecar (#19). Notes are collaboration data, not process documentation:
@@ -22,7 +29,6 @@ export async function POST(req: NextRequest) {
   const slug = body.slug;
   const elementId = body.elementId;
   const text = body.text;
-  const author = body.author;
   const replyTo = body.replyTo;
 
   if (typeof slug !== "string" || !/^[A-Za-z0-9._-]+$/.test(slug)) {
@@ -37,7 +43,7 @@ export async function POST(req: NextRequest) {
 
   const note = {
     id: `n-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-    author: typeof author === "string" && author ? author : "SME",
+    author: sessionAuthor(req),
     text: text.trim(),
     ts: new Date().toISOString(),
     ...(typeof replyTo === "string" && replyTo ? { replyTo } : {}),
@@ -80,7 +86,6 @@ export async function PATCH(req: NextRequest) {
   const elementId = body.elementId;
   const noteId = body.noteId;
   const resolved = body.resolved === true;
-  const by = body.by;
 
   if (typeof slug !== "string" || !/^[A-Za-z0-9._-]+$/.test(slug)) {
     return Response.json({ error: "Bad or missing slug." }, { status: 400 });
@@ -111,7 +116,7 @@ export async function PATCH(req: NextRequest) {
   }
   if (resolved) {
     note.resolved = true;
-    note.resolvedBy = typeof by === "string" && by ? by : "SME";
+    note.resolvedBy = sessionAuthor(req);
     note.resolvedAt = new Date().toISOString().slice(0, 10);
   } else {
     delete note.resolved;

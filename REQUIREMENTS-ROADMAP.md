@@ -75,7 +75,8 @@ Each requirement: source commit(s), what's missing, impact, effort (S/M/L), reco
 - **Source:** `5980ed4`
 - **Gap:** The wiki stores display names (`approvalBy: "M. Berger"`) instead of stable usernames, so renames never propagate and layers drift. API routes (`/api/notes`, `/api/findings`, `/api/upload`) take the author from the **request body**, not the session cookie → any client can impersonate any author. The infra exists (`user.ts` has immutable `username` vs editable `name`) but the wiki + write path ignore it.
 - **Impact:** Impersonation vulnerability + attribution drift. Real on the current baseline regardless of storage shape.
-- **Effort:** M · **Recommendation:** Re-port concept — store `username` in author fields; server-inject `by` from the session in API routes; add a roster resolver (`useDisplayName`) for render. (One-shot data migration is trivial now — one bad value to fix.)
+- **R6a — server-side author injection (impersonation):** ✅ **FIXED.** `setApproval`/`setRelevance` (`wiki-write.ts`) and the `notes` / `findings` / `upload` routes now derive the author from the verified session cookie (`verifySession`) and ignore any client-supplied `author`/`by`/`uploadedBy`. Verified: a POST to `/api/notes` with a forged `author` stores the session user instead. The client signatures are kept (the passed value is ignored) to avoid render/prop churn.
+- **R6b — rename propagation (drift):** still open. Author fields still store the *display name*, so a rename doesn't propagate. The follow-up: store the stable `username` and resolve display names at render (a roster resolver / `useDisplayName`). Deferred to keep R6a a focused, low-risk security PR.
 
 #### R7 — Typed transitions (`to|kind|when` → structured)
 - **Source:** `bbcf8f0` (transitions half; provenance half is already DONE)
