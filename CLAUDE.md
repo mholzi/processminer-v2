@@ -41,10 +41,13 @@ contract intact.
 
 - In-app SME actions → server actions in
   [`src/lib/wiki-write.ts`](src/lib/wiki-write.ts): `updateElement`,
-  `setApproval`, `setRelevance`, `saveSummaryPart`, `triageTargetReview`. Each
-  runs `checkElement` / `checkFrontmatter` / `checkFieldValues` /
-  `checkProvenance` ([`src/lib/conformance.ts`](src/lib/conformance.ts)) and
-  **blocks the write on any failure**.
+  `setApproval`, `setRelevance`, `saveSummaryPart`, `triageTargetReview`. A
+  **content edit** is validated against `checkElement` / `checkFrontmatter` /
+  `checkFieldValues` / `checkProvenance`
+  ([`src/lib/conformance.ts`](src/lib/conformance.ts)) and blocked on any
+  failure. A **metadata-only** state change (approval / relevance / status) is
+  *not* blocked by an element's pre-existing non-conformance — only the approval
+  gate (below) hard-blocks it.
 - AI session authoring → schema-enforced tools, not file writes:
   `createElement`, `updateElement`, `expandElement`, `checkConformance`,
   `checkTransitions`, `applyLint`. The backend generates element IDs — never

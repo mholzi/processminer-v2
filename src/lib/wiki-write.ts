@@ -109,22 +109,31 @@ export async function updateElement(
   }
 
   const fullElement = { meta: newMeta, content: newContent };
-  const info = schema.elementTypes[singularType];
-  const pageRepresentation = jsonElementToWikiPage(fullElement, info);
-  
-  const validationIssues = [
-    ...checkElement(pageRepresentation, info.template || []).filter(c => !c.ok).map(c => `“${c.heading}” ${c.issue}`),
-    ...checkFrontmatter(pageRepresentation, info),
-    ...checkFieldValues(pageRepresentation, info, schema),
-    ...checkProvenance(pageRepresentation, info)
-  ];
 
-  if (validationIssues.length > 0) {
-    return { ok: false, error: `Validation failed:\n- ${validationIssues.join("\n- ")}` };
+  // Only hard-block on content conformance when the patch actually changes
+  // content. Metadata-only writes (approval / relevance / status transitions)
+  // must not be blocked by an element's pre-existing non-conformance — the
+  // approval gate above is the only hard block on a state change, and
+  // conformance is surfaced as a warning badge elsewhere (warn-and-allow,
+  // SKILLS.md §10).
+  const isContentEdit =
+    !!patch.content && Object.keys(patch.content).length > 0;
+  if (isContentEdit) {
+    const info = schema.elementTypes[singularType];
+    const pageRepresentation = jsonElementToWikiPage(fullElement, info);
+    const validationIssues = [
+      ...checkElement(pageRepresentation, info.template || []).filter(c => !c.ok).map(c => `“${c.heading}” ${c.issue}`),
+      ...checkFrontmatter(pageRepresentation, info),
+      ...checkFieldValues(pageRepresentation, info, schema),
+      ...checkProvenance(pageRepresentation, info)
+    ];
+    if (validationIssues.length > 0) {
+      return { ok: false, error: `Validation failed:\n- ${validationIssues.join("\n- ")}` };
+    }
   }
 
   // A content/meta edit by human confirms the element and invalidates prior review verdicts
-  const isSmeAction = patch.meta?.status === "confirmed" || (patch.content && Object.keys(patch.content).length > 0);
+  const isSmeAction = patch.meta?.status === "confirmed" || isContentEdit;
   if (isSmeAction) {
     newMeta.status = "confirmed";
     if (newMeta.approval === "approved") {
