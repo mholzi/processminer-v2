@@ -88,10 +88,6 @@ knowledge solidly supports, at `low` confidence, and say so in the summary —
 
 ## Step 3 — Draft market trends
 
-Before the first write, clear the run manifest. Every element you write is
-logged to it; Step 6's report counts are read back from the manifest, not
-tallied from memory.
-
 For each trend that matters to this process, draft a `market-trend` element per
 its schema template. **Ground every claim in a source you actually found** — a
 claim you cannot trace to a study or report does not go in.
@@ -175,7 +171,7 @@ these are unvalidated proposals). Then write the **whole run in one batch**:
 assemble a manifest `{ "slug": "<slug>", "elements": [ … ] }` of every trend
 from Step 3, every competitor move from Step 4 and every idea here — each spec
 omitting `id`, each carrying its `tempKey`, ideas referencing trends and moves
-by `"@<tempKey>"` — and `use the createElements({ elements }) tool`, then `use the checkConformance() tool`. The batch writer assigns every id and resolves every `@<tempKey>`.
+by `"@<tempKey>"` — and `use the createElements({ elements }) tool`, then `use the checkConformance() tool`. The batch writer assigns every id and resolves every `@<tempKey>`, and returns `created` (the ids) plus per-type `counts` — read your Step 6 report counts from `counts`.
 
 **Completeness check — every documented problem gets an idea.** Once the ideas
 are written, check the idea coverage for the process. It enumerates
@@ -190,9 +186,8 @@ a conscious decision.
 
 ## Step 6 — Report
 
-Get the innovation source report for the process — it reads the run manifest
-and prints how many elements were written, per type. Map those counts into the
-template: `market-trend` → Market trends; `competitor-eu` / `-global` /
+Map the per-type `counts` the createElements call returned into the template:
+`market-trend` → Market trends; `competitor-eu` / `-global` /
 `-fintech` → the Competitor moves total and its European / global / fintech
 split; `innovation-idea` → Innovation ideas. Do not recount from memory.
 

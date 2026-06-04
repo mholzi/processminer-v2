@@ -12,9 +12,16 @@ import * as path from "node:path";
 import { getSchema, jsonElementToWikiPage, transitionTarget } from "./wiki.ts";
 import { writeRuntime } from "./runtime-store.ts";
 import { buildTargetReview, parseSummaryParts } from "./session-writes.ts";
-import { checkElement, checkProvenance, checkFrontmatter, checkFieldValues, checkConformance } from "./conformance.ts";
+import { checkConformance } from "./conformance.ts";
 import { updateElement } from "./wiki-write.ts";
-import { replaceTempKeys, generateNextId, buildProcessDoc } from "./gemini-worker.ts";
+import { buildProcessDoc } from "./gemini-worker.ts";
+import {
+  replaceTempKeys,
+  buildElement,
+  applyElement,
+  createElementsBatch,
+  type BatchSpec,
+} from "./session-create.ts";
 
 /**
  * CLAUDE NATIVE MCP SERVER
@@ -96,6 +103,38 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             }
           },
           required: ["slug", "type", "element"]
+        }
+      },
+      {
+        name: "createElements",
+        description: "Author a whole run of elements in one call. Each spec carries a 'type' (collection name), an 'element' payload (same shape as createElement, no id), and an optional 'tempKey'. Elements may cross-reference each other within the batch via '@tempKey'. The backend assigns every id, resolves every '@tempKey', and returns per-type 'counts' (use these for your report — there is no separate manifest). A failing element is reported in 'errors' and skipped; the rest still write.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            slug: { type: "string", description: "The process slug." },
+            elements: {
+              type: "array",
+              description: "The element specs to create, in order.",
+              items: {
+                type: "object",
+                properties: {
+                  type: { type: "string", description: "The collection name, e.g. 'market-trends'." },
+                  tempKey: { type: "string", description: "Optional ephemeral key so a later element in this batch can reference this one via '@tempKey'." },
+                  element: {
+                    type: "object",
+                    description: "The element payload (meta + content). Do not include 'id'.",
+                    properties: {
+                      meta: { type: "object" },
+                      content: { type: "object" }
+                    },
+                    required: ["meta", "content"]
+                  }
+                },
+                required: ["type", "element"]
+              }
+            }
+          },
+          required: ["slug", "elements"]
         }
       },
       {
@@ -292,63 +331,54 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     
     else if (name === "createElement") {
       const type = args?.type as string;
-      let element = args?.element as any;
       const tempKey = args?.tempKey as string;
       const schema = getSchema();
 
-      element = replaceTempKeys(element, tempKeyMap);
-
-      let singularType = "";
-      for (const [t, def] of Object.entries(schema.elementTypes)) {
-        if ((def as any).section === type) {
-          singularType = t;
-          break;
-        }
-      }
-      if (!singularType) throw new McpError(ErrorCode.InvalidParams, `Unknown collection type: ${type}`);
-      
-      const info = schema.elementTypes[singularType];
-      const idPrefix = info.idPrefix;
-      const newId = generateNextId(doc, singularType, idPrefix);
-
-      const newMeta = {
-        ...(element.meta || {}),
-        id: newId,
-        type: singularType,
-        section: type,
-        status: element.meta?.status || "draft",
-      };
-      const newContent = { ...(element.content || {}) };
-      const fullElement = { meta: newMeta, content: newContent };
-
-      const pageRepresentation = jsonElementToWikiPage(fullElement, info);
-      const validationIssues = [
-        ...checkElement(pageRepresentation, info.template || []).filter(c => !c.ok).map(c => `“${c.heading}” ${c.issue}`),
-        ...checkFrontmatter(pageRepresentation, info),
-        ...checkFieldValues(pageRepresentation, info, schema),
-        ...checkProvenance(pageRepresentation, info)
-      ];
-
-      if (validationIssues.length > 0) {
-        return { content: [{ type: "text", text: `Error: Element validation failed:\n- ${validationIssues.join("\n- ")}` }] };
+      const built = buildElement(doc, schema, type, args?.element, tempKeyMap);
+      if (!built.ok || !built.fullElement) {
+        return { content: [{ type: "text", text: `Error: Element validation failed:\n- ${(built.issues || []).join("\n- ")}` }] };
       }
 
-      if (!doc[type]) doc[type] = [];
-      doc[type].push(fullElement);
-      if (singularType === "process-step") {
-        doc[type].sort((a: any, b: any) => (a.meta?.sequence || 999) - (b.meta?.sequence || 999));
-      }
-
+      applyElement(doc, type, built.fullElement, built.singularType!);
       fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
 
       if (tempKey) {
         const cleanKey = tempKey.startsWith("@") ? tempKey.slice(1) : tempKey;
-        tempKeyMap.set(cleanKey, newId);
+        tempKeyMap.set(cleanKey, built.id!);
       }
 
-      return { content: [{ type: "text", text: JSON.stringify({ ok: true, id: newId, element: fullElement }, null, 2) }] };
-    } 
-    
+      return { content: [{ type: "text", text: JSON.stringify({ ok: true, id: built.id, element: built.fullElement }, null, 2) }] };
+    }
+
+    else if (name === "createElements") {
+      const schema = getSchema();
+      const elements = (args?.elements || []) as BatchSpec[];
+      if (!Array.isArray(elements) || elements.length === 0) {
+        throw new McpError(ErrorCode.InvalidParams, "createElements requires a non-empty `elements` array.");
+      }
+      const batch = createElementsBatch(doc, schema, elements);
+      // Persist whatever wrote successfully (errors are isolated, the rest still land).
+      fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+      for (const c of batch.created) {
+        if (c.tempKey) {
+          const cleanKey = c.tempKey.startsWith("@") ? c.tempKey.slice(1) : c.tempKey;
+          tempKeyMap.set(cleanKey, c.id);
+        }
+      }
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              { ok: batch.ok, created: batch.created, counts: batch.counts, errors: batch.errors },
+              null,
+              2
+            ),
+          },
+        ],
+      };
+    }
+
     else if (name === "updateElement") {
       const id = args?.id as string;
       let patch = args?.patch as any;

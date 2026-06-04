@@ -172,7 +172,7 @@ group. The 315k-token main-agent output of the legacy flow becomes ~30k.
     > ```
     >
     > You are **read-only on the wiki** — do not run any writer script; the
-    > merge step in the parent skill writes everything. Return the manifest
+    > merge step in the parent skill writes everything. Return the result-file
     > path and a one-line count: `<n> drafted, <n> conflicts`.
 
 4.  **Verify — fan out, one sub-agent per drafter group**, 1:1 with Step 3.3.
@@ -207,33 +207,26 @@ group. The 315k-token main-agent output of the legacy flow becomes ~30k.
     >   "corrections": [ { "element", "field", "removed" }, … ] }
     > ```
     >
-    > Return the manifest path and a one-line count: `<n> verified,
+    > Return the result-file path and a one-line count: `<n> verified,
     > <n> corrected`.
 
     (A `document` heading is approvable as it stands; a `proposed` heading is
     not — it flags exactly what still needs a human eye.)
 
-5.  **Merge + write — one batch.** First clear the run manifest —
-    use the resetManifest({ slug }) tool — so a previous run cannot
-    inflate the counts. Then merge every group's output into the inputs the
-    writer expects:
-
-    use the mergeManifests({ slug }) tool
-
-    This collects the verified specs into `/tmp/<slug>-elements.json` (a
-    `writeElements` manifest with `slug`, `source` and every spec), and
-    concatenates the drafter `conflicts` and verifier `corrections` into
-    `/tmp/<slug>-conflicts.json` and `/tmp/<slug>-corrections.json` for the
-    Step 3.8 report.
+5.  **Merge + write — one batch.** Concatenate every group's verified specs
+    into one `elements` array (each entry `{ type, element, tempKey? }`), and
+    concatenate the drafter `conflicts` and verifier `corrections` into two
+    lists you hold for the Step 3.8 report.
 
     Then write the batch:
 
-    use the writeElements({ elements }) tool (passing the content of `/tmp/<slug>-elements.json` as the `elements` argument)
+    use the createElements({ elements }) tool
 
-    It assigns ids, resolves every `@<tempKey>` reference across the whole
-    batch (including cross-group references), writes every element, and
-    records each in the run manifest as created or updated — you do **not**
-    track those lists yourself.
+    It assigns every id, resolves every `@<tempKey>` reference across the whole
+    batch (including cross-group references), writes every element, and returns
+    `created` (the assigned ids, per spec) plus per-type `counts`. Read your
+    created / updated counts from `created` and `counts` — you do **not** track
+    those lists yourself.
 
 6.  **Fill the process overview.** The overview is the process's root `meta`/`content` — its
     one-line `description`, plus the body fields: purpose, owner, trigger,
@@ -267,8 +260,8 @@ group. The 315k-token main-agent output of the legacy flow becomes ~30k.
     `As-Is draft`, `source: {file}`, the verified `confidence`; `slug`, the
     `purpose` body, and — **only when you corrected it** — `description` in the
     spec; omit `description` to keep the scaffolded one). The overview is the
-    process page, not an element: it takes no id, is not in the run manifest,
-    and is not counted in created / updated.
+    process page, not an element: it takes no id and is not counted in
+    created / updated.
 
     If the overview produced any conflict or correction, hold it in memory —
     you append it to the merged lists in Step 3.8 before writing the report.
@@ -282,17 +275,15 @@ group. The 315k-token main-agent output of the legacy flow becomes ~30k.
     rewrite the element. A `document` claim whose evidence cannot be traced is
     exactly the hallucination this step exists to catch; never leave it flagged.
 
-8.  **Write the ingest report.** Step 3.5's merge already wrote
-    `/tmp/<slug>-conflicts.json` and `/tmp/<slug>-corrections.json` — read
-    those two files (small). Append any overview-level entry from Step 3.6
+8.  **Write the ingest report.** Take the `conflicts` and `corrections` lists you
+    held from Step 3.5, and append any overview-level entry from Step 3.6
     (an overview conflict uses `index` as the element). Assemble a JSON object —
-    `file` (the source filename), `conflicts`, `corrections`. Do **not**
-    include `created` or `updated` — the script derives those from the run
-    manifest. Save the object to `/tmp/<slug>-ingest-report.json`, then
-    use the writeIngestReport({ slug, report }) tool (passing the content of `/tmp/<slug>-ingest-report.json` as the `report` argument). It
-    writes the `ingest` field in the process JSON (which the app's triage screen reads) and prints the
-    canonical created / updated / conflict / correction counts — use those
-    printed counts in Step 4.
+    `file` (the source filename), `conflicts`, `corrections`. The created /
+    updated counts come from the createElements result in Step 3.5 — you do not
+    recount them here. Then use the writeIngestReport({ slug, report }) tool. It
+    writes the `ingest` field in the process JSON (which the app's triage screen
+    reads). Use the created / updated counts from Step 3.5 and the conflict /
+    correction counts here in Step 4.
 
 ## Step 4 — Summarise the extraction
 

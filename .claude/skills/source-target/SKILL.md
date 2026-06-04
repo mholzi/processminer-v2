@@ -106,10 +106,6 @@ yields a thin first stub, and that is honest.
 
 ## Step 2 — Draft the target states
 
-Before the first write, clear the run manifest — use the resetManifest({ slug }) tool. Every element you write is
-logged to it; Step 5's report counts are read back from the manifest, not
-tallied from memory.
-
 A `target-state` is a **theme of how the process should work in the future** —
 not a restatement of one idea, but a coherent future picture that a cluster of
 innovation-ideas, addressing a cluster of related problems, points to. Group
@@ -186,12 +182,12 @@ transformation-decision, gap, requirement, process-dependency and assumption,
 each spec omitting `id`, each carrying its `tempKey`, every `realises`,
 target-state link and decision link written as `"@<tempKey>"` — and use the createElements({ elements }) tool, then
 use the checkConformance({ slug }) tool. The batch writer assigns
-every id and resolves every `@<tempKey>`.
+every id and resolves every `@<tempKey>`, and returns `created` (the ids) plus
+per-type `counts`.
 
 ## Step 5 — Report
 
-Retrieve the source report data for the process `<slug>` — it reads the run manifest
-and prints how many elements were written, per type. Do not recount from memory.
+Read the per-type `counts` the createElements call returned. Do not recount from memory.
 
 Report with the canonical template:
 """

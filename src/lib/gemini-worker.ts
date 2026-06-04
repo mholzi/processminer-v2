@@ -7,8 +7,21 @@ import { execSync } from "node:child_process";
 import { getSchema, toCamelCase, jsonElementToWikiPage, transitionTarget, type WikiPage } from "./wiki.ts";
 import { writeRuntime } from "./runtime-store.ts";
 import { buildTargetReview, parseSummaryParts } from "./session-writes.ts";
-import { checkElement, checkProvenance, checkFrontmatter, checkFieldValues, checkConformance } from "./conformance.ts";
+import { checkConformance } from "./conformance.ts";
 import { updateElement } from "./wiki-write.ts";
+import {
+  replaceTempKeys,
+  generateNextId,
+  buildElement,
+  applyElement,
+  createElementsBatch,
+  type BatchSpec,
+} from "./session-create.ts";
+
+// The pure id/tempKey helpers moved to ./session-create.ts; re-export them from
+// here so existing importers (claude-mcp-server, session-worker, lint.test) keep
+// working unchanged.
+export { replaceTempKeys, generateNextId } from "./session-create.ts";
 
 
 const SESSION_MODEL = process.env.SESSION_MODEL || "gemini-2.5-pro";
@@ -87,6 +100,37 @@ const toolDeclarations: any[] = [
         }
       },
       required: ["type", "element"]
+    }
+  },
+  {
+    name: "createElements",
+    description: "Author a whole run of elements in one call. Each spec carries a 'type' (collection name), an 'element' payload (same shape as createElement, no id), and an optional 'tempKey'. Elements may cross-reference each other within the batch via '@tempKey'. The backend assigns every id, resolves every '@tempKey', and returns per-type 'counts' (use these for your report — there is no separate manifest). A failing element is reported in 'errors' and skipped; the rest still write.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        elements: {
+          type: "ARRAY",
+          description: "The element specs to create, in order.",
+          items: {
+            type: "OBJECT",
+            properties: {
+              type: { type: "STRING", description: "The collection name, e.g. 'market-trends', 'regulation', 'innovation-ideas'." },
+              tempKey: { type: "STRING", description: "Optional ephemeral key so a later element in this batch can reference this one via '@tempKey'." },
+              element: {
+                type: "OBJECT",
+                description: "The element payload (meta + content), conforming to the JSON schema. Do not include 'id'; it is auto-assigned.",
+                properties: {
+                  meta: { type: "OBJECT", description: "Metadata fields (status, confidence, source, provenance, etc.)" },
+                  content: { type: "OBJECT", description: "The domain-specific fields and blocks." }
+                },
+                required: ["meta", "content"]
+              }
+            },
+            required: ["type", "element"]
+          }
+        }
+      },
+      required: ["elements"]
     }
   },
   {
@@ -215,31 +259,8 @@ const toolDeclarations: any[] = [
       },
       required: ["slug", "PROC", "title"]
     }
-  }
+  },
 ];
-
-export function replaceTempKeys(obj: any, tempKeyMap: Map<string, string>): any {
-  if (typeof obj === "string") {
-    if (obj.startsWith("@")) {
-      const key = obj.slice(1);
-      if (tempKeyMap.has(key)) {
-        return tempKeyMap.get(key);
-      }
-    }
-    return obj;
-  }
-  if (Array.isArray(obj)) {
-    return obj.map(item => replaceTempKeys(item, tempKeyMap));
-  }
-  if (typeof obj === "object" && obj !== null) {
-    const res: any = {};
-    for (const [k, v] of Object.entries(obj)) {
-      res[k] = replaceTempKeys(v, tempKeyMap);
-    }
-    return res;
-  }
-  return obj;
-}
 
 // SESSIONS_MAP_PATH tracks process slugs across session IDs
 const SESSIONS_MAP_PATH = path.join(process.cwd(), "wiki", "processes", ".sessions.json");
@@ -372,41 +393,6 @@ function customStringify(obj: any, indent = ""): string {
     return out;
   }
   return JSON.stringify(obj);
-}
-
-export function generateNextId(data: any, elementType: string, idPrefix: string): string {
-  let procAbbrev = "";
-  let maxSeq = 0;
-
-  for (const [key, val] of Object.entries(data)) {
-    if (!Array.isArray(val)) continue;
-    for (const el of val) {
-      const elId = el.meta?.id;
-      if (typeof elId === "string") {
-        const parts = elId.split("-");
-        if (parts.length === 3) {
-          if (!procAbbrev) {
-            procAbbrev = parts[1];
-          }
-          if (el.meta?.type === elementType && /^\d+$/.test(parts[2])) {
-            const seq = parseInt(parts[2], 10);
-            if (seq > maxSeq) {
-              maxSeq = seq;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  if (!procAbbrev) {
-    const procId = data.meta?.id || "";
-    procAbbrev = procId.split("-")[0] || "PROC";
-  }
-
-  const nextSeq = maxSeq + 1;
-  const nextSeqStr = String(nextSeq).padStart(3, "0");
-  return `${idPrefix}-${procAbbrev}-${nextSeqStr}`;
 }
 
 /**
@@ -735,69 +721,50 @@ export class GeminiWorker implements IProcessWorker {
                 }
               } else if (isCreateElement) {
                 const type = args.type;
-                let element = args.element;
                 const tempKey = args.tempKey;
 
                 if (!doc) {
                   throw new Error("Process document context not loaded or slug is missing.");
                 }
 
-                // Resolve tempKey references
-                element = replaceTempKeys(element, tempKeyMap);
-
-                let singularType = "";
-                for (const [t, def] of Object.entries(schema.elementTypes)) {
-                  if (def.section === type) {
-                    singularType = t;
-                    break;
-                  }
-                }
-                if (!singularType) {
-                  throw new Error(`Unknown collection type: ${type}`);
-                }
-                const info = schema.elementTypes[singularType];
-                const idPrefix = info.idPrefix;
-                const newId = generateNextId(doc, singularType, idPrefix);
-
-                const newMeta = {
-                  ...(element.meta || {}),
-                  id: newId,
-                  type: singularType,
-                  section: type,
-                  status: element.meta?.status || "draft",
-                };
-                const newContent = {
-                  ...(element.content || {})
-                };
-                const fullElement = { meta: newMeta, content: newContent };
-
-                const pageRepresentation = jsonElementToWikiPage(fullElement, info);
-                const validationIssues = [
-                  ...checkElement(pageRepresentation, info.template || []).filter(c => !c.ok).map(c => `“${c.heading}” ${c.issue}`),
-                  ...checkFrontmatter(pageRepresentation, info),
-                  ...checkFieldValues(pageRepresentation, info, schema),
-                  ...checkProvenance(pageRepresentation, info)
-                ];
-
-                if (validationIssues.length > 0) {
-                  resultText = `Error: Element validation failed:\n- ${validationIssues.join("\n- ")}`;
+                const built = buildElement(doc, schema, type, args.element, tempKeyMap);
+                if (!built.ok || !built.fullElement) {
+                  resultText = `Error: Element validation failed:\n- ${(built.issues || []).join("\n- ")}`;
                 } else {
-                  if (!doc[type]) doc[type] = [];
-                  doc[type].push(fullElement);
-                  if (singularType === "process-step") {
-                    doc[type].sort((a: any, b: any) => (a.meta?.sequence || 999) - (b.meta?.sequence || 999));
-                  }
-
+                  applyElement(doc, type, built.fullElement, built.singularType!);
                   // Write directly to disk immediately
                   fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
 
                   if (tempKey) {
                     const cleanKey = tempKey.startsWith("@") ? tempKey.slice(1) : tempKey;
-                    tempKeyMap.set(cleanKey, newId);
+                    tempKeyMap.set(cleanKey, built.id!);
                   }
 
-                  resultText = JSON.stringify({ ok: true, id: newId, element: fullElement }, null, 2);
+                  resultText = JSON.stringify({ ok: true, id: built.id, element: built.fullElement }, null, 2);
                 }
+              } else if (originalName === "createElements") {
+                if (!doc) {
+                  throw new Error("Process document context not loaded or slug is missing.");
+                }
+                const elements = (args.elements || []) as BatchSpec[];
+                if (!Array.isArray(elements) || elements.length === 0) {
+                  throw new Error("createElements requires a non-empty `elements` array.");
+                }
+                const batch = createElementsBatch(doc, schema, elements);
+                // Persist whatever wrote successfully (errors are isolated, the rest still land).
+                fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+                // Carry resolved tempKeys into the turn-level map so later calls can reference them.
+                for (const c of batch.created) {
+                  if (c.tempKey) {
+                    const cleanKey = c.tempKey.startsWith("@") ? c.tempKey.slice(1) : c.tempKey;
+                    tempKeyMap.set(cleanKey, c.id);
+                  }
+                }
+                resultText = JSON.stringify(
+                  { ok: batch.ok, created: batch.created, counts: batch.counts, errors: batch.errors },
+                  null,
+                  2
+                );
               } else if (isUpdateElement) {
                 const id = args.id;
                 let patch = args.patch || {};

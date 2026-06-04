@@ -54,10 +54,6 @@ element): you extend, you never duplicate.
 
 ## Step 2 — Scan competitor CX
 
-Before the first write, use the resetManifest() tool. Every element you write is
-logged to it; Step 4's report counts are read back from the manifest, not
-tallied from memory.
-
 The three competitor tiers are independent web-research streams, so scan them
 **concurrently**: in a single message, dispatch **three sub-agents** with the
 Task tool — one per tier — and wait for all three.
@@ -75,8 +71,8 @@ Give each sub-agent this brief, filling in its tier:
 > meta/content in the Document Map) and the documented client journey
 > (`channels`, `touchpoints`, `moments`, `friction-points`) for context, and
 > the existing `{type}` elements (`expandElement({ type })`) so you do not
-> duplicate one. Use the getElementTemplate({ type }) tool
-> for the element's shape. Web-search for **named** {who}'s client experience
+> duplicate one. Refer to the `{type}` schema template (in the Document Map /
+> output schema) for the element's shape. Web-search for **named** {who}'s client experience
 > in this domain — onboarding journey, channels, speed, self-service, reviews,
 > case studies. Draft one `createElement({ type, element })` tool spec per material example:
 > blocks *The journey* / *Relevance* / *Evidence*; frontmatter `competitor:`,
@@ -103,10 +99,11 @@ corporate clients expect (status visibility, digital self-service). Write a
 - Draft each `cx-benchmark` as a `createElement({ type, element })` tool spec (`status: draft`,
   `confidence: medium`; `low` if thinly evidenced).
 
-Then write the **whole run in one batch** — assemble a manifest
-`{ "slug": "<slug>", "elements": [ … ] }` of every competitor-CX example from
-Step 2 and every benchmark drafted here, each spec omitting `id`, and use the createElements({ elements }) tool, then
-use the checkConformance() tool.
+Then write the **whole run in one batch** — assemble an `elements` array of
+every competitor-CX example from Step 2 and every benchmark drafted here (each
+`{ type, element }`, omitting `id`), and use the createElements({ elements })
+tool, then the checkConformance() tool. The tool returns `created` (the assigned
+ids) and per-type `counts` — read your Step 4 report counts from `counts`.
 
 Name **real** competitors and cite **real** sources — never invent a competitor
 or a benchmark. If web search is unavailable, write only what you can solidly
@@ -114,11 +111,10 @@ support and say so in the report.
 
 ## Step 4 — Report
 
-Use the generateSourceReport() tool — it reads the run manifest
-and prints how many elements were written, per type. Map those counts into the
-template: `competitor-cx-eu` / `-global` / `-fintech` → the Competitor CX total
-and its European / global / fintech split; `cx-benchmark` → CX benchmarks. Do
-not recount from memory.
+Map the per-type `counts` the createElements call returned into the template:
+`competitor-cx-eu` / `-global` / `-fintech` → the Competitor CX total and its
+European / global / fintech split; `cx-benchmark` → CX benchmarks. Do not
+recount from memory.
 
 Report with the canonical template:
 ```
