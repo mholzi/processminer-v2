@@ -33,9 +33,8 @@ const MIME: Record<string, string> = {
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const slug = searchParams.get("slug");
-  // Process slugs are kebab-case (see derive_process_meta.py /
-  // scaffold_process.py). The strict grammar has no dots or slashes, so a
-  // slug can never traverse out of raw-sources/ (e.g. `..`).
+  // Process slugs are kebab-case. The strict grammar has no dots or slashes,
+  // so a slug can never traverse out of raw-sources/ (e.g. `..`).
   if (!slug || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
     return Response.json({ error: "Bad or missing slug." }, { status: 400 });
   }

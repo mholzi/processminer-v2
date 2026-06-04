@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { findingSignature, type LintFinding } from "@/lib/lint";
 
 // "Dismiss" control on a lint finding — the SME sets a finding aside with a
-// recorded reason (PATCH /api/findings → finding-dismissals.json, an app-owned
-// sidecar that survives a re-lint). Collapsed to a button until clicked; then
+// recorded reason (PATCH /api/findings → the runtime store's findingDismissals,
+// app-owned, surviving a re-lint). Collapsed to a button until clicked; then
 // an inline reason field, because a dismissal without a reason is not worth
 // recording. "Snooze" dismisses for 30 days, then the finding resurfaces.
 export default function FindingDismiss({

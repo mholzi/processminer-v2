@@ -38,17 +38,7 @@ function describeTool(name: string, input: Record<string, unknown>): string {
   if (name === "updateElement") {
     return `✏ Updating element ${input.id} …`;
   }
-  if (name === "Bash") {
-    const cmd = String(input?.command ?? "");
-    if (cmd.includes("write_element.py")) return "✏ Writing element …";
-    if (cmd.includes("next_id.py")) return "Assigning element ID …";
-    if (cmd.includes("check_conformance.py")) return "Checking structure …";
-    if (cmd.includes("add_source.py")) return "Recording document as a source …";
-    if (cmd.includes("scaffold_process.py")) return "Creating process …";
-    if (cmd.includes("derive_process_meta.py"))
-      return "Deriving process details …";
-    return "Working …";
-  }
+  if (name === "Bash") return "Working …";
   if (name === "Read") return `Reading ${base(input?.file_path)}`;
   if (name === "Write") return `Writing ${base(input?.file_path)}`;
   if (name === "Edit") return `Editing ${base(input?.file_path)}`;
@@ -126,11 +116,9 @@ export async function POST(req: NextRequest) {
               const input = (block.input as Record<string, unknown>) ?? {};
               let text = describeTool(block.name, input);
               // Number each element write so a long extraction visibly
-              // counts up rather than repeating one static line.
-              if (
-                block.name === "Bash" &&
-                String(input?.command ?? "").includes("write_element.py")
-              ) {
+              // counts up rather than repeating one static line. Element
+              // writes go through the createElement MCP tool now.
+              if (block.name === "createElement") {
                 elementsWritten += 1;
                 text = `✏ Writing wiki element ${elementsWritten} …`;
               }

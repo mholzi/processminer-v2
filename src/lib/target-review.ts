@@ -3,11 +3,11 @@
 // themes) from their own lens, and the SME triages each item accept / reject.
 //
 // The review itself is the `council-review` skill (.claude/skills/council-review/):
-// it runs the specialists and hands the feedback to write_target_review.py,
-// which writes wiki/processes/<slug>/target-review.json. The app reads that file
-// (see wiki.ts), renders it in the Council Review panel, and the SME's
-// accept/reject writes back via the triageTargetReview server action — an
-// accepted item re-opens the implicated transformation-decision.
+// it runs the specialists and writes the feedback into the process JSON's
+// `targetReview`. The app reads it (see wiki.ts), renders it in the Council
+// Review panel, and the SME's accept/reject writes back via the
+// triageTargetReview server action — an accepted item re-opens the implicated
+// transformation-decision.
 
 export type CouncilSpecialist =
   | "process-specialist"
@@ -20,7 +20,7 @@ export type CouncilSpecialist =
 export type TriageState = "pending" | "accepted" | "rejected";
 
 export interface TargetReviewItem {
-  /** R-001, R-002, … — stamped by write_target_review.py. */
+  /** R-001, R-002, … — stamped by the council-review skill. */
   id: string;
   /** Which of the five perspective specialists raised this. */
   specialist: CouncilSpecialist;
@@ -34,7 +34,7 @@ export interface TargetReviewItem {
   triage: TriageState;
 }
 
-/** A whole council-review pass — one per process, written to target-review.json. */
+/** A whole council-review pass — one per process, in the process JSON's `targetReview`. */
 export interface TargetReview {
   /** ISO timestamp the pass was run. */
   generatedAt: string;

@@ -10,10 +10,10 @@ function sessionAuthor(req: NextRequest): string {
   return verifySession(req.cookies.get(COOKIE_NAME)?.value)?.username || "SME";
 }
 
-// Appends an SME note to wiki/processes/<slug>/notes.json — the note-thread
-// sidecar (#19). Notes are collaboration data, not process documentation:
+// Appends an SME note to the process JSON's `notes` map (wiki/processes/<slug>.json,
+// keyed by element id). Notes are collaboration data, not process documentation:
 // the app owns the SME-comment writes here. The thread is co-owned — the
-// comment-review skill also writes notes.json (via scripts/wiki/notes.py) to
+// comment-review skill also writes notes (via the schema-enforced tools) to
 // mark comments resolved and post its closing analyst summary.
 
 export const runtime = "nodejs";
@@ -73,8 +73,8 @@ export async function POST(req: NextRequest) {
 }
 
 // Toggle a comment's `resolved` flag — the SME marking a thread item handled
-// (or reopening it). The comment-review skill sets the same flag via
-// scripts/wiki/notes.py; this is the manual, in-app equivalent.
+// (or reopening it). The comment-review skill sets the same flag via the
+// schema-enforced tools; this is the manual, in-app equivalent.
 export async function PATCH(req: NextRequest) {
   let body: Record<string, unknown>;
   try {

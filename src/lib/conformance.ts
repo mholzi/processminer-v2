@@ -5,9 +5,9 @@
 // any required frontmatter the element does not carry.
 //
 // Unlike the cross-section discrepancy pass, this check is exact, not an
-// agent guess — it is pure structure arithmetic over the wiki.
-//
-// The twin of scripts/wiki/check_conformance.py — keep the two in step.
+// agent guess — it is pure structure arithmetic over the wiki. This is the
+// sole conformance engine (the pre-rewrite Python `check_conformance.py`
+// toolkit it once mirrored was removed in the JSON-native rewrite).
 import type { BlockSpec, ElementType, Schema, WikiPage } from "./wiki.ts";
 import type { LintFinding } from "./lint.ts";
 
@@ -123,9 +123,8 @@ export function checkElement(
   return checks;
 }
 
-// Provenance sources — the hallucination countermeasure (HALLUCINATION-PLAN.md).
-// Mirrors PROVENANCE_SOURCES / UNCONFIRMED_SOURCES / EVIDENCE_REQUIRED in
-// scripts/wiki/wiki_lib.py and check_conformance.py — keep the two in step.
+// Provenance sources — the hallucination countermeasure. The canonical value
+// set is the schema's `fieldValues.provenanceSource`; these constants mirror it.
 const PROVENANCE_SOURCES = new Set([
   "elicited",
   "document",
@@ -176,8 +175,7 @@ export function parseProvenance(
 }
 
 /** Every template heading needs a provenance entry; the map keys must not
- *  drift from the template; evidence must back an elicited/document/web claim.
- *  The Python twin is check_provenance() in check_conformance.py. */
+ *  drift from the template; evidence must back an elicited/document/web claim. */
 export function checkProvenance(page: WikiPage, type: ElementType): string[] {
   const issues: string[] = [];
   const template = type.template ?? [];
@@ -243,8 +241,7 @@ export function checkFrontmatter(page: WikiPage, type: ElementType): string[] {
 
 /** A frontmatter field with a fixed value set (schema `fieldValues`) must
  *  carry one of those values exactly — catches typos and casing drift
- *  (e.g. `gapStatus: OPEN` where the schema declares `open`).
- *  The Python twin is check_field_values() in check_conformance.py. */
+ *  (e.g. `gapStatus: OPEN` where the schema declares `open`). */
 export function checkFieldValues(
   page: WikiPage,
   type: ElementType,

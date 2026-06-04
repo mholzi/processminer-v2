@@ -483,8 +483,9 @@ export default function ElementCard({
     });
   }
 
-  // SME note thread (#19) — notes arrive from notes.json via the parent;
-  // posting hits /api/notes, then router.refresh() brings the thread back.
+  // SME note thread (#19) — notes arrive from the process JSON's `notes` via
+  // the parent; posting hits /api/notes, then router.refresh() brings the
+  // thread back.
   const noteList = notes ?? [];
   const [noteDraft, setNoteDraft] = useState("");
   const [replyTo, setReplyTo] = useState<string | null>(null);

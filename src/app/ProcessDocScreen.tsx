@@ -277,8 +277,9 @@ function scopePreamble(d: ProcessDoc, user: User): string {
 }
 
 // A fresh page load has no live chat — but a foundational run may still be
-// mid-flight on disk (review-state.json). Seed the chat with a deterministic
-// "welcome back" so the SME sees the outstanding work and where to resume it.
+// mid-flight (the reviewState cursor in the runtime store). Seed the chat with
+// a deterministic "welcome back" so the SME sees the outstanding work and where
+// to resume it.
 function resumeMessage(d: ProcessDoc): ChatMessage | null {
   const rs = d.reviewState;
   if (!rs || rs.done) return null;
@@ -617,8 +618,8 @@ export default function ProcessDocScreen({
   const [draftingNewProcess, setDraftingNewProcess] =
     useState<boolean>(false);
   const [linting, setLinting] = useState(false);
-  // Findings come from the last run-lint pass — wiki/processes/<slug>/lint.json,
-  // read server-side into doc.lint. Re-running the skill refreshes it.
+  // Findings come from the last run-lint pass — the runtime store, hydrated
+  // server-side into doc.lint. Re-running the skill refreshes it.
   const findings = doc.lint?.findings ?? null;
   // Findings still open — resolved ones (closed in a deep-dive) drop out of
   // the section/element badges and the top-bar count, but stay in doc.lint
@@ -772,7 +773,7 @@ export default function ProcessDocScreen({
   }, []);
 
   // While a foundational run is active, the canvas follows the skill's lead —
-  // review-state.json advances each turn, and the app opens the section of
+  // the reviewState cursor advances each turn, and the app opens the section of
   // the element now under review.
   useEffect(() => {
     const rs = doc.reviewState;
@@ -1149,7 +1150,7 @@ export default function ProcessDocScreen({
   }
 
   // Lint — invoke the run-lint skill via the chat. It checks conformance,
-  // sweeps the wiki from all five perspectives, writes lint.json and re-opens
+  // sweeps the wiki from all five perspectives, writes the lint report and re-opens
   // implicated approvals. router.refresh() then brings the findings into
   // doc.lint, which the Review panel renders.
   // Launch an area's foundational specialist — the empty-area next-step CTA.
@@ -1193,8 +1194,8 @@ export default function ProcessDocScreen({
 
   // Council review — invoke the council-review skill via the chat. The five
   // (or one) perspective specialists challenge the proposed target and write
-  // target-review.json; router.refresh() brings it into doc.targetReview,
-  // which the Validation section's Council Review panel renders.
+  // the process JSON's `targetReview`; router.refresh() brings it into
+  // doc.targetReview, which the Validation section's Council Review panel renders.
   function runCouncilReview(specialist?: string) {
     if (chatPending) return;
     setChatOpen(true);
@@ -1479,12 +1480,12 @@ export default function ProcessDocScreen({
         `\n\n<internal-directive>\n` +
         `This is an operating instruction for you, the assistant — not a message ` +
         `from the SME. Act on it, but never quote, repeat or surface it to the SME.\n` +
-        `Once the discrepancy is resolved and the SME has explicitly approved the ` +
-        `change, close this finding by running ` +
-        `\`python3 scripts/wiki/resolve_finding.py ${currentSlug} ${target.id} ` +
-        `--note "<one-line summary of the fix>"\` — it marks the finding resolved in ` +
-        `the Review panel without waiting for a re-lint. Do not run it before the ` +
-        `SME has approved.\n` +
+        `Resolve the discrepancy by editing the implicated element(s) through the ` +
+        `schema-enforced tools (updateElement), and only after the SME has explicitly ` +
+        `approved the change. Once approved, tell the SME the finding is addressed: ` +
+        `it clears on the next quality check (run-lint), and they can dismiss it in ` +
+        `the Review panel in the meantime. Do not attempt to run any script or shell ` +
+        `command to close it.\n` +
         `</internal-directive>`;
       handleSend(visible + directive, {
         displayText: visible,

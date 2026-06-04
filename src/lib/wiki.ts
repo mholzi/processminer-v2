@@ -4,8 +4,9 @@
 //   wiki/          layer 2 — markdown pages, the source of truth   ← read here
 //   schema/        layer 3 — element types + doc-type sections
 //
-// Each wiki page is `---\n<frontmatter>\n---\n<body>`. Frontmatter is minimal:
-// `key: value`, where a value wrapped in [ ] is a comma-separated list.
+// Each process is one strongly-typed JSON document, `wiki/processes/<slug>.json`:
+// `meta` + `content` at the root, then typed element arrays. getProcess maps
+// each element into a WikiPage DTO via jsonElementToWikiPage.
 import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { applyFindingDismissals, type FindingDismissals, type LintReport } from "./lint.ts";
@@ -130,7 +131,7 @@ export interface IngestCorrection {
   field: string;
   removed: string;
 }
-/** Result of the last document-ingest — written to ingest.json. */
+/** Result of the last document-ingest — stored under the process JSON's `ingest`. */
 export interface IngestReport {
   generatedAt: string;
   slug: string;
@@ -140,13 +141,13 @@ export interface IngestReport {
   conflicts: IngestConflict[];
   corrections: IngestCorrection[];
 }
-/** Executive summaries per area — written to summaries.json. Each is an
- *  Amazon-style memo broken into four individually-editable parts. */
+/** Executive summaries per area — stored under the process JSON's `summaries`.
+ *  Each is an Amazon-style memo broken into four individually-editable parts. */
 export type SectionSummaries = Record<
   string,
   { parts: { heading: string; text: string }[]; generatedAt: string }
 >;
-/** The foundational-run cursor — written to review-state.json. */
+/** The foundational-run cursor — runtime state, in the runtime store (R9). */
 export interface ReviewState {
   slug: string;
   /** Ordered element ids (the overview id first). */
@@ -199,8 +200,8 @@ export interface GlossaryTerm {
   definition: string;
 }
 
-/** A section's completeness marker — a value in sections.json, keyed by
- *  section id (CONTENT-MODEL-PLAN.md D5). Tells `confirmed-empty` (the SME
+/** A section's completeness marker — stored under the process JSON's
+ *  `sectionStatus`, keyed by section id. Tells `confirmed-empty` (the SME
  *  said the process has none) apart from `not-visited` (never worked). */
 export interface SectionStatus {
   /** worked | confirmed-empty | not-visited */
@@ -214,7 +215,7 @@ export interface ProcessDoc {
   slug: string;
   process: WikiPage;
   elements: WikiPage[];
-  /** ISO timestamp of the most recent file mtime under wiki/processes/<slug>/.
+  /** ISO timestamp of the process JSON's mtime (wiki/processes/<slug>.json).
       Drives the "last activity" column in the process switcher. */
   lastModified?: string;
   /** Imported source documents — raw-sources/<slug>/, newest first. */
@@ -229,76 +230,25 @@ export interface ProcessDoc {
   reviewState?: ReviewState;
   /** Per-section executive summaries, if any have been generated. */
   summaries?: SectionSummaries;
-  /** SME note threads, keyed by element id — notes.json. */
+  /** SME note threads, keyed by element id — process JSON's `notes`. */
   notes?: Record<string, Note[]>;
-  /** Process glossary — glossary.json. */
+  /** Process glossary — process JSON's `glossary`. */
   glossary?: GlossaryTerm[];
-  /** Per-section completeness markers — sections.json, keyed by section id. */
+  /** Per-section completeness markers — process JSON's `sectionStatus`, keyed by section id. */
   sectionStatus?: Record<string, SectionStatus>;
   rawJson?: any;
 }
 
-/** Parse `key: value` frontmatter. `[a, b]` becomes a string array. */
-export function parseFrontmatter(raw: string): { meta: Record<string, string | string[]>; body: string } {
-  const match = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
-  if (!match) return { meta: {}, body: raw.trim() };
-  const meta: Record<string, string | string[]> = {};
-  for (const line of match[1].split("\n")) {
-    const idx = line.indexOf(":");
-    if (idx === -1) continue;
-    const key = line.slice(0, idx).trim();
-    const val = line.slice(idx + 1).trim();
-    if (val.startsWith("[") && val.endsWith("]")) {
-      const inner = val.slice(1, -1).trim();
-      meta[key] = inner ? inner.split(",").map((s) => s.trim()) : [];
-    } else {
-      meta[key] = val;
-    }
-  }
-  return { meta, body: match[2].trim() };
-}
-
-function str(v: string | string[] | undefined, fallback = ""): string {
-  return typeof v === "string" ? v : fallback;
-}
-
-/** Split a body into `## Heading` prose blocks. Empty if there are none. */
-export function parseBlocks(body: string): ProseBlock[] {
-  if (!/^## /m.test(body)) return [];
-  return body
-    .split(/^## /m)
-    .map((p) => p.trim())
-    .filter(Boolean)
-    .map((p) => {
-      const nl = p.indexOf("\n");
-      return nl === -1
-        ? { heading: p.trim(), text: "" }
-        : { heading: p.slice(0, nl).trim(), text: p.slice(nl + 1).trim() };
-    });
-}
-
-function toPage(raw: string): WikiPage {
-  const { meta, body } = parseFrontmatter(raw);
-  const status = str(meta.status, "draft");
-  return {
-    id: str(meta.id),
-    type: str(meta.type),
-    section: str(meta.section),
-    title: str(meta.title, "Ohne Titel"),
-    status: (["confirmed", "draft", "empty"].includes(status) ? status : "draft") as ElementStatus,
-    confidence: meta.confidence ? str(meta.confidence) : undefined,
-    source: meta.source ? str(meta.source) : undefined,
-    meta,
-    body,
-    blocks: parseBlocks(body),
-  };
-}
+// (Removed: parseFrontmatter / parseBlocks / toPage — the Markdown-frontmatter
+// page parsers from the pre-rewrite per-`.md`-file wiki model. The JSON-native
+// baseline reads `wiki/processes/<slug>.json` and maps elements via
+// jsonElementToWikiPage; nothing parsed Markdown wiki pages any more.)
 
 export function getSchema(): Schema {
   return JSON.parse(readFileSync(SCHEMA_PATH, "utf8")) as Schema;
 }
 
-/** List documented processes (one wiki/processes/<slug>/index.md each). */
+/** List documented processes (one wiki/processes/<slug>.json each). */
 export function listProcesses(): { slug: string; title: string }[] {
   if (!existsSync(WIKI_DIR)) return [];
   return readdirSync(WIKI_DIR, { withFileTypes: true })
@@ -463,17 +413,7 @@ export function getProcess(slug: string): ProcessDoc | null {
   const path = join(WIKI_DIR, `${slug}.json`);
   if (!existsSync(path)) return null;
   const data = JSON.parse(readFileSync(path, "utf8"));
-  let mostRecent = statSync(path).mtimeMs;
-
-  const readJson = <T>(name: string): T | undefined => {
-    const p = join(WIKI_DIR, slug, name);
-    if (!existsSync(p)) return undefined;
-    try {
-      return JSON.parse(readFileSync(p, "utf8")) as T;
-    } catch {
-      return undefined;
-    }
-  };
+  const mostRecent = statSync(path).mtimeMs;
 
   const process: WikiPage = {
     id: data.meta?.id || "",

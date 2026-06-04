@@ -11,12 +11,13 @@ function sessionAuthor(req: NextRequest): string {
   return verifySession(req.cookies.get(COOKIE_NAME)?.value)?.username || "SME";
 }
 
-// Records a lint-finding dismissal in
-// wiki/processes/<slug>/finding-dismissals.json — an app-owned sidecar keyed
-// by a content signature. lint.json itself is skill-owned and rewritten from
-// scratch each run-lint pass (finding ids re-number), so a durable dismissal
-// cannot live there. The app re-applies this sidecar whenever it loads a lint
-// report (see wiki.ts), so a dismissal — or a snooze — survives a re-lint.
+// Records a lint-finding dismissal in the runtime store
+// (data/runtime/<slug>.json, R9) — app-owned, keyed by a content signature.
+// The lint report itself is skill-owned and rewritten from scratch each
+// run-lint pass (finding ids re-number), so a durable dismissal cannot live
+// there. The app re-applies these dismissals whenever it loads a lint report
+// (see wiki.ts / runtime-store.ts), so a dismissal — or a snooze — survives a
+// re-lint.
 //
 //   action "dismiss"  — set aside, with a reason; optional `days` snoozes it
 //   action "restore"  — drop the dismissal, the finding returns to the list
