@@ -21,7 +21,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#13** | Contributors + per-edit attribution (R5) | `feat/contributors-activity-r5` → `main` | Code + docs | **Merged** (`51abb5c`) |
 | **#14** | Cleanup — asList dedup (R13) + runSourcing via handleSend (R14c) | `fix/dedup-runsourcing-r13-r14c` → `main` | Code + docs | **Merged** (`abce8fe`) |
 | **#15** | Section summary strips (R12b) | `feat/section-summaries-r12b` → `main` | Code + docs | **Merged** (`d30c67b`) |
-| **#16** | Country-variations element type (R15) | `feat/country-variations-r15` → `main` | Schema + code + docs | **Open** (`pending`) |
+| **#16** | Country-variations element type (R15) | `feat/country-variations-r15` → `main` | Schema + code + docs | **Merged** (`e7361e9`) |
+| **#17** | Per-process access control (R16) | `feat/process-access-r16` → `main` | Code + docs | **Open** (`pending`) |
 
 > **What happened with #3 → #4 (the stacking lesson):** #3 was opened *stacked*
 > on #2's branch (the A3 change is only safe with the A1 gate present). When #2
@@ -599,10 +600,43 @@ The UI is otherwise free — the section nav, ElementCard, and add-entry flow ar
 
 ---
 
-# Open follow-ups (as of PR #16)
+# PR #17 — Per-process access control (R16)
 
-Fixed so far: …**R12b** (#15), **R15** (#16) — the Processminer queue **and** the
-R15 product decision are closed. Still open:
+**Branch:** `feat/process-access-r16` → `main` · **Date:** 2026-06-04 ·
+**Type:** Code + docs.
 
-1. **R16** — per-process access control (the remaining product decision: structured per-process access, or keep admin-only / all-users-see-all?).
-2. **Parked:** ArchitectMiner Theme A (R1–R4) — the whole module is still view-only; R10 / schema-generator (optional).
+## Why this PR exists
+
+Product decision **R16 = yes**: every authenticated user saw every process;
+sensitive processes need per-user need-to-know access.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/lib/process-access.ts` | **new** | The access store (`data/process-access.json`, gitignored — authz config, never in the wiki). `canAccess`, `setOwner`/`grant`/`revoke`/`ungovern`. A process is **ungoverned** (open to all) until an admin sets an **owner**; then only owner + grantees + admins see it. |
+| `src/app/page.tsx` | **edit** | Filters the process list by `canAccess(sessionUser, slug)` **server-side** — inaccessible processes never reach the browser. |
+| `src/app/AuthGate.tsx` | **edit** | `router.refresh()` on login/logout so the list re-filters for the new identity. |
+| `src/app/api/processes/[slug]/access/route.ts` | **new** | GET state + POST `set-owner`/`ungovern` (admin) / `grant`/`revoke` (owner-or-admin). |
+| `src/app/api/users/roster/route.ts` | **new** | username+name roster for the grant picker. |
+| `src/components/SettingsPanel.tsx` | **edit** | An **Access** section: restrict to an owner, share/revoke users, make-open. |
+| delete route | **edit** | cleans the access record on delete. |
+
+## Where it lives / guardrail
+
+Authz config sits in `data/` (gitignored, per-deployment) alongside `users.json` — **never in the wiki**, consistent with R9.
+
+## Verification
+
+- `canAccess` correct across owner / granted / other / admin × governed / ungoverned (unit-checked).
+- App (admin): the Settings **Access** section renders; the full **restrict → share → make-open** round-trip works; the roster loads. No errors. `npm run typecheck` clean; `npm test` → 26/26.
+
+---
+
+# Open follow-ups (as of PR #17)
+
+Both product decisions (R15, R16) are now **closed**, and the **entire
+Processminer roadmap is done**. Remaining:
+
+1. **Parked: ArchitectMiner (Theme A — R1–R4)** — the whole module is still view-only (chat is a no-op, Diagram/Traceability/Library are mock, no architect specialists). The largest remaining *functional* gap in the app.
+2. **Optional:** R10 (orchestrator consumer) / the schema generator.

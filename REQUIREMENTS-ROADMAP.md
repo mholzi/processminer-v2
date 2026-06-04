@@ -140,10 +140,9 @@ Each requirement: source commit(s), what's missing, impact, effort (S/M/L), reco
 - **Source:** `ecc57f1` (3rd feature)
 - **Decision:** Add it. ✅ **DONE.** New `country-variation` element type (idPrefix `CV`; field `country`; `affects → process-step`; template **What differs / Why it differs / Impact**) added to **both** schema files (custom + AJV — drift-guard parity holds), plus a **Country Variations** section in the As-Is area. Verified: the section shows in the As-Is nav with an Add-entry CTA; the generic ElementCard + a per-country `SectionSummary` breakdown render it. SMEs document jurisdictional differences as first-class elements.
 
-#### R16 — Per-process access control (grant / owner / contributors / Settings access summary) — **product decision**
+#### R16 — Per-process access control — **product decision: YES**
 - **Source:** `db525cf` (part 2), `1772a5c` (grant-access UI), `3b51a56` (Settings access summary)
-- **Question:** Today **every authenticated user sees every process** (gating is only `isAdmin` + module entitlement `pm`/`am`). Do you want per-process need-to-know access? The old file-based implementation (`process-access.ts`) is gone and should **not** be ported as-is.
-- **Effort:** L · **Recommendation:** Redesign only if accepted — access state would live in a `meta.access` block of `<slug>.json` or a separate store. *(`7a84443`, the old admin-visibility fix, is OBSOLETE either way.)*
+- **Decision:** Add it. ✅ **DONE.** New `src/lib/process-access.ts` store (`data/process-access.json`, gitignored — authz config, never in the wiki). A process is **ungoverned** (visible to all) until an admin gives it an **owner**; then only the owner, granted users, and admins see it. **Enforced server-side** in `page.tsx` (`canAccess` filters the process list before it reaches the browser); `AuthGate` does `router.refresh()` on login/logout so the list re-filters. Endpoints: `GET/POST /api/processes/[slug]/access` (set-owner/ungovern = admin; grant/revoke = owner-or-admin) + `GET /api/users/roster`. UI: an **Access** section in the Settings panel (restrict / share / revoke / make-open). Delete cleans the access record. Verified: `canAccess` correct across owner/granted/other/admin × governed/ungoverned; the full restrict→share→open round-trip works in the app. *(`7a84443`, the old admin-visibility fix, stays OBSOLETE — `page.tsx` reads the disk fresh each request.)*
 
 ### Theme G — Verify-then-decide (low-priority loose ends)
 

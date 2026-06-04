@@ -2189,6 +2189,7 @@ export default function ProcessDocScreen({
               id={doc.process.id}
               elementCount={doc.elements.length}
               sourceCount={doc.sources.length}
+              currentUser={user}
               onDeleted={() => {
                 setSection("overview");
                 router.refresh();
