@@ -55,15 +55,24 @@ contract intact.
 
 ### The schema
 
-The schema is a JSON Schema. ⚠️ **It currently exists in two places that must
-be kept in sync** (consolidation pending — see BRIDGES_AND_TODOS §2C):
+The schema exists as **two different representations** of the same element-type
+model — not duplicate copies, so they can't be merged into one file:
 
-- [`schema/process-schema.json`](schema/process-schema.json) — loaded by
-  `src/lib/wiki.ts` (drives UI templates, fields, the `WikiPage` read DTO).
+- [`schema/process-schema.json`](schema/process-schema.json) — the **custom app
+  schema** (`elementTypes`, templates, `fieldValues`). **The source of truth:**
+  `src/lib/wiki.ts`, `conformance.ts`, and the MCP/Gemini tool schemas all
+  derive from it.
 - [`src/lib/schema/process-schema.json`](src/lib/schema/process-schema.json) —
-  loaded by the AJV validator
-  ([`src/lib/schema/process-validator.ts`](src/lib/schema/process-validator.ts))
-  and the MCP/worker tools.
+  the Draft-07 **JSON Schema** ("LLM output schema"), used by the AJV validator
+  ([`process-validator.ts`](src/lib/schema/process-validator.ts), ElementCard's
+  inline edit validation) and `scripts/verify_llm_schema.mjs`.
+
+⚠️ The two can **drift** (add/rename a type in one, forget the other). A
+drift-guard test ([`schema-consistency.test.ts`](src/lib/schema/schema-consistency.test.ts),
+run by `npm test`) fails if their element-type sets diverge. When you add or
+rename an element type, update **both**. (A generator that derives the JSON
+Schema from the custom schema — removing the dual edit entirely — is a possible
+future step; see `docs/BRIDGES_AND_TODOS.md`.)
 
 `src/lib/wiki.ts` reads the JSON and maps each element into an in-memory
 `WikiPage` DTO so the UI, relations mapper and conformance engine can keep

@@ -11,7 +11,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#3** | Decouple metadata-only writes (A3) — *first attempt* | `fix/metadata-conformance-decouple` → `fix/approval-gate-a1` | Code + tests + docs | **Closed** — auto-closed when #2's branch was deleted; superseded by #4 |
 | **#4** | Decouple metadata-only writes from content conformance (A3) | `fix/metadata-conformance-decouple` → `main` | Code + tests + docs | **Merged** (`b487d3d`) |
 | **#5** | Server-derived write authorship (R6a) | `fix/stable-user-ids-r6` → `main` | Code + docs | **Merged** (`8353927`) |
-| **#6** | Store stable usernames, resolve display names at read (R6b) | `fix/stable-user-ids-r6b` → `main` | Code + tests + docs | **Open** (`5280eeb`) |
+| **#6** | Store stable usernames, resolve display names at read (R6b) | `fix/stable-user-ids-r6b` → `main` | Code + tests + docs | **Merged** (`e3f27ac`) |
+| **#7** | Schema drift-guard (consolidation, option C) | `chore/consolidate-schema` → `main` | Code + tests + docs | **Open** (`pending`) |
 
 > **What happened with #3 → #4 (the stacking lesson):** #3 was opened *stacked*
 > on #2's branch (the A3 change is only safe with the A1 gate present). When #2
@@ -269,16 +270,57 @@ store with its own render path.
 
 ---
 
-# Open follow-ups (as of PR #6)
+# PR #7 — Schema drift-guard (consolidation, option C)
 
-Fixed so far: **A1** (PR #2), **A3** (PR #4), **R6a** (PR #5), **R6b** (PR #6) —
-**R6 complete**. Still open, from `REQUIREMENTS-ROADMAP.md`:
+**Branch:** `chore/consolidate-schema` → `main` · **Date:** 2026-06-04 ·
+**Type:** Code + tests + docs.
 
-1. **R9** — lift runtime state (`reviewState`/`lint`) out of the process JSON
+## Why this PR exists
+
+Investigating "schema consolidation" revealed the premise was inaccurate: the
+two schema files are **not** duplicate copies, so they can't be merged into one.
+
+- `schema/process-schema.json` — the **custom app schema** (`elementTypes`,
+  templates, `fieldValues`). The **source of truth** (UI, conformance, and the
+  MCP/Gemini tool schemas all derive from it).
+- `src/lib/schema/process-schema.json` — the Draft-07 **JSON Schema** ("LLM
+  output schema") used by AJV validation (`process-validator.ts`, ElementCard's
+  inline edit validation) and `scripts/verify_llm_schema.mjs`.
+
+They are two purposeful representations of the same 39 element types. The real
+risk is **silent drift** — add/rename a type in one and forget the other. This
+PR ships **option C** (the low-risk unblock): guard against drift rather than
+force a merge.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/lib/schema/schema-consistency.test.ts` | **new** | Drift-guard: fails if the two files' element-type sets diverge (kebab↔Pascal mapping; excludes `BaseMeta`/`BaseContent`). Does not check per-field parity. |
+| `src/lib/schema/process-schema.legacy.json` | **deleted** | Empty (0-byte), unreferenced migration leftover. |
+| `package.json` | **edit** | `test` runs the drift-guard. |
+| `CLAUDE.md`, `docs/BRIDGES_AND_TODOS.md` | **edit** | Corrected the "duplicate copies" framing to "two representations + drift-guard"; noted a generator (option A) as the optional future step. |
+
+## Verification
+
+- Type-set parity is exact today (39 = 39); the guard passes.
+- **Negative check:** adding a fake type to the custom schema makes the guard
+  report it missing from the JSON Schema — drift is caught.
+- `npm run typecheck` clean; `npm test` → **21/21** (1 new).
+
+---
+
+# Open follow-ups (as of PR #7)
+
+Fixed so far: **A1** (PR #2), **A3** (PR #4), **R6a** (PR #5), **R6b** (PR #6),
+**schema drift-guard** (PR #7). Still open, from `REQUIREMENTS-ROADMAP.md`:
+
+1. **R7 / R8** — typed transitions (`to|kind|when`) and RACI (`step:level`).
+   Now unblocked: the drift-guard catches any schema mismatch while you edit both.
+2. **R9** — lift runtime state (`reviewState`/`lint`) out of the process JSON
    (the guardrail violation).
-2. **Schema consolidation** — merge the two `process-schema.json` copies into one
-   source of truth.
-3. **R7 / R8** — typed transitions (`to|kind|when`) and RACI (`step:level`).
+3. **Schema generator (optional)** — derive the JSON Schema from the custom
+   schema to remove the dual edit entirely (option A; only if it proves painful).
 4. **Product decisions** — R15 (country-variations element type) and R16
    (per-process access control).
 5. Cross-read `REQUIREMENTS-ROADMAP.md` and prioritize the remaining R1–R22.
