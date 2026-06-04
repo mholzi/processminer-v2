@@ -23,6 +23,7 @@ import WholeDocJsonView from "@/components/WholeDocJsonView";
 import RaciMatrix from "@/components/RaciMatrix";
 import SkillsDashboard from "@/components/SkillsDashboard";
 import SettingsPanel from "@/components/SettingsPanel";
+import ContributorsView from "@/components/ContributorsView";
 import ProcessFlow from "@/components/ProcessFlow";
 import OverviewPanel from "@/components/OverviewPanel";
 import AgentChat, { type ChatMessage } from "@/components/AgentChat";
@@ -1904,6 +1905,15 @@ export default function ProcessDocScreen({
               <IconSkills />
             </button>
           </Tooltip>
+          <Tooltip label="Contributors">
+            <button
+              className={`tb-icon${section === "__contributors" ? " active" : ""}`}
+              onClick={() => setSection(section === "__contributors" ? "overview" : "__contributors")}
+              aria-label="Contributors"
+            >
+              <IconUser />
+            </button>
+          </Tooltip>
           {user.isAdmin && (
             <Tooltip label="Process settings">
               <button
@@ -2220,7 +2230,14 @@ export default function ProcessDocScreen({
         </nav>
 
         <main className="canvas">
-          {section === "__settings" ? (
+          {section === "__contributors" ? (
+            <ContributorsView
+              elements={doc.elements}
+              notes={doc.notes}
+              sources={doc.sources}
+              onGoToElement={goToElement}
+            />
+          ) : section === "__settings" ? (
             <SettingsPanel
               slug={currentSlug}
               title={doc.process.title}

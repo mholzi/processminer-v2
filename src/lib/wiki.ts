@@ -510,6 +510,7 @@ export function getProcess(slug: string): ProcessDoc | null {
   for (const page of elements) {
     page.meta.approvalBy = resolveName(page.meta.approvalBy);
     page.meta.relevanceBy = resolveName(page.meta.relevanceBy);
+    page.meta.updatedBy = resolveName(page.meta.updatedBy);
   }
 
   const sources = listSources(slug);
