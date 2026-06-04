@@ -47,6 +47,12 @@
           "label": "Process Gaps",
           "description": "Missing or unclear parts of the As-Is picture that need follow-up before it is complete.",
           "specialist": "process-specialist"
+        },
+        {
+          "id": "country-variations",
+          "label": "Country Variations",
+          "description": "How the process differs by country / jurisdiction — local regulatory or operational variations.",
+          "specialist": "process-specialist"
         }
       ]
     },
@@ -269,6 +275,53 @@
     }
   ],
   "elementTypes": {
+    "country-variation": {
+      "label": "Country Variation",
+      "section": "country-variations",
+      "idPrefix": "CV",
+      "frontmatter": {
+        "fields": [
+          {
+            "key": "country",
+            "label": "Country",
+            "hint": "The country or jurisdiction this variation applies to."
+          }
+        ],
+        "relations": [
+          {
+            "key": "affects",
+            "label": "Affects",
+            "target": "process-step"
+          }
+        ],
+        "required": [
+          "country"
+        ]
+      },
+      "template": [
+        {
+          "heading": "What differs",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "12–50",
+          "purpose": "How the process differs in this country versus the baseline."
+        },
+        {
+          "heading": "Why it differs",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "8–45",
+          "purpose": "The regulation, market practice or local requirement that drives the difference."
+        },
+        {
+          "heading": "Impact",
+          "format": "paragraph",
+          "paragraphs": "1",
+          "words": "8–45",
+          "purpose": "What the variation means for clients, operations or compliance."
+        }
+      ]
+    },
     "role": {
       "label": "Role",
       "section": "roles",
