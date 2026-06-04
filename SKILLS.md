@@ -117,8 +117,11 @@ toolkit.
 
 **In-app SME actions** go through server actions in `src/lib/wiki-write.ts`
 (`updateElement`, `setApproval`, `setRelevance`, `saveSummaryPart`,
-`triageTargetReview`), each running the same conformance checks
-(`src/lib/conformance.ts`) and **blocking the write on failure**.
+`triageTargetReview`). A **content edit** is checked against
+`src/lib/conformance.ts` and blocked on failure; a **metadata-only** state
+change (approval / relevance / status) is not blocked by content
+non-conformance — only the provenance approval gate hard-blocks it
+(warn-and-allow, §10).
 
 **Never format an ID yourself, never speak an unwritten element's ID to the
 SME.** IDs are assigned by the backend at create time; a guessed ID is usually
