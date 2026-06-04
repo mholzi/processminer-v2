@@ -5756,4 +5756,28 @@ body {
   border-radius: var(--r-sm); cursor: pointer;
 }
 
+/* ---- Section summary strip (R12b) ---- */
+.sec-summary {
+  display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-sm);
+  margin: 0 0 var(--space-md); padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--line); border-radius: var(--r-md); background: var(--bg);
+}
+.sec-summary-count { font-size: var(--text-sm); font-weight: 600; color: var(--ink); }
+.sec-summary-by {
+  font-size: var(--text-xs); color: var(--muted); text-transform: uppercase;
+  letter-spacing: .04em; margin-left: var(--space-sm);
+}
+.sec-summary-chips { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+.sec-chip {
+  font-size: var(--text-xs); font-family: var(--mono);
+  padding: 1px var(--space-sm); border-radius: var(--r-pill);
+  background: var(--surface); border: 1px solid var(--line); color: var(--muted);
+}
+.sec-chip b { color: var(--ink); }
+.sec-chip.sev-hi  { background: var(--lo-bg);  border-color: var(--lo);  color: var(--lo); }
+.sec-chip.sev-mid { background: var(--mid-bg); border-color: var(--mid); color: var(--mid); }
+.sec-chip.sev-lo  { background: var(--hi-bg);  border-color: var(--hi);  color: var(--hi); }
+.sec-chip.sev-none { color: var(--muted); }
+.sec-chip.sev-hi b, .sec-chip.sev-mid b, .sec-chip.sev-lo b { color: inherit; }
+
 

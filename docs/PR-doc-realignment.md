@@ -19,7 +19,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#11** | Quick wins — applyLint bug + chat overlay + clickable chat refs (R14 a/b) | `fix/quick-wins-r13-r14` → `main` | Code + docs | **Merged** (`7df0b5f`) |
 | **#12** | Editable Overview (R12a) | `feat/overview-edit-summaries-r12` → `main` | Code + docs | **Merged** (`b742eb1`) |
 | **#13** | Contributors + per-edit attribution (R5) | `feat/contributors-activity-r5` → `main` | Code + docs | **Merged** (`51abb5c`) |
-| **#14** | Cleanup — asList dedup (R13) + runSourcing via handleSend (R14c) | `fix/dedup-runsourcing-r13-r14c` → `main` | Code + docs | **Open** (`pending`) |
+| **#14** | Cleanup — asList dedup (R13) + runSourcing via handleSend (R14c) | `fix/dedup-runsourcing-r13-r14c` → `main` | Code + docs | **Merged** (`abce8fe`) |
+| **#15** | Section summary strips (R12b) | `feat/section-summaries-r12b` → `main` | Code + docs | **Open** (`pending`) |
 
 > **What happened with #3 → #4 (the stacking lesson):** #3 was opened *stacked*
 > on #2's branch (the A3 change is only safe with the A1 gate present). When #2
@@ -542,13 +543,40 @@ Per-process (uses the loaded doc). Deferred: lint resolved/dismissed events and 
 
 ---
 
-# Open follow-ups (as of PR #14)
+# PR #15 — Section summary strips (R12b)
+
+**Branch:** `feat/section-summaries-r12b` → `main` · **Date:** 2026-06-04 ·
+**Type:** Code + docs.
+
+## Why this PR exists
+
+Finishes R12: sections showed raw cards with no at-a-glance roll-up.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/components/SectionSummary.tsx` | **new** | One **config-driven** summary strip above a section's cards: item count + a breakdown by the section's key enum field (exceptions→impact, pain-points/audit-findings/control-gaps→severity, controls→controlType, process-gaps→gapStatus, …), with severity-toned chips. |
+| `src/app/ProcessDocScreen.tsx` | **edit** | Renders `SectionSummary` alongside the existing bespoke widgets (it returns null for roles/process-steps/to-be-design and for empty breakdowns). |
+| `src/app/globals.css` | **edit** | Summary-strip + chip styles (design tokens; severity tones). |
+
+## Design note
+
+A single unified component rather than 8 hand-crafted matrix/heatmap widgets — consistent, maintainable, and it's the `SectionSummary` the R13 dedup referenced.
+
+## Verification
+
+- `npm run typecheck` clean; `npm test` → 26/26 (unchanged).
+- App: **Controls** "5 items · Type · PREVENTIVE 5"; **Process Gaps** "3 items · Status · open 3". Exceptions gracefully shows nothing (its migrated `impact` field holds prose, not the enum — a data-quality matter). No errors.
+
+---
+
+# Open follow-ups (as of PR #15)
 
 Fixed so far: **A1** (#2), **A3** (#4), **R6a** (#5), **R6b** (#6), **schema
 drift-guard** (#7), **R7 + R8** (#8), **R9** (#9), **R11** (#10), **A4 + R14 a/b**
-(#11), **R12a** (#12), **R5** (#13), **R13 + R14c** (#14). Still open, from
-`REQUIREMENTS-ROADMAP.md`:
+(#11), **R12a** (#12), **R5** (#13), **R13 + R14c** (#14), **R12b** (#15) — the
+Processminer feature queue is **clear**. Still open:
 
-1. **R12b** — the 8 section-summary widgets (the remaining half of R12).
-2. **Product decisions** — R15 (country-variations) and R16 (per-process access control).
-3. **Parked:** ArchitectMiner Theme A (R1–R4); R10 / schema-generator (optional).
+1. **Product decisions** — R15 (country-variations element type) and R16 (per-process access control).
+2. **Parked:** ArchitectMiner Theme A (R1–R4); R10 / schema-generator (optional).
