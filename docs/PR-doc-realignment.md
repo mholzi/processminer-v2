@@ -17,7 +17,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#9** | Runtime state above the wiki (R9) | `refactor/runtime-state-above-wiki-r9` → `main` | Code + tests + docs | **Merged** (`94b92bf`) |
 | **#10** | Delete a process, in-app (R11) | `feat/delete-process-r11` → `main` | Code + docs | **Merged** (`7d1035c`) |
 | **#11** | Quick wins — applyLint bug + chat overlay + clickable chat refs (R14 a/b) | `fix/quick-wins-r13-r14` → `main` | Code + docs | **Merged** (`7df0b5f`) |
-| **#12** | Editable Overview (R12a) | `feat/overview-edit-summaries-r12` → `main` | Code + docs | **Open** (`pending`) |
+| **#12** | Editable Overview (R12a) | `feat/overview-edit-summaries-r12` → `main` | Code + docs | **Merged** (`b742eb1`) |
+| **#13** | Contributors + per-edit attribution (R5) | `feat/contributors-activity-r5` → `main` | Code + docs | **Open** (`pending`) |
 
 > **What happened with #3 → #4 (the stacking lesson):** #3 was opened *stacked*
 > on #2's branch (the A3 change is only safe with the A1 gate present). When #2
@@ -485,15 +486,45 @@ widgets; those are deferred — see below.)
 
 ---
 
-# Open follow-ups (as of PR #12)
+# PR #13 — Contributors + per-edit attribution (R5)
+
+**Branch:** `feat/contributors-activity-r5` → `main` · **Date:** 2026-06-04 ·
+**Type:** Code + docs.
+
+## Why this PR exists
+
+There was no per-edit attribution (`updatedBy`/`updatedAt`) and no way to see who
+did what on a process.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/lib/wiki-write.ts` | **edit** | `updateElement` stamps `updatedBy`/`updatedAt` (stable username) on every content edit. |
+| `src/lib/wiki.ts` | **edit** | `getProcess` resolves `updatedBy` → display name. |
+| `src/components/ContributorsView.tsx` | **new** | Per-process roster + activity feed built off the loaded `ProcessDoc`: approvals (approved / rejected / **re-opened**), edits, comments + resolutions, uploads. Per-person filter, clickable element targets, "show more" paging. |
+| `src/app/ProcessDocScreen.tsx` | **edit** | People top-bar icon → `__contributors` view. |
+| `src/app/globals.css` | **edit** | Contributors / roster / feed styles. |
+
+## Scope
+
+Per-process (uses the loaded doc). Deferred: lint resolved/dismissed events and a global cross-process feed.
+
+## Verification
+
+- `npm run typecheck` clean; `npm test` → 26/26 (unchanged).
+- App: on `cob-003` the view shows **2 contributors** (run-lint, M. Berger) and a **6-event feed** with correct verbs (caught + fixed a labelling bug — a lint-re-opened element was showing "approved"; now reads the *current* approval state → "re-opened"). Per-person filter + clickable targets work; no errors.
+
+---
+
+# Open follow-ups (as of PR #13)
 
 Fixed so far: **A1** (#2), **A3** (#4), **R6a** (#5), **R6b** (#6), **schema
 drift-guard** (#7), **R7 + R8** (#8), **R9** (#9), **R11** (#10), **A4 + R14 a/b**
-(#11), **R12a** (#12). Still open, from `REQUIREMENTS-ROADMAP.md` (Processminer
-focus):
+(#11), **R12a** (#12), **R5** (#13). Still open, from `REQUIREMENTS-ROADMAP.md`
+(Processminer focus):
 
 1. **R12b** — the 8 section-summary widgets.
-2. **R5** — attribution + contributors/activity feed.
-3. **R13** — shared-helper dedup; **R14c** — `runSourcing` via `handleSend`.
-4. **Product decisions** — R15 (country-variations) and R16 (per-process access control).
-5. **Parked:** ArchitectMiner Theme A (R1–R4); R10 / schema-generator (optional).
+2. **R13** — shared-helper dedup; **R14c** — `runSourcing` via `handleSend`.
+3. **Product decisions** — R15 (country-variations) and R16 (per-process access control).
+4. **Parked:** ArchitectMiner Theme A (R1–R4); R10 / schema-generator (optional).

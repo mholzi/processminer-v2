@@ -175,6 +175,12 @@ export async function updateElement(
       newMeta.relevanceDate = "";
     }
   }
+  // R5 — stamp per-edit attribution on a content change (stable username; the
+  // display name is resolved at read time).
+  if (isContentEdit) {
+    newMeta.updatedBy = await sessionAuthor();
+    newMeta.updatedAt = new Date().toISOString().slice(0, 10);
+  }
 
   doc[foundCollection][foundIndex] = fullElement;
   if (singularType === "process-step") {

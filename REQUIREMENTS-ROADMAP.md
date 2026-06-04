@@ -66,7 +66,7 @@ Each requirement: source commit(s), what's missing, impact, effort (S/M/L), reco
 - **Source:** `27d68e4` + `08bbc07`
 - **Gap:** `wiki-write.ts` stamps only `approvalBy`/`relevanceBy`, not general per-edit `updatedBy`/`updatedAt` on content. No `contributors.ts`, no `ContributorsView` (roster + paginated activity feed with per-person filter).
 - **Impact:** Can't see who changed what; no activity timeline.
-- **Effort:** M–L · **Recommendation:** Redesign — stamp `updatedBy`/`updatedAt` into element `meta` in `wiki-write.ts`; build the feed reader off the JSON doc's `meta` + collapsed `lint`/`notes` keys. Old Python `--by` plumbing and MD-frontmatter scanning are obsolete. **Note:** strongly coupled to R6 (server-side author identity).
+- ✅ **FIXED.** `updateElement` now stamps `updatedBy`/`updatedAt` (stable username, resolved to a display name at read time) on every content edit. A new `ContributorsView` (top-bar people icon → `__contributors`) is a per-process roster + activity feed built off the loaded `ProcessDoc`: element approvals (approved / rejected / **re-opened**, reading the *current* approval state), edits, note comments + resolutions, and source uploads — with per-person filter, clickable element targets (`goToElement`), and "show more" paging. Verified on `cob-003`: 2 contributors (run-lint, M. Berger), 6 correctly-labelled events. **Deferred:** lint resolved/dismissed events and a *global* (cross-process) feed — this view is per-process.
 - *(Cleanup chores `ab4e351`, `ddbea02` fold into R3/R4 — don't reintroduce the mock fixtures when redesigning the canvas. `8df5961` mock seed is obsolete.)*
 
 ### Theme B — Data integrity & security (regressions that returned)
