@@ -36,7 +36,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#28** | Reconcile per-requirement status against all merged PRs | `docs/roadmap-reconcile` → `main` | Docs only — parallel track | **Merged** (`6046216`) |
 | **#29** | Add an Open items section near the top of the roadmap | `docs/roadmap-open-items` → `main` | Docs only — parallel track | **Merged** (`bff5c81`) |
 | **#30** | Architect section detail views from real elements | `feat/architect-section-detail-views` → `main` | Code | **Merged** (`cbd4390`) |
-| **#31** | Reference all of today's PRs in the PR log + roadmap | `docs/pr-log-reference-all-today` → `main` | Docs only | **Open** (`pending`) |
+| **#31** | Reference all of today's PRs in the PR log + roadmap | `docs/pr-log-reference-all-today` → `main` | Docs only | **Merged** (`3d00316`) |
+| **#32** | Enrich the product ROADMAP with the open backlog items (Phase 0) | `docs/roadmap-enrich-open-items` → `main` | Docs only | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1125,6 +1126,47 @@ Net **−1,185 lines** in the canvas — the file shrank from ~2,100 to ~1,000 l
   header ("0 elements · authored here"), the right Add/Elicit buttons, and the
   empty state; every mock id (`CAP-COB-003-002`, `Case capture & validation`,
   `MIG-…`, the Quantexa rows) is gone. Zero console errors; screenshot verified.
+
+---
+
+# PR #31 — Reference all of today's PRs in the PR log + roadmap
+
+**Branch:** `docs/pr-log-reference-all-today` → `main` · **Date:** 2026-06-04 ·
+**Type:** Docs only.
+
+Made the PR index complete + accurate for the whole #1–#30 run: fixed branch
+names (#23, #25), split the collapsed #27–#29 row into three accurate rows with
+their merge SHAs, marked #30 merged, added the missing per-PR sections for #23,
+#25, #27, #28, #29, and added #30 + the docs-bookkeeping PRs to the roadmap's
+*Delivered (PR #)* line.
+
+---
+
+# PR #32 — Enrich the product ROADMAP with the open backlog items (Phase 0)
+
+**Branch:** `docs/roadmap-enrich-open-items` → `main` · **Date:** 2026-06-04 ·
+**Type:** Docs only.
+
+## Why this PR exists
+
+Two roadmap docs coexist: `REQUIREMENTS-ROADMAP.md` (the post-migration backlog,
+R1–R22, with its two remaining **Open items**) and `ROADMAP.md` (the
+forward-looking product roadmap, ~80 candidates across 7 phases, recovered in
+#22). The product roadmap didn't carry the still-open engineering items, so the
+two views diverged.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `ROADMAP.md` | **edit** | New **Phase 0 — Foundations & technical debt** section carrying the two open items from `REQUIREMENTS-ROADMAP.md`: (1) the **schema generator** (derive the Draft-07 schema from the custom schema, kill the dual-edit + per-field drift), (2) **R19** slim per-type schema slices. Adds a Phase 0 row to the overview table, a "foundations first" note in the 2026 H1 sequencing, a currency note that the doc predates the JSON-native rewrite (stale `scripts/wiki/*.py` references in later phases), and an enriched footer date. |
+| `public/ROADMAP.md` | **edit** | Kept byte-identical to the root copy. |
+
+*(The `public/roadmap.html` render is a separate generated artifact — left for the "refresh the recovered artifacts" follow-up.)*
+
+## Verification
+
+- Docs only — typecheck / test unaffected. Root and `public/ROADMAP.md` verified identical.
 
 ---
 

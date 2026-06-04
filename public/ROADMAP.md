@@ -26,6 +26,7 @@ the questions they answer:
 
 | Phase | Question | Candidates |
 |---|---|---|
+| **0.** Foundations & tech debt | "Is the JSON-native baseline's remaining engineering debt cleared?" | 2 |
 | **1.** Processminer component | "Does the elicitation tool feel complete to an SME?" | 15 |
 | **2.** ArchitectMiner | "Can an architect develop the target state without leaving the tool?" | 20 |
 | **3.** General usability | "Does the whole app feel like a finished product?" | 15 |
@@ -161,6 +162,69 @@ nominate the first 4–6 P0s once the user has prioritised.
 - **M** — 2–3 weeks
 - **L** — ~1 month
 - **XL** — multi-month
+
+---
+
+## Phase 0 — Foundations & technical debt (2 open items)
+
+> **Carried in 2026-06-04 from [REQUIREMENTS-ROADMAP.md](REQUIREMENTS-ROADMAP.md).**
+> After the JSON-native (v3) rewrite, the post-migration requirements backlog
+> (R1–R22, A1–A4, both product decisions) is **fully delivered** — see that
+> doc's *Delivered (PR #)* line. Exactly **two engineering items remain open**.
+> They're foundational: small, decision-free, and they **de-risk every later
+> phase that adds element types** (Phase 2's `vendor`, Phase 4's `decision`,
+> Phase 5's `data-payload` / `arb-session`, Phase 7's `programme` / `wave` all
+> introduce new types). Listed here so the product roadmap and the migration
+> backlog share one view.
+>
+> ⚠️ **Currency note.** This roadmap predates the JSON-native rewrite and the
+> later phases still reference the deleted `scripts/wiki/*.py` toolkit
+> (`write_element.py`, `get_context.py`, derived `.json` schemas, …). Those are
+> historical; the current write path is the TypeScript/MCP layer
+> (`wiki-write.ts` + the `createElement`/`updateElement`/`expandElement` tools)
+> over a single strongly-typed `wiki/processes/<slug>.json`. The Phase 0 items
+> below are written against that **current** codebase.
+
+### Schema integrity
+
+#### 1. Schema generator — derive the Draft-07 JSON Schema from the custom schema
+- **What:** the element-type model lives in **two hand-edited files** —
+  `schema/process-schema.json` (the custom app schema, source of truth:
+  `elementTypes`, `frontmatter`, `template`, `fieldValues`) and
+  `src/lib/schema/process-schema.json` (the Draft-07 JSON Schema the AJV
+  validator + the LLM output schema consume). A generator
+  (`scripts/gen-llm-schema.mjs`) would **emit the second from the first**, so
+  only one is ever hand-edited.
+- **Why:** today every element type added or changed must be edited in **both**
+  files, and the only guard (`schema-consistency.test.ts`) checks just the
+  type-*name* sets — per-field drift (enums, relations, required, constraints)
+  is completely unguarded. The generator makes a new element type a **single
+  edit** and makes field-level drift **impossible** (the guard regenerates and
+  compares the whole file). This directly de-risks every later phase that adds
+  element types.
+- **Effort:** M
+- **Touches:** new `scripts/gen-llm-schema.mjs`; `src/lib/schema/process-schema.json`
+  becomes a generated artifact; replace the name-set drift test with a
+  "generated schema is up to date" assertion; `package.json` `gen:schema`
+  script. (Custom-schema-only meta like `process-step.sequence` either moves
+  into the custom schema or stays a small generator override.) See
+  REQUIREMENTS-ROADMAP **Open items → Schema generator (option A)**.
+
+### Token & context optimization
+
+#### 2. Slim per-type schema slices (R19)
+- **What:** stop injecting / reading the full (~23k-token) schema into every
+  skill turn; serve only the type(s) a skill actually needs, via a runtime
+  `describeType(type)` slice (progressive disclosure) — **not** the old static
+  `.derived` files the pre-rewrite design used.
+- **Why:** most skills touch 1–3 element types but pay for the whole schema on
+  every turn. Slicing cuts token cost and latency on every session. Not
+  blocking, but compounding. Overlaps with item 1 (both derive from the custom
+  schema, so build the generator first).
+- **Effort:** M (full slicer) · S (Gemini-path dedup quick win)
+- **Touches:** a `describeType()` slice over the custom schema; the MCP / Gemini
+  tool-schema injection path. See REQUIREMENTS-ROADMAP **R19** (assessed — still
+  relevant, deferred).
 
 ---
 
@@ -1287,6 +1351,10 @@ happens once the user has prioritised individual candidates.
 
 ### 2026 H1 — "make the L4 wedge undeniable"
 **Focus:** Processminer component + bank-landscape integration.
+**Foundations first (quick, decision-free):**
+- Phase 0 #1 — Schema generator (do before any phase that adds element types)
+- Phase 0 #2 — Slim per-type schema slices (R19), if the Gemini-path quick win fits
+
 **Candidate P0 set (~4 items, ~3 months):**
 - Phase 1 #1 — EPM tree as navigation rückgrat
 - Phase 1 #2 — Adonis CSV importer
@@ -1379,5 +1447,7 @@ before the first P0 set goes into design docs.
 
 ---
 
-*Last updated 2026-05-28. Next review: after the first P0 set is
-prioritised and the first `*-PLAN.md` design doc is in flight.*
+*Last updated 2026-05-28; **enriched 2026-06-04** with the Phase 0 foundations
+(the two open engineering items carried from
+[REQUIREMENTS-ROADMAP.md](REQUIREMENTS-ROADMAP.md)). Next review: after the first
+P0 set is prioritised and the first `*-PLAN.md` design doc is in flight.*
