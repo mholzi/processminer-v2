@@ -24,6 +24,7 @@ import RaciMatrix from "@/components/RaciMatrix";
 import SkillsDashboard from "@/components/SkillsDashboard";
 import SettingsPanel from "@/components/SettingsPanel";
 import ContributorsView from "@/components/ContributorsView";
+import SectionSummary from "@/components/SectionSummary";
 import ProcessFlow from "@/components/ProcessFlow";
 import OverviewPanel from "@/components/OverviewPanel";
 import AgentChat, { type ChatMessage } from "@/components/AgentChat";
@@ -2638,6 +2639,13 @@ export default function ProcessDocScreen({
                   steps={doc.elements.filter((e) => e.type === "process-step")}
                   themes={doc.elements.filter((e) => e.type === "target-state")}
                   onGoToElement={goToElement}
+                />
+              )}
+              {sectionKind === null && (
+                <SectionSummary
+                  section={section}
+                  elements={sectionElements}
+                  fieldValues={schema.fieldValues ?? {}}
                 />
               )}
               {section === "process-steps" &&
