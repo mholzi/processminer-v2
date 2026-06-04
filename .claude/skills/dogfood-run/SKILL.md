@@ -23,7 +23,7 @@ You wear two hats at once:
 - **The test driver** — you drive the browser, observe the app, record
   evidence, and judge each stage pass or fail.
 - **The SME** — at every interactive prompt you answer as a knowledgeable but
-  slightly impatient corporate-banking subject-matter expert would: mostly
+  slightly impatient payment-operations subject-matter expert would: mostly
   approving, occasionally correcting, sometimes rejecting, posting the kind of
   comments a real reviewer leaves.
 
@@ -105,8 +105,9 @@ app's assistant, respond as the SME. Read the assistant's actual reply first
 - **Comments** — when posting discussion comments, write what a reviewer would:
   a question, a challenge, a missing-link observation — not "looks good".
 
-Keep SME answers grounded in the fixture documents and ordinary corporate
-trade-finance knowledge. Do not invent facts that contradict the fixtures.
+Keep SME answers grounded in the fixture documents and ordinary payment-
+operations / funds-release knowledge. Do not invent facts that contradict the
+fixtures.
 
 ## Reading a chat turn
 
@@ -140,29 +141,36 @@ clean. Screenshot the landing state.
 
 ### Stage 1 — Create process
 Open the process switcher's "new process" action. In the chat, the `new-process`
-skill runs. As the SME, give the process name **"Bank Guarantee Issuance"** and
+skill runs. As the SME, give the process name **"Funds Release Dogfood"** (a
+throwaway test process — deliberately distinct from any real `funds-release`
+process so the destructive re-ingest in Stage 8 cannot touch real content) and
 confirm with `[Y]` when it presents the description / slug / abbreviation.
-*Assert:* a new process appears in the switcher; `wiki/processes/<slug>/` exists
-with section folders and `index.md`. Record the slug into `state.json`.
+*Assert:* a new process appears in the switcher; the single typed document
+`wiki/processes/<slug>.json` exists, with the process `meta` + `content`
+(overview) at the root. Record the slug into `state.json`.
 
 ### Stage 2 — Upload and ingest
 Open the "⬆ Upload document" modal. Switch it to **"Paste text"** mode. Set the
-file name to `bank-guarantee-issuance-v1.md` and paste the **full contents of
+file name to `funds-release-dogfood-v1.md` and paste the **full contents of
 `.claude/skills/dogfood-run/fixtures/source-doc-v1.md`** into the text area.
 Click "Add document". The app saves it to `raw-sources/<slug>/` and the chat
 runs `document-ingest`. Let the ingest finish; answer any prompt as the SME.
-*Assert:* the triage screen appears; `ingest.json` exists; a reasonable number
-of elements were created across sections (steps, roles, controls, systems,
-regulation, pain points — expect a dozen or more).
+*Assert:* the triage screen appears; the ingest report is recorded as the
+`ingest` field inside `wiki/processes/<slug>.json` (the sidecar `ingest.json`
+no longer exists in the JSON-native model); a reasonable number of elements
+were created across the typed element arrays (`process-steps`, `roles`,
+`controls`, `systems`, `regulation`, pain points — expect a dozen or more).
 
 ### Stage 3 — Foundational run
 From the triage screen, start the foundational run. Walk every element it
 challenges. Approve most as the SME; make **at least one `[E]` edit** with a
 concrete correction and **at least one `[R]` reject** forcing a redraft. Let it
 run to its close-out.
-*Assert:* `review-state.json` advances and reaches completion; approved
-elements are stamped with an approver and timestamp; the edited element shows
-the SME's correction; the rejected element was redrafted.
+*Assert:* the foundational-run cursor advances and reaches completion — it lives
+in the runtime store `data/runtime/<slug>.json` (`reviewState`), **not** in the
+process JSON and no longer as a `review-state.json` sidecar; approved elements
+are stamped with an approver and timestamp; the edited element shows the SME's
+correction; the rejected element was redrafted.
 
 ### Stage 4 — Source from the web
 For each area with a "✦ Source from the web" empty-state CTA, trigger it and
@@ -191,9 +199,9 @@ listed below in the Stage 9 verdict.
   Friction-Points for the documented process. At least one element per
   section. `source-cx` only covers the comparative external layer; the
   internal layer needs SME elicitation. The SME must specifically supply
-  friction-points for the bespoke-wording journey and (when applicable) the
-  collateral-confirmation journey — these are the slowest paths in real
-  guarantee desks and are routinely missed by AI drafts.
+  friction-points for the manual-release callback-verification journey and the
+  near-cut-off Treasury-confirmation journey — these are the slowest paths in
+  real funds-release / payments desks and are routinely missed by AI drafts.
 - **5b. Target Process refinement** — run the `transformation-agent` on the
   Target Process area. Refine each target-state, transformation-decision and
   gap-resolution from `provenance: proposed` / `confidence: low` to
@@ -207,14 +215,15 @@ listed below in the Stage 9 verdict.
   audit-finding (or an explicit "accepted, no remediation planned" note).
 - **5c. Audit findings + gap remediation** — run the
   `control-compliance-specialist` with two tasks: (a) populate Audit-Findings
-  (capture at least 3 historical findings on a guarantee desk — assume the
-  bank has audit history); (b) for every open `control-gap` with no matching
-  control, draft a remediating `control` element or explicitly document why
-  none is planned (accepted risk). The SME must also enrich the
-  As-Is `exceptions/` section to at least 5 exception paths — typical
-  guarantee desk exceptions beyond limit and sanctions include incomplete
-  intake, Legal-review delay, collateral not posted, SWIFT NAK / MT760
-  rejection, and post-issuance facility-update lag.
+  (capture at least 3 historical findings on a funds-release / payment-operations
+  desk — assume the bank has audit history); (b) for every open `control-gap`
+  with no matching control, draft a remediating `control` element or explicitly
+  document why none is planned (accepted risk). The SME must also enrich the
+  As-Is `exceptions` collection to at least 5 exception paths — typical
+  funds-release exceptions beyond limit and sanctions include incomplete or
+  invalid request, confirmed sanctions / AML hit, insufficient funding for the
+  value date, 4-eyes approver unavailable / segregation-of-duties breach, and a
+  missed same-day cut-off.
 - **5d. Process-gaps** — run the `process-specialist` on the Process-Gaps
   section. Capture at least 2 process-level gaps (e.g. SLA mismatch, manual
   handoff brittleness, no end-to-end metric). The foundational-run
@@ -231,8 +240,10 @@ listed below in the Stage 9 verdict.
 - **5g. IT architecture** — run the `it-architect` specialist with the SME
   to populate the Integrations section and deepen the Systems entries. At
   least one `integration` element per major system-to-system data flow the
-  process needs (typical guarantee-issuance flows: Portal → TFS, TFS →
-  Sanctions Screening Tool, TFS → SWIFT, TFS ↔ Facility / Credit). For each
+  process needs (typical funds-release flows: Payments Workflow Tool → Core
+  Banking System, Payments Workflow Tool → Sanctions Screening Engine, Payments
+  Workflow Tool → Treasury / Liquidity Platform, Payments Workflow Tool ↔
+  Facility Management System). For each
   documented system, the SME should also supply the missing architectural
   attributes the source document never names — criticality, vendor (where
   known), data classification, and an RTO/RPO band — so the systems are
@@ -254,30 +265,35 @@ whose content the review changed reverts from `approved` to `in-progress`.
 
 ### Stage 7 — Lint
 Click the "⊛ Run lint" top-bar button. Let `run-lint` finish.
-*Assert:* `lint.json` is written with findings; the Review panel shows them; any
-approved element a finding implicates has reverted to `in-progress`, stamped
-`run-lint`.
+*Assert:* the lint report is written to the runtime store
+`data/runtime/<slug>.json` (`lint`) — not to a `lint.json` sidecar — with
+findings; the Review panel shows them; any approved element a finding implicates
+has reverted to `in-progress`, stamped `run-lint`.
 
 ### Stage 8 — Conflict edge case
 Open the upload modal again, "Paste text" mode, file name
-`bank-guarantee-issuance-v2.md`, paste the full contents of
+`funds-release-dogfood-v2.md`, paste the full contents of
 `.claude/skills/dogfood-run/fixtures/source-doc-v2.md`. This document
-deliberately contradicts v1 — a changed SLA (3→5 days), a new mandatory
-collateral step, a lowered approval threshold (EUR 5m→2m) and a changed control
-owner for C1. Let `document-ingest` run; it should flag conflicts. Then run
+deliberately contradicts v1 — a changed STP SLA (2→4 hours) and same-day
+cut-off (14:00→12:00 CET), a new mandatory beneficiary-callback-verification
+step, a lowered Treasury threshold (EUR 5m→2m) and a changed control owner for
+C-3 (4-eyes, Operations Approver → Head of Payment Operations). Let
+`document-ingest` run; it should flag conflicts. Then run
 `conflict-resolution` (from the chat or the triage CTA) and walk each conflict
 as the SME — accept some document versions, keep some wiki versions, edit one.
-*Assert:* the re-ingest flags conflicts in `ingest.json`; `conflict-resolution`
+*Assert:* the re-ingest flags conflicts in the `ingest` block of
+`wiki/processes/<slug>.json`; `conflict-resolution`
 clears the resolved conflicts; the elements reflect the SME's per-conflict
 decisions. Also verify the approval-revert rule: confirm at least one element
 that was `approved` went back to `in-progress` after an edit this run.
 
 After conflict-resolution closes, the SME must perform a **stale-reference
 sweep**: ask the assistant to grep the whole wiki for the now-superseded
-values (in this fixture: "EUR 5 million" / "EUR 5M" and "3 business days") and
-patch every remaining occurrence — the conflict-resolution skill only patches
-the specific conflict block, so adjacent narrative blocks (Outputs bullets,
-overview text, regulatedBy descriptions) routinely retain the stale value.
+values (in this fixture: "EUR 5,000,000" / "EUR 5m" / "EUR 5 million", the
+"2 hours" STP target and the "14:00" cut-off) and patch every remaining
+occurrence — the conflict-resolution skill only patches the specific conflict
+block, so adjacent narrative blocks (Outputs bullets, overview text,
+regulatedBy descriptions) routinely retain the stale value.
 Approve the assistant's patch list before it writes. This step is what closes
 the post-conflict drift that an auditor will land on first.
 
@@ -288,15 +304,19 @@ process is any good.
 
 Launch a **subagent** (the `Agent` tool, `subagent_type: general-purpose`) with
 a fully self-contained prompt — it has none of this conversation's context, so
-the prompt must stand alone. Brief it as a **senior corporate trade-finance
-process SME** and tell it to:
+the prompt must stand alone. Brief it as a **senior payment-operations /
+funds-release process SME** and tell it to:
 
-- Read the *entire* documented wiki for the test process at
-  `wiki/processes/<slug>/` — **every section of every area** across all six
-  areas (As-Is Process, Risk & Compliance, Client Experience, Innovation,
-  Target Process, IT Architecture), the overview `index.md`, and the sidecar
-  JSON (`ingest.json`, `lint.json`, `review-state.json`). Compare against the
-  schema in `schema/process-schema.json` so it knows every section that is
+- Read the *entire* documented wiki for the test process — it is **one
+  strongly-typed JSON document**, `wiki/processes/<slug>.json`: the root `meta`
+  + `content` (the overview), then the typed element arrays covering **every
+  area** (As-Is Process, Risk & Compliance, Client Experience, Innovation,
+  Target Process, IT Architecture). There are no per-section folders and no
+  `index.md` in the JSON-native model. Also read the runtime store
+  `data/runtime/<slug>.json` (the `reviewState` cursor and the latest `lint`
+  report); the ingest report and any conflicts are the `ingest` field inside
+  the process JSON itself. Compare against the schema in
+  `schema/process-schema.json` so it knows every element type / section that is
   *supposed* to exist.
 - **Score empty and sparse sections, not just populated ones.** Enumerate every
   schema section and mark each as populated / sparse / empty. An empty section
@@ -425,9 +445,10 @@ Contents, in order:
     empty/sparse section or low score it addresses and states the expected
     completeness gain. This is the run's feed-forward — the applied tweaks make
     the next run score higher on their own.
-6.  **Process artifact** — the test process slug and a note that its wiki under
-    `wiki/processes/<slug>/` is kept for inspection; counts of elements created
-    per area.
+6.  **Process artifact** — the test process slug and a note that its typed
+    document `wiki/processes/<slug>.json` (and its runtime store
+    `data/runtime/<slug>.json`) is kept for inspection; counts of elements
+    created per area.
 7.  **Errors and findings** — a consolidated list of every console error,
     network failure, app exception or unexpected behaviour observed, with the
     stage it occurred in.

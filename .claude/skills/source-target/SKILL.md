@@ -73,9 +73,10 @@ perspective specialists. You only consolidate what they wrote into a target.
 
 ## Step 1 — Read the whole process
 
-Read `wiki/processes/<slug>/index.md` (the domain — what the process does, its
-scope), then read **every perspective**, because the target consolidates all of
-them:
+Read the process overview (root meta/content in the Document Map — the domain,
+what the process does, its scope), then read **every perspective**
+(`expandElement({ type })` to list a collection, then `expandElement({ type, id })`
+for a specific element), because the target consolidates all of them:
 
 - **As-Is** — `process-step`, `exception`, `pain-point`, `process-gap`,
   `role`, `metric`. The pain-points and process-gaps are the problems the

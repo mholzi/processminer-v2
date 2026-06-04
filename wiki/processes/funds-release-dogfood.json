@@ -1,0 +1,1741 @@
+{
+  "meta": {
+    "id": "FRD-001",
+    "type": "process",
+    "section": "overview",
+    "status": "confirmed",
+    "confidence": "high",
+    "source": "funds-release-dogfood-v1.md",
+    "docStatus": "As-Is draft",
+    "approval": "approved",
+    "approvalBy": "Markus Holzhäuser",
+    "approvalDate": "2026-06-04"
+  },
+  "content": {
+    "title": "Funds Release Dogfood",
+    "description": "Controls the release of funds held in a blocked or pending state, once all verification, approval and compliance conditions have been satisfied.",
+    "processOwner": "Head of Payment Operations",
+    "trigger": "Drawdown request from the front office for an approved facility · Held payment reaching its scheduled release date · Manual analyst initiation of a flagged item",
+    "frequency": "Continuous (business hours), per-request; no batch window.",
+    "scopeIn": "Release against an approved corporate credit facility; manual and straight-through (STP) release paths",
+    "scopeOut": "Origination or approval of the underlying credit facility; retail customer payments; cross-border settlement mechanics; release of trade-finance proceeds and cash-collateral (separate processes)",
+    "processInput": "Facility ID, amount, currency, value date, beneficiary details, supporting documents",
+    "processOutput": "Posted fund movement, confirmation to front office, closed workflow item with complete audit log"
+  },
+  "process-steps": [
+    {
+      "meta": {
+        "id": "PS-FRD-001",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "funds-release-dogfood-v1.md",
+        "sequence": 1,
+        "approval": "approved",
+        "approvalBy": "Markus Holzhäuser",
+        "approvalDate": "2026-06-04",
+        "provenance": {
+          "What happens": {
+            "source": "document",
+            "evidence": "The release request arrives in the Operations queue via the Payments Workflow Tool. Each item carries a facility ID, amount, currency, value date and beneficiary details. (Process steps §1; Trigger section for the three trigger types)"
+          },
+          "Inputs": {
+            "source": "document",
+            "evidence": "Each item carries a facility ID, amount, currency, value date and beneficiary details. (Process steps §1)"
+          },
+          "Outputs": {
+            "source": "elicited",
+            "evidence": "Markus Holzhäuser confirmed: workflow item visible in the Operations queue in the Payments Workflow Tool, ready for validation."
+          },
+          "Why it matters": {
+            "source": "elicited",
+            "evidence": "Markus Holzhäuser confirmed: every release must enter through the Payments Workflow Tool to be subject to the full validation and approval chain and to capture the authorised-requestor record. Items submitted outside the tool, or by unauthorised parties, bypass these controls and break the audit trail."
+          }
+        }
+      },
+      "content": {
+        "title": "Receive Request",
+        "owner": "Operations Analyst",
+        "sla": "Same business day, within 2 hours of receipt (STP path)",
+        "condition": null,
+        "systems": [
+          "SYS-FRD-001"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRD-002",
+            "kind": "normal",
+            "when": "Request received and visible in queue"
+          }
+        ],
+        "description": "The release request arrives in the Operations queue via the Payments Workflow Tool. Each item carries a facility ID, amount, currency, value date and beneficiary details. Requests can arrive via three triggers: a drawdown request from the front office for an approved facility, a held payment reaching its scheduled release date, or a manually initiated release of a flagged item.",
+        "inputs": [
+          "Facility ID",
+          "Requested amount and currency",
+          "Value date",
+          "Beneficiary details"
+        ],
+        "outputs": [
+          "Workflow item visible in the Operations queue in the Payments Workflow Tool, ready for validation"
+        ],
+        "businessValue": "Every release must enter the process through the Payments Workflow Tool to be subject to the full validation and approval chain and to capture the authorised-requestor record. Items submitted outside the tool, or by unauthorised parties, bypass these controls and break the audit trail."
+      }
+    },
+    {
+      "meta": {
+        "id": "PS-FRD-002",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "funds-release-dogfood-v1.md",
+        "sequence": 2,
+        "approval": "approved",
+        "approvalBy": "Markus Holzhäuser",
+        "approvalDate": "2026-06-04",
+        "provenance": {
+          "What happens": {
+            "source": "document",
+            "evidence": "The Operations Analyst checks completeness: the facility ID exists and is in 'Active' status, the requested amount does not exceed the available undrawn limit, the value date is a valid business day, and the supporting documents are attached. Incomplete requests are returned to the front office — this is the most common reason for delay. (Process steps §2)"
+          },
+          "Inputs": {
+            "source": "document",
+            "evidence": "The facility ID exists and is in 'Active' status, the requested amount does not exceed the available undrawn limit, the value date is a valid business day, and the supporting documents are attached. (Process steps §2); Facility Management System listed in Systems section."
+          },
+          "Outputs": {
+            "source": "elicited",
+            "evidence": "Markus Holzhäuser confirmed [Y]: pass/fail output framing accepted — validated item cleared for screening on pass, incomplete request returned to front office on failure."
+          },
+          "Why it matters": {
+            "source": "elicited",
+            "evidence": "Markus Holzhäuser confirmed: this gate protects the compliance/approval chain and drives queue volume — incomplete submissions are the most common reason for delay."
+          }
+        }
+      },
+      "content": {
+        "title": "Validate Request",
+        "owner": "Operations Analyst",
+        "sla": "Same business day",
+        "condition": null,
+        "systems": [
+          "SYS-FRD-001",
+          "SYS-FRD-005"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRD-003",
+            "kind": "normal",
+            "when": "All four validation criteria pass"
+          },
+          {
+            "to": "PS-FRD-001",
+            "kind": "exception",
+            "when": "Request is incomplete — returned to front office for remediation"
+          }
+        ],
+        "description": "The Operations Analyst checks four completeness and validity criteria: (1) the facility ID exists and is in Active status, (2) the requested amount does not exceed the available undrawn limit, (3) the value date is a valid business day, and (4) supporting documents are attached. Requests failing any criterion are returned to the front office for correction. This is the most common reason for delay in the process.",
+        "inputs": [
+          "Workflow item from the Operations queue",
+          "Facility status and available limit (checked against Facility Management System)",
+          "Requested amount, currency, and value date",
+          "Attached supporting documents"
+        ],
+        "outputs": [
+          "Validated workflow item cleared for compliance screening (on pass)",
+          "Incomplete request returned to front office (on failure)"
+        ],
+        "businessValue": "This gate prevents defective requests from entering the compliance and approval chain. The quality of this check directly determines queue volume — incomplete submissions are the most common reason for delay in the process."
+      }
+    },
+    {
+      "meta": {
+        "id": "PS-FRD-003",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "funds-release-dogfood-v1.md",
+        "sequence": 3,
+        "approval": "approved",
+        "approvalBy": "Markus Holzhäuser",
+        "approvalDate": "2026-06-04",
+        "provenance": {
+          "What happens": {
+            "source": "document",
+            "evidence": "The item is screened for sanctions and AML hits. Clean items pass automatically; potential hits are routed to Compliance for adjudication. A confirmed hit freezes the item pending investigation. (Process steps §3)"
+          },
+          "Inputs": {
+            "source": "document",
+            "evidence": "The item is screened for sanctions and AML hits. (Process steps §3); beneficiary details are an input carried on every workflow item (Process steps §1)."
+          },
+          "Outputs": {
+            "source": "elicited",
+            "evidence": "Markus Holzhäuser confirmed [Y]: three-path output framing accepted — clean pass, potential hit to Compliance, confirmed hit frozen."
+          },
+          "Why it matters": {
+            "source": "elicited",
+            "evidence": "Markus Holzhäuser confirmed: this is the only step where a release is permanently blocked rather than just delayed — the single point of irreversible stop in the process."
+          }
+        }
+      },
+      "content": {
+        "title": "Compliance Screening",
+        "owner": "Compliance",
+        "sla": "Automated pass: immediate. Manual adjudication: within 1 business day of identification.",
+        "condition": null,
+        "systems": [
+          "SYS-FRD-001",
+          "SYS-FRD-003"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRD-004",
+            "kind": "normal",
+            "when": "Clean pass — no sanctions or AML hits"
+          },
+          {
+            "to": "PS-FRD-004",
+            "kind": "branch",
+            "when": "Potential hit routed to Compliance for adjudication — cleared by Compliance"
+          },
+          {
+            "to": "PS-FRD-004",
+            "kind": "exception",
+            "when": "Confirmed hit — item frozen pending investigation; process halted for this item"
+          }
+        ],
+        "description": "The workflow item is screened against sanctions lists and AML rules by the Sanctions Screening Engine. Clean items pass automatically and proceed without delay. Items generating a potential hit are routed to Compliance for adjudication. A confirmed hit freezes the item; it is held pending investigation and cannot proceed to approval or execution.",
+        "inputs": [
+          "Validated workflow item",
+          "Beneficiary details"
+        ],
+        "outputs": [
+          "Clean pass result: item proceeds automatically",
+          "Potential hit: item routed to Compliance queue for manual adjudication",
+          "Confirmed hit: item frozen pending investigation"
+        ],
+        "businessValue": "Sanctions and AML screening is a regulatory obligation and a hard control. Automating the clean-pass path supports the STP time target. This is the only step where a release can be permanently blocked rather than merely delayed — the single point of irreversible stop in the process."
+      }
+    },
+    {
+      "meta": {
+        "id": "PS-FRD-004",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "confirmed",
+        "confidence": "high",
+        "source": "funds-release-dogfood-v1.md",
+        "sequence": 4,
+        "approval": "approved",
+        "approvalBy": "Markus Holzhäuser",
+        "approvalDate": "2026-06-04",
+        "provenance": {
+          "What happens": {
+            "source": "document",
+            "evidence": "The Operations Analyst approves the release after confirming validation and screening results. (Process steps §4)"
+          },
+          "Inputs": {
+            "source": "document",
+            "evidence": "The Operations Analyst approves the release after confirming validation and screening results. (Process steps §4)"
+          },
+          "Outputs": {
+            "source": "elicited",
+            "evidence": "Markus Holzhäuser confirmed [Y]: first-line approval recorded against the workflow item is the correct output for this step."
+          },
+          "Why it matters": {
+            "source": "elicited",
+            "evidence": "Markus Holzhäuser confirmed [Y]: no separate completeness-check control needed; the 4-eyes pair (CP-FRD-003) at second-line approval is the control that matters. First-line approval establishes the human confirmation point and one leg of the segregation-of-duties control."
+          }
+        }
+      },
+      "content": {
+        "title": "First-Line Approval",
+        "owner": "Operations Analyst",
+        "sla": "Same business day",
+        "condition": null,
+        "systems": [
+          "SYS-FRD-001"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRD-005",
+            "kind": "branch",
+            "when": "Amount is at or above EUR 5,000,000 — liquidity confirmation required"
+          },
+          {
+            "to": "PS-FRD-006",
+            "kind": "normal",
+            "when": "Amount is below EUR 5,000,000 — proceed directly to second-line approval"
+          }
+        ],
+        "description": "The Operations Analyst reviews and approves the release after confirming that both validation and compliance screening have been completed satisfactorily. This is the first of two mandatory approval steps (4-eyes control).",
+        "inputs": [
+          "Validated and compliance-screened workflow item",
+          "Validation check results",
+          "Compliance screening outcome"
+        ],
+        "outputs": [
+          "First-line approval recorded against the workflow item in the Payments Workflow Tool"
+        ],
+        "businessValue": "First-line approval provides a human confirmation point before the release proceeds, and establishes one leg of the segregation-of-duties control. No separate per-step control is required; CP-FRD-003 governs the 4-eyes pair as a whole."
+      }
+    },
+    {
+      "meta": {
+        "id": "PS-FRD-005",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dogfood-v1.md",
+        "sequence": 5,
+        "provenance": {
+          "What happens": {
+            "source": "document",
+            "evidence": "For amounts at or above the Treasury threshold (currently EUR 5,000,000 equivalent), Treasury confirms funding availability for the value date. If funding is unavailable the release is deferred and rescheduled to the next available value date. (Process steps §5)"
+          },
+          "Inputs": {
+            "source": "document",
+            "evidence": "For amounts at or above the Treasury threshold (currently EUR 5,000,000 equivalent), Treasury confirms funding availability for the value date. (Process steps §5); Treasury / Liquidity Platform listed in Systems section."
+          },
+          "Outputs": {
+            "source": "proposed",
+            "evidence": ""
+          },
+          "Why it matters": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "Liquidity Confirmation",
+        "owner": "Treasury",
+        "sla": "Same business day; if funding unavailable, deferred to next available value date",
+        "condition": "Amount at or above EUR 5,000,000 equivalent",
+        "systems": [
+          "SYS-FRD-001",
+          "SYS-FRD-004"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRD-006",
+            "kind": "normal",
+            "when": "Treasury confirms funding availability for the value date"
+          },
+          {
+            "to": "PS-FRD-006",
+            "kind": "loopback",
+            "when": "Funding unavailable — release deferred and rescheduled to next available value date; re-enters at this step on new value date"
+          }
+        ],
+        "description": "For releases at or above the Treasury threshold of EUR 5,000,000 equivalent, Treasury confirms that funding is available for the requested value date using the Treasury / Liquidity Platform. If funding is confirmed, the release proceeds to second-line approval. If funding is unavailable, the release is deferred and rescheduled to the next available value date.",
+        "inputs": [
+          "First-line approved workflow item",
+          "Requested amount, currency, and value date",
+          "Treasury / Liquidity Platform"
+        ],
+        "outputs": [
+          "Funding confirmed: release proceeds to second-line approval",
+          "Funding unavailable: release deferred and rescheduled to next available value date"
+        ],
+        "businessValue": "This is a formal control (C-4) with Treasury as owner. It applies only to amounts at or above the EUR 5,000,000 threshold."
+      }
+    },
+    {
+      "meta": {
+        "id": "PS-FRD-006",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dogfood-v1.md",
+        "sequence": 6,
+        "provenance": {
+          "What happens": {
+            "source": "document",
+            "evidence": "A separate Operations Approver independently reviews and authorises the release. The approver must not be the same person who performed the first-line approval. (Process steps §6)"
+          },
+          "Inputs": {
+            "source": "document",
+            "evidence": "A separate Operations Approver independently reviews and authorises the release. The approver must not be the same person who performed the first-line approval. (Process steps §6)"
+          },
+          "Outputs": {
+            "source": "proposed",
+            "evidence": ""
+          },
+          "Why it matters": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "Second-Line Approval (4-Eyes)",
+        "owner": "Operations Approver",
+        "sla": "Same business day",
+        "condition": null,
+        "systems": [
+          "SYS-FRD-001"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRD-007",
+            "kind": "normal",
+            "when": "Second-line approval granted by a different person than first-line approver"
+          }
+        ],
+        "description": "A separate Operations Approver independently reviews and authorises the release. The approver must not be the same person who performed the first-line approval. This step enforces the segregation-of-duties (4-eyes) control.",
+        "inputs": [
+          "Workflow item carrying first-line approval, compliance screening result, and (where applicable) Treasury funding confirmation",
+          "Identity of first-line approver (to ensure a different person performs second-line approval)"
+        ],
+        "outputs": [
+          "Second-line approval recorded against the workflow item",
+          "Item cleared for execution"
+        ],
+        "businessValue": "The 4-eyes principle is a core fraud and error prevention control. Requiring independent authorisation ensures no single individual can initiate and approve a release. This is control C-3."
+      }
+    },
+    {
+      "meta": {
+        "id": "PS-FRD-007",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dogfood-v1.md",
+        "sequence": 7,
+        "provenance": {
+          "What happens": {
+            "source": "document",
+            "evidence": "The approved item is posted in the Core Banking System. Funds move from the held account to the beneficiary instruction. (Process steps §7); The cut-off for same-day value is 14:00 CET. (Standard service level section)"
+          },
+          "Inputs": {
+            "source": "document",
+            "evidence": "The approved item is posted in the Core Banking System. Funds move from the held account to the beneficiary instruction. (Process steps §7)"
+          },
+          "Outputs": {
+            "source": "document",
+            "evidence": "The approved item is posted in the Core Banking System. Funds move from the held account to the beneficiary instruction. (Process steps §7)"
+          },
+          "Why it matters": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "Execute Release",
+        "owner": "Operations Analyst",
+        "sla": "Same business day; cut-off 14:00 CET for same-day value",
+        "condition": null,
+        "systems": [
+          "SYS-FRD-001",
+          "SYS-FRD-002"
+        ],
+        "transitions": [
+          {
+            "to": "PS-FRD-008",
+            "kind": "normal",
+            "when": "Posting confirmed in Core Banking System"
+          }
+        ],
+        "description": "The approved workflow item is posted in the Core Banking System. Funds move from the held account to the beneficiary instruction. The 14:00 CET cut-off applies for same-day value.",
+        "inputs": [
+          "Doubly approved workflow item (both first-line and second-line approvals confirmed)",
+          "Beneficiary account and payment instruction details"
+        ],
+        "outputs": [
+          "Posting entry recorded in the Core Banking System",
+          "Funds transferred from held account to beneficiary instruction"
+        ],
+        "businessValue": "Execution is the point of fund movement. Timely execution relative to the 14:00 CET cut-off is operationally critical for same-day value delivery."
+      }
+    },
+    {
+      "meta": {
+        "id": "PS-FRD-008",
+        "type": "process-step",
+        "section": "process-steps",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dogfood-v1.md",
+        "sequence": 8,
+        "provenance": {
+          "What happens": {
+            "source": "document",
+            "evidence": "A confirmation is sent to the front office and the workflow item is closed. The audit log records all actors and timestamps. (Process steps §8)"
+          },
+          "Inputs": {
+            "source": "document",
+            "evidence": "The audit log records all actors and timestamps. (Process steps §8)"
+          },
+          "Outputs": {
+            "source": "document",
+            "evidence": "A confirmation is sent to the front office and the workflow item is closed. The audit log records all actors and timestamps. (Process steps §8)"
+          },
+          "Why it matters": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "Confirm and Close",
+        "owner": "Operations Analyst",
+        "sla": "Same business day",
+        "condition": null,
+        "systems": [
+          "SYS-FRD-001"
+        ],
+        "transitions": [],
+        "description": "A confirmation is sent to the front office confirming that the release has been executed. The workflow item is closed in the Payments Workflow Tool. The audit log records all actors and timestamps for the full lifecycle of the item.",
+        "inputs": [
+          "Executed workflow item with Core Banking System posting confirmed",
+          "Actor and timestamp data from the audit log"
+        ],
+        "outputs": [
+          "Confirmation notification sent to front office",
+          "Workflow item status set to closed in the Payments Workflow Tool",
+          "Complete audit log entry for the release, including all actors and timestamps"
+        ],
+        "businessValue": "Closing the loop with the front office completes the service obligation. The closed audit log entry supports reconciliation (C-5) and provides the record for regulatory inspection."
+      }
+    }
+  ],
+  "roles": [
+    {
+      "meta": {
+        "id": "ROLE-FRD-001",
+        "type": "role",
+        "section": "roles",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dogfood-v1.md",
+        "provenance": {
+          "Responsibility": {
+            "source": "document",
+            "evidence": "Operations Analyst — intake, validation, first-line approval, execution and confirmation."
+          },
+          "In this process": {
+            "source": "document",
+            "evidence": "The Operations Analyst checks completeness: the facility ID exists and is in \"Active\" status, the requested amount does not exceed the available undrawn limit, the value date is a valid business day, and the supporting documents are attached. [...] The Operations Analyst approves the release after confirming validation and screening results. [...] The approved item is posted in the Core Banking System. Funds move from the held account to the beneficiary instruction. [...] A confirmation is sent to the front office and the workflow item is closed. [...] an Operations Analyst manually initiates release of a flagged item."
+          }
+        }
+      },
+      "content": {
+        "title": "Operations Analyst",
+        "responsibility": "Owns the end-to-end operational handling of each release item: intake of incoming requests, completeness validation, first-line approval after screening results are confirmed, execution of the fund movement, and issuance of the final confirmation to the front office.",
+        "inThisProcess": "Receives the release request from the Payments Workflow Tool queue and checks that the facility ID is active, the requested amount is within the available undrawn limit, the value date is a valid business day, and supporting documents are attached. Approves the item at the first-line stage once validation and compliance screening are clear. Posts the approved release in the Core Banking System, moving funds from the held account to the beneficiary instruction, and closes the workflow item after sending confirmation to the front office. Also manually initiates release of flagged items when required.",
+        "systems": [
+          "SYS-FRD-001",
+          "SYS-FRD-002",
+          "SYS-FRD-005"
+        ],
+        "controls": [
+          "CP-FRD-001"
+        ],
+        "raci": [
+          {
+            "step": "PS-FRD-001",
+            "level": "R"
+          },
+          {
+            "step": "PS-FRD-002",
+            "level": "R"
+          },
+          {
+            "step": "PS-FRD-004",
+            "level": "R"
+          },
+          {
+            "step": "PS-FRD-007",
+            "level": "R"
+          },
+          {
+            "step": "PS-FRD-008",
+            "level": "R"
+          }
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "ROLE-FRD-002",
+        "type": "role",
+        "section": "roles",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "funds-release-dogfood-v1.md",
+        "provenance": {
+          "Responsibility": {
+            "source": "document",
+            "evidence": "Operations Approver — independent second-line (4-eyes) authorisation. [...] The approver must not be the same person who performed the first-line approval."
+          },
+          "In this process": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "Operations Approver",
+        "responsibility": "Provides independent second-line authorisation of release items, enforcing the four-eyes segregation-of-duties control. Must be a different individual from the person who performed the first-line approval.",
+        "inThisProcess": "At step 6, independently reviews and authorises the release in the Payments Workflow Tool. Approval by the same individual who carried out the first-line approval is not permitted.",
+        "systems": [
+          "SYS-FRD-001"
+        ],
+        "controls": [
+          "CP-FRD-003"
+        ],
+        "raci": [
+          {
+            "step": "PS-FRD-006",
+            "level": "R"
+          }
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "ROLE-FRD-003",
+        "type": "role",
+        "section": "roles",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dogfood-v1.md",
+        "provenance": {
+          "Responsibility": {
+            "source": "document",
+            "evidence": "Treasury — funding availability confirmation above the threshold."
+          },
+          "In this process": {
+            "source": "document",
+            "evidence": "For amounts at or above the Treasury threshold (currently EUR 5,000,000 equivalent), Treasury confirms funding availability for the value date. If funding is unavailable the release is deferred and rescheduled to the next available value date."
+          }
+        }
+      },
+      "content": {
+        "title": "Treasury",
+        "responsibility": "Confirms funding availability for high-value release requests to ensure the bank has sufficient liquidity to honour the value date. Engagement is threshold-gated and does not apply to sub-threshold items.",
+        "inThisProcess": "At step 5, for release amounts at or above the current threshold of EUR 5,000,000 equivalent, Treasury confirms that funding is available for the requested value date. If funding is unavailable, the release is deferred and rescheduled to the next available value date. Sub-threshold items bypass this step.",
+        "systems": [
+          "SYS-FRD-004"
+        ],
+        "controls": [
+          "CP-FRD-004"
+        ],
+        "raci": [
+          {
+            "step": "PS-FRD-005",
+            "level": "R"
+          }
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "ROLE-FRD-004",
+        "type": "role",
+        "section": "roles",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "funds-release-dogfood-v1.md",
+        "provenance": {
+          "Responsibility": {
+            "source": "document",
+            "evidence": "Compliance — sanctions and AML adjudication. [...] Clean items pass automatically; potential hits are routed to Compliance for adjudication."
+          },
+          "In this process": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "Compliance",
+        "responsibility": "Adjudicates potential hits arising from the automated sanctions and AML screening step. Clean items pass through without Compliance involvement; Compliance is engaged only when the screening engine flags a potential match.",
+        "inThisProcess": "At step 3, when the Sanctions Screening Engine raises a potential sanctions or AML hit, the item is routed to Compliance for adjudication. A confirmed hit freezes the item pending investigation.",
+        "systems": [
+          "SYS-FRD-003"
+        ],
+        "controls": [
+          "CP-FRD-002"
+        ],
+        "raci": [
+          {
+            "step": "PS-FRD-003",
+            "level": "R"
+          }
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "ROLE-FRD-005",
+        "type": "role",
+        "section": "roles",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dogfood-v1.md",
+        "provenance": {
+          "Responsibility": {
+            "source": "document",
+            "evidence": "Front Office — submits drawdown requests; receives confirmation."
+          },
+          "In this process": {
+            "source": "document",
+            "evidence": "a drawdown request is received from the front office for an approved facility [...] Each item carries a facility ID, amount, currency, value date and beneficiary details. [...] A confirmation is sent to the front office [...] Incomplete requests are returned to the front office — this is the most common reason for delay."
+          }
+        }
+      },
+      "content": {
+        "title": "Front Office",
+        "responsibility": "Initiates funds release by submitting drawdown requests against approved facilities and receives confirmation once the release has been executed and closed.",
+        "inThisProcess": "At step 1, submits the drawdown request carrying the facility ID, amount, currency, value date and beneficiary details, which enters the Operations queue via the Payments Workflow Tool. At step 8, receives the confirmation issued when the workflow item is closed. Incomplete submissions are the most common reason for processing delay and result in the request being returned for correction.",
+        "systems": [],
+        "controls": [],
+        "raci": [
+          {
+            "step": "PS-FRD-001",
+            "level": "R"
+          },
+          {
+            "step": "PS-FRD-008",
+            "level": "I"
+          }
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "ROLE-FRD-006",
+        "type": "role",
+        "section": "roles",
+        "status": "draft",
+        "confidence": "low",
+        "source": "funds-release-dogfood-v1.md",
+        "provenance": {
+          "Responsibility": {
+            "source": "proposed",
+            "evidence": ""
+          },
+          "In this process": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "Operations Team Lead",
+        "responsibility": "Handles reassignment of work items and escalation of exceptions. Owns the daily reconciliation control over held versus released balances.",
+        "inThisProcess": "Handles reassignment and escalation of items that cannot be resolved at analyst level. Owns C-5, the daily detective control that reconciles held balances against released balances.",
+        "systems": [],
+        "controls": [
+          "CP-FRD-005"
+        ],
+        "raci": [
+          {
+            "step": "PS-FRD-001",
+            "level": "A"
+          },
+          {
+            "step": "PS-FRD-002",
+            "level": "A"
+          },
+          {
+            "step": "PS-FRD-003",
+            "level": "A"
+          },
+          {
+            "step": "PS-FRD-004",
+            "level": "A"
+          },
+          {
+            "step": "PS-FRD-005",
+            "level": "A"
+          },
+          {
+            "step": "PS-FRD-006",
+            "level": "A"
+          },
+          {
+            "step": "PS-FRD-007",
+            "level": "A"
+          },
+          {
+            "step": "PS-FRD-008",
+            "level": "A"
+          }
+        ]
+      }
+    }
+  ],
+  "controls": [
+    {
+      "meta": {
+        "id": "CP-FRD-001",
+        "type": "control",
+        "section": "controls",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dogfood-v1.md",
+        "provenance": {
+          "What it checks": {
+            "source": "document",
+            "evidence": "C-1 — Facility limit check. Release is blocked unless the available facility limit covers the requested amount."
+          },
+          "Control activity": {
+            "source": "document",
+            "evidence": "the facility ID exists and is in \"Active\" status, the requested amount does not exceed the available undrawn limit … C-1: Release is blocked unless the available facility limit covers the requested amount. Preventive / automated."
+          },
+          "Risk addressed": {
+            "source": "document",
+            "evidence": "C-1 — Release is blocked unless the available facility limit covers the requested amount; Step 2: facility ID exists and is in \"Active\" status, the requested amount does not exceed the available undrawn limit."
+          },
+          "Timing": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "Facility Limit Check",
+        "controlType": "PREVENTIVE",
+        "execution": "AUTOMATED",
+        "effectiveness": "HIGH",
+        "owner": "Payment Operations",
+        "step": [
+          "PS-FRD-002"
+        ],
+        "regulatedBy": [],
+        "whatItChecks": "Whether the requested release amount is covered by the available undrawn limit on the associated credit facility.",
+        "controlActivity": "The system blocks release of any item where the requested amount exceeds the available facility limit. The control validates that the facility ID is in Active status and that the requested amount does not exceed the available undrawn limit before the item can progress.",
+        "riskAddressed": "Over-release beyond approved credit exposure; disbursement against an inactive or exhausted facility.",
+        "timing": "At request validation (Step 2), before first-line approval is sought."
+      }
+    },
+    {
+      "meta": {
+        "id": "CP-FRD-002",
+        "type": "control",
+        "section": "controls",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "funds-release-dogfood-v1.md",
+        "provenance": {
+          "What it checks": {
+            "source": "document",
+            "evidence": "C-2 — Sanctions and AML screening. Every item is screened before release."
+          },
+          "Control activity": {
+            "source": "document",
+            "evidence": "The item is screened for sanctions and AML hits. Clean items pass automatically; potential hits are routed to Compliance for adjudication. A confirmed hit freezes the item pending investigation."
+          },
+          "Risk addressed": {
+            "source": "document",
+            "evidence": "The process is subject to anti-money-laundering and sanctions obligations (EU sanctions regulations, AML directives)."
+          },
+          "Timing": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "Sanctions and AML Screening",
+        "controlType": "PREVENTIVE",
+        "execution": "AUTOMATED",
+        "effectiveness": "HIGH",
+        "owner": "Compliance",
+        "step": [
+          "PS-FRD-003"
+        ],
+        "regulatedBy": [
+          "REG-FRD-001",
+          "REG-FRD-002"
+        ],
+        "whatItChecks": "Whether the release item appears on sanctions lists or triggers AML risk indicators.",
+        "controlActivity": "Every item is screened for sanctions and AML hits before release can proceed. Clean items pass automatically. Potential hits are routed to Compliance for adjudication; a confirmed hit freezes the item pending investigation.",
+        "riskAddressed": "Releasing funds to sanctioned parties or facilitating money laundering; breach of EU sanctions regulations and AML directives.",
+        "timing": "At compliance screening (Step 3), after validation and before any approval step."
+      }
+    },
+    {
+      "meta": {
+        "id": "CP-FRD-003",
+        "type": "control",
+        "section": "controls",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dogfood-v1.md",
+        "provenance": {
+          "What it checks": {
+            "source": "document",
+            "evidence": "C-3 — Segregation of duties (4-eyes). First-line and second-line approval must be performed by different people."
+          },
+          "Control activity": {
+            "source": "document",
+            "evidence": "A separate Operations Approver independently reviews and authorises the release. The approver must not be the same person who performed the first-line approval."
+          },
+          "Risk addressed": {
+            "source": "document",
+            "evidence": "C-3 — Segregation of duties (4-eyes). First-line and second-line approval must be performed by different people. Preventive / manual."
+          },
+          "Timing": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "Segregation of Duties (4-Eyes)",
+        "controlType": "PREVENTIVE",
+        "execution": "MANUAL",
+        "effectiveness": "HIGH",
+        "owner": "Payment Operations",
+        "step": [
+          "PS-FRD-006"
+        ],
+        "regulatedBy": [],
+        "whatItChecks": "Whether the second-line approver is a different individual from the person who performed the first-line approval.",
+        "controlActivity": "A separate Operations Approver independently reviews and authorises the release. The approver must not be the same person who performed the first-line approval.",
+        "riskAddressed": "Unilateral release by a single operator; fraudulent or erroneous release that a second reviewer would have caught.",
+        "timing": "At second-line approval (Step 6), after first-line approval and any required Treasury confirmation."
+      }
+    },
+    {
+      "meta": {
+        "id": "CP-FRD-004",
+        "type": "control",
+        "section": "controls",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dogfood-v1.md",
+        "provenance": {
+          "What it checks": {
+            "source": "document",
+            "evidence": "C-4 — Treasury funding confirmation. For amounts above the threshold, Treasury confirms funding before release. Step 5: For amounts at or above the Treasury threshold (currently EUR 5,000,000 equivalent), Treasury confirms funding availability for the value date."
+          },
+          "Control activity": {
+            "source": "document",
+            "evidence": "Treasury confirms funding availability for the value date. If funding is unavailable the release is deferred and rescheduled to the next available value date."
+          },
+          "Risk addressed": {
+            "source": "document",
+            "evidence": "Step 5: Treasury confirms funding availability for the value date. If funding is unavailable the release is deferred — implying settlement / liquidity risk."
+          },
+          "Timing": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "Treasury Funding Confirmation",
+        "controlType": "PREVENTIVE",
+        "execution": "MANUAL",
+        "effectiveness": "MEDIUM",
+        "owner": "Treasury",
+        "step": [
+          "PS-FRD-005"
+        ],
+        "regulatedBy": [],
+        "whatItChecks": "Whether sufficient funding is available on the intended value date for large-value releases at or above the Treasury threshold (currently EUR 5,000,000 equivalent).",
+        "controlActivity": "For releases meeting or exceeding the threshold, Treasury confirms funding availability before the release proceeds to second-line approval. If funding is unavailable, the release is deferred and rescheduled to the next available value date.",
+        "riskAddressed": "Settlement failure or intraday liquidity shortfall caused by releasing funds for which adequate funding has not been secured.",
+        "timing": "At liquidity confirmation (Step 5), after first-line approval and before second-line approval; applies only to amounts at or above the EUR 5,000,000 threshold."
+      }
+    },
+    {
+      "meta": {
+        "id": "CP-FRD-005",
+        "type": "control",
+        "section": "controls",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "funds-release-dogfood-v1.md",
+        "provenance": {
+          "What it checks": {
+            "source": "document",
+            "evidence": "C-5 — Daily reconciliation of held vs. released balances. Detective / manual. Control owner: Operations Team Lead."
+          },
+          "Control activity": {
+            "source": "proposed",
+            "evidence": ""
+          },
+          "Risk addressed": {
+            "source": "document",
+            "evidence": "C-5 — Daily reconciliation of held vs. released balances. Detective / manual."
+          },
+          "Timing": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "Daily Reconciliation of Held vs Released Balances",
+        "controlType": "DETECTIVE",
+        "execution": "MANUAL",
+        "effectiveness": "MEDIUM",
+        "owner": "Payment Operations",
+        "step": [],
+        "regulatedBy": [],
+        "whatItChecks": "Whether the total held balance and the total released balance across all items reconcile to the expected position at end of day.",
+        "controlActivity": "Operations Team Lead (Payment Operations function) performs a daily reconciliation of held vs. released balances. Discrepancies trigger investigation and escalation.",
+        "riskAddressed": "Undetected posting errors, missed releases, or balance leakage that would not be caught within a single transaction's lifecycle.",
+        "timing": "Daily, after the payment processing cut-off; not tied to an individual transaction step."
+      }
+    }
+  ],
+  "regulation": [
+    {
+      "meta": {
+        "id": "REG-FRD-001",
+        "type": "regulation",
+        "section": "regulation",
+        "status": "draft",
+        "confidence": "medium",
+        "source": null,
+        "provenance": {
+          "What it requires": {
+            "source": "document",
+            "evidence": "anti-money-laundering and sanctions obligations (EU sanctions regulations, AML directives)"
+          },
+          "Why it applies": {
+            "source": "document",
+            "evidence": "The process is subject to anti-money-laundering and sanctions obligations (EU sanctions regulations, AML directives)."
+          },
+          "How it is met": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "EU Sanctions Regulations",
+        "domain": "Sanctions",
+        "asOf": null,
+        "whatItRequires": "EU sanctions regulations impose sanctions obligations on this process.",
+        "whyItApplies": "The document explicitly states this process is subject to sanctions obligations under EU sanctions regulations.",
+        "howItIsMet": "The Sanctions and AML Screening control (C-2) is applied at the compliance screening step (step 3). Clean items pass automatically; potential hits are routed to Compliance for adjudication and confirmed hits freeze the item pending investigation."
+      }
+    },
+    {
+      "meta": {
+        "id": "REG-FRD-002",
+        "type": "regulation",
+        "section": "regulation",
+        "status": "draft",
+        "confidence": "medium",
+        "source": null,
+        "provenance": {
+          "What it requires": {
+            "source": "document",
+            "evidence": "anti-money-laundering and sanctions obligations (EU sanctions regulations, AML directives)"
+          },
+          "Why it applies": {
+            "source": "document",
+            "evidence": "The process is subject to anti-money-laundering and sanctions obligations (EU sanctions regulations, AML directives)."
+          },
+          "How it is met": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "AML Directives",
+        "domain": "Anti-Money-Laundering",
+        "asOf": null,
+        "whatItRequires": "EU AML directives impose anti-money-laundering obligations on this process.",
+        "whyItApplies": "The document explicitly states this process is subject to anti-money-laundering obligations under AML directives. The process executes fund transfers (funds move from a held account to a beneficiary instruction, per step 7), placing it within scope.",
+        "howItIsMet": "The Sanctions and AML Screening control (C-2) is applied at the compliance screening step (step 3), covering both sanctions and AML hit detection before any release is authorised."
+      }
+    },
+    {
+      "meta": {
+        "id": "REG-FRD-003",
+        "type": "regulation",
+        "section": "regulation",
+        "status": "draft",
+        "confidence": "medium",
+        "source": null,
+        "provenance": {
+          "What it requires": {
+            "source": "document",
+            "evidence": "the EU Funds Transfer Regulation for payer / payee information"
+          },
+          "Why it applies": {
+            "source": "document",
+            "evidence": "Payment execution and operational resilience expectations apply (e.g. the EU Funds Transfer Regulation for payer / payee information, and operational-risk controls)."
+          },
+          "How it is met": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "EU Funds Transfer Regulation",
+        "domain": "Payment Services",
+        "asOf": null,
+        "whatItRequires": "The EU Funds Transfer Regulation imposes requirements relating to payer and payee information.",
+        "whyItApplies": "The document states that payment execution expectations apply to this process, citing the EU Funds Transfer Regulation for payer and payee information.",
+        "howItIsMet": "Beneficiary details are captured as a mandatory field at request receipt (step 1) — each item in the Payments Workflow Tool carries facility ID, amount, currency, value date and beneficiary details — and these are carried through to execution."
+      }
+    }
+  ],
+  "systems": [
+    {
+      "meta": {
+        "id": "SYS-FRD-001",
+        "type": "system",
+        "section": "systems",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dogfood-v1.md",
+        "provenance": {
+          "Purpose": {
+            "source": "document",
+            "evidence": "Payments Workflow Tool — queue, routing, approvals and audit log."
+          },
+          "Role in this process": {
+            "source": "document",
+            "evidence": "The release request arrives in the Operations queue via the Payments Workflow Tool. [...] The Operations Analyst checks completeness [...] The Operations Analyst approves the release [...] A separate Operations Approver independently reviews and authorises the release. [...] the workflow item is closed. The audit log records all actors and timestamps."
+          }
+        }
+      },
+      "content": {
+        "title": "Payments Workflow Tool",
+        "systemType": "CORE",
+        "purpose": "Provides the operational queue, routing logic, approval workflow and audit log for payment items requiring controlled release.",
+        "roleInThisProcess": "Release requests arrive in the Operations queue via this tool (step 1). It is used by the Operations Analyst throughout validation (step 2) and first-line approval (step 4), by the Operations Approver for second-line (4-eyes) authorisation (step 6), and to close the workflow item and record all actors and timestamps in the audit log at confirmation (step 8).",
+        "integrates": [
+          "SYS-FRD-002"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "SYS-FRD-002",
+        "type": "system",
+        "section": "systems",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dogfood-v1.md",
+        "provenance": {
+          "Purpose": {
+            "source": "document",
+            "evidence": "Core Banking System — account postings and fund movement."
+          },
+          "Role in this process": {
+            "source": "document",
+            "evidence": "The approved item is posted in the Core Banking System. Funds move from the held account to the beneficiary instruction."
+          }
+        }
+      },
+      "content": {
+        "title": "Core Banking System",
+        "systemType": "CORE",
+        "purpose": "Performs account postings and executes fund movement between accounts.",
+        "roleInThisProcess": "Used at step 7 (Execute Release) to post the approved item and move funds from the held account to the beneficiary instruction.",
+        "integrates": [
+          "SYS-FRD-001"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "SYS-FRD-003",
+        "type": "system",
+        "section": "systems",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dogfood-v1.md",
+        "provenance": {
+          "Purpose": {
+            "source": "document",
+            "evidence": "Sanctions Screening Engine — real-time sanctions / AML screening."
+          },
+          "Role in this process": {
+            "source": "document",
+            "evidence": "The item is screened for sanctions and AML hits. Clean items pass automatically; potential hits are routed to Compliance for adjudication. A confirmed hit freezes the item pending investigation."
+          }
+        }
+      },
+      "content": {
+        "title": "Sanctions Screening Engine",
+        "systemType": "SUPPORTING",
+        "purpose": "Provides real-time sanctions and AML screening of payment items.",
+        "roleInThisProcess": "Used at step 3 (Compliance Screening). Clean items pass automatically; potential hits are routed to Compliance for adjudication. A confirmed hit freezes the item pending investigation.",
+        "integrates": [
+          "SYS-FRD-001"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "SYS-FRD-004",
+        "type": "system",
+        "section": "systems",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dogfood-v1.md",
+        "provenance": {
+          "Purpose": {
+            "source": "document",
+            "evidence": "Treasury / Liquidity Platform — funding availability confirmation."
+          },
+          "Role in this process": {
+            "source": "document",
+            "evidence": "For amounts at or above the Treasury threshold (currently EUR 5,000,000 equivalent), Treasury confirms funding availability for the value date. If funding is unavailable the release is deferred and rescheduled to the next available value date."
+          }
+        }
+      },
+      "content": {
+        "title": "Treasury / Liquidity Platform",
+        "systemType": "SUPPORTING",
+        "purpose": "Confirms funding availability for a given value date.",
+        "roleInThisProcess": "Used at step 5 (Liquidity Confirmation) for release amounts at or above the Treasury threshold (currently EUR 5,000,000 equivalent). Treasury uses this platform to confirm funding availability; if funding is unavailable, the release is deferred and rescheduled to the next available value date.",
+        "integrates": [
+          "SYS-FRD-001"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "id": "SYS-FRD-005",
+        "type": "system",
+        "section": "systems",
+        "status": "draft",
+        "confidence": "high",
+        "source": "funds-release-dogfood-v1.md",
+        "provenance": {
+          "Purpose": {
+            "source": "document",
+            "evidence": "Facility Management System — facility status and available limit."
+          },
+          "Role in this process": {
+            "source": "document",
+            "evidence": "the facility ID exists and is in \"Active\" status, the requested amount does not exceed the available undrawn limit"
+          }
+        }
+      },
+      "content": {
+        "title": "Facility Management System",
+        "systemType": "SUPPORTING",
+        "purpose": "Maintains facility status and tracks available undrawn limits.",
+        "roleInThisProcess": "Consulted during step 2 (Validate Request) to confirm that the facility ID exists and is in Active status, and that the requested amount does not exceed the available undrawn limit.",
+        "integrates": [
+          "SYS-FRD-001"
+        ]
+      }
+    }
+  ],
+  "metrics": [
+    {
+      "meta": {
+        "id": "M-FRD-001",
+        "type": "metric",
+        "section": "metrics",
+        "status": "draft",
+        "confidence": "high",
+        "source": null,
+        "provenance": {
+          "Definition": {
+            "source": "proposed",
+            "evidence": ""
+          },
+          "Current reading": {
+            "source": "document",
+            "evidence": "The target for a clean STP release is same business day, within 2 hours of receipt. The cut-off for same-day value is 14:00 CET."
+          },
+          "Why it matters": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "STP Release Cycle Time",
+        "target": "Same business day, within 2 hours of receipt",
+        "value": "Not measured",
+        "trend": null,
+        "definition": "The elapsed time from receipt of a clean straight-through processing (STP) release request in the Operations queue to completion of posting in the Core Banking System, with no manual intervention or exception.",
+        "currentReading": "No measured actuals are available. The documented SLA target is same business day, within 2 hours of receipt. Note-of-cut-off: same-day value requires receipt before 14:00 CET.",
+        "whyItMatters": "STP cycle time is the primary indicator of operational throughput and client experience. Sustained performance within the 2-hour window supports same-day value delivery and reduces front-office enquiry volumes."
+      }
+    },
+    {
+      "meta": {
+        "id": "M-FRD-002",
+        "type": "metric",
+        "section": "metrics",
+        "status": "draft",
+        "confidence": "high",
+        "source": null,
+        "provenance": {
+          "Definition": {
+            "source": "proposed",
+            "evidence": ""
+          },
+          "Current reading": {
+            "source": "document",
+            "evidence": "Manual releases with no exception complete same business day. The cut-off for same-day value is 14:00 CET."
+          },
+          "Why it matters": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "Manual Release Cycle Time",
+        "target": "Same business day",
+        "value": "Not measured",
+        "trend": null,
+        "definition": "The elapsed time from receipt of a release request that requires manual handling — including validation checks, first-line approval, potential Treasury confirmation, and second-line (4-eyes) authorisation — to final posting, where no compliance exception is present.",
+        "currentReading": "No measured actuals are available. The documented SLA target is same business day. Note-of-cut-off: same-day value requires completion before the 14:00 CET cut-off.",
+        "whyItMatters": "Manual releases introduce human touchpoints at multiple approval stages. Tracking cycle time against the same-business-day target reveals capacity pressure and highlights steps — particularly Treasury confirmation and second-line approval — that are most likely to cause breaches."
+      }
+    },
+    {
+      "meta": {
+        "id": "M-FRD-003",
+        "type": "metric",
+        "section": "metrics",
+        "status": "draft",
+        "confidence": "high",
+        "source": null,
+        "provenance": {
+          "Definition": {
+            "source": "proposed",
+            "evidence": ""
+          },
+          "Current reading": {
+            "source": "document",
+            "evidence": "Exception resolution targets within 1 business day of identification."
+          },
+          "Why it matters": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "Exception Resolution Time",
+        "target": "Within 1 business day of identification",
+        "value": "Not measured",
+        "trend": null,
+        "definition": "The elapsed time from identification of an exception — such as a compliance screening hit, an incomplete request returned to front office, or a deferred release due to funding unavailability — to resolution and either release or formal closure of the item.",
+        "currentReading": "No measured actuals are available. The documented SLA target is within 1 business day of identification.",
+        "whyItMatters": "Exception resolution time directly determines how long funds remain unnecessarily blocked after an issue is flagged. Breaches of the 1-business-day target create credit-risk exposure, damage client relationships, and indicate gaps in Compliance or Treasury coordination."
+      }
+    }
+  ],
+  "pain-points": [
+    {
+      "meta": {
+        "id": "PP-FRD-001",
+        "type": "pain-point",
+        "section": "pain-points",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "funds-release-dogfood-v1.md",
+        "provenance": {
+          "Description": {
+            "source": "document",
+            "evidence": "Items frequently stall at validation when the front office submits an incomplete request or an inactive facility ID."
+          },
+          "Impact": {
+            "source": "document",
+            "evidence": "Incomplete requests are returned to the front office — this is the most common reason for delay."
+          },
+          "Root cause": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "Incomplete Requests Stalling at Validation",
+        "category": "data-quality",
+        "severity": "HIGH",
+        "priority": "P1",
+        "affects": [
+          "PS-FRD-002"
+        ],
+        "description": "Items stall at the validation step when the front office submits an incomplete request or an inactive facility ID.",
+        "impact": "This is the most common reason for delay.",
+        "rootCause": "Front office submissions do not always meet completeness requirements — missing documents or references to inactive facilities."
+      }
+    },
+    {
+      "meta": {
+        "id": "PP-FRD-002",
+        "type": "pain-point",
+        "section": "pain-points",
+        "status": "draft",
+        "confidence": "medium",
+        "source": "funds-release-dogfood-v1.md",
+        "provenance": {
+          "Description": {
+            "source": "document",
+            "evidence": "Same-day value is at risk when a request arrives close to the 14:00 cut-off and still needs Treasury confirmation."
+          },
+          "Impact": {
+            "source": "proposed",
+            "evidence": ""
+          },
+          "Root cause": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "Same-Day Value at Risk Near Cut-Off",
+        "category": "timing",
+        "severity": "MEDIUM",
+        "priority": "P2",
+        "affects": [
+          "PS-FRD-005",
+          "PS-FRD-001"
+        ],
+        "description": "When a release request arrives close to the 14:00 CET cut-off and still requires Treasury confirmation, same-day value is at risk.",
+        "impact": "Requests arriving late in the day may miss the cut-off, pushing the value date to the next business day.",
+        "rootCause": "Treasury confirmation adds time to the process for large amounts."
+      }
+    },
+    {
+      "meta": {
+        "id": "PP-FRD-003",
+        "type": "pain-point",
+        "section": "pain-points",
+        "status": "draft",
+        "confidence": "high",
+        "source": "foundational-run",
+        "provenance": {
+          "Description": {
+            "source": "elicited",
+            "evidence": "Markus Holzhäuser: the front office often resubmits an item that was returned for incompleteness without referencing the original, creating duplicate workflow items."
+          },
+          "Impact": {
+            "source": "proposed",
+            "evidence": ""
+          },
+          "Root cause": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "Duplicate Submissions from Resubmitted Returns",
+        "category": "process",
+        "severity": "MEDIUM",
+        "priority": "P2",
+        "affects": [
+          "PS-FRD-001"
+        ],
+        "description": "The front office frequently resubmits a returned incomplete request without referencing the original, creating duplicate workflow items in the Operations queue.",
+        "impact": "Operations Analysts must identify and resolve duplicate items manually, adding overhead to intake and risking double-processing if duplicates are not caught.",
+        "rootCause": "No mechanism enforces or prompts the front office to reference the original submission when resubmitting a corrected request."
+      }
+    }
+  ],
+  "control-gaps": [
+    {
+      "meta": {
+        "id": "CG-FRD-001",
+        "type": "compliance-gap",
+        "section": "control-gaps",
+        "status": "draft",
+        "confidence": "high",
+        "source": "foundational-run",
+        "provenance": {
+          "The gap": {
+            "source": "elicited",
+            "evidence": "Markus Holzhäuser confirmed: only mandated front-office requestors may submit a release, and intake should verify the submitter is authorised. No such control exists."
+          },
+          "Risk": {
+            "source": "proposed",
+            "evidence": ""
+          },
+          "Remediation": {
+            "source": "proposed",
+            "evidence": ""
+          }
+        }
+      },
+      "content": {
+        "title": "Authorised-Requestor Check Missing at Intake",
+        "severity": "HIGH",
+        "gapStatus": "open",
+        "control": [],
+        "theGap": "The intake step (PS-FRD-001) does not verify that the submitter is an authorised front-office requestor. Any party with channel access can submit a drawdown request.",
+        "risk": "Unauthorised or fraudulent release requests entering the controlled process; regulatory exposure from releases not originating from mandated requestors.",
+        "remediation": "Awaiting SME decision — control stub to be drafted, or recorded as accepted risk with no control planned."
+      }
+    }
+  ],
+  "ingest": {
+    "file": "funds-release-dogfood-v1.md",
+    "source": "funds-release-dogfood-v1.md",
+    "created": 32,
+    "updated": 0,
+    "conflicts": [],
+    "corrections": [
+      {
+        "element": "step-1",
+        "field": "Inputs",
+        "removed": "\"Drawdown request or scheduled release trigger from the front office\" and \"Supporting documents attached to the workflow item\" — supporting documents are a validation criterion (step 2), not listed as an input to step 1 in the document."
+      },
+      {
+        "element": "step-2",
+        "field": "Outputs",
+        "removed": "\"with identified deficiencies\" — the document says incomplete requests are returned to the front office but does not state they are returned with identified deficiencies listed."
+      },
+      {
+        "element": "step-2",
+        "field": "provenance (Outputs and Why it matters)",
+        "removed": "Both blocks had source set to \"document\" but contain inferred claims. Corrected to \"proposed\"."
+      },
+      {
+        "element": "step-2",
+        "field": "Why it matters",
+        "removed": "\"protecting same-day value date and avoiding wasted effort\" and \"primary gate against data quality issues introduced by the front office\" — these framings are editorial inferences not stated in the document."
+      },
+      {
+        "element": "step-3",
+        "field": "meta.owner",
+        "removed": "\"Sanctions Screening Engine\" — this is a system, not a role. The document's Roles section assigns Compliance as the actor for sanctions and AML adjudication. Corrected to \"Compliance\"."
+      },
+      {
+        "element": "step-3",
+        "field": "Inputs",
+        "removed": "\"name, account, country\" breakdown of beneficiary details — the document says \"beneficiary details\" without specifying sub-fields. \"counterparty information\" — not mentioned as a screening input in the document."
+      },
+      {
+        "element": "step-3",
+        "field": "Outputs",
+        "removed": "\"freeze status and reason recorded in audit log\" — the document says the item is frozen pending investigation but does not state a freeze status/reason is recorded in the audit log at this step."
+      },
+      {
+        "element": "step-4",
+        "field": "What happens",
+        "removed": "\"The approver confirms all prior results are recorded in the workflow item before approving\" — the document says approves after confirming validation and screening results, but does not specify checking that results are recorded in the workflow item."
+      },
+      {
+        "element": "step-4",
+        "field": "Outputs",
+        "removed": "\"with actor identity and timestamp captured in the audit log\" — the audit log statement is from step 8 and applies globally; it is not explicitly stated for step 4 in the document."
+      },
+      {
+        "element": "step-5",
+        "field": "What happens",
+        "removed": "\"Treasury uses the Treasury / Liquidity Platform to assess intraday funding position\" — \"intraday funding position\" is not stated in the document. The document lists the platform as a system for funding availability confirmation but does not specify intraday position assessment."
+      },
+      {
+        "element": "step-5",
+        "field": "Outputs",
+        "removed": "\"Deferral notice\" — the document says the release is deferred and rescheduled but does not describe a deferral notice being issued."
+      },
+      {
+        "element": "step-5",
+        "field": "Why it matters",
+        "removed": "\"prevents overdraft positions\" — not stated in the document."
+      },
+      {
+        "element": "step-6",
+        "field": "What happens",
+        "removed": "\"The Payments Workflow Tool enforces the same-person block at the system level\" — the document states the approval rule but does not say the system enforces it. This is an unsupported inference."
+      },
+      {
+        "element": "step-6",
+        "field": "Inputs",
+        "removed": "\"(enforced by system to prevent same-person approval)\" — same as above; system enforcement is not stated in the document."
+      },
+      {
+        "element": "step-7",
+        "field": "What happens",
+        "removed": "\"The Payments Workflow Tool triggers or records the execution\" — the document does not say the Payments Workflow Tool triggers execution. It is described as handling queue, routing, approvals and audit log."
+      },
+      {
+        "element": "step-7",
+        "field": "Inputs",
+        "removed": "\"Held account identifier\" as a separate input — the document mentions the held account in the step description but does not list it as a discrete input parameter passed to this step."
+      },
+      {
+        "element": "step-7",
+        "field": "Outputs",
+        "removed": "\"Execution event recorded in the Payments Workflow Tool audit log\" — the audit log statement is from step 8; execution-specific audit logging is not explicitly stated for step 7 in the document."
+      },
+      {
+        "element": "role-2",
+        "field": "In this process",
+        "removed": "The approver confirms that validation, compliance screening, and — where applicable — Treasury confirmation have all been completed — not stated in the document; step 6 only says the approver independently reviews and authorises. Rewritten to document-supported claims only; provenance demoted to proposed."
+      },
+      {
+        "element": "role-2",
+        "field": "meta.confidence",
+        "removed": "Downgraded from high to medium because the In this process block required demotion to proposed."
+      },
+      {
+        "element": "role-4",
+        "field": "In this process",
+        "removed": "\"determines whether the hit is a true match or a false positive\" — true/false-positive framing is an inference not stated in the document (document only says 'adjudication' and 'confirmed hit freezes'). Sentence removed; provenance demoted to proposed."
+      },
+      {
+        "element": "role-4",
+        "field": "meta.confidence",
+        "removed": "Downgraded from high to medium because the In this process block required demotion to proposed."
+      },
+      {
+        "element": "role-5",
+        "field": "meta.raci[@step-1]",
+        "removed": "Level was I (Informed); corrected to R (Responsible). Front Office submits the request at step 1 — they are the actor, not a passive recipient of information."
+      },
+      {
+        "element": "role-5",
+        "field": "In this process",
+        "removed": "\"issued by the Operations Analyst\" attribution for step 8 confirmation removed — step 8 says 'A confirmation is sent to the front office' without explicitly naming the sender in that sentence (Roles section attributes it to Analyst; attribution was defensible but overly specific for the step description)."
+      },
+      {
+        "element": "role-6",
+        "field": "Responsibility",
+        "removed": "\"Accountable for the overall execution of the funds release process\" — not stated in the document. Roles section only says 'reassignment and escalation'. Removed; provenance changed from document to proposed."
+      },
+      {
+        "element": "role-6",
+        "field": "In this process",
+        "removed": "\"Acts as the accountable owner across all process steps, ensuring capacity is appropriately allocated\" — not stated in the document. \"same-day cut-off risk\" and \"compliance or liquidity exception cannot be resolved within the standard service level\" are elaborations not in the document. All removed; block rewritten to document-supported claims only."
+      },
+      {
+        "element": "role-6",
+        "field": "meta.confidence",
+        "removed": "Downgraded from high to low: both content blocks are now proposed; RACI A-across-all-steps is entirely inferred (document gives no RACI assignments; Team Lead role is described only as reassignment and escalation)."
+      },
+      {
+        "element": "role-6",
+        "field": "meta.provenance.Responsibility",
+        "removed": "Source was document; corrected to proposed because 'Accountable for the overall execution' is not in the document."
+      },
+      {
+        "element": "ctrl-1",
+        "field": "Control activity",
+        "removed": "Named 'Payments Workflow Tool' as the specific system performing the facility-limit validation. The document lists the Facility Management System for 'facility status and available limit' and does not attribute the blocking check to the Payments Workflow Tool. System name removed; control-level language retained."
+      },
+      {
+        "element": "ctrl-2",
+        "field": "What it checks",
+        "removed": "'beneficiary, or associated parties' — the document states only 'Every item is screened before release' with no specification of beneficiary or associated-party scope. Narrowed to 'the release item'."
+      },
+      {
+        "element": "ctrl-2",
+        "field": "Control activity",
+        "removed": "'in real time' / 'screened in real time by the Sanctions Screening Engine' — the document says 'Preventive / automated' but does not use 'real time'. System name retained (it is listed in §Systems) but 'real time' qualifier removed."
+      },
+      {
+        "element": "ctrl-2",
+        "field": "meta.confidence",
+        "removed": "Downgraded from 'high' to 'medium' because the scope of what is screened (beneficiary, associated parties) was partially hallucinated and had to be narrowed."
+      },
+      {
+        "element": "ctrl-3",
+        "field": "Control activity",
+        "removed": "'The system or workflow enforces that the approver must not be the same person who performed the first-line approval; any attempt to self-approve the second line is blocked.' The document marks C-3 as Preventive / manual and Step 6 states the rule as a requirement on people, not a system enforcement. No automated blocking is described."
+      },
+      {
+        "element": "ctrl-4",
+        "field": "Control activity",
+        "removed": "'via the Treasury / Liquidity Platform' — the document names this system in §Systems but C-4 does not state Treasury uses it specifically for this confirmation step. Removed to avoid over-specification not present in the Controls section."
+      },
+      {
+        "element": "ctrl-5",
+        "field": "Control activity",
+        "removed": "'comparing held balances in the Payments Workflow Tool against released postings in the Core Banking System' — C-5 states only 'Daily reconciliation of held vs. released balances. Detective / manual.' No systems are named for this control in the document. Specific system names removed. 'Discrepancies are investigated and escalated as required' simplified to 'Discrepancies trigger investigation and escalation' (the specific phrase is not in the document but the general intent is implied by a detective control; kept as proposed)."
+      },
+      {
+        "element": "ctrl-5",
+        "field": "meta.confidence",
+        "removed": "Downgraded from 'high' to 'medium' because the Control activity block is proposed (C-5 has no procedural detail in the document) and specific system names were hallucinated."
+      },
+      {
+        "element": "reg-1",
+        "field": "What it requires",
+        "removed": "EU sanctions regulations prohibit the release of funds to sanctioned entities or persons. Institutions must screen all payment beneficiaries against applicable sanctions lists before executing any fund movement. — The document names the regulation but states no specific requirement; these are general-knowledge expansions not traceable to the source passage."
+      },
+      {
+        "element": "reg-2",
+        "field": "What it requires",
+        "removed": "EU AML directives require that institutions perform anti-money-laundering checks before executing fund movements, including screening for money laundering risk associated with counterparties and transactions. — The document names the regulation but states no specific requirement; 'require that institutions perform…checks' and 'screening for money laundering risk associated with counterparties and transactions' are general-knowledge expansions not traceable to the source passage."
+      },
+      {
+        "element": "reg-3",
+        "field": "What it requires",
+        "removed": "…throughout the payment chain, enabling traceability of the originator and beneficiary for each transfer. — 'Throughout the payment chain' and 'enabling traceability of the originator and beneficiary' are general-knowledge expansions; the document says only 'for payer / payee information'."
+      },
+      {
+        "element": "reg-3",
+        "field": "Why it applies",
+        "removed": "…to comply with the information requirements imposed on payment service providers. — 'payment service providers' is not mentioned in the source document."
+      },
+      {
+        "element": "sys-1",
+        "field": "Role in this process",
+        "removed": "\"The primary system of record for the funds-release workflow.\" — no passage in the document describes this tool as a 'system of record'; characterisation is an inference not traceable to any verbatim claim."
+      },
+      {
+        "element": "sys-2",
+        "field": "Role in this process",
+        "removed": "\"It is the system of record for the actual financial transaction.\" — the document does not use the phrase 'system of record'; this is an inference with no verbatim support."
+      },
+      {
+        "element": "sys-4",
+        "field": "Purpose",
+        "removed": "\"supporting liquidity management\" — not stated in the document; §Systems gives only 'funding availability confirmation' and no liquidity-management characterisation appears elsewhere."
+      },
+      {
+        "element": "M-FRD-001",
+        "field": "provenance.Definition.source",
+        "removed": "\"source\": \"document\" — the metric definition is an inferred construct; the document states the SLA target but never defines the metric itself. Corrected to \"proposed\"."
+      },
+      {
+        "element": "M-FRD-002",
+        "field": "provenance.Definition.source",
+        "removed": "\"source\": \"document\" — the metric definition is an inferred construct; the document states the SLA target but never defines the metric itself. Corrected to \"proposed\"."
+      },
+      {
+        "element": "M-FRD-003",
+        "field": "provenance.Definition.source",
+        "removed": "\"source\": \"document\" — the metric definition is an inferred construct; the document states the SLA target but never defines the metric itself. Corrected to \"proposed\"."
+      },
+      {
+        "element": "pp-1",
+        "field": "Impact",
+        "removed": "Delays in the validation step; the most common cause of cycle-time overruns. Release items sit in the queue awaiting correction rather than progressing."
+      },
+      {
+        "element": "pp-1",
+        "field": "Impact",
+        "removed": "Replaced with close-to-verbatim document text: 'this is the most common reason for delay' (Step 2). 'cycle-time overruns' is not in the document; second sentence ('sit in the queue awaiting correction') is not in the document."
+      },
+      {
+        "element": "pp-2",
+        "field": "Impact",
+        "removed": "and potentially breaching client commitments"
+      },
+      {
+        "element": "pp-2",
+        "field": "Root cause",
+        "removed": "and there is no early-warning mechanism when requests arrive late"
+      }
+    ],
+    "date": "2026-06-04"
+  }
+}

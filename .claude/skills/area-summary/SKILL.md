@@ -5,7 +5,8 @@ description: >-
   Risk & Compliance, Client Experience, Innovation, Target Process or IT
   Architecture — written
   as an Amazon-style narrative memo. Read every section in the area and write
-  the memo into summaries.json for the app to render. Non-interactive: no SME
+  the memo into the process's `summaries` field for the app to render.
+  Non-interactive: no SME
   questions, no approval loop. Invoked by a button. Use this whenever the user
   wants an executive summary of an area.
 ---
@@ -23,9 +24,10 @@ approval loop. This is a silent generation, like `source-cx`.
 ## Step 1 — Read the area
 
 Read `schema/process-schema.json`, find the area by its id, and note the
-sections it contains. Read **every element across all of those sections** in
-`wiki/processes/<slug>/`, and `index.md` for the process context — what the
-process is and its domain. An area with no elements gets a summary that
+sections it contains. Read **every element across all of those sections** with
+`expandElement({ type })` (then `expandElement({ type, id })` for specifics),
+and the process overview (root `meta`/`content`) in the Document Map for the
+process context — what the process is and its domain. An area with no elements gets a summary that
 plainly says it is not yet documented.
 
 ## Step 2 — Write it as an Amazon-style narrative memo
@@ -70,8 +72,8 @@ area has no elements, say so plainly, in the same narrative voice.
 
 Save the summary markdown to a temp file, then use the writeSummary({ slug, area, summary }) tool.
 
-It stores the summary in `summaries.json`, keyed by area — the file the app's
-summary panel reads. The tool checks the memo has exactly the four headings
+It stores the summary in the process's `summaries` field, keyed by area — what
+the app's summary panel reads. The tool checks the memo has exactly the four headings
 above, in order; if it errors, fix the headings and run it again.
 
 Then report exactly one line:

@@ -33,10 +33,10 @@ general process-analyst lens and sign the summary *Process Analyst*.
 
 ## Step 1 — Read the element and its comments
 
-- Read the element file at `wiki/processes/<slug>/<section>/<elementId>.md` —
-  its content, `status`, `confidence` and relations.
-- Read `wiki/processes/<slug>/notes.json` — the `<elementId>` entry is the
-  comment thread. The comments to review are the **unresolved** ones: a note
+- Read the element with `expandElement({ type, id })` — its content, `status`,
+  `confidence` and relations.
+- Read the element's `notes` (in the Document Map / via `expandElement`) — the
+  `<elementId>` entry is the comment thread. The comments to review are the **unresolved** ones: a note
   *without* `resolved: true`. A note with `resolved: true` is already handled —
   skip it. A note with `replyTo` set is a reply; read it under its parent.
 - If there are no unresolved comments, tell the SME there is nothing to review
@@ -111,4 +111,4 @@ You review the comments on **one** element per run, for the element you were
 invoked on. You edit only that element, always `status: draft` — the SME
 re-approves it on the card; you never set `approved`. You decide nothing for the
 SME. The closing summary note and the `resolved` marks are the only things you
-write to `notes.json`.
+write to `notes`.

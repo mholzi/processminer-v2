@@ -32,8 +32,8 @@ The sequence is fixed. You follow it in order; you never reorder or skip steps.
 Within a step the work is judgement — but the sequence is not yours to change.
 This is what makes the session auditable.
 
-**The cursor.** `qer_cursor.py` owns `wiki/processes/<slug>/qer-state.json` —
-the resumable record of which step the session is on. A QER session is long
+**The cursor.** The session tools (`getSessionStatus` / `startSession` /
+`advanceSession`) own the resumable record of which step the session is on. A QER session is long
 and easily interrupted; the cursor is what lets a stopped session resume at the
 right step rather than you re-deriving it by eye. You read it at the start
 (Step 1) and advance it at the end of every step.
@@ -55,8 +55,8 @@ for the rest.
 ## Specialist registry
 
 Dispatch in this order — it is the order the cursor steps through.
-`qer_cursor.py status` reports, per perspective, whether its specialist skill
-is built (`skillBuilt`); skip any that is not.
+The `getSessionStatus()` tool reports, per perspective, whether its specialist
+skill is built (`skillBuilt`); skip any that is not.
 
 | Perspective | Skill | Owns |
 |---|---|---|
@@ -86,11 +86,12 @@ Identify the process, then read the cursor.
 
 **Identify the process.** If the invocation already names one, use it.
 Otherwise greet the SME and either:
-- **Existing** — list the slugs under `wiki/processes/`, let the SME pick. Read
-  the current `index.md` so the session extends rather than duplicates.
+- **Existing** — list the available process slugs, let the SME pick. Read the
+  current process overview (root `meta`/`content`) in the Document Map so the
+  session extends rather than duplicates.
 - **New** — run the `new-process` skill (read `.claude/skills/new-process/
-  SKILL.md` and follow it) to scaffold the process folder, the section folders
-  and a skeleton `index.md`.
+  SKILL.md` and follow it) to scaffold the process JSON document and its empty
+  element collections.
 
 **Read the cursor** — `use the getSessionStatus() tool`:
 - **`exists: false`, or `done: true`** — a fresh session. `use the startSession({ slug }) tool`. The SME's **name** and **role** are
@@ -115,7 +116,7 @@ these three choices, verbatim, never just two:
 - **[E] Edit** — apply the SME's corrections, show the result, ask again.
 - **[R] Rewrite** — the draft missed; redraft together, then re-present.
 
-On **[Y]**, write the overview with the tool — never hand-edit `index.md`.
+On **[Y]**, write the overview with the tool — never hand-edit the process JSON.
 Assemble a JSON spec and `use the updateProcessOverview({ slug, overview }) tool`:
 ```json
 {
@@ -132,8 +133,8 @@ Assemble a JSON spec and `use the updateProcessOverview({ slug, overview }) tool
 }
 ```
 The tool preserves the process identity (`id`, `type`, `title`, `status`)
-from the scaffolded `index.md` and owns the frontmatter format — the overview
-cannot come out malformed.
+from the scaffolded process document and owns the frontmatter format — the
+overview cannot come out malformed.
 
 When the overview is written, `use the advanceSession() tool` to move to Step 3.
 

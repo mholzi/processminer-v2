@@ -53,6 +53,17 @@ While the read path works cleanly, several half-migrated writing and schema path
 * **Mitigation (shipped):** a drift-guard test (`src/lib/schema/schema-consistency.test.ts`, run by `npm test`) fails if the two files' element-type sets diverge, so the dangerous case (silent drift) is caught. It does **not** check per-field parity.
 * **Possible future step:** generate the JSON Schema from the custom schema (removing the dual edit entirely) — see TODO 3.
 
+### D. Skill ↔ tool-surface drift (the skills assume tools the backend never exposes)
+* **Location:** `.claude/skills/*/SKILL.md` vs. the real tool surface in [`claude-mcp-server.ts`](file:///Users/markusholzhauser/Development/Processminer2/src/lib/claude-mcp-server.ts) and [`gemini-worker.ts`](file:///Users/markusholzhauser/Development/Processminer2/src/lib/gemini-worker.ts).
+* **The real surface:** the AI session is given **exactly six** tools — `expandElement`, `createElement`, `updateElement`, `checkConformance`, `checkTransitions`, `applyLint`. (`setApproval` / `setRelevance` / `saveSummaryPart` / `triageTargetReview` exist only as in-app server actions in `wiki-write.ts`, not as session tools.) The data-model references in the skills (old folder/`index.md`/sidecar paths) **were migrated to JSON-native** in the skill-migration pass; this entry is the *remaining* drift.
+* **The Problem:** the skill prompts instruct the worker to call a much richer orchestration surface that **does not exist anywhere in `src/`** (0 definitions). Confirmed phantom tools and their callers:
+  * `scaffoldProcess` — **new-process**. No tool (and no API route) creates a new process document, and the MCP server throws `Process document not found for slug` for any slug whose `wiki/processes/<slug>.json` is absent. **New-process is non-functional end-to-end**, and the `/dogfood-run` harness fails at Stage 1 for this reason.
+  * `getSessionStatus` / `startSession` / `advanceSession` / `updateProcessOverview` — **qer-session** (the resumable QER cursor + overview write).
+  * `addSource` / `getSourceReport` / `generateSourceReport` / `createElements` / `writeElements` / `resetManifest` / `mergeManifests` — **document-ingest**, **source-\*** (batch element authoring + the ingest/source manifest).
+  * `writeOverview` / `writeSummary` / `writeIngestReport` / `writeTargetReview` / `clearConflicts` / `getElementTemplate` / `checkEvidence` — **area-summary**, **council-review**, **conflict-resolution**, **document-ingest**.
+* **Root cause:** the JSON-native backend migration is incomplete (cf. CLAUDE.md: "only `cob-003.json` has been migrated"). Crucially, the six tools are **element-scoped**, so root-level writes the skills need — creating a new process, writing the overview, `summaries`, `targetReview`, the `ingest` report, batch element creation — have **no expressible path** with the current surface; closing this gap requires backend work, not just skill edits.
+* **Symptom:** every skill that depends on a phantom tool cannot complete its write step under the real backend; non-interactive button skills (area-summary, council-review, source-\*) and the create/ingest flows are the most exposed.
+
 ---
 
 ## 3. Actionable TODO List
@@ -69,6 +80,13 @@ Convert the following actions to be completely JSON-native:
 
 ### 2. Standardize Saving in `ElementCard.tsx`
 * Update [ElementCard.tsx](file:///Users/devuser/processminer-v2/src/components/ElementCard.tsx) to save all element types (`process-step`, `role`, `system`, `exception`) through the same unified pathway (either a unified JSON-native API route or a unified `saveElement` server action).
+
+### 4. Close the skill ↔ tool-surface gap (see §2D) [CRITICAL for new-process / dogfood]
+The skills' data-model references are migrated, but they still call tools the backend does not expose. Decide and implement a tool surface that covers the writes the skills need (none are expressible with the current six element-scoped tools):
+* **Process creation** — a `scaffoldProcess`-style tool (+ API route) that writes a fresh `wiki/processes/<slug>.json` with `meta` + empty `content`. Unblocks **new-process** and `/dogfood-run` Stage 1.
+* **Root-level writes** — tools for the overview, `summaries`, `targetReview`, the `ingest` report (used by qer-session, area-summary, council-review, conflict-resolution, document-ingest). These write process-JSON fields outside the element arrays.
+* **Batch element authoring + source manifest** — `createElements` / source-manifest tools used by document-ingest and the `source-*` skills.
+* Until then, treat new-process, qer-session, document-ingest, conflict-resolution, area-summary, council-review and source-* as **not runnable end-to-end** against the real backend, and keep `/dogfood-run` out of CI.
 
 ### 3. Schemas — drift-guarded (done); generator (optional, not done)
 * ✅ **Done:** removed the empty `src/lib/schema/process-schema.legacy.json`; added a drift-guard test that fails if the custom schema and the JSON Schema disagree on their element-type sets (see §2C).

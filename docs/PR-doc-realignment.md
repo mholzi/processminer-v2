@@ -38,7 +38,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#30** | Architect section detail views from real elements | `feat/architect-section-detail-views` → `main` | Code | **Merged** (`cbd4390`) |
 | **#31** | Reference all of today's PRs in the PR log + roadmap | `docs/pr-log-reference-all-today` → `main` | Docs only | **Merged** (`3d00316`) |
 | **#32** | Enrich the product ROADMAP with the open backlog items (Phase 0) | `docs/roadmap-enrich-open-items` → `main` | Docs only | **Merged** (`5dfe2dc`) |
-| **#33** | Reconcile + reprioritise the product ROADMAP (remove shipped items; trust-first H1) | `docs/roadmap-reprioritise` → `main` | Docs only | **Open** (`pending`) |
+| **#33** | Reconcile + reprioritise the product ROADMAP (remove shipped items; trust-first H1) | `docs/roadmap-reprioritise` → `main` | Docs only | **Merged** (`6b375d7`) |
+| **#34** | Sync the working tree to main (skill edits, doc/data, dogfood content) | `chore/sync-working-tree-to-main` → `main` | Skills + docs + data | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;

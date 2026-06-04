@@ -30,7 +30,7 @@ Step 3.
 Read the document at the given path (Claude Code reads PDF, Markdown, Word and
 text directly). Take the process `<slug>` from the path
 `raw-sources/<slug>/<file>`, and the process title from
-`wiki/processes/<slug>/index.md`.
+the process overview (root `meta`/`content`) at the top of the Document Map.
 
 Write a clear summary — what the document is, what it covers, what process
 content it holds. Then present the canonical prompt:
@@ -67,13 +67,13 @@ dispatches one drafter sub-agent per element-type group, then one verifier per
 group. The 315k-token main-agent output of the legacy flow becomes ~30k.
 
 1.  **Reference it as an upload.** use the addSource({ slug, file }) tool — this records the
-    document in the process `index.md` so the wiki references the upload.
+    document in the process overview (root `meta`/`content`) so the wiki references the upload.
 
 2.  **Outline — plan every element up front.** Read
     `schema/process-schema.json` for the element types, their sections and
-    templates. For each section folder under `wiki/processes/<slug>/`, list
+    templates. For each element type, use `expandElement({ type })` to list
     the existing element ids + titles (do **not** read their bodies yet — the
-    drafter sub-agent that handles that section will read what it needs).
+    drafter sub-agent that handles that type will read what it needs).
     Read the document end-to-end. For every piece of content that maps to an
     element type, plan one outline entry:
 
@@ -120,9 +120,9 @@ group. The 315k-token main-agent output of the legacy flow becomes ~30k.
     > yours. The full outline is yours to consult for cross-group relations.
     >
     > Read `schema/process-schema.json` for your element types' frontmatter,
-    > relations and template headings. Read the section folder(s) for your
-    > types under `wiki/processes/<slug>/` if you need an existing element's
-    > body to decide how to merge a refine. Then read the document and draft
+    > relations and template headings. Use `expandElement({ type })` to list
+    > your types' collections, then `expandElement({ type, id })` if you need an
+    > existing element's body to decide how to merge a refine. Then read the document and draft
     > each assigned entry:
     >
     > -   **New entry (has `tempKey`, no `id`)** — draft a `createElement`
@@ -235,11 +235,11 @@ group. The 315k-token main-agent output of the legacy flow becomes ~30k.
     records each in the run manifest as created or updated — you do **not**
     track those lists yourself.
 
-6.  **Fill the process overview.** The overview is the process `index.md` — its
+6.  **Fill the process overview.** The overview is the process's root `meta`/`content` — its
     one-line `description`, plus the body fields: purpose, owner, trigger,
     frequency, in/out scope, input and output. The body fields are scaffolded
     blank, so a document that describes the process at a glance should fill
-    them. Read `index.md`, then draft each from what the document explicitly
+    them. Read the process overview (root `meta`/`content`) in the Document Map, then draft each from what the document explicitly
     states — its purpose/scope/trigger sections, its RACI or document-control
     table for the owner, its systems or data section for input and output.
     Apply the same rules as element extraction:
@@ -290,7 +290,7 @@ group. The 315k-token main-agent output of the legacy flow becomes ~30k.
     include `created` or `updated` — the script derives those from the run
     manifest. Save the object to `/tmp/<slug>-ingest-report.json`, then
     use the writeIngestReport({ slug, report }) tool (passing the content of `/tmp/<slug>-ingest-report.json` as the `report` argument). It
-    writes `ingest.json` (which the app's triage screen reads) and prints the
+    writes the `ingest` field in the process JSON (which the app's triage screen reads) and prints the
     canonical created / updated / conflict / correction counts — use those
     printed counts in Step 4.
 
