@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ProcessDoc } from "@/lib/wiki";
 import { hasEntitlement, initials, type User } from "@/lib/user";
-import { isOpen } from "@/lib/lint";
+import { buildAttentionFeed } from "@/lib/orchestrator";
 import RelativeTime from "./RelativeTime";
 
 // The welcome screen — replaces SplashScreen. One component, three faces:
@@ -43,31 +43,6 @@ type PMItem = {
   /** For sorting — higher = more urgent. */
   weight: number;
 };
-
-function pmAttentionForDoc(d: ProcessDoc): PMItem | null {
-  const conflicts = d.ingest?.conflicts?.length ?? 0;
-  const lint = d.lint?.findings?.filter(isOpen).length ?? 0;
-  let openComments = 0;
-  if (d.notes) {
-    for (const arr of Object.values(d.notes)) {
-      for (const n of arr) if (!n.resolved) openComments++;
-    }
-  }
-  const reasons: string[] = [];
-  if (conflicts) reasons.push(`${conflicts} ingest conflict${conflicts === 1 ? "" : "s"}`);
-  if (lint) reasons.push(`${lint} quality finding${lint === 1 ? "" : "s"}`);
-  if (openComments) reasons.push(`${openComments} comment${openComments === 1 ? "" : "s"}`);
-  if (reasons.length === 0) return null;
-  return {
-    kind: "pm-attention",
-    slug: d.slug,
-    id: d.process.id,
-    title: d.process.title,
-    reasons,
-    // Conflicts beat lint beats comments — urgency-weighted.
-    weight: conflicts * 100 + lint * 5 + openComments,
-  };
-}
 
 function handoffReady(d: ProcessDoc): boolean {
   let total = 0;
@@ -121,14 +96,19 @@ export default function WelcomeScreen({
   }, [docs, hasPM]);
 
   // ----- derive the queue items (real data, per-process aggregated) -----
-  const pmAttention = useMemo(() => {
+  // The weight formula + reasons phrasing live in the orchestrator read layer
+  // (buildAttentionFeed), the canonical home shared with any future consumer;
+  // this screen just renders the ranked rows.
+  const pmAttention = useMemo<PMItem[]>(() => {
     if (!hasPM) return [];
-    const items: PMItem[] = [];
-    for (const d of docs) {
-      const it = pmAttentionForDoc(d);
-      if (it) items.push(it);
-    }
-    return items.sort((a, b) => b.weight - a.weight);
+    return buildAttentionFeed(docs).attentionRows.map((r) => ({
+      kind: "pm-attention",
+      slug: r.slug,
+      id: r.id,
+      title: r.title,
+      reasons: r.reasons,
+      weight: r.weight,
+    }));
   }, [docs, hasPM]);
 
   const handoffDocs = useMemo(

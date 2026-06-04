@@ -22,7 +22,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#14** | Cleanup — asList dedup (R13) + runSourcing via handleSend (R14c) | `fix/dedup-runsourcing-r13-r14c` → `main` | Code + docs | **Merged** (`abce8fe`) |
 | **#15** | Section summary strips (R12b) | `feat/section-summaries-r12b` → `main` | Code + docs | **Merged** (`d30c67b`) |
 | **#16** | Country-variations element type (R15) | `feat/country-variations-r15` → `main` | Schema + code + docs | **Merged** (`e7361e9`) |
-| **#17** | Per-process access control (R16) | `feat/process-access-r16` → `main` | Code + docs | **Open** (`pending`) |
+| **#17** | Per-process access control (R16) | `feat/process-access-r16` → `main` | Code + docs | **Merged** (`bd30d67`) |
+| **#18** | Read-only orchestrator layer (R10) | `feat/orchestrator-read-layer-r10` → `main` | Code + tests + docs | **Open** (`pending`) |
 
 > **What happened with #3 → #4 (the stacking lesson):** #3 was opened *stacked*
 > on #2's branch (the A3 change is only safe with the A1 gate present). When #2
@@ -633,10 +634,53 @@ Authz config sits in `data/` (gitignored, per-deployment) alongside `users.json`
 
 ---
 
-# Open follow-ups (as of PR #17)
+# PR #18 — Read-only orchestrator layer (R10)
 
-Both product decisions (R15, R16) are now **closed**, and the **entire
-Processminer roadmap is done**. Remaining:
+**Branch:** `feat/orchestrator-read-layer-r10` → `main` · **Date:** 2026-06-04 ·
+**Type:** Code + tests + docs.
 
-1. **Parked: ArchitectMiner (Theme A — R1–R4)** — the whole module is still view-only (chat is a no-op, Diagram/Traceability/Library are mock, no architect specialists). The largest remaining *functional* gap in the app.
-2. **Optional:** R10 (orchestrator consumer) / the schema generator.
+## Why this PR exists
+
+Roadmap **R10**. The migration dropped `src/lib/orchestrator.ts`
+(`buildOrchestratorState` + `buildAttentionFeed`, source commit `947ee0d`) and
+its 13 tests. The attention-weight formula (`conflicts*100 + lint*5 + comments`)
+survived only **inlined and untyped** inside `WelcomeScreen.tsx`, with no test
+guarding it and no shared home for the routing logic any future consumer (chat
+router, an ArchitectMiner attention surface) could reuse.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/lib/orchestrator.ts` | **new** | The canonical read layer over `ProcessDoc`. `buildOrchestratorState(doc)` → ranked typed `ActionSpec[]` (four kinds: resolve-ingest-conflict / resume-foundational-run / resolve-lint-finding / address-comment) + `OrchestratorHealth`. `buildAttentionFeed(docs)` → `{ attentionRows, cleanProcesses }` for the dashboard. Pure data — no LLM, no writes, no wiki sidecars. Weight constants locked in one place. |
+| `src/lib/orchestrator.test.ts` | **new** | 13 tests — weight ordering, dismissed/resolved exclusion, done-run not resumable, **byte-identical legacy reasons phrasing + formula** so the dashboard order can't silently drift. |
+| `src/components/WelcomeScreen.tsx` | **edit** | Deleted the inline `pmAttentionForDoc`; `pmAttention` now maps `buildAttentionFeed(docs).attentionRows`. Dropped the now-unused `isOpen` import. |
+| `package.json` | **edit** | Wired `orchestrator.test.ts` into the `test` script. |
+
+## Design notes / scope
+
+- The original took a `ProcessView` second arg (it was unused — `_view`) tied to
+  `process-view.ts` (R18), which doesn't exist on this baseline. Scoped the new
+  `buildOrchestratorState` to read straight off `ProcessDoc`; R18 was **not**
+  pulled in.
+- Runtime inputs (open lint findings, the run cursor) are read off the
+  **hydrated** `ProcessDoc` — `getProcess` stitches them from the runtime store
+  (R9), so this layer never touches `data/runtime/` and never reads runtime
+  state back out of the wiki JSON. Pairs cleanly with R9 as its consumer.
+
+## Verification
+
+- `npm run typecheck` clean. `npm test` → **39/39** (26 prior + 13 new).
+- App (admin): the welcome dashboard renders an identical attention row —
+  `COB-003 · 89 quality findings` — sourced live through the new
+  `buildAttentionFeed` path off the R9 runtime store. No console errors.
+
+---
+
+# Open follow-ups (as of PR #18)
+
+Both product decisions (R15, R16) are **closed**, R10 is **done**, and the
+**entire Processminer roadmap is delivered**. Remaining:
+
+1. **Parked: ArchitectMiner (Theme A — R1–R4)** — the whole module is still view-only (chat is a no-op, Diagram/Traceability/Library are mock, no architect specialists). The largest remaining *functional* gap in the app. R10 (this PR) is the shared read layer its dashboard attention rows would consume.
+2. **Optional:** the schema generator (derive the Draft-07 JSON Schema from the custom schema, retiring the dual-edit + drift-guard).
