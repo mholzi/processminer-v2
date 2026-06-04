@@ -25,13 +25,16 @@ what it changes, behaviour/scope, and how it was verified.
 | **#17** | Per-process access control (R16) | `feat/process-access-r16` → `main` | Code + docs | **Merged** (`bd30d67`) |
 | **#18** | Read-only orchestrator layer (R10) | `feat/orchestrator-read-layer-r10` → `main` | Code + tests + docs | **Merged** (`1e3ad18`) |
 | **#19** | Live architect chat via shared `useAgentChat` (R1) | `feat/architect-chat-r1` → `main` | Code + docs | **Merged** (`de1eb98`) |
-| **#20** | Domain + solution architect specialists (R2) | `feat/architect-specialists-r2` → `main` | Skills + docs | **Open** (`pending`) |
+| **#20** | Domain + solution architect specialists (R2) | `feat/architect-specialists-r2` → `main` | Skills + docs | **Merged** (`ced2bc6`) |
+| **#21** | Flag dangling relation targets in the element card (R17) | `fix/dangling-relation-chips-r17` → `main` | Code + docs | **Merged** (`be7fe91`) |
+| **#22** | Recover docs & standalone artifacts (R20–R22) | `feat/docs-artifacts-r20-r22` → `main` | Docs / artifacts only | **Open** (`pending`) |
 
-> **Numbering note.** A "Recover docs & standalone artifacts (R20–R22)" PR was
-> pre-logged here as #19 but never opened on GitHub; its work is still staged
-> locally on `feat/docs-artifacts-r20-r22`. The next real GitHub number went to
-> the ArchitectMiner R1 work above, so that docs/artifacts PR will take a later
-> number when it is actually opened.
+> **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
+> was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
+> the docs/artifacts PR was opened later as **#22**. **#20** is the R2
+> architect-specialists PR (opened separately by the ArchitectMiner track).
+> #21 + #22 were developed concurrently with R2 in isolated git worktrees off
+> `main`, so the PR numbers are not in requirement order.
 
 > **What happened with #3 → #4 (the stacking lesson):** #3 was opened *stacked*
 > on #2's branch (the A3 change is only safe with the A1 gate present). When #2
@@ -825,14 +828,82 @@ set authored in the same era.
 
 ---
 
-# Open follow-ups (as of PR #19)
+# PR #21 — Flag dangling relation targets in the element card (R17)
 
-Both product decisions (R15, R16) are **closed**, R10 is **done**, the docs
-track (R20–R22) is **recovered**, and the **entire Processminer roadmap is
-delivered**. Remaining:
+**Branch:** `fix/dangling-relation-chips-r17` → `main` · **Date:** 2026-06-04
+· **Type:** Code + docs.
 
-1. **In progress: ArchitectMiner (Theme A — R1–R4).** R1 (chat) and R2 (specialists) are done. Remaining:
+## Why this PR exists
+
+Roadmap **R17** ("broken-relation visibility"). Verified the gap was real
+first: `buildRelations` (`src/lib/relations.ts`) renders forward/reverse
+relation chips straight from each element's schema relations but never checks
+the target id resolves. The only deterministic dangling-ref check
+(`src/lib/coverage.ts`) covers **only** `transformation-decision.resolves` /
+`.realises`, so every other relation (control→step, regulation→control,
+country-variation→affects, role→systems/controls, system integrations, …)
+rendered a chip that silently no-op'd on click. `lint.ts` is just data shapes —
+the real lint pass is the LLM `run-lint` skill (non-deterministic).
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/components/ElementCard.tsx` | **edit** | A dangling branch in the relation-chip render: when `getRef` resolves no element, emit a non-navigable `<span class="link-chip link-chip-dangling">⟨id⟩ not found</span>` instead of a clickable chip. Auto-covers all generic relations (the chip list comes from `buildRelations`). |
+| `src/app/globals.css` | **edit** | `.link-chip-dangling` styling — `--lo`/`--lo-bg` error palette, `cursor: help`. |
+| `REQUIREMENTS-ROADMAP.md` | **edit** | R17 marked ✅ FIXED. |
+
+## Verification
+
+- `npm run typecheck` clean (against current `main`, incl. R1).
+- Live on `cob-003`: **297 valid relation chips unchanged + navigable** (no
+  regression); the dangling markup computes to the `--lo`/`--lo-bg` error tokens
+  and renders as a non-button `<span>`. *(Transitions + RACI step refs share the
+  same `getRef` pattern and have their own write-time validators — left as a
+  possible extension.)*
+
+---
+
+# PR #22 — Recover docs & standalone artifacts (R20–R22)
+
+**Branch:** `feat/docs-artifacts-r20-r22` → `main` · **Date:** 2026-06-04
+· **Type:** Docs / standalone artifacts only — **no application code changes.**
+
+## Why this PR exists
+
+Roadmap **Theme H (R20–R22)** — three clusters of standalone artifacts dropped
+in the JSON-native migration. None is imported by `src/`; all were fully
+recoverable from their source commits.
+
+## What this PR adds / changes
+
+| Req | Files | Source |
+|---|---|---|
+| **R20** | `pm-pdf.mjs`, `pm-shot-competitor.mjs`, the full `public/onepager*` set (4 HTML slides, `onepager-deck.html`/`.pdf`, 5 screenshots) | `b858dff` |
+| **R21** | `ROADMAP.md`, `AI-GOVERNANCE-ROADMAP.md`, `AI-GOVERNANCE-CHANGESET.md` + byte-identical `public/` copies + HTML renders | `1e347a6` |
+| **R22** | `pm-shot.mjs`, `pm-shot-architect.mjs` | `7899697` |
+
+## Design notes / scope
+
+- **Restore-as-is, by decision.** Pre-rewrite screenshots, v0.x deck framing,
+  and old-UI `pm-shot` selectors are left intact; refreshing them is a follow-up.
+- `AI-GOVERNANCE-CHANGESET.md` (root + `public/` copy) carries a banner flagging
+  it targets the pre-rewrite codebase — reference only.
+- No `src/` imports touch the restored files, so typecheck/test are unaffected.
+- Built in an isolated git worktree off `main`, concurrent with the R1/R2
+  ArchitectMiner work, to avoid colliding in the shared working tree.
+
+---
+
+# Open follow-ups (as of PR #22)
+
+Both product decisions (R15, R16) are **closed**, R10 is **done**, R17 is
+**fixed** (#21), the docs track (R20–R22) is **recovered** (#22), and the
+**entire Processminer roadmap is delivered**. Remaining:
+
+1. **In progress: ArchitectMiner (Theme A — R1–R4).** R1 (#19) made the architect canvas chat live; R2 (#20) adds the architect specialists. Remaining:
    - **R3** — Diagram + Traceability real data wiring (replace the hardcoded SVG + the "illustrative" stat with reads off `doc.elements[].relations`). *Next.*
    - **R4** — Personal + Library tiers from real data (aggregate across all `<slug>.json` docs).
 2. **Optional:** the schema generator (derive the Draft-07 JSON Schema from the custom schema, retiring the dual-edit + drift-guard).
-3. **Open docs/artifacts PR (R20–R22):** staged locally on `feat/docs-artifacts-r20-r22`, not yet opened (see the numbering note above). Re-point `pm-shot*.mjs` at the current UI before regenerating.
+3. **Refresh the recovered artifacts (follow-up to R20/R22):** re-point `pm-shot*.mjs` at the current UI, regenerate the onepager screenshots + PDF, and update the v0.x deck framing.
+4. **R18 / R19** — remaining verify-then-decide loose ends (ProcessView join layer; slim per-type schema slices).
