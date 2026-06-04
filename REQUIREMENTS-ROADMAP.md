@@ -136,10 +136,9 @@ Each requirement: source commit(s), what's missing, impact, effort (S/M/L), reco
 
 ### Theme F — Product decisions (not technical givens)
 
-#### R15 — Country-variations element type — **product decision**
+#### R15 — Country-variations element type — **product decision: YES**
 - **Source:** `ecc57f1` (3rd feature)
-- **Question:** Do you still want a `country-variation` element type + section in the JSON schema? Not present anywhere now.
-- **Effort:** S to add the schema type once confirmed · **Recommendation:** Verify-then-decide.
+- **Decision:** Add it. ✅ **DONE.** New `country-variation` element type (idPrefix `CV`; field `country`; `affects → process-step`; template **What differs / Why it differs / Impact**) added to **both** schema files (custom + AJV — drift-guard parity holds), plus a **Country Variations** section in the As-Is area. Verified: the section shows in the As-Is nav with an Add-entry CTA; the generic ElementCard + a per-country `SectionSummary` breakdown render it. SMEs document jurisdictional differences as first-class elements.
 
 #### R16 — Per-process access control (grant / owner / contributors / Settings access summary) — **product decision**
 - **Source:** `db525cf` (part 2), `1772a5c` (grant-access UI), `3b51a56` (Settings access summary)

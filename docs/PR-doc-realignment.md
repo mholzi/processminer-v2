@@ -20,7 +20,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#12** | Editable Overview (R12a) | `feat/overview-edit-summaries-r12` → `main` | Code + docs | **Merged** (`b742eb1`) |
 | **#13** | Contributors + per-edit attribution (R5) | `feat/contributors-activity-r5` → `main` | Code + docs | **Merged** (`51abb5c`) |
 | **#14** | Cleanup — asList dedup (R13) + runSourcing via handleSend (R14c) | `fix/dedup-runsourcing-r13-r14c` → `main` | Code + docs | **Merged** (`abce8fe`) |
-| **#15** | Section summary strips (R12b) | `feat/section-summaries-r12b` → `main` | Code + docs | **Open** (`pending`) |
+| **#15** | Section summary strips (R12b) | `feat/section-summaries-r12b` → `main` | Code + docs | **Merged** (`d30c67b`) |
+| **#16** | Country-variations element type (R15) | `feat/country-variations-r15` → `main` | Schema + code + docs | **Open** (`pending`) |
 
 > **What happened with #3 → #4 (the stacking lesson):** #3 was opened *stacked*
 > on #2's branch (the A3 change is only safe with the A1 gate present). When #2
@@ -571,12 +572,37 @@ A single unified component rather than 8 hand-crafted matrix/heatmap widgets —
 
 ---
 
-# Open follow-ups (as of PR #15)
+# PR #16 — Country-variations element type (R15)
 
-Fixed so far: **A1** (#2), **A3** (#4), **R6a** (#5), **R6b** (#6), **schema
-drift-guard** (#7), **R7 + R8** (#8), **R9** (#9), **R11** (#10), **A4 + R14 a/b**
-(#11), **R12a** (#12), **R5** (#13), **R13 + R14c** (#14), **R12b** (#15) — the
-Processminer feature queue is **clear**. Still open:
+**Branch:** `feat/country-variations-r15` → `main` · **Date:** 2026-06-04 ·
+**Type:** Schema + code + docs.
 
-1. **Product decisions** — R15 (country-variations element type) and R16 (per-process access control).
-2. **Parked:** ArchitectMiner Theme A (R1–R4); R10 / schema-generator (optional).
+## Why this PR exists
+
+Product decision **R15 = yes**: jurisdictional differences should be captured as
+first-class elements, not buried in prose.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `schema/process-schema.json` (custom) | **edit** | New `country-variation` element type (idPrefix `CV`; field `country`; `affects → process-step`; template **What differs / Why it differs / Impact**) + a **Country Variations** section in the As-Is area. |
+| `src/lib/schema/process-schema.json` (AJV) | **edit** | `CountryVariation` definition + the `country-variations` collection. |
+| `src/components/SectionSummary.tsx` | **edit** | Per-country breakdown for the new section. |
+
+The UI is otherwise free — the section nav, ElementCard, and add-entry flow are all schema-driven.
+
+## Verification
+
+- Both schema files valid JSON; **drift-guard parity holds** (`country-variation` ↔ `CountryVariation`). `npm run typecheck` clean; `npm test` → 26/26 (drift-guard green).
+- App: **Country Variations** appears in the As-Is nav (count 0) and renders its header + description + **Add entry** CTA. No errors.
+
+---
+
+# Open follow-ups (as of PR #16)
+
+Fixed so far: …**R12b** (#15), **R15** (#16) — the Processminer queue **and** the
+R15 product decision are closed. Still open:
+
+1. **R16** — per-process access control (the remaining product decision: structured per-process access, or keep admin-only / all-users-see-all?).
+2. **Parked:** ArchitectMiner Theme A (R1–R4) — the whole module is still view-only; R10 / schema-generator (optional).

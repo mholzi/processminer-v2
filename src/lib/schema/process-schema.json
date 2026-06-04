@@ -167,6 +167,15 @@
         "$ref": "#/definitions/PainPoint"
       }
     },
+    "country-variations": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/CountryVariation"
+      }
+    },
     "friction-points": {
       "type": [
         "array",
@@ -442,6 +451,69 @@
     "migration-phases"
   ],
   "definitions": {
+    "CountryVariation": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "country-variation"
+                },
+                "section": {
+                  "const": "country-variations"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "country": {
+                  "type": "string"
+                },
+                "affects": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "whatDiffers": {
+                  "type": "string"
+                },
+                "whyItDiffers": {
+                  "type": "string"
+                },
+                "impact": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "country",
+                "whatDiffers",
+                "whyItDiffers",
+                "impact"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
     "BaseMeta": {
       "type": "object",
       "properties": {

@@ -17,6 +17,7 @@ const SUMMARY: Record<string, { field: string; label: string }> = {
   "innovation-ideas": { field: "strategicFit", label: "Strategic fit" },
   "innovation-risks": { field: "severity", label: "Severity" },
   "market-trends": { field: "horizon", label: "Horizon" },
+  "country-variations": { field: "country", label: "Country" },
 };
 
 // Severity-like values get a tone; everything else is a neutral chip.
