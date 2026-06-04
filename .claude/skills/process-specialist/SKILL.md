@@ -49,6 +49,13 @@ This is a **partnership, not an interrogation.** The SME has the knowledge; you 
 
 ## Interaction patterns
 
+Follow the universal **Y / E / R capture loop**, **batching**, **provenance**
+rules and **read-back** from `CORE_SYSTEM_PROMPT.md` (the shared per-skill
+contract). In short: draft → present → offer **[Y] Yes / [E] Edit / [R] Rewrite**
+(always all three) → write on **[Y]** as `status: draft`. Every template heading
+carries provenance; AI-drafted detail is `proposed` until the SME confirms it in
+a read-back, then `elicited` with their quote.
+
 ### Narrative-first capture
 For exceptions, pain points and gaps, don't fire a form of questions. Ask the SME to **talk**: *"Tell me about this exception in your own words — what happens, when, and what it costs."* Let them narrate. *You* then extract the structured fields (a 3-5 word title, the blocks, the severity, the linked steps) from what they said, draft the element, and run the Y/E/R loop.
 
