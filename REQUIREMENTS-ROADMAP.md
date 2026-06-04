@@ -172,16 +172,19 @@ Each requirement: source commit(s), what's missing, impact, effort (S/M/L), reco
 - **Source:** `b858dff` (supersedes `44f8ffa`)
 - **Gap:** The finished 4-slide product deck + print-ready PDF + `pm-pdf.mjs` are gone. Standalone `public/` artifacts, never imported by app code.
 - **Effort:** S restore-as-is / M regenerate · **Recommendation:** Verify-then-decide — narrative still holds but slide 4 screenshots + v0.x framing predate the rewrite. Fully recoverable from the tag.
+- ✅ **RECOVERED (restore-as-is).** `pm-pdf.mjs`, `pm-shot-competitor.mjs`, and the full `public/onepager*` set (4 HTML slides + `onepager-deck.html`/`.pdf` + 5 screenshots) restored verbatim from `b858dff`. Screenshots + v0.x framing remain pre-rewrite; refreshing them is a follow-up (needs the screenshot helpers re-pointed at the current UI).
 
 #### R21 — Phase-2 product roadmap + AI-governance docs
 - **Source:** `1e347a6`
 - **Gap:** `ROADMAP.md`, `AI-GOVERNANCE-ROADMAP.md`, `AI-GOVERNANCE-CHANGESET.md` — no new doc covers these, and governance is a live concern (referenced in project memory).
 - **Effort:** S recover · **Recommendation:** Recover roadmap + governance-roadmap for reference; treat the changeset (targets old codebase) as Update-or-Skip.
+- ✅ **RECOVERED.** `ROADMAP.md`, `AI-GOVERNANCE-ROADMAP.md`, `AI-GOVERNANCE-CHANGESET.md` (+ their byte-identical `public/` copies and `public/*.html` renders) restored from `1e347a6`. The changeset is included as-is with a banner noting it targets the pre-rewrite codebase (reference only).
 
 #### R22 — pm-shot screenshot helpers
 - **Source:** `7899697` (+ `pm-shot-competitor.mjs` from `b858dff`)
 - **Gap:** CDP/cookie screenshot harness gone. Selectors target the old UI.
 - **Effort:** S restore / M re-point · **Recommendation:** Only if R20 is accepted.
+- ✅ **RECOVERED (restore-as-is).** `pm-shot.mjs` + `pm-shot-architect.mjs` restored from `7899697` (`pm-shot-competitor.mjs` came in with R20). Selectors still target the old UI — re-pointing to the current UI is a follow-up if/when the screenshots are regenerated.
 
 ---
 
