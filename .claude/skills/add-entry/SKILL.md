@@ -22,9 +22,10 @@ counterpart to the bulk `source-innovation` / `source-cx` skills.
 ## Step 1 — Read the section's context
 
 - Read `schema/process-schema.json` for the section — the element type(s) it
-  holds. For each of those types use the `getElementTemplate({ type })` tool: it prints the type's `## ` blocks **and** its type-specific
-  frontmatter fields and relations, so the entry you draft is as complete as
-  one the dedicated sourcing skills produce.
+  holds. For each of those types, read its schema template (its `## ` blocks
+  **and** its type-specific frontmatter fields and relations) from the schema /
+  Document Map, so the entry you draft is as complete as one the dedicated
+  sourcing skills produce.
 - List the section's existing elements with `expandElement({ type })`, then
   read any specific one with `expandElement({ type, id })`, so the new entry
   fits and does not duplicate one already there.
@@ -54,7 +55,7 @@ Research the entry before drafting — never draft from a blank guess:
   do not have. Cite the real source; never invent one.
 
 Then draft the element: every block per its schema `template`, **every
-frontmatter field and relation `getElementTemplate({ type })` listed for the type** (for a
+frontmatter field and relation the schema template lists for the type** (for a
 web-sourced type that means `sourceUrl`, `asOf` and the rest — do not leave
 them off), an honest `confidence`, and a `source` (the SME, the wiki element,
 or the study/URL the research found). If the
@@ -78,11 +79,11 @@ While drafting and presenting (Steps 3–4) the element has no id yet — refer 
 it by description, never guess an id. The id is assigned here, at write time.
 
 On **[Y]**:
-1. use the `getNextId({ slug, type })` tool — this provides the id.
-2. Assemble an element object (`slug`, `type`, `id`, `title`, `confidence`,
-   `source`, `fields` for scalar frontmatter, `relations` for id-lists,
-   `blocks`), then use the `createElement({ type, element })` tool — `status: draft`.
-3. use the `checkConformance({ slug, id })` tool — fix any flag.
+1. Assemble an element object (`title`, `confidence`, `source`, the scalar
+   frontmatter fields, the relation id-lists and the blocks) and use the
+   `createElement({ type, element })` tool — `status: draft`. **Do not set an
+   id**: the backend assigns it and returns it in the result.
+2. use the `checkConformance({ slug })` tool — fix any flag.
 
 Then confirm with this **exact** line, substituting the id, title and section:
 

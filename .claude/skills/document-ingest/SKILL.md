@@ -255,25 +255,28 @@ group. The 315k-token main-agent output of the legacy flow becomes ~30k.
     leave it untouched.
 
     Verify the drafted overview against the source the same way the Step 3.4
-    verifiers do — strip any claim you cannot trace — then write it with
-    use the writeOverview({ overview }) tool (passing the content of `/tmp/<slug>-overview.json` as the `overview` argument) (`docStatus`
-    `As-Is draft`, `source: {file}`, the verified `confidence`; `slug`, the
-    `purpose` body, and — **only when you corrected it** — `description` in the
-    spec; omit `description` to keep the scaffolded one). The overview is the
-    process page, not an element: it takes no id and is not counted in
-    created / updated.
+    verifiers do — strip any claim you cannot trace — then write it with the
+    updateElement({ id, patch }) tool, where `id` is the **process overview's
+    root id** (the root `meta.id` in the Document Map). Patch its `meta`
+    (`docStatus: "As-Is draft"`, `source: {file}`, the verified `confidence`)
+    and its `content` (the body fields — `processOwner`, `trigger`, `frequency`,
+    `scopeIn`, `scopeOut`, `processInput`, `processOutput` — and, **only when you
+    corrected it**, `description`; omit `description` to keep the scaffolded one).
+    The overview is the process page, not an element in a collection: it is not
+    counted in created / updated.
 
     If the overview produced any conflict or correction, hold it in memory —
     you append it to the merged lists in Step 3.8 before writing the report.
 
-7.  **Check conformance and evidence.** use the checkConformance({ slug }) tool and fix any element you wrote that
-    it flags. Then use the checkEvidence({ slug }) tool — it
-    verifies every `document` heading's `evidence` is genuinely traceable to a
-    file under `raw-sources/<slug>/`. If it flags an element, the quote is
-    wrong, paraphrased or carried over from another document — re-read the
-    source passage, correct the `evidence` to a verbatim quote from it, and
-    rewrite the element. A `document` claim whose evidence cannot be traced is
-    exactly the hallucination this step exists to catch; never leave it flagged.
+7.  **Check conformance.** use the checkConformance({ slug }) tool and fix any
+    element you wrote that it flags — it validates every element against its
+    template, frontmatter, field values **and provenance** (including that each
+    `document` heading carries an `evidence` quote). For every `document` heading
+    you wrote, re-read the source passage and confirm the `evidence` is a
+    verbatim quote genuinely traceable to a file under `raw-sources/<slug>/`; if
+    a quote is wrong, paraphrased or carried over from another document, correct
+    it and rewrite the element. A `document` claim whose evidence cannot be
+    traced is exactly the hallucination this step exists to catch; never leave it.
 
 8.  **Write the ingest report.** Take the `conflicts` and `corrections` lists you
     held from Step 3.5, and append any overview-level entry from Step 3.6
