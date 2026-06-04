@@ -94,10 +94,7 @@ export interface CoverageReport {
   consistency: ConsistencyFinding[];
 }
 
-function asList(v: string | string[] | undefined): string[] {
-  if (!v) return [];
-  return Array.isArray(v) ? v : [v];
-}
+import { asList } from "./meta.ts";
 
 /** A problem is closed (excluded from coverage) when its gapStatus /
  *  findingStatus is a known closed value. Missing status, "open", or any

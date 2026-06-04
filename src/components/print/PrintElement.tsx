@@ -5,10 +5,7 @@ import { elementStatus } from "@/lib/element-format";
 // One element, rendered for the print/export document — read-only, fully
 // expanded, every reference shown as "ID (Name)" so it reads on paper.
 
-function asList(v: string | string[] | undefined): string[] {
-  if (!v) return [];
-  return Array.isArray(v) ? v : [v];
-}
+import { asList } from "@/lib/meta";
 
 export default function PrintElement({
   page,

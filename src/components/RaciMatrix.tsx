@@ -12,10 +12,7 @@ const LEVEL_CLASS: Record<string, string> = {
   I: "raci-i",
 };
 
-function asList(v: string | string[] | undefined): string[] {
-  if (!v) return [];
-  return Array.isArray(v) ? v : [v];
-}
+import { asList } from "@/lib/meta";
 
 // RACI rule check for the levels assigned to one step. A valid activity has
 // at least one Responsible and exactly one Accountable.

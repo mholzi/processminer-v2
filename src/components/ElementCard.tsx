@@ -39,10 +39,7 @@ function specText(b: BlockSpec): string {
   return bits.length ? `Paragraph · ${bits.join(" · ")}` : "Paragraph";
 }
 
-function asList(v: string | string[] | undefined): string[] {
-  if (!v) return [];
-  return Array.isArray(v) ? v : [v];
-}
+import { asList } from "@/lib/meta";
 
 const TRANSITION_KINDS = ["normal", "branch", "loopback", "exception"];
 

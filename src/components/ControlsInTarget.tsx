@@ -13,10 +13,7 @@ import ElementHovercard from "./ElementHovercard";
 //               it needs a manual call.
 // This is a derived diff, like TargetSynthesis — nothing is stored.
 
-function asList(v: string | string[] | undefined): string[] {
-  if (!v) return [];
-  return Array.isArray(v) ? v : [v];
-}
+import { asList } from "@/lib/meta";
 
 type Disposition = "reworked" | "carried" | "unanchored";
 
