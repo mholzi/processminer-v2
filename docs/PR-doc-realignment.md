@@ -37,7 +37,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#29** | Add an Open items section near the top of the roadmap | `docs/roadmap-open-items` → `main` | Docs only — parallel track | **Merged** (`bff5c81`) |
 | **#30** | Architect section detail views from real elements | `feat/architect-section-detail-views` → `main` | Code | **Merged** (`cbd4390`) |
 | **#31** | Reference all of today's PRs in the PR log + roadmap | `docs/pr-log-reference-all-today` → `main` | Docs only | **Merged** (`3d00316`) |
-| **#32** | Enrich the product ROADMAP with the open backlog items (Phase 0) | `docs/roadmap-enrich-open-items` → `main` | Docs only | **Open** (`pending`) |
+| **#32** | Enrich the product ROADMAP with the open backlog items (Phase 0) | `docs/roadmap-enrich-open-items` → `main` | Docs only | **Merged** (`5dfe2dc`) |
+| **#33** | Reconcile + reprioritise the product ROADMAP (status tags, content-first H1) | `docs/roadmap-reprioritise` → `main` | Docs only | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1167,6 +1168,34 @@ two views diverged.
 ## Verification
 
 - Docs only — typecheck / test unaffected. Root and `public/ROADMAP.md` verified identical.
+
+---
+
+# PR #33 — Reconcile + reprioritise the product ROADMAP
+
+**Branch:** `docs/roadmap-reprioritise` → `main` · **Date:** 2026-06-04 ·
+**Type:** Docs only.
+
+## Why this PR exists
+
+`ROADMAP.md` is dated 2026-05-28 and predates the whole R1–R22 + ArchitectMiner
+run, so several of its candidate features had already shipped, and its proposed
+2026 H1 P0 set was partly stale. A priority review (verified against the code).
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `ROADMAP.md` | **edit** | (1) A **Status reconciliation (2026-06-04)** banner + inline **✅ SHIPPED / 🟡 PARTIAL** tags on candidates that already landed (Phase 1 #4/#5, Phase 3 #1/#6/#10/#12/#14, Phase 2 #20, the Phase 1 #11 seam) — verified against the code. (2) A new **Phase 0 #0 — Content & data coverage** item (document 2–3 real processes + architect one end-to-end), flagged as the real #1 since only `cob-003` is documented and zero processes are architected, so the R4/AM views read empty. (3) A **revised 2026 H1** ("prove it on real content, then anchor it"): content-first, EPM anchor, two trust quick wins (staleness + consistency widget), Confluence outbound pulled forward; defers the already-shipped #4/#5, Adonis import, and R19. |
+| `public/ROADMAP.md` | **edit** | Kept byte-identical. |
+
+## Verification
+
+- Docs only — typecheck / test unaffected. The ✅/🟡 tags were each checked
+  against the codebase (e.g. `useAgentChat`, `ElementCard` inline edit,
+  `GuidedTour`, `CommandPalette`, `notifyTurnComplete`, `data-theme` toggle,
+  `buildTraceability`, orchestrator `ActionKind`). Root and `public/ROADMAP.md`
+  verified identical.
 
 ---
 
