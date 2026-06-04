@@ -28,12 +28,15 @@ what it changes, behaviour/scope, and how it was verified.
 | **#20** | Domain + solution architect specialists (R2) | `feat/architect-specialists-r2` → `main` | Skills + docs | **Merged** (`ced2bc6`) |
 | **#21** | Flag dangling relation targets in the element card (R17) | `fix/dangling-relation-chips-r17` → `main` | Code + docs | **Merged** (`be7fe91`) |
 | **#22** | Recover docs & standalone artifacts (R20–R22) | `feat/docs-artifacts-r20-r22` → `main` | Docs / artifacts only | **Merged** (`ea052d5`) |
-| **#23** | Refresh roadmap status header | `docs/roadmap-refresh` → `main` | Docs only | **Merged** (`8377486`) |
+| **#23** | Refresh roadmap status header | `docs/roadmap-status-refresh` → `main` | Docs only | **Merged** (`8377486`) |
 | **#24** | Diagram + Traceability real-data wiring (R3) | `feat/architect-diagram-traceability-r3` → `main` | Code + tests + docs | **Merged** (`9e82c4c`) |
-| **#25** | Extract RACI-pivot + flow-lane joins into process-view (R18) | `refactor/process-view-r18` → `main` | Code + tests | **Merged** (`ebdf9fa`) — parallel track |
+| **#25** | Extract RACI-pivot + flow-lane joins into process-view (R18) | `feat/process-view-r18` → `main` | Code + tests | **Merged** (`ebdf9fa`) — parallel track |
 | **#26** | Personal + Library tiers from real data (R4) | `feat/architect-personal-library-r4` → `main` | Code + tests + docs | **Merged** (`bf77fe3`) |
-| **#27–#29** | Roadmap-doc reconciliation (status, open-items, R3/R4/R18/R19) | `docs/roadmap-*` → `main` | Docs only — parallel track | **Merged** |
-| **#30** | Architect section detail views from real elements | `feat/architect-section-detail-views` → `main` | Code | **Open** (`pending`) |
+| **#27** | Record R3/R4/R18 delivered + R19 relevance assessment | `docs/roadmap-r18-r19` → `main` | Docs only — parallel track | **Merged** (`1009038`) |
+| **#28** | Reconcile per-requirement status against all merged PRs | `docs/roadmap-reconcile` → `main` | Docs only — parallel track | **Merged** (`6046216`) |
+| **#29** | Add an Open items section near the top of the roadmap | `docs/roadmap-open-items` → `main` | Docs only — parallel track | **Merged** (`bff5c81`) |
+| **#30** | Architect section detail views from real elements | `feat/architect-section-detail-views` → `main` | Code | **Merged** (`cbd4390`) |
+| **#31** | Reference all of today's PRs in the PR log + roadmap | `docs/pr-log-reference-all-today` → `main` | Docs only | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -901,6 +904,28 @@ recoverable from their source commits.
 
 ---
 
+# PR #23 — Refresh roadmap status header
+
+**Branch:** `docs/roadmap-status-refresh` → `main` · **Date:** 2026-06-04 ·
+**Type:** Docs only. Parallel track (roadmap bookkeeping).
+
+## Why this PR exists
+
+`REQUIREMENTS-ROADMAP.md`'s top-of-file status header had gone stale as PRs
+landed. This refreshes it to record R10, R1, R2, R17 and R20–R22 as delivered.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `REQUIREMENTS-ROADMAP.md` | **edit** | Status header updated to mark the then-delivered set (R10 / R1 / R2 / R17 / R20–R22). No app code. |
+
+## Verification
+
+- Docs only — `npm run typecheck` / `npm test` unaffected.
+
+---
+
 # PR #24 — Diagram + Traceability real-data wiring (R3)
 
 **Branch:** `feat/architect-diagram-traceability-r3` → `main` · **Date:**
@@ -943,6 +968,34 @@ architect analysis views were decorative mockups.
 
 ---
 
+# PR #25 — Extract RACI-pivot + flow-lane joins into process-view (R18)
+
+**Branch:** `feat/process-view-r18` → `main` · **Date:** 2026-06-04 · **Type:**
+Code + tests. Parallel track (developed concurrently with the ArchitectMiner R3/R4 work).
+
+## Why this PR exists
+
+Roadmap **R18** — the "verify-then-decide" view-layer item. The RACI pivot and
+flow-lane joins were computed inline in components; this extracts them into a
+dedicated `process-view` join layer (`src/lib/process-view.ts`) so the shape is
+computed once, tested, and reusable.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/lib/process-view.ts` | **new** | The RACI-pivot + flow-lane join layer over a `ProcessDoc`. |
+| `src/lib/process-view.test.ts` | **new** | Unit tests for the joins. |
+| consumers | **edit** | Components read the precomputed view instead of joining inline. |
+
+## Verification
+
+- `npm run typecheck` clean; `npm test` green (added `process-view.test.ts`).
+- Opened in an isolated git worktree off `main` concurrent with R3/R4, which is
+  why its PR number (#25) interleaves the ArchitectMiner sequence.
+
+---
+
 # PR #26 — Personal + Library tiers from real data (R4)
 
 **Branch:** `feat/architect-personal-library-r4` → `main` · **Date:**
@@ -982,6 +1035,57 @@ rendered fiction.
   **0**, Pattern library **—**); "All processes" lists the 3 real processes
   (all UPSTREAM, "none yet"); Capability catalog / ADRs / etc. show real empty
   states. The mock portfolios are gone. Zero console errors; screenshot verified.
+
+---
+
+# PR #27 — Record R3/R4/R18 delivered + R19 relevance assessment
+
+**Branch:** `docs/roadmap-r18-r19` → `main` · **Date:** 2026-06-04 · **Type:**
+Docs only. Parallel track (roadmap bookkeeping).
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `REQUIREMENTS-ROADMAP.md` | **edit** | Marks R3, R4 and R18 delivered, and adds a relevance assessment for R19 (slim per-type schema slices). |
+
+## Verification
+
+- Docs only — typecheck / test unaffected.
+
+---
+
+# PR #28 — Reconcile per-requirement status against all merged PRs
+
+**Branch:** `docs/roadmap-reconcile` → `main` · **Date:** 2026-06-04 · **Type:**
+Docs only. Parallel track.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `REQUIREMENTS-ROADMAP.md` | **edit** | Sweeps every requirement (R1–R22) and reconciles its status line against what actually merged, so the roadmap matches the PR log. |
+
+## Verification
+
+- Docs only — typecheck / test unaffected.
+
+---
+
+# PR #29 — Add an Open items section near the top of the roadmap
+
+**Branch:** `docs/roadmap-open-items` → `main` · **Date:** 2026-06-04 · **Type:**
+Docs only. Parallel track.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `REQUIREMENTS-ROADMAP.md` | **edit** | Adds an at-a-glance "Open items" section near the top so the remaining optional follow-ups are visible without reading the whole doc. |
+
+## Verification
+
+- Docs only — typecheck / test unaffected.
 
 ---
 
