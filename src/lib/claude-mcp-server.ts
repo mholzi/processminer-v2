@@ -365,8 +365,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       for (const [key, val] of Object.entries(doc)) {
         if (Array.isArray(val)) {
           for (const el of val) {
-            if (el.meta?.id && implicated.has(el.meta.id) && el.meta.status === "approved") {
-              el.meta.status = "in-progress";
+            // Re-open an approved element a finding implicates. Approval lives
+            // in `meta.approval` (not `meta.status`); the old check never fired.
+            if (el.meta?.id && implicated.has(el.meta.id) && el.meta?.approval === "approved") {
+              el.meta.approval = "in-progress";
+              el.meta.approvalBy = "run-lint";
+              el.meta.approvalDate = new Date().toISOString().slice(0, 10);
             }
           }
         }

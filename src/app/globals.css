@@ -2117,14 +2117,21 @@ body {
 .nav-flag:hover { background: var(--mid); color: #fff; }
 
 /* ---- Right rail: agent chat panel ---- */
-/* --chat-w is set inline on .shell from the drag-resizable chat width. */
-.shell.chat-open { grid-template-columns: 292px 1fr var(--chat-w, 340px); }
+/* --chat-w is set inline on .shell from the drag-resizable chat width.
+   When expanded, the chat panel FLOATS over the right edge of the canvas
+   (R14) — the grid keeps the 56px collapsed-rail column, so opening the chat
+   no longer reflows / narrows the document. */
+.shell { position: relative; }
 .shell.sections-collapsed { grid-template-columns: 80px 1fr 56px; }
-.shell.sections-collapsed.chat-open { grid-template-columns: 80px 1fr var(--chat-w, 340px); }
-/* New-process drafting: no left rail, just canvas + chat. */
+/* New-process drafting: no left rail, just canvas + chat rail. */
 .shell.drafting { grid-template-columns: 1fr 56px; }
-.shell.drafting.chat-open { grid-template-columns: 1fr var(--chat-w, 340px); }
 .rail-r.chat { padding: 0; align-items: stretch; display: flex; flex-direction: column; position: relative; }
+.shell.chat-open .rail-r.chat {
+  position: absolute; top: 0; right: 0; bottom: 0;
+  width: var(--chat-w, 340px); z-index: 30;
+  background: var(--surface);
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.12);
+}
 /* Drag handle on the chat panel's left edge — widen / narrow the panel. */
 .chat-resize {
   position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
@@ -2267,8 +2274,9 @@ body {
 .chat-msg.user th { background: rgba(255, 255, 255, 0.12); }
 .chat-ref {
   font-family: var(--mono); font-size: 0.92em; white-space: nowrap;
-  color: var(--accent); border-bottom: 1px dotted var(--accent); cursor: help;
+  color: var(--accent); border-bottom: 1px dotted var(--accent); cursor: pointer;
 }
+.chat-ref:hover { border-bottom-style: solid; }
 .chat-msg.user .chat-ref {
   color: inherit; border-bottom-color: rgba(255, 255, 255, 0.6);
 }
