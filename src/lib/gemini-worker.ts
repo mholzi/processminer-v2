@@ -5,6 +5,7 @@ import * as path from "node:path";
 import * as os from "node:os";
 import { execSync } from "node:child_process";
 import { getSchema, toCamelCase, jsonElementToWikiPage, transitionTarget, type WikiPage } from "./wiki.ts";
+import { writeRuntime } from "./runtime-store.ts";
 import { checkElement, checkProvenance, checkFrontmatter, checkFieldValues, checkConformance } from "./conformance.ts";
 import { updateElement } from "./wiki-write.ts";
 
@@ -838,9 +839,11 @@ export class GeminiWorker implements IProcessWorker {
                   }
                 }
                 lintReport.reopens = reopens;
-                doc.lint = lintReport;
-                
-                // Write directly to disk immediately
+                // R9: the lint report is runtime state — store it above the wiki.
+                writeRuntime(this.slug!, { lint: lintReport as any });
+                delete doc.lint; // guardrail: lint never lives in the wiki JSON
+
+                // Write directly to disk immediately (element re-opens only)
                 fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
 
                 resultText = JSON.stringify({

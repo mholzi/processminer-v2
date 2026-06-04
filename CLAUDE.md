@@ -95,9 +95,14 @@ The **approval gate is enforced**: `updateElement`/`setApproval`
 `proposed`, so re-approval requires re-confirmation. *(This was the roadmap A1
 regression — fixed.)*
 
-> ⚠️ **Known guardrail issue (roadmap R9).** Runtime/orchestration state
-> (`reviewState`, `lint`) currently lives **inside** the process JSON,
-> contradicting the rule that runtime state lives *above* the wiki layer.
+**Runtime state lives above the wiki (roadmap R9 — fixed).** The Karpathy
+guardrail: `wiki/processes/<slug>.json` holds only durable process knowledge.
+Runtime / orchestration / derived state — the foundational-run cursor
+(`reviewState`), the latest `lint` report, and `findingDismissals` — lives in a
+sibling **runtime store**, [`src/lib/runtime-store.ts`](src/lib/runtime-store.ts)
+→ `data/runtime/<slug>.json` (gitignored; transient, per-environment). `getProcess`
+reads it; `applyLint` and `/api/findings` write it. **Never** put runtime state
+back into the process JSON.
 
 ## Dual-track AI backend
 

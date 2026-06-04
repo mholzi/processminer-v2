@@ -1,8 +1,8 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 import type { NextRequest } from "next/server";
-import type { FindingDismissals } from "@/lib/lint";
 import { COOKIE_NAME, verifySession } from "@/lib/auth-server";
+import { getRuntime, writeRuntime } from "@/lib/runtime-store";
 
 // R6: the author of a dismissal is the signed-in user, resolved from the
 // session cookie — never a client-supplied value. Stores the stable username
@@ -60,21 +60,14 @@ export async function PATCH(req: NextRequest) {
     reason = body.reason.trim();
   }
 
-  const path = join(
-    process.cwd(),
-    "wiki",
-    "processes",
-    `${slug}.json`,
-  );
-  let processData: any = {};
-  try {
-    processData = JSON.parse(await readFile(path, "utf8"));
-  } catch (e) {
+  const wikiPath = join(process.cwd(), "wiki", "processes", `${slug}.json`);
+  if (!existsSync(wikiPath)) {
     return Response.json({ error: `Process not found: ${slug}` }, { status: 404 });
   }
 
-  processData.findingDismissals ??= {};
-  const dismissals = processData.findingDismissals;
+  // R9: dismissals are runtime state — stored above the wiki, not in the
+  // process JSON.
+  const dismissals = getRuntime(slug).findingDismissals ?? {};
 
   if (action === "restore") {
     delete dismissals[signature];
@@ -92,7 +85,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   try {
-    await writeFile(path, `${JSON.stringify(processData, null, 2)}\n`);
+    writeRuntime(slug, { findingDismissals: dismissals });
   } catch (e) {
     return Response.json(
       { error: `Could not save: ${e instanceof Error ? e.message : e}` },

@@ -10,6 +10,7 @@ import {
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { getSchema, jsonElementToWikiPage, transitionTarget } from "./wiki.ts";
+import { writeRuntime } from "./runtime-store.ts";
 import { checkElement, checkProvenance, checkFrontmatter, checkFieldValues, checkConformance } from "./conformance.ts";
 import { updateElement } from "./wiki-write.ts";
 import { replaceTempKeys, generateNextId } from "./gemini-worker.ts";
@@ -352,9 +353,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     
     else if (name === "applyLint") {
       const findings = args?.findings as any[];
-      if (!doc.lint) doc.lint = [];
-      doc.lint = findings;
-      
+      // R9: the lint report is runtime/derived state — store it above the wiki.
+      writeRuntime(slug, { lint: findings as any });
+      delete doc.lint; // guardrail: lint never lives in the wiki JSON
+
       const implicated = new Set<string>();
       for (const f of findings) {
         for (const elId of (f.elements || [])) implicated.add(elId);
