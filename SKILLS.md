@@ -1,85 +1,52 @@
-# Skills & Agent Architecture — Processminer v2
+# Skills & Agent Architecture — Processminer (v3, JSON-Native)
 
-The agent design for Processminer v2 — from the architecture brainstorm of
-2026-05-16, **reconciled 2026-05-17** to the skills as actually built.
-
-The skills are Claude Code `SKILL.md` files under `.claude/skills/`, ported
-from v1's `process-miner` BMAD module (§13). Read this before creating or
-changing any skill. UI/visual decisions defer to `DESIGN.md`.
-
----
+> Rewritten for the JSON-native baseline. The pre-rewrite version (the Python
+> `scripts/wiki/*.py` toolkit, per-Markdown-file wiki, verbatim cross-skill
+> block enforcement) is archived at
+> [`legacy-docs/LEGACY-SKILLS.md`](legacy-docs/LEGACY-SKILLS.md) and no longer
+> describes how the system works. The shared, authoritative contract for every
+> skill is [`.claude/skills/CORE_SYSTEM_PROMPT.md`](.claude/skills/CORE_SYSTEM_PROMPT.md);
+> the data model is in [`CLAUDE.md`](CLAUDE.md) and
+> [`TARGET-ARCHITECTURE.md`](TARGET-ARCHITECTURE.md).
 
 ## 1. Overview
 
-Processminer's loop is **Extract → Document → Develop**: agents extract SME
-process knowledge through interactive brainstorming, document it as wiki
-elements, and develop it into a Target State. The wiki is Karpathy's 3-layer
-LLM-Wiki (`raw-sources/` → `wiki/` → `schema/`).
+Processminer documents a business process by eliciting an SME's knowledge,
+writing it into a strongly-typed JSON document (`wiki/processes/<slug>.json`),
+and developing it into a target state. The agent layer is a set of
+self-contained **skills** under `.claude/skills/`. Each skill is a **pure
+reasoning prompt** — domain expertise and interaction discipline only. Skills
+do not shell out, run scripts, or write files; all reads and writes go through
+schema-enforced tools (§6).
 
-The design has **two axes**:
+## 2. Runtime — skills driven by the web app, dual-track backend
 
-- **Perspective specialists** — six domain experts, each looking at the same
-  process through a different lens (§4).
-- **The functional pattern** — a shared interaction pattern (brainstorm /
-  author / verify) every specialist runs with its own expertise (§5).
+The web app drives the skills. A session runs through `/api/session` on one of
+two interchangeable backends, selected by `SESSION_PROVIDER`:
 
-One pattern + six expertise packages — plus a set of cross-cutting and
-automated skills (§3).
+- **Gemini** — in-process via the Google GenAI SDK (`src/lib/gemini-worker.ts`).
+- **Claude** — the local Claude CLI connected to the custom MCP server
+  (`src/lib/claude-mcp-server.ts`, registered via `claude.json`).
 
----
-
-## 2. Runtime — Claude Code skills, driven by the web app
-
-**The skills are Claude Code skills** — `SKILL.md` files in `.claude/skills/`
-that run **locally in the CLI** by Claude Code. No API key, no hosted endpoint.
-
-The skills operate **directly on the file-backed wiki** — they Read, Grep and
-Write the markdown under `wiki/`, against `schema/`, sourcing from
-`raw-sources/`. The CLI agent has filesystem tools, so there is no
-embedding/retrieval subsystem.
-
-**The web app drives the skills from its Process Assistant chat.** The Next.js
-app in `src/` shows the documented wiki *and* runs skill sessions: the chat
-panel posts to `/api/session` (`src/app/api/session/route.ts`), which spawns
-the local `claude` CLI headless, in the repo, with `--output-format
-stream-json` so each turn streams a live activity line. `claude` discovers the
-skills in `.claude/skills/`, runs them, reads/writes the wiki; the document
-view re-reads after each turn. Auth is the machine's Claude Code login — **no
-API key**. The app runs locally, since it spawns `claude` on the same machine.
-
-The app invokes skills both from **free chat** (description match) and from
-**buttons** that send a fixed message (§10). "AI edit" is still stubbed.
-
----
+Both expose the same tools, the same JSON document, and the same
+`CORE_SYSTEM_PROMPT.md` system instructions, so skill behaviour is
+provider-agnostic. Skills are invoked by free-chat description match and by
+fixed-message buttons (§11).
 
 ## 3. The skill roster
 
-These skills are built; the Wiki Assistant is planned.
+21 skills, grouped by purpose:
 
-| Skill | Kind | Role |
-|---|---|---|
-| **qer-session** | orchestrator | end-to-end documentation session; dispatches the specialists (§8) |
-| **process-specialist** | specialist | As-Is operational mechanics (§4) |
-| **control-compliance-specialist** | specialist | risk & regulatory (§4) |
-| **client-journey-specialist** | specialist | client experience (§4) |
-| **innovation-analyst** | specialist | forward-looking — refine sourced trends/ideas, weigh risk (§4) |
-| **transformation-agent** | specialist | the Target Process — target state, transformation decisions, gaps (§4) |
-| **it-architect** | specialist | systems landscape (§4) |
-| **new-process** | automated | scaffold a process folder + section folders + blank `index.md` |
-| **document-ingest** | automated | extract an uploaded document into draft elements; verifies each draft against the source (§5) |
-| **source-innovation** | automated | non-interactive web research → draft `market-trend`, competitor-move and `innovation-idea` elements |
-| **source-cx** | automated | non-interactive web research → draft competitor-CX and `cx-benchmark` elements |
-| **source-regulation** | automated | non-interactive web research → draft `regulation` elements for the Risk & Compliance area |
-| **source-target** | automated | non-interactive — consolidate the documented perspectives into a first-stub Target Process (target states, decisions, gaps) |
-| **run-lint** | automated | lint pass — conformance + five-lens sweep; writes `lint.json`, re-opens implicated approvals (§9) |
-| **foundational-run** | guided | post-ingest narrated walk: challenge every current-state element with the SME + deepen past the document (pain points, missing-control gaps), resumable (§7) |
-| **add-entry** | interactive | add one AI-drafted element to a section — asks the SME, researches (wiki / web), refines Y/E/R, writes on approval |
-| **comment-review** | interactive | work the open discussion comments on an element with the SME — evaluate impact, incorporate agreed changes, post a closing analyst summary into the thread |
-| **area-summary** | automated | generate an area's executive summary as an Amazon-style narrative memo; silent, writes summaries.json |
-| **conflict-resolution** | interactive | walk each doc-vs-wiki conflict from a re-ingest with the SME — D/W/E per conflict, clears them when done (§5) |
-| **Wiki Assistant** | *planned* | grounded Q&A over the wiki for SME / transformation team |
-
----
+- **Scaffolding & ingest:** `new-process`, `document-ingest`, `conflict-resolution`
+- **The end-to-end session:** `qer-session`
+- **The current-state walk:** `foundational-run`
+- **Perspective specialists (interactive):** `process-specialist`,
+  `control-compliance-specialist`, `client-journey-specialist`,
+  `innovation-analyst`, `transformation-agent`, `it-architect`
+- **Web-sourcing (non-interactive):** `source-regulation`, `source-cx`,
+  `source-innovation`, `source-target`
+- **Single-element & review:** `add-entry`, `comment-review`, `run-lint`,
+  `area-summary`, `council-review`
 
 ## 4. The perspective specialists
 
@@ -89,121 +56,76 @@ question bank, the functional pattern (§5), and the slice of the schema it owns
 | Specialist | Lens | Owns (element types) |
 |---|---|---|
 | **Process Specialist** | operational mechanics — who does what, in what order, where it breaks | process-step, exception, role, metric, process-gap, pain-point |
-| **Control & Compliance Specialist** | risk & regulatory (one specialist — a control exists to satisfy a regulation) | control, regulation, compliance-gap, audit-finding |
-| **Client Journey Specialist** | the customer's experience — effort, emotion, friction | cx-channel, cx-touchpoint, moment, friction-point, competitor-cx-\*, cx-benchmark |
-| **Innovation Analyst** | forward-looking — refine the sourced trends/competitors/ideas, weigh risk | market-trend, competitor-eu/-global/-fintech, innovation-idea, innovation-risk |
-| **Transformation Agent** | the forward synthesis — turn the documented perspectives into a target state, the decisions to reach it and the gaps to close | target-state, transformation-decision, gap |
+| **Control & Compliance Specialist** | risk & regulatory (a control exists to satisfy a regulation) | control, regulation, control-gap, audit-finding |
+| **Client Journey Specialist** | the customer's experience — effort, emotion, friction | channel, touchpoint, moment, friction-point, competitor-cx, cx-benchmark |
+| **Innovation Analyst** | forward-looking — refine sourced trends/competitors/ideas, weigh risk | market-trend, competitor-innovation, innovation-idea, innovation-risk |
+| **Transformation Agent** | the forward synthesis — target state, the decisions to reach it, the gaps to close | to-be-design, transformation-decision, gap-resolution |
 | **IT Architect** | the systems landscape | system, integration |
 
-Mapped to the six schema areas:
+Mapped to the six schema areas: **As-Is Process** (Process Specialist),
+**Risk & Compliance** (Control & Compliance), **Client Experience** (Client
+Journey), **Innovation** (Innovation Analyst), **Target Process**
+(Transformation Agent), **IT Architecture** (IT Architect).
 
-- **As-Is Process** — worked by the Process Specialist. Roles, process steps,
-  exceptions, pain points, metrics and process gaps.
-- **Risk & Compliance** — the Control & Compliance Specialist's. Controls,
-  regulations, control gaps and audit findings, each in its own section. The
-  non-interactive `source-regulation` skill web-sources the first pass of
-  `regulation` elements — the financial-services regulation and supervisory
-  rules that govern the process; the Control & Compliance Specialist then
-  refines those with the SME and maps each to the controls that satisfy it.
-- **Client Experience** — the Client Journey Specialist's. Channels,
-  touchpoints, moments and friction points are the process's own journey,
-  documented with the SME; the non-interactive `source-cx` skill web-sources
-  the comparative layer — competitor CX (three tiers: European corporate
-  banks, global corporate banks, fintechs) and CX benchmarks.
-- **Innovation** — the Innovation Analyst's. The non-interactive
-  `source-innovation` skill web-sources the first pass of `market-trend`,
-  competitor-move and `innovation-idea` elements — competitors scanned in three
-  tiers; the Innovation Analyst then refines those with the SME and weighs the
-  risks of pursuing them.
-- **Target Process** — the Transformation Agent's. The non-interactive
-  `source-target` skill consolidates the documented As-Is, risk,
-  client-experience, innovation and systems work into a first-stub target
-  state, transformation decisions and gaps; the Transformation Agent then
-  refines that with the SME and closes the open coverage.
-- **IT Architecture** — the IT Architect's.
+Note: **pain-points** are staff/process pain (→ As-Is); **friction-points** are
+client-facing pain (→ Client Experience).
 
-Note: **pain-points** are staff/process pain (→ Process, As-Is); **friction-
-points** are client-facing pain (→ Client Journey, Client Experience).
-
----
+> **ArchitectMiner specialists (not yet present).** The architect workspace is
+> meant to have its own `domain-architect` + `solution-architect` specialists
+> (capabilities/ADRs and integrations/components/NFRs/migration-phases). These
+> were dropped in the migration and are a roadmap item — see
+> [`REQUIREMENTS-ROADMAP.md`](REQUIREMENTS-ROADMAP.md) R2.
 
 ## 5. The functional pattern
 
-Every specialist runs the same interaction pattern with its own expertise. It
-is shared *content*, repeated inline in each `SKILL.md` (not a separate module)
-so each skill stands alone. The spans that must stay verbatim-identical between
-skills — the provenance block, the element-writing procedure, the batching
-rule — are wrapped in `<!-- …-BLOCK:start/end -->` markers;
-`scripts/check_skill_blocks.py` (run by the wiki test suite) fails if any copy
-drifts.
+Every specialist runs the same interaction pattern with its own expertise. The
+shared discipline (the Y/E/R loop, batching, the provenance contract) lives
+once in `CORE_SYSTEM_PROMPT.md` and is injected into every session — no longer
+copy-pasted into each `SKILL.md` and policed by a byte-identical check.
 
 - **Brainstorm** — interactive extraction: technique-led conversation with the
-  SME (BMAD techniques, §13), targeted questions, narrative-first capture, the
-  `[A]/[E]/[N]` entry idiom for optional sections.
-- **Author** — turn extracted knowledge into a wiki element conforming to the
-  schema template. The deterministic scripts (§6) own the file format; the
-  conformance check validates it.
+  SME, targeted questions, narrative-first capture.
+- **Author** — turn extracted knowledge into a schema-conforming element via the
+  CRUD tools (§6). The schema owns the structure; the conformance check
+  validates it; the backend assigns the ID.
 - **Verify** — challenge drafted content. **There is no standalone Verifier
-  skill** — verification is realised two ways:
-  - *Interactive* — the Y/E/R approval loop and the `foundational-run`'s
-    per-element challenge put drafts in front of the SME, who is the authority.
-  - *Against a source* — `document-ingest` verifies every extracted draft
-    against the source document before writing it (no SME is present during an
-    ingest, so the document is the only authority).
+  skill.** Verification is realised two ways: *interactive* (the Y/E/R loop and
+  `foundational-run`'s per-element challenge put drafts in front of the SME, who
+  is ground truth) and *against a source* (`document-ingest` verifies every
+  extracted draft against the source document before writing it, since no SME is
+  present during an ingest).
 
-  An earlier plan for a standalone hallucination-guard Verifier was dropped:
-  for SME-elicited content the SME *is* ground truth, and re-checking it against
-  stale source documents would flag the SME doing their job. Verification only
-  applies where no SME has spoken — i.e. inside `document-ingest`.
+## 6. Determinism — the tool layer
 
----
+**Judgement is the model's; mechanics are deterministic.** Skills do the
+judgement (elicit, draft, challenge, extract); a fixed set of tools and server
+actions do every mechanical operation, so an element cannot come out malformed
+and every run behaves the same. This replaces the deleted `scripts/wiki/*.py`
+toolkit.
 
-## 6. Determinism — the scripts toolkit
+**AI authoring tools** (exposed identically to both backends; defined in
+`CORE_SYSTEM_PROMPT.md §2` and `src/lib/claude-mcp-server.ts`):
 
-**Judgement is the model's; mechanics are deterministic Python.** The skills do
-the judgement (elicit, draft, challenge, extract); the scripts in
-`scripts/wiki/` do every mechanical, repeatable operation, so element files
-cannot come out malformed and every run reads the same.
-
-| Script | Does |
+| Tool | Does |
 |---|---|
-| `wiki_lib.py` | shared helpers — paths, frontmatter parse, schema load |
-| `derive_process_meta.py` | process name → deterministic slug + abbreviation |
-| `scaffold_process.py` | create the process folder, section folders, blank `index.md` |
-| `write_overview.py` | fill the process overview (`index.md`) from a JSON spec |
-| `next_id.py` | next element id for a type |
-| `show_template.py` | print an element type's conformant skeleton from the schema |
-| `write_element.py` | write a conformant element file from a JSON spec |
-| `write_elements.py` | write a batch of elements from one manifest — assigns ids, resolves `@tempKey` cross-references |
-| `merge_manifests.py` | merge per-group drafter + verifier manifests into one write batch (document-ingest's fan-out) |
-| `patch_element.py` | change one block or field of an element in place |
-| `check_conformance.py` | check elements against their schema templates + required frontmatter |
-| `check_transitions.py` | reconcile exception `affects` against process-step `transitions` |
-| `add_source.py` | record an uploaded document in `index.md` |
-| `apply_lint.py` | write `lint.json`, re-open implicated approvals |
-| `write_ingest_report.py` | write `ingest.json` (created/updated from the run manifest) |
-| `reset_manifest.py` | clear the run manifest before a counted run |
-| `source_report.py` | count a sourcing run's elements per type, from the manifest |
-| `clear_conflicts.py` | empty the resolved `conflicts` from `ingest.json` |
-| `write_summary.py` | write an area's executive summary into `summaries.json` |
-| `set_approval.py` | set an element's (or the overview's) approval |
-| `review_cursor.py` | build / advance / report the foundational-run queue |
+| `expandElement({ type, id? })` | Expand an abridged collection (IDs+titles) or one element's full content from the progressive-disclosure Document Map |
+| `createElement({ type, element })` | Append a new element; **the backend generates and returns the ID** |
+| `updateElement({ id, patch })` | Deep-merge a patch into an existing element |
+| `checkConformance({ slug, id })` | Validate an element against its schema template + provenance |
+| `checkTransitions({ slug })` | Reconcile exception `affects` against process-step `transitions` |
+| `applyLint({ slug, findings })` | Write lint findings and re-open implicated approvals |
 
-**Reserve an element id before you name it.** `next_id.py` assigns ids in
-creation order, so an id is only known once the element is written. A skill
-must never speak an id to the SME before `next_id.py` has assigned it — a
-guessed id ("this will be `PG-FR-005`") is often wrong. Refer to a
-not-yet-written element by description; state its id only once written. This
-matters in an audit-facing tool, where the SME follows the work by id.
+**In-app SME actions** go through server actions in `src/lib/wiki-write.ts`
+(`updateElement`, `setApproval`, `setRelevance`, `saveSummaryPart`,
+`triageTargetReview`), each running the same conformance checks
+(`src/lib/conformance.ts`) and **blocking the write on failure**.
 
-Skills also write **sidecar JSON artifacts** into the process folder, which the
-app reads: `lint.json` (run-lint findings), `ingest.json` (document-ingest
-result — the triage screen), `review-state.json` (foundational-run cursor).
+**Never format an ID yourself, never speak an unwritten element's ID to the
+SME.** IDs are assigned by the backend at create time; a guessed ID is usually
+wrong, and this is an audit-facing tool where the SME follows the work by ID.
 
-The conformance check also exists as app code (`src/lib/conformance.ts`) for
-the instant inline per-element badge.
-
----
+**No sidecar files.** What used to be `lint.json` / `ingest.json` /
+`review-state.json` is now consolidated into the single `<slug>.json` document.
 
 ## 7. The flows
 
@@ -215,191 +137,115 @@ new-process ─▶ document-ingest ─▶ [triage screen] ─▶ foundational-ru
                  draft elements       + launch         state element, approve
 ```
 
-- `new-process` scaffolds the empty process and points the user to upload a
-  document.
+- `new-process` scaffolds the empty process JSON and prompts a document upload.
 - `document-ingest` extracts the document into draft elements, verifying each
-  against the source, and writes `ingest.json`.
-- The **triage screen** (app) shows what the ingest produced and launches the
-  **foundational run** — a narrated, resumable walk where the meticulous
-  Process Analyst persona challenges every current-state element (each through
-  its owning specialist's lens) and the SME approves it. As it walks, it also
-  **deepens past the document** on each process-step — a pain-point probe, and
-  a control-coverage check that raises any step with no linked control as a
-  candidate `compliance-gap` — so the Pain Points and Control Gaps sections
-  are not left structurally empty by the document-driven path. Its close-out
-  points to `conflict-resolution` for any later re-ingest.
+  against the source, and records the ingest result.
+- The **triage screen** shows what the ingest produced and launches the
+  **foundational run** — a narrated, resumable walk where a meticulous Process
+  Analyst challenges every current-state element through its owning specialist's
+  lens, and the SME approves it. As it walks it also **deepens past the
+  document** (a pain-point probe and a control-coverage check that raises any
+  step with no linked control as a candidate control-gap), so Pain Points and
+  Control Gaps are not left structurally empty.
 
-**Alongside:**
-- `qer-session` — the interactive multi-perspective session (§8), for
-  documenting a process by SME interview rather than from a document.
-- `source-innovation` then `innovation-analyst` — web-source the innovation
-  perspective, then refine + deepen it with the SME.
-- `source-target` then `transformation-agent` — consolidate the documented
-  perspectives into a first-stub Target Process, then refine it with the SME.
-- `run-lint` — the consistency checkpoint, run any time (§9).
-
----
+**Alongside:** `qer-session` (SME-interview path, §8); `source-*` then the
+matching specialist (web-source a perspective, then refine it with the SME);
+`run-lint` (the consistency checkpoint, any time, §9).
 
 ## 8. Orchestration & the QER session
 
 There is no "manager agent." Orchestration is **`qer-session`'s authored step
-sequence** — a fixed sequence of steps written into its `SKILL.md`. It is
-**deterministic**: the sequence is authored, not an LLM routing decision.
-Judgement within a step is the model's; the sequence is fixed.
+sequence** — fixed and deterministic, not an LLM routing decision. Judgement
+within a step is the model's; the sequence is authored.
 
 ```
 1 SELECT → 2 OVERVIEW → 3 PERSPECTIVE PASSES → 4 CROSS-REVIEW → 5 VALIDATION → 6 DONE
                         (one specialist per perspective, registry order)
 ```
 
-- **SELECT** — the human picks or creates the process (delegates to
-  `new-process` for a new one).
-- **OVERVIEW** — capture purpose, trigger, scope into `index.md`.
-- **PERSPECTIVE PASSES** — for each specialist in registry order, read its
-  `SKILL.md` and run its perspective phases here, in the same conversation.
-- **CROSS-REVIEW** — once ≥2 perspectives are documented, each specialist
-  reviews the others' elements from its lens.
-- **VALIDATION** — `check_conformance.py` plus a judgement gap-analysis pass.
-- **DONE** — summarise; the SME reviews and approves in the app.
-
-Why deterministic: a bank can audit "step 05 ran, then 06"; "the LLM decided
-to" is not auditable. The human picks *what* to work on and decides *when it is
-done* — the machine never declares the work finished (§9).
-
----
+Why deterministic: a bank can audit "step 05 ran, then 06"; "the LLM decided to"
+is not auditable. The human picks *what* to work on and decides *when it is
+done* — the machine never declares the work finished (§10).
 
 ## 9. Collaboration model & the lint council
 
-Specialists "work together" through three mechanics, all driven by authored
-sequence, no LLM router:
+Specialists "work together" through three mechanics, all authored sequence, no
+LLM router:
 
 1. **Section ownership** — working a section activates its owning specialist.
-2. **Cross-perspective review** — a specialist reviews the other perspectives'
-   elements from its lens. **Route by *potential* relations, not actual ones**
-   — the Control Specialist reviews *every* process-step, including those with
-   no control; "step missing a control" is its most valuable finding.
+2. **Cross-perspective review** — a specialist reviews other perspectives'
+   elements from its lens. **Route by *potential* relations, not actual ones** —
+   the Control Specialist reviews *every* process-step, including those with no
+   control; "step missing a control" is its most valuable finding.
+   `council-review` runs this across the target state.
 3. **Lint = the council** — `run-lint` is every perspective sweeping the whole
-   process. It runs the deterministic conformance check, then a five-lens
-   cross-perspective sweep for discrepancies and clarifying questions, writes
-   `lint.json`, and re-opens any approved element a finding implicates.
-
----
+   process: the deterministic conformance check, then a five-lens
+   cross-perspective sweep for discrepancies and clarifying questions; it
+   records findings and re-opens any approved element a finding implicates.
 
 ## 10. The approval / "done" model
 
-Human-driven. The machine informs; it never declares the work finished. This
-operates in the web app on the wiki files.
+Human-driven. The machine informs; it never declares the work finished.
 
-- **"Done" = an element is approved.** Per element — `in-progress` / `approved`
-  / `rejected`, stamped with who and when. The **process overview is approvable
-  too**, like an element.
-- **Web-sourced / ideated elements are triaged, not approved.** Market trends,
-  competitor moves (innovation and CX), innovation ideas and CX benchmarks
-  carry a binary `relevance` — `relevant` / `disregarded` — instead of
-  approval. The SME judges whether the signal matters, not whether it
-  documents the process accurately. A section of these is "done" when every
-  element has been triaged either way.
-- **No separate section/process "done" state** — a computed roll-up; the left
-  nav shows each section's state with a status dot (empty / has gaps / fully
-  reviewed — approved or triaged, by the element's model).
+- **"Done" = an element is approved** — per element, `in-progress` / `approved`
+  / `rejected`, stamped with who and when. The process overview is approvable
+  too.
+- **Web-sourced / ideated elements are triaged, not approved** — market trends,
+  competitor moves, innovation ideas and CX benchmarks carry a binary
+  `relevance` (`relevant` / `disregarded`). A section of these is "done" when
+  every element has been triaged.
+- **Section/process state is a computed roll-up** — the left nav shows a status
+  dot per section.
 - **No locking** — approved elements stay editable.
-- **Approved reverts to `in-progress`** when a pillar of "done" breaks:
+- **Approved reverts to `in-progress`** when a pillar of "done" breaks: an edit
+  (SME *or* skill) at save, or a `run-lint` finding that implicates the element.
 
-  | Trigger | When |
-  |---|---|
-  | An edit (SME *or* skill) | immediately, at save |
-  | A `run-lint` finding implicates the element | at the lint run (`apply_lint.py` re-opens it, stamped `run-lint`) |
-
-- **Warn and allow** — the SME *may* approve a non-conformant or flagged
-  element; warned, not blocked.
-- **Lint is a core workflow rhythm**, not an optional aid.
-
----
+> ⚠️ **Known regression (roadmap A1).** The provenance contract says an element
+> with any `proposed`/`web` heading cannot be approved
+> (`CORE_SYSTEM_PROMPT.md §4`), but that gate is currently **not enforced** —
+> `UNCONFIRMED_SOURCES` in `conformance.ts` is dead code and `setApproval` does
+> not block on it. Until A1 is fixed, unconfirmed content can be approved.
 
 ## 11. How skills are invoked
 
-The app drives the skills (§2) — by free-chat description match, and by
-buttons that post a fixed message to `/api/session`:
+The app drives the skills by free-chat description match and by buttons that
+post a fixed message to `/api/session`:
 
 | Skill | Invoked by |
 |---|---|
 | `new-process` | the process switcher's "new process" action; or `qer-session` |
 | `document-ingest` | the "⬆ Upload document" modal, after the file is saved |
 | `foundational-run` | the triage screen's "Start / Resume foundational run" |
-| `source-innovation` | the "✦ Source from the web" empty-state CTA on the Market Trends / Competitor / Innovation Ideas sections |
-| `source-cx` | the "✦ Source from the web" empty-state CTA on the Competitor CX / CX Benchmarks sections |
-| `source-regulation` | the "✦ Source from the web" empty-state CTA / "✦ Refresh from the web" toolbar button on the Regulation section |
-| `source-target` | the empty-state CTA on the Target Process area, when the whole area is still empty |
-| `run-lint` | the "⊛ Run lint" top-bar button |
-| `comment-review` | the "✦ Review with analyst" button on an element's Discussion panel, shown when the element has open (unresolved) comments |
-| `qer-session`, the specialists | free chat; `qer-session` dispatches them; or the **Deep Dive** button — routes the owning specialist by the element's section (§4/§9) |
-
----
+| `source-innovation` | "Source from the web" on Market Trends / Competitor / Innovation Ideas |
+| `source-cx` | "Source from the web" on Competitor CX / CX Benchmarks |
+| `source-regulation` | "Source from the web" / "Refresh from the web" on Regulation |
+| `source-target` | the empty-state CTA on the Target Process area |
+| `run-lint` | the "Run lint" top-bar button |
+| `comment-review` | "Review with analyst" on an element's Discussion panel with open comments |
+| `area-summary` | the per-area "executive summary" button |
+| `council-review` | the target-state council button |
+| `qer-session`, the specialists | free chat; `qer-session` dispatches them; or the **Deep Dive** button, which routes the owning specialist by the element's section |
 
 ## 12. The web app
 
-Not a skill, but it shares the wiki and hosts the skills' surface:
+Not a skill, but it shares the JSON document and hosts the skills' surface:
 
 - **Viewer / review** — process-doc display, RACI matrix, Overview roll-up,
-  structure templates, search, inline edit, the approval model (§10), the
-  inline conformance badge, the per-section status dots, collapsible nav areas.
-- **Triage screen** — the post-ingest landing page (§7): what the ingest
-  produced (counts, conflicts, verification corrections, coverage gaps) and the
-  foundational-run launch/resume point.
+  search, inline edit, the approval model (§10), the inline conformance badge,
+  per-section status dots, whole-document views (`WholeDoc{Json,Raw,Word}View`).
+- **Triage screen** — the post-ingest landing page: what the ingest produced and
+  the foundational-run launch/resume point.
 - **Skill runner** — the Process Assistant chat, wired to `/api/session`,
-  streaming live activity per turn (§2).
-- **Deep Dive** — wired (§11): an element routes the Brainstorm of its
-  section's owning specialist; a finding routes through its first implicated
-  element. Authored routing, not an LLM decision.
-- **Still stubbed** — "AI edit". Will be wired to `/api/session` or removed.
+  streaming live activity per turn.
+- **Deep Dive** — an element routes the Brainstorm of its section's owning
+  specialist; authored routing, not an LLM decision.
+- **ArchitectMiner** — the architecture workspace (capabilities, target apps,
+  ADRs, integrations, components, NFRs, migration phases). Currently largely
+  view-only — see roadmap Theme A.
 
----
+## 13. Open work
 
-## 13. v1 port base & BMAD reuse
-
-v2's skills are Claude Code skills — the same family as v1's BMAD module. This
-was a **port**, not a from-scratch build, and it is done.
-
-### v1 `process-miner` — the port base
-
-v1 (`mholzi/Processminer`, `bmad-custom-modules-src/process-miner/`) built:
-
-- **Agents** — Process Documentation Analyst, Control Analyst, Client Journey
-  Analyst, Innovation Analyst, Transformation Agent (+ IT Architect, QA). Maps
-  almost 1:1 onto the five specialists (§4).
-- **`start-new-process`** — a 9-step progressive-elicitation workflow. The
-  precedent for `process-specialist`'s phases and `qer-session`.
-- **Templates** and a structured referencing system (PS#, EX#, CP#, …) — now
-  the schema's per-type templates and the `<idPrefix>-<PROC>-<NNN>` ids.
-
-### BMAD core-skills reused
-
-Source: [`bmad-code-org/BMAD-METHOD`](https://github.com/bmad-code-org/BMAD-METHOD),
-`src/core-skills/`.
-
-| BMAD core-skill | Reused as |
-|---|---|
-| `bmad-brainstorming` | the **Brainstorm** pattern — setup → technique-select → execute → organise |
-| `bmad-advanced-elicitation` | deeper probing in Brainstorm and the verify challenges |
-| `bmad-review-adversarial-general` | the adversarial stance of the foundational-run challenge |
-| `bmad-review-edge-case-hunter` | edge-case / exception analysis — Process Specialist |
-| `bmad-editorial-review-prose` | a clarity pass on Author output |
-
-**Not adopted** — `bmad-party-mode` (free-form agent chat conflicts with the
-authored sequence, §8); `bmad-editorial-review-structure` (schema + conformance
-cover it); the install tooling skills.
-
----
-
-## 14. Open questions
-
-- **Wiki Assistant** — planned, not built.
-- **"AI edit"** — the last stubbed agent UI; wire to `/api/session` or remove.
-- **Long skill runs** — a turn is held open as one HTTP request (timeout 30
-  min). A genuinely long run (a large ingest) would be more robust as an async
-  job; not yet needed.
-
-Decided: runtime is Claude Code skills driven by the app (§2); completion is
-human-driven (§10); orchestration is an authored step sequence (§8); the roster
-is six specialists plus the automated skills (§3); verification is folded into
-`document-ingest`, not a standalone Verifier (§5).
+Skill-related gaps from the migration are tracked in
+[`REQUIREMENTS-ROADMAP.md`](REQUIREMENTS-ROADMAP.md): the ArchitectMiner chat +
+specialists (R1/R2), the approval-gate fix (A1), and the runtime-state-in-wiki
+guardrail (R9).
