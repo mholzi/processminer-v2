@@ -230,8 +230,8 @@ you never invent a competitor.
 <!-- WEB-PROVENANCE-BLOCK:start -->
 ## Provenance — web-sourced content is unconfirmed
 
-This block is identical in the three web-sourcing skills (HALLUCINATION-PLAN.md).
-Do not edit one copy — a drift check fails CI.
+This block is identical in the three web-sourcing skills — keep them in sync by
+hand if you change one. The provenance contract is in `CORE_SYSTEM_PROMPT.md`.
 
 You source from the web with no SME present. Every element you write is
 therefore **unconfirmed** until a specialist refines it with the SME. Record

@@ -272,5 +272,5 @@ SME's call: you challenge and redraft, the SME approves. You never set
 
 An `assumption` is never a queue item of its own. If a challenge surfaces an
 assumption, or you meet one already written, challenge it through the
-specialist that owns the element its `bearsOn` points at — resolve that with
-`assumption_owner()` in `wiki_lib.py`; do not guess the owning lens.
+specialist that owns the element its `bearsOn` points at — the owning lens is
+the `specialist` the schema assigns to that element's section; do not guess it.
