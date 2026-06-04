@@ -1,0 +1,831 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Processminer — Onepager deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  /* ───────────────────────── design tokens (shared) */
+  :root {
+    --primary: #1e40af; --secondary: #2563eb; --soft: #e9eaf6;
+    --bg: #f7f8f8; --surface: #ffffff; --ink: #16181d;
+    --muted: #6b7280; --line: #e2e4e8;
+    --success: #3f7d5c; --warning: #9a7b32; --error: #a8534a;
+    --r-sm: 4px; --r-md: 6px; --r-pill: 9999px;
+    --font: "Geist", -apple-system, system-ui, sans-serif;
+    --mono: "Geist Mono", ui-monospace, "SF Mono", monospace;
+    --scale: 1;
+    --nav-h: 56px;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; overflow: hidden; height: 100%; }
+  body {
+    font-family: var(--font); color: var(--ink);
+    background: #0f1216;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  /* ───────────────────────── deck shell */
+  .deck { position: fixed; inset: 0; display: grid; grid-template-rows: 1fr var(--nav-h); }
+  .stage {
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .slide {
+    width: 1920px; height: 1080px; background: var(--bg);
+    transform: scale(var(--scale));
+    transform-origin: center center;
+    position: absolute;
+    opacity: 0; pointer-events: none;
+    transition: opacity .18s ease-out;
+    padding: 40px 56px 32px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,.4);
+  }
+  .slide.active { opacity: 1; pointer-events: auto; z-index: 2; }
+
+  /* ───────────────────────── nav bar */
+  .nav {
+    background: #16181d; color: #e8eaed;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px;
+    border-top: 1px solid #2a2e37;
+    user-select: none;
+  }
+  .nav-left, .nav-right { display: flex; align-items: center; gap: 16px; }
+  .nav-title { font-size: 13px; font-weight: 500; }
+  .nav-title .mono { color: #8095e8; }
+  .nav-sub { font-size: 12px; color: #8d94a3; }
+  .nav-btn {
+    background: transparent; color: #e8eaed;
+    border: 1px solid #2a2e37; border-radius: var(--r-sm);
+    padding: 6px 12px; font: inherit; font-size: 13px;
+    cursor: pointer; transition: background .12s;
+  }
+  .nav-btn:hover { background: #1f232b; }
+  .nav-btn:active { background: #2a2e37; }
+  .dots { display: flex; gap: 8px; }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #3a3f4a;
+    border: none; padding: 0; cursor: pointer;
+    transition: background .12s, transform .12s;
+  }
+  .dot:hover { background: #5a6172; }
+  .dot.active { background: #8095e8; transform: scale(1.3); }
+  .kbd-hint { font-family: var(--mono); font-size: 11px; color: #6b7280; }
+
+  /* ───────────────────────── print / export mode */
+  body.export-mode { background: var(--bg); }
+  body.export-mode .deck { display: block; }
+  body.export-mode .stage { display: block; height: 1080px; overflow: visible; }
+  body.export-mode .slide { box-shadow: none; transform: none; position: relative; }
+  body.export-mode .slide:not(.active) { display: none; }
+  body.export-mode .nav { display: none; }
+
+  /* Print mode — every slide becomes its own page, native 1920×1080 */
+  @page { size: 1920px 1080px; margin: 0; }
+  html.print-mode, body.print-mode {
+    height: auto !important;
+    overflow: visible !important;
+    background: white;
+  }
+  body.print-mode .deck {
+    display: block !important;
+    position: static !important;
+    inset: auto !important;
+    height: auto !important;
+    width: 1920px;
+  }
+  body.print-mode .nav { display: none !important; }
+  body.print-mode .stage {
+    display: block !important;
+    position: static !important;
+    height: auto !important;
+    width: 1920px;
+    overflow: visible !important;
+  }
+  body.print-mode .slide {
+    position: relative !important;
+    transform: none !important;
+    opacity: 1 !important;
+    pointer-events: auto;
+    box-shadow: none;
+    margin: 0;
+    page-break-after: always;
+    break-after: page;
+  }
+  body.print-mode .slide:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+
+  /* ═════════════════════════════════════════════════════════════════════════ */
+  /* SHARED SLIDE PRIMITIVES                                                  */
+  /* ═════════════════════════════════════════════════════════════════════════ */
+  .topbar { display: flex; align-items: center; justify-content: space-between; }
+  .topbar .logo { font-weight: 600; letter-spacing: 0.10em; font-size: 14px; text-transform: uppercase; }
+  .topbar .meta { color: var(--muted); font-size: 13px; }
+  .topbar .meta .mono { color: var(--ink); }
+  .topbar .meta span + span { margin-left: 16px; padding-left: 16px; border-left: 1px solid var(--line); }
+
+  .title-block { display: flex; flex-direction: column; justify-content: center; }
+  .eyebrow { color: var(--secondary); font-size: 14px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px; }
+  h1 { font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; margin: 0; }
+  .lede { color: var(--ink); margin: 0; line-height: 1.45; }
+  .lede .muted { color: var(--muted); }
+  .lede strong { font-weight: 600; }
+
+  .footer-strip {
+    border-top: 1px solid var(--line); padding-top: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: var(--muted); font-size: 12px;
+  }
+  .footer-strip strong { color: var(--ink); font-weight: 600; }
+  .footer-strip .stack > span + span { margin-left: 12px; padding-left: 12px; border-left: 1px solid var(--line); }
+
+  /* ─────────────────────────────────────── SLIDE 1 specific */
+  #s1 { display: grid; grid-template-rows: 32px 200px 248px 216px 200px 32px; row-gap: 16px; }
+  #s1 .title-block { max-width: 1600px; }
+  #s1 h1 { font-size: 44px; line-height: 1.1; max-width: 1500px; margin-bottom: 14px; }
+  #s1 .lede { font-size: 18px; max-width: 1400px; }
+  #s1 .hero-shot { border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; background: var(--surface); height: 100%; min-height: 0; }
+  #s1 .hero-shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+
+  #s1 .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  #s1 .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md);
+    padding: 20px 22px; display: flex; flex-direction: column;
+  }
+  #s1 .card .kicker { font-family: var(--mono); font-size: 12px; color: var(--secondary); letter-spacing: 0.04em; margin-bottom: 8px; }
+  #s1 .card h3 { font-size: 17px; font-weight: 600; margin: 0 0 10px; line-height: 1.25; }
+  #s1 .card p { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+  #s1 .card .chips { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  #s1 .chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 2px 8px; font-size: 11px;
+    border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--bg);
+    font-family: var(--mono);
+  }
+  #s1 .chip .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+  #s1 .chip .dot.g { background: var(--success); }
+  #s1 .chip .dot.b { background: var(--secondary); }
+  #s1 .chip .dot.a { background: var(--warning); }
+
+  #s1 .bottom { display: grid; grid-template-columns: 1fr 1fr 320px; grid-template-rows: 100%; gap: 20px; min-height: 0; }
+  #s1 .shot {
+    border: 1px solid var(--line); border-radius: var(--r-md);
+    background: var(--surface); overflow: hidden;
+    display: flex; flex-direction: column;
+    height: 100%; min-height: 0;
+  }
+  #s1 .shot .frame { flex: 1; overflow: hidden; min-height: 0; }
+  #s1 .shot .frame img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  #s1 .shot .cap { padding: 10px 14px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; background: var(--surface); }
+  #s1 .shot .cap .kicker { font-family: var(--mono); font-size: 11px; color: var(--secondary); letter-spacing: 0.04em; }
+  #s1 .shot .cap .t { font-size: 13px; font-weight: 600; color: var(--ink); }
+  #s1 .shot .cap .d { font-size: 12px; color: var(--muted); }
+
+  #s1 .stats-col {
+    display: flex; flex-direction: column;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md);
+    padding: 20px 22px;
+  }
+  #s1 .stats-col h3 { font-size: 13px; font-weight: 600; margin: 0 0 16px; }
+  #s1 .stats-col .benefits {
+    list-style: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 14px;
+    justify-content: center; flex: 1;
+  }
+  #s1 .stats-col .benefits li {
+    display: grid; grid-template-columns: 18px 1fr;
+    gap: 10px; align-items: baseline;
+    font-size: 15px; color: var(--ink); line-height: 1.35; font-weight: 500;
+  }
+  #s1 .stats-col .benefits li::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--primary); transform: translateY(4px);
+  }
+
+  /* ─────────────────────────────────────── SLIDE 2 specific */
+  #s2 { display: grid; grid-template-rows: 32px 200px 1fr 64px 32px; row-gap: 16px; }
+  #s2 h1 { font-size: 44px; line-height: 1.1; max-width: 1500px; margin-bottom: 14px; }
+  #s2 h1 .pm { color: var(--primary); }
+  #s2 h1 .am { color: var(--secondary); }
+  #s2 .lede { font-size: 18px; max-width: 1400px; }
+  #s2 .modules { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  #s2 .module {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md);
+    overflow: hidden;
+    display: grid; grid-template-rows: auto auto 1fr auto;
+  }
+  #s2 .module-head { padding: 22px 26px 18px; border-bottom: 1px solid var(--line); }
+  #s2 .module-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+    color: var(--muted); text-transform: uppercase; margin-bottom: 12px;
+  }
+  #s2 .module-tag .dot { width: 8px; height: 8px; border-radius: 50%; }
+  #s2 .module.pm .module-tag .dot { background: var(--primary); }
+  #s2 .module.am .module-tag .dot { background: var(--secondary); }
+  #s2 .module-name { font-size: 26px; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 4px; }
+  #s2 .module-tagline { font-size: 14px; color: var(--muted); margin: 0; }
+  #s2 .module-body { padding: 18px 26px 18px; }
+  #s2 .module-body p.what { font-size: 15px; line-height: 1.5; margin: 0 0 16px; }
+  #s2 .module-body p.what strong { font-weight: 600; }
+  #s2 .section-list-label { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; }
+  #s2 .section-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+  #s2 .sec-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; font-size: 12px;
+    border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--bg);
+  }
+  #s2 .sec-chip .n { font-family: var(--mono); color: var(--muted); font-size: 11px; }
+  #s2 .module.pm .sec-chip { border-color: rgba(30,64,175,.18); }
+  #s2 .module.am .sec-chip { border-color: rgba(37,99,235,.20); background: var(--soft); }
+  #s2 .who {
+    font-size: 13px; color: var(--muted); margin: 0;
+    padding-top: 14px; border-top: 1px solid var(--line);
+  }
+  #s2 .who strong { color: var(--ink); font-weight: 500; }
+  #s2 .module-shot { border-top: 1px solid var(--line); background: var(--bg); height: 220px; overflow: hidden; }
+  #s2 .module-shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+  #s2 .handoff {
+    display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+    align-items: center; gap: 12px; padding: 0 8px;
+  }
+  #s2 .step-card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md);
+    padding: 12px 18px; text-align: center;
+  }
+  #s2 .step-card .lbl { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+  #s2 .step-card .name { font-size: 14px; font-weight: 600; }
+  #s2 .step-card.pm { border-top: 2px solid var(--primary); }
+  #s2 .step-card.am { border-top: 2px solid var(--secondary); }
+  #s2 .arrow { font-family: var(--mono); color: var(--secondary); font-size: 18px; line-height: 1; }
+
+  /* ─────────────────────────────────────── SLIDE 3 specific */
+  #s3 { display: grid; grid-template-rows: 32px 200px 280px 1fr 32px; row-gap: 16px; }
+  #s3 h1 { font-size: 44px; line-height: 1.1; max-width: 1700px; margin-bottom: 14px; }
+  #s3 h1 em { font-style: normal; color: var(--primary); }
+  #s3 .lede { font-size: 18px; max-width: 1700px; }
+  #s3 .lede a { color: var(--secondary); text-decoration: none; border-bottom: 1px solid var(--line); }
+
+  #s3 .narrative { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  #s3 .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md);
+    padding: 22px 26px; display: flex; flex-direction: column;
+  }
+  #s3 .card .kicker { font-family: var(--mono); font-size: 11px; color: var(--secondary); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+  #s3 .card h3 { font-size: 19px; font-weight: 600; margin: 0 0 12px; line-height: 1.25; }
+  #s3 .card p { font-size: 13.5px; color: var(--muted); margin: 0 0 8px; line-height: 1.55; }
+  #s3 .card p:last-child { margin-bottom: 0; }
+  #s3 .card p strong { color: var(--ink); font-weight: 600; }
+  #s3 .card p .mono { color: var(--ink); }
+  #s3 .card .label-strip {
+    display: inline-flex; gap: 8px; margin-top: 10px; padding: 6px 10px;
+    border-radius: var(--r-sm); background: var(--bg); border: 1px solid var(--line);
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+  }
+  #s3 .card .label-strip .k { color: var(--ink); }
+
+  #s3 .row2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; }
+  #s3 .karpathy {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md);
+    padding: 22px 26px;
+    display: grid; grid-template-rows: auto 1fr; gap: 14px;
+  }
+  #s3 .karpathy .head h3 { font-size: 18px; font-weight: 600; margin: 0 0 4px; }
+  #s3 .karpathy .head p { font-size: 13px; color: var(--muted); margin: 0; }
+  #s3 .layers { display: grid; grid-template-rows: 1fr 1fr 1fr; gap: 10px; }
+  #s3 .layer {
+    display: grid; grid-template-columns: 56px 1fr 320px;
+    align-items: center; gap: 18px;
+    background: var(--bg); border: 1px solid var(--line); border-radius: var(--r-md);
+    padding: 12px 16px;
+  }
+  #s3 .layer.l1 { border-left: 3px solid var(--muted); }
+  #s3 .layer.l2 { border-left: 3px solid var(--primary); background: var(--soft); }
+  #s3 .layer.l3 { border-left: 3px solid var(--secondary); }
+  #s3 .layer .num { font-family: var(--mono); font-size: 13px; color: var(--secondary); font-weight: 500; }
+  #s3 .layer .body h4 { font-size: 15px; font-weight: 600; margin: 0 0 3px; }
+  #s3 .layer .body p { font-size: 12.5px; color: var(--muted); margin: 0; line-height: 1.4; }
+  #s3 .layer .pathway code {
+    display: block;
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--r-sm); padding: 3px 8px; font-size: 11px; color: var(--ink);
+    margin-bottom: 3px; font-family: var(--mono);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  #s3 .layer .pathway code .c { color: var(--muted); }
+  #s3 .layer .pathway code:last-child { margin-bottom: 0; }
+
+  #s3 .extension {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md);
+    padding: 22px 26px; display: flex; flex-direction: column;
+  }
+  #s3 .extension .ptag { font-family: var(--mono); font-size: 11px; color: var(--secondary); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+  #s3 .extension h3 { font-size: 18px; font-weight: 600; margin: 0 0 10px; line-height: 1.25; }
+  #s3 .extension > p { font-size: 13px; color: var(--muted); margin: 0 0 14px; line-height: 1.5; }
+  #s3 .ext-list { list-style: none; padding: 0; margin: 0 0 14px; display: flex; flex-direction: column; gap: 10px; }
+  #s3 .ext-list li {
+    display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: baseline;
+    font-size: 13px;
+  }
+  #s3 .ext-list li::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--secondary); transform: translateY(4px);
+  }
+  #s3 .ext-list li .t { color: var(--ink); }
+  #s3 .ext-list li .t strong { font-weight: 600; }
+  #s3 .ext-list li .d { color: var(--muted); display: block; margin-top: 2px; font-size: 12.5px; }
+  #s3 .ext-list li .d .mono { color: var(--ink); }
+  #s3 .quote-block {
+    border-left: 3px solid var(--secondary);
+    padding: 10px 14px; background: var(--bg); border-radius: var(--r-sm);
+    margin-top: auto;
+  }
+  #s3 .quote-block .q { font-size: 14px; font-style: italic; color: var(--ink); margin: 0 0 4px; line-height: 1.4; }
+  #s3 .quote-block .a { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+
+  /* ─────────────────────────────────────── SLIDE 4 specific */
+  #s4 { display: grid; grid-template-rows: 32px 200px 200px 1fr 32px; row-gap: 16px; }
+  #s4 h1 { font-size: 44px; line-height: 1.1; max-width: 1600px; margin-bottom: 14px; }
+  #s4 .lede { font-size: 18px; max-width: 1400px; }
+  #s4 .shot-strip { display: grid; grid-template-columns: 420px 1fr; gap: 24px; }
+  #s4 .shot-cap { display: flex; flex-direction: column; justify-content: center; padding: 0 4px; }
+  #s4 .shot-cap .kicker { font-family: var(--mono); font-size: 12px; color: var(--secondary); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+  #s4 .shot-cap .t { font-size: 20px; font-weight: 600; color: var(--ink); line-height: 1.25; margin-bottom: 12px; }
+  #s4 .shot-cap .d { font-size: 14px; color: var(--muted); line-height: 1.55; }
+  #s4 .shot-cap .d .mono { color: var(--ink); }
+  #s4 .shot-cap .d strong { color: var(--ink); font-weight: 600; }
+  #s4 .shot-frame { border: 1px solid var(--line); border-radius: var(--r-md); background: var(--bg); overflow: hidden; height: 100%; min-height: 0; }
+  #s4 .shot-frame img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+  #s4 h1 { font-size: 44px; max-width: 1600px; margin-bottom: 14px; }
+  #s4 .lede { font-size: 18px; max-width: 1500px; }
+
+  #s4 .bottom-two { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  #s4 .panel {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md);
+    padding: 20px 24px; display: flex; flex-direction: column;
+  }
+  #s4 .panel .ptag { font-family: var(--mono); font-size: 11px; color: var(--secondary); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+  #s4 .panel h3 { font-size: 20px; font-weight: 600; margin: 0 0 8px; line-height: 1.25; }
+  #s4 .panel > p.intro { font-size: 13.5px; color: var(--muted); margin: 0 0 12px; line-height: 1.5; }
+  #s4 .panel > p.intro strong { color: var(--ink); font-weight: 600; }
+
+  #s4 .skill-list { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; }
+  #s4 .skill-list li {
+    display: grid; grid-template-columns: 180px 1fr; gap: 14px; align-items: baseline;
+    font-size: 12.5px; padding: 7px 12px;
+    background: var(--bg); border-radius: var(--r-sm); border: 1px solid var(--line);
+  }
+  #s4 .skill-list li .name { font-family: var(--mono); color: var(--primary); font-weight: 500; }
+  #s4 .skill-list li .desc { color: var(--muted); line-height: 1.45; }
+  #s4 .skill-list li .desc strong { color: var(--ink); font-weight: 500; }
+  #s4 .auto-note {
+    margin-top: auto;
+    padding: 10px 14px;
+    background: var(--bg); border: 1px solid var(--line); border-left: 3px solid var(--success); border-radius: var(--r-md);
+    font-size: 12px; color: var(--muted); line-height: 1.5;
+  }
+  #s4 .auto-note strong { color: var(--ink); font-weight: 600; }
+  #s4 .auto-note .mono { color: var(--ink); }
+  #s4 .trust-list { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  #s4 .trust-list li {
+    display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: baseline;
+    font-size: 13px; line-height: 1.45;
+  }
+  #s4 .trust-list li::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--secondary); transform: translateY(4px);
+  }
+  #s4 .trust-list li .t { color: var(--ink); }
+  #s4 .trust-list li .t strong { font-weight: 600; }
+  #s4 .trust-list li .d { color: var(--muted); font-size: 12px; display: block; margin-top: 2px; }
+  #s4 .trust-list li .d .mono { color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="stage" id="stage">
+
+    <!-- ═══════════════════ SLIDE 1 — Pitch ═══════════════════ -->
+    <div class="slide active" id="s1" data-title="The pitch">
+      <div class="topbar">
+        <div class="logo">PROCESSMINER</div>
+        <div class="meta">
+          <span>For transformation, operations &amp; process teams</span>
+          <span>Slide 1 of 4</span>
+        </div>
+      </div>
+      <div class="title-block">
+        <div class="eyebrow">AI-assisted process documentation</div>
+        <h1>Quarters of process documentation in hours of SME time — documented and traceable as you go.</h1>
+        <p class="lede">
+          Processminer pairs your subject-matter expert with an AI interviewer, drafts every section as you go, and shows the <strong>source for every sentence</strong>. The SME approves block by block. <span class="muted">The documentation is complete and traceable the moment the session ends — not weeks of write-up later.</span>
+        </p>
+      </div>
+      <div class="hero-shot"><img src="onepager-assets/01-dashboard.png" alt="Processminer dashboard" /></div>
+      <div class="cards">
+        <div class="card">
+          <div class="kicker">THE PROBLEM</div>
+          <h3>Process docs take a quarter — and you've got nothing usable until the very end.</h3>
+          <p>Senior SME time is the bottleneck. "Just let AI write it" sounds great until the AI confidently invents the part nobody actually said. By the time you spot it, the wrong draft is already in three downstream decks.</p>
+        </div>
+        <div class="card">
+          <div class="kicker">THE PITCH</div>
+          <h3>The AI does the typing. The SME does the saying.</h3>
+          <p>Every sentence shows who said it and where. What's confirmed looks confirmed. What's still a draft looks like a draft. Nothing is hidden, nothing is invented, nothing ships without your SME's nod.</p>
+          <div class="chips">
+            <span class="chip"><span class="dot g"></span>said by SME</span>
+            <span class="chip"><span class="dot b"></span>from document</span>
+            <span class="chip"><span class="dot a"></span>AI draft</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="kicker">THE OUTCOME</div>
+          <h3>One source of truth covering six perspectives — ready the moment the SME closes the session.</h3>
+          <p>The same record serves the transformation lead, the operations team, and whoever picks up the process next. No parallel decks, no stale Confluence pages, no "let me find the latest version."</p>
+        </div>
+      </div>
+      <div class="bottom">
+        <div class="shot">
+          <div class="frame"><img src="onepager-assets/02-triage.png" alt="Triage" /></div>
+          <div class="cap">
+            <span class="kicker">STEP 1 · DROP THE DOCUMENT IN</span>
+            <span class="t">The AI reads it and proposes a first draft.</span>
+            <span class="d">You see exactly what's covered, what's still open, and what's worth a closer look — before you spend any SME time.</span>
+          </div>
+        </div>
+        <div class="shot">
+          <div class="frame"><img src="onepager-assets/03-steps.png" alt="Process Steps" /></div>
+          <div class="cap">
+            <span class="kicker">STEP 2 · WALK IT WITH THE SME</span>
+            <span class="t">The AI proposes. The SME confirms, corrects, or cuts.</span>
+            <span class="d">Every step shows its source. "AI-drafted · awaiting confirmation" is honest, not hidden. The SME stays in charge.</span>
+          </div>
+        </div>
+        <div class="stats-col">
+          <h3>What you get</h3>
+          <ul class="benefits">
+            <li>Standardised documentation</li>
+            <li>Live capturing with the SME</li>
+            <li>No endless workshops anymore</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-strip">
+        <div class="stack">
+          <span><strong>Hours</strong> of SME time, not quarters of write-up</span>
+          <span>Documented inline, not weeks later</span>
+          <span>Every claim cited at the heading where it lives</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ SLIDE 2 — Two modules ═══════════════════ -->
+    <div class="slide" id="s2" data-title="Two modules">
+      <div class="topbar">
+        <div class="logo">PROCESSMINER</div>
+        <div class="meta">
+          <span>Two modules, one source of truth</span>
+          <span>Slide 2 of 4</span>
+        </div>
+      </div>
+      <div class="title-block">
+        <div class="eyebrow">How the tool is organized</div>
+        <h1><span class="pm">ProcessMiner</span> documents what is. <span class="am">ArchitectMiner</span> designs what should be.</h1>
+        <p class="lede">
+          One platform, two specialist modules. They share the same wiki, the same SME, and the same audit trail — but they answer different questions and serve different roles. <span class="muted">A documented process flows from the first module straight into the second; nothing is re-keyed.</span>
+        </p>
+      </div>
+      <div class="modules">
+        <div class="module pm">
+          <div class="module-head">
+            <div class="module-tag"><span class="dot"></span>Module 1 · The process</div>
+            <h2 class="module-name">ProcessMiner</h2>
+            <p class="module-tagline">The business view — how the process runs today, and what it should look like.</p>
+          </div>
+          <div class="module-body">
+            <p class="what">Pairs the SME with an AI interviewer to <strong>document the process end-to-end across six perspectives</strong>, then develops the target state with the same SME — controls, regulations, customer experience, innovation, transformation.</p>
+            <div class="section-list-label">Six sections it owns</div>
+            <div class="section-chips">
+              <span class="sec-chip"><span class="n">01</span>Process &amp; operations</span>
+              <span class="sec-chip"><span class="n">02</span>Risk &amp; compliance</span>
+              <span class="sec-chip"><span class="n">03</span>Client experience</span>
+              <span class="sec-chip"><span class="n">04</span>Innovation</span>
+              <span class="sec-chip"><span class="n">05</span>Target process</span>
+              <span class="sec-chip"><span class="n">06</span>IT landscape (As-Is)</span>
+            </div>
+            <p class="who"><strong>Run by</strong> · process specialists, compliance officers, client-journey designers, innovation analysts, transformation leads.</p>
+          </div>
+          <div class="module-shot"><img src="onepager-assets/03-steps.png" alt="ProcessMiner process steps" /></div>
+        </div>
+        <div class="module am">
+          <div class="module-head">
+            <div class="module-tag"><span class="dot"></span>Module 2 · The architecture</div>
+            <h2 class="module-name">ArchitectMiner</h2>
+            <p class="module-tagline">The IT view — the target architecture that will support the target process.</p>
+          </div>
+          <div class="module-body">
+            <p class="what">Takes the documented process and the target state, then <strong>develops a seven-section target architecture</strong> — capabilities, target applications, ADRs, integrations, components, NFRs and the migration phases to get there.</p>
+            <div class="section-list-label">Seven sections it owns</div>
+            <div class="section-chips">
+              <span class="sec-chip"><span class="n">01</span>Capabilities</span>
+              <span class="sec-chip"><span class="n">02</span>Target applications</span>
+              <span class="sec-chip"><span class="n">03</span>Architecture decisions</span>
+              <span class="sec-chip"><span class="n">04</span>Target integrations</span>
+              <span class="sec-chip"><span class="n">05</span>Components</span>
+              <span class="sec-chip"><span class="n">06</span>Non-functional requirements</span>
+              <span class="sec-chip"><span class="n">07</span>Migration phases</span>
+            </div>
+            <p class="who"><strong>Run by</strong> · domain architects, solution architects, enterprise architects.</p>
+          </div>
+          <div class="module-shot"><img src="onepager-assets/04-target-arch.png" alt="ArchitectMiner target architecture" /></div>
+        </div>
+      </div>
+      <div class="handoff">
+        <div class="step-card"><div class="lbl">Input</div><div class="name">Document + SME</div></div>
+        <div class="arrow">→</div>
+        <div class="step-card pm"><div class="lbl">ProcessMiner</div><div class="name">As-Is &amp; target process</div></div>
+        <div class="arrow">→</div>
+        <div class="step-card am"><div class="lbl">ArchitectMiner</div><div class="name">Target architecture</div></div>
+        <div class="arrow">→</div>
+        <div class="step-card"><div class="lbl">Output</div><div class="name">Audit · transformation · board</div></div>
+      </div>
+      <div class="footer-strip">
+        <div class="stack">
+          <span><strong>Shared wiki</strong> — both modules read and write the same per-process record</span>
+          <span>Same provenance rules apply to both</span>
+          <span>Switch modules with the toggle at the top of the dashboard</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ SLIDE 3 — Karpathy ═══════════════════ -->
+    <div class="slide" id="s3" data-title="Karpathy's LLM Wiki">
+      <div class="topbar">
+        <div class="logo">PROCESSMINER</div>
+        <div class="meta">
+          <span>The pattern Processminer is built on</span>
+          <span>Slide 3 of 4</span>
+        </div>
+      </div>
+      <div class="title-block">
+        <div class="eyebrow">Karpathy's LLM Wiki — what he proposed</div>
+        <h1>Treat knowledge as a <em>structured artifact</em>, not a retrieval target.</h1>
+        <p class="lede">
+          In a May 2026 gist, <strong>Andrej Karpathy</strong> (ex-Tesla AI director, OpenAI co-founder) sketched an alternative to RAG for knowledge work: let the wiki <em>be</em> the artifact, keep it as typed Markdown on disk, and let the LLM read and write it directly under schema constraints. <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f" target="_blank" rel="noopener">karpathy/442a6bf…</a> · <span class="muted">Processminer applies that pattern to process documentation, then adds per-heading provenance and an approval gate on top.</span>
+        </p>
+      </div>
+      <div class="narrative">
+        <div class="card">
+          <div class="kicker">WHY HE WROTE IT</div>
+          <h3>Naïve RAG hides what the LLM made up.</h3>
+          <p>LLMs are confidently fluent — their output looks finished even when it's wrong. The standard recipe (<span class="mono">chunk → embed → retrieve top-k → stuff into context</span>) lets the model rephrase retrieved fragments into plausible prose with no clear line between source-true and model-invented.</p>
+          <p>The result reads beautifully. But you can't tell which sentence came from a source and which came from the model's prior. <strong>In regulated knowledge work, that's disqualifying.</strong></p>
+        </div>
+        <div class="card">
+          <div class="kicker">THE CORE MOVE</div>
+          <h3>Make the wiki the artifact. The schema is the contract.</h3>
+          <p>Knowledge-work products already <em>are</em> wikis: typed sections, named files, structured fields. Stop pretending knowledge is just chunks waiting to be retrieved. <strong>Let the wiki be the artifact.</strong></p>
+          <p>The LLM reads it directly with file-level tools. The schema defines what's writable. The LLM emits structured specs; deterministic code writes the files. Reading and writing follow completely different rules.</p>
+          <div class="label-strip"><span class="k">wiki</span>=<span>artifact</span> · <span class="k">schema</span>=<span>contract</span> · <span class="k">LLM</span>=<span>drafting partner</span></div>
+        </div>
+        <div class="card">
+          <div class="kicker">THE READ/WRITE RULE</div>
+          <h3>Judgement is the model's. Mechanics are deterministic code.</h3>
+          <p><strong>READ</strong> — the LLM reads the wiki directly with <span class="mono">Read</span> / <span class="mono">Grep</span> tools. No vector store, no embeddings, no retrieval ranking. The wiki is small (10² – 10³ elements) and structured; grep on disk beats nearest-neighbour search.</p>
+          <p><strong>WRITE</strong> — the LLM never touches Markdown. It emits a JSON spec; a schema-validated Python writer accepts or rejects it. Two runs of the same skill on the same input produce <span class="mono">byte-identical</span> files.</p>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="karpathy">
+          <div class="head">
+            <h3>Three file layers. Each owns one thing.</h3>
+            <p>Karpathy's pattern, instantiated for Processminer. The model has judgement; the files have truth; the schema has the contract.</p>
+          </div>
+          <div class="layers">
+            <div class="layer l1">
+              <div class="num">L1</div>
+              <div class="body">
+                <h4>Raw sources — <span style="color:var(--muted);font-weight:400">immutable</span></h4>
+                <p>The original uploaded documents. The receipts. Never modified by the system.</p>
+              </div>
+              <div class="pathway">
+                <code><span class="c">raw-sources/</span>sepa-payments/dtp-2025-q4.md</code>
+                <code><span class="c">raw-sources/</span>sepa-payments/sme-transcript.txt</code>
+              </div>
+            </div>
+            <div class="layer l2">
+              <div class="num">L2</div>
+              <div class="body">
+                <h4>The wiki — <span style="color:var(--muted);font-weight:400">typed Markdown + JSON sidecars</span></h4>
+                <p>The shared workspace. One folder per process, one file per element. Every heading carries provenance.</p>
+              </div>
+              <div class="pathway">
+                <code><span class="c">wiki/processes/</span>sepa-payments/<span class="c">process-steps/</span>PS-SP-001.md</code>
+                <code><span class="c">wiki/processes/</span>sepa-payments/provenance.json</code>
+              </div>
+            </div>
+            <div class="layer l3">
+              <div class="num">L3</div>
+              <div class="body">
+                <h4>The schema — <span style="color:var(--muted);font-weight:400">single source of truth</span></h4>
+                <p>32 element types, 11 relation types, the provenance contract. The only place that defines what's valid.</p>
+              </div>
+              <div class="pathway">
+                <code><span class="c">schema/</span>process-schema.json <span class="c">·</span> 2,200 lines</code>
+                <code><span class="c">schema/.derived/</span>process-step.llm.json</code>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="extension">
+          <div class="ptag">Processminer's extension to the pattern</div>
+          <h3>Per-heading provenance + an approval gate makes it auditable.</h3>
+          <p>Karpathy's pattern says "track provenance." Processminer makes provenance a first-class schema field that the approval gate consults.</p>
+          <ul class="ext-list">
+            <li><div><span class="t"><strong>Provenance is per heading, not per element.</strong></span><span class="d">Every named section in every element carries <span class="mono">{source, verbatim quote}</span> — six source types: <span class="mono">elicited</span>, <span class="mono">document</span>, <span class="mono">web</span>, <span class="mono">proposed</span>, <span class="mono">legacy-approved</span>, <span class="mono">imported</span>.</span></div></li>
+            <li><div><span class="t"><strong>Approval is gated on every heading.</strong></span><span class="d">Nothing reaches <span class="mono">approved</span> while any heading is <span class="mono">proposed</span>. The wiki tells you what still needs SME confirmation, at heading granularity.</span></div></li>
+            <li><div><span class="t"><strong>Edits auto-flip the heading back to draft.</strong></span><span class="d">Touch a confirmed heading and its provenance flips to <span class="mono">proposed</span>. No silent re-breaking of an approved record.</span></div></li>
+          </ul>
+          <div class="quote-block">
+            <p class="q">"The wiki is the artifact, not the retrieval system."</p>
+            <p class="a">— A. Karpathy, LLM Wiki gist · paraphrased</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-strip">
+        <div class="stack">
+          <span><strong>Citation</strong> Karpathy, "LLM Wiki" — gist published May 2026</span>
+          <span>Implementation: <strong>21</strong> skills</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ SLIDE 4 — Auto-research + trust ═══════════════════ -->
+    <div class="slide" id="s4" data-title="Auto-research &amp; trust model">
+      <div class="topbar">
+        <div class="logo">PROCESSMINER</div>
+        <div class="meta">
+          <span>Auto-research &amp; trust model</span>
+          <span>Slide 4 of 4</span>
+        </div>
+      </div>
+      <div class="title-block">
+        <div class="eyebrow">What runs autonomously — and where the data goes</div>
+        <h1>Auto-research pre-fills the obvious. The SME approves the verdict. The wiki stays local.</h1>
+        <p class="lede">
+          Four autonomous web-research skills scrape the open web for what's already known about the process — regulation, competitor moves, CX benchmarks. The SME never wastes time on desk research. <span class="muted">Every web finding is gated behind the same approval rules; the process knowledge never leaves the analyst's filesystem.</span>
+        </p>
+      </div>
+      <div class="shot-strip">
+        <div class="shot-cap">
+          <span class="kicker">SAMPLE OUTPUT · /source-cx</span>
+          <span class="t">Real competitor cards, auto-researched.</span>
+          <span class="d">Each card names the competitor, stamps the source URL, and lives in the wiki as <span class="mono">source: web</span> until the SME confirms it. <strong>Auto-research is the runway, never the destination.</strong></span>
+        </div>
+        <div class="shot-frame">
+          <img src="onepager-assets/05-competitor.png" alt="Sample /source-cx output — competitor cards" />
+        </div>
+      </div>
+      <div class="bottom-two">
+        <div class="panel">
+          <div class="ptag">Auto-research · the web is a source, not the source</div>
+          <h3>Four autonomous skills pre-fill what the open web already knows.</h3>
+          <p class="intro">The AI does the desk research <strong>before</strong> the SME walks in — so the SME's time goes into validating, correcting, and adding the inside knowledge only they have.</p>
+          <ul class="skill-list">
+            <li><span class="name">/source-regulation</span><span class="desc">Financial-services <strong>regulation, supervisory rules and guidance</strong> that govern the process. Stamped with the regulator and the source URL.</span></li>
+            <li><span class="name">/source-cx</span><span class="desc">Competitor banks &amp; fintechs running the same client journey + <strong>industry CX benchmarks</strong>. Each finding cites the competitor.</span></li>
+            <li><span class="name">/source-innovation</span><span class="desc">Market trends, analyst reports, <strong>competitor moves</strong> in the space. Useful for the innovation perspective and target-state planning.</span></li>
+            <li><span class="name">/source-target</span><span class="desc">Drafts an initial <strong>target process</strong> from the documented As-Is + risk + CX + innovation perspectives — gives the SME something concrete to react to.</span></li>
+          </ul>
+          <div class="auto-note">
+            <strong>Approval is still gated.</strong> Every web finding lands as <span class="mono">source: web</span> with the URL stamped on the heading. Nothing reaches <span class="mono">approved</span> until the SME confirms it — same rule as any other source. <strong>Auto-research is the runway, never the destination.</strong>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="ptag">Trust model · where the data lives (and doesn't)</div>
+          <h3>The bank's process knowledge stays on the bank's filesystem.</h3>
+          <p class="intro">Standard LLM tradeoff, made explicit: <strong>files local, inference remote</strong>. The architecture supports swapping to an on-prem model when the bank asks for air-gapped operation.</p>
+          <ul class="trust-list">
+            <li><div><span class="t"><strong>Wiki + source documents</strong> live as files on the analyst's machine.</span><span class="d">No database, no vector store, no cloud sync. <span class="mono">git</span> tracks every change — that <em>is</em> the audit log.</span></div></li>
+            <li><div><span class="t"><strong>Model inference</strong> runs via an external LLM provider.</span><span class="d">A local AI-agent runtime keeps long-lived sessions warm (6 by default). Per-turn context is sent on each turn; verify your provider's retention policy.</span></div></li>
+            <li><div><span class="t"><strong>No RAG, no embeddings.</strong></span><span class="d">The AI reads the wiki directly with <span class="mono">Read</span> / <span class="mono">Grep</span> tools. The wiki is small enough — grep on disk beats vector search at this scale.</span></div></li>
+            <li><div><span class="t"><strong>Auth + access control on top.</strong></span><span class="d">Per-user sessions, role-based process ownership, password-gated login. Per-process access lists ship as <span class="mono">data/process-access.json</span>.</span></div></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-strip">
+        <div class="stack">
+          <span><strong>Stack</strong> Next.js + Node (UI) · Python stdlib (writers) · Local AI-agent runtime (warm pool)</span>
+          <span><strong>21</strong> skills</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Nav bar -->
+  <nav class="nav" id="nav">
+    <div class="nav-left">
+      <button class="nav-btn" id="prev" aria-label="Previous slide">← Prev</button>
+      <button class="nav-btn" id="next" aria-label="Next slide">Next →</button>
+    </div>
+    <div class="nav-title">
+      <span class="mono" id="counter">1 / 4</span>
+      &nbsp;·&nbsp;
+      <span id="slide-title">The pitch</span>
+    </div>
+    <div class="nav-right">
+      <div class="dots" id="dots"></div>
+      <span class="kbd-hint">← → · 1–4 · F = fullscreen</span>
+    </div>
+  </nav>
+</div>
+
+<script>
+(() => {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const counter = document.getElementById('counter');
+  const titleEl = document.getElementById('slide-title');
+  const dotsEl = document.getElementById('dots');
+  const stage = document.getElementById('stage');
+
+  // export-mode bypasses all navigation; just shows one slide at native size for PNG export
+  const params = new URLSearchParams(location.search);
+  const exportMode = params.has('export');
+  const exportSlide = parseInt(params.get('slide') || '1', 10);
+
+  if (exportMode) {
+    document.body.classList.add('export-mode');
+    slides.forEach((s, i) => s.classList.toggle('active', i === exportSlide - 1));
+    return;
+  }
+
+  if (params.has('print')) {
+    document.body.classList.add('print-mode');
+    document.documentElement.classList.add('print-mode');
+    return; // skip nav setup; let print engine render every slide
+  }
+
+  // Build dots
+  slides.forEach((s, i) => {
+    const d = document.createElement('button');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.dataset.slide = String(i + 1);
+    d.setAttribute('aria-label', `Go to slide ${i + 1}`);
+    dotsEl.appendChild(d);
+  });
+
+  let current = 0;
+
+  function show(idx) {
+    current = (idx + slides.length) % slides.length;
+    slides.forEach((s, i) => s.classList.toggle('active', i === current));
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+    counter.textContent = `${current + 1} / ${slides.length}`;
+    titleEl.textContent = slides[current].dataset.title || '';
+    history.replaceState(null, '', `#slide-${current + 1}`);
+  }
+
+  function fitScale() {
+    const w = stage.clientWidth;
+    const h = stage.clientHeight;
+    const scale = Math.min(w / 1920, h / 1080) * 0.96; // 4% padding
+    document.documentElement.style.setProperty('--scale', scale);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { show(current + 1); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { show(current - 1); e.preventDefault(); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+    else if (e.key >= '1' && e.key <= '9') {
+      const n = parseInt(e.key, 10);
+      if (n <= slides.length) show(n - 1);
+    }
+    else if (e.key === 'f' || e.key === 'F') {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen();
+    }
+  });
+  document.getElementById('prev').addEventListener('click', () => show(current - 1));
+  document.getElementById('next').addEventListener('click', () => show(current + 1));
+  dotsEl.addEventListener('click', (e) => {
+    const t = e.target.closest('.dot');
+    if (t) show(parseInt(t.dataset.slide, 10) - 1);
+  });
+  window.addEventListener('resize', fitScale);
+
+  // hash routing on load
+  const hashMatch = location.hash.match(/^#slide-(\d+)$/);
+  if (hashMatch) show(parseInt(hashMatch[1], 10) - 1);
+  fitScale();
+})();
+</script>
+</body>
+</html>

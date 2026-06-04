@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Processminer — Slide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --primary: #1e40af;
+    --secondary: #2563eb;
+    --soft: #e9eaf6;
+    --bg: #f7f8f8;
+    --surface: #ffffff;
+    --ink: #16181d;
+    --muted: #6b7280;
+    --line: #e2e4e8;
+    --success: #3f7d5c;
+    --warning: #9a7b32;
+    --r-sm: 4px;
+    --r-md: 6px;
+    --r-pill: 9999px;
+    --font: "Geist", -apple-system, system-ui, sans-serif;
+    --mono: "Geist Mono", ui-monospace, "SF Mono", monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    color: var(--ink);
+    background: #e5e7eb;
+    -webkit-font-smoothing: antialiased;
+    display: flex; justify-content: center; align-items: flex-start;
+  }
+  .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  /* The slide canvas — fixed PPTX 16:9 widescreen at 1920×1080 */
+  .slide {
+    width: 1920px;
+    height: 1080px;
+    background: var(--bg);
+    padding: 40px 56px 32px;
+    display: grid;
+    grid-template-rows: 32px 200px 248px 216px 200px 32px;
+    row-gap: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,.06);
+  }
+
+  /* ── Top bar */
+  .topbar { display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-weight: 600; letter-spacing: 0.10em; font-size: 14px; text-transform: uppercase; }
+  .topbar .meta { color: var(--muted); font-size: 13px; }
+  .topbar .meta .mono { color: var(--ink); }
+  .topbar .meta span + span { margin-left: 16px; padding-left: 16px; border-left: 1px solid var(--line); }
+
+  /* ── Title block — full width */
+  .title-block { display: flex; flex-direction: column; justify-content: center; max-width: 1600px; }
+  .eyebrow { color: var(--secondary); font-size: 14px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; }
+  h1 { font-size: 44px; line-height: 1.1; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 14px; max-width: 1500px; }
+  .lede { font-size: 18px; color: var(--ink); margin: 0; line-height: 1.45; max-width: 1400px; }
+  .lede .muted { color: var(--muted); }
+
+  /* ── Hero shot full-width strip */
+  .hero-shot { border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; background: var(--surface); height: 100%; min-height: 0; }
+  .hero-shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+
+  /* ── Three cards */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: 20px 22px;
+    display: flex; flex-direction: column;
+  }
+  .card .kicker {
+    font-family: var(--mono); font-size: 12px; color: var(--secondary);
+    letter-spacing: 0.04em; margin-bottom: 8px;
+  }
+  .card h3 { font-size: 17px; font-weight: 600; margin: 0 0 10px; line-height: 1.25; }
+  .card p { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+  .card .chips { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 2px 8px; font-size: 11px;
+    border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--bg);
+    font-family: var(--mono);
+  }
+  .chip .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+  .chip .dot.g { background: var(--success); }
+  .chip .dot.b { background: var(--secondary); }
+  .chip .dot.a { background: var(--warning); }
+
+  /* ── Bottom row: two product shots + stats */
+  .bottom { display: grid; grid-template-columns: 1fr 1fr 320px; grid-template-rows: 100%; gap: 20px; min-height: 0; }
+  .shot {
+    border: 1px solid var(--line); border-radius: var(--r-md);
+    background: var(--surface); overflow: hidden;
+    display: flex; flex-direction: column;
+    height: 100%; min-height: 0;
+  }
+  .shot .frame { flex: 1; overflow: hidden; min-height: 0; }
+  .shot .frame img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .shot .cap {
+    padding: 10px 14px; border-top: 1px solid var(--line);
+    display: flex; flex-direction: column; gap: 2px;
+    background: var(--surface);
+  }
+  .shot .cap .kicker { font-family: var(--mono); font-size: 11px; color: var(--secondary); letter-spacing: 0.04em; }
+  .shot .cap .t { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .shot .cap .d { font-size: 12px; color: var(--muted); }
+
+  /* ── Stats column */
+  .stats-col {
+    display: flex; flex-direction: column;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md);
+    padding: 20px 22px;
+  }
+  .stats-col h3 { font-size: 13px; font-weight: 600; margin: 0 0 16px; }
+  .stats-col .benefits {
+    list-style: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 14px;
+    justify-content: center; flex: 1;
+  }
+  .stats-col .benefits li {
+    display: grid; grid-template-columns: 18px 1fr;
+    gap: 10px; align-items: baseline;
+    font-size: 15px; color: var(--ink); line-height: 1.35; font-weight: 500;
+  }
+  .stats-col .benefits li::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--primary); transform: translateY(4px);
+  }
+
+  /* ── Footer strip */
+  .footer {
+    border-top: 1px solid var(--line); padding-top: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+    color: var(--muted); font-size: 12px;
+  }
+  .footer strong { color: var(--ink); font-weight: 600; }
+  .footer .stack > span + span { margin-left: 12px; padding-left: 12px; border-left: 1px solid var(--line); }
+</style>
+</head>
+<body>
+<div class="slide">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="logo">PROCESSMINER</div>
+    <div class="meta">
+      <span>For transformation, operations &amp; process teams</span>
+      <span>28 May 2026</span>
+    </div>
+  </div>
+
+  <!-- Title — full width -->
+  <div class="title-block">
+    <div class="eyebrow">AI-assisted process documentation</div>
+    <h1>Quarters of process documentation in hours of SME time — documented and traceable as you go.</h1>
+    <p class="lede">
+      Processminer pairs your subject-matter expert with an AI interviewer, drafts every section as you go, and shows the <strong>source for every sentence</strong>. The SME approves block by block. <span class="muted">The documentation is complete and traceable the moment the session ends — not weeks of write-up later.</span>
+    </p>
+  </div>
+
+  <!-- Hero shot — full-width strip -->
+  <div class="hero-shot">
+    <img src="onepager-assets/01-dashboard.png" alt="Processminer dashboard" />
+  </div>
+
+  <!-- Three cards -->
+  <div class="cards">
+    <div class="card">
+      <div class="kicker">THE PROBLEM</div>
+      <h3>Process docs take a quarter — and you've got nothing usable until the very end.</h3>
+      <p>Senior SME time is the bottleneck. "Just let AI write it" sounds great until the AI confidently invents the part nobody actually said. By the time you spot it, the wrong draft is already in three downstream decks.</p>
+    </div>
+    <div class="card">
+      <div class="kicker">THE PITCH</div>
+      <h3>The AI does the typing. The SME does the saying.</h3>
+      <p>Every sentence shows who said it and where. What's confirmed looks confirmed. What's still a draft looks like a draft. Nothing is hidden, nothing is invented, nothing ships without your SME's nod.</p>
+      <div class="chips">
+        <span class="chip"><span class="dot g"></span>said by SME</span>
+        <span class="chip"><span class="dot b"></span>from document</span>
+        <span class="chip"><span class="dot a"></span>AI draft</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="kicker">THE OUTCOME</div>
+      <h3>One source of truth covering six perspectives — ready the moment the SME closes the session.</h3>
+      <p>The same record serves the transformation lead, the operations team, and whoever picks up the process next. No parallel decks, no stale Confluence pages, no "let me find the latest version."</p>
+    </div>
+  </div>
+
+  <!-- Bottom: two shots + stats -->
+  <div class="bottom">
+    <div class="shot">
+      <div class="frame"><img src="onepager-assets/02-triage.png" alt="Triage" /></div>
+      <div class="cap">
+        <span class="kicker">STEP 1 · DROP THE DOCUMENT IN</span>
+        <span class="t">The AI reads it and proposes a first draft.</span>
+        <span class="d">You see exactly what's covered, what's still open, and what's worth a closer look — before you spend any SME time.</span>
+      </div>
+    </div>
+    <div class="shot">
+      <div class="frame"><img src="onepager-assets/03-steps.png" alt="Process Steps" /></div>
+      <div class="cap">
+        <span class="kicker">STEP 2 · WALK IT WITH THE SME</span>
+        <span class="t">The AI proposes. The SME confirms, corrects, or cuts.</span>
+        <span class="d">Every step shows its source. "AI-drafted · awaiting confirmation" is honest, not hidden. The SME stays in charge.</span>
+      </div>
+    </div>
+    <div class="stats-col">
+      <h3>What you get</h3>
+      <ul class="benefits">
+        <li>Standardised documentation</li>
+        <li>Live capturing with the SME</li>
+        <li>No endless workshops anymore</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="stack">
+      <span><strong>Hours</strong> of SME time, not quarters of write-up</span>
+      <span>Documented inline, not weeks later</span>
+      <span>Every claim cited at the heading where it lives</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

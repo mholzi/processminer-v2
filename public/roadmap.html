@@ -1,0 +1,1262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Processminer Roadmap — 2026 H1 → 2028+</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1a1a1a;
+    --muted: #666;
+    --rule: #e5e5e5;
+    --rule-soft: #f0f0f0;
+    --card-bg: #fafafa;
+
+    --p1: #3b82f6;       /* PM component — blue */
+    --p1-bg: #eff6ff;
+    --p2: #10b981;       /* ArchitectMiner — green */
+    --p2-bg: #ecfdf5;
+    --p3: #8b5cf6;       /* Usability — purple */
+    --p3-bg: #f3e8ff;
+    --p4: #f59e0b;       /* Process analysis — amber */
+    --p4-bg: #fef3c7;
+    --p5: #ec4899;       /* Top architect — pink */
+    --p5-bg: #fce7f3;
+    --p6: #06b6d4;       /* Connectors — cyan */
+    --p6-bg: #cffafe;
+    --p7: #ef4444;       /* Domain modules — red */
+    --p7-bg: #fee2e2;
+
+    --new: #16a34a;
+    --depr: #92400e;
+    --depr-bg: #fef3c7;
+
+    --code-bg: #f5f5f5;
+    --quote-bg: #fffbeb;
+    --quote-rule: #f59e0b;
+    --quote-fg: #92400e;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    max-width: 1180px;
+    margin: 2.5em auto;
+    padding: 0 1.25em 4em;
+    line-height: 1.55;
+    color: var(--fg);
+    background: var(--bg);
+  }
+  h1 { font-size: 2em; margin: 0 0 0.2em; letter-spacing: -0.015em; }
+  h2 { font-size: 1.4em; margin: 2.5em 0 0.6em; letter-spacing: -0.01em; }
+  h3 { font-size: 1.15em; margin: 1.4em 0 0.4em; }
+  h4 { font-size: 0.85em; margin: 0 0 0.5em; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; }
+  p { margin: 0.5em 0; }
+  .meta { color: var(--muted); font-size: 0.95em; }
+  .lede { font-size: 1.02em; color: var(--fg); margin: 1em 0 1.5em; }
+
+  /* Section card */
+  .section { border: 1px solid var(--rule); border-radius: 10px; padding: 1.5em 1.75em; margin: 1.5em 0; background: #fff; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin: 0.8em 0; font-size: 0.92em; }
+  th, td { padding: 0.6em 0.85em; text-align: left; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { background: #fafafa; font-weight: 600; font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  tr:last-child td { border-bottom: none; }
+  td.num { font-variant-numeric: tabular-nums; text-align: right; }
+
+  /* Phase chip + summary table colour bar */
+  .phase-cell { display: flex; align-items: center; gap: 0.55em; }
+  .phase-dot {
+    width: 0.65em; height: 0.65em; border-radius: 50%; flex: 0 0 auto;
+  }
+
+  code { background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 4px; font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace; font-size: 0.86em; }
+
+  ul, ol { padding-left: 1.4em; margin: 0.5em 0; }
+  li { margin: 0.25em 0; }
+
+  /* Bank landscape grid */
+  .tools { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.85em; margin: 1em 0; }
+  @media (max-width: 980px) { .tools { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px) { .tools { grid-template-columns: 1fr; } }
+  .tool {
+    border: 1px solid var(--rule); border-radius: 8px; padding: 0.9em 1em; background: #fff;
+  }
+  .tool h4 { color: var(--fg); font-size: 1em; text-transform: none; letter-spacing: 0; margin-bottom: 0.3em; }
+  .tool .sub { font-size: 0.82em; color: var(--muted); }
+  .tool p { font-size: 0.88em; margin: 0.5em 0 0; }
+
+  /* Positioning principles callouts */
+  .principles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.85em; margin: 1em 0; }
+  @media (max-width: 760px) { .principles { grid-template-columns: 1fr; } }
+  .principle {
+    border-left: 4px solid var(--p1); background: var(--p1-bg);
+    padding: 0.8em 1em; border-radius: 6px;
+  }
+  .principle .num {
+    display: inline-block; width: 1.5em; height: 1.5em; line-height: 1.5em;
+    border-radius: 50%; background: var(--p1); color: #fff;
+    text-align: center; font-weight: 600; font-size: 0.75em; margin-right: 0.5em;
+    vertical-align: middle;
+  }
+  .principle strong { font-size: 0.96em; }
+  .principle p { font-size: 0.88em; margin: 0.3em 0 0; }
+
+  /* Priority pills */
+  .pill {
+    display: inline-block; padding: 0.12em 0.6em; border-radius: 10px;
+    font-size: 0.75em; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase;
+  }
+  .pill-p0 { background: #dcfce7; color: #166534; }
+  .pill-p1 { background: #dbeafe; color: #1e40af; }
+  .pill-p2 { background: #fef3c7; color: #92400e; }
+  .pill-drop { background: #fee2e2; color: #991b1b; }
+  .pill-new { background: #dcfce7; color: #166534; }
+  .pill-depr { background: var(--depr-bg); color: var(--depr); }
+
+  .effort {
+    display: inline-block; padding: 0.08em 0.45em; border-radius: 4px;
+    background: #f1f5f9; color: #334155;
+    font-size: 0.72em; font-weight: 700; letter-spacing: 0.04em;
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+  }
+  .effort-xs { background: #e0f2fe; color: #075985; }
+  .effort-s  { background: #d1fae5; color: #065f46; }
+  .effort-m  { background: #fef3c7; color: #92400e; }
+  .effort-l  { background: #fed7aa; color: #9a3412; }
+  .effort-xl { background: #fee2e2; color: #991b1b; }
+
+  /* Phase header */
+  .phase-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    flex-wrap: wrap; gap: 0.5em;
+    padding: 1em 1.25em; border-radius: 10px 10px 0 0;
+    border: 1px solid var(--rule); border-bottom: none;
+    margin-top: 2em;
+  }
+  .phase-head h2 { margin: 0; font-size: 1.3em; }
+  .phase-head .count { font-size: 0.85em; color: var(--muted); }
+  .phase-body {
+    border: 1px solid var(--rule); border-top: 0;
+    border-radius: 0 0 10px 10px;
+    padding: 1em 1.25em 1.5em;
+    background: #fff;
+  }
+  .phase-1 { background: var(--p1-bg); border-color: var(--p1); }
+  .phase-2 { background: var(--p2-bg); border-color: var(--p2); }
+  .phase-3 { background: var(--p3-bg); border-color: var(--p3); }
+  .phase-4 { background: var(--p4-bg); border-color: var(--p4); }
+  .phase-5 { background: var(--p5-bg); border-color: var(--p5); }
+  .phase-6 { background: var(--p6-bg); border-color: var(--p6); }
+  .phase-7 { background: var(--p7-bg); border-color: var(--p7); }
+
+  .group-head {
+    font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--muted); font-weight: 600; margin: 1.5em 0 0.5em;
+    padding-bottom: 0.3em; border-bottom: 1px solid var(--rule-soft);
+  }
+
+  /* Candidate cards */
+  .candidates { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.85em; margin: 0.5em 0; }
+  @media (max-width: 880px) { .candidates { grid-template-columns: 1fr; } }
+  .candidates.one-col { grid-template-columns: 1fr; }
+  .candidate {
+    border: 1px solid var(--rule); border-radius: 8px;
+    padding: 0.9em 1em; background: #fff;
+    position: relative;
+  }
+  .candidate.deprioritised { background: #fafaf9; }
+  .candidate .head {
+    display: flex; align-items: baseline; gap: 0.5em; margin-bottom: 0.4em; flex-wrap: wrap;
+  }
+  .candidate .num {
+    display: inline-block; min-width: 1.6em; height: 1.6em; line-height: 1.6em;
+    border-radius: 4px; text-align: center; font-weight: 700; font-size: 0.78em;
+    background: var(--p1); color: #fff; padding: 0 0.35em;
+    font-variant-numeric: tabular-nums;
+  }
+  .phase-1 .candidate .num,
+  .phase-1-num { background: var(--p1); }
+  .phase-2-num { background: var(--p2); }
+  .phase-3-num { background: var(--p3); }
+  .phase-4-num { background: var(--p4); }
+  .phase-5-num { background: var(--p5); }
+  .phase-6-num { background: var(--p6); }
+  .phase-7-num { background: var(--p7); }
+
+  .candidate h3 { font-size: 0.98em; margin: 0; flex: 1 1 auto; }
+  .candidate .row { font-size: 0.85em; margin: 0.35em 0; }
+  .candidate .row .label {
+    display: inline-block; min-width: 4.2em;
+    font-size: 0.72em; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--muted); font-weight: 600;
+  }
+  .candidate .row.what  .label { color: #1e3a8a; }
+  .candidate .row.why   .label { color: #166534; }
+  .candidate .row.touches { font-size: 0.78em; color: var(--muted); }
+
+  .ribbon {
+    display: inline-block; padding: 0.05em 0.45em; border-radius: 3px;
+    font-size: 0.68em; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  .ribbon-new  { background: #dcfce7; color: #166534; }
+  .ribbon-depr { background: var(--depr-bg); color: var(--depr); }
+
+  /* Quote callout */
+  blockquote, .callout {
+    background: var(--quote-bg);
+    border-left: 4px solid var(--quote-rule);
+    color: var(--quote-fg);
+    padding: 0.85em 1em; border-radius: 6px;
+    margin: 1em 0;
+    font-size: 0.92em;
+  }
+  blockquote p, .callout p { margin: 0.3em 0; }
+
+  /* Timeline */
+  .timeline { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5em; margin: 1em 0; }
+  @media (max-width: 980px) { .timeline { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px) { .timeline { grid-template-columns: 1fr; } }
+  .qtr {
+    border: 1px solid var(--rule); border-radius: 8px; padding: 0.85em 1em;
+    background: #fff;
+  }
+  .qtr .when {
+    font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--muted); font-weight: 600;
+  }
+  .qtr .focus { font-weight: 600; margin: 0.2em 0 0.5em; font-size: 0.95em; }
+  .qtr ul { font-size: 0.82em; padding-left: 1.1em; }
+  .qtr li { margin: 0.15em 0; }
+
+  /* TOC */
+  .toc {
+    border: 1px solid var(--rule); border-radius: 8px;
+    padding: 0.9em 1.25em; background: #fafafa;
+    margin: 1.5em 0;
+    font-size: 0.92em;
+  }
+  .toc h4 { color: var(--fg); text-transform: none; letter-spacing: 0; font-size: 1em; margin-bottom: 0.4em; }
+  .toc ol { columns: 2; column-gap: 2em; padding-left: 1.4em; margin: 0.3em 0; }
+  @media (max-width: 760px) { .toc ol { columns: 1; } }
+  .toc li { break-inside: avoid; margin: 0.15em 0; }
+
+  /* Open questions */
+  .questions { padding-left: 1.4em; }
+  .questions li { margin: 0.5em 0; }
+  .questions li strong { color: #92400e; }
+
+  footer { margin-top: 4em; padding-top: 1.5em; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.88em; }
+  a { color: var(--p1); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<h1>Processminer Feature Roadmap</h1>
+<p class="meta">
+  <strong>Version:</strong> 2026-05-28 · <strong>Status:</strong> Candidate pipeline, not a commitment ·
+  <strong>Horizon:</strong> 2026 H1 → 2028+ · <strong>Updated after</strong> the v0.4.0 architecture
+  rollout, the 2026-05-28 dogfood run, and the Sparx/Adonis/EPM landscape discussion.
+</p>
+
+<p class="lede">
+  Processminer started as an LLM-Wiki for documenting a single banking process end-to-end with
+  SME interviews. The v0.4.0 rollout finished the foundational engine: derived per-type schemas,
+  a pure-data <code>ProcessView</code> join layer, and an orchestrator state machine that picks the
+  next best action from the wiki's own state. This roadmap is the bridge from "usable for a single
+  dogfood SME" to "institutional bank-wide tool that integrates into the existing landscape and
+  supports the recurring deliverables a process / architecture / change team actually produces".
+</p>
+
+<!-- Executive summary table -->
+<div class="section">
+  <h2 style="margin-top:0;">Executive summary — 7 phases, ≈80 candidates</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:8%">Phase</th>
+        <th style="width:30%">Module</th>
+        <th>Question it answers</th>
+        <th style="width:10%" class="num"># Candidates</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="phase-cell"><span class="phase-dot" style="background:var(--p1)"></span><strong>1</strong></span></td>
+        <td>Processminer component</td>
+        <td>"Does the elicitation tool feel complete to an SME?"</td>
+        <td class="num">15</td>
+      </tr>
+      <tr>
+        <td><span class="phase-cell"><span class="phase-dot" style="background:var(--p2)"></span><strong>2</strong></span></td>
+        <td>ArchitectMiner</td>
+        <td>"Can an architect develop the target state without leaving the tool?"</td>
+        <td class="num">20</td>
+      </tr>
+      <tr>
+        <td><span class="phase-cell"><span class="phase-dot" style="background:var(--p3)"></span><strong>3</strong></span></td>
+        <td>General usability</td>
+        <td>"Does the whole app feel like a finished product?"</td>
+        <td class="num">15</td>
+      </tr>
+      <tr>
+        <td><span class="phase-cell"><span class="phase-dot" style="background:var(--p4)"></span><strong>4</strong></span></td>
+        <td>Process analysis fundamentals</td>
+        <td>"Do we cover the basics a pro process analyst expects?"</td>
+        <td class="num">4</td>
+      </tr>
+      <tr>
+        <td><span class="phase-cell"><span class="phase-dot" style="background:var(--p5)"></span><strong>5</strong></span></td>
+        <td>Top-architect expectations</td>
+        <td>"Would a senior enterprise architect ship out of this tool?"</td>
+        <td class="num">20</td>
+      </tr>
+      <tr>
+        <td><span class="phase-cell"><span class="phase-dot" style="background:var(--p6)"></span><strong>6</strong></span></td>
+        <td>Tool connectors <span class="ribbon ribbon-new">new</span></td>
+        <td>"Does it talk to Confluence and Jira (the bank's product/tech home)?"</td>
+        <td class="num">4</td>
+      </tr>
+      <tr>
+        <td><span class="phase-cell"><span class="phase-dot" style="background:var(--p7)"></span><strong>7</strong></span></td>
+        <td>Domain modules <span class="ribbon ribbon-new">new</span></td>
+        <td>"Does it serve Change/Transformation, Training and Policy cross-check?"</td>
+        <td class="num">3</td>
+      </tr>
+      <tr>
+        <td>—</td>
+        <td>Deferred pool</td>
+        <td>Promising ideas excluded from the active list this round</td>
+        <td class="num">23</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="toc">
+    <h4>Jump to</h4>
+    <ol>
+      <li><a href="#landscape">Bank landscape</a></li>
+      <li><a href="#principles">Positioning principles</a></li>
+      <li><a href="#priorities">Prioritisation framework</a></li>
+      <li><a href="#phase1">Phase 1 — Processminer component</a></li>
+      <li><a href="#phase2">Phase 2 — ArchitectMiner</a></li>
+      <li><a href="#phase3">Phase 3 — General usability</a></li>
+      <li><a href="#phase4">Phase 4 — Process analysis fundamentals</a></li>
+      <li><a href="#phase5">Phase 5 — Top-architect expectations</a></li>
+      <li><a href="#phase6">Phase 6 — Tool connectors</a></li>
+      <li><a href="#phase7">Phase 7 — Domain modules</a></li>
+      <li><a href="#deferred">Deferred pool</a></li>
+      <li><a href="#sequencing">Strategic sequencing</a></li>
+      <li><a href="#questions">Open strategic questions</a></li>
+      <li><a href="#refs">Cross-references</a></li>
+    </ol>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<h2 id="landscape">Bank landscape — the tools we live next to</h2>
+<p>Processminer does not enter an empty room. The bank already runs four adjacent systems and one
+shared taxonomy. Every Phase 1 / 6 / 7 idea is shaped by them.</p>
+
+<div class="tools">
+  <div class="tool">
+    <h4>Sparx Enterprise Architect</h4>
+    <p class="sub">L2/L3 architecture repository</p>
+    <p>Holds capability map, application portfolio, integration architecture at strategic abstraction.
+    <strong>Does NOT hold L4 detail.</strong> Processminer aggregates upward via XML export (Phase 1 #3).</p>
+  </div>
+  <div class="tool">
+    <h4>Adonis NP</h4>
+    <p class="sub">Partial L4 process repository</p>
+    <p>Process step lists + owner roles where adopted. Patchy adoption, content often years old; CSV
+    export with varying format. Used as <strong>warm-start input</strong> (Phase 1 #2).</p>
+  </div>
+  <div class="tool">
+    <h4>EPM</h4>
+    <p class="sub">Enterprise Process Model — shared taxonomy</p>
+    <p>3–4 level hierarchy: Process Group → Process Area → Process → Sub-Process. The
+    <strong>navigation rückgrat</strong> for Processminer (Phase 1 #1). Without it, the three tools
+    cannot stay aligned.</p>
+  </div>
+  <div class="tool">
+    <h4>Confluence</h4>
+    <p class="sub">Product & tech documentation</p>
+    <p>Where product and engineering teams already live. Two-way connector (Phase 6 #1) prevents
+    parallel knowledge-base divergence.</p>
+  </div>
+  <div class="tool">
+    <h4>Jira</h4>
+    <p class="sub">Work tracking</p>
+    <p>System of record for "what is being done". Pain Points / Innovation Ideas / Gap Resolutions
+    flow forward to Jira epics (Phase 6 #2, Phase 7 #1).</p>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<h2 id="principles">Positioning principles — what Processminer is NOT</h2>
+<p>The durable framing this roadmap inherits. Every candidate is sanity-checked against these four rules.</p>
+
+<div class="principles">
+  <div class="principle">
+    <strong><span class="num">1</span>Processminer is the L4 elicitation engine.</strong>
+    <p>It does what Sparx, Adonis and GRC tools structurally cannot: pull tacit per-step detail out
+    of the SME's head into a structured wiki via AI-led interviews. <em>That is the wedge.</em></p>
+  </div>
+  <div class="principle">
+    <strong><span class="num">2</span>Processminer is NOT the system of record for governance.</strong>
+    <p>Adonis handles process versioning for L4; Sparx handles L2/L3 governance; GRC handles
+    compliance attestation. <code>set_approval.py</code> covers elicitation sign-off, not
+    governance gates. Phase 1 #8 / #9 deprioritised for this reason.</p>
+  </div>
+  <div class="principle">
+    <strong><span class="num">3</span>Processminer aggregates upward and is aggregated into.</strong>
+    <p>Adonis CSV flows IN (warm start). Sparx XML flows OUT (architectural aggregation).
+    Confluence ↔ Jira flow BOTH WAYS (Phase 6). Participant in the bank's landscape, not a
+    replacement.</p>
+  </div>
+  <div class="principle">
+    <strong><span class="num">4</span>The Karpathy wiki is sacred.</strong>
+    <p>Every wiki mutation goes through a schema-validated writer; new orchestration state lives in
+    sidecars <em>outside</em> the wiki tree. No candidate may bypass the writer or invent
+    wiki-internal sidecars.</p>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<h2 id="priorities">Prioritisation framework</h2>
+<p>Every candidate gets one of four tags. The tags are an honest commitment signal, not a wishlist.</p>
+
+<table>
+  <thead>
+    <tr><th style="width:10%">Tag</th><th>Meaning</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><span class="pill pill-p0">P0</span></td><td><strong>Do now.</strong> Committed to the current quarter. Gets a <code>*-PLAN.md</code> design doc next.</td></tr>
+    <tr><td><span class="pill pill-p1">P1</span></td><td><strong>Strong yes, sequence later.</strong> Committed in principle, queued for a later quarter.</td></tr>
+    <tr><td><span class="pill pill-p2">P2</span></td><td><strong>Maybe.</strong> Revisit at the next quarterly planning round.</td></tr>
+    <tr><td><span class="pill pill-drop">drop</span></td><td><strong>Not the right move.</strong> Kept in the doc with reasoning so the rationale stays visible.</td></tr>
+  </tbody>
+</table>
+<p style="font-size:0.92em;color:var(--muted)">A typical quarter lands 4–6 P0 ideas (≈1 month of focused work each).
+Anything above 6 P0 is overcommitment.</p>
+
+<p><strong>Effort sizing:</strong>
+  <span class="effort effort-xs">XS</span> 1–2 days ·
+  <span class="effort effort-s">S</span> ~1 week ·
+  <span class="effort effort-m">M</span> 2–3 weeks ·
+  <span class="effort effort-l">L</span> ~1 month ·
+  <span class="effort effort-xl">XL</span> multi-month
+</p>
+
+<!-- ============================================================= -->
+<!-- PHASE 1 -->
+<div class="phase-head phase-1" id="phase1">
+  <h2>Phase 1 — Processminer component</h2>
+  <span class="count">15 candidates · SME-facing elicitation + bank-landscape integration</span>
+</div>
+<div class="phase-body">
+  <blockquote>
+    Refined 2026-05-28 with bank-landscape context. Three foundational ideas added at the top reflect
+    the actual setup: <strong>Sparx</strong> as L2/L3 architecture repository, <strong>Adonis</strong>
+    (patchy, legacy, CSV export) as partial process source, and a bank-wide
+    <strong>EPM</strong> as shared taxonomy. Processminer is repositioned as the L4 detail authority
+    that aggregates upward to Sparx and pulls warm-start content from Adonis. Ideas #8
+    (versioning) and #9 (approval chains) deprioritised — Adonis/Sparx already cover governance.
+  </blockquote>
+
+  <div class="group-head">Bank-landscape integration (foundational)</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-1-num">1</span><h3>EPM-Knoten als Navigationsrückgrat</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Left spine becomes the bank's EPM tree (3–4 levels). Every process anchored to exactly one EPM leaf. Cross-process aggregation views compose by EPM node.</p>
+      <p class="row why"><span class="label">Why</span> Without an EPM anchor, Processminer is structurally disconnected from how the bank organises work. EPM is the single shared taxonomy across Adonis, Sparx and Processminer.</p>
+      <p class="row touches"><span class="label">Touches</span> new <code>epm.json</code>; <code>EPMTree.tsx</code>; <code>index.md</code> frontmatter <code>epmNode</code>; per-area aggregation views.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-1-num">2</span><h3>Adonis CSV importer</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Read Adonis CSV exports (process steps + owner role assignments) into a scaffold of stub <code>process-step</code> and <code>role</code> elements. Foundational run picks up from the warm start.</p>
+      <p class="row why"><span class="label">Why</span> Adonis adoption is patchy but where it exists it's free warm-start material. Turns "empty wiki" startup into "≈40–60% pre-populated".</p>
+      <p class="row touches"><span class="label">Touches</span> <code>scripts/wiki/import_adonis_csv.py</code> (configurable field mapping); new upload modal flow; <code>document-ingest</code> picks up scaffold.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-1-num">3</span><h3>Sparx XML-Export für L2/L3-Aggregation</h3><span class="effort effort-m">M–L</span></div>
+      <p class="row what"><span class="label">What</span> Aggregate Processminer L4 detail into Sparx-compatible XML at L2/L3. XMI (UML) or ArchiMate Open Exchange XML — depends on Sparx config.</p>
+      <p class="row why"><span class="label">Why</span> Sparx is the L2/L3 repository; without an export, the detail never reaches the strategic view EA and senior management consume. Closes elicitation → enterprise loop.</p>
+      <p class="row touches"><span class="label">Touches</span> <code>scripts/wiki/export_sparx.py</code>; aggregation over <code>ProcessView</code>; export action per EPM area.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Visibility & feedback</div>
+  <div class="candidates one-col">
+    <div class="candidate">
+      <div class="head"><span class="num phase-1-num">4</span><h3>Live progress in chat for long skill turns</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Replace "Working…" placeholder with structured progress: which skill, how many elements written, which sub-agent active, current activity.</p>
+      <p class="row why"><span class="label">Why</span> The 2026-05-28 dogfood sat 25 min on slow-but-working <code>source-cx</code> with zero feedback. Worker emits the events; UI doesn't surface them.</p>
+      <p class="row touches"><span class="label">Touches</span> <code>useAgentChat.ts</code>, <code>AgentChat.tsx</code>, optionally <code>session-worker.ts</code>.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Inline editing & SME UX</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-1-num">5</span><h3>Inline element block edit</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Click a <code>## </code> block on ElementCard, edit in place, save via a JSON endpoint that calls <code>patch_element.py --block</code>.</p>
+      <p class="row why"><span class="label">Why</span> Today every typo fix has to go through chat → skill → patch. Schema-validated writer stays the only mutation path.</p>
+      <p class="row touches"><span class="label">Touches</span> <code>src/app/api/elements/[slug]/[id]/route.ts</code>, <code>ElementCard.tsx</code>.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-1-num">6</span><h3>Skill execution log per element</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Per element, full skill-touch history: "Drafted by <code>/document-ingest</code> 2026-05-26 · refined by <code>/process-specialist</code> 2026-05-27 · 3 lint findings".</p>
+      <p class="row why"><span class="label">Why</span> Stamps + run manifest + lint findings exist but aren't surfaced per element. Closes the "who did what" question without git archaeology.</p>
+      <p class="row touches"><span class="label">Touches</span> per-element history sidecar built at render time; surface in <code>ElementCard</code>.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-1-num">7</span><h3>Slug + abbreviation collision warnings</h3><span class="effort effort-xs">XS</span></div>
+      <p class="row what"><span class="label">What</span> In <code>/new-process</code>, flag both slug-exists AND abbreviation-already-used across siblings.</p>
+      <p class="row why"><span class="label">Why</span> Dogfood caught the first, not the second — <code>BGID</code> reused across 3 dogfood processes; dashboard with three <code>BGID</code> chips is confusing.</p>
+      <p class="row touches"><span class="label">Touches</span> <code>derive_process_meta.py</code> + <code>new-process</code> SKILL.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Cross-process workflow</div>
+  <div class="candidates">
+    <div class="candidate deprioritised">
+      <div class="head"><span class="num phase-1-num">8</span><h3>Process versioning / baselines</h3><span class="ribbon ribbon-depr">deprioritised</span><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">Status</span> Adonis NP already handles process versioning + lifecycle governance for L4; Sparx covers L2/L3. Keep as fallback for processes living <em>only</em> in Processminer.</p>
+      <p class="row what"><span class="label">What</span> Snapshot a wiki at a point in time; immutable read-only copy; diff against current.</p>
+      <p class="row why"><span class="label">Why</span> Auditors ask "what did the process look like when certified on date X?" Today: <code>git checkout &lt;sha&gt;</code> + screenshot.</p>
+    </div>
+    <div class="candidate deprioritised">
+      <div class="head"><span class="num phase-1-num">9</span><h3>Approval chains</h3><span class="ribbon ribbon-depr">deprioritised</span><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">Status</span> Adonis handles approval workflow; bank-wide approval authority sits in GRC. Processminer's <code>set_approval.py</code> is sufficient for L4 elicitation sign-off.</p>
+      <p class="row what"><span class="label">What</span> Configurable per element type — control requires sign-off from process owner AND control owner; regulation requires legal sign-off.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Quality & consistency</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-1-num">10</span><h3>Element staleness signal</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Flag elements not touched in N days, or with <code>source</code> provenance from a superseded document.</p>
+      <p class="row why"><span class="label">Why</span> Banking processes drift. Documentation that was true 6 months ago is often the most dangerous thing in the wiki.</p>
+      <p class="row touches"><span class="label">Touches</span> derived view in <code>process-view.ts</code>; surface in <code>ElementCard</code>.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-1-num">11</span><h3>Stuck-element detector</h3><span class="effort effort-xs">XS</span></div>
+      <p class="row what"><span class="label">What</span> Alert on elements <code>provenance: proposed</code> or <code>status: in-progress</code> for &gt; N days.</p>
+      <p class="row why"><span class="label">Why</span> Approval gate blocks approval while any heading is <code>proposed</code>. Drafts that sit unconfirmed are silently invisible in the approval workflow.</p>
+      <p class="row touches"><span class="label">Touches</span> new <code>ActionKind</code> in <code>orchestrator.ts</code> — surfaces in WelcomeScreen / TriagePanel automatically.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-1-num">12</span><h3>Cross-element consistency widget</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Real-time subset of lint, always running: role-in-step-not-in-roles, control-owner-not-a-role, step-references-missing-system. Surfaced inline as dots per element.</p>
+      <p class="row why"><span class="label">Why</span> These checks only run on explicit Run Lint (minutes). The cheap structural checks should be always-on.</p>
+      <p class="row touches"><span class="label">Touches</span> <code>src/lib/consistency.ts</code>; surface in <code>ElementCard</code>.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-1-num">13</span><h3>Re-source freshness signal</h3><span class="effort effort-xs">XS</span></div>
+      <p class="row what"><span class="label">What</span> Show "last sourced N days ago" on every sourced element. Suggest re-sourcing after configurable interval per type.</p>
+      <p class="row why"><span class="label">Why</span> Regulatory landscapes and competitor moves change. Sourced content goes stale fast and silently.</p>
+      <p class="row touches"><span class="label">Touches</span> <code>asOf</code> already in frontmatter; surface freshness chip.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Audit & provenance</div>
+  <div class="candidates one-col">
+    <div class="candidate">
+      <div class="head"><span class="num phase-1-num">14</span><h3>Inline citation links: element body → source quote</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Hover/click a paragraph, see the exact source-document quote that grounds it (already in <code>provenance.json</code> as <code>evidence</code>). In-page, no context switch.</p>
+      <p class="row why"><span class="label">Why</span> Speeds up the SME's "is this true?" check. Today the evidence quote is in a sidecar nobody reads.</p>
+      <p class="row touches"><span class="label">Touches</span> <code>ElementCard.tsx</code>; new <code>CitationPanel.tsx</code> slide-out.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Interop & ecosystem</div>
+  <div class="candidates one-col">
+    <div class="candidate">
+      <div class="head"><span class="num phase-1-num">15</span><h3>Custom element type plugin API</h3><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">What</span> Banks define their own element types via <code>schema/extensions/&lt;bank&gt;/*.json</code>. Core schema untouched; extension overlays.</p>
+      <p class="row why"><span class="label">Why</span> Every bank has institution-specific element types they'd want to document. Forking the core schema is too much friction; the extension pattern keeps customisation contained.</p>
+      <p class="row touches"><span class="label">Touches</span> schema loader; derived-schemas build; conformance in both languages.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- PHASE 2 -->
+<div class="phase-head phase-2" id="phase2">
+  <h2>Phase 2 — ArchitectMiner</h2>
+  <span class="count">20 candidates · architect's tooling around the seven target-architecture sections</span>
+</div>
+<div class="phase-body">
+  <p>ArchitectMiner takes a documented As-Is process and develops the seven sections: <code>capability</code>,
+  <code>target-application</code>, <code>adr</code>, <code>target-integration</code>, <code>component</code>,
+  <code>nfr</code>, <code>migration-phase</code>. Two specialist skills (<code>/domain-architect</code>,
+  <code>/solution-architect</code>) elaborate them. Phase 2 sharpens everything around them.</p>
+
+  <div class="group-head">Visualization</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">1</span><h3>Capability map</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Radial or matrix view of capabilities + the target applications hosting them. Heat-coded by maturity / coverage / priority.</p>
+      <p class="row why"><span class="label">Why</span> Capability inventory exists as a list; spatial view exposes redundancy and gaps at a glance.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">2</span><h3>Target application landscape diagram</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Apps as nodes, integrations as edges, NFR criticality as node size. Extends ProcessFlow swimlane pattern.</p>
+      <p class="row why"><span class="label">Why</span> Integration list is a tabular blob; picture answers "what depends on what" in seconds.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">3</span><h3>As-Is → Target system mapping diagram</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> For each documented <code>SYS-*</code>, show which target app replaces / consolidates / wraps it.</p>
+      <p class="row why"><span class="label">Why</span> The migration story IS this mapping. ADRs reference it constantly but it lives only in prose.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">4</span><h3>ADR decision graph</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> ADRs as nodes; "supersedes" + "depends on" as edges. Find orphans and contradictions.</p>
+      <p class="row why"><span class="label">Why</span> ADRs accumulate over years; relationships invisible in a flat list. Architects can't see what's load-bearing vs deprecated.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Modelling & analysis</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">5</span><h3>Capability coverage gap analyzer</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Flag capabilities not yet mapped to a target app; flag those duplicated across multiple target apps.</p>
+      <p class="row why"><span class="label">Why</span> Obvious "what's missing" check currently a manual eyeball exercise.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">6</span><h3>NFR compliance pass</h3><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">What</span> Validate target architecture actually meets each NFR (e.g. P99 ≤ 200ms against an integration chain with 5 sync hops → flag).</p>
+      <p class="row why"><span class="label">Why</span> Highest-value architect feedback loop. NFRs written aspirationally; nothing checks whether architecture lands them.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">7</span><h3>Integration complexity score</h3><span class="effort effort-xs">XS</span></div>
+      <p class="row what"><span class="label">What</span> Per target app, count fan-in/fan-out integrations; flag &gt; N as architectural risk.</p>
+      <p class="row why"><span class="label">Why</span> The biggest failure mode is the central super-app. A score makes it visible.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">8</span><h3>Cross-process capability alignment</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Surface overlap + conflict when multiple processes target the same target app with different capability expectations.</p>
+      <p class="row why"><span class="label">Why</span> Enterprise architecture is multi-process; today each process plans its target in isolation.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Decision capture (ADRs)</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">9</span><h3>ADR template library + status workflow</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> <code>proposed → accepted → superseded / rejected</code> with auto-suggested template per decision kind.</p>
+      <p class="row why"><span class="label">Why</span> Free-text ADRs miss the Consequences / Alternatives sections auditors expect.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">10</span><h3>ADR ↔ capability ↔ target app linkage</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Every ADR explicitly traces to the capabilities and target apps it affects (not just text mentions).</p>
+      <p class="row why"><span class="label">Why</span> When an ADR is questioned, the architect needs to see what it touches.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">11</span><h3>Decision conflict detector</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Surface contradictions: "ADR A says consolidate X+Y; ADR B says extend X to handle Y".</p>
+      <p class="row why"><span class="label">Why</span> ADRs drift over years; nobody re-reads them all before authoring a new one.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Migration planning</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">12</span><h3>Migration phase sequencer</h3><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">What</span> Drag-and-drop reorder of phases with automatic dependency validation.</p>
+      <p class="row why"><span class="label">Why</span> Today's phase list is a fixed sequence. Architects want to model "what if we did phase 3 before 2?"</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">13</span><h3>Phase risk heatmap</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Each phase scored on dependencies, business disruption (peak season?), tech risk.</p>
+      <p class="row why"><span class="label">Why</span> Migration plans reduce to "phases 1–5"; the risk shape is invisible.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">14</span><h3>Quick-win identifier</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Flag phases that deliver high NFR improvement for low effort.</p>
+      <p class="row why"><span class="label">Why</span> Every migration plan needs the executive "what we deliver in 90 days" story.</p>
+    </div>
+  </div>
+
+  <div class="group-head">PM ↔ AM handoff</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">15</span><h3>Handoff readiness check</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Block handoff if every process-step has an owner role, every role has RACI, every system has classification.</p>
+      <p class="row why"><span class="label">Why</span> Half-documented PM content becomes guesswork in AM.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">16</span><h3>"Send back to PM"</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> AM detects a gap mid-architecture; bounce back to PM with the specific finding.</p>
+      <p class="row why"><span class="label">Why</span> Today's only recourse is manual cross-team coordination.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Inline editing & SME UX</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">17</span><h3>Inline ADR edit</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Click an ADR section (Context / Decision / Consequences), edit in place via <code>patch_element.py --block</code>.</p>
+      <p class="row why"><span class="label">Why</span> Same as PM #5. Editing through chat is heavyweight for ADR refinements.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">18</span><h3>Drag-to-link</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Drag a capability node onto a target app to set <code>hostedBy</code>; drag a target app onto an ADR to set <code>affectedBy</code>.</p>
+      <p class="row why"><span class="label">Why</span> Today setting relations requires editing frontmatter via chat. Drag-to-link matches how architects work.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Quality & consistency</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">19</span><h3>Target architecture lint</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Always-on cheap checks: capability has ≥1 target app; target app has ≥1 component; ADR has Consequences; NFR references ≥1 target app.</p>
+      <p class="row why"><span class="label">Why</span> Structural completeness should be always-on, not run-on-demand.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-2-num">20</span><h3>Target traceability matrix</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Visualise the full chain: As-Is step → As-Is system → target app → target component → NFR → ADR.</p>
+      <p class="row why"><span class="label">Why</span> Regulators want "if I change this NFR, what target apps are affected?" — today requires walking JSON.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- PHASE 3 -->
+<div class="phase-head phase-3" id="phase3">
+  <h2>Phase 3 — General usability</h2>
+  <span class="count">15 candidates · app-wide polish; low-effort quick wins</span>
+</div>
+<div class="phase-body">
+  <p>The cut on 2026-05-28 removed bigger architectural lifts (responsive layout, multi-user
+  presence, undo / history, element-level revision history, saved views) — kept here as
+  <em>low-effort quick wins</em> that the app already needs to feel like a finished product.</p>
+
+  <div class="group-head">Onboarding & first-run</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">1</span><h3>Guided tour for first-time users</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Annotated walkthrough on first login — switcher, chat, foundational run, lint, export. Skippable.</p>
+      <p class="row why"><span class="label">Why</span> Today a first-time SME lands on an empty welcome screen with no signal where to start.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">2</span><h3>Sample / demo process pre-loaded</h3><span class="effort effort-xs">XS</span></div>
+      <p class="row what"><span class="label">What</span> Curated <code>sepa-payments</code>-style read-only fixture every fresh install ships with.</p>
+      <p class="row why"><span class="label">Why</span> Lets a prospect or new SME see what good documentation looks like with no setup.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Performance & responsiveness</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">3</span><h3>Lazy-load element cards</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Virtualize the element list — don't render all 100+ cards at once.</p>
+      <p class="row why"><span class="label">Why</span> 80 process-steps + 30 controls → ~150 ElementCards per section entry; scroll perf degrades.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">4</span><h3>Skeleton screens during load</h3><span class="effort effort-xs">XS</span></div>
+      <p class="row what"><span class="label">What</span> Placeholder layout while the wiki re-reads, instead of blank flash then content pop.</p>
+      <p class="row why"><span class="label">Why</span> <code>force-dynamic</code> means every navigation re-reads; 100–500ms blanks are common.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Keyboard navigation</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">5</span><h3>Comprehensive keyboard shortcuts</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> j/k between elements, e to edit, c to comment, / to search, ? for cheat sheet.</p>
+      <p class="row why"><span class="label">Why</span> Power analysts spend hours in the app; mouse-only navigation is friction tax.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">6</span><h3>Global command palette</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Extend ⌘K beyond process switching to "do anything" — run lint, start foundational run, jump to element, open settings.</p>
+      <p class="row why"><span class="label">Why</span> Orchestrator's <code>ActionSpec</code> is the natural action vocabulary.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Search & navigation</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">7</span><h3>Global search across all content</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> One search box that hits elements, comments, ADRs, lint findings, raw-sources. Filterable.</p>
+      <p class="row why"><span class="label">Why</span> Everything is one index.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">8</span><h3>Recently viewed stack</h3><span class="effort effort-xs">XS</span></div>
+      <p class="row what"><span class="label">What</span> Persistent across sessions, visible in switcher and small "where was I" widget.</p>
+      <p class="row why"><span class="label">Why</span> "Pick up where I left off" matters when you're context-switching across processes.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">9</span><h3>Breadcrumb navigation</h3><span class="effort effort-xs">XS</span></div>
+      <p class="row what"><span class="label">What</span> Module → Area → Section → Element, with click-back.</p>
+      <p class="row why"><span class="label">Why</span> Today's spine + section nav assumes you remember where you are.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Notifications</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">10</span><h3>Browser notifications when long skills complete</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Opt-in browser notifications when ingest / lint / source / foundational run finishes.</p>
+      <p class="row why"><span class="label">Why</span> document-ingest is 20+ minutes; SME walks away. Notification closes the loop.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">11</span><h3>In-app notification center</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Bell icon with recent events — completed skills, comments on my elements, lint findings on my elements.</p>
+      <p class="row why"><span class="label">Why</span> ATTENTION column is the only event surface today. A centre lets a user catch up in 30 seconds.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Collaboration</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">12</span><h3>Activity feed per process</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Running log per process: "Markus approved CP-BGID-001 2 min ago", "Jane commented on PS-BGID-003".</p>
+      <p class="row why"><span class="label">Why</span> Data exists (stamps + manifest); running view is missing. Doubles as basic audit trail.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Bulk operations</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">13</span><h3>Multi-select + bulk operations</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Checkbox column on element lists; approve-all-high-confidence; re-open all elements implicated by a finding.</p>
+      <p class="row why"><span class="label">Why</span> Reviewing 30 sourced competitors one-by-one is busywork.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Personalization & resilience</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">14</span><h3>Dark mode toggle</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Honour OS preference + explicit toggle.</p>
+      <p class="row why"><span class="label">Why</span> DESIGN.md already declares tokens; long review sessions in a dim office.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-3-num">15</span><h3>Better error messages with retry path</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Say what failed, what user can do, link to relevant doc / log. No more silent <code>.catch(...)</code>.</p>
+      <p class="row why"><span class="label">Why</span> The <code>runSourcing</code> bug fixed today (commit 641078f) was a symptom of this.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- PHASE 4 -->
+<div class="phase-head phase-4" id="phase4">
+  <h2>Phase 4 — Process analysis fundamentals</h2>
+  <span class="count">4 candidates · derive new analytical views from existing wiki data; no new engines</span>
+</div>
+<div class="phase-body">
+  <p>The full pro-tool brainstorm produced 20 candidates (BPMN export, process mining, simulation,
+  activity-based costing, capacity planning, …). The cut kept only the four that derive a new
+  analytical view from data the wiki already holds. The heavy features (process mining, simulation,
+  costing) stay in the deferred pool.</p>
+
+  <div class="group-head">Standard methodology support</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-4-num">1</span><h3>DMN decision tables</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Extract decisions from process-step bodies — "if amount &gt; EUR 5m → Head of Trade Finance" — into proper Decision Model and Notation tables.</p>
+      <p class="row why"><span class="label">Why</span> Banking is rules-heavy; today rules are buried in step narratives where they can't be audited, tested or exported. DMN makes them first-class.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-4-num">2</span><h3>SIPOC auto-view</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Derive Suppliers / Inputs / Process / Outputs / Customers from process-step inputs/outputs blocks, role + system relations. Printable for project kickoff.</p>
+      <p class="row why"><span class="label">Why</span> Stakeholders expect a SIPOC at the start of any review. Data already in the wiki — just compose the view.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-4-num">3</span><h3>Process maturity assessment</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> CMMI-style scoring (0–5) across documentation, control coverage, KPI presence, automation, governance. Persisted history.</p>
+      <p class="row why"><span class="label">Why</span> Stage-9 dogfood subagent produces this ad-hoc; institutionalize it as first-class with history.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-4-num">4</span><h3>Process governance dashboard</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Per process: owner, escalation chain, last reviewed, next review due, audit cycle, change frequency, automation %. The process owner's daily view.</p>
+      <p class="row why"><span class="label">Why</span> Data exists across wiki + sidecars; never consolidated. One dashboard tile the owner can scan in 30 seconds.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- PHASE 5 -->
+<div class="phase-head phase-5" id="phase5">
+  <h2>Phase 5 — Top-architect expectations</h2>
+  <span class="count">20 candidates · what a senior EA expects beyond the seven sections — not yet trimmed</span>
+</div>
+<div class="phase-body">
+  <p>Phase 2 covers the ArchitectMiner <em>module</em>. Phase 5 covers what a <strong>senior
+  enterprise architect</strong> expects from an architecture tool in the first place — TOGAF /
+  ArchiMate compatibility, Wardley mapping, vendor management, run-cost modelling, ARB workflow,
+  resilience scenarios. <em>Not yet trimmed by the user</em> — open question #6 below.</p>
+
+  <div class="group-head">Strategic framing</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">1</span><h3>Wardley map view per process</h3><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">What</span> Plot capabilities on value-chain × evolution axes. Highlight capabilities ripe for outsourcing vs needing differentiation.</p>
+      <p class="row why"><span class="label">Why</span> Wardley mapping is the strategic framing top architects use when arguing build-vs-buy in the C-suite. Today happens in Miro outside the tool.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">2</span><h3>Capability heatmap by business unit</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Matrix of capabilities × business units, colour-coded by ownership / maturity / priority. Reveals duplication and orphans.</p>
+      <p class="row why"><span class="label">Why</span> Standard EA artifact for the "who-owns-what" conversation.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">3</span><h3>ArchiMate-compatible export</h3><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">What</span> Export target architecture as ArchiMate Open Exchange XML — the OMG standard most EA tools (Sparx, BiZZdesign, Archi) consume.</p>
+      <p class="row why"><span class="label">Why</span> Senior architects work in ArchiMate-aware tools. Speak the standard, not require translation.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Vendor & supplier modelling</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">4</span><h3>Vendor portfolio</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Every target app has a vendor (or <code>internal</code>); contract expiry, SLAs, support tier, cost band. Aggregate into a portfolio view.</p>
+      <p class="row why"><span class="label">Why</span> Vendor management is half the EA job. Today buried in narrative.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">5</span><h3>Vendor risk score</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Per vendor — financial health, concentration, strategic alignment, geo/regulatory risk. Roll up to portfolio risk view.</p>
+      <p class="row why"><span class="label">Why</span> DORA explicitly requires ICT third-party risk assessment. Answer the regulator with one click.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">6</span><h3>Contract renewal calendar</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Timeline of vendor contracts + licence renewals. 90/60/30-day chips on architect's dashboard.</p>
+      <p class="row why"><span class="label">Why</span> Dates live in procurement's spreadsheet; architect finds out too late to influence terms.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Cost modelling</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">7</span><h3>Application run-cost modelling</h3><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">What</span> Per target app: annual licence, infra, support, internal FTE cost; show cost over time as migration phases land.</p>
+      <p class="row why"><span class="label">Why</span> Every target decision is a cost decision. Build-vs-buy ADR is undermined when cost lives in finance's spreadsheet.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">8</span><h3>TCO comparison per ADR</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> For build-vs-buy / consolidate-vs-separate ADRs, render a 5-year TCO comparison table.</p>
+      <p class="row why"><span class="label">Why</span> ADR Decision section deserves a numerical anchor. Removes "I forgot to include integration costs".</p>
+    </div>
+  </div>
+
+  <div class="group-head">Lifecycle & roadmap</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">9</span><h3>Technology lifecycle stage per system</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Every system and target app has a lifecycle stage (<code>pilot → ramp → mature → sunset → decommissioned</code>). Aggregate into portfolio lifecycle view.</p>
+      <p class="row why"><span class="label">Why</span> EA's bread-and-butter view. "We have N apps in sunset not yet replaced."</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">10</span><h3>Roadmap Gantt with capability lanes</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Time-axis Gantt of migration phases, swimlanes by capability, milestones. Classic 18-month transformation roadmap.</p>
+      <p class="row why"><span class="label">Why</span> Deliverable every transformation programme needs at every steering committee. Today: rebuilt in PowerPoint monthly.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Risk & resilience</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">11</span><h3>Single-point-of-failure detector</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Scan the integration graph for nodes whose removal disconnects the architecture.</p>
+      <p class="row why"><span class="label">Why</span> Architect's most-asked resilience question. Today: manual whiteboard exercise.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">12</span><h3>DR / BCP scenario modelling</h3><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">What</span> "What if SYS-X is down for 4 hours?" — propagate impact through integrations; show RTO/RPO breaches against documented NFRs.</p>
+      <p class="row why"><span class="label">Why</span> BCP team runs this quarterly as a workshop. Built-in lets the architect rehearse independently.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">13</span><h3>Cyber-attack-surface view</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Per target app — exposure level, data classification, regulatory scope. Heat-map across portfolio.</p>
+      <p class="row why"><span class="label">Why</span> Security-by-design is the regulator's expectation. Architect needs the view at design time, not post-pen-test.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Decision authority & governance</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">14</span><h3>ADR scope + authority labels</h3><span class="effort effort-xs">XS</span></div>
+      <p class="row what"><span class="label">What</span> Tag every ADR with scope (team / domain / enterprise) and ratifying authority. Filter by scope at review time.</p>
+      <p class="row why"><span class="label">Why</span> Mixing tactical-team and enterprise-board ADRs in one list is the most common governance failure.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">15</span><h3>Architecture review board (ARB) workflow</h3><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">What</span> Queue of ADRs scheduled for board review; agenda generator; decision capture flowing back into the ADR's status.</p>
+      <p class="row why"><span class="label">Why</span> The ARB meeting is where the bank's architecture decisions are actually made. Tool currently has no concept of it.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Standards & frameworks</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">16</span><h3>TOGAF ADM phase tagging</h3><span class="effort effort-s">S</span></div>
+      <p class="row what"><span class="label">What</span> Tag every artifact to TOGAF Architecture Development Method phases (A–F). Filter view by phase.</p>
+      <p class="row why"><span class="label">Why</span> TOGAF is the lingua franca of EA governance at large banks. Tool needs to speak it.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">17</span><h3>Reference architecture library</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Curated pre-built architectures (open banking, payments, trade finance) the architect can clone as a start.</p>
+      <p class="row why"><span class="label">Why</span> Every engagement re-invents 60% of the structure. A reference library accelerates the start.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Cross-domain modelling</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">18</span><h3>Data flow modelling</h3><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">What</span> Every integration carries a payload modelled at field level; aggregate into a data flow view per data domain.</p>
+      <p class="row why"><span class="label">Why</span> Data architects need this view; today split across integration descriptions in narrative.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">19</span><h3>Capability investment scoring</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> Per capability: strategic importance × maturity × differentiation × cost-to-improve → 2×2 invest / divest / sustain / monitor matrix.</p>
+      <p class="row why"><span class="label">Why</span> McKinsey 2×2 is the standard exec deliverable when defending the IT budget.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Cross-architecture transparency</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-5-num">20</span><h3>Architecture diff between two timepoints</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">What</span> "What changed in the target architecture between Q1 and Q3?" — diff capabilities, target apps, ADRs, NFRs across baselines.</p>
+      <p class="row why"><span class="label">Why</span> Transformation governance asks this at every steering committee. Depends on Phase 1 #8 (baselines).</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- PHASE 6 -->
+<div class="phase-head phase-6" id="phase6">
+  <h2>Phase 6 — Tool connectors <span class="ribbon ribbon-new" style="font-size:0.6em;vertical-align:middle">new this round</span></h2>
+  <span class="count">4 candidates · connect Processminer to the bank's existing product / tech / process tools</span>
+</div>
+<div class="phase-body">
+  <p>Without these connectors Processminer is an island. Adonis (PM #2) and Sparx (PM #3) are
+  cross-referenced from Phase 1; the new ideas in this phase are Confluence and Jira.</p>
+
+  <div class="group-head">Productivity-suite connectors (new)</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-6-num">1</span><h3>Confluence bidirectional connector</h3><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">What</span> Two-way link between elements and Confluence pages.
+        <strong>Inbound:</strong> when a system / process-step references a Confluence page, render a preview inline.
+        <strong>Outbound:</strong> publish a Processminer process summary (overview, SIPOC, key controls, owner) as a Confluence page that updates whenever the wiki changes. Badged "rendered from Processminer".</p>
+      <p class="row why"><span class="label">Why</span> Confluence is where product and tech teams already live. If Processminer's knowledge doesn't show up there, it doesn't exist for half the bank.</p>
+      <p class="row touches"><span class="label">Touches</span> <code>scripts/wiki/publish_confluence.py</code> (Atlassian REST); new <code>confluencePageId</code> frontmatter; published-pages registry sidecar (outside the wiki tree).</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-6-num">2</span><h3>Jira bidirectional connector</h3><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">What</span> Link Pain Points / Innovation Ideas / Gap Resolutions / ADRs / Transformation Decisions to Jira issues.
+        <strong>Inbound:</strong> Jira status (open / done / blocked) inline on the element.
+        <strong>Outbound:</strong> create a new Jira epic from a Pain Point; epic description generated from the element and stays linked.
+        <strong>Search:</strong> "what Jira work is happening on this process?"</p>
+      <p class="row why"><span class="label">Why</span> Jira is the system of record for "what is being done about it". Process documentation must answer this — answer lives in Jira.</p>
+      <p class="row touches"><span class="label">Touches</span> <code>scripts/wiki/jira_sync.py</code> (Atlassian REST); <code>jiraEpicKey</code> frontmatter on pain-point / innovation-idea / gap-resolution / adr / transformation-decision; Jira-status sidecar.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Bank-landscape connectors (cross-references)</div>
+  <div class="candidates">
+    <div class="candidate">
+      <div class="head"><span class="num phase-6-num">3</span><h3>Adonis CSV importer</h3><span class="effort effort-m">M</span></div>
+      <p class="row what"><span class="label">See</span> Phase 1 #2 — pulls process step + owner role assignments from Adonis NP as warm start. Already in PM phase because it's foundational to onboarding.</p>
+    </div>
+    <div class="candidate">
+      <div class="head"><span class="num phase-6-num">4</span><h3>Sparx XML exporter</h3><span class="effort effort-m">M–L</span></div>
+      <p class="row what"><span class="label">See</span> Phase 1 #3 — aggregates Processminer L4 detail upward to Sparx L2/L3 as XMI / ArchiMate. Already in PM phase as the primary "visible to senior management" loop.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- PHASE 7 -->
+<div class="phase-head phase-7" id="phase7">
+  <h2>Phase 7 — Domain modules <span class="ribbon ribbon-new" style="font-size:0.6em;vertical-align:middle">new this round</span></h2>
+  <span class="count">3 candidates · adjacent use cases reusing the wiki infrastructure</span>
+</div>
+<div class="phase-body">
+  <p>Adjacent use cases that <strong>reuse</strong> Processminer's wiki infrastructure for a
+  different audience and problem. Each is substantial enough to be a sub-product; this section
+  sketches the wedge.</p>
+
+  <div class="group-head">Change & Transformation Portfolio</div>
+  <div class="candidates one-col">
+    <div class="candidate">
+      <div class="head"><span class="num phase-7-num">1</span><h3>Change / Transformation Portfolio module</h3><span class="effort effort-xl">XL</span></div>
+      <p class="row what"><span class="label">What</span> New top-level module aggregating pain-points + innovation ideas + transformation decisions + migration phases + Jira epics (Phase 6 #2) across processes. Programme portfolio (Wave 1 / 2 / 3) with phase Gantt, budget overlay, RAID log, Jira drill-down.</p>
+      <p class="row why"><span class="label">Why</span> Today the transformation team rebuilds the portfolio view in PowerPoint each month from a dozen sources. Processminer already holds the structured upstream (pain → decision → migration phase); missing piece is the aggregation + Jira link.</p>
+      <p class="row touches"><span class="label">Touches</span> new <code>wiki/programmes/&lt;slug&gt;/</code> parallel to <code>wiki/processes/&lt;slug&gt;/</code> (Karpathy-compliant — separate file hierarchy with its own schema); new element types (<code>programme</code>, <code>wave</code>, <code>raid-entry</code>, <code>programme-milestone</code>); new module spine; depends on Phase 6 #2.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Training & enablement</div>
+  <div class="candidates one-col">
+    <div class="candidate">
+      <div class="head"><span class="num phase-7-num">2</span><h3>Training & enablement module</h3><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">What</span> Generate role-specific training materials from a documented process. Per-role training pack (process narrative, key controls, exception handling, systems). Publish to LMS via SCORM / xAPI or to Confluence (Phase 6 #1). Optional quiz generation.</p>
+      <p class="row why"><span class="label">Why</span> Onboarding a new SME today means handing them PDFs. Generated training packs with role context turn the wiki into enablement material with zero extra authoring.</p>
+      <p class="row touches"><span class="label">Touches</span> new <code>/generate-training</code> skill; <code>TrainingPack.tsx</code> preview; LMS connector; reuses Phase 6 #1.</p>
+    </div>
+  </div>
+
+  <div class="group-head">Document cross-check</div>
+  <div class="candidates one-col">
+    <div class="candidate">
+      <div class="head"><span class="num phase-7-num">3</span><h3>Document cross-check module (Policies / DTPs / KOPs)</h3><span class="effort effort-l">L</span></div>
+      <p class="row what"><span class="label">What</span> Cross-check Policies, DTPs (Detaillierte Tätigkeitsbeschreibungen) and KOPs (Konzern-Operativ-Prozesse) against the documented process.
+        <strong>Forward:</strong> wiki flags a Policy / DTP / KOP gap as an <code>audit-finding</code>.
+        <strong>Backward:</strong> wiki suggests Policy / DTP / KOP amendments based on SME elicitation.</p>
+      <p class="row why"><span class="label">Why</span> Today the bank maintains wiki AND policies AND DTPs/KOPs as parallel knowledge bases that drift apart. Audit findings then materialise as "documentation gap" — exactly the gap this module closes. High auditor-visibility win.</p>
+      <p class="row touches"><span class="label">Touches</span> new <code>/cross-check-policies</code> skill; new ingestion path for Policies / DTPs / KOPs as raw-sources; new finding kind (<code>policy-mismatch</code>); resolution workflow.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<h2 id="deferred">Deferred pool — 23 promising ideas excluded this round</h2>
+<div class="section">
+  <h3 style="margin-top:0">Phase 1 — original 8 cut</h3>
+  <p>Live context preview · context provenance log · filtered ⌘K · near-duplicate finder ·
+  cross-process comparison · BPMN export · auto-suggested controls · two LLM-transparency items.</p>
+  <p class="meta"><strong>Reason:</strong> Phase 1 already had 12 ideas; LLM-transparency and
+  search/discovery sit downstream of more foundational gaps. Revisit after Phase 1 lands.</p>
+
+  <h3>Phase 3 — original 5 cut</h3>
+  <p>Mobile / tablet responsive layout · multi-user presence · undo / history ·
+  element-level revision history · saved views / filters.</p>
+  <p class="meta"><strong>Reason:</strong> All valuable, all bigger architectural lifts that block
+  the quick wins. Revisit as "Phase 3.5" once the 15 smaller items land.</p>
+
+  <h3>Phase 4 — original 16 cut</h3>
+  <p>BPMN 2.0 export · process mining (event log ingest) · variant analysis · conformance check ·
+  process simulation · activity-based costing · capacity planning · KPI framework ·
+  risk register integration · traceability matrix (process scope) · compliance evidence
+  requirements · root-cause analysis templates · automation candidate flagger · change impact
+  analysis · SOP generation · APQC PCF tagging.</p>
+  <p class="meta"><strong>Reason:</strong> The "heavy" process-analysis features (new engines, new
+  ingestion pipelines, new ML). Phase 4 deliberately kept only derivative views from existing wiki
+  data. Revisit once SIPOC + maturity + governance have demonstrated their value with real SMEs.</p>
+
+  <h3>Phase 7 — original 7 module candidates cut</h3>
+  <p>Audit & evidence management · Risk & control library · KPI / OKR catalogue · Vendor / third-
+  party risk module · Data governance & lineage · Regulatory horizon scanning · Customer journey
+  portfolio.</p>
+  <p class="meta"><strong>Reason:</strong> User picked Change/Transformation, Training and Document
+  Cross-Check this round. Audit & Evidence and Risk & Control Library are the strongest second-wave
+  candidates.</p>
+</div>
+
+<!-- ============================================================= -->
+<h2 id="sequencing">Strategic sequencing — proposed timeline</h2>
+<p>A <strong>proposal</strong>, not a commitment. The exact P0 / P1 assignment happens once the
+user has prioritised individual candidates.</p>
+
+<div class="timeline">
+  <div class="qtr">
+    <div class="when">2026 H1</div>
+    <div class="focus">Make the L4 wedge undeniable</div>
+    <p class="meta" style="font-size:0.8em;margin:0">~4 P0, ~3 months</p>
+    <ul>
+      <li>PM #1 EPM tree</li>
+      <li>PM #2 Adonis import</li>
+      <li>PM #4 Live progress</li>
+      <li>PM #5 Inline edit</li>
+    </ul>
+  </div>
+  <div class="qtr">
+    <div class="when">2026 H2</div>
+    <div class="focus">Aggregate upward + close consistency gaps</div>
+    <p class="meta" style="font-size:0.8em;margin:0">~5 P0, ~3 months</p>
+    <ul>
+      <li>PM #3 Sparx export</li>
+      <li>PM #10 Staleness</li>
+      <li>PM #12 Consistency widget</li>
+      <li>UX #2 Sample process</li>
+      <li>UX #15 Error messages</li>
+    </ul>
+  </div>
+  <div class="qtr">
+    <div class="when">2027 H1</div>
+    <div class="focus">ArchitectMiner productive</div>
+    <p class="meta" style="font-size:0.8em;margin:0">~5 P0, ~3 months</p>
+    <ul>
+      <li>AM #1 Capability map</li>
+      <li>AM #2 App landscape</li>
+      <li>AM #5 Gap analyzer</li>
+      <li>AM #15 Handoff check</li>
+      <li>AM #19 Target lint</li>
+    </ul>
+  </div>
+  <div class="qtr">
+    <div class="when">2027 H2</div>
+    <div class="focus">Phase 4 + Confluence flow</div>
+    <p class="meta" style="font-size:0.8em;margin:0">~4 P0, ~3 months</p>
+    <ul>
+      <li>PA #2 SIPOC view</li>
+      <li>PA #3 Maturity</li>
+      <li>PA #4 Governance dashboard</li>
+      <li>Connector #1 Confluence</li>
+    </ul>
+  </div>
+  <div class="qtr">
+    <div class="when">2028 H1+</div>
+    <div class="focus">Top-architect + Jira + first domain module</div>
+    <p class="meta" style="font-size:0.8em;margin:0">Selective</p>
+    <ul>
+      <li>Phase 5 selective (Wardley, vendor portfolio, roadmap Gantt)</li>
+      <li>Connector #2 Jira</li>
+      <li>Phase 7 — first module (TBD)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<h2 id="questions">Open strategic questions</h2>
+<p>Unresolved decisions affecting sequencing. Best resolved before the first P0 set goes into
+design docs.</p>
+
+<ol class="questions">
+  <li><strong>Sparx XML flavour.</strong> XMI (UML profile) vs ArchiMate Open Exchange. Affects
+  Phase 1 #3 effort sizing (M vs L). Depends on how the bank's Sparx is configured — EA team
+  should confirm.</li>
+  <li><strong>Adonis CSV variants.</strong> No two Adonis exports look the same. Does Phase 1 #2
+  ship with N field-mapping profiles, or one configurable importer with profile-as-YAML?
+  Configurable is more durable.</li>
+  <li><strong>Confluence space strategy.</strong> Phase 6 #1 — single bank-wide space, one per
+  business unit, or one per process? Affects access control + URL stability.</li>
+  <li><strong>Jira project mapping.</strong> Phase 6 #2 — when Processminer creates an epic,
+  which Jira project does it land in? Per-process default? Per business unit? User-selected each
+  time?</li>
+  <li><strong>Phase 7 module sequencing.</strong> Change / Transformation vs Training vs Document
+  Cross-Check — which ships first? Document Cross-Check is highest auditor visibility;
+  Change / Transformation is highest budget visibility; Training is lowest effort.</li>
+  <li><strong>Phase 5 trim.</strong> The 20 top-architect candidates have not yet been trimmed by
+  the user. A "best 6 to invest in" cut would clarify the 2028 outlook.</li>
+</ol>
+
+<!-- ============================================================= -->
+<h2 id="refs">Cross-references</h2>
+<ul>
+  <li><a href="/TARGET-ARCH-PLAN.md">TARGET-ARCH-PLAN.md</a> — completed v0.2 / v0.3 rollout this builds on</li>
+  <li><a href="/ORCHESTRATOR-PLAN.md">ORCHESTRATOR-PLAN.md</a> — v0.4 orchestrator design; contains the <strong>Karpathy wiki is sacred</strong> principle</li>
+  <li><a href="/HALLUCINATION-PLAN.md">HALLUCINATION-PLAN.md</a> — per-heading provenance contract (Phase 1 #14 builds on this)</li>
+  <li><a href="/SKILLS.md">SKILLS.md</a> — agent / skill architecture (Phase 1 #4 / #5 / #6 touch skill behaviour)</li>
+  <li><a href="/docs/architecture-comparison.html">docs/architecture-comparison.html</a> — target-vs-current snapshot (the "post-v0.4.0" view this roadmap is starting from)</li>
+  <li><a href="/CONTENT-MODEL-PLAN.md">CONTENT-MODEL-PLAN.md</a> — schema decisions D1–D6 (every Phase 2 / 5 schema addition needs a new D-decision)</li>
+  <li><a href="/ROADMAP.md">ROADMAP.md</a> — the Markdown source of this page</li>
+</ul>
+
+<footer>
+  Last updated 2026-05-28 · Next review: after the first P0 set is prioritised and the first
+  <code>*-PLAN.md</code> design doc is in flight.
+</footer>
+
+</body>
+</html>

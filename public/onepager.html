@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Processminer — KI-native Prozessdokumentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --primary: #1e40af;
+    --secondary: #2563eb;
+    --soft: #e9eaf6;
+    --bg: #f7f8f8;
+    --surface: #ffffff;
+    --ink: #16181d;
+    --muted: #6b7280;
+    --line: #e2e4e8;
+    --success: #3f7d5c;
+    --warning: #9a7b32;
+    --error: #a8534a;
+    --r-sm: 4px;
+    --r-md: 6px;
+    --r-pill: 9999px;
+    --s2: 2px; --s4: 4px; --s8: 8px; --s12: 12px; --s16: 16px; --s24: 24px; --s32: 32px; --s48: 48px;
+    --font: "Geist", -apple-system, system-ui, sans-serif;
+    --mono: "Geist Mono", ui-monospace, "SF Mono", monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    color: var(--ink);
+    background: var(--bg);
+    font-size: 14px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 1120px; margin: 0 auto; padding: var(--s48) var(--s24); }
+  .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  /* ── Header */
+  header.top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: var(--s24);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: var(--s48);
+  }
+  .logo { font-weight: 600; letter-spacing: 0.08em; font-size: 12px; text-transform: uppercase; }
+  .top-meta { color: var(--muted); font-size: 12px; }
+  .top-meta .mono { color: var(--ink); }
+
+  /* ── Hero */
+  .hero { display: grid; grid-template-columns: 1fr; gap: var(--s32); margin-bottom: var(--s48); }
+  .eyebrow { color: var(--secondary); font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: var(--s12); }
+  h1 { font-size: 36px; line-height: 1.15; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 var(--s16); max-width: 800px; }
+  .lede { font-size: 16px; color: var(--ink); max-width: 720px; margin: 0; }
+  .lede strong { font-weight: 600; }
+  .lede .muted { color: var(--muted); }
+
+  .hero-shot { border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; background: var(--surface); margin-top: var(--s24); }
+  .hero-shot img { display: block; width: 100%; height: auto; }
+
+  /* ── Pillars */
+  section { margin-bottom: var(--s48); }
+  h2 { font-size: 19px; font-weight: 600; margin: 0 0 var(--s16); letter-spacing: -0.01em; }
+  h2 .num { color: var(--muted); margin-right: var(--s8); font-weight: 400; }
+
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s16); }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    padding: var(--s24);
+  }
+  .card h3 { font-size: 14px; font-weight: 600; margin: 0 0 var(--s8); }
+  .card p { font-size: 13px; color: var(--muted); margin: 0; }
+  .card .kicker {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--secondary);
+    margin-bottom: var(--s8);
+    letter-spacing: 0.02em;
+  }
+
+  /* ── Problem */
+  .problem {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--warning);
+    border-radius: var(--r-md);
+    padding: var(--s24);
+  }
+  .problem .q { font-style: italic; color: var(--ink); margin: 0 0 var(--s12); font-size: 15px; }
+  .problem .a { color: var(--muted); margin: 0; font-size: 13px; }
+
+  /* ── Two-column shot row */
+  .shots-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s24); }
+  .shot-block { display: flex; flex-direction: column; gap: var(--s12); }
+  .shot-block .frame {
+    border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; background: var(--surface);
+  }
+  .shot-block img { display: block; width: 100%; height: auto; }
+  .shot-block .label .kicker { font-family: var(--mono); font-size: 11px; color: var(--secondary); letter-spacing: 0.02em; }
+  .shot-block .label h3 { font-size: 14px; font-weight: 600; margin: 2px 0 4px; }
+  .shot-block .label p { font-size: 13px; color: var(--muted); margin: 0; }
+
+  /* ── Stats strip */
+  .stats {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: var(--s16);
+    padding: var(--s24);
+    border: 1px solid var(--line);
+    border-radius: var(--r-md);
+    background: var(--surface);
+  }
+  .stat .n { font-family: var(--mono); font-size: 24px; font-weight: 500; color: var(--primary); display: block; }
+  .stat .l { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; display: block; }
+
+  /* ── Provenance chip row */
+  .chips { display: flex; gap: var(--s8); flex-wrap: wrap; margin-top: var(--s8); }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 2px var(--s8);
+    font-size: 12px;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--mono);
+  }
+  .chip .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+  .chip .dot.green { background: var(--success); }
+  .chip .dot.amber { background: var(--warning); }
+  .chip .dot.red { background: var(--error); }
+  .chip .dot.blue { background: var(--secondary); }
+
+  /* ── Process flow (mini) */
+  .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--s8); }
+  .step {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-sm);
+    padding: var(--s12); font-size: 12px; position: relative;
+  }
+  .step .id { font-family: var(--mono); color: var(--muted); font-size: 11px; }
+  .step .t { font-weight: 500; margin-top: 4px; }
+  .step .meta { color: var(--muted); margin-top: 4px; }
+  .step.draft .meta { color: var(--warning); }
+  .step.approved .meta { color: var(--success); }
+  .arrow { position: absolute; right: -10px; top: 50%; transform: translateY(-50%); color: var(--secondary); font-size: 14px; pointer-events: none; }
+  .step:last-child .arrow { display: none; }
+
+  /* ── Footer */
+  footer { border-top: 1px solid var(--line); padding-top: var(--s24); margin-top: var(--s48); color: var(--muted); font-size: 12px; }
+  footer a { color: var(--secondary); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  .stack-row { display: flex; gap: var(--s16); flex-wrap: wrap; }
+
+  @media (max-width: 900px) {
+    .grid-3, .shots-2 { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    h1 { font-size: 28px; }
+    .flow { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="top">
+    <div class="logo">PROCESSMINER</div>
+    <div class="top-meta">Onepager <span class="mono">v0.1</span> · 28 May 2026 · Internal</div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div>
+      <div class="eyebrow">KI-native Prozessdokumentation</div>
+      <h1>Das Wissen des SMEs ins Wiki — ohne dass der Assistent ihm den Mund verleiht.</h1>
+      <p class="lede">
+        Processminer extrahiert in interaktiven KI-Sessions das Prozesswissen eines Subject-Matter-Experts,
+        schreibt es per-Überschrift mit Provenance ins Wiki und entwickelt einen Target State daraus.
+        <span class="muted">Refined Utilitarian. Banking-tauglich. Track-Changes-Sensibilität für jede KI-Aussage.</span>
+      </p>
+    </div>
+    <div class="hero-shot">
+      <img src="onepager-assets/01-dashboard.png" alt="Processminer Dashboard mit Resume / Attention / Open Process" />
+    </div>
+  </section>
+
+  <!-- Problem -->
+  <section>
+    <h2><span class="num">1</span>Das Problem, das wir lösen.</h2>
+    <div class="problem">
+      <p class="q">„Die naïve KI-Lösung: Fragt den SME, lässt GPT schreiben. Der LLM bläst eine dünne Bemerkung zu einem überzeugenden Absatz auf — der SME überfliegt, nickt, der erfundene Teil reitet auf dem echten mit ins Dokument."</p>
+      <p class="a">Banking-Compliance-Doku darf das nicht. Sie wird audit-relevant, regulierungs-relevant, gerichts-relevant.</p>
+    </div>
+  </section>
+
+  <!-- Three pillars -->
+  <section>
+    <h2><span class="num">2</span>Drei Gegenmaßnahmen, in einem Produkt.</h2>
+    <div class="grid-3">
+      <div class="card">
+        <div class="kicker">Spezialisten-Skills</div>
+        <h3>Sechs Perspektiven, jede mit einem eigenen Interview-Agenten.</h3>
+        <p>As-Is Prozess · Risk &amp; Compliance · Client Experience · Innovation · Target Process · IT Architecture. Jeder Skill kennt seinen Schema-Ausschnitt und stellt nur die Fragen, die er beantworten muss.</p>
+      </div>
+      <div class="card">
+        <div class="kicker">Per-Überschrift-Provenance</div>
+        <h3>Jede Überschrift trägt ihre Herkunft und ein wörtliches Zitat.</h3>
+        <p><span class="mono">elicited</span> · <span class="mono">document</span> · <span class="mono">proposed</span> · <span class="mono">web</span> · <span class="mono">legacy-approved</span>. Approval ist blockiert, solange irgendwo <span class="mono">proposed</span> steht. Eine Bearbeitung kippt die Überschrift automatisch zurück auf <span class="mono">proposed</span>.</p>
+        <div class="chips">
+          <span class="chip"><span class="dot green"></span>elicited</span>
+          <span class="chip"><span class="dot blue"></span>document</span>
+          <span class="chip"><span class="dot amber"></span>proposed</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="kicker">Karpathy-LLM-Wiki</div>
+        <h3>Dateien sind die Wahrheit. Keine DB, kein RAG, keine Embeddings.</h3>
+        <p>Das LLM editiert nie Markdown direkt — es emittiert JSON-Specs, die schema-validierte Python-Writer in <span class="mono">wiki/processes/&lt;slug&gt;/</span> ablegen. <em>git diff</em> ist das Audit-Log.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section>
+    <h2><span class="num">3</span>Vom Dokument bis zum Target State, in einem Lauf.</h2>
+    <div class="shots-2">
+      <div class="shot-block">
+        <div class="label">
+          <div class="kicker">SCHRITT 1 · INGEST &amp; TRIAGE</div>
+          <h3>SME lädt das Dokument hoch — der KI-Ingester zieht Entitäten und stellt sie zur Bestätigung.</h3>
+          <p>Importprotokoll, Draft-Confidence-Verteilung, sektionsweise Worklist. Klick auf „Start foundational run" und der Prozessanalyst geht jedes Element mit dem SME durch — angreifend, nicht zustimmend.</p>
+        </div>
+        <div class="frame"><img src="onepager-assets/02-triage.png" alt="Triage-Screen mit Importprotokoll und Foundational-Run-Button" /></div>
+      </div>
+      <div class="shot-block">
+        <div class="label">
+          <div class="kicker">SCHRITT 2 · ELEMENTE &amp; PROVENANCE</div>
+          <h3>Jeder Prozessschritt ist ein Element mit getypten Feldern und sichtbarer Herkunft.</h3>
+          <p>„AI-drafted · awaiting confirmation" ist eine erstklassige visuelle Unterscheidung, kein „✨ KI"-Effekt. Bestätigung erst, wenn jeder Block belegt ist. Beziehungen sind forward-only — Rückseiten werden abgeleitet, niemals doppelt gepflegt.</p>
+        </div>
+        <div class="frame"><img src="onepager-assets/03-steps.png" alt="Process-Steps-Ansicht mit Flow-Diagramm und Provenance-Markern" /></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Numbers -->
+  <section>
+    <h2><span class="num">4</span>Was unter der Haube steckt.</h2>
+    <div class="stats">
+      <div class="stat"><span class="n">6</span><span class="l">Perspektiven</span></div>
+      <div class="stat"><span class="n">21</span><span class="l">Claude-Code-Skills</span></div>
+      <div class="stat"><span class="n">32</span><span class="l">Element-Typen im Schema</span></div>
+      <div class="stat"><span class="n">28</span><span class="l">Python-Writer-Tools</span></div>
+    </div>
+  </section>
+
+  <!-- Mini flow mockup using design tokens -->
+  <section>
+    <h2><span class="num">5</span>Wie ein Prozess durch das Wiki läuft.</h2>
+    <div class="flow">
+      <div class="step approved">
+        <span class="arrow">→</span>
+        <div class="id">PS-SP-001</div>
+        <div class="t">Receive instruction</div>
+        <div class="meta">● approved</div>
+      </div>
+      <div class="step approved">
+        <span class="arrow">→</span>
+        <div class="id">PS-SP-002</div>
+        <div class="t">Validate instruction</div>
+        <div class="meta">● approved · 2 controls</div>
+      </div>
+      <div class="step draft">
+        <span class="arrow">→</span>
+        <div class="id">PS-SP-003</div>
+        <div class="t">Funds check &amp; hold</div>
+        <div class="meta">○ AI-drafted</div>
+      </div>
+      <div class="step draft">
+        <span class="arrow">→</span>
+        <div class="id">PS-SP-004</div>
+        <div class="t">Sanctions &amp; AML</div>
+        <div class="meta">○ AI-drafted · 1 control</div>
+      </div>
+      <div class="step">
+        <div class="id">PS-SP-005</div>
+        <div class="t">Settle &amp; book</div>
+        <div class="meta" style="color:var(--muted)">○ not visited</div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-top:var(--s12)">
+      Der „Foundational Run" hält an jedem Element, hört den SME, schlägt eine Korrektur vor und wartet auf Approval — dann darf es <span class="mono">approved</span> werden.
+    </p>
+  </section>
+
+  <!-- Why it matters -->
+  <section>
+    <h2><span class="num">6</span>Was Processminer von einer „KI-schreibt-mir"-App unterscheidet.</h2>
+    <div class="grid-3">
+      <div class="card">
+        <div class="kicker">Es nimmt die Arbeit ernst.</div>
+        <h3>Kein Startup-Look, kein Theater.</h3>
+        <p>Eine Schriftfamilie (Geist), zurückhaltende Farbe, datendichte Layouts. Sieht aus wie ein professionelles Aufzeichnungssystem, weil es eines ist.</p>
+      </div>
+      <div class="card">
+        <div class="kicker">Es kennt seine Grenze.</div>
+        <h3>Das LLM hat ein Urteil. Die Mechanik ist deterministisches Python.</h3>
+        <p>Zwei Skill-Läufe mit derselben Spec ergeben byte-identische Dateien. Der Reviewer liest <span class="mono">write_element.py</span> einmal — und weiß, wie jedes Element entsteht.</p>
+      </div>
+      <div class="card">
+        <div class="kicker">Es ist auditierbar.</div>
+        <h3>Track-Changes-Sensibilität für KI-extrahiertes Wissen.</h3>
+        <p>Maschinell-entworfen vs. menschlich-bestätigt ist eine erstklassige visuelle und Schema-Unterscheidung. Reopen via Lint-Findings. Re-Ingest via Conflict-Resolution.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="stack-row" style="margin-bottom:var(--s12)">
+      <span><strong style="color:var(--ink)">Stack</strong> · Next.js + Node · Python (stdlib only) · Claude Code CLI (warm pool) · keine externe API</span>
+    </div>
+    <div class="stack-row">
+      <span><strong style="color:var(--ink)">Live</strong> · <a href="http://localhost:3000/">http://localhost:3000/</a></span>
+      <span><strong style="color:var(--ink)">Repo</strong> · ~2.500 LOC TS · ~4.000 LOC Python · 21 SKILL.md</span>
+      <span><strong style="color:var(--ink)">Status</strong> · v0.4 ArchitectMiner integriert</span>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
