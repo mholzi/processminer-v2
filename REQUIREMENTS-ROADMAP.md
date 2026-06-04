@@ -116,7 +116,8 @@ Each requirement: source commit(s), what's missing, impact, effort (S/M/L), reco
 - **Source:** `ecc57f1` (2 of its 3 features; the 3rd, country-variations, is R15)
 - **Gap:** Eight at-a-glance summary widgets (`MetricsSummary`, `ExceptionsSummary`, `PainPointsSummary`, `ControlsSummary`, `ControlGapsSummary`, `RegulationSummary`, `AuditFindingsSummary`, + the country one) are all gone — sections show raw cards only. `OverviewPanel.tsx` is read-only (facts like trigger/scope/I-O can't be edited in-app).
 - **Impact:** Loss of matrix/heatmap/severity roll-ups; Overview not editable.
-- **Effort:** Summary UIs M–L (8 components, but consume already-loaded elements) · Overview editing M · **Recommendation:** Redesign summary UIs to render off in-memory `doc.elements`; re-port Overview editing adapted to the `wiki-write.ts` write path.
+- **R12a — Overview editing:** ✅ **FIXED.** `OverviewPanel` has an admin/SME Edit mode — a Purpose textarea + inputs for the 7 fact fields (processOwner, trigger, frequency, scopeIn/Out, processInput/Output), saved via `updateElement(slug, processId, { content })`. Editing the overview content **re-opens its approval** (`approved → in-progress`), consistent with elements (added to `updateElement`'s root branch). Verified: save persists content + resets approval; the edit form renders with all fields; Cancel reverts.
+- **R12b — section summary UIs:** still open. The 8 bespoke at-a-glance widgets (matrix/heatmap/severity) are a sizeable presentational build; deferred as its own PR. They consume the already-loaded `doc.elements`.
 
 ### Theme E — Polish & hygiene
 
