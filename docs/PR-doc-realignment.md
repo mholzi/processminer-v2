@@ -38,7 +38,7 @@ what it changes, behaviour/scope, and how it was verified.
 | **#30** | Architect section detail views from real elements | `feat/architect-section-detail-views` → `main` | Code | **Merged** (`cbd4390`) |
 | **#31** | Reference all of today's PRs in the PR log + roadmap | `docs/pr-log-reference-all-today` → `main` | Docs only | **Merged** (`3d00316`) |
 | **#32** | Enrich the product ROADMAP with the open backlog items (Phase 0) | `docs/roadmap-enrich-open-items` → `main` | Docs only | **Merged** (`5dfe2dc`) |
-| **#33** | Reconcile + reprioritise the product ROADMAP (status tags, content-first H1) | `docs/roadmap-reprioritise` → `main` | Docs only | **Open** (`pending`) |
+| **#33** | Reconcile + reprioritise the product ROADMAP (remove shipped items; trust-first H1) | `docs/roadmap-reprioritise` → `main` | Docs only | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1186,16 +1186,16 @@ run, so several of its candidate features had already shipped, and its proposed
 
 | File | Change | Summary |
 |---|---|---|
-| `ROADMAP.md` | **edit** | (1) A **Status reconciliation (2026-06-04)** banner + inline **✅ SHIPPED / 🟡 PARTIAL** tags on candidates that already landed (Phase 1 #4/#5, Phase 3 #1/#6/#10/#12/#14, Phase 2 #20, the Phase 1 #11 seam) — verified against the code. (2) A new **Phase 0 #0 — Content & data coverage** item (document 2–3 real processes + architect one end-to-end), flagged as the real #1 since only `cob-003` is documented and zero processes are architected, so the R4/AM views read empty. (3) A **revised 2026 H1** ("prove it on real content, then anchor it"): content-first, EPM anchor, two trust quick wins (staleness + consistency widget), Confluence outbound pulled forward; defers the already-shipped #4/#5, Adonis import, and R19. |
+| `ROADMAP.md` | **edit** | (1) A **Status reconciliation (2026-06-04)** banner. (2) **Removed the candidates that fully shipped** during the R1–R22 + ArchitectMiner run — Phase 1 #4 (live progress), #5 (inline edit); Phase 3 #1 (tour), #6 (palette), #10 (notifications), #14 (dark mode) — plus the two subsection headers they orphaned. The **partially**-landed ones stay with a 🟡 tag (Phase 1 #6, #11; Phase 3 #12; Phase 2 #20). Each call verified against the code. (3) A **revised 2026 H1** ("anchor it + make it trustworthy"): schema generator → EPM anchor → two trust quick wins (staleness + consistency widget) → Confluence outbound pulled forward; defers Adonis import + R19. (4) Per-phase + overview candidate counts updated (Phase 1 15→13, Phase 3 15→11), dangling cross-refs fixed. *(An earlier draft added a Phase 0 "content coverage" item; removed on request.)* |
 | `public/ROADMAP.md` | **edit** | Kept byte-identical. |
 
 ## Verification
 
-- Docs only — typecheck / test unaffected. The ✅/🟡 tags were each checked
-  against the codebase (e.g. `useAgentChat`, `ElementCard` inline edit,
-  `GuidedTour`, `CommandPalette`, `notifyTurnComplete`, `data-theme` toggle,
-  `buildTraceability`, orchestrator `ActionKind`). Root and `public/ROADMAP.md`
-  verified identical.
+- Docs only — typecheck / test unaffected. Each removed/tagged item was checked
+  against the codebase (`useAgentChat`, `ElementCard` inline edit, `GuidedTour`,
+  `CommandPalette`, `notifyTurnComplete`, `data-theme` toggle, `buildTraceability`,
+  orchestrator `ActionKind`). Counts re-derived from the doc; root and
+  `public/ROADMAP.md` verified identical.
 
 ---
 

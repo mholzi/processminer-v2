@@ -26,10 +26,10 @@ the questions they answer:
 
 | Phase | Question | Candidates |
 |---|---|---|
-| **0.** Foundations & tech debt + content | "Is the baseline's debt cleared &mdash; and is there real content to use it on?" | 3 |
-| **1.** Processminer component | "Does the elicitation tool feel complete to an SME?" | 15 |
+| **0.** Foundations & tech debt | "Is the JSON-native baseline's remaining engineering debt cleared?" | 2 |
+| **1.** Processminer component | "Does the elicitation tool feel complete to an SME?" | 13 |
 | **2.** ArchitectMiner | "Can an architect develop the target state without leaving the tool?" | 20 |
-| **3.** General usability | "Does the whole app feel like a finished product?" | 15 |
+| **3.** General usability | "Does the whole app feel like a finished product?" | 11 |
 | **4.** Process analysis fundamentals | "Do we cover the basics a pro process analyst expects?" | 4 |
 | **5.** Top-architect expectations | "Would a senior enterprise architect ship out of this tool?" | 20 |
 | **6.** Tool connectors | "Does it talk to Confluence and Jira (the bank's product/tech home)?" | 4 |
@@ -45,27 +45,19 @@ keeps the scope honest.
 ## ⏱️ Status reconciliation (2026-06-04)
 
 > **This roadmap predates the JSON-native (v3) rewrite and the entire R1–R22 +
-> ArchitectMiner run.** Several candidates below have **already shipped** as a
-> side effect of that work — they're tagged inline with **✅ SHIPPED** /
-> **🟡 PARTIAL**. Re-prioritise against this reconciliation, not the original
-> 2026-05-28 framing.
+> ArchitectMiner run.** Candidates that **fully shipped** as a side effect of
+> that work have been **removed** from the phases below; ones that only partly
+> landed keep an inline **🟡 PARTIAL** tag.
 
-**Already shipped since 2026-05-28:**
-- Phase 1 **#4** Live progress in chat — ✅ (`useAgentChat`: activity line, sub-agent task chips, per-skill ETA, watchdog).
-- Phase 1 **#5** Inline element block edit — ✅ (`ElementCard` inline edit → `updateElement`, schema-validated).
-- Phase 1 **#6** Skill log per element — 🟡 (R5 per-edit attribution + `ContributorsView`; per-element skill-touch popover not yet).
-- Phase 3 **#1** Guided tour — ✅ · **#6** Command palette — ✅ · **#10** Browser notifications — ✅ · **#12** Activity feed — 🟡 (contributors view) · **#14** Dark mode — ✅ (tokens + `data-theme` toggle).
-- Phase 2 **#20** Target traceability — 🟡 (R3 Traceability view buckets OK/partial/orphan; full transitive As-Is→…→ADR matrix not yet).
-- Phase 1 **#11** Stuck-element detector — the orchestrator `ActionKind` seam is in place (R10); the specific action isn't built yet.
+**Removed because already shipped since 2026-05-28:**
+- Phase 1 — #4 Live progress in chat (`useAgentChat`), #5 Inline element block edit (`ElementCard`).
+- Phase 3 — #1 Guided tour, #6 Command palette, #10 Browser notifications, #14 Dark mode (`data-theme` toggle).
 
-**The real #1 priority is content, not features.** Only **3** process files exist
-(`cob-003`, `funds-release`, `funds-release-dogfood`) and **zero** processes are
-architected — so every cross-process / portfolio / reuse view (R4) and the
-ArchitectMiner Diagram / Traceability / catalogs read **empty**. The tool is
-feature-rich and data-poor. Documenting 2–3 more real processes and architecting
-**one** end-to-end outranks any feature below: it validates the R1–R4 stack,
-lights up the empty views, and surfaces real gaps better than a planning round.
-See **Phase 0** and the revised **2026 H1** below.
+**Partially landed (kept below, with the remaining work):**
+- Phase 1 **#6** Skill log per element — 🟡 (R5 attribution + `ContributorsView`; per-element skill-touch popover not yet).
+- Phase 3 **#12** Activity feed — 🟡 (contributors view).
+- Phase 2 **#20** Target traceability — 🟡 (R3 Traceability view; full transitive As-Is→…→ADR matrix not yet).
+- Phase 1 **#11** Stuck-element detector — orchestrator `ActionKind` seam ready (R10); the action isn't built yet.
 
 ---
 
@@ -192,7 +184,7 @@ nominate the first 4–6 P0s once the user has prioritised.
 
 ---
 
-## Phase 0 — Foundations & technical debt (3 items: 1 content + 2 engineering)
+## Phase 0 — Foundations & technical debt (2 open items)
 
 > **Carried in 2026-06-04 from [REQUIREMENTS-ROADMAP.md](REQUIREMENTS-ROADMAP.md).**
 > After the JSON-native (v3) rewrite, the post-migration requirements backlog
@@ -211,24 +203,6 @@ nominate the first 4–6 P0s once the user has prioritised.
 > (`wiki-write.ts` + the `createElement`/`updateElement`/`expandElement` tools)
 > over a single strongly-typed `wiki/processes/<slug>.json`. The Phase 0 items
 > below are written against that **current** codebase.
-
-### Content & data coverage (the real P0)
-
-#### 0. Document more processes + architect one end-to-end · **operational, not code**
-- **What:** drive 2–3 real processes through Processminer end-to-end, and take
-  **one** all the way through ArchitectMiner (capabilities → applications →
-  ADRs → integrations → NFRs → migration). Not a feature — a content/usage
-  campaign.
-- **Why:** the tool is **feature-rich and data-poor**. Only `cob-003` is
-  meaningfully documented; **zero** processes are architected. So every R4
-  portfolio / reuse view and the AM Diagram / Traceability / catalogs render
-  empty. Real content (a) validates the whole R1–R4 stack against reality,
-  (b) lights up the empty views, and (c) surfaces the genuine next gaps far
-  better than another planning round. This is the highest-leverage thing on the
-  whole roadmap right now, and it ships no code.
-- **Effort:** S–M (SME time, not engineering)
-- **Touches:** no code. Output is content + a punch-list of real gaps that
-  re-orders everything below.
 
 ### Schema integrity
 
@@ -273,7 +247,7 @@ nominate the first 4–6 P0s once the user has prioritised.
 
 ---
 
-## Phase 1 — Processminer component (15 candidates)
+## Phase 1 — Processminer component (13 candidates)
 
 > **Refined 2026-05-28 with bank-landscape context.** Three foundational
 > ideas added at the top reflect the actual setup: the bank uses **Sparx**
@@ -338,35 +312,7 @@ nominate the first 4–6 P0s once the user has prioritised.
   flavour; aggregation logic over `ProcessView`; export action per EPM
   area in the UI.
 
-### Visibility & feedback
-
-#### 4. Live progress in chat for long skill turns · ✅ SHIPPED (useAgentChat)
-- **What:** replace the all-purpose "Working…" placeholder with structured
-  progress: which skill is running, how many elements have been written
-  so far, which sub-agent is active, what the current activity is.
-- **Why:** the dogfood run (2026-05-28-1502) sat 25 minutes on a
-  slow-but-working `source-cx` with zero feedback. The `runSourcing` fix
-  (commit 641078f) opens the chat panel — but the chat itself still shows
-  "Working…" with nothing inside. The event stream the worker already
-  emits has the data; the UI just doesn't surface it.
-- **Effort:** M
-- **Touches:** `src/hooks/useAgentChat.ts`, `src/components/AgentChat.tsx`,
-  optionally `src/lib/session-worker.ts` for richer event shapes.
-
 ### Inline editing & SME UX
-
-#### 5. Inline element block edit · ✅ SHIPPED (ElementCard inline edit)
-- **What:** click a `## ` block on an `ElementCard`, edit in place, save
-  through a small JSON endpoint that calls `patch_element.py --block`.
-  Skip the chat for one-line corrections.
-- **Why:** today every refinement — even a typo fix — has to go through
-  chat → skill → `patch_element`. For known-small changes that's a lot of
-  ceremony. The schema-validated writer stays the only mutation path; the
-  UI just calls it directly.
-- **Effort:** M
-- **Touches:** new `src/app/api/elements/[slug]/[id]/route.ts`,
-  `src/components/ElementCard.tsx`, a small Python wrapper for
-  `patch_element` callable from the route.
 
 #### 6. Skill execution log per element · 🟡 PARTIAL (R5 attribution + ContributorsView)
 - **What:** for each element, surface its full skill-touch history:
@@ -688,12 +634,12 @@ architect's tooling around them.
 
 #### 17. Inline ADR edit
 - **What:** click an ADR section (Context, Decision, Consequences), edit
-  in place, save via `patch_element.py --block`.
-- **Why:** same rationale as Processminer idea 5. Editing through chat is
-  heavyweight for ADR refinements.
-- **Effort:** M
-- **Touches:** reuse the inline-edit infrastructure from PM idea 5 (if
-  built); apply to ADR card.
+  in place, save via `updateElement`.
+- **Why:** editing through chat is heavyweight for ADR refinements — same
+  rationale as the (already-shipped) Processminer inline element edit.
+- **Effort:** S (the inline-edit infrastructure already exists on `ElementCard`)
+- **Touches:** reuse the shipped `ElementCard` inline-edit path; apply it to the
+  ADR card.
 
 #### 18. Drag-to-link
 - **What:** drag a capability node onto a target application to set the
@@ -730,7 +676,7 @@ architect's tooling around them.
 
 ---
 
-## Phase 3 — General usability (15 candidates)
+## Phase 3 — General usability (11 candidates)
 
 App-wide polish that isn't tied to a specific module. The cut on
 2026-05-28 removed bigger architectural lifts (mobile/tablet responsive
@@ -740,16 +686,6 @@ smaller usability items are in. What remains here is **low-effort quick
 wins** that the app already needs to feel like a finished product.
 
 ### Onboarding & first-run
-
-#### 1. Guided tour for first-time users · ✅ SHIPPED (GuidedTour)
-- **What:** annotated walkthrough on first login — switcher, chat,
-  foundational run, lint, export. Skippable.
-- **Why:** today a first-time SME lands on an empty welcome screen with
-  no signal where to start. The product has depth; the first-30-seconds
-  story is critical.
-- **Effort:** S
-- **Touches:** new `src/components/OnboardingTour.tsx`, a small "tour
-  seen" flag in user profile.
 
 #### 2. Sample / demo process pre-loaded
 - **What:** a curated `sepa-payments`-style read-only fixture every fresh
@@ -794,17 +730,6 @@ wins** that the app already needs to feel like a finished product.
 - **Touches:** a small `KeyboardShortcuts.tsx` provider; cheat sheet
   overlay; per-section keymap.
 
-#### 6. Global command palette · ✅ SHIPPED (CommandPalette)
-- **What:** extend ⌘K beyond process switching to a "do anything"
-  palette — run lint, start foundational run, jump to an element, open
-  settings.
-- **Why:** ⌘K already exists for process switching; the next step is
-  action-anywhere. The orchestrator's `ActionSpec` is the natural action
-  vocabulary.
-- **Effort:** M
-- **Touches:** `src/components/ProcessSwitcher.tsx` → generalise to a
-  command palette; new action registry.
-
 ### Search & navigation
 
 #### 7. Global search across all content
@@ -835,16 +760,6 @@ wins** that the app already needs to feel like a finished product.
   section state.
 
 ### Notifications
-
-#### 10. Browser notifications when long skill turns complete · ✅ SHIPPED (notifyTurnComplete)
-- **What:** opt-in browser notifications when a long-running skill
-  (ingest, lint, source-*, foundational run) finishes — including the
-  title of the process and the skill that completed.
-- **Why:** a document-ingest is 20+ minutes; SME walks away, doesn't
-  realise it's done. Notification closes the loop.
-- **Effort:** S
-- **Touches:** `useAgentChat.ts` (request permission, dispatch on the
-  `done` event), per-user opt-in.
 
 #### 11. In-app notification center
 - **What:** bell icon with recent events — completed skills, comments on
@@ -879,16 +794,6 @@ wins** that the app already needs to feel like a finished product.
 - **Effort:** M
 - **Touches:** selection state in `ProcessDocScreen.tsx`; bulk-action
   sidebar; writers already support batched calls.
-
-### Personalization
-
-#### 14. Dark mode toggle · ✅ SHIPPED (data-theme toggle)
-- **What:** honour the OS preference + give an explicit toggle.
-- **Why:** `DESIGN.md` already declares tokens; long review sessions in a
-  dim office. Standard ask.
-- **Effort:** S
-- **Touches:** `src/app/globals.css` (already token-based), new toggle in
-  the user menu, persist on `User`.
 
 ### Error handling & resilience
 
@@ -1394,19 +1299,13 @@ Library are the strongest second-wave candidates.
 This is a **proposal**, not a commitment. The exact P0 / P1 assignment
 happens once the user has prioritised individual candidates.
 
-### 2026 H1 — "prove it on real content, then anchor it" · **revised 2026-06-04**
-**Focus:** real usage + the structural anchor + trust signals.
+### 2026 H1 — "anchor it + make it trustworthy" · **revised 2026-06-04**
+**Focus:** the structural anchor + trust signals + first adoption lever.
 
 > **Why revised:** the original H1 set listed Phase 1 #4 and #5 — both **already
-> shipped** (see the status reconciliation). And the binding constraint today is
-> *content*, not features. So H1 leads with usage, keeps the foundation + anchor,
-> and pulls the trust quick wins forward (for a banking-documentation tool,
-> "is this current and consistent?" *is* the product).
-
-**P0 prerequisite (no code):**
-- **Phase 0 #0 — Document 2–3 real processes + architect one end-to-end.** The
-  highest-leverage item on the roadmap; everything below is sharper once real
-  data exists.
+> shipped** (removed; see the status reconciliation). So H1 keeps the foundation
+> + anchor and pulls the trust quick wins forward (for a banking-documentation
+> tool, "is this current and consistent?" *is* the product).
 
 **Foundations (quick, decision-free):**
 - Phase 0 #1 — Schema generator (do before any phase that adds element types).
@@ -1417,28 +1316,28 @@ happens once the user has prioritised individual candidates.
 - Phase 1 #12 — Cross-element consistency widget *(trust, always-on)*
 - Phase 6 #1 — Confluence **outbound** publish *(adoption: make the knowledge visible to the rest of the bank — pulled forward from 2027)*
 
-**Rationale:** content first makes the R1–R4 stack pay off and exposes real gaps.
-EPM is the anchor that ties Processminer to Sparx/Adonis. The two trust signals
-are S/XS and address the core "can I trust this documentation?" question.
-Confluence outbound is the cheapest adoption lever and contradicts the original
-plan's own "connectors are not optional" framing by sitting 18 months out — so
-it moves up.
+**Rationale:** EPM is the anchor that ties Processminer to Sparx/Adonis. The two
+trust signals are S/XS and address the core "can I trust this documentation?"
+question. Confluence outbound is the cheapest adoption lever and contradicts the
+original plan's own "connectors are not optional" framing by sitting 18 months
+out — so it moves up.
 
 **Deferred from the original H1:**
-- Phase 1 #4 / #5 — **already shipped.**
+- Phase 1 #4 / #5 — **already shipped** (removed from the doc).
 - Phase 1 #2 (Adonis import) — an accelerant on patchy, years-old data, not a
   wedge-definer; slips behind Sparx export / the trust wins.
 - Phase 0 #2 (R19 token slicing) — invisible optimization; keep only as a cheap
   rider on the schema generator, else defer out of H1.
 
-### 2026 H2 — "aggregate upward + close consistency gaps"
-**Focus:** Sparx export + Phase 1 quality signals + Phase 3 quick wins.
-**Candidate P0 set (~5 items, ~3 months):**
+### 2026 H2 — "aggregate upward + warm-start"
+**Focus:** Sparx export + Adonis warm-start + Phase 3 quick wins.
+**Candidate P0 set (~4 items, ~3 months):**
 - Phase 1 #3 — Sparx XML export
-- Phase 1 #10 — Element staleness signal
-- Phase 1 #12 — Cross-element consistency widget
+- Phase 1 #2 — Adonis CSV importer *(deferred from H1)*
 - Phase 3 #2 — Sample / demo process pre-loaded
 - Phase 3 #15 — Better error messages with retry path
+
+*(Phase 1 #10 staleness + #12 consistency widget moved up to H1.)*
 
 ### 2027 H1 — "ArchitectMiner makes the architect productive"
 **Focus:** Phase 2 visualisations + quality.
@@ -1502,8 +1401,8 @@ before the first P0 set goes into design docs.
   sacred** principle
 - [HALLUCINATION-PLAN.md](HALLUCINATION-PLAN.md) — per-heading
   provenance contract (Phase 1 #14 builds on this)
-- [SKILLS.md](SKILLS.md) — agent/skill architecture (Phase 1 #4, #5, #6
-  touch skill behaviour)
+- [SKILLS.md](SKILLS.md) — agent/skill architecture (Phase 1 #6 touches
+  skill behaviour)
 - [docs/architecture-comparison.html](docs/architecture-comparison.html)
   — target-vs-current snapshot (the "post-v0.4.0" view this roadmap is
   starting from)
@@ -1514,7 +1413,7 @@ before the first P0 set goes into design docs.
 
 *Last updated 2026-05-28; **enriched + reprioritised 2026-06-04**: added Phase 0
 foundations (open items from [REQUIREMENTS-ROADMAP.md](REQUIREMENTS-ROADMAP.md)),
-a status reconciliation tagging the candidates that already shipped during the
-R1–R22 + ArchitectMiner run, and a revised 2026 H1 (content-first + trust
+**removed the candidates that already shipped** during the R1–R22 + ArchitectMiner
+run (listed in the status reconciliation), and revised 2026 H1 (anchor + trust
 signals; Confluence outbound pulled forward). Next review: after the first P0
 set is prioritised and the first `*-PLAN.md` design doc is in flight.*
