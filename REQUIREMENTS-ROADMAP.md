@@ -2,11 +2,11 @@
 
 **Purpose.** After replacing `main` with the JSON-native baseline (`b6f7b64`), this document triages every code-touching commit that the old main line carried but the new baseline dropped (see [`SUPERSEDED-MAIN-COMMITS.md`](SUPERSEDED-MAIN-COMMITS.md)), and turns the still-relevant ones into candidate requirements.
 
-**Status of this doc — ✅ COMPLETE (updated 2026-06-04).** Every requirement was triaged and worked through. The **entire core Processminer scope is delivered**, **both product decisions are settled** (R15 = yes, R16 = yes), and the previously-parked items (R10 orchestrator, R17 broken-relation visibility) plus the docs track (R20–R22) have now shipped. **ArchitectMiner (Theme A)** is being built out: R1 + R2 delivered, R3 in progress. Individual requirement entries below carry a ✅ **FIXED** / decision note. The original "Proposed — pending prioritization" framing is kept for the requirements text; the per-item status lines record what shipped.
+**Status of this doc — ✅ COMPLETE (updated 2026-06-04).** Every requirement was triaged and worked through. The **entire Processminer scope is delivered**, **both product decisions are settled** (R15 = yes, R16 = yes), the previously-parked items (R10 orchestrator, R17 broken-relation visibility, R18 ProcessView joins) plus the docs track (R20–R22) have shipped, and **ArchitectMiner (Theme A — R1–R4) is fully delivered**. Individual requirement entries below carry a ✅ **FIXED** / decision note. The original "Proposed — pending prioritization" framing is kept for the requirements text; the per-item status lines record what shipped.
 
-**Delivered (PR #):** A1 (#2) · A3 (#4) · R6a (#5) · R6b (#6) · schema drift-guard (#7) · R7+R8 (#8) · R9 (#9) · R11 (#10) · A4 + R14 a/b (#11) · R12a (#12) · R5 (#13) · R13 + R14c (#14) · R12b (#15) · R15 (#16) · R16 (#17) · R10 (#18) · R1 (#19) · R2 (#20) · R17 (#21) · R20–R22 (#22).
+**Delivered (PR #):** A1 (#2) · A3 (#4) · R6a (#5) · R6b (#6) · schema drift-guard (#7) · R7+R8 (#8) · R9 (#9) · R11 (#10) · A4 + R14 a/b (#11) · R12a (#12) · R5 (#13) · R13 + R14c (#14) · R12b (#15) · R15 (#16) · R16 (#17) · R10 (#18) · R1 (#19) · R2 (#20) · R17 (#21) · R20–R22 (#22) · R3 (#24) · R18 (#25) · R4 (#26).
 
-**In progress / remaining:** **ArchitectMiner R3** (Diagram + Traceability real-data wiring) and **R4** (Personal + Library tiers from real data) — the last functional build-out of Theme A. Optional / verify-then-decide loose ends: **R18** (ProcessView join layer) and **R19** (slim per-type schema slices), plus the schema generator (option A — derive the Draft-07 schema from the custom schema, retiring the dual-edit + drift-guard).
+**Remaining:** only **R19** (slim per-type schema slices) — assessed and kept, but deferred (see its entry) — and the optional schema generator (option A — derive the Draft-07 schema from the custom schema, retiring the dual-edit + drift-guard). No functional gaps remain.
 
 **Method.** All 41 commits were assessed against the actual files on the current baseline. Each was classed:
 - **PRESENT** — the functionality already exists on the new baseline → no action.
@@ -160,11 +160,19 @@ Each requirement: source commit(s), what's missing, impact, effort (S/M/L), reco
 - **Source:** `318d817`
 - **Gap:** `process-view.ts` (+22 tests) gone; `relations.ts` absorbed the relation-index slice, but RACI-pivot and flow-lane joins are re-inlined in components, and `contextFor` is gone (had no consumer anyway).
 - **Effort:** M full / S for RACI+flow only · **Recommendation:** Verify-then-decide — only worth it if R10 wants a `view` input. In-component joins work today.
+- ✅ **FIXED (RACI+flow scope, #25).** `src/lib/process-view.ts` now holds `buildRaciGrid(roles)` + `buildFlowLanes(sortedSteps, grid)` — the RACI pivot and lane assignment that `RaciMatrix` and `ProcessFlow` previously computed inline (with subtly divergent level parsing, now unified). 11 unit tests in `process-view.test.ts`. `contextFor` deliberately **not** restored (no consumer); the reverse-relation index stays in `relations.ts`. Verified behaviour-preserving against the live `cob-003` render.
 
 #### R19 — Slim per-type schema slices (token optimization)
 - **Source:** `4c6d1e1` (only piece of the get_context cluster without a full successor)
 - **Gap:** Several skills still instruct the LLM to read the full ~2,800-line `schema/process-schema.json` (comment-review, add-entry, area-summary, document-ingest, council-review). The old `.derived/<type>.llm.json` slices (~50–80 lines) are gone.
 - **Effort:** M · **Recommendation:** Verify-then-decide — measure runtime token cost; only build a TS per-type emitter if it's actually painful (schema is already enforced at the MCP tool boundary, so the model may not need the full body).
+- 🔎 **ASSESSED 2026-06-04 — still relevant; deferred (not yet built).** The premise holds and the new architecture did *not* remove the cost:
+  - The full schema is **~80 KB ≈ ~23k tokens, 40 element types**; a skill typically needs 1–3.
+  - **Gemini path** (`gemini-worker.ts`) injects the *entire* schema into every session's system prompt unconditionally. **Claude/MCP path** has the 5 skills `Read` the full file (~23k tokens) per run. (All 5 still do: comment-review, add-entry, area-summary, document-ingest, council-review.)
+  - The "enforced at the tool boundary so the model needn't read it" hypothesis is only half-true: `createElement`/`updateElement` take a **freeform** `element`/`content` object and validate **server-side, post-hoc** (`conformance.ts`/AJV). Enforcement ≠ authoring guidance — without the schema text the model trial-and-errors through `checkConformance`, costing *more* tokens.
+  - Free finding: on the Gemini path the skills' `Read schema/...` is **redundant** (already in the system prompt) — a near-zero-effort partial win is to drop those reads.
+  - **Recommended shape (changed):** do **not** restore the old static `.derived/<type>.llm.json` files (they drift, like the dual-schema problem). Instead add a runtime `schemaForType(type)` slice + a `describeType(type)` tool mirroring `expandElement`'s progressive disclosure, and/or inject only the active type slices on the Gemini path; repoint the 5 skills. Overlaps with the schema generator (option A) — both derive from the custom schema.
+  - **Decision:** keep on the backlog; not blocking (no functional gap). Effort **M** for the full slicer; the dedup win is **S**.
 
 ### Theme H — Docs & standalone artifacts (separate track, no app impact)
 
