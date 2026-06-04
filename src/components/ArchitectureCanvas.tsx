@@ -1,17 +1,66 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { ProcessDoc } from "@/lib/wiki";
 import type { User } from "@/lib/user";
 import Tooltip from "./Tooltip";
 import Markdown from "./Markdown";
 import AgentChat from "./AgentChat";
+import { useAgentChat } from "./useAgentChat";
 
-// Frame-03 of the ArchitectMiner mockup, stubbed with mock ADR/capability
-// content. Inputs from Processminer (left nav, top group) use REAL counts
-// from the open process so the upstream side reads truthfully; the
-// architect-side elements are illustrative until the architect data model
-// lands.
+// Frame-03 of the ArchitectMiner mockup. Inputs from Processminer (left nav,
+// top group) use REAL counts from the open process; the architect-side
+// elements read from the same process JSON. The canvas chat is the live
+// architect agent (R1) — domain-architect + solution-architect specialists
+// author the target architecture into this process's JSON via the same
+// schema-enforced write path as Processminer.
+
+// The two architect-side specialists, and the friendly labels for the
+// active-skill chip + completion notifications.
+const AM_SKILL_LABELS: Record<string, string> = {
+  "domain-architect": "Domain Architect",
+  "solution-architect": "Solution Architect",
+};
+
+// Architect session scope — prepended to the first turn of a chat session,
+// the analogue of Processminer's scopePreamble. Locks the headless `claude`
+// CLI to this one process and frames it as the architecture author.
+function archScopePreamble(d: ProcessDoc, user: User): string {
+  const { id, title } = d.process;
+  return [
+    "[SESSION SCOPE — applies to this whole conversation]",
+    `You are the Architecture Assistant for exactly one process: ${title} (${id}).`,
+    "You author its TARGET ARCHITECTURE — capabilities, target applications,",
+    "ADRs, target integrations, components, NFRs and migration phases —",
+    "grounded in the upstream Processminer artifacts (target process,",
+    "transformation decisions, requirements, gap resolution, dependencies,",
+    "controls, regulation, as-is systems and integrations).",
+    `Its wiki content is wiki/processes/${d.slug}/; its source documents`,
+    `are under raw-sources/${d.slug}/.`,
+    "",
+    `The architect present in this session is ${user.name} (${user.role}). Use`,
+    "that name verbatim wherever an approval or edit is stamped — never ask",
+    "for their name.",
+    "",
+    "Rules, in force for every turn of this session:",
+    `1. Only consider, discuss and change content belonging to ${id}.`,
+    "2. Never read or modify another process under wiki/processes/ or",
+    "   raw-sources/, and never change anything else in the repository.",
+    "3. Author every element through the schema-enforced tools (createElement /",
+    "   updateElement / expandElement) — never hand-edit the process JSON.",
+    "4. If asked to do anything unrelated to architecting this process, decline:",
+    "   briefly say you are scoped to this process's architecture, in the",
+    "   language the architect is using.",
+    "5. schema/, scripts/ and .claude/skills/ are shared framework the skills",
+    "   need — reading and running those is allowed and expected.",
+    "",
+    "The architect's request follows below.",
+    "",
+    "---",
+    "",
+  ].join("\n");
+}
 
 // Architect-relevant upstream sections — these are what the architect reads
 // before authoring. Order matches the natural flow of architecture work.
@@ -123,24 +172,68 @@ export default function ArchitectureCanvas({
   ];
   const openAdr = adrs.find((a) => a.open) ?? adrs[2];
 
-  // The architect canvas reuses Processminer's AgentChat component directly
-  // — same React component, same styles, mock no-op handlers because the
-  // architect-side /api/session is not wired yet. Title / subtitle / empty
-  // state / lint label / placeholder are overridden via props.
+  // The architect canvas reuses Processminer's AgentChat component and the
+  // shared useAgentChat pipeline (R1) — same SSE driver, watchdog, ETA and
+  // persistence as the SME canvas, scoped to the architect role via its own
+  // sessionStorage namespace ("am") and scope preamble.
+  const router = useRouter();
+  const archPreamble = useMemo(() => archScopePreamble(doc, user), [doc, user]);
+  const chat = useAgentChat({
+    storePrefix: "am",
+    slug: doc.slug,
+    streamReplies: user.streamReplies === true,
+    skillLabels: AM_SKILL_LABELS,
+    scopePreamble: archPreamble,
+    // A turn may have authored architecture elements — re-read the doc.
+    onTurnDone: () => router.refresh(),
+  });
+
+  // Resolve element-id references in chat replies to their page for hovercards.
+  const getRef = useCallback(
+    (id: string) => {
+      const page =
+        doc.elements.find((e) => e.id === id) ??
+        (id === doc.process.id ? doc.process : undefined);
+      return page ? { page, typeLabel: page.type } : undefined;
+    },
+    [doc],
+  );
+
+  // Add / Elicit buttons across the views seed a scoped turn with the right
+  // specialist. "Add" drafts a single element; "Elicit" works the whole
+  // section against the upstream artifacts.
+  const elicit = useCallback(
+    (skill: "domain-architect" | "solution-architect", prompt: string) => {
+      chat.send(prompt, { skill });
+    },
+    [chat],
+  );
+
   const chatSidebar = (
     <div className="am-canvas-chat">
       <AgentChat
         open={true}
         onToggle={() => {}}
         onWidthChange={() => {}}
-        messages={[]}
-        onSend={() => {}}
-        pending={false}
-        onRestart={() => {}}
-        onRunLint={() => {}}
-        linting={false}
+        messages={chat.messages}
+        onSend={chat.send}
+        pending={chat.pending}
+        activity={chat.activity}
+        tasks={chat.tasks}
+        activeSkillLabel={
+          chat.activeSkill ? (AM_SKILL_LABELS[chat.activeSkill] ?? null) : null
+        }
+        activeSkillEta={chat.activeSkillEta}
+        onRestart={chat.restart}
+        onRunLint={() =>
+          chat.send(
+            "Cross-check the architecture traces across all views for this process: every ADR, capability, application, integration, component, NFR and migration phase. Flag anything orphaned, partially traced, or inconsistent with the upstream Processminer artifacts, and list the gaps.",
+          )
+        }
+        linting={chat.pending}
         findingCount={null}
-        getRef={() => undefined}
+        getRef={getRef}
+        onStop={chat.stop}
         title="ArchitectMiner"
         subtitle="Authors the architecture with you"
         placeholder="Message the architect…"
@@ -362,8 +455,28 @@ export default function ArchitectureCanvas({
               12 elements · 2 accepted · 2 proposed · 1 draft
             </span>
             <span style={{ flex: 1 }} />
-            <button type="button" className="am-canvas-btn">＋ Add ADR</button>
-            <button type="button" className="am-canvas-btn am-canvas-btn-primary">
+            <button
+              type="button"
+              className="am-canvas-btn"
+              onClick={() =>
+                elicit(
+                  "domain-architect",
+                  "Let's add a single Architecture Decision Record (ADR) for this process. Ask me the decision to capture, then draft it with context, the decision, the alternatives considered and the consequences.",
+                )
+              }
+            >
+              ＋ Add ADR
+            </button>
+            <button
+              type="button"
+              className="am-canvas-btn am-canvas-btn-primary"
+              onClick={() =>
+                elicit(
+                  "domain-architect",
+                  "Let's work the ADRs for this architecture together: review what exists, surface the decisions implied by the target process and transformation decisions that aren't yet recorded, and elicit them with me one at a time.",
+                )
+              }
+            >
               ／ Elicit with domain architect
             </button>
           </div>
@@ -909,8 +1022,28 @@ export default function ArchitectureCanvas({
                   {archData.confirmedN} confirmed · {archData.draftN} draft
                 </span>
                 <span style={{ flex: 1 }} />
-                <button type="button" className="am-canvas-btn">＋ Add Capability</button>
-                <button type="button" className="am-canvas-btn am-canvas-btn-primary">
+                <button
+                  type="button"
+                  className="am-canvas-btn"
+                  onClick={() =>
+                    elicit(
+                      "domain-architect",
+                      "Let's add a single business capability to the target architecture for this process. Ask me what it is and draft it.",
+                    )
+                  }
+                >
+                  ＋ Add Capability
+                </button>
+                <button
+                  type="button"
+                  className="am-canvas-btn am-canvas-btn-primary"
+                  onClick={() =>
+                    elicit(
+                      "domain-architect",
+                      "Let's work the capability map for this architecture: derive the capabilities the target process needs, check them against the requirements and gap resolution, and elicit what's missing with me.",
+                    )
+                  }
+                >
                   ／ Elicit with domain architect
                 </button>
               </div>
@@ -1085,8 +1218,28 @@ export default function ArchitectureCanvas({
                   {archData.configureN} CONFIGURE · {archData.keepN} KEEP
                 </span>
                 <span style={{ flex: 1 }} />
-                <button type="button" className="am-canvas-btn">＋ Add Application</button>
-                <button type="button" className="am-canvas-btn am-canvas-btn-primary">
+                <button
+                  type="button"
+                  className="am-canvas-btn"
+                  onClick={() =>
+                    elicit(
+                      "domain-architect",
+                      "Let's add a single target application to the architecture. Ask me about it and draft it, including the build / buy / configure / keep verdict and its rationale.",
+                    )
+                  }
+                >
+                  ＋ Add Application
+                </button>
+                <button
+                  type="button"
+                  className="am-canvas-btn am-canvas-btn-primary"
+                  onClick={() =>
+                    elicit(
+                      "domain-architect",
+                      "Let's work the target application landscape: map the applications that realise the capabilities, decide build / buy / configure / keep for each, and elicit what's missing with me.",
+                    )
+                  }
+                >
                   ／ Elicit with domain architect
                 </button>
               </div>
@@ -1256,8 +1409,28 @@ export default function ArchitectureCanvas({
                   8 elements · 5 accepted · 3 proposed · 4 sync · 2 async · 1 event · 1 batch
                 </span>
                 <span style={{ flex: 1 }} />
-                <button type="button" className="am-canvas-btn">＋ Add Integration</button>
-                <button type="button" className="am-canvas-btn am-canvas-btn-primary">
+                <button
+                  type="button"
+                  className="am-canvas-btn"
+                  onClick={() =>
+                    elicit(
+                      "solution-architect",
+                      "Let's add a single target integration between two applications. Ask me the endpoints, the data and the pattern, then draft it.",
+                    )
+                  }
+                >
+                  ＋ Add Integration
+                </button>
+                <button
+                  type="button"
+                  className="am-canvas-btn am-canvas-btn-primary"
+                  onClick={() =>
+                    elicit(
+                      "solution-architect",
+                      "Let's work the integration architecture: derive the interfaces between target applications that the target process needs, and elicit what's missing with me.",
+                    )
+                  }
+                >
                   ／ Elicit with solution architect
                 </button>
               </div>
@@ -1380,8 +1553,28 @@ export default function ArchitectureCanvas({
                   17 elements · across 3 BUILD/BUY apps · 11 accepted · 6 proposed
                 </span>
                 <span style={{ flex: 1 }} />
-                <button type="button" className="am-canvas-btn">＋ Add Component</button>
-                <button type="button" className="am-canvas-btn am-canvas-btn-primary">
+                <button
+                  type="button"
+                  className="am-canvas-btn"
+                  onClick={() =>
+                    elicit(
+                      "solution-architect",
+                      "Let's add a single component of a target application (a service, gateway, worker or store). Ask me about it and draft it.",
+                    )
+                  }
+                >
+                  ＋ Add Component
+                </button>
+                <button
+                  type="button"
+                  className="am-canvas-btn am-canvas-btn-primary"
+                  onClick={() =>
+                    elicit(
+                      "solution-architect",
+                      "Let's work the component breakdown for the target applications: decompose each into its components and elicit what's missing with me.",
+                    )
+                  }
+                >
                   ／ Elicit with solution architect
                 </button>
               </div>
@@ -1529,8 +1722,28 @@ export default function ArchitectureCanvas({
                   8 elements · 5 accepted · 3 proposed · 2 perf · 2 avail · 2 sec · 2 compliance
                 </span>
                 <span style={{ flex: 1 }} />
-                <button type="button" className="am-canvas-btn">＋ Add NFR</button>
-                <button type="button" className="am-canvas-btn am-canvas-btn-primary">
+                <button
+                  type="button"
+                  className="am-canvas-btn"
+                  onClick={() =>
+                    elicit(
+                      "solution-architect",
+                      "Let's add a single non-functional requirement. Ask me the category and the target, then draft it with its traces.",
+                    )
+                  }
+                >
+                  ＋ Add NFR
+                </button>
+                <button
+                  type="button"
+                  className="am-canvas-btn am-canvas-btn-primary"
+                  onClick={() =>
+                    elicit(
+                      "solution-architect",
+                      "Let's work the NFRs for this architecture: derive them from the requirements, controls and regulation, set measurable targets, and elicit what's missing with me.",
+                    )
+                  }
+                >
                   ／ Elicit with solution architect
                 </button>
               </div>
@@ -1652,8 +1865,28 @@ export default function ArchitectureCanvas({
                   4 phases · 1 done · 1 in flight · 2 planned · go-live 2027 Q2
                 </span>
                 <span style={{ flex: 1 }} />
-                <button type="button" className="am-canvas-btn">＋ Add Phase</button>
-                <button type="button" className="am-canvas-btn am-canvas-btn-primary">
+                <button
+                  type="button"
+                  className="am-canvas-btn"
+                  onClick={() =>
+                    elicit(
+                      "solution-architect",
+                      "Let's add a single migration phase. Ask me its scope and sequencing, then draft it.",
+                    )
+                  }
+                >
+                  ＋ Add Phase
+                </button>
+                <button
+                  type="button"
+                  className="am-canvas-btn am-canvas-btn-primary"
+                  onClick={() =>
+                    elicit(
+                      "solution-architect",
+                      "Let's work the migration plan: sequence the move from the as-is systems to the target architecture into phases with clear entry and exit criteria, and elicit what's missing with me.",
+                    )
+                  }
+                >
                   ／ Elicit with solution architect
                 </button>
               </div>

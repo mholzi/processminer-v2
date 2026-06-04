@@ -23,7 +23,14 @@ what it changes, behaviour/scope, and how it was verified.
 | **#15** | Section summary strips (R12b) | `feat/section-summaries-r12b` → `main` | Code + docs | **Merged** (`d30c67b`) |
 | **#16** | Country-variations element type (R15) | `feat/country-variations-r15` → `main` | Schema + code + docs | **Merged** (`e7361e9`) |
 | **#17** | Per-process access control (R16) | `feat/process-access-r16` → `main` | Code + docs | **Merged** (`bd30d67`) |
-| **#18** | Read-only orchestrator layer (R10) | `feat/orchestrator-read-layer-r10` → `main` | Code + tests + docs | **Open** (`pending`) |
+| **#18** | Read-only orchestrator layer (R10) | `feat/orchestrator-read-layer-r10` → `main` | Code + tests + docs | **Merged** (`1e3ad18`) |
+| **#19** | Live architect chat via shared `useAgentChat` (R1) | `feat/architect-chat-r1` → `main` | Code + docs | **Open** (`pending`) |
+
+> **Numbering note.** A "Recover docs & standalone artifacts (R20–R22)" PR was
+> pre-logged here as #19 but never opened on GitHub; its work is still staged
+> locally on `feat/docs-artifacts-r20-r22`. The next real GitHub number went to
+> the ArchitectMiner R1 work above, so that docs/artifacts PR will take a later
+> number when it is actually opened.
 
 > **What happened with #3 → #4 (the stacking lesson):** #3 was opened *stacked*
 > on #2's branch (the A3 change is only safe with the A1 gate present). When #2
@@ -677,10 +684,108 @@ router, an ArchitectMiner attention surface) could reuse.
 
 ---
 
-# Open follow-ups (as of PR #18)
+# PR #19 — Live architect chat via shared `useAgentChat` (R1)
 
-Both product decisions (R15, R16) are **closed**, R10 is **done**, and the
-**entire Processminer roadmap is delivered**. Remaining:
+**Branch:** `feat/architect-chat-r1` → `main` · **Date:** 2026-06-04 ·
+**Type:** Code + docs. First PR of **Theme A — ArchitectMiner (R1–R4)**.
 
-1. **Parked: ArchitectMiner (Theme A — R1–R4)** — the whole module is still view-only (chat is a no-op, Diagram/Traceability/Library are mock, no architect specialists). The largest remaining *functional* gap in the app. R10 (this PR) is the shared read layer its dashboard attention rows would consume.
+## Why this PR exists
+
+Roadmap **R1**. ArchitectMiner had **no agent interaction**: the canvas chat
+was `onSend={() => {}}` and every "+ Add X" / "Elicit with architect" button
+was an inert `<button>`. The working SME chat pipeline was inlined in
+`ProcessDocScreen.tsx` and never extracted, so the architect side couldn't
+reuse it — the functional heart of the workspace was dead.
+
+## What this PR adds / changes
+
+| File | Change | Summary |
+|---|---|---|
+| `src/lib/agent-chat.ts` | **new** | Provider-agnostic core, no React: the `runSession` fetch+SSE driver, per-skill ETA history, the long-turn browser notification, and the sessionStorage transcript codec (namespaced per canvas via a `prefix`). |
+| `src/components/useAgentChat.ts` | **new** | The React hook composing that core — `messages`, the live turn (pending / activity / sub-agent tasks / active skill), the claude session id, the stuck-turn watchdog, per-process persistence, and `send` / `stop` / `restart`. |
+| `src/components/ArchitectureCanvas.tsx` | **edit** | Chat wired to the hook under its own `"am"` storage namespace + an architect scope preamble. All 7 view pairs of **Add / Elicit** buttons seed a scoped turn with the right specialist (`domain-architect` for ADRs / capabilities / applications; `solution-architect` for integrations / components / NFRs / migration). "Cross-check traces" sends a traceability sweep. A real `getRef` resolves element-id hovercards. |
+| `src/app/ProcessDocScreen.tsx` | **edit** | `handleSend` delegates to the shared `runSession`; the ETA / notify / storage helpers are imported, not duplicated. **State shape and all 13 call sites unchanged** — pure dedup. |
+
+## Scope / risk
+
+- The SME canvas is the working core product, so its **stateful shell was left
+  intact** — only `handleSend`'s internals (the SSE loop) and the helper
+  definitions changed. The 87 chat references across the screen are untouched.
+- No real chat turn was fired against `cob-003` in verification (it would
+  invoke the CLI against real process data). The wiring is verified by render +
+  typecheck + tests.
+
+## Dependency
+
+Unblocks **R2** (the `domain-architect` / `solution-architect` specialists the
+Elicit buttons invoke) and the rest of Theme A.
+
+## Verification
+
+- `npm run typecheck` clean. `npm test` → **39/39**.
+- SME canvas (`?p=cob-003`) renders and its chat is intact after the refactor.
+- ArchitectMiner canvas chat is **live** — "Message the architect…" textarea,
+  wired Add/Elicit buttons, "Cross-check traces across all views" — with **zero
+  console errors** on both canvases.
+
+---
+
+# PR (planned, not yet opened) — Recover docs & standalone artifacts (R20–R22)
+
+> Pre-logged as #19 but never opened on GitHub; the ArchitectMiner R1 PR took
+> the real #19. Its work is still staged locally on `feat/docs-artifacts-r20-r22`
+> and will take a later number when opened. Writeup kept below as-is.
+
+**Branch:** `feat/docs-artifacts-r20-r22` → `main` · **Date:** 2026-06-04
+· **Type:** Docs / standalone artifacts only — **no application code changes.**
+
+## Why this PR exists
+
+Roadmap **Theme H (R20–R22)** — three clusters of standalone artifacts dropped
+in the JSON-native migration. None is imported by `src/`; all were fully
+recoverable from their source commits. Restored together because R22's
+screenshot helpers exist to feed R20's deck, and R21 is the matching planning-doc
+set authored in the same era.
+
+## What this PR adds / changes
+
+| Req | Files | Source | Summary |
+|---|---|---|---|
+| **R20** | `pm-pdf.mjs`, `pm-shot-competitor.mjs`, `public/onepager.html`, `public/onepager-deck.html`, `public/onepager-deck.pdf`, `public/onepager-slide{,-2,-3,-4}.html`, `public/onepager-assets/*.png` (5 screenshots + 5 slide renders) | `b858dff` | The finished 4-slide product deck, its print-ready PDF, and the CDP PDF-export helper, restored verbatim. |
+| **R21** | `ROADMAP.md`, `AI-GOVERNANCE-ROADMAP.md`, `AI-GOVERNANCE-CHANGESET.md` + byte-identical `public/` copies + `public/{roadmap,ai-governance-roadmap,ai-governance-changeset}.html` renders | `1e347a6` | Phase-2 product roadmap + AI-governance roadmap & changeset. Changeset included as-is with a banner noting it targets the pre-rewrite codebase. |
+| **R22** | `pm-shot.mjs`, `pm-shot-architect.mjs` | `7899697` | CDP screenshot helpers that mint a local signed `pm_session` cookie to drive headless Chrome through the authenticated app. |
+
+## Design notes / scope
+
+- **Restore-as-is, by decision.** Screenshots, the v0.x deck framing, and the
+  pm-shot/-architect UI selectors all predate the JSON-native rewrite.
+  Regenerating them (re-pointing the helpers at the current UI, rebuilding the
+  PDF) is left as a follow-up — noted on the R20/R22 roadmap entries.
+- **Changeset banner.** `AI-GOVERNANCE-CHANGESET.md` (root + `public/` copy)
+  gets a one-block note that its diffs target the old codebase and are reference
+  only — it must not be applied literally against the current tree.
+- **No app impact.** Everything lands under `public/` or as root `.mjs` dev
+  tooling; nothing in `src/` references these files, so typecheck/test surface
+  is unchanged.
+
+## Verification
+
+- File-level: all 30 artifacts restored from their source commits; `git status`
+  shows them as additions only.
+- No `src/` imports touch the restored files (standalone `public/` assets + root
+  scripts), so `npm run typecheck` / `npm test` are unaffected.
+
+---
+
+# Open follow-ups (as of PR #19)
+
+Both product decisions (R15, R16) are **closed**, R10 is **done**, the docs
+track (R20–R22) is **recovered**, and the **entire Processminer roadmap is
+delivered**. Remaining:
+
+1. **In progress: ArchitectMiner (Theme A — R1–R4).** R1 (this PR) makes the architect canvas chat live. Remaining:
+   - **R2** — `domain-architect` + `solution-architect` specialist skills (the Elicit buttons invoke them). *Next.*
+   - **R3** — Diagram + Traceability real data wiring (replace the hardcoded SVG + the "illustrative" stat with reads off `doc.elements[].relations`).
+   - **R4** — Personal + Library tiers from real data (aggregate across all `<slug>.json` docs).
 2. **Optional:** the schema generator (derive the Draft-07 JSON Schema from the custom schema, retiring the dual-edit + drift-guard).
+3. **Open docs/artifacts PR (R20–R22):** staged locally on `feat/docs-artifacts-r20-r22`, not yet opened (see the numbering note above). Re-point `pm-shot*.mjs` at the current UI before regenerating.
