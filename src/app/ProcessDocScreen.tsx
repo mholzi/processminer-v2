@@ -220,6 +220,7 @@ const SKILL_LABEL: Record<string, string> = {
   "solution-architect": "Solution Architect",
   "run-lint": "Quality Check",
   "foundational-run": "Foundational Run",
+  "qer-session": "QER Session",
   "council-review": "Target Council Review",
   "add-entry": "Add Entry",
   "comment-review": "Comment Review",
@@ -282,22 +283,36 @@ function scopePreamble(d: ProcessDoc, user: User): string {
 // to resume it.
 function resumeMessage(d: ProcessDoc): ChatMessage | null {
   const rs = d.reviewState;
-  if (!rs || rs.done) return null;
-  const currentId = rs.queue[rs.cursor];
-  const current =
-    currentId === d.process.id
-      ? d.process
-      : d.elements.find((e) => e.id === currentId);
-  const next = current ? `**${current.id}** — ${current.title}` : currentId;
-  return {
-    id: mid(),
-    role: "agent",
-    text:
-      `Welcome back. The **foundational run** for **${d.process.title}** is ` +
-      `paused at **item ${rs.cursor + 1} of ${rs.total}** — next up is ${next}.` +
-      `\n\nOpen **Triage** in the top bar and press **Resume** to continue the ` +
-      `challenged walk through the As-Is elements.`,
-  };
+  if (rs && !rs.done) {
+    const currentId = rs.queue[rs.cursor];
+    const current =
+      currentId === d.process.id
+        ? d.process
+        : d.elements.find((e) => e.id === currentId);
+    const next = current ? `**${current.id}** — ${current.title}` : currentId;
+    return {
+      id: mid(),
+      role: "agent",
+      text:
+        `Welcome back. The **foundational run** for **${d.process.title}** is ` +
+        `paused at **item ${rs.cursor + 1} of ${rs.total}** — next up is ${next}.` +
+        `\n\nOpen **Triage** in the top bar and press **Resume** to continue the ` +
+        `challenged walk through the As-Is elements.`,
+    };
+  }
+  const qs = d.qerState;
+  if (qs && !qs.done) {
+    const step = qs.queue[qs.cursor] ?? "the next step";
+    return {
+      id: mid(),
+      role: "agent",
+      text:
+        `Welcome back. The **QER session** for **${d.process.title}** is ` +
+        `paused at **step ${qs.cursor + 1} of ${qs.total}** — **${step}**.` +
+        `\n\nContinue in the chat to resume the guided session from where it left off.`,
+    };
+  }
+  return null;
 }
 
 // The chat transcript + claude session id are persisted to sessionStorage per
