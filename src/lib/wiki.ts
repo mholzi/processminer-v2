@@ -231,6 +231,8 @@ export interface ProcessDoc {
   ingest?: IngestReport;
   /** The foundational-run cursor, if a run has been started. */
   reviewState?: ReviewState;
+  /** The qer-session cursor, if a session has been started. */
+  qerState?: ReviewState;
   /** Per-section executive summaries, if any have been generated. */
   summaries?: SectionSummaries;
   /** SME note threads, keyed by element id — process JSON's `notes`. */
@@ -505,6 +507,7 @@ export function getProcess(slug: string): ProcessDoc | null {
     targetReview: data.targetReview,
     ingest: data.ingest,
     reviewState: runtime.reviewState,
+    qerState: runtime.qerState,
     summaries: data.summaries,
     notes,
     glossary: data.glossary,

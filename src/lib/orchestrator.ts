@@ -58,6 +58,15 @@ export type ActionSpec =
       cursor: number;
       total: number;
       weight: number;
+    }
+  | {
+      kind: "resume-qer-session";
+      slug: string;
+      cursor: number;
+      total: number;
+      /** The step name the QER cursor is paused on (the queue holds step names). */
+      current: string | null;
+      weight: number;
     };
 
 export type ActionKind = ActionSpec["kind"];
@@ -74,6 +83,8 @@ export interface OrchestratorHealth {
   openComments: number;
   /** A foundational run exists and isn't finished. */
   runResumable: boolean;
+  /** A QER session exists and isn't finished. */
+  qerSessionResumable: boolean;
 }
 
 export interface OrchestratorState {
@@ -108,6 +119,7 @@ const WEIGHT_CONFLICT = 100;
 const WEIGHT_LINT = 5;
 const WEIGHT_COMMENT = 1;
 const WEIGHT_RUN_BASE = 50; // mid-band; below conflicts, above lint
+const WEIGHT_QER_BASE = 50; // same band as the foundational run
 
 // ---- Counts -------------------------------------------------------------
 
@@ -132,6 +144,8 @@ export function buildOrchestratorState(doc: ProcessDoc): OrchestratorState {
   const openComments = countOpenComments(doc);
   const rs = doc.reviewState;
   const runResumable = !!(rs && !rs.done && rs.total > 0);
+  const qs = doc.qerState;
+  const qerSessionResumable = !!(qs && !qs.done && qs.total > 0);
 
   const actions: ActionSpec[] = [];
   if (conflicts > 0) {
@@ -152,6 +166,17 @@ export function buildOrchestratorState(doc: ProcessDoc): OrchestratorState {
       cursor: rs!.cursor,
       total: rs!.total,
       weight: WEIGHT_RUN_BASE + remaining,
+    });
+  }
+  if (qerSessionResumable) {
+    const remaining = qs!.total - qs!.cursor;
+    actions.push({
+      kind: "resume-qer-session",
+      slug: doc.slug,
+      cursor: qs!.cursor,
+      total: qs!.total,
+      current: qs!.queue[qs!.cursor] ?? null,
+      weight: WEIGHT_QER_BASE + remaining,
     });
   }
   if (openLintFindings > 0) {
@@ -181,6 +206,7 @@ export function buildOrchestratorState(doc: ProcessDoc): OrchestratorState {
       openLintFindings,
       openComments,
       runResumable,
+      qerSessionResumable,
     },
   };
 }

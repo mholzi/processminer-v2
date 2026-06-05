@@ -95,6 +95,18 @@ export default function WelcomeScreen({
     );
   }, [docs, hasPM]);
 
+  // ----- derive the in-flight QER session (the second resume hero) -----
+  const inflightQER = useMemo(() => {
+    if (!hasPM) return null;
+    return (
+      docs
+        .filter((d) => d.qerState && !d.qerState.done)
+        .sort((a, b) =>
+          b.qerState!.updatedAt.localeCompare(a.qerState!.updatedAt),
+        )[0] ?? null
+    );
+  }, [docs, hasPM]);
+
   // ----- derive the queue items (real data, per-process aggregated) -----
   // The weight formula + reasons phrasing live in the orchestrator read layer
   // (buildAttentionFeed), the canonical home shared with any future consumer;
@@ -297,6 +309,29 @@ export default function WelcomeScreen({
                 <b>
                   {inflightPM.reviewState!.cursor + 1} of {inflightPM.reviewState!.total}
                 </b>
+              </span>
+            </span>
+            <span className="ws-resume-cta">Resume →</span>
+          </button>
+        )}
+
+        {/* Resume hero — in-flight QER session. */}
+        {inflightQER && (view === "both" || view === "pm") && (
+          <button
+            type="button"
+            className="ws-resume"
+            onClick={() => openProcess(inflightQER.slug)}
+          >
+            <span className="ws-resume-ico">▶</span>
+            <span className="ws-resume-body">
+              <span className="ws-resume-eyebrow">Resume QER session</span>
+              <span className="ws-resume-title">
+                {inflightQER.process.id} · {inflightQER.process.title}
+              </span>
+              <span className="ws-resume-sub">
+                Paused at step{" "}
+                <b>{inflightQER.qerState!.queue[inflightQER.qerState!.cursor] ?? "—"}</b>{" "}
+                ({inflightQER.qerState!.cursor + 1} of {inflightQER.qerState!.total})
               </span>
             </span>
             <span className="ws-resume-cta">Resume →</span>

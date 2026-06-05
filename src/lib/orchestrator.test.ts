@@ -48,6 +48,7 @@ function doc(opts: {
   openLintFindings?: number;
   openComments?: number;
   runResumable?: { cursor: number; total: number; done?: boolean } | null;
+  qerResumable?: { cursor: number; total: number; done?: boolean } | null;
 }): ProcessDoc {
   const findings: LintFinding[] = [];
   for (let i = 0; i < (opts.openLintFindings ?? 0); i++) {
@@ -105,6 +106,18 @@ function doc(opts: {
             cursor: opts.runResumable.cursor,
             total: opts.runResumable.total,
             done: opts.runResumable.done ?? false,
+            startedAt: "2026-01-01T00:00:00Z",
+            updatedAt: "2026-01-01T00:00:00Z",
+          }
+        : undefined,
+    qerState:
+      opts.qerResumable !== undefined && opts.qerResumable !== null
+        ? {
+            slug: opts.slug,
+            queue: ["OVERVIEW", "PERSPECTIVE PASSES", "VALIDATION", "DONE"],
+            cursor: opts.qerResumable.cursor,
+            total: opts.qerResumable.total,
+            done: opts.qerResumable.done ?? false,
             startedAt: "2026-01-01T00:00:00Z",
             updatedAt: "2026-01-01T00:00:00Z",
           }
@@ -181,6 +194,39 @@ test("buildOrchestratorState: a done run is not resumable", () => {
     state.actions.find((a) => a.kind === "resume-foundational-run"),
     undefined,
   );
+});
+
+test("buildOrchestratorState: an in-flight QER session is a resume action", () => {
+  const d = doc({ slug: "q", qerResumable: { cursor: 1, total: 4 } });
+  const state = buildOrchestratorState(d);
+  assert.equal(state.health.qerSessionResumable, true);
+  const a = state.actions.find((x) => x.kind === "resume-qer-session");
+  assert.ok(a);
+  assert.equal(a!.kind === "resume-qer-session" && a!.current, "PERSPECTIVE PASSES");
+  assert.equal(a!.kind === "resume-qer-session" && a!.total, 4);
+});
+
+test("buildOrchestratorState: a done QER session is not resumable", () => {
+  const d = doc({ slug: "q", qerResumable: { cursor: 4, total: 4, done: true } });
+  const state = buildOrchestratorState(d);
+  assert.equal(state.health.qerSessionResumable, false);
+  assert.equal(
+    state.actions.find((a) => a.kind === "resume-qer-session"),
+    undefined,
+  );
+});
+
+test("buildOrchestratorState: foundational + QER can both be resumable at once", () => {
+  const d = doc({
+    slug: "q",
+    runResumable: { cursor: 2, total: 10 },
+    qerResumable: { cursor: 1, total: 4 },
+  });
+  const state = buildOrchestratorState(d);
+  assert.equal(state.health.runResumable, true);
+  assert.equal(state.health.qerSessionResumable, true);
+  assert.ok(state.actions.find((a) => a.kind === "resume-foundational-run"));
+  assert.ok(state.actions.find((a) => a.kind === "resume-qer-session"));
 });
 
 test("buildOrchestratorState: actions sorted by weight descending", () => {

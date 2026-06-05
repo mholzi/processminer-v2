@@ -50,7 +50,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#42** | Root-field tools — `writeIngestReport` + `clearConflicts`; drop `addSource` | `feat/ingest-report-tools` → `main` | Code + 1 skill + docs | **Merged** (`2921b19`) |
 | **#43** | Notes tools — `createNote` + `resolveNotes` | `feat/notes-tools` → `main` | Code + 1 skill + docs | **Merged** (`b93f4d0`) |
 | **#44** | Session-cursor + `setApproval` — closes the phantom-tool program | `feat/session-cursor` → `main` | Code + 1 skill + docs | **Merged** (`7d47bcd`) |
-| **#45** | dogfood-run tuning + FRD-001 artifact (parallel session) | `feat/dogfood-run-frd001` → `main` | Skill + process data + docs | **Open** (`pending`) |
+| **#45** | dogfood-run tuning + FRD-001 artifact (parallel session) | `feat/dogfood-run-frd001` → `main` | Skill + process data + docs | **Merged** (`ffbad3b`) |
+| **#46** | QER-resume dashboard tile (deferred #44 follow-up) | `feat/qer-resume-tile` → `main` | Code + UI + docs | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
