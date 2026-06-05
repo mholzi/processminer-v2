@@ -171,7 +171,7 @@ these are unvalidated proposals). Then write the **whole run in one batch**:
 assemble a manifest `{ "slug": "<slug>", "elements": [ … ] }` of every trend
 from Step 3, every competitor move from Step 4 and every idea here — each spec
 omitting `id`, each carrying its `tempKey`, ideas referencing trends and moves
-by `"@<tempKey>"` — and `use the createElements({ elements }) tool`, then `use the checkConformance() tool`. The batch writer assigns every id and resolves every `@<tempKey>`, and returns `created` (the ids) plus per-type `counts` — read your Step 6 report counts from `counts`.
+by `"@<tempKey>"` — and `use the createElements({ elements }) tool`, then `use the checkConformance() tool`. The batch writer assigns every id and resolves every `@<tempKey>`, and returns `created` (the ids) plus per-type `counts` — read your Step 6 report counts from `counts`. **This run must stay a single batch** (unlike source-cx / source-regulation, which write incrementally): the ideas reference trends and moves by `@<tempKey>`, and the writer only resolves those cross-references *within one batch* — splitting the write would leave the references unresolved.
 
 **Completeness check — every documented problem gets an idea.** Once the ideas
 are written, check the idea coverage for the process. It enumerates

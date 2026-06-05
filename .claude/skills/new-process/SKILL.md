@@ -38,8 +38,13 @@ you ask for.
 
 1.  Derive the process metadata (slug, abbreviation, and check for slug conflicts) for `"<name>"`. It returns JSON
     with a deterministic **slug** (kebab-case folder name), a **`<PROC>`**
-    abbreviation (uppercase, for element IDs), and **`slugTaken`**. Use exactly
+    abbreviation (for element IDs), and **`slugTaken`**. Use exactly
     what it returns — do not invent your own.
+
+    The **`<PROC>` abbreviation must be 2–6 uppercase letters — no digits, no
+    symbols** (the scaffolder rejects anything else, e.g. `FRD2` fails; use
+    `FRDT`). If you ever derive or correct an abbreviation yourself, keep it
+    letters-only so the scaffold succeeds on the first try.
 
     If **`slugTaken` is `true`**, a process with this slug already exists. Do
     not confirm or scaffold — tell the user plainly that the name collides with

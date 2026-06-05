@@ -80,12 +80,15 @@ obligation that genuinely applies to *this* process:
   link on the **control**: patch that control's `regulatedBy` to add this
   regulation's id (use the updateElement({ id, patch }) tool). A regulation has no `controls`
   field — its control list is the derived reverse of `control.regulatedBy`.
-- Write all the regulations **in one batch** — an `elements` array of specs
-  (each `{ type: "regulation", element: { … } }`, `status: draft`,
-  `confidence: medium`; `low` if thinly evidenced) — with the
-  createElements({ elements }) tool, then the checkConformance() tool; fix any
-  flagged element and re-run it. The tool returns `created` (the assigned ids)
-  and per-type `counts` — read your Step 3 report count from `counts`.
+- Write regulations **incrementally** — as you draft each regulation (or a
+  small group), call `createElements({ elements })` for it (each
+  `{ type: "regulation", element: { … } }`, `status: draft`,
+  `confidence: medium`; `low` if thinly evidenced) rather than holding them all
+  for one end-of-run batch. Writing as you go surfaces each regulation in the
+  workspace while the scan proceeds and keeps the session visibly alive. Keep a
+  **running total** of the per-type `counts` each call returns. After the last
+  group, run the checkConformance() tool once; fix any flagged element and
+  re-run it. Each call also returns `created` (the assigned ids).
 
 Name **real** regulations and cite **real** sources — never invent a regulation
 or a citation. If web search is unavailable, write only what you can solidly
@@ -93,8 +96,8 @@ support and say so in the report.
 
 ## Step 3 — Report
 
-Read the `regulation` count from the `counts` the createElements call returned
-(`counts["regulation"]`); do not recount from memory.
+Read the `regulation` count from your **running total** (the `regulation` counts
+summed across every createElements call); do not recount from memory.
 
 Report with the canonical template:
 """

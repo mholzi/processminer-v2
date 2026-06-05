@@ -84,7 +84,13 @@ Give each sub-agent this brief, filling in its tier:
 > **read-only** — do not write or call any write tool. Return **only** a
 > JSON array of the draft specs.
 
-Collect the three arrays and hold the drafts for the Step 3 batch write.
+**Write each tier as soon as its drafts are ready** — do not hold all three for
+a single end-of-run batch. As each tier's array comes back, call
+`createElements({ elements })` for that tier (each `{ type, element }`, omitting
+`id`). Writing incrementally makes the elements appear in the workspace as the
+scan progresses instead of all at once at the end, and keeps the session
+visibly alive. Keep a **running per-type tally**: add the per-type `counts` each
+call returns to your totals — those totals are your Step 4 report counts.
 
 ## Step 3 — Scan CX benchmarks
 
@@ -99,11 +105,12 @@ corporate clients expect (status visibility, digital self-service). Write a
 - Draft each `cx-benchmark` as a `createElement({ type, element })` tool spec (`status: draft`,
   `confidence: medium`; `low` if thinly evidenced).
 
-Then write the **whole run in one batch** — assemble an `elements` array of
-every competitor-CX example from Step 2 and every benchmark drafted here (each
-`{ type, element }`, omitting `id`), and use the createElements({ elements })
-tool, then the checkConformance() tool. The tool returns `created` (the assigned
-ids) and per-type `counts` — read your Step 4 report counts from `counts`.
+Write the benchmarks as their **own** `createElements({ elements })` call (the
+same incremental pattern as the Step 2 tiers — one group, written as soon as it
+is ready), and add the per-type `counts` it returns to your running tally. After
+the last group is written, run the checkConformance() tool once over the run.
+Each createElements call returns `created` (the assigned ids) and per-type
+`counts`; your Step 4 report counts are the **sum across all of your calls**.
 
 Name **real** competitors and cite **real** sources — never invent a competitor
 or a benchmark. If web search is unavailable, write only what you can solidly
@@ -111,10 +118,10 @@ support and say so in the report.
 
 ## Step 4 — Report
 
-Map the per-type `counts` the createElements call returned into the template:
-`competitor-cx-eu` / `-global` / `-fintech` → the Competitor CX total and its
-European / global / fintech split; `cx-benchmark` → CX benchmarks. Do not
-recount from memory.
+Map your **running per-type totals** (summed across every createElements call)
+into the template: `competitor-cx-eu` / `-global` / `-fintech` → the Competitor
+CX total and its European / global / fintech split; `cx-benchmark` → CX
+benchmarks. Do not recount from memory.
 
 Report with the canonical template:
 ```

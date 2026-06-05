@@ -164,7 +164,9 @@ For the `current` item, one element at a time:
         line of **what changed** so the SME approves with eyes open, e.g.
         "Reworked PS-FR-002 — validation is now automated-first, analyst-on-
         exception; the STP branch is named. Approved." Never approve a rework
-        silently; the echo is how the SME catches a mis-applied change.
+        silently; the echo is how the SME catches a mis-applied change. Then
+        **continue straight to step 5 (Advance) in this same turn** — writing an
+        `[E]` edit is *not* the end of the turn; do not stop and wait for a nudge.
 
         **Keep frontmatter relation lists in sync with prose.** If your rework
         names a `SYS-*` (or any element id) in body text that is not already
@@ -178,8 +180,12 @@ For the `current` item, one element at a time:
         session. Then approve it.
     -   **Move on** — the SME wants to advance without approving. Leave the
         element as it is (`in-progress`); do not set approval.
-5.  **Advance.** Use the `advanceSession({ slug })` tool. If
-    it reports `done`, go to Step 4; otherwise present the next `current` item.
+5.  **Advance.** This step runs after **every** outcome — `[Y]`, `[E]`, `[D]`
+    *and* Move on — not just `[Y]`. In the **same turn** as the write/approval,
+    use the `advanceSession({ slug })` tool: never end the turn after writing an
+    `[E]` edit or stamping an approval and wait for the SME to say "continue" —
+    advancing and presenting the next item is part of the *same* response. If it
+    reports `done`, go to Step 4; otherwise present the next `current` item.
 
 Work one element per exchange. Never batch the challenged walk — the challenge
 *is* the value, and a batched challenge earns a batched, shallow answer. The

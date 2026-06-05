@@ -56,6 +56,11 @@ When drafting or editing an element (or a block of prose), present the draft to 
 - **One-at-a-Time**: Present elements one at a time whenever the discussion requires detailed judgment or validation.
 - **Batch Presentation**: If a group of reference-type elements requires minimal per-element analysis (e.g., simple lists of regulations, competitor systems, or standard metrics), you may group them into a single labeled batch for a single Y/E/R approval. When in doubt, default to presenting one at a time.
 
+### Skill Routing
+- **A message that names a skill is a request to run that skill.** When the SME's message names or plainly asks for a specialist or skill — "run the client-journey-specialist", "start the controls pass", "let's do the foundational run" — invoke **that** skill via the Skill tool as the first action of the turn. Do **not** instead summarise or continue the previous turn's work because its topic is fresher in context — the named skill wins over recency.
+- **Match on intent, not exact spelling.** Map the request to the closest skill (the descriptions in the skills list are the source of truth); if two are plausible, ask one short disambiguating question rather than guessing.
+- **CTAs are the reliable path.** When a dedicated section call-to-action exists for what the SME wants, prefer it (or tell the SME which CTA to click) — a CTA passes the skill handle explicitly and never mis-routes.
+
 ---
 
 ## 4. Universal Provenance Rules

@@ -136,6 +136,13 @@ group. The 315k-token main-agent output of the legacy flow becomes ~30k.
     >     reference sister entries by their outline `tempKey` (e.g.
     >     `"systems": ["@sys-3"]`) or by their existing `id` if the sister is a
     >     refine. The batch writer resolves `@<tempKey>` across the whole run.
+    >     **tempKeys belong only in `relations`/`fields` reference arrays —
+    >     never inside `blocks` prose.** The writer resolves a standalone
+    >     `@<tempKey>` reference value, but it does **not** rewrite tempKeys
+    >     embedded in narrative text, so a `(ps-1)` written into a block leaks to
+    >     the SME as a raw token. In prose, name the element by its **title**
+    >     ("the drawdown request step"), not its key. Lint flags any tempKey left
+    >     in a block.
     > -   **Refine (has `id`, no `tempKey`)** — draft the same spec keyed by
     >     `id` instead of `tempKey`; produce the merged content (your draft is
     >     what will be written).

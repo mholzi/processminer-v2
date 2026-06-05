@@ -271,6 +271,50 @@ export function checkFieldValues(
   return issues;
 }
 
+// Ingest writes elements in a batch using temporary cross-reference keys —
+// `<idPrefix-lowercased>-<n>` (e.g. `ps-1`, `sys-3`, `role-2`) — which the batch
+// writer resolves to real ids in *relation fields* (`@ps-1` → `PS-FRDT-001`).
+// A tempKey written into *prose* is never resolved (the writer only swaps
+// standalone `@key` reference values), so it leaks to the SME as a raw token
+// like "(ps-1)". This was the dogfood ingest-leak finding. Build the leak
+// detector's alphabet from the schema's own idPrefixes so it matches exactly
+// the ingest namespace — never a real id (`PS-FRDT-001` has letters, not
+// digits, after the prefix) and never ordinary prose ("tier-1", "Basel-3" are
+// not idPrefixes).
+function buildTempKeyRegex(schema: Schema): RegExp | null {
+  const prefixes = [
+    ...new Set(
+      Object.values(schema.elementTypes)
+        .map((t) => (t.idPrefix || "").toLowerCase())
+        // 2+ chars only — a single-letter prefix (e.g. metric "M") would
+        // false-match ordinary tokens like "M-1".
+        .filter((p) => p.length >= 2),
+    ),
+  ].sort((a, b) => b.length - a.length);
+  if (prefixes.length === 0) return null;
+  const alt = prefixes.map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
+  // optional leading `@`, a known prefix, a hyphen, then a small integer.
+  return new RegExp(`@?\\b(?:${alt})-\\d{1,3}\\b`, "gi");
+}
+
+/** Unresolved ingest tempKeys left inside an element's prose blocks. Reference
+ *  keys belong only in relation fields; in prose the element must be named. */
+export function checkTempKeyLeaks(page: WikiPage, schema: Schema): string[] {
+  const re = buildTempKeyRegex(schema);
+  if (!re) return [];
+  const issues: string[] = [];
+  for (const block of page.blocks) {
+    if (typeof block.text !== "string") continue;
+    const hits = [...new Set(block.text.match(re) ?? [])];
+    for (const hit of hits) {
+      issues.push(
+        `block “${block.heading}” contains an unresolved ingest tempKey “${hit}” — name the element in prose and keep reference keys to relation fields`,
+      );
+    }
+  }
+  return issues;
+}
+
 /** Whole-wiki conformance pass — one finding per non-conforming element.
  *  Covers both block-template deviations and missing required frontmatter. */
 export function checkConformance(
@@ -295,11 +339,13 @@ export function checkConformance(
     const fvIssues = checkFieldValues(el, type, schema);
     const provIssues =
       template && template.length ? checkProvenance(el, type) : [];
+    const tempKeyIssues = checkTempKeyLeaks(el, schema);
     if (
       blockIssues.length === 0 &&
       fmIssues.length === 0 &&
       fvIssues.length === 0 &&
-      provIssues.length === 0
+      provIssues.length === 0 &&
+      tempKeyIssues.length === 0
     )
       continue;
 
@@ -313,6 +359,7 @@ export function checkConformance(
         ...fmIssues,
         ...fvIssues,
         ...provIssues,
+        ...tempKeyIssues,
       ].join("; ")}.`,
       elements: [el.id],
     });

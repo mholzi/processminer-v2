@@ -183,7 +183,11 @@ each spec omitting `id`, each carrying its `tempKey`, every `realises`,
 target-state link and decision link written as `"@<tempKey>"` — and use the createElements({ elements }) tool, then
 use the checkConformance({ slug }) tool. The batch writer assigns
 every id and resolves every `@<tempKey>`, and returns `created` (the ids) plus
-per-type `counts`.
+per-type `counts`. **This run must stay a single batch** (unlike source-cx /
+source-regulation, which write incrementally): the `realises`, target-state and
+decision links are written as `@<tempKey>`, and the writer only resolves those
+cross-references *within one batch* — splitting the write would leave the
+references unresolved.
 
 ## Step 5 — Report
 
