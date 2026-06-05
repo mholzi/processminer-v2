@@ -92,9 +92,22 @@ export async function POST(req: NextRequest) {
           /* controller already closed */
         }
       };
+      // Keepalive heartbeat. A skill turn can fall silent for many minutes —
+      // a long sub-agent fan-out (source-cx) or pure model reasoning emits no
+      // tool events, so the SSE stream produces nothing. The client arms a
+      // 5-min stuck-turn watchdog that bumps on every event; without a signal
+      // it wrongly declares "lost contact" on a perfectly healthy turn, and a
+      // restart then risks killing the still-running worker. A lightweight
+      // `ping` every 20s keeps the watchdog armed and the connection warm.
+      const heartbeat = setInterval(() => {
+        if (closed || resultSent) return;
+        send({ type: "ping" });
+      }, 20_000);
+
       const close = () => {
         if (closed) return;
         closed = true;
+        clearInterval(heartbeat);
         try {
           controller.close();
         } catch {

@@ -1,6 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import type { IProcessWorker, WorkerEvent } from "./worker-interface.ts";
 import * as fs from "node:fs";
+import { atomicWriteFileSync } from "./atomic-write.ts";
 import * as path from "node:path";
 import * as os from "node:os";
 import { execSync } from "node:child_process";
@@ -816,7 +817,7 @@ export class GeminiWorker implements IProcessWorker {
                 const newPath = path.join(process.cwd(), "wiki", "processes", `${newSlug}.json`);
                 if (fs.existsSync(newPath)) throw new Error(`A process already exists for slug: ${newSlug}`);
                 const newDoc = buildProcessDoc(PROC, title, description);
-                fs.writeFileSync(newPath, JSON.stringify(newDoc, null, 2) + "\n", "utf8");
+                atomicWriteFileSync(newPath, JSON.stringify(newDoc, null, 2) + "\n");
                 // Scope this session to the freshly created process for subsequent turns.
                 this.slug = newSlug;
                 if (this.sessionId) saveSessionSlug(this.sessionId, this.slug, this.activeSkill);
@@ -856,7 +857,7 @@ export class GeminiWorker implements IProcessWorker {
                 } else {
                   applyElement(doc, type, built.fullElement, built.singularType!);
                   // Write directly to disk immediately
-                  fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+                  atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
 
                   if (tempKey) {
                     const cleanKey = tempKey.startsWith("@") ? tempKey.slice(1) : tempKey;
@@ -875,7 +876,7 @@ export class GeminiWorker implements IProcessWorker {
                 }
                 const batch = createElementsBatch(doc, schema, elements);
                 // Persist whatever wrote successfully (errors are isolated, the rest still land).
-                fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+                atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
                 // Carry resolved tempKeys into the turn-level map so later calls can reference them.
                 for (const c of batch.created) {
                   if (c.tempKey) {
@@ -1040,7 +1041,7 @@ export class GeminiWorker implements IProcessWorker {
                 delete doc.lint; // guardrail: lint never lives in the wiki JSON
 
                 // Write directly to disk immediately (element re-opens only)
-                fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+                atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
 
                 resultText = JSON.stringify({
                   ok: true,
@@ -1051,24 +1052,24 @@ export class GeminiWorker implements IProcessWorker {
               } else if (originalName === "writeTargetReview") {
                 if (!doc) throw new Error("Process document context not loaded or slug is missing.");
                 doc.targetReview = buildTargetReview(this.slug!, args.reviewData);
-                fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+                atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
                 resultText = JSON.stringify({ ok: true, items: doc.targetReview.items.length }, null, 2);
               } else if (originalName === "writeSummary") {
                 if (!doc) throw new Error("Process document context not loaded or slug is missing.");
                 const parts = parseSummaryParts(args.summary || "");
                 if (!doc.summaries || typeof doc.summaries !== "object") doc.summaries = {};
                 doc.summaries[args.area] = { parts, generatedAt: new Date().toISOString() };
-                fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+                atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
                 resultText = JSON.stringify({ ok: true, area: args.area, parts: parts.length }, null, 2);
               } else if (originalName === "writeIngestReport") {
                 if (!doc) throw new Error("Process document context not loaded or slug is missing.");
                 doc.ingest = buildIngestReport(this.slug!, args.report);
-                fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+                atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
                 resultText = JSON.stringify({ ok: true, created: doc.ingest.created.length, updated: doc.ingest.updated.length, conflicts: doc.ingest.conflicts.length, corrections: doc.ingest.corrections.length }, null, 2);
               } else if (originalName === "clearConflicts") {
                 if (!doc) throw new Error("Process document context not loaded or slug is missing.");
                 const { cleared } = clearIngestConflicts(doc);
-                fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+                atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
                 resultText = JSON.stringify({ ok: true, cleared }, null, 2);
               } else if (originalName === "createNote") {
                 if (!doc) throw new Error("Process document context not loaded or slug is missing.");
@@ -1078,13 +1079,13 @@ export class GeminiWorker implements IProcessWorker {
                   { id, ts: new Date().toISOString() }
                 );
                 appendNote(doc, args.elementId, note);
-                fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+                atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
                 resultText = JSON.stringify({ ok: true, note }, null, 2);
               } else if (originalName === "resolveNotes") {
                 if (!doc) throw new Error("Process document context not loaded or slug is missing.");
                 const noteIds = Array.isArray(args.noteIds) ? args.noteIds : [];
                 const res = resolveNotesInDoc(doc, noteIds, args.resolvedBy, new Date().toISOString().slice(0, 10));
-                fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+                atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
                 resultText = JSON.stringify({ ok: true, ...res }, null, 2);
               } else if (originalName === "setApproval") {
                 if (!this.slug) throw new Error("Process document context not loaded or slug is missing.");
