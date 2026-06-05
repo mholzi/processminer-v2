@@ -10,9 +10,17 @@ import {
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { getSchema, jsonElementToWikiPage, transitionTarget } from "./wiki.ts";
-import { writeRuntime } from "./runtime-store.ts";
-import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts } from "./session-writes.ts";
+import { writeRuntime, getRuntime } from "./runtime-store.ts";
+import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch } from "./session-writes.ts";
 import { buildNote, appendNote, resolveNotesInDoc } from "./session-notes.ts";
+import {
+  buildFoundationalQueue,
+  newReviewState,
+  advance,
+  foundationalStatus,
+  qerStatus,
+  QER_STEPS,
+} from "./session-cursor.ts";
 import { checkConformance } from "./conformance.ts";
 import { updateElement } from "./wiki-write.ts";
 import { buildProcessDoc } from "./gemini-worker.ts";
@@ -324,6 +332,62 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
           required: ["slug", "noteIds"]
         }
+      },
+      {
+        name: "setApproval",
+        description: "Set an element's approval (in-progress | approved | rejected). The gate is enforced: 'approved' is refused while any heading's provenance is 'proposed'/'web'. Used by foundational-run and the specialists.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            slug: { type: "string", description: "The process slug." },
+            id: { type: "string", description: "The element id." },
+            status: { type: "string", description: "in-progress | approved | rejected." },
+            approver: { type: "string", description: "The SME name signing it off." }
+          },
+          required: ["slug", "id", "status"]
+        }
+      },
+      {
+        name: "buildQueue",
+        description: "Start a fresh foundational-run: build the ordered walk queue (overview first, current-state elements, process-gaps last) and persist the cursor. Returns position/total/done/current + outcomes_line.",
+        inputSchema: {
+          type: "object",
+          properties: { slug: { type: "string", description: "The process slug." } },
+          required: ["slug"]
+        }
+      },
+      {
+        name: "startSession",
+        description: "Start a fresh qer-session: build the cursor over the fixed QER step sequence and persist it. Returns position/total/done/current (the step name).",
+        inputSchema: {
+          type: "object",
+          properties: { slug: { type: "string", description: "The process slug." } },
+          required: ["slug"]
+        }
+      },
+      {
+        name: "getSessionStatus",
+        description: "Read the resumable cursor — exists/position/total/done/current, plus (foundational only) outcomes_line while running and closeout_template once done. `kind`: 'foundational' (default) or 'qer'.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            slug: { type: "string", description: "The process slug." },
+            kind: { type: "string", description: "'foundational' (default) or 'qer'." }
+          },
+          required: ["slug"]
+        }
+      },
+      {
+        name: "advanceSession",
+        description: "Advance the resumable cursor by one and persist it; returns the next position/total/done/current. `kind`: 'foundational' (default) or 'qer'.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            slug: { type: "string", description: "The process slug." },
+            kind: { type: "string", description: "'foundational' (default) or 'qer'." }
+          },
+          required: ["slug"]
+        }
       }
     ]
   };
@@ -600,6 +664,49 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const res = resolveNotesInDoc(doc, noteIds, args?.resolvedBy as string, new Date().toISOString().slice(0, 10));
       fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
       return { content: [{ type: "text", text: JSON.stringify({ ok: true, ...res }, null, 2) }] };
+    }
+
+    else if (name === "setApproval") {
+      const patch = buildApprovalPatch(args?.status as string, args?.approver as string, new Date().toISOString().slice(0, 10));
+      const res = await updateElement(slug, args?.id as string, patch);
+      if (!res.ok) {
+        return { content: [{ type: "text", text: `Error: ${res.error}` }], isError: true };
+      }
+      return { content: [{ type: "text", text: JSON.stringify({ ok: true, id: args?.id, approval: args?.status }, null, 2) }] };
+    }
+
+    else if (name === "buildQueue") {
+      const queue = buildFoundationalQueue(doc);
+      const rs = newReviewState(slug, queue, new Date().toISOString());
+      writeRuntime(slug, { reviewState: rs });
+      return { content: [{ type: "text", text: JSON.stringify(foundationalStatus(rs), null, 2) }] };
+    }
+
+    else if (name === "startSession") {
+      const qs = newReviewState(slug, QER_STEPS, new Date().toISOString());
+      writeRuntime(slug, { qerState: qs });
+      return { content: [{ type: "text", text: JSON.stringify(qerStatus(qs), null, 2) }] };
+    }
+
+    else if (name === "getSessionStatus") {
+      const rt = getRuntime(slug);
+      const view = args?.kind === "qer" ? qerStatus(rt.qerState) : foundationalStatus(rt.reviewState);
+      return { content: [{ type: "text", text: JSON.stringify(view, null, 2) }] };
+    }
+
+    else if (name === "advanceSession") {
+      const rt = getRuntime(slug);
+      const now = new Date().toISOString();
+      if (args?.kind === "qer") {
+        if (!rt.qerState) throw new McpError(ErrorCode.InvalidParams, "No qer session to advance — call startSession first.");
+        const next = advance(rt.qerState, now);
+        writeRuntime(slug, { qerState: next });
+        return { content: [{ type: "text", text: JSON.stringify(qerStatus(next), null, 2) }] };
+      }
+      if (!rt.reviewState) throw new McpError(ErrorCode.InvalidParams, "No foundational run to advance — call buildQueue first.");
+      const next = advance(rt.reviewState, now);
+      writeRuntime(slug, { reviewState: next });
+      return { content: [{ type: "text", text: JSON.stringify(foundationalStatus(next), null, 2) }] };
     }
 
     else {

@@ -38,6 +38,12 @@ and easily interrupted; the cursor is what lets a stopped session resume at the
 right step rather than you re-deriving it by eye. You read it at the start
 (Step 1) and advance it at the end of every step.
 
+**This is the QER step cursor, not the foundational-run element cursor.** Pass
+`kind: "qer"` on **every** `getSessionStatus` and `advanceSession` call below —
+e.g. `getSessionStatus({ slug, kind: "qer" })`, `advanceSession({ slug, kind: "qer" })`.
+`startSession` is QER-specific and needs no `kind`. (Omitting `kind` would read
+or advance the *foundational* cursor by mistake.)
+
 ## How you dispatch a specialist
 
 Each perspective is owned by a specialist skill (registry below). To run a
@@ -93,10 +99,10 @@ Otherwise greet the SME and either:
   SKILL.md` and follow it) to scaffold the process JSON document and its empty
   element collections.
 
-**Read the cursor** — `use the getSessionStatus() tool`:
+**Read the cursor** — `use the getSessionStatus({ slug, kind: "qer" }) tool`:
 - **`exists: false`, or `done: true`** — a fresh session. `use the startSession({ slug }) tool`. The SME's **name** and **role** are
   already handed over by the session-scope preamble — use those verbatim for
-  the human-in-the-loop record and `source` context; do not ask. Then `use the advanceSession() tool` and go to Step 2.
+  the human-in-the-loop record and `source` context; do not ask. Then `use the advanceSession({ slug, kind: "qer" }) tool` and go to Step 2.
 - **`exists: true`, `done: false`** — a session is already in flight. Tell the
   SME: "Resuming the QER session for **{process}** — at step {current}." Jump
   straight to the step the cursor names; do not re-run the completed steps.

@@ -48,7 +48,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#40** | `createElements` batch tool — kill the source/ingest run-manifest | `feat/create-elements-batch` → `main` | Code + 5 skills + docs | **Merged** (`969d7bc`) |
 | **#41** | Phantom-tool rewrites onto existing tools (overview / id / template / evidence) | `feat/skill-tool-rewrites` → `main` | 5 skills + docs | **Merged** (`e9a8d18`) |
 | **#42** | Root-field tools — `writeIngestReport` + `clearConflicts`; drop `addSource` | `feat/ingest-report-tools` → `main` | Code + 1 skill + docs | **Merged** (`2921b19`) |
-| **#43** | Notes tools — `createNote` + `resolveNotes` | `feat/notes-tools` → `main` | Code + 1 skill + docs | **Open** (`pending`) |
+| **#43** | Notes tools — `createNote` + `resolveNotes` | `feat/notes-tools` → `main` | Code + 1 skill + docs | **Merged** (`b93f4d0`) |
+| **#44** | Session-cursor + `setApproval` — closes the phantom-tool program | `feat/session-cursor` → `main` | Code + 1 skill + docs | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1531,6 +1532,57 @@ the "notes subsystem" group. Only the session-cursor group remains after this.
 **Session-cursor API:** `getSessionStatus` / `startSession` / `advanceSession` /
 `buildQueue` (qer-session, foundational-run) — a real cursor over `reviewState`.
 The biggest and riskiest; touches orchestration, not just a root field.
+
+---
+
+# PR #44 — Session-cursor + `setApproval` (closes the phantom-tool program)
+
+**Branch:** `feat/session-cursor` → `main` · **Date:** 2026-06-05 ·
+**Type:** Code + 1 skill + docs. **Final slice** — the biggest group, built whole
+per the user's call. After this **the skills' tool-call set exactly matches the
+registered tools: zero phantoms remain** (19 tools, both providers).
+
+## What
+
+- **`src/lib/session-cursor.ts` (new)** — pure, unit-tested cursor core:
+  `buildFoundationalQueue` (overview first, current-state sections in order,
+  process-gaps last; forward-looking/target excluded), `newReviewState`,
+  `advance`, `foundationalStatus` / `qerStatus`, the `QER_STEPS` sequence, and
+  the canonical `FOUNDATIONAL_OUTCOMES_LINE` + `FOUNDATIONAL_CLOSEOUT_TEMPLATE`
+  (single source of truth so the skill can't drift them). **+8 tests.**
+- **`buildApprovalPatch`** in `session-writes.ts` (+3 tests) — the AI `setApproval`
+  builds an approval `meta` patch and calls the existing `updateElement`, which
+  **already enforces the approval gate** (refuses `approved` while a heading is
+  `proposed`/`web`). No new gate logic.
+- **5 tools in both providers** (now **19 each, drift-free**): `setApproval`,
+  `buildQueue`, `startSession`, `getSessionStatus`, `advanceSession`.
+  `getSessionStatus`/`advanceSession` route by `kind` ('foundational' default |
+  'qer').
+- **`qerState`** added to the runtime store (`ProcessRuntime`) — a separate
+  cursor from `reviewState`, so the orchestrator's foundational-resume read is
+  never confused by a QER session. Runtime state stays out of the wiki (Karpathy).
+- **qer-session** skill: a blanket rule + the Step-1 examples now pass
+  `kind: "qer"` on every `getSessionStatus`/`advanceSession`. foundational-run
+  needed no edit (it uses the default kind, and already called `setApproval`/the
+  cursor tools in the right shape).
+
+## Deliberately deferred (one piece)
+
+A dashboard **"resume QER session" tile**. `orchestrator.ts` surfaces
+`resume-foundational-run` from `reviewState`; the analogous `resume-qer-session`
+from `qerState` is a new `ActionSpec` kind rendered across ~8 UI components — a
+**browser-verifiable** feature best done on its own, not bundled into the tool
+layer. The cursor tools work without it (the skill's `getSessionStatus` handles
+resume).
+
+## Verification
+
+`npm run typecheck` clean · `npm test` **100/100** (+11). Both registries match.
+**Caveat (cannot live-verify):** the queue order, the QER step granularity, and
+the canonical `outcomes_line`/`closeout_template` text are read from the skill
+prose — firing real foundational/qer turns against process data is off-limits.
+They are plain constants in `session-cursor.ts`, trivial to adjust if the author
+finds a mismatch.
 
 ---
 

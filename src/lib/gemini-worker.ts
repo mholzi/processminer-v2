@@ -5,9 +5,17 @@ import * as path from "node:path";
 import * as os from "node:os";
 import { execSync } from "node:child_process";
 import { getSchema, toCamelCase, jsonElementToWikiPage, transitionTarget, type WikiPage } from "./wiki.ts";
-import { writeRuntime } from "./runtime-store.ts";
-import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts } from "./session-writes.ts";
+import { writeRuntime, getRuntime } from "./runtime-store.ts";
+import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch } from "./session-writes.ts";
 import { buildNote, appendNote, resolveNotesInDoc } from "./session-notes.ts";
+import {
+  buildFoundationalQueue,
+  newReviewState,
+  advance,
+  foundationalStatus,
+  qerStatus,
+  QER_STEPS,
+} from "./session-cursor.ts";
 import { checkConformance } from "./conformance.ts";
 import { updateElement } from "./wiki-write.ts";
 import {
@@ -318,6 +326,61 @@ const toolDeclarations: any[] = [
         resolvedBy: { type: "STRING", description: "Optional — who resolved them (the analyst / SME name); defaults to 'SME'." }
       },
       required: ["noteIds"]
+    }
+  },
+  {
+    name: "setApproval",
+    description: "Set an element's approval state (in-progress | approved | rejected). The approval gate is enforced: 'approved' is refused while any heading's provenance is still 'proposed'/'web'. Used by foundational-run and the specialists when the SME signs an element off.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        id: { type: "STRING", description: "The element id to set approval on, e.g. 'PS-COB-001'." },
+        status: { type: "STRING", description: "in-progress | approved | rejected." },
+        approver: { type: "STRING", description: "The SME name signing it off (the session context)." }
+      },
+      required: ["id", "status"]
+    }
+  },
+  {
+    name: "buildQueue",
+    description: "Start a fresh foundational-run: build the ordered walk queue (the overview first, then current-state elements, process-gaps last) and persist the cursor. Returns position/total/done/current and the canonical outcomes_line. Used by foundational-run when no run state exists.",
+    parameters: {
+      type: "OBJECT",
+      properties: { slug: { type: "STRING", description: "The process slug." } },
+      required: ["slug"]
+    }
+  },
+  {
+    name: "startSession",
+    description: "Start a fresh qer-session: build the cursor over the fixed QER step sequence and persist it. Returns position/total/done/current (the step name). Used by qer-session when no session state exists.",
+    parameters: {
+      type: "OBJECT",
+      properties: { slug: { type: "STRING", description: "The process slug." } },
+      required: ["slug"]
+    }
+  },
+  {
+    name: "getSessionStatus",
+    description: "Read the resumable cursor for the process — returns exists/position/total/done/current, plus (foundational only) the canonical outcomes_line while running and closeout_template once done. `kind` selects which cursor: 'foundational' (default, the element walk) or 'qer' (the step sequence).",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        slug: { type: "STRING", description: "The process slug." },
+        kind: { type: "STRING", description: "'foundational' (default) or 'qer'." }
+      },
+      required: ["slug"]
+    }
+  },
+  {
+    name: "advanceSession",
+    description: "Advance the resumable cursor by one item and persist it; returns the next position/total/done/current. `kind` selects which cursor: 'foundational' (default) or 'qer'.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        slug: { type: "STRING", description: "The process slug." },
+        kind: { type: "STRING", description: "'foundational' (default) or 'qer'." }
+      },
+      required: ["slug"]
     }
   },
 ];
@@ -1023,6 +1086,49 @@ export class GeminiWorker implements IProcessWorker {
                 const res = resolveNotesInDoc(doc, noteIds, args.resolvedBy, new Date().toISOString().slice(0, 10));
                 fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
                 resultText = JSON.stringify({ ok: true, ...res }, null, 2);
+              } else if (originalName === "setApproval") {
+                if (!this.slug) throw new Error("Process document context not loaded or slug is missing.");
+                const patch = buildApprovalPatch(args.status, args.approver, new Date().toISOString().slice(0, 10));
+                const res = await updateElement(this.slug, args.id, patch);
+                if (!res.ok) {
+                  resultText = `Error: ${res.error}`;
+                } else {
+                  resultText = JSON.stringify({ ok: true, id: args.id, approval: args.status }, null, 2);
+                }
+              } else if (originalName === "buildQueue") {
+                if (!doc || !this.slug) throw new Error("Process document context not loaded or slug is missing.");
+                const queue = buildFoundationalQueue(doc);
+                const rs = newReviewState(this.slug, queue, new Date().toISOString());
+                writeRuntime(this.slug, { reviewState: rs });
+                resultText = JSON.stringify(foundationalStatus(rs), null, 2);
+              } else if (originalName === "startSession") {
+                if (!this.slug) throw new Error("Process document context not loaded or slug is missing.");
+                const qs = newReviewState(this.slug, QER_STEPS, new Date().toISOString());
+                writeRuntime(this.slug, { qerState: qs });
+                resultText = JSON.stringify(qerStatus(qs), null, 2);
+              } else if (originalName === "getSessionStatus") {
+                if (!this.slug) throw new Error("Process document context not loaded or slug is missing.");
+                const rt = getRuntime(this.slug);
+                resultText = JSON.stringify(
+                  args.kind === "qer" ? qerStatus(rt.qerState) : foundationalStatus(rt.reviewState),
+                  null,
+                  2
+                );
+              } else if (originalName === "advanceSession") {
+                if (!this.slug) throw new Error("Process document context not loaded or slug is missing.");
+                const rt = getRuntime(this.slug);
+                const now = new Date().toISOString();
+                if (args.kind === "qer") {
+                  if (!rt.qerState) throw new Error("No qer session to advance — call startSession first.");
+                  const next = advance(rt.qerState, now);
+                  writeRuntime(this.slug, { qerState: next });
+                  resultText = JSON.stringify(qerStatus(next), null, 2);
+                } else {
+                  if (!rt.reviewState) throw new Error("No foundational run to advance — call buildQueue first.");
+                  const next = advance(rt.reviewState, now);
+                  writeRuntime(this.slug, { reviewState: next });
+                  resultText = JSON.stringify(foundationalStatus(next), null, 2);
+                }
               } else {
                 throw new Error(`Unsupported tool: ${originalName}`);
               }

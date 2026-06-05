@@ -6,7 +6,24 @@ import {
   parseSummaryParts,
   buildIngestReport,
   clearIngestConflicts,
+  buildApprovalPatch,
 } from "./session-writes.ts";
+
+test("buildApprovalPatch: builds the meta patch with approver + date", () => {
+  const p = buildApprovalPatch("approved", "Ada Byron", "2026-06-05");
+  assert.deepEqual(p, {
+    meta: { approval: "approved", approvalBy: "Ada Byron", approvalDate: "2026-06-05" },
+  });
+});
+
+test("buildApprovalPatch: defaults a missing approver to SME", () => {
+  const p = buildApprovalPatch("in-progress", undefined, "2026-06-05");
+  assert.equal(p.meta.approvalBy, "SME");
+});
+
+test("buildApprovalPatch: rejects an invalid approval value", () => {
+  assert.throws(() => buildApprovalPatch("yes-please", "A", "2026-06-05"), /Invalid approval value/);
+});
 
 test("buildTargetReview: id-stamps items R-001… and marks each pending", () => {
   const r = buildTargetReview("cob-003", {
