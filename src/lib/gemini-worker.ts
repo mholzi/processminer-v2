@@ -7,6 +7,7 @@ import { execSync } from "node:child_process";
 import { getSchema, toCamelCase, jsonElementToWikiPage, transitionTarget, type WikiPage } from "./wiki.ts";
 import { writeRuntime } from "./runtime-store.ts";
 import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts } from "./session-writes.ts";
+import { buildNote, appendNote, resolveNotesInDoc } from "./session-notes.ts";
 import { checkConformance } from "./conformance.ts";
 import { updateElement } from "./wiki-write.ts";
 import {
@@ -290,6 +291,33 @@ const toolDeclarations: any[] = [
         slug: { type: "STRING", description: "The process slug." }
       },
       required: ["slug"]
+    }
+  },
+  {
+    name: "createNote",
+    description: "Post a note onto an element's discussion thread (the process JSON's `notes`, keyed by element id). Used by the comment-review skill to post its closing analyst summary. The id and timestamp are assigned by the backend.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        elementId: { type: "STRING", description: "The element the note is attached to, e.g. 'PS-COB-001'." },
+        author: { type: "STRING", description: "Who is posting — the analyst / SME name from the session context." },
+        content: { type: "STRING", description: "The note text." },
+        type: { type: "STRING", description: "Optional note kind, e.g. 'summary' for the analyst close-out." },
+        replyTo: { type: "STRING", description: "Optional id of the note this replies to." }
+      },
+      required: ["elementId", "content"]
+    }
+  },
+  {
+    name: "resolveNotes",
+    description: "Mark the given note ids resolved across the process's discussion threads (sets resolved/resolvedBy/resolvedAt), so they no longer show as open comments. Used by the comment-review skill once each comment has a decision.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        noteIds: { type: "ARRAY", items: { type: "STRING" }, description: "The note ids to mark resolved." },
+        resolvedBy: { type: "STRING", description: "Optional — who resolved them (the analyst / SME name); defaults to 'SME'." }
+      },
+      required: ["noteIds"]
     }
   },
 ];
@@ -979,6 +1007,22 @@ export class GeminiWorker implements IProcessWorker {
                 const { cleared } = clearIngestConflicts(doc);
                 fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
                 resultText = JSON.stringify({ ok: true, cleared }, null, 2);
+              } else if (originalName === "createNote") {
+                if (!doc) throw new Error("Process document context not loaded or slug is missing.");
+                const id = `n-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+                const note = buildNote(
+                  { author: args.author, text: args.content, type: args.type, replyTo: args.replyTo },
+                  { id, ts: new Date().toISOString() }
+                );
+                appendNote(doc, args.elementId, note);
+                fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+                resultText = JSON.stringify({ ok: true, note }, null, 2);
+              } else if (originalName === "resolveNotes") {
+                if (!doc) throw new Error("Process document context not loaded or slug is missing.");
+                const noteIds = Array.isArray(args.noteIds) ? args.noteIds : [];
+                const res = resolveNotesInDoc(doc, noteIds, args.resolvedBy, new Date().toISOString().slice(0, 10));
+                fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+                resultText = JSON.stringify({ ok: true, ...res }, null, 2);
               } else {
                 throw new Error(`Unsupported tool: ${originalName}`);
               }
