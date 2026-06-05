@@ -13,6 +13,7 @@ import { applyFindingDismissals, type FindingDismissals, type LintReport } from 
 import type { TargetReview } from "./target-review.ts";
 import { getUsers } from "./auth-server.ts";
 import { getRuntime } from "./runtime-store.ts";
+import type { DtpReport } from "./runtime-store.ts";
 
 const ROOT = process.cwd();
 const WIKI_DIR = join(ROOT, "wiki", "processes");
@@ -170,6 +171,11 @@ export interface SourceFile {
    *  raw-sources/<slug>/uploads.json. Optional — pre-manifest uploads have
    *  no recorded actor. */
   uploadedBy?: string;
+  /** True when this file was produced by dtp-regenerate (not a genuine upload).
+   *  Lets the Sources picker mark it apart from immutable layer-1 sources. */
+  generated?: boolean;
+  /** For a generated file — the original source filename it was regenerated from. */
+  from?: string;
 }
 
 /** An SME note left on an element — a question or comment for a colleague. */
@@ -233,6 +239,8 @@ export interface ProcessDoc {
   reviewState?: ReviewState;
   /** The qer-session cursor, if a session has been started. */
   qerState?: ReviewState;
+  /** The last dtp-regenerate result (regenerated DTP + critical review), if run. */
+  dtpReport?: DtpReport;
   /** Per-section executive summaries, if any have been generated. */
   summaries?: SectionSummaries;
   /** SME note threads, keyed by element id — process JSON's `notes`. */
@@ -271,7 +279,10 @@ export function listProcesses(): { slug: string; title: string }[] {
 export function listSources(slug: string): SourceFile[] {
   const dir = join(SOURCES_DIR, slug);
   if (!existsSync(dir)) return [];
-  let manifest: Record<string, { by?: string; at?: string }> = {};
+  let manifest: Record<
+    string,
+    { by?: string; at?: string; generated?: boolean; from?: string }
+  > = {};
   const manifestPath = join(dir, "uploads.json");
   if (existsSync(manifestPath)) {
     try {
@@ -293,6 +304,8 @@ export function listSources(slug: string): SourceFile[] {
         size: s.size,
         uploadedAt: meta?.at ?? s.mtime.toISOString(),
         uploadedBy: meta?.by,
+        ...(meta?.generated ? { generated: true } : {}),
+        ...(meta?.from ? { from: meta.from } : {}),
       };
     })
     .sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt));
@@ -508,6 +521,7 @@ export function getProcess(slug: string): ProcessDoc | null {
     ingest: data.ingest,
     reviewState: runtime.reviewState,
     qerState: runtime.qerState,
+    dtpReport: runtime.dtpReport,
     summaries: data.summaries,
     notes,
     glossary: data.glossary,

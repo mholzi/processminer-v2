@@ -107,6 +107,18 @@ export default function WelcomeScreen({
     );
   }, [docs, hasPM]);
 
+  // ----- derive a regenerated DTP awaiting review (the third resume hero) -----
+  const dtpReady = useMemo(() => {
+    if (!hasPM) return null;
+    return (
+      docs
+        .filter((d) => d.dtpReport)
+        .sort((a, b) =>
+          b.dtpReport!.generatedAt.localeCompare(a.dtpReport!.generatedAt),
+        )[0] ?? null
+    );
+  }, [docs, hasPM]);
+
   // ----- derive the queue items (real data, per-process aggregated) -----
   // The weight formula + reasons phrasing live in the orchestrator read layer
   // (buildAttentionFeed), the canonical home shared with any future consumer;
@@ -335,6 +347,31 @@ export default function WelcomeScreen({
               </span>
             </span>
             <span className="ws-resume-cta">Resume →</span>
+          </button>
+        )}
+
+        {/* Resume hero — a regenerated DTP awaiting critical review. */}
+        {dtpReady && (view === "both" || view === "pm") && (
+          <button
+            type="button"
+            className="ws-resume"
+            onClick={() => openProcess(dtpReady.slug)}
+          >
+            <span className="ws-resume-ico">♻</span>
+            <span className="ws-resume-body">
+              <span className="ws-resume-eyebrow">Review regenerated DTP</span>
+              <span className="ws-resume-title">
+                {dtpReady.process.id} · {dtpReady.process.title}
+              </span>
+              <span className="ws-resume-sub">
+                <b>
+                  {dtpReady.dtpReport!.findings.length} review finding
+                  {dtpReady.dtpReport!.findings.length === 1 ? "" : "s"}
+                </b>{" "}
+                · diff vs {dtpReady.dtpReport!.sourceFile}
+              </span>
+            </span>
+            <span className="ws-resume-cta">Review →</span>
           </button>
         )}
 

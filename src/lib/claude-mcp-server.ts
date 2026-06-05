@@ -13,6 +13,7 @@ import * as path from "node:path";
 import { getSchema, jsonElementToWikiPage, transitionTarget } from "./wiki.ts";
 import { writeRuntime, getRuntime } from "./runtime-store.ts";
 import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch } from "./session-writes.ts";
+import { writeDtpReport } from "./dtp-report.ts";
 import { buildNote, appendNote, resolveNotesInDoc } from "./session-notes.ts";
 import {
   buildFoundationalQueue,
@@ -289,6 +290,42 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                 conflicts: { type: "array", items: { type: "object" } },
                 corrections: { type: "array", items: { type: "object" } }
               }
+            }
+          },
+          required: ["slug", "report"]
+        }
+      },
+      {
+        name: "writeDtpReport",
+        description: "Write a regenerated DTP and its critical-review report. Saves the Markdown as a new versioned file under raw-sources/<slug>/ (flagged generated), stamps finding ids (DTPF-…), and stores the report (generatedFile + findings) in the runtime store — never the wiki JSON. Returns the generated filename and finding count. Used by dtp-regenerate.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            slug: { type: "string", description: "The process slug." },
+            report: {
+              type: "object",
+              description: "The regeneration result.",
+              properties: {
+                basis: { type: "string", description: "Always 'as-is' today." },
+                sourceFile: { type: "string", description: "Original DTP filename the regeneration is based on (doc.ingest.file)." },
+                markdown: { type: "string", description: "The full regenerated DTP, as Markdown." },
+                findings: {
+                  type: "array",
+                  description: "Critical-review findings — the original DTP vs the corrected As-Is wiki.",
+                  items: {
+                    type: "object",
+                    properties: {
+                      kind: { type: "string", enum: ["outdated", "missing", "contradiction", "added"] },
+                      dtpSays: { type: "string" },
+                      wikiSays: { type: "string" },
+                      elements: { type: "array", items: { type: "string" } },
+                      severity: { type: "string", enum: ["high", "medium", "low"] }
+                    },
+                    required: ["kind", "wikiSays"]
+                  }
+                }
+              },
+              required: ["sourceFile", "markdown"]
             }
           },
           required: ["slug", "report"]
@@ -641,6 +678,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       doc.ingest = buildIngestReport(slug, args?.report as any);
       atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
       return { content: [{ type: "text", text: JSON.stringify({ ok: true, created: doc.ingest.created.length, updated: doc.ingest.updated.length, conflicts: doc.ingest.conflicts.length, corrections: doc.ingest.corrections.length }, null, 2) }] };
+    }
+
+    else if (name === "writeDtpReport") {
+      // Writes the .md artifact + runtime report; never touches the process JSON.
+      const res = writeDtpReport(slug, (args?.report as any) ?? {});
+      return { content: [{ type: "text", text: JSON.stringify({ ok: true, ...res }, null, 2) }] };
     }
 
     else if (name === "clearConflicts") {

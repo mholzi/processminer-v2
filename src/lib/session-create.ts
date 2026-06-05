@@ -96,8 +96,11 @@ export function generateNextId(
   return `${idPrefix}-${procAbbrev}-${nextSeqStr}`;
 }
 
-/** Map a collection name (`section`, e.g. "process-steps") to its singular element type. */
+/** Map a collection name (`section`, e.g. "process-steps") to its singular element type.
+ * Also accepts the element type key directly (e.g. "competitor-cx-eu") so callers can
+ * target a specific subtype within a shared section. */
 export function singularTypeFor(schema: any, section: string): string | null {
+  if (schema.elementTypes[section]) return section;
   for (const [t, def] of Object.entries(schema.elementTypes)) {
     if ((def as any).section === section) return t;
   }
@@ -139,13 +142,16 @@ export function buildElement(
 
   const info = schema.elementTypes[singularType];
   const newId = generateNextId(doc, singularType, info.idPrefix);
+  // Use the canonical section from the schema (handles the case where `type` is an
+  // element type key rather than a section name, e.g. "competitor-cx-eu" → "competitor-cx").
+  const canonicalSection = info.section ?? type;
 
   const fullElement = {
     meta: {
       ...(resolved.meta || {}),
       id: newId,
       type: singularType,
-      section: type,
+      section: canonicalSection,
       status: resolved.meta?.status || "draft",
     },
     content: { ...(resolved.content || {}) },
@@ -172,10 +178,14 @@ export function applyElement(
   fullElement: any,
   singularType: string
 ): void {
-  if (!doc[type]) doc[type] = [];
-  doc[type].push(fullElement);
+  // Use the canonical section stored in the element meta (may differ from `type` when
+  // the caller passed an element type key such as "competitor-cx-eu" rather than the
+  // section name "competitor-cx").
+  const collectionKey = fullElement.meta?.section ?? type;
+  if (!doc[collectionKey]) doc[collectionKey] = [];
+  doc[collectionKey].push(fullElement);
   if (singularType === "process-step") {
-    doc[type].sort(
+    doc[collectionKey].sort(
       (a: any, b: any) => (a.meta?.sequence || 999) - (b.meta?.sequence || 999)
     );
   }
