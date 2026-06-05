@@ -18,7 +18,12 @@ import type { FindingDismissals, LintReport } from "./lint.ts";
 const RUNTIME_DIR = join(process.cwd(), "data", "runtime");
 
 export interface ProcessRuntime {
+  /** The foundational-run cursor (walks current-state element ids). */
   reviewState?: ReviewState;
+  /** The qer-session cursor (walks the fixed QER step sequence). Same shape as
+   *  reviewState but kept separate so the orchestrator's foundational-resume
+   *  read of reviewState is never confused by a QER session. */
+  qerState?: ReviewState;
   lint?: LintReport;
   findingDismissals?: FindingDismissals;
 }

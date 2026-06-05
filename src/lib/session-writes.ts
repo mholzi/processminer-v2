@@ -76,6 +76,33 @@ export function parseSummaryParts(
   return parts;
 }
 
+/** The approval states an element can be in (mirrors wiki-write's APPROVAL_VALUES). */
+export const APPROVAL_VALUES = ["in-progress", "approved", "rejected"] as const;
+
+/**
+ * Build the `meta` patch that sets an element's approval — the AI-session
+ * equivalent of the in-app `setApproval` server action. The provider passes the
+ * result to `updateElement`, which **enforces the approval gate** (refuses
+ * `approved` while any heading is `proposed`/`web`). The approver is the SME
+ * name from the session context (the in-app action derives it from the cookie;
+ * a headless session has none, so the skill supplies it). Throws on an invalid
+ * approval value so the skill gets a corrective message.
+ */
+export function buildApprovalPatch(
+  approval: string,
+  approver: string | undefined,
+  date: string,
+): { meta: { approval: string; approvalBy: string; approvalDate: string } } {
+  if (!(APPROVAL_VALUES as readonly string[]).includes(approval)) {
+    throw new Error(
+      `Invalid approval value: ${approval} (expected one of ${APPROVAL_VALUES.join(", ")}).`,
+    );
+  }
+  return {
+    meta: { approval, approvalBy: approver?.trim() || "SME", approvalDate: date },
+  };
+}
+
 /**
  * Build the document-ingest result (`doc.ingest`) from the skill's payload —
  * the file ingested, the created/updated element ids, and the `conflicts` /
