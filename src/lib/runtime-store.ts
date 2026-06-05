@@ -10,7 +10,8 @@
 //
 // `data/` is gitignored, so runtime state is per-environment and never
 // version-controlled — which is correct for transient state.
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { readFileSync, existsSync, mkdirSync } from "node:fs";
+import { atomicWriteFileSync } from "./atomic-write.ts";
 import { join } from "node:path";
 import type { ReviewState } from "./wiki.ts";
 import type { FindingDismissals, LintReport } from "./lint.ts";
@@ -47,5 +48,5 @@ export function getRuntime(slug: string): ProcessRuntime {
 export function writeRuntime(slug: string, patch: Partial<ProcessRuntime>): void {
   if (!existsSync(RUNTIME_DIR)) mkdirSync(RUNTIME_DIR, { recursive: true });
   const next = { ...getRuntime(slug), ...patch };
-  writeFileSync(pathFor(slug), JSON.stringify(next, null, 2) + "\n", "utf8");
+  atomicWriteFileSync(pathFor(slug), JSON.stringify(next, null, 2) + "\n");
 }

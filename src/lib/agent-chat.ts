@@ -14,6 +14,10 @@ export type SessionEvent =
   | { type: "delta"; text: string }
   | { type: "task_start"; id: string; label: string }
   | { type: "task_end"; id: string }
+  // Keepalive heartbeat from the server during silent turns — carries no
+  // payload. It has no case in `apply` below; its only job is to fire
+  // `onAnyEvent`, which bumps the client's stuck-turn watchdog.
+  | { type: "ping" }
   | { type: "done"; reply?: string; sessionId?: string; isError?: boolean }
   | { type: "error"; error: string; sessionId?: string };
 

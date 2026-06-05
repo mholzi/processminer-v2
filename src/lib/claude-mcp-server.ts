@@ -8,6 +8,7 @@ import {
   McpError,
 } from "@modelcontextprotocol/sdk/types.js";
 import * as fs from "node:fs";
+import { atomicWriteFileSync } from "./atomic-write.ts";
 import * as path from "node:path";
 import { getSchema, jsonElementToWikiPage, transitionTarget } from "./wiki.ts";
 import { writeRuntime, getRuntime } from "./runtime-store.ts";
@@ -422,7 +423,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       throw new McpError(ErrorCode.InvalidParams, `A process already exists for slug: ${slug}`);
     }
     const newDoc = buildProcessDoc(PROC, title, description);
-    fs.writeFileSync(processFilePath, JSON.stringify(newDoc, null, 2) + "\n", "utf8");
+    atomicWriteFileSync(processFilePath, JSON.stringify(newDoc, null, 2) + "\n");
     return { content: [{ type: "text", text: JSON.stringify({ ok: true, slug, id: newDoc.meta.id, created: true }, null, 2) }] };
   }
 
@@ -467,7 +468,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       applyElement(doc, type, built.fullElement, built.singularType!);
-      fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+      atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
 
       if (tempKey) {
         const cleanKey = tempKey.startsWith("@") ? tempKey.slice(1) : tempKey;
@@ -485,7 +486,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
       const batch = createElementsBatch(doc, schema, elements);
       // Persist whatever wrote successfully (errors are isolated, the rest still land).
-      fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+      atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
       for (const c of batch.created) {
         if (c.tempKey) {
           const cleanKey = c.tempKey.startsWith("@") ? c.tempKey.slice(1) : c.tempKey;
@@ -616,14 +617,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }
         }
       }
-      fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+      atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
       return { content: [{ type: "text", text: JSON.stringify({ ok: true, implicatedCount: implicated.size }, null, 2) }] };
     }
 
     else if (name === "writeTargetReview") {
       // Council-review result — a durable root field of the process JSON.
       doc.targetReview = buildTargetReview(slug, args?.reviewData as any);
-      fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+      atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
       return { content: [{ type: "text", text: JSON.stringify({ ok: true, items: doc.targetReview.items.length }, null, 2) }] };
     }
 
@@ -632,19 +633,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const parts = parseSummaryParts((args?.summary as string) || "");
       if (!doc.summaries || typeof doc.summaries !== "object") doc.summaries = {};
       doc.summaries[area] = { parts, generatedAt: new Date().toISOString() };
-      fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+      atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
       return { content: [{ type: "text", text: JSON.stringify({ ok: true, area, parts: parts.length }, null, 2) }] };
     }
 
     else if (name === "writeIngestReport") {
       doc.ingest = buildIngestReport(slug, args?.report as any);
-      fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+      atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
       return { content: [{ type: "text", text: JSON.stringify({ ok: true, created: doc.ingest.created.length, updated: doc.ingest.updated.length, conflicts: doc.ingest.conflicts.length, corrections: doc.ingest.corrections.length }, null, 2) }] };
     }
 
     else if (name === "clearConflicts") {
       const { cleared } = clearIngestConflicts(doc);
-      fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+      atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
       return { content: [{ type: "text", text: JSON.stringify({ ok: true, cleared }, null, 2) }] };
     }
 
@@ -655,14 +656,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         { id, ts: new Date().toISOString() }
       );
       appendNote(doc, args?.elementId as string, note);
-      fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+      atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
       return { content: [{ type: "text", text: JSON.stringify({ ok: true, note }, null, 2) }] };
     }
 
     else if (name === "resolveNotes") {
       const noteIds = Array.isArray(args?.noteIds) ? (args!.noteIds as string[]) : [];
       const res = resolveNotesInDoc(doc, noteIds, args?.resolvedBy as string, new Date().toISOString().slice(0, 10));
-      fs.writeFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n", "utf8");
+      atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
       return { content: [{ type: "text", text: JSON.stringify({ ok: true, ...res }, null, 2) }] };
     }
 
