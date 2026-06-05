@@ -101,3 +101,10 @@ prioritization-section and validation-section have no schema element type
 at 3/10 and Target Process at 3/10); document-ingest's 30-min worker timeout
 fragility (manifested twice this run, required serial-dispatch workaround);
 conflict-resolution's narrow per-block patch (root cause of tweak 4 above).
+
+## 2026-06-04-1638
+
+- **Stage 5a** — raised CX minimums (≥4 friction-points, ≥3 moments, ≥1 touchpoint per channel) and required anchoring the callback friction-point to the callback/manual-release step. Targets Stage 9 shortfall: Client Experience 3/10, sparse friction-points/moments, channels with zero touchpoints, FP-FRD-001 mis-anchored.
+- **Stage 5b** — required ≥1 Requirement per transformation-decision and ≥1 Validation element per major target-state theme. Targets: Target Process 6/10, sparse requirements (5) / validation (2).
+- **Stage 5c** — added (c) fill each regulation's "how it is met", (d) verify every step (esp. Execute-Release) has ≥1 linked control, (e) wire each exception to the step transition that raises it. Targets: Risk & Compliance 5/10, 5 regulations with proposed/empty how-it-is-met, uncontrolled PS-FRD-007, six unreachable exceptions.
+- **Stage 5h (new sub-pass)** — added Country-Variations sub-pass (≥1 variation or explicit single-jurisdiction rationale). Targets: country-variations EMPTY (only empty As-Is section; capped As-Is ≤6).
