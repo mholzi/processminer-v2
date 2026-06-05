@@ -202,6 +202,11 @@ listed below in the Stage 9 verdict.
   friction-points for the manual-release callback-verification journey and the
   near-cut-off Treasury-confirmation journey — these are the slowest paths in
   real funds-release / payments desks and are routinely missed by AI drafts.
+  Two per section is too thin (the Stage 9 SME flagged sparse CX): capture at
+  least 4 friction-points and at least 3 moments of truth, and at least one
+  touchpoint for EVERY channel (not just the submission channel). Anchor the
+  manual-release callback friction-point to the callback / manual-release step
+  itself, not the upstream validation step.
 - **5b. Target Process refinement** — run the `transformation-agent` on the
   Target Process area. Refine each target-state, transformation-decision and
   gap-resolution from `provenance: proposed` / `confidence: low` to
@@ -213,6 +218,10 @@ listed below in the Stage 9 verdict.
   PS-*, or an explicit "no change in TO-BE" rationale), and must require a
   gap-resolution element for every open process-gap, control-gap and
   audit-finding (or an explicit "accepted, no remediation planned" note).
+  Requirements and Validation are routinely left thin — require at least one
+  Requirement per transformation-decision and at least one Validation element
+  per major target-state theme (a pilot / parallel-run with measurable success
+  criteria), not a single stub each.
 - **5c. Audit findings + gap remediation** — run the
   `control-compliance-specialist` with two tasks: (a) populate Audit-Findings
   (capture at least 3 historical findings on a funds-release / payment-operations
@@ -223,7 +232,13 @@ listed below in the Stage 9 verdict.
   funds-release exceptions beyond limit and sanctions include incomplete or
   invalid request, confirmed sanctions / AML hit, insufficient funding for the
   value date, 4-eyes approver unavailable / segregation-of-duties breach, and a
-  missed same-day cut-off.
+  missed same-day cut-off. The SME must also (c) fill each regulation's "how it
+  is met" / control-mapping heading (leaving them `proposed`/empty is an audit
+  fail), (d) verify EVERY process step — especially the irreversible
+  Execute-Release step — has at least one linked control, drafting one where
+  missing, and (e) ensure each exception is wired to the process-step
+  transition that raises it (an exception no transition reaches is invisible to
+  the flow).
 - **5d. Process-gaps** — run the `process-specialist` on the Process-Gaps
   section. Capture at least 2 process-level gaps (e.g. SLA mismatch, manual
   handoff brittleness, no end-to-end metric). The foundational-run
@@ -248,6 +263,12 @@ listed below in the Stage 9 verdict.
   attributes the source document never names — criticality, vendor (where
   known), data classification, and an RTO/RPO band — so the systems are
   usable for a DORA / ICT-mapping audit, not just narrative description.
+- **5h. Country variations** — use `add-entry` on the Country-Variations
+  section (As-Is). Capture at least one jurisdiction-specific variation (e.g. a
+  different same-day cut-off, an extra local screening obligation, or a local
+  sanctions regime), OR record an explicit "single-jurisdiction — no country
+  variations" rationale. The ingest never populates this section, so the
+  Stage 9 SME marks it empty (and it caps the As-Is area score) otherwise.
 
 *Assert:* Deep Dive opens the chat with the right specialist; refined elements
 show the SME's changes; triaged elements show the chosen relevance. Each of
