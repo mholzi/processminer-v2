@@ -8,6 +8,7 @@ import { execSync } from "node:child_process";
 import { getSchema, toCamelCase, jsonElementToWikiPage, transitionTarget, type WikiPage } from "./wiki.ts";
 import { writeRuntime, getRuntime } from "./runtime-store.ts";
 import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch } from "./session-writes.ts";
+import { writeDtpReport } from "./dtp-report.ts";
 import { buildNote, appendNote, resolveNotesInDoc } from "./session-notes.ts";
 import {
   buildFoundationalQueue,
@@ -47,6 +48,7 @@ const SKILL_NAMES = [
   "council-review",
   "document-ingest",
   "dogfood-run",
+  "dtp-regenerate",
   "foundational-run",
   "innovation-analyst",
   "it-architect",
@@ -286,6 +288,41 @@ const toolDeclarations: any[] = [
             conflicts: { type: "ARRAY", items: { type: "OBJECT" }, description: "{ element, field, documentSays, wikiSays } entries." },
             corrections: { type: "ARRAY", items: { type: "OBJECT" }, description: "{ element, field, removed } entries." }
           }
+        }
+      },
+      required: ["report"]
+    }
+  },
+  {
+    name: "writeDtpReport",
+    description: "Write a regenerated DTP and its critical-review report. Saves the Markdown as a new versioned file under raw-sources/<slug>/ (flagged generated), stamps finding ids (DTPF-…), and stores the report (generatedFile + findings) in the runtime store — never the wiki JSON. Returns the generated filename and finding count. Used by the dtp-regenerate skill.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        report: {
+          type: "OBJECT",
+          description: "The regeneration result.",
+          properties: {
+            basis: { type: "STRING", description: "Always 'as-is' today." },
+            sourceFile: { type: "STRING", description: "Original DTP filename the regeneration is based on (doc.ingest.file)." },
+            markdown: { type: "STRING", description: "The full regenerated DTP, as Markdown." },
+            findings: {
+              type: "ARRAY",
+              description: "Critical-review findings — the original DTP measured against the corrected As-Is wiki.",
+              items: {
+                type: "OBJECT",
+                properties: {
+                  kind: { type: "STRING", description: "One of: outdated | missing | contradiction | added." },
+                  dtpSays: { type: "STRING", description: "What the original DTP states (or '—')." },
+                  wikiSays: { type: "STRING", description: "What the corrected As-Is wiki holds." },
+                  elements: { type: "ARRAY", items: { type: "STRING" }, description: "Implicated wiki element ids." },
+                  severity: { type: "STRING", description: "One of: high | medium | low." }
+                },
+                required: ["kind", "wikiSays"]
+              }
+            }
+          },
+          required: ["sourceFile", "markdown"]
         }
       },
       required: ["report"]
@@ -1066,6 +1103,11 @@ export class GeminiWorker implements IProcessWorker {
                 doc.ingest = buildIngestReport(this.slug!, args.report);
                 atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
                 resultText = JSON.stringify({ ok: true, created: doc.ingest.created.length, updated: doc.ingest.updated.length, conflicts: doc.ingest.conflicts.length, corrections: doc.ingest.corrections.length }, null, 2);
+              } else if (originalName === "writeDtpReport") {
+                if (!this.slug) throw new Error("Process document context not loaded or slug is missing.");
+                // Writes the .md artifact + runtime report; never the process JSON.
+                const res = writeDtpReport(this.slug, args.report ?? {});
+                resultText = JSON.stringify({ ok: true, ...res }, null, 2);
               } else if (originalName === "clearConflicts") {
                 if (!doc) throw new Error("Process document context not loaded or slug is missing.");
                 const { cleared } = clearIngestConflicts(doc);

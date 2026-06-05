@@ -40,6 +40,11 @@ fixed-message buttons (§11).
 - **Scaffolding & ingest:** `new-process`, `document-ingest`, `conflict-resolution`
 - **The end-to-end session:** `qer-session`
 - **The current-state walk:** `foundational-run`
+- **DTP regeneration & critical review:** `dtp-regenerate` — after the As-Is is
+  worked, rewrites the procedure document from the corrected wiki and reviews the
+  original DTP against it (a full-text diff + critical-review findings, surfaced
+  in the DTP module). Non-interactive; writes to the runtime store + a new
+  `raw-sources/` artifact, never the wiki JSON.
 - **Perspective specialists (interactive):** `process-specialist`,
   `control-compliance-specialist`, `client-journey-specialist`,
   `innovation-analyst`, `transformation-agent`, `it-architect`

@@ -455,7 +455,7 @@
             "suffix": "%"
           },
           {
-            "key": "impact",
+            "key": "impactSeverity",
             "label": "Impact",
             "hint": "HIGH / MEDIUM / LOW — the severity of the exception's effect on the process or client."
           },
@@ -468,7 +468,7 @@
         "relations": [],
         "required": [
           "category",
-          "impact"
+          "impactSeverity"
         ]
       },
       "template": [
@@ -2631,6 +2631,11 @@
       "NONE"
     ],
     "impact": [
+      "HIGH",
+      "MEDIUM",
+      "LOW"
+    ],
+    "impactSeverity": [
       "HIGH",
       "MEDIUM",
       "LOW"

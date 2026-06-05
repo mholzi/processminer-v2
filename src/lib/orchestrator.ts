@@ -67,6 +67,13 @@ export type ActionSpec =
       /** The step name the QER cursor is paused on (the queue holds step names). */
       current: string | null;
       weight: number;
+    }
+  | {
+      kind: "review-dtp";
+      slug: string;
+      /** Number of critical-review findings on the regenerated DTP. */
+      count: number;
+      weight: number;
     };
 
 export type ActionKind = ActionSpec["kind"];
@@ -85,6 +92,11 @@ export interface OrchestratorHealth {
   runResumable: boolean;
   /** A QER session exists and isn't finished. */
   qerSessionResumable: boolean;
+  /** A regenerated DTP + critical review exists to look at. */
+  dtpReportReady: boolean;
+  /** The As-Is is far enough along to regenerate the DTP (advisory — a DTP was
+   *  ingested and at least one As-Is process step is approved). */
+  dtpRegenerable: boolean;
 }
 
 export interface OrchestratorState {
@@ -120,6 +132,7 @@ const WEIGHT_LINT = 5;
 const WEIGHT_COMMENT = 1;
 const WEIGHT_RUN_BASE = 50; // mid-band; below conflicts, above lint
 const WEIGHT_QER_BASE = 50; // same band as the foundational run
+const WEIGHT_DTP = 40; // a ready DTP review — below the resumes, above lint
 
 // ---- Counts -------------------------------------------------------------
 
@@ -146,6 +159,12 @@ export function buildOrchestratorState(doc: ProcessDoc): OrchestratorState {
   const runResumable = !!(rs && !rs.done && rs.total > 0);
   const qs = doc.qerState;
   const qerSessionResumable = !!(qs && !qs.done && qs.total > 0);
+  const dtpReportReady = !!doc.dtpReport;
+  const dtpRegenerable =
+    !!doc.ingest &&
+    doc.elements.some(
+      (el) => el.section === "process-steps" && el.meta?.approval === "approved",
+    );
 
   const actions: ActionSpec[] = [];
   if (conflicts > 0) {
@@ -179,6 +198,14 @@ export function buildOrchestratorState(doc: ProcessDoc): OrchestratorState {
       weight: WEIGHT_QER_BASE + remaining,
     });
   }
+  if (dtpReportReady) {
+    actions.push({
+      kind: "review-dtp",
+      slug: doc.slug,
+      count: doc.dtpReport!.findings.length,
+      weight: WEIGHT_DTP,
+    });
+  }
   if (openLintFindings > 0) {
     actions.push({
       kind: "resolve-lint-finding",
@@ -207,6 +234,8 @@ export function buildOrchestratorState(doc: ProcessDoc): OrchestratorState {
       openComments,
       runResumable,
       qerSessionResumable,
+      dtpReportReady,
+      dtpRegenerable,
     },
   };
 }

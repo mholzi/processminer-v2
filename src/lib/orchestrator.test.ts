@@ -229,6 +229,51 @@ test("buildOrchestratorState: foundational + QER can both be resumable at once",
   assert.ok(state.actions.find((a) => a.kind === "resume-qer-session"));
 });
 
+test("buildOrchestratorState: a regenerated DTP surfaces a review-dtp action", () => {
+  const d = doc({ slug: "dtp" });
+  d.dtpReport = {
+    generatedAt: "2026-01-01T00:00:00Z",
+    basis: "as-is",
+    sourceFile: "dtp.md",
+    generatedFile: "dtp-regenerated-v1.md",
+    findings: [
+      {
+        id: "DTPF-001",
+        kind: "outdated",
+        dtpSays: "a",
+        wikiSays: "b",
+        elements: ["PS-001"],
+        severity: "high",
+      },
+    ],
+  };
+  const state = buildOrchestratorState(d);
+  assert.equal(state.health.dtpReportReady, true);
+  const a = state.actions.find((x) => x.kind === "review-dtp");
+  assert.ok(a);
+  assert.equal(a!.kind === "review-dtp" && a!.count, 1);
+});
+
+test("buildOrchestratorState: dtpRegenerable needs an ingest and an approved step", () => {
+  const none = doc({ slug: "n" });
+  assert.equal(buildOrchestratorState(none).health.dtpRegenerable, false);
+
+  const ready = doc({ slug: "r", conflicts: 1 });
+  ready.elements = [
+    {
+      id: "PS-1",
+      type: "process-step",
+      section: "process-steps",
+      title: "Step",
+      status: "confirmed",
+      meta: { approval: "approved" },
+      body: "",
+      blocks: [],
+    },
+  ];
+  assert.equal(buildOrchestratorState(ready).health.dtpRegenerable, true);
+});
+
 test("buildOrchestratorState: actions sorted by weight descending", () => {
   const d = doc({
     slug: "x",

@@ -44,6 +44,7 @@ import SummaryPanel from "@/components/SummaryPanel";
 import { CoveragePanel, CoverageRollup } from "@/components/CoveragePanel";
 import { computeCoverage } from "@/lib/coverage";
 import TargetReviewPanel from "@/components/TargetReviewPanel";
+import DTPReviewPanel from "@/components/DTPReviewPanel";
 import TargetSynthesis from "@/components/TargetSynthesis";
 import ControlsInTarget from "@/components/ControlsInTarget";
 import { COUNCIL_SPECIALISTS } from "@/lib/target-review";
@@ -714,6 +715,10 @@ export default function ProcessDocScreen({
     status: "generating" | "error";
   } | null>(null);
 
+  // DTP regeneration + critical review — runs the dtp-regenerate skill in the
+  // chat; `dtpGenerating` drives the module's spinner until the turn completes.
+  const [dtpGenerating, setDtpGenerating] = useState(false);
+
   // ⌘K search palette.
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -1230,6 +1235,37 @@ export default function ProcessDocScreen({
             "Council review complete",
             "See the Council Review panel in the Validation section.",
           ),
+      },
+    );
+  }
+
+  // Regenerate the DTP — runs the dtp-regenerate skill in the chat: it rewrites
+  // the procedure document from the corrected As-Is wiki and critically reviews
+  // the original DTP against it. The result lands in the DTP module.
+  function runDtpRegenerate() {
+    if (chatPending) return;
+    setChatOpen(true);
+    setDtpGenerating(true);
+    const baseFile = doc.ingest?.file;
+    handleSend(
+      `Run the dtp-regenerate skill on the process with slug "${currentSlug}".` +
+        (baseFile
+          ? ` The original DTP to regenerate from and review is "${baseFile}" (under raw-sources/${currentSlug}/).`
+          : ""),
+      {
+        skill: "dtp-regenerate",
+        displayText: "Regenerate the DTP from the As-Is and review the original.",
+        // onComplete fires on both done and error; the module shows the result
+        // (or its empty state if the run failed).
+        onComplete: () => {
+          setDtpGenerating(false);
+          setSection("__dtp");
+          pushToast(
+            "success",
+            "DTP regeneration finished",
+            "See the diff and critical review in the DTP module.",
+          );
+        },
       },
     );
   }
@@ -1867,6 +1903,21 @@ export default function ProcessDocScreen({
                     <span style={{ fontSize: "14px", marginRight: "4px" }}>📄</span>
                     View Document
                   </button>
+                  {activeArea.id === "as-is" && (
+                    <button
+                      className={`nav-item${section === "__dtp" ? " active" : ""}`}
+                      onClick={() => setSection("__dtp")}
+                      title="Regenerate the DTP from the corrected As-Is and review the original"
+                    >
+                      <span style={{ fontSize: "14px", marginRight: "4px" }}>♻️</span>
+                      DTP
+                      {doc.dtpReport && (
+                        <span className="count" style={{ marginLeft: "auto" }}>
+                          {doc.dtpReport.findings.length}
+                        </span>
+                      )}
+                    </button>
+                  )}
                 </div>
                 <div className="nav-sec-head">
                   <button
@@ -2207,6 +2258,26 @@ export default function ProcessDocScreen({
                   </p>
                 </div>
               )}
+            </>
+          ) : section === "__dtp" ? (
+            <>
+              <div className="canvas-head">
+                <h1>DTP</h1>
+                <div className="sub">
+                  Regenerate the procedure document from the corrected As-Is and
+                  critically review the original DTP against the wiki — a
+                  full-text diff plus the discrepancies the analysis surfaced.
+                </div>
+              </div>
+              <DTPReviewPanel
+                slug={doc.slug}
+                dtpReport={doc.dtpReport}
+                status={
+                  dtpGenerating ? "generating" : "idle"
+                }
+                onRegenerate={runDtpRegenerate}
+                onGoToElement={goToElement}
+              />
             </>
           ) : section === "validation" ? (
             <>

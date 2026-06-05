@@ -135,6 +135,7 @@ request matches a skill, invoke it via the Skill tool.
 | Document a process end-to-end with SME interviews | `/qer-session` |
 | Extract a freshly uploaded document into the wiki | `/document-ingest` |
 | Walk an ingested process and challenge each element | `/foundational-run` |
+| Regenerate the DTP from the As-Is and critically review the original | `/dtp-regenerate` |
 | Add a single element to one section | `/add-entry` |
 | Work the open comments on an element | `/comment-review` |
 | Resolve conflicts from a re-ingest | `/conflict-resolution` |
