@@ -70,7 +70,7 @@ from the table below:
 | Lens | What to check across the process |
 |---|---|
 | **Process** | a process-step with no control linked; a step with no SLA where a touchpoint sets a client expectation; a missing or contradictory RACI entry; an exception with no scope or no fallback procedure |
-| **Control & Compliance** | a compliance-gap on a topic that has no control; a control linked to no step; segregation-of-duties not covered by any control |
+| **Control & Compliance** | a compliance-gap on a topic that has no control; a control linked to no step; segregation-of-duties not covered by any control; a control whose `owner` is a coarse function ("Operations", "Compliance") where a more precise documented role element exists ("Operations Analyst", "Approver", "Team Lead") — name both the control and the role it should point to |
 | **Client Journey** | a friction-point and a pain-point describing the same issue but not linked; an innovation or friction item not traced to the pain-point it addresses |
 | **Innovation** | an innovation-idea not linked to the friction- or pain-point it solves; a pain-point with no innovation-idea addressing it |
 | **IT Architect** | a count stated in prose that disagrees with the documented elements (e.g. "6+ systems" vs 8 systems); an integration referencing no system; a system touched by no step |

@@ -147,3 +147,34 @@ the dev server. (4) A genuine future `[walkthrough]` candidate (not applied
 from a truncated run): the dogfood walkthrough has no Target-Architecture
 (domain-architect / solution-architect) sub-pass, leaving spine-node-7 wholly
 empty.
+
+## 2026-06-06 — follow-up triage of the 2026-06-05-1841 findings
+
+Walked the 1841 `walkthrough-tweaks.md` list item-by-item. Dispositions:
+
+- **Item 2 (app bugs) — already fixed upstream.** The exception `impact`
+  collision and the multi-type-section mis-mapping were both resolved in
+  `a323b6d` (#50): the exception frontmatter field is `impactSeverity` (prose
+  heading "Impact" → content key `impact`, now distinct), and
+  `singularTypeFor`/`canonicalSection` in `session-create.ts` resolve
+  multi-type sections (`competitor-cx-eu` etc.). The 1841 run hit them only
+  because it executed against pre-`a323b6d` code. The one live residue — an
+  orphaned `fieldValues.impact` enum left by the rename — was removed from
+  `schema/process-schema.json`.
+- **Item 3 (latency/robustness) — documented**, not coded: see
+  `docs/SESSION-LATENCY-AND-ROBUSTNESS.md` and `docs/BRIDGES_AND_TODOS.md`
+  TODO 5. Open `[infra]` finding (full-doc read/write per MCP tool call;
+  30-min turn/idle timeouts).
+- **Item 11 (coarse control-owner labels) — fixed (detective half):** added a
+  Control & Compliance discrepancy rule to `run-lint/SKILL.md` flagging a
+  control whose `owner` is a coarse function where a precise documented role
+  element exists.
+- **Item 12 (approval gate, 31/140 approved) — finding, no code change.**
+  Dominated by truncation (5d–5h, 6, 7, 8 never ran, so their per-element
+  approval moments never happened). It is also *partly correct behavior*:
+  web-sourced elements are intentionally relevance-triaged, not approved, until
+  their provenance is confirmed — so they should not count toward "expected
+  approved." A batch "approve all" would be the wrong fix: it would bypass the
+  per-heading Y/E/R confirmation and re-introduce the A1 approval-gate
+  regression. The clean levers are run-to-completion and refining the expected
+  metric, neither of which touches approval code.
