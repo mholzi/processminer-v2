@@ -39,10 +39,18 @@ export interface UseAgentChatOptions {
   streamReplies: boolean;
   /** Skill → friendly label, for the active-skill chip + notifications. */
   skillLabels: Record<string, string>;
-  /** Prepended to the first turn of a scoped session (locks scope). */
+  /** Prepended to the first turn of a scoped session (locks scope). Pass "" for
+   *  advisor sessions — the server assembles the advisor preamble instead. */
   scopePreamble: string;
   /** Called once a turn completes (a skill may have written wiki files). */
   onTurnDone?: () => void;
+  /** Advisory Board persona id — when set, turns run as that advisor (the
+   *  server prepends the persona preamble on the first turn). */
+  advisor?: string;
+  /** Slugs the advisor may read across (the user's accessible processes). */
+  advisorSlugs?: string[];
+  /** Signed-in user's display name, for the advisor to address them. */
+  userName?: string;
 }
 
 export interface AgentChatState {
@@ -66,7 +74,7 @@ export interface AgentChatState {
 // through the shared `runSession` SSE driver. Both the Processminer and the
 // ArchitectMiner canvas mount this hook.
 export function useAgentChat(opts: UseAgentChatOptions): AgentChatState {
-  const { storePrefix, slug, streamReplies, skillLabels, scopePreamble, onTurnDone } = opts;
+  const { storePrefix, slug, streamReplies, skillLabels, scopePreamble, onTurnDone, advisor, advisorSlugs, userName } = opts;
 
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     if (typeof window === "undefined") return [];
@@ -172,6 +180,9 @@ export function useAgentChat(opts: UseAgentChatOptions): AgentChatState {
           sessionId: turnSessionId,
           stream: streamReplies,
           skill: sendOpts?.skill || turnSkill || null,
+          advisor: advisor ?? null,
+          advisorSlugs,
+          userName,
           signal: controller.signal,
         },
         {
@@ -256,7 +267,7 @@ export function useAgentChat(opts: UseAgentChatOptions): AgentChatState {
           sendOpts?.onComplete?.();
         });
     },
-    [activeSkill, sessionId, scopePreamble, streamReplies, skillLabels, onTurnDone],
+    [activeSkill, sessionId, scopePreamble, streamReplies, skillLabels, onTurnDone, advisor, advisorSlugs, userName],
   );
 
   const stop = useCallback(() => {

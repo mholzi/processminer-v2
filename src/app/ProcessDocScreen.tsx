@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Schema, ProcessDoc, WikiPage } from "@/lib/wiki";
+import type { DtpFinding } from "@/lib/runtime-store";
 import { isSourcedType } from "@/lib/element-types";
 import { initials, type User } from "@/lib/user";
 import { buildRelations, type LinkGroup } from "@/lib/relations";
@@ -1242,11 +1243,13 @@ export default function ProcessDocScreen({
   // Regenerate the DTP — runs the dtp-regenerate skill in the chat: it rewrites
   // the procedure document from the corrected As-Is wiki and critically reviews
   // the original DTP against it. The result lands in the DTP module.
-  function runDtpRegenerate() {
+  function runDtpRegenerate(file?: string) {
     if (chatPending) return;
     setChatOpen(true);
     setDtpGenerating(true);
-    const baseFile = doc.ingest?.file;
+    // The DTP Enhancer's "Select a source DTP" card passes the chosen document;
+    // with none, fall back to the ingested original.
+    const baseFile = file ?? doc.ingest?.file;
     handleSend(
       `Run the dtp-regenerate skill on the process with slug "${currentSlug}".` +
         (baseFile
@@ -1266,6 +1269,72 @@ export default function ProcessDocScreen({
             "See the diff and critical review in the DTP module.",
           );
         },
+      },
+    );
+  }
+
+  // Compare a chosen DTP against the corrected As-Is — runs the dtp-compare skill
+  // in the chat: review-only, no DTP regenerated, no artifact written. The result
+  // lands in the DTP Enhancer's past-comparison history.
+  function runDtpCompare(file: string) {
+    if (chatPending) return;
+    setChatOpen(true);
+    setDtpGenerating(true);
+    handleSend(
+      `Run the dtp-compare skill on the process with slug "${currentSlug}".` +
+        ` The DTP to review against the As-Is is "${file}" (under raw-sources/${currentSlug}/).`,
+      {
+        skill: "dtp-compare",
+        displayText: "Compare the selected DTP against the As-Is.",
+        onComplete: () => {
+          setDtpGenerating(false);
+          setSection("__dtp");
+          pushToast(
+            "success",
+            "DTP comparison finished",
+            "See the critical review in the DTP Enhancer.",
+          );
+        },
+      },
+    );
+  }
+
+  // Persist a reviewer's disposition on a DTP-review finding (runtime state).
+  // The panel updates optimistically; this just writes through.
+  async function setDtpDisposition(
+    runId: string,
+    findingId: string,
+    disposition: string,
+  ): Promise<boolean> {
+    try {
+      const res = await fetch("/api/dtp-disposition", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: currentSlug, runId, findingId, disposition }),
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  }
+
+  // Dismissing a DTP-review finding is not a DTP edit — it means the discrepancy
+  // may belong in the wiki itself. Open the chat, hand it the finding in full,
+  // and let the assistant work out with the SME what (if anything) to change in
+  // the process wiki. The assistant edits the wiki only on the SME's say-so.
+  function discussDtpFinding(f: DtpFinding) {
+    setChatOpen(true);
+    const els = f.elements.length ? f.elements.join(", ") : "none recorded";
+    handleSend(
+      `A DTP-review finding on process "${currentSlug}" was just dismissed — meaning it is not a change to make in the procedure document, so we should check whether the As-Is wiki itself needs to change.\n\n` +
+        `Finding ${f.id} · ${f.kind} (severity ${f.severity})\n` +
+        `Summary: ${f.headline ?? f.wikiSays}\n` +
+        `The DTP says: ${f.dtpSays || "—"}\n` +
+        `The As-Is wiki holds: ${f.wikiSays}\n` +
+        `Implicated wiki elements: ${els}\n\n` +
+        `Read the implicated elements, then ask me what — if anything — should change in the wiki to resolve this. Do not edit any element until I confirm the change.`,
+      {
+        displayText: `Dismissed ${f.id} — what should change in the wiki?`,
       },
     );
   }
@@ -1903,21 +1972,6 @@ export default function ProcessDocScreen({
                     <span style={{ fontSize: "14px", marginRight: "4px" }}>📄</span>
                     View Document
                   </button>
-                  {activeArea.id === "as-is" && (
-                    <button
-                      className={`nav-item${section === "__dtp" ? " active" : ""}`}
-                      onClick={() => setSection("__dtp")}
-                      title="Regenerate the DTP from the corrected As-Is and review the original"
-                    >
-                      <span style={{ fontSize: "14px", marginRight: "4px" }}>♻️</span>
-                      DTP
-                      {doc.dtpReport && (
-                        <span className="count" style={{ marginLeft: "auto" }}>
-                          {doc.dtpReport.findings.length}
-                        </span>
-                      )}
-                    </button>
-                  )}
                 </div>
                 <div className="nav-sec-head">
                   <button
@@ -2067,6 +2121,38 @@ export default function ProcessDocScreen({
                 );
                 })}
               </div>
+              {activeArea.id === "as-is" && (
+                <div className="sources">
+                  <button
+                    className={`src-head${section === "__dtp" ? " active" : ""}`}
+                    onClick={() => setSection("__dtp")}
+                    title="Regenerate the DTP from the corrected As-Is and review the original"
+                  >
+                    <span className="src-ico" aria-hidden>
+                      <svg
+                        width={14}
+                        height={14}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+                        <path d="M21 3v6h-6" />
+                      </svg>
+                    </span>
+                    <span className="src-title">DTP Enhancer</span>
+                    {doc.dtpReports.length > 0 && (
+                      <span className="src-count">
+                        {doc.dtpReports.length}
+                      </span>
+                    )}
+                    <span className="src-chevron">›</span>
+                  </button>
+                </div>
+              )}
               <SourcesPanel
                 sources={doc.sources}
                 ingest={doc.ingest}
@@ -2262,21 +2348,27 @@ export default function ProcessDocScreen({
           ) : section === "__dtp" ? (
             <>
               <div className="canvas-head">
-                <h1>DTP</h1>
+                <h1>DTP Enhancer</h1>
                 <div className="sub">
-                  Regenerate the procedure document from the corrected As-Is and
-                  critically review the original DTP against the wiki — a
-                  full-text diff plus the discrepancies the analysis surfaced.
+                  Compare a procedure document against the corrected As-Is —
+                  pick an uploaded DTP or bring in an old one, and the analysis
+                  surfaces every material discrepancy with the wiki.
                 </div>
               </div>
               <DTPReviewPanel
                 slug={doc.slug}
-                dtpReport={doc.dtpReport}
+                reports={doc.dtpReports}
+                sources={doc.sources}
                 status={
                   dtpGenerating ? "generating" : "idle"
                 }
+                onCompare={runDtpCompare}
                 onRegenerate={runDtpRegenerate}
+                onUpload={() => setUploadModalOpen(true)}
                 onGoToElement={goToElement}
+                getRef={getRef}
+                onSetDisposition={setDtpDisposition}
+                onDiscussFinding={discussDtpFinding}
               />
             </>
           ) : section === "validation" ? (

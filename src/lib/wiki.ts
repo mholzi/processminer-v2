@@ -239,7 +239,11 @@ export interface ProcessDoc {
   reviewState?: ReviewState;
   /** The qer-session cursor, if a session has been started. */
   qerState?: ReviewState;
-  /** The last dtp-regenerate result (regenerated DTP + critical review), if run. */
+  /** Every dtp-regenerate run (DTP Enhancer past-comparison history), newest
+   *  first. Empty when none has been run. */
+  dtpReports: DtpReport[];
+  /** The most recent dtp-regenerate result, if any — `dtpReports[0]`. Kept for
+   *  the nav badge and any single-report consumer. */
   dtpReport?: DtpReport;
   /** Per-section executive summaries, if any have been generated. */
   summaries?: SectionSummaries;
@@ -477,6 +481,19 @@ export function getProcess(slug: string): ProcessDoc | null {
   // R9 — runtime state (review cursor, lint, dismissals) lives above the wiki,
   // in the runtime store, not in the process JSON.
   const runtime = getRuntime(slug);
+  // DTP Enhancer history — newest first. Migrate the legacy single-report field
+  // for any runtime store written before history existed.
+  const dtpReports: DtpReport[] = Array.isArray(runtime.dtpReports)
+    ? runtime.dtpReports
+    : runtime.dtpReport
+      ? [
+          {
+            ...runtime.dtpReport,
+            runId: runtime.dtpReport.runId ?? "DTP-REGEN-001",
+            mode: runtime.dtpReport.mode ?? "regenerate",
+          },
+        ]
+      : [];
   const lint = runtime.lint;
   if (lint) {
     const dismissals = runtime.findingDismissals;
@@ -521,11 +538,139 @@ export function getProcess(slug: string): ProcessDoc | null {
     ingest: data.ingest,
     reviewState: runtime.reviewState,
     qerState: runtime.qerState,
-    dtpReport: runtime.dtpReport,
+    dtpReports,
+    dtpReport: dtpReports[0],
     summaries: data.summaries,
     notes,
     glossary: data.glossary,
     sectionStatus: data.sectionStatus,
     rawJson: data,
   };
+}
+
+// ---- Read-only cross-process views (Advisory Board) ---------------------
+// Thin readers the advisor tools wrap. Cross-process by design and strictly
+// read-only — they call no writer.
+
+export interface ProcessSummary {
+  slug: string;
+  id: string;
+  title: string;
+  description: string;
+  /** The merged overview fields (process meta + content). */
+  overview: Record<string, unknown>;
+  /** Per-section completeness markers, if any. */
+  sectionStatus?: Record<string, SectionStatus>;
+  /** Element count + confirmed count per section. */
+  counts: { section: string; count: number; confirmed: number }[];
+  total: number;
+  lastModified?: string;
+}
+
+/** A compact, breadth-first view of one process — overview + section counts,
+ *  without dumping every element. The advisor's first read. */
+export function getProcessSummary(slug: string): ProcessSummary | null {
+  const doc = getProcess(slug);
+  if (!doc) return null;
+  const bySection = new Map<string, { count: number; confirmed: number }>();
+  for (const e of doc.elements) {
+    const key = e.section || e.type || "other";
+    const cur = bySection.get(key) ?? { count: 0, confirmed: 0 };
+    cur.count += 1;
+    if (e.status === "confirmed") cur.confirmed += 1;
+    bySection.set(key, cur);
+  }
+  const counts = [...bySection.entries()].map(([section, v]) => ({
+    section,
+    count: v.count,
+    confirmed: v.confirmed,
+  }));
+  const desc = doc.process.meta.description;
+  return {
+    slug,
+    id: doc.process.id,
+    title: doc.process.title,
+    description:
+      typeof desc === "string" && desc ? desc : doc.process.body || "",
+    overview: doc.process.meta,
+    sectionStatus: doc.sectionStatus,
+    counts,
+    total: doc.elements.length,
+    lastModified: doc.lastModified,
+  };
+}
+
+/** The elements of one section/collection of a process — {id,title,meta,content}.
+ *  null if the process doesn't exist; [] if the collection is empty/absent. */
+export function getProcessElements(
+  slug: string,
+  collection: string,
+): { id: string; title: string; meta: any; content: any }[] | null {
+  const path = join(WIKI_DIR, `${slug}.json`);
+  if (!existsSync(path)) return null;
+  const data = JSON.parse(readFileSync(path, "utf8"));
+  const list = data[collection];
+  if (!Array.isArray(list)) return [];
+  return list.map((el: any) => ({
+    id: el.meta?.id ?? "",
+    title: el.content?.title ?? "",
+    meta: el.meta ?? {},
+    content: el.content ?? {},
+  }));
+}
+
+export interface SearchHit {
+  slug: string;
+  processTitle: string;
+  /** Element id (or the process id for an overview match). */
+  id: string;
+  type: string;
+  section: string;
+  title: string;
+  /** A short window of text around the match. */
+  snippet: string;
+}
+
+/** Keyword search across processes. Scans element title, body and metadata.
+ *  Caps the result set so a broad query can't dump the whole portfolio. */
+export function searchProcesses(
+  query: string,
+  allowedSlugs?: string[],
+): SearchHit[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+  const slugs =
+    allowedSlugs && allowedSlugs.length
+      ? allowedSlugs
+      : listProcesses().map((p) => p.slug);
+  const hits: SearchHit[] = [];
+  const CAP = 50;
+  for (const slug of slugs) {
+    const doc = getProcess(slug);
+    if (!doc) continue;
+    const processTitle = doc.process.title;
+    for (const e of [doc.process, ...doc.elements]) {
+      const hay = `${e.title}\n${e.body}\n${JSON.stringify(
+        e.meta,
+      )}`.toLowerCase();
+      const idx = hay.indexOf(q);
+      if (idx === -1) continue;
+      const start = Math.max(0, idx - 60);
+      const snippet = hay
+        .slice(start, idx + q.length + 60)
+        .replace(/\s+/g, " ")
+        .trim();
+      hits.push({
+        slug,
+        processTitle,
+        id: e.id,
+        type: e.type,
+        section: e.section,
+        title: e.title,
+        snippet,
+      });
+      if (hits.length >= CAP) return hits;
+    }
+  }
+  return hits;
 }
