@@ -14,28 +14,72 @@ function approvalGateError(id: string, provenance: any): string | null {
   return `Cannot approve ${id} — these headings are not yet confirmed by the SME (still proposed/web): ${unconfirmed.join(", ")}. Confirm them in the read-back first.`;
 }
 
-/** R6 — the author of an in-app write is the signed-in user, resolved from the
- *  session cookie on the server. Never trust a client-supplied author string: a
- *  client could forge it to attribute an action to someone else. Stores the
- *  stable `username` (R6b — display names are resolved at read time so renames
- *  propagate); falls back to "SME" when there is no valid session. (Imports are
- *  dynamic so this module stays importable outside a Next request context.) */
-async function sessionAuthor(): Promise<string> {
-  try {
-    const { cookies } = await import("next/headers");
-    const { COOKIE_NAME, verifySession } = await import("./auth-server.ts");
-    const store = await cookies();
-    const user = verifySession(store.get(COOKIE_NAME)?.value);
-    return user?.username || "SME";
-  } catch {
-    return "SME";
+/** Thrown when an in-app (browser-originated) write is not authenticated or the
+ *  signed-in user lacks access to the target process. `updateElement` converts
+ *  it to an `{ ok: false, error }` result; the other actions let it propagate
+ *  (they already throw on failure). The message is safe to surface. */
+class WriteDeniedError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "WriteDeniedError";
   }
 }
 
+/** R6 / R16 — resolve and authorize the author of a write.
+ *
+ *  Two callers reach this module, distinguished by request context:
+ *
+ *  - **In-app SME writes** are React server actions invoked over HTTP from the
+ *    browser. They always run inside a Next request context, so `cookies()`
+ *    resolves (even when the cookie itself is absent). For these we REQUIRE a
+ *    valid session and that the user may access `slug` — otherwise the write is
+ *    denied. This closes the gap where a forged server-action call (or a
+ *    logged-in user reaching a process they can't see) could mutate the wiki.
+ *
+ *  - **AI authoring** calls `updateElement` in-process from the headless worker
+ *    (claude-mcp-server / gemini-worker), which has no request context, so
+ *    `cookies()` throws. The worker's trust boundary is `/api/session` (now
+ *    authenticated); here it proceeds as the system author "SME".
+ *
+ *  Never trust a client-supplied author string — the stable `username` is
+ *  resolved from the signed session cookie server-side (display names are
+ *  resolved at read time, R6b, so renames propagate). The reliance on
+ *  `cookies()` throwing outside a request context is the same assumption the
+ *  rest of this module already makes for its dynamic imports. */
+async function resolveWriter(slug: string): Promise<string> {
+  let store: Awaited<ReturnType<typeof import("next/headers")["cookies"]>>;
+  try {
+    const { cookies } = await import("next/headers");
+    store = await cookies();
+  } catch {
+    return "SME"; // in-process AI worker — no request context, trusted via /api/session
+  }
+  // Browser-originated server action: authentication + authorization required.
+  const { COOKIE_NAME, verifySession } = await import("./auth-server.ts");
+  const user = verifySession(store.get(COOKIE_NAME)?.value);
+  if (!user) throw new WriteDeniedError("Not signed in.");
+  const { canAccess } = await import("./process-access.ts");
+  if (!canAccess(user, slug)) {
+    throw new WriteDeniedError("You don't have access to this process.");
+  }
+  return user.username;
+}
+
+// Best-effort cache invalidation. Defaults to a no-op, then swaps in the real
+// `next/cache` helper once it loads. The swapped-in version swallows the
+// "static generation store missing" invariant that `revalidatePath` throws when
+// called outside a request context (the in-process AI worker and unit tests) —
+// there is no router cache to revalidate there, so it is safe to skip.
 let revalidatePath = (path: string) => {};
 import("next/cache")
   .then((m) => {
-    revalidatePath = m.revalidatePath;
+    revalidatePath = (p: string) => {
+      try {
+        m.revalidatePath(p);
+      } catch {
+        /* outside request scope (worker / tests) — nothing to revalidate */
+      }
+    };
   })
   .catch(() => {});
 
@@ -50,6 +94,16 @@ export async function updateElement(
   const filePath = join(WIKI_DIR, `${slug}.json`);
   if (!existsSync(filePath)) {
     return { ok: false, error: `Process not found: ${slug}` };
+  }
+
+  // Authenticate + authorize the writer. In-app calls must be a signed-in user
+  // with access to this process; the in-process AI worker resolves to "SME".
+  let author: string;
+  try {
+    author = await resolveWriter(slug);
+  } catch (e) {
+    if (e instanceof WriteDeniedError) return { ok: false, error: e.message };
+    throw e;
   }
 
   const doc = JSON.parse(readFileSync(filePath, "utf8"));
@@ -179,7 +233,7 @@ export async function updateElement(
   // R5 — stamp per-edit attribution on a content change (stable username; the
   // display name is resolved at read time).
   if (isContentEdit) {
-    newMeta.updatedBy = await sessionAuthor();
+    newMeta.updatedBy = author;
     newMeta.updatedAt = new Date().toISOString().slice(0, 10);
   }
 
@@ -206,7 +260,7 @@ export async function setApproval(
   if (!APPROVAL_VALUES.includes(approval)) {
     throw new Error(`Invalid approval value: ${approval}`);
   }
-  const author = await sessionAuthor();
+  const author = await resolveWriter(slug);
   const date = new Date().toISOString().slice(0, 10);
   const patch = {
     meta: {
@@ -230,6 +284,7 @@ export async function saveSummaryPart(
 ): Promise<{ ok: true }> {
   const path = join(WIKI_DIR, `${slug}.json`);
   if (!existsSync(path)) throw new Error("No process file found.");
+  await resolveWriter(slug); // authenticate + authorize the writer
   const data = JSON.parse(readFileSync(path, "utf8"));
   const summaries = data.summaries;
   if (!summaries) throw new Error("No summaries found for this process.");
@@ -254,7 +309,7 @@ export async function setRelevance(
   if (!RELEVANCE_VALUES.includes(relevance)) {
     throw new Error(`Invalid relevance value: ${relevance}`);
   }
-  const author = await sessionAuthor();
+  const author = await resolveWriter(slug);
   const date = new Date().toISOString().slice(0, 10);
   const patch = {
     meta: {
@@ -282,7 +337,8 @@ export async function triageTargetReview(
   }
   const path = join(WIKI_DIR, `${slug}.json`);
   if (!existsSync(path)) throw new Error("No process file found.");
-  
+  await resolveWriter(slug); // authenticate + authorize the writer
+
   const doc = JSON.parse(readFileSync(path, "utf8"));
   const review = doc.targetReview;
   if (!review) throw new Error("No council review for this process.");

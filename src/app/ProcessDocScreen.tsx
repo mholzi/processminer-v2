@@ -1063,6 +1063,10 @@ export default function ProcessDocScreen({
       {
         message: wireText,
         sessionId,
+        // The open process — the server enforces canAccess against it (R16).
+        // Even the unscoped + New-process flow runs against a process the SME
+        // already has open (and thus can access), so this never wrongly blocks.
+        slug: currentSlug,
         stream: user.streamReplies === true,
         skill: opts?.skill || turnSkill || null,
         signal: controller.signal,
@@ -1536,6 +1540,7 @@ export default function ProcessDocScreen({
       body: JSON.stringify({
         message: `Run the area-summary skill for the "${target}" area of the process with slug "${currentSlug}".`,
         sessionId: null,
+        slug: currentSlug,
       }),
     })
       .then(async (res) => {
