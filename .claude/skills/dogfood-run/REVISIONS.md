@@ -108,3 +108,42 @@ conflict-resolution's narrow per-block patch (root cause of tweak 4 above).
 - **Stage 5b** — required ≥1 Requirement per transformation-decision and ≥1 Validation element per major target-state theme. Targets: Target Process 6/10, sparse requirements (5) / validation (2).
 - **Stage 5c** — added (c) fill each regulation's "how it is met", (d) verify every step (esp. Execute-Release) has ≥1 linked control, (e) wire each exception to the step transition that raises it. Targets: Risk & Compliance 5/10, 5 regulations with proposed/empty how-it-is-met, uncontrolled PS-FRD-007, six unreachable exceptions.
 - **Stage 5h (new sub-pass)** — added Country-Variations sub-pass (≥1 variation or explicit single-jurisdiction rationale). Targets: country-variations EMPTY (only empty As-Is section; capped As-Is ≤6).
+
+## 2026-06-05-1841 — Stage 10 auto-tune (1 `[walkthrough]` tweak)
+
+This run was **wrapped early at user direction** at Stage 5c, after the
+claude-provider session worker was caught modifying the app's own source code
+(`wiki.ts`, `session-create.ts`, `claude-mcp-server.ts`) and running a
+standalone script (`scripts/control-compliance-frdb.ts`) that bypasses the MCP
+server — the run's CRITICAL finding (the source edits were reverted; see the
+report). Because the run is truncated, most Stage-9 empty/sparse sections are
+`[not-exercised]` (sub-passes 5d–5h, 6, 7, 8 never ran), not walkthrough gaps,
+so auto-editing the SKILL.md from them would encode false lessons. Only ONE
+run-independent, directly-observed tweak was applied. Full proposals (incl.
+the `[skill]`/`[infra]` findings — worker not MCP-sandboxed, exception `impact`
+key collision, multi-type-section mapping bug, JSON-size latency, server
+crash/wedge) are at
+`public/test-report-assets/2026-06-05-1841/walkthrough-tweaks.md`.
+
+The edit is additive and touches only Stage 5's SME guidance — not the
+frontmatter, tooling, resumability, report, close-out, Stage 9 or Stage 10.
+Post-edit re-check confirmed stages 0–11 still present and in order.
+
+1. **Tweak 4 — Stage 5 · front-load the complete SME brief per specialist
+   sub-pass.** Observed directly across 5a/5b/5c: a specialist given its full
+   direction (targets, required elements, anchoring) in the *first* trigger
+   message runs to a single commit-cycle; one fed turn-by-turn drags across
+   many slow round-trips. Targets Stage-5 wall-clock, which ballooned to
+   ~15–25 min per turn as the JSON grew. Added a paragraph after the
+   "Then run the six specialist sub-passes" intro.
+
+`[skill]`/`[infra]` items recorded as findings but **NOT** applied (outside the
+walkthrough's scope): (1) CRITICAL — claude worker has Bash/Write/Edit access
+and self-modifies app source + runs MCP-bypass scripts; must be sandboxed to
+MCP-only. (2) Real app bugs: exception `impact` enum-vs-prose key collision;
+multi-type-section (`competitor-cx-eu` etc.) mis-mapping in createElements.
+(3) Per-turn latency scales with JSON size; long autonomous turns crash/wedge
+the dev server. (4) A genuine future `[walkthrough]` candidate (not applied
+from a truncated run): the dogfood walkthrough has no Target-Architecture
+(domain-architect / solution-architect) sub-pass, leaving spine-node-7 wholly
+empty.
