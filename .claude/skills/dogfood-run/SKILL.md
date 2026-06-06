@@ -194,6 +194,12 @@ completeness shortfall that Deep Dive + triage alone do not address. Do not
 skip any of these; an earlier run that did skipped landed every shortfall
 listed below in the Stage 9 verdict.
 
+For each sub-pass, **front-load the complete SME brief in the first trigger
+message** — all targets, the specific elements you want, and where to anchor
+them — and tell the specialist to write it all and only stop if genuinely
+blocked. A specialist given its full direction up front runs to a single
+commit-cycle; one fed guidance turn-by-turn drags across many slow round-trips.
+
 - **5a. Internal client journey** — run the `client-journey-specialist` and
   walk the SME through Channels, Touchpoints, Moments of Truth and
   Friction-Points for the documented process. At least one element per
