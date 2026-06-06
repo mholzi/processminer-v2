@@ -2,7 +2,7 @@
 
 This document tracks the in-memory translation layers ("bridges") created during the transition to a JSON-Native architecture and the migration debt around them.
 
-**Status (2026-06-06):** most of the debt is cleared. The broken write bridge (§2A), the split element-save paths (§2B), and the skill ↔ tool-surface drift (§2D) are all **resolved**. What genuinely remains: the read-side `WikiPage` DTO bridge (§1, by design), the two schema representations (§2C, drift-guarded), and the optional schema generator (TODO 3). ✅ entries are kept for history; verify any claim against the code before trusting it.
+**Status (2026-06-06):** most of the debt is cleared. The broken write bridge (§2A), the split element-save paths (§2B), and the skill ↔ tool-surface drift (§2D) are all **resolved**. What genuinely remains: the read-side `WikiPage` DTO bridge (§1, by design), the two schema representations (§2C, drift-guarded), the optional schema generator (TODO 3), and an open `[infra]` finding — session latency/robustness scaling with document size (TODO 5). ✅ entries are kept for history; verify any claim against the code before trusting it.
 
 ---
 
@@ -111,3 +111,27 @@ The tool surface now covers every write the skills need. Delivered group by grou
 ### 3. Schemas — drift-guarded (done); generator (optional, not done)
 * ✅ **Done:** removed the empty `src/lib/schema/process-schema.legacy.json`; added a drift-guard test that fails if the custom schema and the JSON Schema disagree on their element-type sets (see §2C).
 * ⏳ **Optional next:** the two are different representations and can't simply be merged. To remove the dual edit entirely, derive the JSON Schema (`src/lib/schema/process-schema.json`) from the custom schema (`schema/process-schema.json`) via a build-time generator + a freshness check. Only worth it if the dual maintenance proves painful.
+
+### 5. Session latency & robustness — ⏳ open (`[infra]`)
+Per-turn cost in an AI session scales with the size of the process document, so
+long runs slow down monotonically as the JSON grows, and long autonomous turns
+can crash/wedge the dev server. Recorded from the 2026-06-05-1841 dogfood run.
+* **Symptom:** Stage-5 turns ballooned from ~3–4 min to ~15–25 min as the JSON
+  reached ~140 elements; the dev server crashed mid `source-cx`; a worker
+  idle-timeout left a "lost contact" wedge.
+* **Root cause (read/write):** the MCP server re-reads the *whole* document
+  (`JSON.parse(fs.readFileSync(...))`) on **every tool call**
+  ([`claude-mcp-server.ts:470`](file:///Users/markusholzhauser/Development/Processminer2/src/lib/claude-mcp-server.ts))
+  and writes the *whole* document on every mutation — so per-call cost is
+  O(document size) and a multi-call turn pays it repeatedly. A targeted getter
+  exists (`expandElement`) but there is no section-scoped/summary getter, so the
+  worker tends to pull the full doc into context.
+* **Root cause (robustness):** `TURN_TIMEOUT_MS` / `IDLE_TTL_MS` default to
+  30 min ([`session-worker.ts:23-24`](file:///Users/markusholzhauser/Development/Processminer2/src/lib/session-worker.ts)),
+  right at the boundary of a legitimate long turn.
+* **Already mitigated (partly):** `ca5ae9f` added an SSE heartbeat (fixes the
+  false "lost contact", dogfood #1) and atomic process-JSON writes (dogfood #7).
+* **Recommended first slice:** a read-once-per-turn in-memory `doc` cache in the
+  MCP request handler (flush on write, re-read if file mtime changed to avoid
+  clobbering concurrent in-app edits).
+* **Full write-up:** [SESSION-LATENCY-AND-ROBUSTNESS.md](file:///Users/markusholzhauser/Development/Processminer2/docs/SESSION-LATENCY-AND-ROBUSTNESS.md).
