@@ -29,10 +29,21 @@ export interface DtpReportInput {
   /** The full regenerated DTP, as Markdown. */
   markdown?: string;
   findings?: unknown[];
+  /** The DTP sections the run reviewed (coverage map). */
+  coverage?: unknown;
 }
 
 const KINDS = new Set(["outdated", "missing", "contradiction", "added"]);
 const SEVERITIES = new Set(["high", "medium", "low"]);
+const SUGGESTED = new Set(["accepted", "dismissed"]);
+
+/** Normalise the coverage block a run emits (the DTP sections it reviewed). */
+function stampCoverage(raw: unknown): { dtpSections: string[] } | undefined {
+  const secs = (raw as { dtpSections?: unknown })?.dtpSections;
+  if (!Array.isArray(secs)) return undefined;
+  const dtpSections = secs.map(String).map((s) => s.trim()).filter(Boolean);
+  return dtpSections.length ? { dtpSections } : undefined;
+}
 
 /** Normalise + id-stamp the skill's raw findings (DTPF-001…). The tool owns the
  *  format; the skill owns the judgement — mirrors buildTargetReview's R-001 pass. */
@@ -50,6 +61,12 @@ export function stampDtpFindings(raw: unknown): DtpFinding[] {
     severity: (SEVERITIES.has(it?.severity as string)
       ? it.severity
       : "medium") as DtpFinding["severity"],
+    ...(typeof it?.rationale === "string" && it.rationale.trim()
+      ? { rationale: it.rationale.trim() }
+      : {}),
+    ...(SUGGESTED.has(it?.suggestedDisposition as string)
+      ? { suggestedDisposition: it.suggestedDisposition as "accepted" | "dismissed" }
+      : {}),
     disposition: "open" as const,
   }));
 }
@@ -111,6 +128,8 @@ export interface DtpComparisonInput {
   /** The DTP filename the comparison reviewed (under raw-sources/<slug>/). */
   sourceFile?: string;
   findings?: unknown[];
+  /** The DTP sections the comparison reviewed (coverage map). */
+  coverage?: unknown;
 }
 
 /**
@@ -124,12 +143,14 @@ export function writeDtpComparison(
   _by?: string,
 ): { runId: string; findingCount: number } {
   const findings = stampDtpFindings(input.findings);
+  const coverage = stampCoverage(input.coverage);
   const { runId } = appendReport(slug, {
     mode: "compare",
     generatedAt: new Date().toISOString(),
     basis: "as-is",
     sourceFile: input.sourceFile || "",
     findings,
+    ...(coverage ? { coverage } : {}),
   });
   return { runId, findingCount: findings.length };
 }
@@ -181,6 +202,7 @@ export function writeDtpReport(
   writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
 
   const findings = stampDtpFindings(input.findings);
+  const coverage = stampCoverage(input.coverage);
   const { runId } = appendReport(slug, {
     mode: "regenerate",
     generatedAt: new Date().toISOString(),
@@ -188,6 +210,7 @@ export function writeDtpReport(
     sourceFile: input.sourceFile || "",
     generatedFile,
     findings,
+    ...(coverage ? { coverage } : {}),
   });
 
   return { generatedFile, runId, findingCount: findings.length };

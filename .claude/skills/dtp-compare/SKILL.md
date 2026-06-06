@@ -56,7 +56,8 @@ Read the process overview (root `meta`/`content`) in the Document Map, then read
 
 Walk the DTP section by section against the wiki and emit one finding per
 **material** discrepancy — not every cosmetic wording difference. Each finding
-is `{ kind, headline, dtpSays, wikiSays, elements, severity }`:
+is `{ kind, headline, dtpSays, wikiSays, elements, severity, rationale,
+suggestedDisposition }`:
 
 - `kind`:
   - `outdated` — the DTP describes a state the analysis has since superseded.
@@ -73,6 +74,13 @@ is `{ kind, headline, dtpSays, wikiSays, elements, severity }`:
 - `elements` — the implicated wiki element ids (e.g. `["PS-COB-003", "CP-COB-001"]`).
 - `severity` — `high` (a control/risk/regulatory gap, a wrong owner on a key
   step), `medium`, or `low` (a minor omission or refinement).
+- `rationale` — one short phrase on *why* this severity / why it matters, e.g.
+  "control gap", "wrong owner on a key step", "minor wording". Reviewers triage
+  on this.
+- `suggestedDisposition` — your recommended call: `accepted` when the DTP is the
+  thing that's wrong (a correction to make in the procedure doc), or `dismissed`
+  when the discrepancy more likely means the *wiki* is wrong or incomplete and
+  should be reconciled. A hint only — the reviewer decides.
 
 Be a critic, not a stenographer: the value is in the discrepancies that matter
 to someone relying on the document.
@@ -80,7 +88,10 @@ to someone relying on the document.
 ## Step 4 — Store the review
 
 Pass the findings to the `writeDtpComparison({ slug, report })` tool, where
-`report` is `{ sourceFile: "<the reviewed filename>", findings: [ … ] }`.
+`report` is `{ sourceFile: "<the reviewed filename>", findings: [ … ],
+coverage: { dtpSections: [ … ] } }`. `coverage.dtpSections` is the list of the
+DTP's section/heading titles you walked in Step 3 — it drives the coverage map,
+so name every section you reviewed even where it raised no finding.
 
 The tool stamps the finding ids (`DTPF-…`) and stores the comparison as a new
 entry in the runtime past-comparison history — never the wiki JSON, and with no

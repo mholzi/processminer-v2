@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Schema, ProcessDoc, WikiPage } from "@/lib/wiki";
-import type { DtpFinding } from "@/lib/runtime-store";
+import type { DtpFinding, DtpReport } from "@/lib/runtime-store";
 import { isSourcedType } from "@/lib/element-types";
 import { initials, type User } from "@/lib/user";
 import { buildRelations, type LinkGroup } from "@/lib/relations";
@@ -437,6 +437,20 @@ export default function ProcessDocScreen({
     },
     [elementsById, schema],
   );
+
+  // The As-Is element inventory — drives the DTP Enhancer coverage map (which
+  // As-Is elements no finding references). Scoped to the As-Is area's sections.
+  const asIsElements = useMemo(() => {
+    const asIs = schema.areas.find((a) => a.id === "as-is");
+    const secIds = new Set((asIs?.sections ?? []).map((s) => s.id));
+    return doc.elements
+      .filter((e) => secIds.has(e.section))
+      .map((e) => ({
+        id: e.id,
+        typeLabel: schema.elementTypes[e.type]?.label ?? e.type,
+        title: e.title,
+      }));
+  }, [doc.elements, schema]);
 
   // Map a role's title → its element id, so an element's `owner` field can
   // link straight to the role (its RACI entry). Owners are stored as the
@@ -1316,6 +1330,38 @@ export default function ProcessDocScreen({
     } catch {
       return false;
     }
+  }
+
+  // Generate an executive-summary memo for one DTP comparison run — runs the
+  // dtp-summary skill in the chat with the run's findings handed in; the skill
+  // writes the memo to the run via writeDtpSummary, and onDone's refresh surfaces
+  // it in the panel.
+  function runDtpSummary(report: DtpReport) {
+    if (chatPending) return;
+    setChatOpen(true);
+    const lines = report.findings.map(
+      (f) =>
+        `- ${f.id} · ${f.kind} · ${f.severity}: ${f.headline ?? f.wikiSays}` +
+        ` | DTP: ${f.dtpSays || "—"} | As-Is: ${f.wikiSays}` +
+        (f.rationale ? ` | why: ${f.rationale}` : "") +
+        (f.elements.length ? ` | elements: ${f.elements.join(", ")}` : ""),
+    );
+    handleSend(
+      `Run the dtp-summary skill on the process with slug "${currentSlug}".` +
+        ` Write the executive-summary memo for run "${report.runId}" (the DTP "${report.sourceFile}" compared against the As-Is).` +
+        ` The ${report.findings.length} finding(s) for this run:\n${lines.join("\n")}\n` +
+        `Compose the memo from these and call writeDtpSummary with runId "${report.runId}".`,
+      {
+        skill: "dtp-summary",
+        displayText: `Write the executive summary for ${report.runId}.`,
+        onComplete: () =>
+          pushToast(
+            "success",
+            "Executive summary ready",
+            "See the memo at the top of the comparison.",
+          ),
+      },
+    );
   }
 
   // Dismissing a DTP-review finding is not a DTP edit — it means the discrepancy
@@ -2367,8 +2413,10 @@ export default function ProcessDocScreen({
                 onUpload={() => setUploadModalOpen(true)}
                 onGoToElement={goToElement}
                 getRef={getRef}
+                asIsElements={asIsElements}
                 onSetDisposition={setDtpDisposition}
                 onDiscussFinding={discussDtpFinding}
+                onGenerateSummary={runDtpSummary}
               />
             </>
           ) : section === "validation" ? (
