@@ -53,6 +53,7 @@ what it changes, behaviour/scope, and how it was verified.
 | **#45** | dogfood-run tuning + FRD-001 artifact (parallel session) | `feat/dogfood-run-frd001` → `main` | Skill + process data + docs | **Merged** (`ffbad3b`) |
 | **#46** | QER-resume dashboard tile (deferred #44 follow-up) | `feat/qer-resume-tile` → `main` | Code + UI + docs | **Merged** (`3109aeb`) |
 | **#47** | BRIDGES doc cleanup — mark resolved sections against real code | `chore/bridges-cleanup` → `main` | Docs only | **Open** (`pending`) |
+| **#53** | DTP Enhancer (compare + triage) + Advisory Board (WIP) | `feat/dtp-enhancer-and-advisory-wip` → `main` | Code + skills + docs | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1600,3 +1601,49 @@ gap are closed. Remaining, all optional:
 2. **Schema generator** — derive the Draft-07 JSON Schema from the custom schema, retiring the dual-edit + drift-guard.
 3. **Refresh the recovered artifacts (R20/R22):** re-point `pm-shot*.mjs` at the current UI, regenerate the onepager screenshots + PDF, update the v0.x deck framing.
 4. **R19** — slim per-type schema slices (token optimization).
+
+---
+
+# PR #53 — DTP Enhancer (compare + triage) + Advisory Board (WIP)
+
+`feat/dtp-enhancer-and-advisory-wip` → `main` · Code + skills + docs · **Open**.
+
+Bundles all working-tree changes per request. Two distinct bodies of work; the
+shared files (`globals.css`, `wiki.ts`, `claude-mcp-server.ts`,
+`gemini-worker.ts`) carry changes for both, so they could not be split into
+separate commits.
+
+## DTP Enhancer (complete, dogfooded)
+
+The As-Is "DTP" section is reworked into a **DTP Enhancer** review tool.
+
+- **Rename** "DTP" → "DTP Enhancer" (canvas header + bottom-rail nav button).
+- **Entry launcher**: *Select a source DTP* / *Upload an old DTP* / *Past
+  comparisons*, plus a past-comparison history table.
+- **Comparison flow**: choosing a source DTP runs the new **`dtp-compare`** skill
+  via the new **`writeDtpComparison`** tool — reviews the chosen DTP against the
+  corrected As-Is, findings only, **no regenerated `.md`**. The legacy
+  regenerate path (with full-text diff) still works.
+- **History**: `DtpReport` gains `runId` + `mode`; kept as an array in the
+  runtime store (R9), newest first, with legacy single-report migration.
+- **Finding cards** as a scannable list + expand: headline, approved/draft
+  evidence provenance (derived from element approval state), element type+title
+  chips, severity.
+- **Disposition workflow** Open / Accept / Dismiss, persisted via
+  **`/api/dtp-disposition`**. An **Accepted** overview filter lists the
+  manual-DTP-change worklist. **Dismiss** opens the chat with the finding in
+  context to reconcile the wiki (edits nothing until the SME confirms).
+
+## Advisory Board (work in progress)
+
+See `docs/ADVISORY-BOARD-PLAN.md`. Advisor definitions under `.claude/advisors/`,
+`advisor.ts` / `advisor-server.ts`, `AdvisorChat` / `AdvisorOverviewCard` /
+`AdvisorPortfolioCard`, WelcomeScreen surfacing, and shared chat-infra tweaks
+(session route, `useAgentChat`, `agent-chat`). **Not finished** — bundled here
+because it shares files with the DTP work.
+
+## Verification
+
+`npm run typecheck` clean · `npm test` **108/108**. DTP flows verified in the
+running app (compare → findings list, disposition persist + Accepted filter,
+Dismiss → chat). Advisory Board compiles but is incomplete.
