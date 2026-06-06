@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useAgentChat } from "./useAgentChat";
@@ -9,6 +9,18 @@ import type { User } from "@/lib/user";
 import type { ProcessDoc } from "@/lib/wiki";
 import AdvisorOverviewCard from "./AdvisorOverviewCard";
 import AdvisorPortfolioCard from "./AdvisorPortfolioCard";
+import { pickPerspective } from "@/lib/wait-perspective";
+
+// Long-wait perspective footer — same threshold/behaviour as the module chat.
+const PERSPECTIVE_THRESHOLD_MS = 2 * 60 * 1000;
+function formatElapsedMinutes(ms: number): string {
+  const min = Math.max(1, Math.round(ms / 60_000));
+  return min === 1 ? "1 minute" : `${min} minutes`;
+}
+function formatEtaShort(ms: number): string {
+  if (ms < 60_000) return `${Math.round(ms / 1000)} s`;
+  return `${Math.round(ms / 60_000)} min`;
+}
 
 // Deterministic card directive. A standard-question chip writes this block into
 // the transcript (the CLIENT writes it, not the LLM) and the renderer swaps it
@@ -68,10 +80,31 @@ export default function AdvisorChat({
     userName: user.name,
   });
 
+  // Long-wait perspective footer — tick elapsed every 5s while pending, pick the
+  // line once when the threshold is first crossed (same as the module chat).
+  const [elapsedMs, setElapsedMs] = useState(0);
+  const [perspective, setPerspective] = useState<string | null>(null);
+  useEffect(() => {
+    if (!chat.pending) {
+      setElapsedMs(0);
+      setPerspective(null);
+      return;
+    }
+    const start = Date.now();
+    const t = setInterval(() => setElapsedMs(Date.now() - start), 5000);
+    return () => clearInterval(t);
+  }, [chat.pending]);
+  useEffect(() => {
+    if (chat.pending && elapsedMs >= PERSPECTIVE_THRESHOLD_MS && perspective === null) {
+      setPerspective(pickPerspective());
+    }
+  }, [chat.pending, elapsedMs, perspective]);
+
   const submit = () => {
     const t = draft.trim();
     if (!t || chat.pending) return;
-    chat.send(t);
+    // Drive the running/ETA chip + per-advisor ETA history off the advisor id.
+    chat.send(t, { skill: advisor.id });
     setDraft("");
   };
 
@@ -189,10 +222,48 @@ export default function AdvisorChat({
               </div>
             );
           })}
+          {chat.pending && chat.activeSkill && (
+            <div className="chat-skill-chip">
+              <span className="chat-skill-glyph" aria-hidden="true">✦</span>
+              {ADVISOR_LABELS[chat.activeSkill] ?? advisor.name}
+              <span className="chat-skill-state">· running</span>
+              {chat.activeSkillEta && (
+                <span
+                  className="chat-skill-eta"
+                  title={`Median of ${chat.activeSkillEta.runs} past run${
+                    chat.activeSkillEta.runs === 1 ? "" : "s"
+                  } on this machine`}
+                >
+                  · est ~{formatEtaShort(chat.activeSkillEta.medianMs)}
+                </span>
+              )}
+            </div>
+          )}
+          {chat.pending && chat.tasks.length > 0 && (
+            <div className="chat-task-strip" aria-label="Sub-agent fan-out">
+              {chat.tasks.map((t) => (
+                <span
+                  key={t.id}
+                  className={`chat-task-chip chat-task-${t.status}`}
+                  title={t.label}
+                >
+                  <span className="chat-task-mark" aria-hidden="true">
+                    {t.status === "done" ? "✓" : "⟳"}
+                  </span>
+                  {t.label}
+                </span>
+              ))}
+            </div>
+          )}
           {chat.pending && (
             <div className="ab-msg agent pending">
               <span className="ab-dot" />
-              {chat.activity || "Thinking…"}
+              {chat.activity || "Working…"}
+            </div>
+          )}
+          {chat.pending && perspective && (
+            <div className="chat-perspective" aria-hidden="true">
+              You&rsquo;ve been waiting {formatElapsedMinutes(elapsedMs)}. {perspective}
             </div>
           )}
         </div>

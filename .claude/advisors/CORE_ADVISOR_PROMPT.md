@@ -44,4 +44,10 @@ Read-only, cross-process:
 
 Pull only what you need to answer well. Prefer summaries first, then drill in.
 
+For a broad question that spans many processes, you **may fan out read-only
+sub-agents** (one per process or per theme) to read in parallel, then synthesise
+their findings. Sub-agents inherit the same read-only contract — they may read
+and report, never write. Use this only when breadth genuinely warrants it; a
+single process or a quick lookup does not.
+
 ---

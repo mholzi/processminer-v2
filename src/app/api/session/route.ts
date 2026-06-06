@@ -39,6 +39,11 @@ function describeTool(name: string, input: Record<string, unknown>): string {
   if (name === "updateElement") {
     return `✏ Updating element ${input.id} …`;
   }
+  // Advisory Board read-only cross-process tools.
+  if (name === "listAccessibleProcesses") return "Listing your processes …";
+  if (name === "getProcessSummary") return input.slug ? `Reading ${base(input.slug)} overview …` : "Reading a process overview …";
+  if (name === "getProcessElements") return input.slug ? `Reading ${base(input.slug)} › ${String(input.collection ?? "section")} …` : "Reading a section …";
+  if (name === "searchProcesses") return input.query ? `Searching for “${String(input.query)}” across processes …` : "Searching across processes …";
   if (name === "Bash") return "Working …";
   if (name === "Read") return `Reading ${base(input?.file_path)}`;
   if (name === "Write") return `Writing ${base(input?.file_path)}`;

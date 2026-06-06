@@ -53,7 +53,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#45** | dogfood-run tuning + FRD-001 artifact (parallel session) | `feat/dogfood-run-frd001` → `main` | Skill + process data + docs | **Merged** (`ffbad3b`) |
 | **#46** | QER-resume dashboard tile (deferred #44 follow-up) | `feat/qer-resume-tile` → `main` | Code + UI + docs | **Merged** (`3109aeb`) |
 | **#47** | BRIDGES doc cleanup — mark resolved sections against real code | `chore/bridges-cleanup` → `main` | Docs only | **Open** (`pending`) |
-| **#53** | DTP Enhancer (compare + triage) + Advisory Board (WIP) | `feat/dtp-enhancer-and-advisory-wip` → `main` | Code + skills + docs | **Open** (`pending`) |
+| **#53** | DTP Enhancer (compare + triage) + Advisory Board (WIP) | `feat/dtp-enhancer-and-advisory-wip` → `main` | Code + skills + docs | **Merged** |
+| **#54** | Advisor chat: full progress UI parity + read-only sub-agent fan-out | `feat/advisor-chat-progress-parity` → `main` | Code + skills | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1647,3 +1648,24 @@ because it shares files with the DTP work.
 `npm run typecheck` clean · `npm test` **108/108**. DTP flows verified in the
 running app (compare → findings list, disposition persist + Accepted filter,
 Dismiss → chat). Advisory Board compiles but is incomplete.
+
+## PR #54 — Advisor chat: progress UI parity + read-only sub-agent fan-out
+
+Follow-up to #53's Advisory Board (WIP). The advisor slide-over reused
+`useAgentChat` but rendered only a minimal "Thinking…" line. This brings it to
+**full parity with the per-process module chat** (`AgentChat`), since the same
+hook already exposes all the state.
+
+- **`AdvisorChat`**: renders the running/ETA chip (advisor drives the chip +
+  per-advisor ETA history), the **sub-agent fan-out chips** (`chat-task-strip`),
+  the live activity line, and the long-wait "perspective" footer — reusing the
+  same `chat-*` classes + `pickPerspective`, so it looks identical.
+- **`CORE_ADVISOR_PROMPT.md`**: advisors may **fan out read-only sub-agents** for
+  broad cross-process questions (they read + report, never write).
+- **Session route**: friendly activity labels for the advisor read tools
+  (`Reading <slug> overview …`, `Searching for "…" across processes …`).
+
+**Verification**: live turn confirmed running chip, activity line, a real
+spawned sub-agent fan-out chip ("Search sanctions-screening controls across all
+processes"), and a streamed cross-process answer. `npm run typecheck` clean for
+the changed files.
