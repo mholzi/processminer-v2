@@ -6,7 +6,7 @@ import * as path from "node:path";
 import * as os from "node:os";
 import { execSync } from "node:child_process";
 import { getSchema, toCamelCase, jsonElementToWikiPage, transitionTarget, listProcesses, getProcessSummary, getProcessElements, searchProcesses, type WikiPage } from "./wiki.ts";
-import { writeRuntime, getRuntime } from "./runtime-store.ts";
+import { writeRuntime, getRuntime, setDtpSummary } from "./runtime-store.ts";
 import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch } from "./session-writes.ts";
 import { writeDtpReport, writeDtpComparison } from "./dtp-report.ts";
 import { buildNote, appendNote, resolveNotesInDoc } from "./session-notes.ts";
@@ -357,9 +357,18 @@ const toolDeclarations: any[] = [
                   dtpSays: { type: "STRING", description: "What the original DTP states (or '—')." },
                   wikiSays: { type: "STRING", description: "What the corrected As-Is wiki holds." },
                   elements: { type: "ARRAY", items: { type: "STRING" }, description: "Implicated wiki element ids." },
-                  severity: { type: "STRING", description: "One of: high | medium | low." }
+                  severity: { type: "STRING", description: "One of: high | medium | low." },
+                  rationale: { type: "STRING", description: "One line on why this severity / why it matters (e.g. 'control gap', 'wrong owner on a key step')." },
+                  suggestedDisposition: { type: "STRING", description: "Suggested call: 'accepted' = a DTP correction; 'dismissed' = more likely a wiki issue to reconcile." }
                 },
                 required: ["kind", "headline", "wikiSays"]
+              }
+            },
+            coverage: {
+              type: "OBJECT",
+              description: "What the run reviewed, for the coverage map.",
+              properties: {
+                dtpSections: { type: "ARRAY", items: { type: "STRING" }, description: "The DTP sections/headings the run walked." }
               }
             }
           },
@@ -391,9 +400,18 @@ const toolDeclarations: any[] = [
                   dtpSays: { type: "STRING", description: "What the original DTP states (or '—')." },
                   wikiSays: { type: "STRING", description: "What the corrected As-Is wiki holds." },
                   elements: { type: "ARRAY", items: { type: "STRING" }, description: "Implicated wiki element ids." },
-                  severity: { type: "STRING", description: "One of: high | medium | low." }
+                  severity: { type: "STRING", description: "One of: high | medium | low." },
+                  rationale: { type: "STRING", description: "One line on why this severity / why it matters (e.g. 'control gap', 'wrong owner on a key step')." },
+                  suggestedDisposition: { type: "STRING", description: "Suggested call: 'accepted' = a DTP correction; 'dismissed' = more likely a wiki issue to reconcile." }
                 },
                 required: ["kind", "headline", "wikiSays"]
+              }
+            },
+            coverage: {
+              type: "OBJECT",
+              description: "What the run reviewed, for the coverage map.",
+              properties: {
+                dtpSections: { type: "ARRAY", items: { type: "STRING" }, description: "The DTP sections/headings the run walked." }
               }
             }
           },
@@ -401,6 +419,18 @@ const toolDeclarations: any[] = [
         }
       },
       required: ["report"]
+    }
+  },
+  {
+    name: "writeDtpSummary",
+    description: "Store the executive-summary memo for one past DTP comparison run, keyed by its run id. Markdown. Stored in the runtime store — never the wiki JSON. Used by the dtp-summary skill.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        runId: { type: "STRING", description: "The DTP run id the memo summarises (e.g. DTP-REGEN-003)." },
+        summary: { type: "STRING", description: "The executive-summary memo, as Markdown." }
+      },
+      required: ["runId", "summary"]
     }
   },
   {
@@ -1201,6 +1231,10 @@ export class GeminiWorker implements IProcessWorker {
                 // Review-only run: stores findings, writes no artifact, never the JSON.
                 const res = writeDtpComparison(this.slug, args.report ?? {});
                 resultText = JSON.stringify({ ok: true, ...res }, null, 2);
+              } else if (originalName === "writeDtpSummary") {
+                if (!this.slug) throw new Error("Process document context not loaded or slug is missing.");
+                const ok = setDtpSummary(this.slug, String(args.runId ?? ""), String(args.summary ?? ""));
+                resultText = JSON.stringify({ ok }, null, 2);
               } else if (originalName === "clearConflicts") {
                 if (!doc) throw new Error("Process document context not loaded or slug is missing.");
                 const { cleared } = clearIngestConflicts(doc);

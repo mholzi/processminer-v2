@@ -77,7 +77,8 @@ truth:
 
 Walk the original DTP section by section against the wiki and emit one finding
 per **material** discrepancy — not every cosmetic wording difference. Each
-finding is `{ kind, headline, dtpSays, wikiSays, elements, severity }`:
+finding is `{ kind, headline, dtpSays, wikiSays, elements, severity, rationale,
+suggestedDisposition }`:
 
 - `kind`:
   - `outdated` — the DTP describes a state the analysis has since superseded.
@@ -94,6 +95,11 @@ finding is `{ kind, headline, dtpSays, wikiSays, elements, severity }`:
 - `elements` — the implicated wiki element ids (e.g. `["PS-COB-003", "CP-COB-001"]`).
 - `severity` — `high` (a control/risk/regulatory gap, a wrong owner on a key
   step), `medium`, or `low` (a minor omission or refinement).
+- `rationale` — one short phrase on *why* this severity / why it matters, e.g.
+  "control gap", "wrong owner on a key step", "minor wording".
+- `suggestedDisposition` — your recommended call: `accepted` when the DTP is the
+  thing that's wrong (a correction to make in the procedure doc), or `dismissed`
+  when the discrepancy more likely means the *wiki* is wrong or incomplete.
 
 Be a critic, not a stenographer: the value is in the discrepancies that matter
 to someone relying on the old document.
@@ -103,7 +109,10 @@ to someone relying on the old document.
 Pass the regenerated Markdown and the findings to the
 `writeDtpReport({ slug, report })` tool, where `report` is
 `{ basis: "as-is", sourceFile: "<original filename>", markdown: "<the full
-regenerated DTP>", findings: [ … ] }`.
+regenerated DTP>", findings: [ … ], coverage: { dtpSections: [ … ] } }`.
+`coverage.dtpSections` is the list of the original DTP's section/heading titles
+you walked — it drives the coverage map, so name every section you reviewed even
+where it raised no finding.
 
 The tool writes the Markdown as a new versioned file under
 `raw-sources/<slug>/` (flagged `generated`), stamps the finding ids (`DTPF-…`),
