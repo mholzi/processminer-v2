@@ -54,7 +54,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#46** | QER-resume dashboard tile (deferred #44 follow-up) | `feat/qer-resume-tile` → `main` | Code + UI + docs | **Merged** (`3109aeb`) |
 | **#47** | BRIDGES doc cleanup — mark resolved sections against real code | `chore/bridges-cleanup` → `main` | Docs only | **Open** (`pending`) |
 | **#53** | DTP Enhancer (compare + triage) + Advisory Board (WIP) | `feat/dtp-enhancer-and-advisory-wip` → `main` | Code + skills + docs | **Merged** |
-| **#54** | Advisor chat: full progress UI parity + read-only sub-agent fan-out | `feat/advisor-chat-progress-parity` → `main` | Code + skills | **Open** (`pending`) |
+| **#54** | Advisor chat: full progress UI parity + read-only sub-agent fan-out | `feat/advisor-chat-progress-parity` → `main` | Code + skills | **Merged** (`bf5b81d`) |
+| **#55** | Advisor chat: clickable citations + capture-as-note + richer markdown | `feat/advisor-chat-citations-notes` → `main` | Code | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1669,3 +1670,27 @@ hook already exposes all the state.
 spawned sub-agent fan-out chip ("Search sanctions-screening controls across all
 processes"), and a streamed cross-process answer. `npm run typecheck` clean for
 the changed files.
+
+## PR #55 — Advisor chat: clickable citations + capture-as-note + richer markdown
+
+Three Advisory-Board UX wins (picked from a 20-idea list).
+
+- **Clickable element-id citations (#6)** — extracted the linkify/hovercard
+  helpers out of `AgentChat` into a shared `chat-linkify.tsx` (module chat now
+  imports it; no behaviour change, no drift). `AdvisorChat` builds a
+  **cross-process** `getRef` over all accessible processes, so a cited id like
+  `CP-COB-001` becomes a hover-previewable link that opens its process. The
+  advisor prompt now cites the **full** element id so the linkifier catches it.
+- **Capture as note (#11)** — a "💬 Save as note" affordance under an advisor
+  answer that cites an element: resolves the cited id(s) (picker when several),
+  POSTs to the existing `/api/notes`, with the text prefixed by the advisor name
+  for attribution. Read-only contract intact — it's a user action through the
+  existing notes writer, not an advisor write.
+- **Richer markdown (#15)** — table + code-block CSS for advisor answers
+  (`remark-gfm` already parsed them).
+
+**Verification**: live in the running app — table rendered, `CP-COB-001`
+linkified, "Save as note" wrote a note to `cob-003.json` authored by the user
+with the `**Lead Banking SME** (advisory):` prefix (test note reverted).
+`npm run typecheck` clean for all changed files, including the `AgentChat`
+extraction (module chat unchanged).
