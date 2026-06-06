@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useAgentChat } from "./useAgentChat";
@@ -9,7 +9,21 @@ import type { User } from "@/lib/user";
 import type { ProcessDoc } from "@/lib/wiki";
 import AdvisorOverviewCard from "./AdvisorOverviewCard";
 import AdvisorPortfolioCard from "./AdvisorPortfolioCard";
+import { type GetRef, buildComponents, ELEMENT_ID } from "./chat-linkify";
 import { pickPerspective } from "@/lib/wait-perspective";
+
+function prettifyType(t: string): string {
+  return t.replace(/[-_]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+// The distinct element ids an advisor message cites (for "save as note").
+function citedIds(text: string): string[] {
+  const ids = new Set<string>();
+  let m: RegExpExecArray | null;
+  ELEMENT_ID.lastIndex = 0;
+  while ((m = ELEMENT_ID.exec(text))) ids.add(m[0]);
+  return [...ids];
+}
 
 // Long-wait perspective footer — same threshold/behaviour as the module chat.
 const PERSPECTIVE_THRESHOLD_MS = 2 * 60 * 1000;
@@ -79,6 +93,61 @@ export default function AdvisorChat({
     advisorSlugs: allowedSlugs,
     userName: user.name,
   });
+
+  // Cross-process element-id linkify: resolve a cited id (e.g. CTL-COB-004)
+  // against every accessible process, preview on hover, open its process on
+  // click. Same mechanism as the per-process module chat (chat-linkify).
+  const refIndex = useMemo(() => {
+    const idx = new Map<string, { page: ProcessDoc["elements"][number]; slug: string }>();
+    for (const d of docs) {
+      for (const e of d.elements) {
+        if (!idx.has(e.id)) idx.set(e.id, { page: e, slug: d.slug });
+      }
+    }
+    return idx;
+  }, [docs]);
+  const mdComponents = useMemo(() => {
+    const getRef: GetRef = (id) => {
+      const hit = refIndex.get(id);
+      return hit ? { page: hit.page, typeLabel: prettifyType(hit.page.type) } : undefined;
+    };
+    const onRefClick = (id: string) => {
+      const hit = refIndex.get(id);
+      if (hit) onOpenProcess?.(hit.slug);
+    };
+    return buildComponents(getRef, onRefClick);
+  }, [refIndex, onOpenProcess]);
+
+  // "Save as note" — capture an advisor point as a discussion comment on a
+  // cited element, attributed to the advisor (the note author is the signed-in
+  // user; the advisor name is prefixed for traceability). Read-only contract is
+  // intact — this is a user action through the existing /api/notes writer.
+  const [notePick, setNotePick] = useState<string | null>(null); // message id picking a target
+  const [savedNote, setSavedNote] = useState<
+    Record<string, { elementId: string; slug: string }>
+  >({});
+  const saveNote = async (msgId: string, text: string, elementId: string) => {
+    const hit = refIndex.get(elementId);
+    if (!hit) return;
+    setNotePick(null);
+    try {
+      const res = await fetch("/api/notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({
+          slug: hit.slug,
+          elementId,
+          text: `**${advisor.name}** (advisory): ${text}`,
+        }),
+      });
+      if (res.ok) {
+        setSavedNote((s) => ({ ...s, [msgId]: { elementId, slug: hit.slug } }));
+      }
+    } catch {
+      /* leave the button so the user can retry */
+    }
+  };
 
   // Long-wait perspective footer — tick elapsed every 5s while pending, pick the
   // line once when the threshold is first crossed (same as the module chat).
@@ -186,7 +255,7 @@ export default function AdvisorChat({
         <div className="ab-thread">
           {chat.messages.length === 0 && !chat.pending && (
             <div className="ab-msg agent ab-greeting">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
                 {advisor.greeting}
               </ReactMarkdown>
             </div>
@@ -216,9 +285,64 @@ export default function AdvisorChat({
                 </div>
               );
             }
+            const cited =
+              m.role === "agent"
+                ? citedIds(m.text).filter((id) => refIndex.has(id))
+                : [];
             return (
               <div className={`ab-msg ${m.role}`} key={m.id}>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.text}</ReactMarkdown>
+                <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+                  {m.text}
+                </ReactMarkdown>
+                {cited.length > 0 && (
+                  <div className="ab-note-bar">
+                    {savedNote[m.id] ? (
+                      <span className="ab-note-done">
+                        ✓ Saved as note on{" "}
+                        <button
+                          type="button"
+                          className="ab-note-link"
+                          onClick={() => onOpenProcess?.(savedNote[m.id].slug)}
+                        >
+                          {savedNote[m.id].elementId}
+                        </button>
+                      </span>
+                    ) : notePick === m.id ? (
+                      <span className="ab-note-pick">
+                        Attach to:
+                        {cited.map((id) => (
+                          <button
+                            key={id}
+                            type="button"
+                            className="ab-note-opt"
+                            onClick={() => saveNote(m.id, m.text, id)}
+                          >
+                            {id}
+                          </button>
+                        ))}
+                        <button
+                          type="button"
+                          className="ab-note-cancel"
+                          onClick={() => setNotePick(null)}
+                        >
+                          cancel
+                        </button>
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        className="ab-note-btn"
+                        onClick={() =>
+                          cited.length === 1
+                            ? saveNote(m.id, m.text, cited[0])
+                            : setNotePick(m.id)
+                        }
+                      >
+                        💬 Save as note
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}

@@ -2300,6 +2300,22 @@ body {
   background: var(--accent-soft); color: var(--accent);
   border-radius: var(--r-sm); padding: 1px 5px;
 }
+/* Tables + code blocks in advisor answers (GFM via remark-gfm). */
+.ab-msg.agent table {
+  border-collapse: collapse; width: 100%; margin: var(--space-sm) 0;
+  font-size: var(--text-xs); display: block; overflow-x: auto;
+}
+.ab-msg.agent th, .ab-msg.agent td {
+  border: 1px solid var(--line); padding: 4px 8px;
+  text-align: left; vertical-align: top;
+}
+.ab-msg.agent th { background: var(--surface); font-weight: 600; }
+.ab-msg.agent pre {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-sm); padding: var(--space-sm); overflow-x: auto;
+  margin: var(--space-xs) 0;
+}
+.ab-msg.agent pre code { background: none; color: var(--ink); padding: 0; }
 .ab-msg.agent.pending {
   display: flex; align-items: center; gap: var(--space-sm);
   color: var(--muted); background: none; border: 0;
@@ -2307,6 +2323,27 @@ body {
 .ab-dot {
   width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
   animation: tb-sourcing-pulse 1.2s ease-in-out infinite;
+}
+/* "Save as note" affordance under an advisor answer */
+.ab-note-bar { margin-top: var(--space-xs); display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.ab-note-btn {
+  font-family: var(--font); font-size: var(--text-xs); color: var(--muted);
+  background: none; border: 0; padding: 2px 0; cursor: pointer;
+  text-decoration: underline; text-underline-offset: 2px;
+}
+.ab-note-btn:hover { color: var(--accent); }
+.ab-note-pick { font-size: var(--text-xs); color: var(--muted); display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.ab-note-opt {
+  font-family: var(--mono); font-size: var(--text-xs); color: var(--accent);
+  background: var(--accent-soft); border: 1px solid var(--accent-border);
+  border-radius: var(--r-sm); padding: 1px 6px; cursor: pointer;
+}
+.ab-note-opt:hover { background: var(--accent); color: #fff; }
+.ab-note-cancel { font-size: var(--text-xs); color: var(--muted); background: none; border: 0; cursor: pointer; }
+.ab-note-done { font-size: var(--text-xs); color: var(--hi); }
+.ab-note-link {
+  font-family: var(--mono); font-size: var(--text-xs); color: var(--accent);
+  background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
 }
 .ab-composer {
   display: flex; gap: var(--space-sm); align-items: flex-end;
