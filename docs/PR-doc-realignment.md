@@ -1730,3 +1730,54 @@ avatar tooltip).
 
 ## Verification
 `npm run typecheck` clean · `npm test` **108/108** · each flow dogfooded in-app.
+
+---
+
+# PR #57 — Per-process access enforcement: session endpoint, write path, tool layer
+
+`feat/per-process-access` → `main` · Security · **Open**.
+
+Closes the R16 gap where per-process access (`canAccess`) was enforced on the
+page read path but not on the surfaces that can mutate or read process data.
+Authentication and the write-path resolver were already done; this adds the
+session endpoint and the worker tool layer. Deliberately excludes the parallel
+admin feature-flags / feature-toggles track.
+
+## Session endpoint (`/api/session`)
+- The POST body now carries a structured `slug`; the in-app callers send it
+  (`ProcessDocScreen` chat + area-summary, `useAgentChat` / `agent-chat`).
+  Advisor turns send none — they're cross-process by design.
+- When a slug is present (non-advisor), the route enforces `canAccess` → **403**
+  otherwise, before any worker spawns. Resume turns re-confirm against the slug
+  recorded in `.sessions.json`, so a spoofed body slug can't ride a session
+  bound to a process the caller can't see.
+
+## Worker tool layer (the real reach)
+- The signed-in identity is plumbed into the worker pool and down to the tools:
+  `SessionWorker` passes `PM_SESSION_USER` / `PM_SESSION_IS_ADMIN` to the
+  `claude` CLI (inherited by the stdio MCP server); `GeminiWorker` takes the
+  user inline.
+- `claude-mcp-server` + `gemini-worker` now gate every slug-bearing tool by
+  `canAccess`: `listAccessibleProcesses` / `searchProcesses` filter to
+  accessible slugs; `getProcessSummary` / `getProcessElements` and the general
+  slug path (reads, writes, expands) assert access. The Advisory Board's
+  read-only fan-out is no longer prompt-level only.
+- Fail-open only when no identity is present (the HTTP route is the trust
+  boundary; every real session carries identity).
+
+## Write path
+- `wiki-write.resolveWriter` requires a valid session **and** `canAccess(slug)`
+  for browser-originated server actions; the in-process AI worker (no request
+  context) proceeds as the system author "SME".
+
+## Also
+- `listProcesses` skips dotfiles, so the `.sessions.json` runtime map no longer
+  surfaces as a bogus `.sessions` "process" in the cross-process tools.
+
+## Verification
+Session route driven end-to-end with signed cookies: non-owner of a governed
+process → **403**, owner/admin → **200**, advisor turn exempt → **200**. MCP
+server driven directly over stdio JSON-RPC: non-owner **denied** on
+`getProcessElements` / `getProcessSummary`, admin allowed,
+`listAccessibleProcesses` excludes the governed process for the non-owner.
+`npm run typecheck` clean · `npm test` **108/108**.

@@ -11,6 +11,7 @@ import * as fs from "node:fs";
 import { atomicWriteFileSync } from "./atomic-write.ts";
 import * as path from "node:path";
 import { getSchema, jsonElementToWikiPage, transitionTarget, listProcesses, getProcessSummary, getProcessElements, searchProcesses } from "./wiki.ts";
+import { canAccess } from "./process-access.ts";
 import { writeRuntime, getRuntime, setDtpSummary } from "./runtime-store.ts";
 import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch } from "./session-writes.ts";
 import { writeDtpReport, writeDtpComparison } from "./dtp-report.ts";
@@ -51,6 +52,29 @@ import {
  */
 
 const SESSIONS_MAP_PATH = path.join(process.cwd(), "wiki", "processes", ".sessions.json");
+
+// ---- Per-process access (R16) ----
+// The session's signed-in identity, handed down by SessionWorker via env (the
+// `claude` CLI inherits it and passes it to this stdio MCP server). Every
+// slug-bearing tool is gated by canAccess, so a session can only reach the
+// processes its user can see — not every process on disk. When the identity
+// is absent (the env was not set — e.g. a non-session invocation), we leave
+// access open: the session HTTP route is the trust boundary that requires a
+// signed-in user, so a worker with no identity context only exists outside it.
+const SESSION_USER = process.env.PM_SESSION_USER || null;
+const SESSION_IS_ADMIN = process.env.PM_SESSION_IS_ADMIN === "1";
+function hasAccess(slug: string): boolean {
+  if (!SESSION_USER) return true; // no identity context — see note above
+  return canAccess({ username: SESSION_USER, isAdmin: SESSION_IS_ADMIN }, slug);
+}
+function assertAccess(slug: string): void {
+  if (!hasAccess(slug)) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      `Access denied: you do not have access to process "${slug}".`,
+    );
+  }
+}
 
 // Global state for temp keys within a single process run, shared across multiple tool calls
 // In a robust implementation, this would be scoped to the session or request.
@@ -546,20 +570,28 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   // Handled before the per-tool slug guard below — two of them take no slug,
   // and none mutate the wiki (they call no writer).
   if (name === "listAccessibleProcesses") {
-    return { content: [{ type: "text", text: JSON.stringify(listProcesses(), null, 2) }] };
+    // Only the processes this session's user may see (R16) — the name is now
+    // literal, not aspirational.
+    const visible = listProcesses().filter((p) => hasAccess(p.slug));
+    return { content: [{ type: "text", text: JSON.stringify(visible, null, 2) }] };
   }
   if (name === "searchProcesses") {
     const query = String(args?.query || "");
-    return { content: [{ type: "text", text: JSON.stringify(searchProcesses(query), null, 2) }] };
+    // Scope the search to accessible slugs so hits never leak from governed
+    // processes the user can't open.
+    const allowed = listProcesses().map((p) => p.slug).filter(hasAccess);
+    return { content: [{ type: "text", text: JSON.stringify(searchProcesses(query, allowed), null, 2) }] };
   }
   if (name === "getProcessSummary") {
     if (!slug) throw new McpError(ErrorCode.InvalidParams, "slug is required.");
+    assertAccess(slug);
     const summary = getProcessSummary(slug);
     if (!summary) throw new McpError(ErrorCode.InvalidParams, `Process not found: ${slug}`);
     return { content: [{ type: "text", text: JSON.stringify(summary, null, 2) }] };
   }
   if (name === "getProcessElements") {
     if (!slug) throw new McpError(ErrorCode.InvalidParams, "slug is required.");
+    assertAccess(slug);
     const collection = String(args?.collection || "");
     if (!collection) throw new McpError(ErrorCode.InvalidParams, "collection is required.");
     const elements = getProcessElements(slug, collection);
@@ -570,6 +602,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   if (!slug) {
     throw new McpError(ErrorCode.InvalidParams, "slug is required for all tools.");
   }
+
+  // Per-process access gate (R16) for every slug-bearing tool — reads, writes
+  // and expands alike. A scoped session operates on a slug its user can access
+  // (the HTTP route already verified that), so this only ever blocks reaching
+  // OUT to another process. scaffoldProcess creates a not-yet-existing slug,
+  // which is ungoverned and therefore allowed.
+  assertAccess(slug);
 
   const processFilePath = path.join(process.cwd(), "wiki", "processes", `${slug}.json`);
 

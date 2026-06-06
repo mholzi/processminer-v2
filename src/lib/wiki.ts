@@ -269,7 +269,9 @@ export function getSchema(): Schema {
 export function listProcesses(): { slug: string; title: string }[] {
   if (!existsSync(WIKI_DIR)) return [];
   return readdirSync(WIKI_DIR, { withFileTypes: true })
-    .filter((f) => f.isFile() && f.name.endsWith(".json"))
+    // Skip dotfiles — e.g. the .sessions.json runtime map — so they never
+    // surface as bogus "processes" in the list or the cross-process tools.
+    .filter((f) => f.isFile() && f.name.endsWith(".json") && !f.name.startsWith("."))
     .map((f) => {
       const slug = f.name.replace(".json", "");
       const data = JSON.parse(readFileSync(join(WIKI_DIR, f.name), "utf8"));

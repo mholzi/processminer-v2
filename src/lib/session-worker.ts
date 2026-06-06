@@ -18,6 +18,15 @@ import { IProcessWorker, WorkerEvent } from "./worker-interface";
 export { type IProcessWorker, type WorkerEvent } from "./worker-interface";
 import { GeminiWorker } from "./gemini-worker";
 
+/** The signed-in user a session runs as. Plumbed to the tool layer so the
+ *  read/write tools can enforce per-process access (R16) — a session can only
+ *  reach processes its user can see, not every process on disk. A session
+ *  belongs to one user for its whole life, so this is fixed at spawn. */
+export interface SessionUser {
+  username: string;
+  isAdmin: boolean;
+}
+
 const SESSION_PROVIDER = process.env.SESSION_PROVIDER || "claude";
 const MODEL = process.env.SESSION_MODEL || "claude-sonnet-4-6";
 const TURN_TIMEOUT_MS = Number(process.env.SESSION_TURN_TIMEOUT_MS) || 1_800_000;
@@ -50,7 +59,7 @@ export class SessionWorker implements IProcessWorker {
   private sink: ((e: WorkerEvent) => void) | null = null;
 
   /** `resumeId` rehydrates a known session whose warm worker was lost. */
-  constructor(resumeId?: string | null) {
+  constructor(resumeId?: string | null, user?: SessionUser | null) {
     const args = [
       "-p",
       "--input-format", "stream-json",
@@ -66,7 +75,21 @@ export class SessionWorker implements IProcessWorker {
       args.push("--resume", resumeId);
       this.sessionId = resumeId;
     }
-    this.child = spawn("claude", args, { cwd: process.cwd() });
+    // Carry the session's identity into the environment. The `claude` CLI
+    // inherits this env and passes it to the stdio MCP server it spawns
+    // (claude-mcp-server.ts), which reads PM_SESSION_USER/PM_SESSION_IS_ADMIN
+    // to enforce canAccess on every slug-bearing tool (R16). Without it the
+    // cross-process read tools would reach any process on disk.
+    const env = {
+      ...process.env,
+      ...(user
+        ? {
+            PM_SESSION_USER: user.username,
+            PM_SESSION_IS_ADMIN: user.isAdmin ? "1" : "0",
+          }
+        : {}),
+    };
+    this.child = spawn("claude", args, { cwd: process.cwd(), env });
     this.child.stdout?.on("data", (d: Buffer) => this.onStdout(d));
     this.child.stderr?.on("data", (d: Buffer) => {
       this.stderrTail = (this.stderrTail + d.toString()).slice(-600);
@@ -216,7 +239,7 @@ class SessionPool {
    * warm worker (server restarted, evicted, or crashed) is rehydrated.
    * A null `sessionId` always starts a fresh session.
    */
-  acquire(sessionId: string | null): IProcessWorker {
+  acquire(sessionId: string | null, user?: SessionUser | null): IProcessWorker {
     for (const [id, w] of this.workers) {
       if (!w.alive) this.workers.delete(id);
     }
@@ -228,12 +251,12 @@ class SessionPool {
           return w;
         }
       }
-      
+
       let revived: IProcessWorker;
       if (SESSION_PROVIDER === "gemini") {
-        revived = new GeminiWorker(sessionId);
+        revived = new GeminiWorker(sessionId, user);
       } else {
-        revived = new SessionWorker(sessionId);
+        revived = new SessionWorker(sessionId, user);
       }
       this.workers.set(revived.id, revived);
       this.enforceCap();
@@ -242,9 +265,9 @@ class SessionPool {
 
     let fresh: IProcessWorker;
     if (SESSION_PROVIDER === "gemini") {
-      fresh = new GeminiWorker();
+      fresh = new GeminiWorker(null, user);
     } else {
-      fresh = new SessionWorker();
+      fresh = new SessionWorker(null, user);
     }
     this.workers.set(fresh.id, fresh);
     this.enforceCap();

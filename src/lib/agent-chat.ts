@@ -37,6 +37,10 @@ export interface SessionRequest {
   message: string;
   /** Resume id, or null to start a fresh `claude` session. */
   sessionId: string | null;
+  /** The process this turn targets — the server enforces canAccess against it
+   *  (R16). Omit/null for cross-process advisor turns, which scope read-only
+   *  access at the prompt level instead (buildAdvisorPreamble). */
+  slug?: string | null;
   /** Stream reply text token-by-token (user preference). */
   stream: boolean;
   /** Skill this turn invokes, or null for free text. */
@@ -67,6 +71,7 @@ export async function runSession(
     body: JSON.stringify({
       message: req.message,
       sessionId: req.sessionId,
+      slug: req.slug ?? undefined,
       stream: req.stream,
       skill: req.skill,
       advisor: req.advisor ?? null,

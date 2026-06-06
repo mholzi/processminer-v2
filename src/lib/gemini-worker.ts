@@ -6,6 +6,7 @@ import * as path from "node:path";
 import * as os from "node:os";
 import { execSync } from "node:child_process";
 import { getSchema, toCamelCase, jsonElementToWikiPage, transitionTarget, listProcesses, getProcessSummary, getProcessElements, searchProcesses, type WikiPage } from "./wiki.ts";
+import { canAccess } from "./process-access.ts";
 import { writeRuntime, getRuntime, setDtpSummary } from "./runtime-store.ts";
 import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch } from "./session-writes.ts";
 import { writeDtpReport, writeDtpComparison } from "./dtp-report.ts";
@@ -701,11 +702,17 @@ export class GeminiWorker implements IProcessWorker {
   alive = true;
   private slug: string | undefined;
   private activeSkill: string | null = null;
+  // The session's signed-in identity — gates every slug-bearing tool by
+  // canAccess (R16) so a session only reaches processes its user can see.
+  // Null when no identity was provided (legacy callers); access stays open
+  // then, exactly like the out-of-process MCP server.
+  private user: { username: string; isAdmin: boolean } | null;
 
   private ai: GoogleGenAI;
   private history: Array<any> = [];
 
-  constructor(resumeId?: string | null) {
+  constructor(resumeId?: string | null, user?: { username: string; isAdmin: boolean } | null) {
+    this.user = user ?? null;
     this.sessionId = resumeId || crypto.randomUUID();
     this.ai = new GoogleGenAI({
       apiKey: process.env.GEMINI_API_KEY || undefined,
@@ -714,6 +721,18 @@ export class GeminiWorker implements IProcessWorker {
       const info = getSessionInfo(this.sessionId);
       this.slug = info.slug || undefined;
       this.activeSkill = info.activeSkill || null;
+    }
+  }
+
+  /** R16 — whether this session's user may reach `slug`. Open when no identity
+   *  is present (legacy), since the HTTP route is the trust boundary. */
+  private hasAccess(slug: string): boolean {
+    if (!this.user) return true;
+    return canAccess(this.user, slug);
+  }
+  private assertAccess(slug: string): void {
+    if (!this.hasAccess(slug)) {
+      throw new Error(`Access denied: you do not have access to process "${slug}".`);
     }
   }
 
@@ -853,6 +872,12 @@ export class GeminiWorker implements IProcessWorker {
     }
 
     try {
+      // R16 — the session's scoped process must be one the user can access.
+      // Blocks a forged scope preamble pointing this session at a governed
+      // process the user can't open. (Cross-process read tools are gated
+      // separately in the dispatch below.)
+      if (this.slug) this.assertAccess(this.slug);
+
       const systemInstruction = this.buildSystemInstruction(message);
 
       this.history.push({
@@ -949,15 +974,21 @@ export class GeminiWorker implements IProcessWorker {
               const args = (call.args || {}) as any;
 
               if (originalName === "listAccessibleProcesses") {
-                // Advisory Board (read-only) — cross-process, no scoped doc needed.
-                resultText = JSON.stringify(listProcesses(), null, 2);
+                // Advisory Board (read-only) — cross-process, but only the
+                // processes this session's user may see (R16).
+                resultText = JSON.stringify(listProcesses().filter((p) => this.hasAccess(p.slug)), null, 2);
               } else if (originalName === "searchProcesses") {
-                resultText = JSON.stringify(searchProcesses(String(args.query || "")), null, 2);
+                // Scope the search to accessible slugs so hits never leak from
+                // governed processes the user can't open.
+                const allowed = listProcesses().map((p) => p.slug).filter((s) => this.hasAccess(s));
+                resultText = JSON.stringify(searchProcesses(String(args.query || ""), allowed), null, 2);
               } else if (originalName === "getProcessSummary") {
+                this.assertAccess(String(args.slug || ""));
                 const s = getProcessSummary(String(args.slug || ""));
                 if (!s) throw new Error(`Process not found: ${args.slug}`);
                 resultText = JSON.stringify(s, null, 2);
               } else if (originalName === "getProcessElements") {
+                this.assertAccess(String(args.slug || ""));
                 const els = getProcessElements(String(args.slug || ""), String(args.collection || ""));
                 if (els === null) throw new Error(`Process not found: ${args.slug}`);
                 resultText = JSON.stringify({ slug: args.slug, collection: args.collection, elements: els }, null, 2);

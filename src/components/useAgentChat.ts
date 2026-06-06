@@ -178,6 +178,11 @@ export function useAgentChat(opts: UseAgentChatOptions): AgentChatState {
         {
           message: wireText,
           sessionId: turnSessionId,
+          // Advisor turns are cross-process (read-only fan-out) — they carry no
+          // per-process slug; the server scopes them via buildAdvisorPreamble.
+          // For an ordinary process/architect canvas, `slug` is the open
+          // process the server enforces canAccess against (R16).
+          slug: advisor ? null : slug,
           stream: streamReplies,
           skill: sendOpts?.skill || turnSkill || null,
           advisor: advisor ?? null,
@@ -267,7 +272,7 @@ export function useAgentChat(opts: UseAgentChatOptions): AgentChatState {
           sendOpts?.onComplete?.();
         });
     },
-    [activeSkill, sessionId, scopePreamble, streamReplies, skillLabels, onTurnDone, advisor, advisorSlugs, userName],
+    [activeSkill, sessionId, slug, scopePreamble, streamReplies, skillLabels, onTurnDone, advisor, advisorSlugs, userName],
   );
 
   const stop = useCallback(() => {

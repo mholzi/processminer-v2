@@ -1,6 +1,31 @@
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import type { NextRequest } from "next/server";
 import { sessionPool, type WorkerEvent } from "@/lib/session-worker";
 import { buildAdvisorPreamble } from "@/lib/advisor-server";
+import { COOKIE_NAME, verifySession } from "@/lib/auth-server";
+import { canAccess } from "@/lib/process-access";
+
+// The session → process-slug map the worker writes after each turn
+// (claude-mcp-server.ts / gemini-worker.ts). Used to cross-check resume turns:
+// a body slug can be spoofed, but a sessionId is bound to the slug it first ran
+// against, so re-confirm access against the recorded slug too.
+const SESSIONS_MAP_PATH = join(process.cwd(), "wiki", "processes", ".sessions.json");
+function recordedSlug(sessionId: string): string | null {
+  try {
+    if (!existsSync(SESSIONS_MAP_PATH)) return null;
+    const data = JSON.parse(readFileSync(SESSIONS_MAP_PATH, "utf8")) as Record<
+      string,
+      string | { slug?: string } | undefined
+    >;
+    const entry = data[sessionId];
+    if (typeof entry === "string") return entry || null;
+    if (entry && typeof entry === "object") return entry.slug || null;
+    return null;
+  } catch {
+    return null;
+  }
+}
 
 // The Process Assistant chat is backed by the local `claude` CLI. Each chat
 // turn used to spawn a fresh `claude` process — paying a full cold start
@@ -55,9 +80,19 @@ function describeTool(name: string, input: Record<string, unknown>): string {
 }
 
 export async function POST(req: NextRequest) {
+  // Authentication gate. This endpoint drives a `claude` worker running with
+  // --dangerously-skip-permissions that writes wiki files and runs scripts —
+  // the single most powerful surface in the app. It must never be reachable
+  // without a valid session.
+  const sessionUser = verifySession(req.cookies.get(COOKIE_NAME)?.value);
+  if (!sessionUser) {
+    return Response.json({ error: "Not signed in." }, { status: 401 });
+  }
+
   let body: {
     message?: unknown;
     sessionId?: unknown;
+    slug?: unknown;
     stream?: unknown;
     skill?: unknown;
     advisor?: unknown;
@@ -74,6 +109,7 @@ export async function POST(req: NextRequest) {
   const sessionId =
     typeof body.sessionId === "string" && body.sessionId ? body.sessionId : null;
   const skill = typeof body.skill === "string" && body.skill ? body.skill.trim() : null;
+  const slug = typeof body.slug === "string" && body.slug ? body.slug.trim() : null;
   if (!message) {
     return Response.json({ error: "A message is required." }, { status: 400 });
   }
@@ -84,6 +120,34 @@ export async function POST(req: NextRequest) {
   // it via --resume. Access scoping is prompt-level for now (plan §5, B).
   const advisor =
     typeof body.advisor === "string" && body.advisor ? body.advisor.trim() : null;
+
+  // Per-process access gate (R16). Ordinary process/architect turns carry the
+  // open process `slug`; the user must pass canAccess for it — exactly the
+  // check page.tsx and resolveWriter (wiki-write.ts) enforce on the read and
+  // write paths. Advisor turns are deliberately cross-process (read-only
+  // fan-out) and exempt: they scope access at the prompt level via
+  // buildAdvisorPreamble, so they never carry a single per-process slug.
+  if (!advisor && slug) {
+    if (!canAccess(sessionUser, slug)) {
+      return Response.json(
+        { error: "You don't have access to this process." },
+        { status: 403 },
+      );
+    }
+    // Resume turns: a body slug can be spoofed to one the caller can access
+    // while resuming a session bound to a process they cannot. Re-confirm
+    // against the slug the worker recorded for this session, if any.
+    if (sessionId) {
+      const bound = recordedSlug(sessionId);
+      if (bound && !canAccess(sessionUser, bound)) {
+        return Response.json(
+          { error: "You don't have access to this process." },
+          { status: 403 },
+        );
+      }
+    }
+  }
+
   let wireMessage = message;
   if (advisor && !sessionId) {
     const advisorSlugs = Array.isArray(body.advisorSlugs)
@@ -101,7 +165,13 @@ export async function POST(req: NextRequest) {
 
   // The warm worker for this session — reused if alive, rehydrated via
   // --resume if its process was lost, or created fresh for a new session.
-  const worker = sessionPool.acquire(sessionId);
+  // The user identity rides along so the tool layer enforces canAccess (R16):
+  // a session can only reach processes its user can see, not every process on
+  // disk (the cross-process read tools would otherwise leak governed ones).
+  const worker = sessionPool.acquire(sessionId, {
+    username: sessionUser.username,
+    isAdmin: sessionUser.isAdmin === true,
+  });
 
   const stream = new ReadableStream<Uint8Array>({
     start(controller) {
