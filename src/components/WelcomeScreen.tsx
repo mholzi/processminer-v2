@@ -288,15 +288,12 @@ export default function WelcomeScreen({
             ⚙ Admin
           </button>
         )}
-        <span className="ws-user-mini">
-          {user.name} · {user.role}
-        </span>
         <button
           type="button"
           className="ws-avatar"
           onClick={onSignOut}
-          title="Sign out"
-          aria-label="Sign out"
+          title={`${user.name} · ${user.role} — sign out`}
+          aria-label={`${user.name}, ${user.role} — sign out`}
         >
           {initials(user.name)}
         </button>

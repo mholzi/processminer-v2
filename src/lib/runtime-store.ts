@@ -43,6 +43,13 @@ export interface DtpFinding {
   /** Implicated wiki element ids. */
   elements: string[];
   severity: "high" | "medium" | "low";
+  /** One line on WHY this severity / why it matters (e.g. "control gap",
+   *  "wrong owner on a key step"). Skill-emitted, optional. */
+  rationale?: string;
+  /** The skill's suggested disposition — "accepted" (a DTP correction) or
+   *  "dismissed" (more likely a wiki issue to reconcile). A hint only; the
+   *  reviewer still decides. Optional. */
+  suggestedDisposition?: "accepted" | "dismissed";
   /** Reviewer disposition — app-owned workflow state, set in the DTP Enhancer.
    *  Absent means "open". */
   disposition?: DtpDisposition;
@@ -68,6 +75,13 @@ export interface DtpReport {
    *  runs; absent for "compare". */
   generatedFile?: string;
   findings: DtpFinding[];
+  /** What the run actually examined — drives the coverage map. `dtpSections` is
+   *  the list of DTP sections/headings the skill walked. Optional (older runs
+   *  have none). */
+  coverage?: { dtpSections: string[] };
+  /** Executive-summary memo for this comparison (Markdown), generated on demand
+   *  by the dtp-summary skill. Optional. */
+  summary?: string;
 }
 
 export interface ProcessRuntime {
@@ -136,6 +150,28 @@ export function setDtpDisposition(
   const finding = report?.findings.find((f) => f.id === findingId);
   if (!finding) return false;
   finding.disposition = disposition;
+  writeRuntime(slug, { dtpReports: reports, dtpReport: undefined });
+  return true;
+}
+
+/** Store the executive-summary memo for a past DTP run. Returns false when the
+ *  run isn't found. Runtime state (R9), never the wiki JSON. */
+export function setDtpSummary(slug: string, runId: string, summary: string): boolean {
+  const rt = getRuntime(slug);
+  const reports: DtpReport[] = Array.isArray(rt.dtpReports)
+    ? rt.dtpReports
+    : rt.dtpReport
+      ? [
+          {
+            ...rt.dtpReport,
+            runId: rt.dtpReport.runId ?? "DTP-REGEN-001",
+            mode: rt.dtpReport.mode ?? "regenerate",
+          },
+        ]
+      : [];
+  const report = reports.find((r) => r.runId === runId);
+  if (!report) return false;
+  report.summary = summary;
   writeRuntime(slug, { dtpReports: reports, dtpReport: undefined });
   return true;
 }

@@ -56,6 +56,7 @@ what it changes, behaviour/scope, and how it was verified.
 | **#53** | DTP Enhancer (compare + triage) + Advisory Board (WIP) | `feat/dtp-enhancer-and-advisory-wip` → `main` | Code + skills + docs | **Merged** |
 | **#54** | Advisor chat: full progress UI parity + read-only sub-agent fan-out | `feat/advisor-chat-progress-parity` → `main` | Code + skills | **Merged** (`bf5b81d`) |
 | **#55** | Advisor chat: clickable citations + capture-as-note + richer markdown | `feat/advisor-chat-citations-notes` → `main` | Code | **Open** (`pending`) |
+| **#56** | DTP Enhancer review tools — rollup, coverage, evidence, triage, export, summary | `feat/dtp-review-tools` → `main` | Code + skills | **Merged** |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1694,3 +1695,38 @@ linkified, "Save as note" wrote a note to `cob-003.json` authored by the user
 with the `**Lead Banking SME** (advisory):` prefix (test note reverted).
 `npm run typecheck` clean for all changed files, including the `AgentChat`
 extraction (module chat unchanged).
+
+---
+
+# PR #56 — DTP Enhancer review tools (rollup, coverage, evidence, triage, export, summary)
+
+`feat/dtp-review-tools` → `main` · Code + skills · **Open**.
+
+Builds on the DTP Enhancer (#53). The tool stays **read-only review/diagnostic** —
+it compares an existing DTP against the corrected As-Is and never drafts or amends
+the DTP. DTP-only PR; deliberately excludes the parallel Advisory Board track.
+
+## Finding analysis
+- **Run rollup** — counts by kind + severity, control/high-risk flag.
+- **Coverage map** — DTP sections reviewed (new report `coverage` block) + As-Is
+  elements no finding references (blind-spot list).
+- **Evidence drill-down** — expand the cited As-Is element bodies inline.
+- **Severity rationale + suggested disposition** — skill-emitted hints.
+
+## Triage + reporting
+- Scannable findings list with expand-to-detail; **Open/Accept/Dismiss**
+  disposition via `/api/dtp-disposition`; **Accepted** overview filter.
+- **Dismiss** opens the chat with the finding to reconcile the wiki.
+- **Export Accepted worklist** as Markdown checklist or CSV (client-side).
+- **Executive-summary memo** per run: `dtp-summary` skill + `writeDtpSummary`
+  tool, rendered as Markdown.
+
+## Data
+`DtpFinding` gains headline / rationale / suggestedDisposition / disposition;
+`DtpReport` gains runId / mode / coverage / summary — additive + optional, with
+legacy migration. `dtp-compare` / `dtp-regenerate` skills + both worker tool
+schemas updated. WelcomeScreen drops the top-bar name·role text (kept in the
+avatar tooltip).
+
+## Verification
+`npm run typecheck` clean · `npm test` **108/108** · each flow dogfooded in-app.

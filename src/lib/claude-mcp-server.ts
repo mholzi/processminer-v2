@@ -11,7 +11,7 @@ import * as fs from "node:fs";
 import { atomicWriteFileSync } from "./atomic-write.ts";
 import * as path from "node:path";
 import { getSchema, jsonElementToWikiPage, transitionTarget, listProcesses, getProcessSummary, getProcessElements, searchProcesses } from "./wiki.ts";
-import { writeRuntime, getRuntime } from "./runtime-store.ts";
+import { writeRuntime, getRuntime, setDtpSummary } from "./runtime-store.ts";
 import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch } from "./session-writes.ts";
 import { writeDtpReport, writeDtpComparison } from "./dtp-report.ts";
 import { buildNote, appendNote, resolveNotesInDoc } from "./session-notes.ts";
@@ -320,9 +320,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                       dtpSays: { type: "string" },
                       wikiSays: { type: "string" },
                       elements: { type: "array", items: { type: "string" } },
-                      severity: { type: "string", enum: ["high", "medium", "low"] }
+                      severity: { type: "string", enum: ["high", "medium", "low"] },
+                      rationale: { type: "string", description: "One line on why this severity / why it matters (e.g. 'control gap', 'wrong owner on a key step')." },
+                      suggestedDisposition: { type: "string", enum: ["accepted", "dismissed"], description: "Suggested call: 'accepted' = a DTP correction; 'dismissed' = more likely a wiki issue to reconcile." }
                     },
                     required: ["kind", "headline", "wikiSays"]
+                  }
+                },
+                coverage: {
+                  type: "object",
+                  description: "What the run reviewed, for the coverage map.",
+                  properties: {
+                    dtpSections: { type: "array", items: { type: "string" }, description: "The DTP sections/headings the run walked." }
                   }
                 }
               },
@@ -355,9 +364,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                       dtpSays: { type: "string" },
                       wikiSays: { type: "string" },
                       elements: { type: "array", items: { type: "string" } },
-                      severity: { type: "string", enum: ["high", "medium", "low"] }
+                      severity: { type: "string", enum: ["high", "medium", "low"] },
+                      rationale: { type: "string", description: "One line on why this severity / why it matters (e.g. 'control gap', 'wrong owner on a key step')." },
+                      suggestedDisposition: { type: "string", enum: ["accepted", "dismissed"], description: "Suggested call: 'accepted' = a DTP correction; 'dismissed' = more likely a wiki issue to reconcile." }
                     },
                     required: ["kind", "headline", "wikiSays"]
+                  }
+                },
+                coverage: {
+                  type: "object",
+                  description: "What the comparison reviewed, for the coverage map.",
+                  properties: {
+                    dtpSections: { type: "array", items: { type: "string" }, description: "The DTP sections/headings the comparison walked." }
                   }
                 }
               },
@@ -365,6 +383,19 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             }
           },
           required: ["slug", "report"]
+        }
+      },
+      {
+        name: "writeDtpSummary",
+        description: "Store the executive-summary memo for one past DTP comparison run, keyed by its run id. Markdown. Stored in the runtime store — never the wiki JSON. Used by dtp-summary.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            slug: { type: "string", description: "The process slug." },
+            runId: { type: "string", description: "The DTP run id the memo summarises (e.g. DTP-REGEN-003)." },
+            summary: { type: "string", description: "The executive-summary memo, as Markdown." }
+          },
+          required: ["slug", "runId", "summary"]
         }
       },
       {
@@ -791,6 +822,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       // Review-only run: stores findings, writes no artifact, never touches the JSON.
       const res = writeDtpComparison(slug, (args?.report as any) ?? {});
       return { content: [{ type: "text", text: JSON.stringify({ ok: true, ...res }, null, 2) }] };
+    }
+
+    else if (name === "writeDtpSummary") {
+      const ok = setDtpSummary(slug, String(args?.runId ?? ""), String(args?.summary ?? ""));
+      return { content: [{ type: "text", text: JSON.stringify({ ok }, null, 2) }] };
     }
 
     else if (name === "clearConflicts") {
