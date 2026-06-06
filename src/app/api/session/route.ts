@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { sessionPool, type WorkerEvent } from "@/lib/session-worker";
+import { buildAdvisorPreamble } from "@/lib/advisor-server";
 
 // The Process Assistant chat is backed by the local `claude` CLI. Each chat
 // turn used to spawn a fresh `claude` process — paying a full cold start
@@ -49,7 +50,15 @@ function describeTool(name: string, input: Record<string, unknown>): string {
 }
 
 export async function POST(req: NextRequest) {
-  let body: { message?: unknown; sessionId?: unknown; stream?: unknown; skill?: unknown };
+  let body: {
+    message?: unknown;
+    sessionId?: unknown;
+    stream?: unknown;
+    skill?: unknown;
+    advisor?: unknown;
+    advisorSlugs?: unknown;
+    userName?: unknown;
+  };
   try {
     body = await req.json();
   } catch {
@@ -62,6 +71,23 @@ export async function POST(req: NextRequest) {
   const skill = typeof body.skill === "string" && body.skill ? body.skill.trim() : null;
   if (!message) {
     return Response.json({ error: "A message is required." }, { status: 400 });
+  }
+
+  // Advisory Board: on the FIRST turn of an advisor session (no resume id yet)
+  // the server prepends the persona + read-only contract + allow-list, exactly
+  // like the per-process scope preamble but cross-process. Later turns inherit
+  // it via --resume. Access scoping is prompt-level for now (plan §5, B).
+  const advisor =
+    typeof body.advisor === "string" && body.advisor ? body.advisor.trim() : null;
+  let wireMessage = message;
+  if (advisor && !sessionId) {
+    const advisorSlugs = Array.isArray(body.advisorSlugs)
+      ? body.advisorSlugs.filter((s): s is string => typeof s === "string")
+      : [];
+    const userName =
+      typeof body.userName === "string" && body.userName ? body.userName : undefined;
+    const preamble = buildAdvisorPreamble(advisor, advisorSlugs, userName);
+    if (preamble) wireMessage = preamble + message;
   }
   // When true, the caller wants the reply streamed as it is written — we
   // forward each text delta. The worker always runs with partial messages on,
@@ -211,7 +237,7 @@ export async function POST(req: NextRequest) {
 
       (async () => {
         try {
-          for await (const evt of worker.runTurn(message, skill)) {
+          for await (const evt of worker.runTurn(wireMessage, skill)) {
             handleEvent(evt);
           }
           if (!resultSent) {

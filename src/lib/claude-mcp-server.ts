@@ -10,10 +10,10 @@ import {
 import * as fs from "node:fs";
 import { atomicWriteFileSync } from "./atomic-write.ts";
 import * as path from "node:path";
-import { getSchema, jsonElementToWikiPage, transitionTarget } from "./wiki.ts";
+import { getSchema, jsonElementToWikiPage, transitionTarget, listProcesses, getProcessSummary, getProcessElements, searchProcesses } from "./wiki.ts";
 import { writeRuntime, getRuntime } from "./runtime-store.ts";
 import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch } from "./session-writes.ts";
-import { writeDtpReport } from "./dtp-report.ts";
+import { writeDtpReport, writeDtpComparison } from "./dtp-report.ts";
 import { buildNote, appendNote, resolveNotesInDoc } from "./session-notes.ts";
 import {
   buildFoundationalQueue,
@@ -316,16 +316,52 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                     type: "object",
                     properties: {
                       kind: { type: "string", enum: ["outdated", "missing", "contradiction", "added"] },
+                      headline: { type: "string", description: "One-line plain-English summary of the discrepancy, for scanning a list." },
                       dtpSays: { type: "string" },
                       wikiSays: { type: "string" },
                       elements: { type: "array", items: { type: "string" } },
                       severity: { type: "string", enum: ["high", "medium", "low"] }
                     },
-                    required: ["kind", "wikiSays"]
+                    required: ["kind", "headline", "wikiSays"]
                   }
                 }
               },
               required: ["sourceFile", "markdown"]
+            }
+          },
+          required: ["slug", "report"]
+        }
+      },
+      {
+        name: "writeDtpComparison",
+        description: "Record a comparison-only DTP run: the chosen original DTP critically reviewed against the corrected As-Is wiki. Stamps finding ids (DTPF-…) and stores the findings + pointer in the runtime store as a new past-comparison entry — no Markdown is generated and no artifact is written. Returns the run id and finding count. Used by dtp-compare.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            slug: { type: "string", description: "The process slug." },
+            report: {
+              type: "object",
+              description: "The comparison result.",
+              properties: {
+                sourceFile: { type: "string", description: "The DTP filename reviewed (under raw-sources/<slug>/)." },
+                findings: {
+                  type: "array",
+                  description: "Critical-review findings — the chosen DTP vs the corrected As-Is wiki.",
+                  items: {
+                    type: "object",
+                    properties: {
+                      kind: { type: "string", enum: ["outdated", "missing", "contradiction", "added"] },
+                      headline: { type: "string", description: "One-line plain-English summary of the discrepancy, for scanning a list." },
+                      dtpSays: { type: "string" },
+                      wikiSays: { type: "string" },
+                      elements: { type: "array", items: { type: "string" } },
+                      severity: { type: "string", enum: ["high", "medium", "low"] }
+                    },
+                    required: ["kind", "headline", "wikiSays"]
+                  }
+                }
+              },
+              required: ["sourceFile", "findings"]
             }
           },
           required: ["slug", "report"]
@@ -426,6 +462,46 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
           required: ["slug"]
         }
+      },
+      // ---- Advisory Board: read-only cross-process tools ----
+      {
+        name: "listAccessibleProcesses",
+        description: "ADVISORY BOARD (read-only). List the processes available to advise on — {slug,title} for each. Takes no arguments.",
+        inputSchema: { type: "object", properties: {} }
+      },
+      {
+        name: "getProcessSummary",
+        description: "ADVISORY BOARD (read-only). A breadth-first view of one process: overview, per-section element counts (with confirmed counts) and section status — without dumping every element.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            slug: { type: "string", description: "The process slug." }
+          },
+          required: ["slug"]
+        }
+      },
+      {
+        name: "getProcessElements",
+        description: "ADVISORY BOARD (read-only). Return the elements of one section/collection of a process (id + title + content).",
+        inputSchema: {
+          type: "object",
+          properties: {
+            slug: { type: "string", description: "The process slug." },
+            collection: { type: "string", description: "The collection name, e.g. 'controls', 'process-steps'." }
+          },
+          required: ["slug", "collection"]
+        }
+      },
+      {
+        name: "searchProcesses",
+        description: "ADVISORY BOARD (read-only). Keyword search across all accessible processes — matches element title, body and metadata. Returns capped hits with a snippet and the source {slug, id, section}.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            query: { type: "string", description: "The keyword or phrase to search for." }
+          },
+          required: ["query"]
+        }
       }
     ]
   };
@@ -434,7 +510,32 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
   const slug = args?.slug as string;
-  
+
+  // ---- Advisory Board: read-only cross-process tools ----
+  // Handled before the per-tool slug guard below — two of them take no slug,
+  // and none mutate the wiki (they call no writer).
+  if (name === "listAccessibleProcesses") {
+    return { content: [{ type: "text", text: JSON.stringify(listProcesses(), null, 2) }] };
+  }
+  if (name === "searchProcesses") {
+    const query = String(args?.query || "");
+    return { content: [{ type: "text", text: JSON.stringify(searchProcesses(query), null, 2) }] };
+  }
+  if (name === "getProcessSummary") {
+    if (!slug) throw new McpError(ErrorCode.InvalidParams, "slug is required.");
+    const summary = getProcessSummary(slug);
+    if (!summary) throw new McpError(ErrorCode.InvalidParams, `Process not found: ${slug}`);
+    return { content: [{ type: "text", text: JSON.stringify(summary, null, 2) }] };
+  }
+  if (name === "getProcessElements") {
+    if (!slug) throw new McpError(ErrorCode.InvalidParams, "slug is required.");
+    const collection = String(args?.collection || "");
+    if (!collection) throw new McpError(ErrorCode.InvalidParams, "collection is required.");
+    const elements = getProcessElements(slug, collection);
+    if (elements === null) throw new McpError(ErrorCode.InvalidParams, `Process not found: ${slug}`);
+    return { content: [{ type: "text", text: JSON.stringify({ slug, collection, elements }, null, 2) }] };
+  }
+
   if (!slug) {
     throw new McpError(ErrorCode.InvalidParams, "slug is required for all tools.");
   }
@@ -683,6 +784,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     else if (name === "writeDtpReport") {
       // Writes the .md artifact + runtime report; never touches the process JSON.
       const res = writeDtpReport(slug, (args?.report as any) ?? {});
+      return { content: [{ type: "text", text: JSON.stringify({ ok: true, ...res }, null, 2) }] };
+    }
+
+    else if (name === "writeDtpComparison") {
+      // Review-only run: stores findings, writes no artifact, never touches the JSON.
+      const res = writeDtpComparison(slug, (args?.report as any) ?? {});
       return { content: [{ type: "text", text: JSON.stringify({ ok: true, ...res }, null, 2) }] };
     }
 

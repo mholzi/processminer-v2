@@ -41,6 +41,14 @@ export interface SessionRequest {
   stream: boolean;
   /** Skill this turn invokes, or null for free text. */
   skill: string | null;
+  /** Advisory Board persona id, or null for an ordinary process session. When
+   *  set on the first turn (sessionId === null) the server prepends the advisor
+   *  preamble (persona + read-only contract + allow-list). */
+  advisor?: string | null;
+  /** Slugs the user may advise on — the server's allow-list for this advisor turn. */
+  advisorSlugs?: string[];
+  /** Signed-in user's display name, for the advisor to address them. */
+  userName?: string;
   signal: AbortSignal;
 }
 
@@ -61,6 +69,9 @@ export async function runSession(
       sessionId: req.sessionId,
       stream: req.stream,
       skill: req.skill,
+      advisor: req.advisor ?? null,
+      advisorSlugs: req.advisorSlugs ?? undefined,
+      userName: req.userName ?? undefined,
     }),
   });
   if (!res.body) throw new Error("Keine Antwort vom Server.");

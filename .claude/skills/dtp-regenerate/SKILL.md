@@ -77,7 +77,7 @@ truth:
 
 Walk the original DTP section by section against the wiki and emit one finding
 per **material** discrepancy — not every cosmetic wording difference. Each
-finding is `{ kind, dtpSays, wikiSays, elements, severity }`:
+finding is `{ kind, headline, dtpSays, wikiSays, elements, severity }`:
 
 - `kind`:
   - `outdated` — the DTP describes a state the analysis has since superseded.
@@ -86,6 +86,9 @@ finding is `{ kind, dtpSays, wikiSays, elements, severity }`:
   - `contradiction` — the DTP and the wiki state different facts (an owner, an
     SLA, a sequence) for the same thing.
   - `added` — the analysis introduced something genuinely new the DTP never had.
+- `headline` — a single plain-English sentence naming the discrepancy, written
+  so a reviewer can scan a list and grasp it without reading both sides (e.g.
+  "KYC review is documented as a manual 2-day check, but is now same-day STP").
 - `dtpSays` — what the original document states (or `—` when it is silent).
 - `wikiSays` — what the corrected wiki holds.
 - `elements` — the implicated wiki element ids (e.g. `["PS-COB-003", "CP-COB-001"]`).

@@ -18,7 +18,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { join } from "node:path";
-import { writeRuntime } from "./runtime-store.ts";
+import { getRuntime, writeRuntime } from "./runtime-store.ts";
 import type { DtpFinding, DtpReport } from "./runtime-store.ts";
 
 /** The payload the skill hands the writeDtpReport tool. */
@@ -41,12 +41,16 @@ export function stampDtpFindings(raw: unknown): DtpFinding[] {
   return (arr as Array<Record<string, unknown>>).map((it, i) => ({
     id: `DTPF-${String(i + 1).padStart(3, "0")}`,
     kind: (KINDS.has(it?.kind as string) ? it.kind : "contradiction") as DtpFinding["kind"],
+    ...(typeof it?.headline === "string" && it.headline.trim()
+      ? { headline: it.headline.trim() }
+      : {}),
     dtpSays: String(it?.dtpSays ?? "—"),
     wikiSays: String(it?.wikiSays ?? ""),
     elements: Array.isArray(it?.elements) ? (it.elements as unknown[]).map(String) : [],
     severity: (SEVERITIES.has(it?.severity as string)
       ? it.severity
       : "medium") as DtpFinding["severity"],
+    disposition: "open" as const,
   }));
 }
 
@@ -63,16 +67,84 @@ function sanitiseBase(name: string): string {
   );
 }
 
+/** Gather the existing DTP run history, migrating the legacy single-report
+ *  field into the array on first read. Newest first. */
+function existingReports(slug: string): DtpReport[] {
+  const rt = getRuntime(slug);
+  if (Array.isArray(rt.dtpReports)) return rt.dtpReports;
+  if (rt.dtpReport) {
+    return [
+      {
+        ...rt.dtpReport,
+        runId: rt.dtpReport.runId ?? "DTP-REGEN-001",
+        mode: rt.dtpReport.mode ?? "regenerate",
+      },
+    ];
+  }
+  return [];
+}
+
+/** Next "DTP-REGEN-NNN" run id, one past the highest existing. (One id space for
+ *  both compare and regenerate runs, so the history reads as one timeline.) */
+function nextRunId(reports: DtpReport[]): string {
+  let max = 0;
+  for (const r of reports) {
+    const m = /^DTP-REGEN-(\d+)$/.exec(r.runId ?? "");
+    if (m) max = Math.max(max, parseInt(m[1], 10));
+  }
+  return `DTP-REGEN-${String(max + 1).padStart(3, "0")}`;
+}
+
+/** Stamp a run id and prepend the report to the past-comparison history. */
+function appendReport(
+  slug: string,
+  report: Omit<DtpReport, "runId">,
+): DtpReport {
+  const history = existingReports(slug);
+  const full: DtpReport = { runId: nextRunId(history), ...report };
+  writeRuntime(slug, { dtpReports: [full, ...history], dtpReport: undefined });
+  return full;
+}
+
+/** The payload the writeDtpComparison tool hands in — a review-only run. */
+export interface DtpComparisonInput {
+  /** The DTP filename the comparison reviewed (under raw-sources/<slug>/). */
+  sourceFile?: string;
+  findings?: unknown[];
+}
+
+/**
+ * Record a comparison-only run: the chosen DTP critically reviewed against the
+ * corrected As-Is wiki. No markdown is generated and no artifact is written —
+ * only the findings + pointer land in the runtime history (R9).
+ */
+export function writeDtpComparison(
+  slug: string,
+  input: DtpComparisonInput,
+  _by?: string,
+): { runId: string; findingCount: number } {
+  const findings = stampDtpFindings(input.findings);
+  const { runId } = appendReport(slug, {
+    mode: "compare",
+    generatedAt: new Date().toISOString(),
+    basis: "as-is",
+    sourceFile: input.sourceFile || "",
+    findings,
+  });
+  return { runId, findingCount: findings.length };
+}
+
 /**
  * Write a regenerated DTP + its critical-review report. Returns the artifact
- * filename and finding count for the skill's closing summary. Atomic-ish: the
- * .md is written, then uploads.json, then the runtime report.
+ * filename, run id and finding count for the skill's closing summary. Atomic-ish:
+ * the .md is written, then uploads.json, then the runtime report appended to the
+ * past-comparison history (newest first).
  */
 export function writeDtpReport(
   slug: string,
   input: DtpReportInput,
   by?: string,
-): { generatedFile: string; findingCount: number } {
+): { generatedFile: string; runId: string; findingCount: number } {
   const dir = join(process.cwd(), "raw-sources", slug);
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 
@@ -109,14 +181,14 @@ export function writeDtpReport(
   writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
 
   const findings = stampDtpFindings(input.findings);
-  const report: DtpReport = {
+  const { runId } = appendReport(slug, {
+    mode: "regenerate",
     generatedAt: new Date().toISOString(),
     basis: "as-is",
     sourceFile: input.sourceFile || "",
     generatedFile,
     findings,
-  };
-  writeRuntime(slug, { dtpReport: report });
+  });
 
-  return { generatedFile, findingCount: findings.length };
+  return { generatedFile, runId, findingCount: findings.length };
 }

@@ -5,6 +5,8 @@ import type { ProcessDoc } from "@/lib/wiki";
 import { hasEntitlement, initials, type User } from "@/lib/user";
 import { buildAttentionFeed } from "@/lib/orchestrator";
 import RelativeTime from "./RelativeTime";
+import AdvisorChat from "./AdvisorChat";
+import { ADVISORS } from "@/lib/advisor";
 
 // The welcome screen — replaces SplashScreen. One component, three faces:
 // Processminer only, ArchitectMiner only, or both. The same shape across
@@ -77,6 +79,9 @@ export default function WelcomeScreen({
     hasPM && hasAM ? "both" : hasAM ? "am" : "pm";
 
   const [view, setView] = useState<View>(scenario === "both" ? "both" : scenario);
+  // Advisory Board — which advisor's slide-over is open (id), or null.
+  const [advisorOpen, setAdvisorOpen] = useState<string | null>(null);
+  const showAdvisory = hasPM && (view === "both" || view === "pm");
   useEffect(() => {
     // If the user's entitlements change between renders, fix the view to
     // something legal.
@@ -375,6 +380,38 @@ export default function WelcomeScreen({
           </button>
         )}
 
+        {/* Advisory Board — sits above the processes; chat with the senior team. */}
+        {showAdvisory && (
+          <section className="ws-sec ws-advisory">
+            <div className="ws-ab-panel">
+              <div className="ws-ab-intro">
+                <h2>Advisory Board</h2>
+                <p>
+                  Chat with your senior team across all your processes.
+                  <span className="ws-ab-tag">read-only</span>
+                </p>
+              </div>
+              <div className="ws-ab-roster">
+                {ADVISORS.map((a) => (
+                  <button
+                    key={a.id}
+                    type="button"
+                    className="ws-ab-card"
+                    onClick={() => setAdvisorOpen(a.id)}
+                  >
+                    <span className="ws-ab-av">{a.monogram}</span>
+                    <span className="ws-ab-body">
+                      <span className="ws-ab-name">{a.name}</span>
+                      <span className="ws-ab-blurb">{a.blurb}</span>
+                    </span>
+                    <span className="ws-ab-ask">Ask →</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* The queue */}
         <section className="ws-sec">
           <div className="ws-sec-h">
@@ -492,6 +529,24 @@ export default function WelcomeScreen({
           </div>
         </footer>
       </main>
+
+      {advisorOpen && (
+        // key on the advisor id: switching advisors remounts the chat so it
+        // loads that advisor's own transcript instead of keeping the previous
+        // one's (useAgentChat state is per-instance, keyed by slug = advisor id).
+        <AdvisorChat
+          key={advisorOpen}
+          advisorId={advisorOpen}
+          onSwitch={setAdvisorOpen}
+          onClose={() => setAdvisorOpen(null)}
+          docs={docs}
+          user={user}
+          onOpenProcess={(slug) => {
+            setAdvisorOpen(null);
+            openProcess(slug);
+          }}
+        />
+      )}
     </div>
   );
 }

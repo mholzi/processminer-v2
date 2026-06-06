@@ -21,6 +21,11 @@ const RUNTIME_DIR = join(process.cwd(), "data", "runtime");
 /** One discrepancy the dtp-regenerate critical review surfaced — the original
  *  DTP measured against the corrected As-Is wiki. Derived/transient → runtime
  *  store, never the wiki JSON. */
+/** A reviewer's disposition of a finding — the review workflow state. Defaults
+ *  to "open"; the reviewer either accepts it (a DTP change to make manually) or
+ *  dismisses it (which opens a chat to reconcile the wiki instead). */
+export type DtpDisposition = "open" | "accepted" | "dismissed";
+
 export interface DtpFinding {
   /** Backend-stamped, e.g. "DTPF-001". */
   id: string;
@@ -28,6 +33,9 @@ export interface DtpFinding {
    *  holds content the DTP omits; contradiction — the two disagree on a fact;
    *  added — the analysis introduced something the DTP never had. */
   kind: "outdated" | "missing" | "contradiction" | "added";
+  /** One-line plain-English summary of the discrepancy, for scanning a list.
+   *  Optional — the UI falls back to wikiSays/dtpSays when absent. */
+  headline?: string;
   /** What the original DTP states (or "—" when it is silent). */
   dtpSays: string;
   /** What the corrected As-Is wiki holds. */
@@ -35,19 +43,30 @@ export interface DtpFinding {
   /** Implicated wiki element ids. */
   elements: string[];
   severity: "high" | "medium" | "low";
+  /** Reviewer disposition — app-owned workflow state, set in the DTP Enhancer.
+   *  Absent means "open". */
+  disposition?: DtpDisposition;
 }
 /** Result of the last dtp-regenerate run: the regenerated DTP artifact's
  *  filename (written under raw-sources/<slug>/) plus the critical-review
  *  findings. The full text lives in the .md file; only the pointer + findings
  *  live here. */
 export interface DtpReport {
+  /** Backend-stamped run id, e.g. "DTP-REGEN-003" — stable per run, used as the
+   *  key in the DTP Enhancer's past-comparison history. */
+  runId: string;
+  /** "compare" — review the chosen DTP against the wiki (findings only, no new
+   *  artifact); "regenerate" — also rebuild the DTP from the As-Is (with a
+   *  generatedFile + full-text diff). Legacy reports are "regenerate". */
+  mode: "compare" | "regenerate";
   generatedAt: string;
   /** The corrected As-Is is the only basis today; carried for forward-compat. */
   basis: "as-is";
-  /** Original DTP filename the regeneration was based on (doc.ingest.file). */
+  /** Original DTP filename the run was based on. */
   sourceFile: string;
-  /** Regenerated DTP filename under raw-sources/<slug>/. */
-  generatedFile: string;
+  /** Regenerated DTP filename under raw-sources/<slug>/ — only for "regenerate"
+   *  runs; absent for "compare". */
+  generatedFile?: string;
   findings: DtpFinding[];
 }
 
@@ -60,7 +79,12 @@ export interface ProcessRuntime {
   qerState?: ReviewState;
   lint?: LintReport;
   findingDismissals?: FindingDismissals;
-  /** The last dtp-regenerate result (regenerated DTP + critical review). */
+  /** The DTP Enhancer's past-comparison history — every dtp-regenerate run,
+   *  newest first. Each run keeps its own regenerated artifact + findings so the
+   *  history is browsable. */
+  dtpReports?: DtpReport[];
+  /** @deprecated Legacy single-report field (pre-history). Read for migration
+   *  only; new writes go to `dtpReports`. */
   dtpReport?: DtpReport;
 }
 
@@ -84,4 +108,34 @@ export function writeRuntime(slug: string, patch: Partial<ProcessRuntime>): void
   if (!existsSync(RUNTIME_DIR)) mkdirSync(RUNTIME_DIR, { recursive: true });
   const next = { ...getRuntime(slug), ...patch };
   atomicWriteFileSync(pathFor(slug), JSON.stringify(next, null, 2) + "\n");
+}
+
+/** Set a reviewer's disposition on one finding within a past DTP run. Returns
+ *  false when the run or finding isn't found. The dispositions live with the
+ *  findings in the runtime history (R9 — never the wiki JSON). */
+export function setDtpDisposition(
+  slug: string,
+  runId: string,
+  findingId: string,
+  disposition: DtpDisposition,
+): boolean {
+  const rt = getRuntime(slug);
+  // Migrate the legacy single-report field into the array if needed.
+  const reports: DtpReport[] = Array.isArray(rt.dtpReports)
+    ? rt.dtpReports
+    : rt.dtpReport
+      ? [
+          {
+            ...rt.dtpReport,
+            runId: rt.dtpReport.runId ?? "DTP-REGEN-001",
+            mode: rt.dtpReport.mode ?? "regenerate",
+          },
+        ]
+      : [];
+  const report = reports.find((r) => r.runId === runId);
+  const finding = report?.findings.find((f) => f.id === findingId);
+  if (!finding) return false;
+  finding.disposition = disposition;
+  writeRuntime(slug, { dtpReports: reports, dtpReport: undefined });
+  return true;
 }

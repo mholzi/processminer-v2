@@ -5,10 +5,10 @@ import { atomicWriteFileSync } from "./atomic-write.ts";
 import * as path from "node:path";
 import * as os from "node:os";
 import { execSync } from "node:child_process";
-import { getSchema, toCamelCase, jsonElementToWikiPage, transitionTarget, type WikiPage } from "./wiki.ts";
+import { getSchema, toCamelCase, jsonElementToWikiPage, transitionTarget, listProcesses, getProcessSummary, getProcessElements, searchProcesses, type WikiPage } from "./wiki.ts";
 import { writeRuntime, getRuntime } from "./runtime-store.ts";
 import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch } from "./session-writes.ts";
-import { writeDtpReport } from "./dtp-report.ts";
+import { writeDtpReport, writeDtpComparison } from "./dtp-report.ts";
 import { buildNote, appendNote, resolveNotesInDoc } from "./session-notes.ts";
 import {
   buildFoundationalQueue,
@@ -75,6 +75,46 @@ const toolDeclarations: any[] = [
         id: { type: "STRING", description: "Optional. The specific element ID to expand (e.g. 'PS-COB-001'). If omitted, returns all element IDs and titles in the collection." }
       },
       required: ["type"]
+    }
+  },
+  // ---- Advisory Board: read-only cross-process tools ----
+  {
+    name: "listAccessibleProcesses",
+    description: "ADVISORY BOARD (read-only). List the processes available to advise on — {slug,title} for each. Takes no arguments.",
+    parameters: { type: "OBJECT", properties: {} }
+  },
+  {
+    name: "getProcessSummary",
+    description: "ADVISORY BOARD (read-only). A breadth-first view of one process: overview, per-section element counts (with confirmed counts) and section status — without dumping every element.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        slug: { type: "STRING", description: "The process slug." }
+      },
+      required: ["slug"]
+    }
+  },
+  {
+    name: "getProcessElements",
+    description: "ADVISORY BOARD (read-only). Return the elements of one section/collection of a process (id + title + content).",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        slug: { type: "STRING", description: "The process slug." },
+        collection: { type: "STRING", description: "The collection name, e.g. 'controls', 'process-steps'." }
+      },
+      required: ["slug", "collection"]
+    }
+  },
+  {
+    name: "searchProcesses",
+    description: "ADVISORY BOARD (read-only). Keyword search across all accessible processes — matches element title, body and metadata. Returns capped hits with a snippet and the source {slug, id, section}.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        query: { type: "STRING", description: "The keyword or phrase to search for." }
+      },
+      required: ["query"]
     }
   },
   {
@@ -313,16 +353,51 @@ const toolDeclarations: any[] = [
                 type: "OBJECT",
                 properties: {
                   kind: { type: "STRING", description: "One of: outdated | missing | contradiction | added." },
+                  headline: { type: "STRING", description: "One-line plain-English summary of the discrepancy, for scanning a list." },
                   dtpSays: { type: "STRING", description: "What the original DTP states (or '—')." },
                   wikiSays: { type: "STRING", description: "What the corrected As-Is wiki holds." },
                   elements: { type: "ARRAY", items: { type: "STRING" }, description: "Implicated wiki element ids." },
                   severity: { type: "STRING", description: "One of: high | medium | low." }
                 },
-                required: ["kind", "wikiSays"]
+                required: ["kind", "headline", "wikiSays"]
               }
             }
           },
           required: ["sourceFile", "markdown"]
+        }
+      },
+      required: ["report"]
+    }
+  },
+  {
+    name: "writeDtpComparison",
+    description: "Record a comparison-only DTP run: the chosen original DTP critically reviewed against the corrected As-Is wiki. Stamps finding ids (DTPF-…) and stores the findings + pointer in the runtime store as a new past-comparison entry — no Markdown is generated and no artifact is written. Returns the run id and finding count. Used by the dtp-compare skill.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        report: {
+          type: "OBJECT",
+          description: "The comparison result.",
+          properties: {
+            sourceFile: { type: "STRING", description: "The DTP filename reviewed (under raw-sources/<slug>/)." },
+            findings: {
+              type: "ARRAY",
+              description: "Critical-review findings — the chosen DTP measured against the corrected As-Is wiki.",
+              items: {
+                type: "OBJECT",
+                properties: {
+                  kind: { type: "STRING", description: "One of: outdated | missing | contradiction | added." },
+                  headline: { type: "STRING", description: "One-line plain-English summary of the discrepancy, for scanning a list." },
+                  dtpSays: { type: "STRING", description: "What the original DTP states (or '—')." },
+                  wikiSays: { type: "STRING", description: "What the corrected As-Is wiki holds." },
+                  elements: { type: "ARRAY", items: { type: "STRING" }, description: "Implicated wiki element ids." },
+                  severity: { type: "STRING", description: "One of: high | medium | low." }
+                },
+                required: ["kind", "headline", "wikiSays"]
+              }
+            }
+          },
+          required: ["sourceFile", "findings"]
         }
       },
       required: ["report"]
@@ -843,7 +918,20 @@ export class GeminiWorker implements IProcessWorker {
               console.log(`[gemini-worker] Executing tool sequentially: ${originalName}`, call.args);
               const args = (call.args || {}) as any;
 
-              if (originalName === "scaffoldProcess") {
+              if (originalName === "listAccessibleProcesses") {
+                // Advisory Board (read-only) — cross-process, no scoped doc needed.
+                resultText = JSON.stringify(listProcesses(), null, 2);
+              } else if (originalName === "searchProcesses") {
+                resultText = JSON.stringify(searchProcesses(String(args.query || "")), null, 2);
+              } else if (originalName === "getProcessSummary") {
+                const s = getProcessSummary(String(args.slug || ""));
+                if (!s) throw new Error(`Process not found: ${args.slug}`);
+                resultText = JSON.stringify(s, null, 2);
+              } else if (originalName === "getProcessElements") {
+                const els = getProcessElements(String(args.slug || ""), String(args.collection || ""));
+                if (els === null) throw new Error(`Process not found: ${args.slug}`);
+                resultText = JSON.stringify({ slug: args.slug, collection: args.collection, elements: els }, null, 2);
+              } else if (originalName === "scaffoldProcess") {
                 const newSlug = String(args.slug || "").trim();
                 const PROC = String(args.PROC || "").toUpperCase().trim();
                 const title = String(args.title || "").trim();
@@ -1107,6 +1195,11 @@ export class GeminiWorker implements IProcessWorker {
                 if (!this.slug) throw new Error("Process document context not loaded or slug is missing.");
                 // Writes the .md artifact + runtime report; never the process JSON.
                 const res = writeDtpReport(this.slug, args.report ?? {});
+                resultText = JSON.stringify({ ok: true, ...res }, null, 2);
+              } else if (originalName === "writeDtpComparison") {
+                if (!this.slug) throw new Error("Process document context not loaded or slug is missing.");
+                // Review-only run: stores findings, writes no artifact, never the JSON.
+                const res = writeDtpComparison(this.slug, args.report ?? {});
                 resultText = JSON.stringify({ ok: true, ...res }, null, 2);
               } else if (originalName === "clearConflicts") {
                 if (!doc) throw new Error("Process document context not loaded or slug is missing.");
