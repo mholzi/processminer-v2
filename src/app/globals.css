@@ -1822,8 +1822,12 @@ body {
   overflow: hidden;
 }
 .help-head {
+  display: flex; flex-direction: column;
+  padding: 12px 16px 0; border-bottom: 1px solid var(--line);
+}
+.help-head-top {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 16px; border-bottom: 1px solid var(--line);
+  padding-bottom: 10px;
 }
 .help-title { font-size: var(--text-md); font-weight: 600; color: var(--ink); }
 .help-close {
@@ -1831,32 +1835,33 @@ body {
   font-size: var(--text-sm); color: var(--muted); padding: 4px;
 }
 .help-close:hover { color: var(--ink); }
-/* ---- Help center: What's New + Roadmap feed ----
-   One chronological list: shipped → in-flight → planned. No tabs. */
 
-.help-filter {
-  display: inline-flex;
-  border: 1px solid var(--line);
-  border-radius: var(--r-sm);
-  overflow: hidden;
+/* ---- Help center: two-tab layout (Release Notes / Roadmap) ---- */
+
+.help-tabs {
+  display: flex; gap: 0; margin-bottom: -1px;
 }
-.help-filter-btn {
-  height: 26px; padding: 0 var(--space-sm);
+.help-tab {
+  height: 34px; padding: 0 var(--space-md);
   display: inline-flex; align-items: center; gap: 6px;
-  background: transparent; border: 0;
-  border-right: 1px solid var(--line);
+  font-family: var(--font); font-size: var(--text-sm); font-weight: 500;
   color: var(--muted);
-  font-family: var(--font); font-size: var(--text-xs);
+  background: none; border: 0;
+  border-bottom: 2px solid transparent;
   cursor: pointer;
 }
-.help-filter-btn:last-child { border-right: 0; }
-.help-filter-btn:hover { color: var(--ink); }
-.help-filter-btn.on {
-  background: var(--accent-soft); color: var(--accent); font-weight: 500;
+.help-tab:hover { color: var(--ink); }
+.help-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.help-tab-count {
+  font-family: var(--mono); font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  background: var(--bg); color: var(--muted);
+  padding: 0 5px; border-radius: var(--r-pill);
+  border: 1px solid var(--line);
 }
-.help-filter-num {
-  font-family: var(--mono); font-variant-numeric: tabular-nums;
-  font-size: 11px; color: inherit; opacity: 0.7;
+.help-tab.active .help-tab-count {
+  background: var(--accent-soft); color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
 .help-feed {
@@ -1970,6 +1975,28 @@ body {
 }
 .help-vote-label { color: var(--muted); }
 .help-vote.on .help-vote-label { color: var(--accent); }
+
+/* Roadmap tab — card-per-item layout */
+.help-rm-card {
+  margin: var(--space-sm) var(--space-md);
+  padding: var(--space-md);
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  display: flex; flex-direction: column; gap: var(--space-sm);
+}
+.help-rm-card.inflight { border-left: 3px solid var(--accent); }
+.help-rm-card-head {
+  display: flex; align-items: center; gap: var(--space-sm); flex-wrap: wrap;
+}
+.help-rm-card-title {
+  margin: 0; flex: 1; min-width: 0;
+  font-size: var(--text-base); font-weight: 600; color: var(--ink);
+  line-height: 1.3;
+}
+.help-rm-card-when {
+  font-family: var(--mono); font-size: var(--text-xs);
+  color: var(--muted); white-space: nowrap; margin-left: auto;
+}
 
 .help-foot {
   border-top: 1px solid var(--line);
