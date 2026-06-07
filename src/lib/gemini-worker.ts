@@ -8,7 +8,8 @@ import { execSync } from "node:child_process";
 import { getSchema, toCamelCase, jsonElementToWikiPage, transitionTarget, listProcesses, getProcessSummary, getProcessElements, searchProcesses, type WikiPage } from "./wiki.ts";
 import { canAccess } from "./process-access.ts";
 import { writeRuntime, getRuntime, setDtpSummary } from "./runtime-store.ts";
-import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch } from "./session-writes.ts";
+import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch, buildReconciledApprovalPatch, syncRelationsFromProse } from "./session-writes.ts";
+import { enrichFoundationalStatus } from "./foundational.ts";
 import { writeDtpReport, writeDtpComparison } from "./dtp-report.ts";
 import { buildNote, appendNote, resolveNotesInDoc } from "./session-notes.ts";
 import { deriveProcessMeta, scaffoldClosing } from "./process-scaffold.ts";
@@ -190,7 +191,7 @@ const toolDeclarations: any[] = [
   },
   {
     name: "updateElement",
-    description: "Update an existing process element by applying a deep merge patch.",
+    description: "Update an existing process element by applying a deep merge patch. Set syncRelations:true (foundational-run [E] edits) to auto-add relation-list ids the reworked prose names but frontmatter is missing — only ids that exist and match the list's type.",
     parameters: {
       type: "OBJECT",
       properties: {
@@ -202,7 +203,8 @@ const toolDeclarations: any[] = [
             meta: { type: "OBJECT", description: "Metadata fields to update" },
             content: { type: "OBJECT", description: "Content fields to update" }
           }
-        }
+        },
+        syncRelations: { type: "BOOLEAN", description: "Opt-in: derive relation-list additions from ids named in the reworked prose (prevents prose/frontmatter drift)." }
       },
       required: ["id", "patch"]
     }
@@ -487,13 +489,14 @@ const toolDeclarations: any[] = [
   },
   {
     name: "setApproval",
-    description: "Set an element's approval state (in-progress | approved | rejected). The approval gate is enforced: 'approved' is refused while any heading's provenance is still 'proposed'/'web'. Used by foundational-run and the specialists when the SME signs an element off.",
+    description: "Set an element's approval state (in-progress | approved | rejected). The approval gate is enforced: 'approved' is refused while any heading's provenance is still 'proposed'/'web'. Pass `reconcile` (heading → SME's confirming quote) to flip those confirmed headings to 'elicited' and approve in one call (foundational-run [Y]). Used by foundational-run and the specialists when the SME signs an element off.",
     parameters: {
       type: "OBJECT",
       properties: {
         id: { type: "STRING", description: "The element id to set approval on, e.g. 'PS-COB-001'." },
         status: { type: "STRING", description: "in-progress | approved | rejected." },
-        approver: { type: "STRING", description: "The SME name signing it off (the session context)." }
+        approver: { type: "STRING", description: "The SME name signing it off (the session context)." },
+        reconcile: { type: "OBJECT", description: "Optional: { \"Heading Title\": \"SME confirming quote\" } — flips those headings to elicited (quote as evidence) before approving, in one write." }
       },
       required: ["id", "status"]
     }
@@ -1129,12 +1132,30 @@ export class GeminiWorker implements IProcessWorker {
                   }
                 }
 
+                // Opt-in frontmatter-sync (foundational-run [E] edits): add
+                // relation-list ids the reworked prose names but frontmatter lacks.
+                let relationsAdded: Record<string, string[]> = {};
+                if (args.syncRelations) {
+                  let el: any = null;
+                  for (const v of Object.values(doc)) {
+                    if (Array.isArray(v)) { const f = v.find((e: any) => e?.meta?.id === targetId); if (f) { el = f; break; } }
+                  }
+                  if (el) {
+                    const merged = { content: { ...(el.content || {}), ...(patch?.content || {}) } };
+                    const sync = syncRelationsFromProse(merged, doc);
+                    if (Object.keys(sync.content).length) {
+                      patch = { ...patch, content: { ...(patch?.content || {}), ...sync.content } };
+                      relationsAdded = sync.added;
+                    }
+                  }
+                }
+
                 // Call the unified updateElement helper function which validates and writes directly to disk
                 const res = await updateElement(this.slug!, targetId, patch);
                 if (!res.ok) {
                   resultText = `Error: Element validation failed:\n- ${res.error}`;
                 } else {
-                  resultText = JSON.stringify({ ok: true, id: targetId, element: res.element }, null, 2);
+                  resultText = JSON.stringify({ ok: true, id: targetId, element: res.element, ...(Object.keys(relationsAdded).length ? { relationsAdded } : {}) }, null, 2);
                 }
               } else if (originalName === "checkConformance") {
                 if (!doc) {
@@ -1323,19 +1344,26 @@ export class GeminiWorker implements IProcessWorker {
                 resultText = JSON.stringify({ ok: true, ...res }, null, 2);
               } else if (originalName === "setApproval") {
                 if (!this.slug) throw new Error("Process document context not loaded or slug is missing.");
-                const patch = buildApprovalPatch(args.status, args.approver, new Date().toISOString().slice(0, 10));
+                const reconcile = args.reconcile as Record<string, string> | undefined;
+                let el: any = doc?.meta?.id === args.id ? doc : null;
+                if (!el && doc) {
+                  for (const v of Object.values(doc)) {
+                    if (Array.isArray(v)) { const f = v.find((e: any) => e?.meta?.id === args.id); if (f) { el = f; break; } }
+                  }
+                }
+                const patch = buildReconciledApprovalPatch(el, args.status, args.approver, new Date().toISOString().slice(0, 10), reconcile);
                 const res = await updateElement(this.slug, args.id, patch);
                 if (!res.ok) {
                   resultText = `Error: ${res.error}`;
                 } else {
-                  resultText = JSON.stringify({ ok: true, id: args.id, approval: args.status }, null, 2);
+                  resultText = JSON.stringify({ ok: true, id: args.id, approval: args.status, reconciled: reconcile ? Object.keys(reconcile) : [] }, null, 2);
                 }
               } else if (originalName === "buildQueue") {
                 if (!doc || !this.slug) throw new Error("Process document context not loaded or slug is missing.");
                 const queue = buildFoundationalQueue(doc);
                 const rs = newReviewState(this.slug, queue, new Date().toISOString());
                 writeRuntime(this.slug, { reviewState: rs });
-                resultText = JSON.stringify(foundationalStatus(rs), null, 2);
+                resultText = JSON.stringify(enrichFoundationalStatus(rs, doc), null, 2);
               } else if (originalName === "startSession") {
                 if (!this.slug) throw new Error("Process document context not loaded or slug is missing.");
                 const actor = args.actor as { name?: string; role?: string } | undefined;
@@ -1348,7 +1376,7 @@ export class GeminiWorker implements IProcessWorker {
                 resultText = JSON.stringify(
                   args.kind === "qer"
                     ? qerStatusWithPerspectives(rt.qerState, doc, qerSkillBuilt)
-                    : foundationalStatus(rt.reviewState),
+                    : enrichFoundationalStatus(rt.reviewState, doc),
                   null,
                   2
                 );
@@ -1365,7 +1393,7 @@ export class GeminiWorker implements IProcessWorker {
                   if (!rt.reviewState) throw new Error("No foundational run to advance — call buildQueue first.");
                   const next = advance(rt.reviewState, now);
                   writeRuntime(this.slug, { reviewState: next });
-                  resultText = JSON.stringify(foundationalStatus(next), null, 2);
+                  resultText = JSON.stringify(enrichFoundationalStatus(next, doc), null, 2);
                 }
               } else {
                 throw new Error(`Unsupported tool: ${originalName}`);
