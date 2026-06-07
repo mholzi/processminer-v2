@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>it-architect — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">it-architect</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Perspective specialist</div>
+    <h1>it-architect</h1>
+    <p class="lede">Maps the systems landscape a process runs on — the applications and platforms it touches, and the integrations between them — linking each system to the steps it serves and treating every manual re-key the SME describes as a missing integration.</p>
+    <div class="meta-row">
+      <span class="chip">Interactive · Y/E/R loop</span>
+      <span class="chip neutral">LENS: the systems landscape — systems of record, hand-offs, data flow</span>
+      <span class="chip neutral">OWNS: system · integration</span>
+      <span class="chip neutral">Invoked by: free chat / Deep Dive / qer-session</span>
+    </div>
+  </div>
+
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>it-architect</code> owns the <strong>IT Architecture perspective</strong> — the
+      two element types <code>system</code> (an application or platform the process runs on)
+      and <code>integration</code> (a connection between two systems, and what flows). It
+      thinks like a solutions architect: where data lives, how it moves, and where a manual
+      re-key betrays an integration that <em>should</em> exist. Unlike the innovation and
+      transformation specialists, it does no web sourcing and consumes no upstream stub — it
+      elicits the landscape directly from the SME on top of the documented process steps.
+    </p>
+    <p>
+      A defining structural rule: the <strong>system↔step link is not stored on the
+      system</strong>. It lives on each <code>process-step</code>'s <code>systems</code>
+      field, and the system's "Steps" view is derived from it. So linking a system to the
+      steps it serves means patching those steps — a cross-element write the skill performs
+      with <code>updateElement</code> against the process-step, not the system. A system
+      reachable from no step, and a step touching no system, are both findings.
+    </p>
+    <p>Key constraints and behaviours:</p>
+    <ul>
+      <li><strong>Progressive elicitation.</strong> Start broad — "name the systems anyone
+        touches" — then drill in, preferring multiple-choice questions primed with banking-IT
+        knowledge (CRM, core banking, screening, workflow, document management) with an
+        "Other — let me describe it" escape hatch.</li>
+      <li><strong>A manual re-key is a missing integration.</strong> When the SME describes
+        copying data between two systems by hand, capture both systems and flag the gap for
+        the Process specialist — it is a candidate <code>integration</code>.</li>
+      <li><strong>Narrative-first for integrations.</strong> Ask the SME to <em>talk</em> —
+        what data moves, in which direction, how — then extract the structured fields; each
+        integration names exactly the two <code>systems</code> it joins.</li>
+      <li><strong>Stays in its lane.</strong> Process steps, exceptions, roles, controls, CX
+        and target-state elements belong to other specialists; mentions are noted and flagged,
+        not authored here.</li>
+      <li><strong>Everything is <code>status: draft</code></strong> with an honest
+        <code>confidence</code>; the SME approves in the app. The skill never sets
+        <code>approved</code>.</li>
+    </ul>
+  </section>
+
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>Four phases run in order. Under <code>qer-session</code> orchestration the process is already selected and its overview captured, so Phases&nbsp;0,&nbsp;1 and&nbsp;4 are skipped — start at Phase&nbsp;2. Invoked standalone, run every phase.</p>
+    <ol class="steps">
+      <li><span class="st-title">Phase 0 — Setup</span><span class="st-body">Use the SME name/role from the invocation; only ask if absent. Identify the process, read its overview and the existing elements — especially the <code>process-step</code>s — so systems can be linked to the steps they serve. Tools: <span class="tool">expandElement()</span></span></li>
+      <li><span class="st-title">Phase 1 — Orientation</span><span class="st-body">Read the documented process steps (don't re-document them) and confirm with the SME which steps are system-supported, so you know where each system is used. Tools: <span class="tool">expandElement()</span></span></li>
+      <li><span class="st-title">Phase 2 — Systems</span><span class="st-body">Every application or platform the process runs on — its purpose, role and type — drafted and run through <strong>Y/E/R</strong>. Link each system to the steps it serves by patching each of those process-steps' <code>systems</code> field. Walk the process so none is missed. Tools: <span class="tool">createElement()</span> <span class="tool">updateElement()</span></span></li>
+      <li><span class="st-title">Phase 3 — Integrations</span><span class="st-body"><strong>[A]/[E]/[N]</strong>. The connections between systems — what connects, what data flows, in which direction — captured narrative-first, each linking the two <code>systems</code> it joins. A manual hand-off is a candidate integration; capture the systems and flag the gap. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 4 — Validation &amp; close-out</span><span class="st-body">Sweep for systems linked to no step, steps touching no system, integrations naming fewer than two systems, a re-key described but no integration captured; surface each as a short question, then emit the canonical close-out verbatim with per-type counts. Tools: <span class="tool">checkConformance()</span> <span class="tool">checkTransitions()</span></span></li>
+    </ol>
+  </section>
+
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Auto-derive integration candidates from systems referenced across process-steps.</strong> When two systems appear on the same step (or on adjacent steps in a transition), propose a candidate <code>integration</code> for the SME to confirm or reject.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">med</span></td><td>The step→systems links already encode where data must cross between systems; mining them turns Phase&nbsp;3 from blank-page elicitation into a confirm-or-drop pass and surfaces the missing-integration findings deterministically.</td></tr>
+        <tr><td><strong>Precompute the step↔system coverage matrix.</strong> Hand the skill a matrix of every step and the systems on it up front, kept live as systems are written.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Makes the two key findings — system on no step, step on no system — a fact the model reads, so the Phase&nbsp;4 sweep is exhaustive and identical every run.</td></tr>
+        <tr><td><strong>Batch the system list.</strong> Capture the broad "name every system anyone touches" answer as one labelled batch with type/purpose each, then a single Y/E/R, instead of one element at a time.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Systems are largely reference-type with little per-element judgement; one batch approval collapses the serial walk, the case <code>CORE_SYSTEM_PROMPT §3</code> explicitly allows.</td></tr>
+        <tr><td><strong>Transactional system+step-link write.</strong> A single tool call that creates the <code>system</code> and patches every serving step's <code>systems</code> field together.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">med</span></td><td>Today linking a system means N separate <code>updateElement</code> calls against steps; one atomic call removes round-trips and the risk of a half-linked system if a write is missed.</td></tr>
+        <tr><td><strong>Structured-output the element body.</strong> Emit template headings + the <code>integrates</code> / <code>systems</code> relation fields as a typed object validated before write.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Catches an integration naming fewer than two systems, or an out-of-range block, pre-write — removing conformance reject-and-retry loops.</td></tr>
+        <tr><td><strong>Banking-IT system catalog.</strong> Prime the multiple-choice prompts from a deterministic catalog of common banking systems by process domain, rather than the model recalling them.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Gives the same well-formed shortlist every run and reduces the chance a standard system (e.g. the screening tool) is never offered to the SME.</td></tr>
+        <tr><td><strong>Run <code>checkTransitions</code> as the manual-re-key detector.</strong> Tie the existing transition reconciliation into the close-out so a data hand-off across a transition with no integration is flagged automatically.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Operationalises the SKILL.md's signature heuristic ("a manual re-key is a missing integration") as a computed check rather than something the model must remember to look for.</td></tr>
+        <tr><td><strong>Skip read-back for objective system facts.</strong> A system's type/name elicited verbatim from the SME needs no inflated-detail read-back; reserve read-back for the proposed purpose/role prose.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Removes a confirmation turn per system where there is no AI-added detail to police, keeping the loop tight.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> mine the step↔systems links that already exist to <em>auto-derive integration candidates and the coverage matrix</em>. Because the system↔step relation lives on each process-step, the data needed to spot both "two systems meet on one step → likely integration" and "system on no step / step on no system → finding" is already in the document. Surfacing candidate integrations for confirm-or-drop, and the coverage gaps as live facts, converts the two most judgement-light parts of the session — Phase&nbsp;3 and the Phase&nbsp;4 sweep — into deterministic, repeatable passes, with a transactional system+step write removing the multi-call linking overhead on top.</div>
+  </section>
+
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/it-architect/SKILL.md</code></footer>
+</div>
+</body>
+</html>

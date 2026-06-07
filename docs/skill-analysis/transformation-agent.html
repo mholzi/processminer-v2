@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>transformation-agent — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">transformation-agent</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Perspective specialist</div>
+    <h1>transformation-agent</h1>
+    <p class="lede">The forward synthesis — turns everything the five other perspectives documented into a coherent Target Process: the target state, the decisions to reach it, the requirements that operationalise them, the boundary dependencies, and the gaps to close — with coverage traced back to every open As-Is problem.</p>
+    <div class="meta-row">
+      <span class="chip">Interactive · Y/E/R loop</span>
+      <span class="chip neutral">LENS: forward synthesis — As-Is + innovation → a workable to-be plan</span>
+      <span class="chip neutral">OWNS: target-state · transformation-decision · requirement · process-dependency · gap · assumption</span>
+      <span class="chip neutral">Invoked by: free chat / Deep Dive / qer-session</span>
+    </div>
+  </div>
+
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>transformation-agent</code> owns the <strong>Target Process perspective</strong> —
+      the downstream synthesis of every other lens. It does not invent a future state; it
+      reads the documented As-Is (<code>pain-point</code>, <code>process-gap</code>,
+      <code>process-step</code>), the risk picture (<code>compliance-gap</code>,
+      <code>audit-finding</code>), the friction points, the innovation work
+      (<code>innovation-idea</code>, <code>innovation-risk</code>) and the systems landscape,
+      and turns them into a plan. The Target Process is usually stubbed first by the
+      non-interactive <code>source-target</code> skill, and this skill refines that stub with
+      the SME and adds what the consolidation missed.
+    </p>
+    <p>
+      Its spine is <strong>traceability and coverage</strong>. A <code>target-state</code>
+      <code>replaces</code> the As-Is steps it touches (driving the As-Is↔To-Be overlay); a
+      <code>transformation-decision</code> <code>resolves</code> the problems it fixes and
+      <code>realises</code> the target states it brings about; a <code>requirement</code>
+      must carry <code>derivedFrom</code>; a <code>gap</code> links the target it serves.
+      Every <em>open</em> As-Is problem should be resolved by at least one decision — an
+      uncovered problem is either a real gap or a missing decision, never silently dropped.
+    </p>
+    <p>Key constraints and behaviours:</p>
+    <ul>
+      <li><strong>No web research.</strong> The innovation behind the target is already in the
+        wiki (<code>source-innovation</code> / <code>innovation-analyst</code>); this skill
+        synthesises from documented work only.</li>
+      <li><strong>Preserve stubbed frontmatter on edit.</strong> On <strong>[E]</strong>,
+        patch only the corrected block via <code>updateElement</code> so a decision's
+        <code>resolves</code> / <code>realises</code>, a target-state's <code>replaces</code>
+        and a gap's target link survive untouched.</li>
+      <li><strong>Requirements are testable and sourced.</strong> Each carries
+        <code>reqType</code> (FUNCTIONAL / NON-FUNCTIONAL), a <code>moscow</code> priority,
+        and — required — <code>derivedFrom</code>. A requirement with no traceable source is
+        not a requirement and is never written.</li>
+      <li><strong>Assumptions captured as they surface.</strong> Whenever the target rests on
+        something unconfirmed, write an <code>assumption</code> with its
+        <code>assumptionStatus</code> and required <code>bearsOn</code> — not a phase of its
+        own.</li>
+      <li><strong>Stays in its lane.</strong> It <em>reads</em> every perspective freely but
+        never authors As-Is or innovation elements; it points the SME at
+        <code>council-review</code> to challenge the target before approval.</li>
+    </ul>
+  </section>
+
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>The phases run in order; assumptions are captured the moment they surface, not in a phase of their own. Under <code>qer-session</code> orchestration, Phase&nbsp;0 and Phase&nbsp;5 are skipped, but Phase&nbsp;1 always runs.</p>
+    <ol class="steps">
+      <li><span class="st-title">Phase 0 — Setup</span><span class="st-body">Use the SME name/role from the invocation; only ask if absent. Identify the process and read its overview. Tools: <span class="tool">expandElement()</span></span></li>
+      <li><span class="st-title">Phase 1 — Orientation</span><span class="st-body">Read the perspectives the target builds on — pain-points, process-gaps, steps, compliance-gaps, audit-findings, friction-points, innovation ideas and risks, the systems — then the existing <code>source-target</code> stub. Confirm which problems matter most and which ideas the bank will actually fund. Tools: <span class="tool">expandElement()</span></span></li>
+      <li><span class="st-title">Phase 2 — Refine target states</span><span class="st-body">Walk each <code>target-state</code> one at a time with <strong>Y/E/R</strong>; on <strong>[E]</strong> patch only the corrected field to keep <code>replaces</code> intact. Add missing target states via <strong>[A]/[E]/[N]</strong>, capturing <code>replaces</code> on each. Tools: <span class="tool">updateElement()</span> <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 3 — Transformation decisions</span><span class="st-body"><strong>[A]/[E]/[N]</strong>. Each decision captures <code>resolves</code> (the open As-Is problems it fixes) and <code>realises</code> (the target states it brings about) — these drive the computed coverage check. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 3b — Requirements</span><span class="st-body"><strong>[A]/[E]/[N]</strong>. Operationalise decisions into testable <code>requirement</code> elements with <code>reqType</code>, <code>moscow</code> and required <code>derivedFrom</code>; optionally <code>addresses</code> a gap. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 3c — Dependencies</span><span class="st-body"><strong>[A]/[E]/[N]</strong>. The target boundary — <code>process-dependency</code> elements with <code>direction</code>, <code>atStep</code>, what crosses and why. The to-be boundary, not the As-Is one. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 4 — Gaps</span><span class="st-body"><strong>[A]/[E]/[N]</strong>. Any open problem no decision resolves, any target state no decision realises, any <code>innovation-risk</code> the transformation must manage is a candidate <code>gap</code>; each links the target-state it serves. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 5 — Validation &amp; close-out</span><span class="st-body">Sweep for target states with no innovation behind them, decisions resolving nothing, open problems uncovered, gaps untraced; surface each as a short question, emit the canonical close-out with per-type counts, and point the SME at <code>council-review</code>. Tools: <span class="tool">checkConformance()</span></span></li>
+    </ol>
+  </section>
+
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Deterministically derive <code>gap</code> stubs from documented gaps.</strong> After Phase&nbsp;3, compute every open As-Is problem with no resolving decision and every target-state with no realising decision, and pre-create <code>gap</code> stubs for the SME to confirm.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">med</span></td><td>The coverage check is already a deterministic graph query; turning its output straight into gap stubs guarantees no uncovered problem is dropped and removes the Phase&nbsp;4 re-reasoning entirely.</td></tr>
+        <tr><td><strong>Live coverage panel.</strong> Surface the open-problem→decision coverage map continuously as decisions are written, instead of recomputing it only at validation.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Makes "which problems are still uncovered" a fact the model reads rather than infers, so the same gaps are found every run.</td></tr>
+        <tr><td><strong>Precompute &amp; cache the document map.</strong> Hand the skill one consolidated index of all upstream inputs (pains, gaps, findings, friction, ideas, systems) with ids and titles at Phase&nbsp;1.</td><td><span class="tag both">both</span></td><td><span class="tag effort-l">low</span></td><td>This skill reads <em>six</em> perspectives; one precomputed map removes a long burst of <code>expandElement</code> calls and lets every <code>resolves</code> / <code>replaces</code> / <code>derivedFrom</code> link be wired by id without guessing.</td></tr>
+        <tr><td><strong>Structured-output the element body.</strong> Emit template headings + the relation fields as a typed object validated before write.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Catches a missing <code>derivedFrom</code> on a requirement, or an out-of-range block, pre-write — removing conformance reject-and-retry loops.</td></tr>
+        <tr><td><strong>Block requirements without <code>derivedFrom</code> at the tool layer.</strong> Make <code>createElement</code> for a requirement reject a missing source rather than relying on the prompt's rule.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Hard-enforces the SKILL.md invariant ("a requirement with no traceable source is not a requirement") so it cannot slip through on any run.</td></tr>
+        <tr><td><strong>Parallel-draft independent decisions &amp; requirements.</strong> Once target states are settled, fan out the decisions resolving distinct problems, then the requirements per decision, concurrently.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">med</span></td><td>Decisions over disjoint problem sets are independent; serial authoring is the longest stretch of the session.</td></tr>
+        <tr><td><strong>Auto-suggest <code>resolves</code> / <code>replaces</code> candidates.</strong> Propose likely As-Is problem and step ids by keyword overlap when drafting a decision or target state, for the model to confirm.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Reduces under-linking — the coverage contract depends on decisions linking <em>all</em> the problems they fix, not the first that comes to mind.</td></tr>
+        <tr><td><strong>One-pass assumption capture.</strong> A dedicated tool that writes an <code>assumption</code> with required <code>bearsOn</code> in a single call from wherever it surfaces.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Keeps "capture the moment it surfaces" cheap so it isn't deferred or forgotten, and guarantees <code>bearsOn</code> is always set.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> make coverage a <em>computed artifact the skill consumes</em> rather than a sweep it re-reasons at the end. With a live open-problem→decision coverage map and a precomputed upstream index, the model wires <code>resolves</code> / <code>replaces</code> / <code>derivedFrom</code> by id as it drafts, and Phase&nbsp;4 collapses to confirming auto-derived <code>gap</code> stubs for whatever the graph shows uncovered. That single change makes the skill's core invariant — every open As-Is problem covered by a decision or a named gap — deterministic and identical run-to-run, while cutting the longest, most error-prone stretch of the session.</div>
+  </section>
+
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/transformation-agent/SKILL.md</code></footer>
+</div>
+</body>
+</html>

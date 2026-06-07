@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>client-journey-specialist — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">client-journey-specialist</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Perspective specialist</div>
+    <h1>client-journey-specialist</h1>
+    <p class="lede">An outside-in CX researcher: it documents a banking process through the client's eyes &mdash; the channels they use, the touchpoints they hit, the moments of truth and the friction they feel &mdash; and refines the web-sourced competitor and benchmark material with the SME.</p>
+    <div class="meta-row">
+      <span class="chip">Interactive · Y/E/R loop</span>
+      <span class="chip neutral">LENS: the customer's experience &mdash; effort, emotion, friction</span>
+      <span class="chip neutral">OWNS: cx-channel · cx-touchpoint · moment · friction-point · (refines) competitor-cx · cx-benchmark</span>
+      <span class="chip neutral">Invoked by: free chat / Deep Dive / qer-session</span>
+    </div>
+  </div>
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>The client journey specialist documents the <strong>Client Experience</strong> perspective. It sees the process from the <em>outside in</em>: where an operations expert sees a step, it sees what the client had to do, wait for, and feel to get past it. Its first principle is that <strong>emotion is data</strong> &mdash; it captures how a touchpoint <em>feels</em>, not just what happens, because a moment of truth is where the client's trust is won or lost.</p>
+    <p>It owns four journey element types and <strong>refines</strong> two web-sourced ones, all in the Client Experience area:</p>
+    <ul>
+      <li><code>cx-channel</code> (section <code>channels</code>) &mdash; a channel the client uses (portal, branch, phone, email, post): what it is and how it's used here.</li>
+      <li><code>cx-touchpoint</code> (section <code>touchpoints</code>) &mdash; a single interaction the client has: what they do, what they expect, how it feels &mdash; linked to the process <code>step</code> it sits at and the <code>channel</code> it happens on.</li>
+      <li><code>moment</code> &mdash; a moment of truth: an emotionally pivotal point (first impression, the long wait, the activation).</li>
+      <li><code>friction-point</code> &mdash; <strong>client-facing</strong> pain: effort, confusion, repetition the <em>client</em> experiences. Links <code>occursAt</code> the step, and <code>painPoint</code> where it mirrors a staff pain point so the two views agree.</li>
+      <li><code>competitor-cx-*</code> and <code>cx-benchmark</code> &mdash; usually web-sourced first by <code>source-cx</code>; here they are <strong>refined</strong> with the SME (the authority), not researched. This specialist does no web search itself.</li>
+    </ul>
+    <p>The discipline is the shared one &mdash; <em>you draft, the SME validates</em>; recovery-safe writes the instant the SME confirms; conform to the schema. And a sharp lane rule that turns on a single distinction: a <strong>staff</strong> pain point belongs to the Process specialist; a <strong>client</strong> friction point is this specialist's. When the SME mentions a four-eyes check or a CRM limitation, it flags it for the owning specialist and steers back to the client experience.</p>
+  </section>
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>The shared Brainstorm &rarr; Author &rarr; Verify pattern, made concrete: <strong>Brainstorm</strong> is narrative-first &mdash; "walk me through what the client actually does here, what they see, what they wait for, what frustrates them"; <strong>Author</strong> writes each element the moment the SME says [Y]; <strong>Verify</strong> is the per-element Y/E/R loop, the competitor/benchmark refinement pass, and a closing journey-gap sweep. Phases 0, 1 and 7 are skipped under <code>orchestrated</code> mode (qer-session owns them).</p>
+    <ol class="steps">
+      <li><span class="st-title">Phase 0 &mdash; Setup</span><span class="st-body">Take the SME name/role from the invocation as the provenance <code>source</code> (do not re-ask). Identify the process, then read its overview and the <code>process-step</code>s so you can place touchpoints against them. Tools: <span class="tool">expandElement()</span></span></li>
+      <li><span class="st-title">Phase 1 &mdash; Orientation</span><span class="st-body">Read the steps &mdash; you don't re-document them; you confirm which steps the client is actually present at, since those are where touchpoints live. Read any <code>competitor-cx-*</code>/<code>cx-benchmark</code> already sourced &mdash; they tell you what good looks like. Tools: <span class="tool">expandElement()</span></span></li>
+      <li><span class="st-title">Phase 2 &mdash; Channels</span><span class="st-body">The channels the client uses to interact. For each: what it is and how it's used in this process. Draft each as a <code>cx-channel</code>. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 3 &mdash; Touchpoints</span><span class="st-body">Each distinct interaction, walked in order. For each: what the client does, what they expect, how it feels &mdash; linked to the process <code>step</code> and the <code>channel</code>. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 4 &mdash; Moments</span><span class="st-body">[A] Add · [E] Explore · [N] None. The emotionally pivotal points where confidence in the bank is made or broken. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 5 &mdash; Friction points</span><span class="st-body">[A]/[E]/[N]. Client-facing pain: effort, confusion, repetition. Capture severity, root cause, client impact; link <code>occursAt</code> the step, and <code>painPoint</code> where it mirrors a staff pain point. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 6 &mdash; Refine competitor CX &amp; benchmarks</span><span class="st-body">Walk the existing web-sourced <code>competitor-cx-*</code>/<code>cx-benchmark</code> elements with the SME (the authority). Run Y/E/R; on [E] patch only the corrected block. Use them to pressure-test the journey &mdash; where a gap shows, note a friction point or flag the Innovation Analyst. No web search. Tools: <span class="tool">updateElement()</span></span></li>
+      <li><span class="st-title">Phase 7 &mdash; Validation &amp; close-out</span><span class="st-body">Sweep for: touchpoints on no channel or step, friction points not linked to a step, journey gaps where the client surely interacts. Surface each as a question, then print the canonical close-out verbatim (Perspective = Client Experience), counts filled. Tools: <span class="tool">expandElement()</span></span></li>
+    </ol>
+    <div class="callout">The <strong>read-back</strong> and provenance contract applies throughout: any client-experience detail the specialist proposed (not literally stated by the SME) is <code>proposed</code> until confirmed in a read-back, then flips to <code>elicited</code> with the SME's quote; refined competitor/benchmark content carries its <code>web</code> evidence. An element with any <code>proposed</code>/<code>web</code> heading cannot be approved.</div>
+  </section>
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Batch competitor-CX &amp; benchmark refinement</strong> &mdash; in Phase&nbsp;6 present the web-sourced reference elements as one labelled batch for a single Y/E/R, since most need only a light confirm.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>These are reference-type, low-judgement elements the core prompt already permits batching; one approval beats walking N sourced drafts individually.</td></tr>
+        <tr><td><strong>Deterministic touchpoint scaffold from steps</strong> &mdash; pre-generate a candidate touchpoint per client-present step in Phase&nbsp;3, then have the SME correct the grid.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">medium</span></td><td>Touchpoints map directly onto steps; deriving the skeleton from the As-Is makes coverage provable and turns authoring into fast correction.</td></tr>
+        <tr><td><strong>Auto-link friction&harr;pain points</strong> &mdash; match each client friction-point against existing staff <code>pain-point</code>s by step and propose the <code>painPoint</code> link automatically.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>"The two views agree" is a relation rule, not a judgement; deterministic matching keeps the client and staff lenses consistent without manual linking.</td></tr>
+        <tr><td><strong>Structured-output authoring</strong> &mdash; emit each touchpoint/channel/moment against the JSON Schema so <code>createElement</code> never bounces on a missing heading or out-of-range block.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">medium</span></td><td>Removes the draft &rarr; conformance-fail &rarr; re-draft retry loop; every write lands first time and provenance stays clean.</td></tr>
+        <tr><td><strong>Pre-compute the channel&times;step journey map</strong> &mdash; build the matrix of which channel each step is reachable on up front, to drive the walk and expose orphan touchpoints.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">medium</span></td><td>The Phase&nbsp;7 sweep (touchpoint on no channel/step) becomes a continuous deterministic check instead of a late, memory-dependent pass.</td></tr>
+        <tr><td><strong>Deterministic moment-of-truth prompts</strong> &mdash; a fixed primed bank (first impression, the long wait, the activation, the recovery) instead of improvising the moment exploration.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Same journey &rarr; same moment probes &rarr; reproducible, auditable emotional coverage; removes run-to-run variance.</td></tr>
+        <tr><td><strong>Skip read-back for confirmed-empty optional sections</strong> &mdash; a single deterministic "none" handshake stamps Moments / Friction <code>confirmed-empty</code>.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>These sections are often legitimately empty; a fixed handshake is faster and more consistent than improvised wrap-up prose.</td></tr>
+        <tr><td><strong>Parallel-draft independent touchpoints</strong> &mdash; after the SME names the client-present steps, draft their touchpoint bodies in parallel and review in one pass.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">medium</span></td><td>Touchpoints are largely independent; serial one-at-a-time Y/E/R across the whole journey is the slowest part of the session.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">Biggest win: the <strong>deterministic touchpoint scaffold derived from the As-Is steps</strong>. Because touchpoints sit on process steps and friction points <code>occursAt</code> them, the whole client journey can be skeletoned straight from the documented process &mdash; one candidate touchpoint per client-present step, pre-linked to channel and step. That makes journey coverage provable, auto-wires the friction&harr;pain relations, and collapses the session from open-ended elicitation into fast, reproducible correction of a grid.</div>
+  </section>
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/client-journey-specialist/SKILL.md</code></footer>
+</div>
+</body>
+</html>

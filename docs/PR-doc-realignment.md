@@ -58,6 +58,7 @@ what it changes, behaviour/scope, and how it was verified.
 | **#55** | Advisor chat: clickable citations + capture-as-note + richer markdown | `feat/advisor-chat-citations-notes` → `main` | Code | **Open** (`pending`) |
 | **#56** | DTP Enhancer review tools — rollup, coverage, evidence, triage, export, summary | `feat/dtp-review-tools` → `main` | Code + skills | **Merged** |
 | **#58** | Live-testing feedback toolkit — floating widget, auto-context, screenshots, element pins, admin toggles | `feat/live-feedback-toolkit` → `main` | Code + UI | **Open** (`pending`) |
+| **#61** | `new-process` determinism — `deriveProcessMeta` tool + templatized copy; skill deep-dive HTML | `feat/new-process-determinism` → `main` | Code + tests + skill + docs | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1834,3 +1835,43 @@ captured + served (`200 image/png`, `400` on traversal, `404` missing);
 element pin stores `element: PS-COB-001` with title/process; avatar opens the
 profile (session intact). Test feedback items created during verification were
 removed.
+
+---
+
+## PR #61 — `new-process` determinism + skill deep-dive HTML
+
+## Why
+A deep-dive review of all 26 skills (delivered as the `docs/skill-analysis/`
+HTML site) flagged `new-process` as carrying avoidable run-to-run variance: the
+model derived the slug and `<PROC>` abbreviation in its head (the `FRD2`-style
+malformed abbreviation was a guaranteed reject-and-retry), reproduced the
+confirm bullets / closing message verbatim from the prompt (drift-prone), and
+re-prompted on slug collisions. The mechanics belong in the deterministic tool
+layer; only the one-line description is genuine judgement.
+
+## What
+- **New `deriveProcessMeta({ name })` tool** (`src/lib/process-scaffold.ts`),
+  wired into both backends (`claude-mcp-server.ts`, `gemini-worker.ts`).
+  Returns a deterministic `slug`, a guaranteed-valid `PROC` (2–6 uppercase
+  letters — the model never forms it), `slugTaken` + up to three non-colliding
+  `suggestedSlugs`, and a fixed `confirmTemplate` (with a `{{description}}`
+  slot, so the bullet structure can't drift).
+- **Templatized copy** — `confirmBulletsTemplate` + `scaffoldClosing` are now
+  the single source of truth; `scaffoldProcess` returns the canonical `closing`
+  for verbatim relay.
+- **SKILL.md** updated to call the tool, take a one-shot confirm path when the
+  opening message already carries a description, and relay the tool-provided
+  copy verbatim.
+- **`docs/skill-analysis/`** — a per-skill HTML deep-dive (what it does, the
+  sequence, determinism/speed enhancement ideas) for all 26 skills, with the
+  `new-process` outcomes marked.
+
+## Scope
+`new-process` only. No change to any other skill's behaviour. Description text
+stays model-authored (the templated-description idea was deliberately skipped).
+
+## Verification
+`npm run typecheck` clean · `npm test` **108/108** · new
+`src/lib/process-scaffold.test.ts` **8/8** (slug/abbreviation validity,
+collision suggestions, deterministic output). Derivation smoke-tested across
+edge cases (`FRD2`→`FRD`, single-word `Onboarding`→`ONBO`, digit/symbol names).

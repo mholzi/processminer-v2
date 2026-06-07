@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>new-process — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">new-process</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Scaffolding &amp; ingest</div>
+    <h1>new-process</h1>
+    <p class="lede">Scaffolds a brand-new banking process as a single strongly-typed JSON document with an empty overview — name, confirm, create. It captures no content; specialists fill it in later.</p>
+    <div class="meta-row">
+      <span class="chip">Invoked by: process switcher "new process" action, or qer-session</span>
+      <span class="chip neutral">Interactive (one short Y/E/R loop)</span>
+      <span class="chip neutral">WRITES_TO: wiki/processes/&lt;slug&gt;.json (root meta + empty content)</span>
+      <span class="chip neutral">OWNS: no element types</span>
+    </div>
+  </div>
+
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>new-process</code> is the first skill in the documentation flow
+      (<code>new-process → document-ingest → triage → foundational-run</code>). Its
+      single job is to create the durable container — the process JSON document at
+      <code>wiki/processes/&lt;slug&gt;.json</code> — carrying only the process
+      <strong>identity</strong> (<code>meta</code>: id, slug, title, abbreviation)
+      and an <strong>empty overview</strong> (<code>content</code>). It deliberately
+      captures <em>no</em> content: no steps, no overview prose, no elements. When it
+      finishes, the process appears in the app empty and ready for
+      <code>qer-session</code> or a specialist to author into it.
+    </p>
+    <p>
+      The skill's only judgement item is a one-line <strong>description</strong>. The
+      slug, the <code>&lt;PROC&gt;</code> abbreviation, and the slug-conflict check are
+      <em>derived deterministically</em> — the skill is told to use exactly what the
+      derivation returns and never to invent its own. The abbreviation has a hard
+      constraint: 2–6 uppercase letters, no digits or symbols (e.g. <code>FRD2</code>
+      is rejected; use <code>FRDT</code>).
+    </p>
+    <p>Key constraints and behaviours:</p>
+    <ul>
+      <li><strong>Never hand-write the file.</strong> Creation goes through the
+        <code>scaffoldProcess({ slug, PROC, title, description })</code> tool, which
+        builds the document deterministically, validates slug + abbreviation, and
+        refuses to overwrite an existing process.</li>
+      <li><strong>Slug-conflict guard.</strong> If the derivation reports
+        <code>slugTaken: true</code>, the skill must not scaffold — it tells the user
+        the name collides and asks for a different one.</li>
+      <li><strong>Fixed wording.</strong> The confirmation bullets and the closing
+        message are verbatim — bulleted list (never a table), each label bold, and a
+        canonical success closing that says nothing about JSON or file paths.</li>
+      <li><strong>Speed-first by design.</strong> The skill's own mandate is "keep this
+        fast: name → confirm → document created. Nothing more."</li>
+    </ul>
+  </section>
+
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>Four prescribed steps; the only loop is the description Y/E/R.</p>
+    <ol class="steps">
+      <li><span class="st-title">Step 1 — Name</span><span class="st-body">Ask the user for the process name. That is the only thing the skill asks for.</span></li>
+      <li><span class="st-title">Step 2 — Derive, draft, confirm</span><span class="st-body">Derive the deterministic <em>slug</em>, the <code>&lt;PROC&gt;</code> abbreviation, and the <code>slugTaken</code> flag for the name. If <code>slugTaken</code> is true, stop and return to Step 1 with a new name. Otherwise draft a one-line description and present all three (description / slug / abbreviation) as bold-labelled bullets.</span></li>
+      <li><span class="st-title">Y/E/R on the description</span><span class="st-body">Offer exactly three choices: <strong>[Y]</strong> accept → Step 3; <strong>[E]</strong> apply corrections, re-show, ask again; <strong>[R]</strong> redraft from scratch with one or two sharper questions, re-present. Loop until accepted. Create nothing until confirmed.</span></li>
+      <li><span class="st-title">Step 3 — Scaffold</span><span class="st-body">On confirmation, create the document. Tools: <span class="tool">scaffoldProcess()</span>. Do not relay the tool's printed output; on error, relay the error and stop.</span></li>
+      <li><span class="st-title">Step 4 — Done</span><span class="st-body">On success, emit only the canonical closing (process created, app switched, prompt to upload a document or run a documentation session). Say nothing about the JSON document or paths.</span></li>
+    </ol>
+  </section>
+
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <div class="outcome-banner"><strong>Implementation status (2026-06-07).</strong> Ideas 2, 3, 4, 5 shipped and 6 shipped as a pragmatic variant; 1 and 7 were skipped by the user. The work added a new deterministic <code>deriveProcessMeta({ name })</code> tool (<a href="../../src/lib/process-scaffold.ts">src/lib/process-scaffold.ts</a>, wired into both backends), templatized the canonical copy, and is covered by <a href="../../src/lib/process-scaffold.test.ts">process-scaffold.test.ts</a> (8 passing). Typecheck + full suite (108) green.</div>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th><th>Outcome</th></tr></thead>
+      <tbody>
+        <tr class="row-skip"><td><strong>Return the drafted description from the derive tool.</strong> Have <code>scaffoldProcess</code>'s sibling derivation also propose a one-line description from the name, so the model only edits rather than authors.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">med</span></td><td>Collapses the one judgement item into a confirm-or-tweak, cutting a generation round and removing description-style variance between runs.</td><td><span class="tag skip">skipped</span><span class="outcome-note">User choice — a templated description reads bland; description stays model-authored.</span></td></tr>
+        <tr class="row-done"><td><strong>One-shot confirm path.</strong> When the user supplies name + a description in their first message, skip straight to the bullets for a single Y/E/R.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Removes a needless round-trip in the common case where the user already knows what they want.</td><td><span class="tag done">implemented</span><span class="outcome-note">SKILL.md Step 1: if the opening message already gives a name + description, skip the question and go straight to Step 2.</span></td></tr>
+        <tr class="row-done"><td><strong>Validate the abbreviation before the tool call.</strong> Enforce the 2–6 uppercase-letters rule (strip digits/symbols) at draft time, not by relying on a tool rejection + retry.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Eliminates the <code>FRD2</code>-style reject-and-retry round trip that the SKILL.md explicitly warns about.</td><td><span class="tag done">implemented</span><span class="outcome-note"><code>deriveProcessMeta</code> returns a guaranteed-valid <code>PROC</code> (<code>abbreviateProcessName</code> strips digits/stopwords, pads, caps at 6). Model never forms it. Test-locked.</span></td></tr>
+        <tr class="row-done"><td><strong>Templatize the fixed strings.</strong> Move the bullet block and the canonical closing into the tool layer / a constants module the skill references, rather than reproducing verbatim text from the prompt.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Guarantees byte-identical user-facing output every run; the model can't drift the "verbatim" copy.</td><td><span class="tag done">implemented</span><span class="outcome-note">Copy now lives in <code>process-scaffold.ts</code>: <code>confirmBulletsTemplate</code> + <code>scaffoldClosing</code>. <code>scaffoldProcess</code> returns the <code>closing</code> string; SKILL.md relays it verbatim.</span></td></tr>
+        <tr class="row-done"><td><strong>Fold the slug-conflict loop into the tool contract.</strong> Have the derive call return suggested alternative slugs when <code>slugTaken</code> is true.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Lets a collision be resolved in one turn instead of bouncing back to "ask for a new name".</td><td><span class="tag done">implemented</span><span class="outcome-note"><code>deriveProcessMeta</code> returns <code>slugTaken</code> + up to 3 non-colliding <code>suggestedSlugs</code>; SKILL.md offers them on collision.</span></td></tr>
+        <tr class="row-partial"><td><strong>Schema-output the confirm payload.</strong> Have the model emit <code>{ description, slug, PROC }</code> as a structured object that renders the bullets, instead of free-form markdown.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Removes table-vs-bullets and formatting drift, and makes the confirm machine-checkable before scaffolding.</td><td><span class="tag partial">partial</span><span class="outcome-note">Done via the tool layer instead of worker structured-output plumbing: <code>deriveProcessMeta</code> returns a fixed <code>confirmTemplate</code> with a <code>{{description}}</code> slot, so the bullet structure can't drift. Full machine-checked structured output was not worth the worker lift for this skill.</span></td></tr>
+        <tr class="row-skip"><td><strong>Idempotent scaffold short-circuit.</strong> If the exact slug already exists with an empty overview, switch to it instead of erroring.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Turns an accidental re-run into an instant no-op rather than an error the model has to relay and recover from.</td><td><span class="tag skip">skipped</span><span class="outcome-note">User choice — left as-is; <code>scaffoldProcess</code> still refuses to overwrite an existing process.</span></td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> push the description draft <em>and</em> the abbreviation validation into the deterministic derive/scaffold tool layer. Today the model authors a description (variance), can mis-form the abbreviation (a guaranteed reject-retry), and must reproduce verbatim copy by hand. If the tool returns a proposed description, a guaranteed-valid <code>&lt;PROC&gt;</code>, and the canonical strings, the skill degenerates to a single confirm-or-edit turn — the fastest, most reproducible shape this scaffolding skill can take.</div>
+  </section>
+
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/new-process/SKILL.md</code></footer>
+</div>
+</body>
+</html>

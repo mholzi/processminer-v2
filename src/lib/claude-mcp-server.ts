@@ -27,6 +27,7 @@ import {
 import { checkConformance } from "./conformance.ts";
 import { updateElement } from "./wiki-write.ts";
 import { buildProcessDoc } from "./gemini-worker.ts";
+import { deriveProcessMeta, scaffoldClosing } from "./process-scaffold.ts";
 import {
   replaceTempKeys,
   buildElement,
@@ -284,8 +285,19 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         }
       },
       {
+        name: "deriveProcessMeta",
+        description: "Deterministically derive a new process's slug and `<PROC>` abbreviation from its name, and report whether the slug is taken (with non-colliding alternatives). Returns a guaranteed-valid abbreviation (2–6 uppercase letters) and the exact confirm-bullet template. Call this in the new-process skill before scaffolding; use exactly what it returns — never invent the slug or abbreviation.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            name: { type: "string", description: "The raw process name the user gave." }
+          },
+          required: ["name"]
+        }
+      },
+      {
         name: "scaffoldProcess",
-        description: "Create a brand-new, empty process document (root meta + an empty overview). Used only by the new-process skill before any content exists. Refuses to overwrite an existing process.",
+        description: "Create a brand-new, empty process document (root meta + an empty overview). Used only by the new-process skill before any content exists. Refuses to overwrite an existing process. Returns the canonical closing message to relay verbatim.",
         inputSchema: {
           type: "object",
           properties: {
@@ -599,6 +611,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     return { content: [{ type: "text", text: JSON.stringify({ slug, collection, elements }, null, 2) }] };
   }
 
+  // deriveProcessMeta takes a name (not a slug) and runs before any process
+  // exists, so it sits above the slug guard alongside the cross-process tools.
+  if (name === "deriveProcessMeta") {
+    const procName = String(args?.name || "").trim();
+    if (!procName) throw new McpError(ErrorCode.InvalidParams, "name is required.");
+    const slugExists = (s: string) =>
+      fs.existsSync(path.join(process.cwd(), "wiki", "processes", `${s}.json`));
+    const meta = deriveProcessMeta(procName, slugExists);
+    return { content: [{ type: "text", text: JSON.stringify(meta, null, 2) }] };
+  }
+
   if (!slug) {
     throw new McpError(ErrorCode.InvalidParams, "slug is required for all tools.");
   }
@@ -632,7 +655,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
     const newDoc = buildProcessDoc(PROC, title, description);
     atomicWriteFileSync(processFilePath, JSON.stringify(newDoc, null, 2) + "\n");
-    return { content: [{ type: "text", text: JSON.stringify({ ok: true, slug, id: newDoc.meta.id, created: true }, null, 2) }] };
+    return { content: [{ type: "text", text: JSON.stringify({ ok: true, slug, id: newDoc.meta.id, created: true, closing: scaffoldClosing(title) }, null, 2) }] };
   }
 
   let doc: any = null;

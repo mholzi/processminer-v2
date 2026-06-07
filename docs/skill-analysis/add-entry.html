@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>add-entry — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">add-entry</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Single-element &amp; review</div>
+    <h1>add-entry</h1>
+    <p class="lede">Drafts <strong>one new element</strong> into a single wiki section — read the section's context, ask the SME what to add, research it in the wiki and (where useful) on the web, then refine via Y/E/R and write it on approval. The interactive, single-entry counterpart to the bulk <code>source-*</code> skills.</p>
+    <div class="meta-row">
+      <span class="chip">Interactive (Y/E/R loop)</span>
+      <span class="chip neutral">WRITES_TO: one element via createElement() (status: draft)</span>
+      <span class="chip neutral">Invoked by: section "add entry" action / free chat</span>
+      <span class="chip neutral">SCOPE: one element</span>
+    </div>
+  </div>
+
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>add-entry</code> appends a single AI-drafted element to the one
+      <code>&lt;section&gt;</code> of the one process <code>&lt;slug&gt;</code> it was invoked
+      for. It is the manual, surgical complement to the autonomous sourcing skills
+      (<code>source-innovation</code>, <code>source-cx</code>): instead of bulk-filling a
+      section, the SME describes a single thing they want — a market trend, an
+      innovation idea, a competitor move, a CX benchmark, a control, or any other
+      element type the section holds — and the skill drafts exactly that one entry.
+    </p>
+    <p>
+      The skill does the judgement (ask, research, draft, refine) and the
+      schema-enforced <code>createElement()</code> tool does the mechanical write. Every
+      entry is grounded: it must connect to what the wiki already holds (related
+      pain-points, steps, trends), and external facts must cite a real source — either
+      web research or the SME. Nothing is invented, and nothing is written until the
+      SME accepts the draft in the Y/E/R loop.
+    </p>
+    <p>
+      Everything it writes is <code>status: draft</code>. The skill never sets
+      <code>approved</code> or the <code>relevance</code> triage itself — the SME does
+      that later on the element card. To add to a different section, the SME runs the
+      skill again from there: one element per run.
+    </p>
+  </section>
+
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>Read the section, ask, research, draft, refine, write — five steps that bracket one Y/E/R loop.</p>
+    <ol class="steps">
+      <li><span class="st-title">Read the section's context</span><span class="st-body">Read the schema for the section's element type(s) — every <code>##</code> block, frontmatter field and relation — so the draft is as complete as a dedicated sourcing skill's. List existing elements so the new one fits and does not duplicate, and read the process overview for domain context. Tools: <span class="tool">expandElement({ type })</span> · <span class="tool">expandElement({ type, id })</span></span></li>
+      <li><span class="st-title">Ask what to add</span><span class="st-body">Ask the SME, substituting the section label: "What would you like to add to <em>{section label}</em>?" Wait for the answer — never draft from a blank guess.</span></li>
+      <li><span class="st-title">Research, then draft</span><span class="st-body">Always read the related wiki elements (an idea's pain-points, a control's steps); use web search for external signals (trends, competitor moves, benchmarks), citing the real source. Then draft every block, every frontmatter field and relation the type lists (incl. <code>sourceUrl</code>/<code>asOf</code> for web types), an honest <code>confidence</code> and a <code>source</code>. Tools: web search</span></li>
+      <li><span class="st-title">Refine with the SME — Y / E / R</span><span class="st-body">Present the draft with exactly three choices: <strong>[Y]</strong> accept, <strong>[E]</strong> edit-and-re-show, <strong>[R]</strong> rewrite with sharper research. Loop until [Y]; always offer all three.</span></li>
+      <li><span class="st-title">Write it</span><span class="st-body">On [Y], assemble the element object (no id — the backend assigns it) and write it as <code>status: draft</code>, then conformance-check and fix any flag. Confirm with the exact added-line. Tools: <span class="tool">createElement({ type, element })</span> · <span class="tool">checkConformance({ slug })</span></span></li>
+    </ol>
+  </section>
+
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Pre-fill from the schema template.</strong> Have <code>createElement</code> (or a new <code>scaffoldElement({ type })</code>) return a skeleton with every required block, frontmatter field and empty relation already laid out, so the model fills slots rather than recalling the shape from the schema each run.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Cuts a read-and-recall round-trip and guarantees no required field is dropped — the most common conformance flag for this skill.</td></tr>
+        <tr><td><strong>Bundle the context reads into one call.</strong> A single <code>sectionContext({ slug, section })</code> returning the type schema(s), the existing element titles/ids, and the overview in one payload, replacing several <code>expandElement</code> calls.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">med</span></td><td>Step 1 today is 3+ sequential tool calls; one call removes latency and makes the context the draft is built on identical every run.</td></tr>
+        <tr><td><strong>Structured draft object instead of free prose.</strong> Have the model emit the element as a strict JSON object matched against the type's output schema before presentation, not assembled ad hoc at write time.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Validation happens before the SME sees the draft, so [Y] never fails the post-write conformance check.</td></tr>
+        <tr><td><strong>Parallel web research fan-out</strong> for external-signal types — dispatch 2–3 concurrent searches (the trend, the competitor, the benchmark) instead of serial queries.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">med</span></td><td>Research is the slowest part for web-sourced entries; concurrency collapses it to a single round.</td></tr>
+        <tr><td><strong>Deterministic duplicate check.</strong> A helper that, given the SME's description, returns the nearest existing element by title/embedding so the skill can warn before drafting a near-duplicate.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Makes "does not duplicate one already there" a mechanical guarantee rather than a judgement call the model can miss.</td></tr>
+        <tr><td><strong>Auto-suggest relations from the description.</strong> Match the SME's sentence against existing pain-points/steps and pre-populate the relation id-lists for the SME to confirm.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">med</span></td><td>Relations are the field most often left empty; pre-filling them strengthens grounding and saves an [E] round.</td></tr>
+        <tr><td><strong>Type disambiguation up front.</strong> When a section holds several element types, ask the type question in Step 2 rather than discovering ambiguity at draft time.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Avoids a wasted draft-and-rewrite when the model guesses the wrong type.</td></tr>
+        <tr><td><strong>Cache the schema read per session.</strong> The type template rarely changes within a run; load it once and reuse across repeated adds to the same section.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Removes repeated schema parsing when the SME adds several entries in a row.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> a <code>scaffoldElement</code>-style template pre-fill combined with a structured, schema-validated draft object. Together they turn the riskiest moment — assembling a complete, conformant element by hand at write time — into a fill-in-the-blanks exercise that is validated <em>before</em> the SME ever sees it, eliminating the post-write conformance flag and the extra [E] rounds it triggers.</div>
+  </section>
+
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/add-entry/SKILL.md</code></footer>
+</div>
+</body>
+</html>
