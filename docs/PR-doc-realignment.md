@@ -63,6 +63,7 @@ what it changes, behaviour/scope, and how it was verified.
 | **#64** | Design-review wave 3 (round-2 fixes) — login first-impression, guided-tour escape, DTP relabel, Help/⌘K focus-trap | `fix/design-review-wave-3` → `fix/design-review-wave-2` | Code + UI | **Open** (`pending`) — stacked on #60 |
 | **#66** | Design-review wave 4 — the export PDF: provenance tags + legend, page footer, print-color-adjust, tokens | `fix/design-review-wave-4-print` → `fix/design-review-wave-3` | Code + UI | **Open** (`pending`) — stacked on #64 |
 | **#68** | Design-review wave 5 — confirm access-widening + surface failures in SettingsPanel | `fix/design-review-wave-5-access` → `fix/design-review-wave-4-print` | Code + UI | **Open** (`pending`) — stacked on #66 |
+| **#71** | Design-review wave 6 — DTP colour overload: kind goes neutral, severity is the only colour axis | `fix/design-review-wave-6-dtp-color` → `fix/design-review-wave-5-access` | Code (CSS) | **Open** (`pending`) — stacked on #68 |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -2003,3 +2004,23 @@ Reuses the wave-2 `<Modal>` primitive (Esc / focus-trap / aria-modal). Stacked o
 governed a process → "Make open to everyone" → the confirm dialog appears
 (`aria-modal`, impact spelled out) → confirming un-governs and the panel returns
 to "open" (state restored); no silent failures.
+
+## PR #71 — Design-review wave 6: DTP colour overload
+
+## Why
+DTP findings coloured the *kind* word (outdated/missing/contradiction/added) AND
+the severity dot, so the semantic triad (`--hi/--mid/--lo`) meant two things at
+once and "added" rendered green (= good/high-confidence). The element-card
+colour-overload root (#1) recurring in the DTP Enhancer.
+
+## What
+Severity is now the only colour axis on a finding (the dot / left-rule / severity
+word). The kind tags go neutral across all three render sites — the row
+(`.dtpf-kind`), the rollup chips (`.dtpr-kind`), and the detail header
+(`.dtp-finding-kind`, now a neutral outline chip). CSS-only; the kind class names
+still render, just without semantic colour.
+
+## Verification
+`npm run typecheck` clean · `npm test` **140/140**. Computed-style checks:
+`kind.missing` blue→`--muted`, `dtp-finding-kind.contradiction` red→neutral
+outline, `dtpr-kind.added` green→neutral; the `sev-high` dot keeps `--lo` red.
