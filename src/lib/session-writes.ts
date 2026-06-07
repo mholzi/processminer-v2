@@ -104,6 +104,103 @@ export function buildApprovalPatch(
 }
 
 /**
+ * Build an approval patch that ALSO reconciles confirmed provenance in the same
+ * write (foundational-run [Y]). `reconcile` maps a heading title to the SME's
+ * confirming quote; each named heading flips to `source: "elicited"` with that
+ * evidence, deep-merged over the element's existing provenance (so the
+ * `document` headings are preserved). This collapses the rewrite-then-approve
+ * pair into one call and removes the most common [Y] failure — approving before
+ * reconciling, which the approval gate rejects. Pass the element so the merge
+ * starts from its real provenance map.
+ */
+export function buildReconciledApprovalPatch(
+  element: { meta?: { provenance?: Record<string, { source: string; evidence: string }> } } | null | undefined,
+  approval: string,
+  approver: string | undefined,
+  date: string,
+  reconcile: Record<string, string> | null | undefined,
+): { meta: Record<string, unknown> } {
+  const base = buildApprovalPatch(approval, approver, date);
+  if (!reconcile || Object.keys(reconcile).length === 0) return base;
+  const existing = element?.meta?.provenance ?? {};
+  const merged: Record<string, { source: string; evidence: string }> = { ...existing };
+  for (const [heading, evidence] of Object.entries(reconcile)) {
+    merged[heading] = { source: "elicited", evidence: String(evidence ?? "") };
+  }
+  return { meta: { ...base.meta, provenance: merged } };
+}
+
+/**
+ * Relation-list field name → the collection (section) whose ids belong in it.
+ * Used by `syncRelationsFromProse` to add only ids of the correct type.
+ */
+const RELATION_FIELD_SECTIONS: Record<string, string> = {
+  systems: "systems",
+  roles: "roles",
+  controls: "controls",
+  integrations: "integrations",
+  exceptions: "exceptions",
+  regulatedBy: "regulation",
+  regulations: "regulation",
+};
+
+const ELEMENT_ID_RE = /\b[A-Z]{1,5}-[A-Z0-9]+-\d+\b/g;
+
+/**
+ * Frontmatter-sync on an [E] edit (opt-in): when reworked prose names an element
+ * id (e.g. a `SYS-*`) that isn't already in the matching relation list, add it —
+ * deriving the relation list from the prose instead of letting prose/frontmatter
+ * drift (which lint later flags). Conservative by design: only adds an id that
+ * (1) appears in the element's prose, (2) actually exists in the doc, (3) belongs
+ * to the section the relation-list field maps to, and (4) isn't already listed.
+ * Returns a `content` patch of the *full* updated arrays (empty when nothing to
+ * add), plus the additions for an echo line.
+ */
+export function syncRelationsFromProse(
+  element: { content?: Record<string, unknown> } | null | undefined,
+  doc: any,
+): { content: Record<string, string[]>; added: Record<string, string[]> } {
+  const content = element?.content ?? {};
+  // The element's prose: every string field that isn't itself a relation list.
+  const proseText = Object.entries(content)
+    .filter(([k, v]) => typeof v === "string" && !(k in RELATION_FIELD_SECTIONS))
+    .map(([, v]) => v as string)
+    .join("\n");
+  const namedIds = new Set(proseText.match(ELEMENT_ID_RE) ?? []);
+  if (namedIds.size === 0) return { content: {}, added: {} };
+
+  // Index doc ids by section so we only add ids of the right type that exist.
+  const idsBySection: Record<string, Set<string>> = {};
+  for (const [section, list] of Object.entries(doc ?? {})) {
+    if (!Array.isArray(list)) continue;
+    const set = new Set<string>();
+    for (const el of list) {
+      const id = el?.meta?.id;
+      if (typeof id === "string" && id) set.add(id);
+    }
+    idsBySection[section] = set;
+  }
+
+  const contentPatch: Record<string, string[]> = {};
+  const added: Record<string, string[]> = {};
+  for (const [field, section] of Object.entries(RELATION_FIELD_SECTIONS)) {
+    if (!Array.isArray(content[field])) continue; // element doesn't carry this list
+    const existing = content[field] as string[];
+    const existingSet = new Set(existing);
+    const valid = idsBySection[section] ?? new Set<string>();
+    const toAdd: string[] = [];
+    for (const id of namedIds) {
+      if (valid.has(id) && !existingSet.has(id)) toAdd.push(id);
+    }
+    if (toAdd.length) {
+      contentPatch[field] = [...existing, ...toAdd];
+      added[field] = toAdd;
+    }
+  }
+  return { content: contentPatch, added };
+}
+
+/**
  * Build the document-ingest result (`doc.ingest`) from the skill's payload —
  * the file ingested, the created/updated element ids, and the `conflicts` /
  * `corrections` the SME triages in the app. Normalises every array (a missing

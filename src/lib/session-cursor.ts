@@ -264,6 +264,19 @@ export interface StatusView {
   closeout?: string;
   /** The SME running the session, carried on the cursor (QER) — present on resume. */
   actor?: { name?: string; role?: string };
+  // ---- foundational-run enrichment (see foundational.ts) ----
+  /** When the current item is a process-step: does any control link to it? */
+  currentHasControl?: boolean;
+  /** Process-step ids with no control linked — the control-coverage probe targets. */
+  uncoveredSteps?: string[];
+  /** When the current item is in the process-gap tail: the remaining gap ids to batch. */
+  gapTail?: { ids: string[] };
+  /** Close-out counts by section (non-empty), populated once done. */
+  closeoutCounts?: { section: string; count: number }[];
+  /** Close-out element total, populated once done. */
+  closeoutTotal?: number;
+  /** Empty sections mapped to their filling skill/✦ button, populated once done. */
+  stillToDocument?: { section: string; label: string; action: string }[];
 }
 
 /**

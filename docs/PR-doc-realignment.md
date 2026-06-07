@@ -59,7 +59,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#56** | DTP Enhancer review tools — rollup, coverage, evidence, triage, export, summary | `feat/dtp-review-tools` → `main` | Code + skills | **Merged** |
 | **#58** | Live-testing feedback toolkit — floating widget, auto-context, screenshots, element pins, admin toggles | `feat/live-feedback-toolkit` → `main` | Code + UI | **Open** (`pending`) |
 | **#61** | `new-process` determinism — `deriveProcessMeta` tool + templatized copy; skill deep-dive HTML | `feat/new-process-determinism` → `main` | Code + tests + skill + docs | **Merged** |
-| **#65** | `qer-session` determinism — perspective-aware cursor (skillBuilt/documented/next-built), counted cross-review gate, close-out renderer, SME actor on cursor | `feat/qer-determinism` → `main` | Code + tests + skill + docs | **Open** (`pending`) |
+| **#65** | `qer-session` determinism — perspective-aware cursor (skillBuilt/documented/next-built), counted cross-review gate, close-out renderer, SME actor on cursor | `feat/qer-determinism` → `main` | Code + tests + skill + docs | **Merged** |
+| **#67** | `foundational-run` determinism — control-coverage flag, close-out counts + still-to-document, one-call [Y] reconcile, opt-in [E] frontmatter-sync, gap-tail batch | `feat/foundational-determinism` → `main` | Code + tests + skill + docs | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1985,3 +1986,45 @@ that bypass it.
 `npm run typecheck` clean · `npm test` **111/111** (3 new `normalizeIngestReport`
 cases in `wiki.test.ts`: malformed→coerced, well-formed→preserved,
 null/non-object→undefined).
+
+---
+
+## PR #67 — `foundational-run` determinism: doc-derived facts
+
+## Why
+The skill deep-dive found the walk's most fragile spots were judgement the model
+re-derived each run: whether a step has a control, the close-out counts +
+"still to document" list, the rewrite-then-approve provenance dance on [Y], and
+prose/frontmatter drift on [E]. This PR turns each into a counted fact or a
+one-call write, leaving the sharp lens-specific challenge to the model.
+
+## What
+- **`foundational.ts`** (new, pure) — `buildControlCoverage` / `uncoveredSteps`
+  (per-step "has a control?" from `control.content.step`); `stillToDocument` +
+  `FOUNDATIONAL_FILL_MAP` (empty section → filling skill/✦, Target Process
+  excluded); `closeoutCounts`; `enrichFoundationalStatus` (layers
+  `currentHasControl`, `uncoveredSteps`, `gapTail`, and the close-out counts +
+  still-to-document onto the base cursor view).
+- **`session-writes.ts`** — `buildReconciledApprovalPatch` (reconcile + approve
+  in one gated write) and `syncRelationsFromProse` (conservative, opt-in
+  frontmatter sync — only adds ids that exist and match the list's type).
+- **Both backends** — foundational `getSessionStatus`/`buildQueue`/`advanceSession`
+  return the enriched status; `setApproval` gains `reconcile`; `updateElement`
+  gains opt-in `syncRelations`.
+- **SKILL.md** — snapshot once + reuse bodies; control probe off
+  `currentHasControl`; one-message per-step template; [Y] one-call reconcile;
+  [E] `syncRelations`; gap-tail batch; close-out from the counted facts.
+- **Test wiring** — added `foundational.test.ts` AND the #61
+  `process-scaffold.test.ts` to `npm test` (both existed but weren't run).
+
+## Scope
+foundational-run + the shared cursor/write cores. `setApproval.reconcile` and
+`updateElement.syncRelations` are optional/opt-in, so other skills and the
+in-app write paths are unaffected. Skipped by request: atomic cursor (#3).
+Partial: per-element body cache (#9) — Step-1 read-once reuse done, stateful
+worker cache deferred (staleness risk).
+
+## Verification
+`npm run typecheck` clean · `npm test` **138/138** — 12 new `foundational.test.ts`
+cases (control coverage, gap-tail, close-out, reconcile, conservative relation
+sync).
