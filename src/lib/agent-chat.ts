@@ -35,6 +35,8 @@ export type SessionEvent =
       sessionId?: string;
       isError?: boolean;
       usage?: TurnUsage;
+      /** This turn's wall-clock run-time in ms, when measured. */
+      durationMs?: number;
     }
   | { type: "error"; error: string; sessionId?: string };
 
@@ -45,7 +47,12 @@ export interface SessionHandlers {
   onTaskStart?: (id: string, label: string) => void;
   onTaskEnd?: (id: string) => void;
   onDelta?: (text: string) => void;
-  onDone?: (reply: string, sessionId: string | null, usage?: TurnUsage) => void;
+  onDone?: (
+    reply: string,
+    sessionId: string | null,
+    usage?: TurnUsage,
+    durationMs?: number,
+  ) => void;
   onError?: (error: string, sessionId: string | null) => void;
 }
 
@@ -118,7 +125,12 @@ export async function runSession(
         handlers.onDelta?.(evt.text);
         break;
       case "done":
-        handlers.onDone?.(evt.reply || "", evt.sessionId ?? null, evt.usage);
+        handlers.onDone?.(
+          evt.reply || "",
+          evt.sessionId ?? null,
+          evt.usage,
+          evt.durationMs,
+        );
         break;
       case "error":
         handlers.onError?.(evt.error, evt.sessionId ?? null);

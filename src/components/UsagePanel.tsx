@@ -15,6 +15,18 @@ function fmt(n: number): string {
   return String(n);
 }
 
+/** "4.2s" / "3m 12s" / "1h 4m" — compact run-time. */
+function dur(ms: number): string {
+  if (!ms) return "—";
+  if (ms < 60_000) return `${(ms / 1000).toFixed(1)}s`;
+  if (ms < 3_600_000) {
+    const m = Math.floor(ms / 60_000);
+    return `${m}m ${Math.round((ms % 60_000) / 1000)}s`;
+  }
+  const h = Math.floor(ms / 3_600_000);
+  return `${h}h ${Math.round((ms % 3_600_000) / 60_000)}m`;
+}
+
 function when(iso: string): string {
   if (!iso) return "—";
   const d = new Date(iso);
@@ -105,6 +117,10 @@ export default function UsagePanel() {
               <span className="usage-stat-v">{t.turns}</span>
             </div>
             <div className="usage-stat">
+              <span className="usage-stat-k">Run-time</span>
+              <span className="usage-stat-v">{dur(t.durationMs)}</span>
+            </div>
+            <div className="usage-stat">
               <span className="usage-stat-k">Processes</span>
               <span className="usage-stat-v">{data.processes.length}</span>
             </div>
@@ -116,6 +132,7 @@ export default function UsagePanel() {
               <tr>
                 <th>Skill</th>
                 <th className="num">Turns</th>
+                <th className="num">Run-time</th>
                 <th className="num">Input</th>
                 <th className="num">Output</th>
                 <th className="num">Cached</th>
@@ -126,6 +143,7 @@ export default function UsagePanel() {
                 <tr key={skill}>
                   <td>{skill}</td>
                   <td className="num">{e.turns}</td>
+                  <td className="num">{dur(e.durationMs)}</td>
                   <td className="num">{fmt(e.inputTokens)}</td>
                   <td className="num">{fmt(e.outputTokens)}</td>
                   <td className="num">{fmt(e.cacheReadTokens)}</td>
@@ -140,6 +158,7 @@ export default function UsagePanel() {
               <tr>
                 <th>Process</th>
                 <th className="num">Turns</th>
+                <th className="num">Run-time</th>
                 <th className="num">Input</th>
                 <th className="num">Output</th>
                 <th className="num">Cached</th>
@@ -151,6 +170,7 @@ export default function UsagePanel() {
                 <tr key={p.slug}>
                   <td title={p.slug}>{p.title}</td>
                   <td className="num">{p.total.turns}</td>
+                  <td className="num">{dur(p.total.durationMs)}</td>
                   <td className="num">{fmt(p.total.inputTokens)}</td>
                   <td className="num">{fmt(p.total.outputTokens)}</td>
                   <td className="num">{fmt(p.total.cacheReadTokens)}</td>
