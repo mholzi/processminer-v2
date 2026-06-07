@@ -15,6 +15,7 @@ import { canAccess } from "./process-access.ts";
 import { writeRuntime, getRuntime, setDtpSummary } from "./runtime-store.ts";
 import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch, buildReconciledApprovalPatch, syncRelationsFromProse } from "./session-writes.ts";
 import { enrichFoundationalStatus } from "./foundational.ts";
+import { buildProcessRelations } from "./process-relations.ts";
 import { writeDtpReport, writeDtpComparison } from "./dtp-report.ts";
 import { buildNote, appendNote, resolveNotesInDoc } from "./session-notes.ts";
 import {
@@ -292,6 +293,15 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             summary: { type: "string", description: "The memo markdown with exactly the four headings in order." }
           },
           required: ["slug", "area", "summary"]
+        }
+      },
+      {
+        name: "getProcessRelations",
+        description: "Deterministic relation/coverage/orphan facts for the process — per-step systems/controls/touchpoints with hasControl/hasSystem flags, orphan systems/controls/regulations, candidate integrations (system pairs co-occurring on a step with no integration), and steps without a control/system. Specialists call this instead of re-deriving coverage by hand (Process, Control & Compliance, Client Journey, IT Architect).",
+        inputSchema: {
+          type: "object",
+          properties: { slug: { type: "string", description: "The process slug." } },
+          required: ["slug"]
         }
       },
       {
@@ -966,6 +976,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return { content: [{ type: "text", text: `Error: ${res.error}` }], isError: true };
       }
       return { content: [{ type: "text", text: JSON.stringify({ ok: true, id: args?.id, approval: args?.status, reconciled: reconcile ? Object.keys(reconcile) : [] }, null, 2) }] };
+    }
+
+    else if (name === "getProcessRelations") {
+      return { content: [{ type: "text", text: JSON.stringify(buildProcessRelations(doc), null, 2) }] };
     }
 
     else if (name === "buildQueue") {
