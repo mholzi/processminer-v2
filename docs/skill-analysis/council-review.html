@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>council-review — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">council-review</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Single-element &amp; review</div>
+    <h1>council-review</h1>
+    <p class="lede">The target-state council: the five perspective specialists who did <em>not</em> author the target each challenge the proposed To-Be from their own lens, and the skill writes their concerns to the process's <code>targetReview</code> field for the SME to triage. Non-interactive: no SME questions, no approval loop.</p>
+    <div class="meta-row">
+      <span class="chip">Non-interactive (review, write, close out)</span>
+      <span class="chip neutral">WRITES_TO: targetReview field via writeTargetReview()</span>
+      <span class="chip neutral">Invoked by: a button / free chat</span>
+      <span class="chip neutral">SCOPE: whole process (target area)</span>
+    </div>
+  </div>
+
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>council-review</code> runs the cross-perspective review of the transformation
+      — the lint "council" (SKILLS.md §9) pointed specifically at the Target Process
+      area. The target itself is the <code>transformation-agent</code>'s work; the
+      council is every <em>other</em> specialist sense-checking it: Process, Control
+      &amp; Compliance, Client Journey, Innovation, and IT Architect. Each puts on its
+      lens and challenges the proposed target, and the skill writes the feedback to the
+      <code>targetReview</code> field for the SME to accept or reject in the app's
+      Council Review panel.
+    </p>
+    <p>
+      It reviews the <code>transformation-decision</code> and <code>target-state</code>
+      elements and their relations (a decision's <code>resolves</code>/<code>realises</code>,
+      a target-state's <code>replaces</code>), reading the As-Is freely as context. Each
+      feedback item is a genuine concern grounded in a specific decision or target-state
+      element, captured as <code>{ specialist, title, detail, targets }</code> — the
+      <code>targets</code> being the ids that re-open on accept. The skill routes by
+      <em>potential</em> relevance, not stored relations: the Control specialist reviews
+      every decision, even those naming no control.
+    </p>
+    <p>
+      The scope is either the full council (all five) or one named specialist. It is
+      strictly non-interactive — no questions, no approval loop. The
+      <code>writeTargetReview</code> tool id-stamps the items, stamps each
+      <code>triage: pending</code>, and writes the field; the skill never sets a triage
+      state. Each specialist stays in its lane (one lens per item), raises concerns not
+      praise, and an honest empty result writes an empty <code>items</code> list rather
+      than manufacturing findings.
+    </p>
+  </section>
+
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>Orient, review specialist by specialist, write, close out — four phases, no SME loop.</p>
+    <ol class="steps">
+      <li><span class="st-title">Phase 0 — Orientation</span><span class="st-body">Identify the process from the slug, read the schema, then the Target Process area (transformation-decisions, to-be-design) and the As-Is. Note which specialists are in scope (full council or one named). Tools: <span class="tool">expandElement({ type })</span> · <span class="tool">expandElement({ type, id })</span></span></li>
+      <li><span class="st-title">Phase 1 — Review, specialist by specialist</span><span class="st-body">For each in-scope specialist, put on its lens and challenge the target — a control the change weakens, a To-Be step that is not operable, a touchpoint the redesign breaks, a system capability a target-state assumes but lacks. Ground every item in a specific decision/target-state id; route by potential relevance; raise concerns only, never praise.</span></li>
+      <li><span class="st-title">Phase 2 — Write</span><span class="st-body">Assemble one object — <code>{ ran: [specialists], items: [{ specialist, title, detail, targets }] }</code> — and pass it to the writer, which id-stamps items (R-001…), stamps each <code>triage: pending</code>, and writes the field. Tools: <span class="tool">writeTargetReview({ slug, reviewData })</span></span></li>
+      <li><span class="st-title">Phase 3 — Close out</span><span class="st-body">Summarise how many items each specialist raised and tell the SME to triage them in the Council Review panel (Validation section) where accept re-opens the implicated decision. If nobody raised a concern, still write an empty <code>items</code> list and say the council found nothing to flag.</span></li>
+    </ol>
+  </section>
+
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Literal parallel sub-agent fan-out for the five specialists.</strong> Dispatch the in-scope lenses concurrently as read-only sub-agents (mirroring <code>run-lint</code>'s five lenses) and await all, instead of reviewing serially.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">med</span></td><td>The five reviews are independent; running them concurrently cuts the dominant cost to the slowest single specialist rather than the sum.</td></tr>
+        <tr><td><strong>Strict structured item schema.</strong> Constrain each specialist to emit <code>{ specialist, title, detail, targets }</code> objects validated at the boundary, rejecting items with no target or an unknown id.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Enforces the "ground every item" principle mechanically — a concern with no valid target is not actionable and would mis-wire the re-open behaviour.</td></tr>
+        <tr><td><strong>Share one target snapshot across specialists.</strong> Build the expanded target area + As-Is once and pass it to every lens.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">med</span></td><td>Removes redundant reads and ensures all five judge the identical target state.</td></tr>
+        <tr><td><strong>Validate target ids against the live id set</strong> before <code>writeTargetReview</code>.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Guarantees every re-openable target id actually exists, so an accepted item always re-opens a real decision.</td></tr>
+        <tr><td><strong>Lane enforcement check.</strong> Tag each item with its raising specialist and reject cross-lane items (a Control specialist raising an operability concern) before writing.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Makes Principle 1 ("each specialist stays in its lane") a mechanical guard rather than a hope.</td></tr>
+        <tr><td><strong>Deterministic merge + close-out line.</strong> Concatenate the per-specialist arrays and compute the per-specialist counts mechanically for the summary.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>The close-out counts always match what was written, and every run reads the same.</td></tr>
+        <tr><td><strong>Deterministic single-specialist routing.</strong> Parse "full council" vs "with only the X specialist" from the invoking message in code and dispatch exactly that set.</td><td><span class="tag both">both</span></td><td><span class="tag effort-l">low</span></td><td>Removes any chance of running the wrong specialist set and skips the unneeded lenses for the single-specialist case.</td></tr>
+        <tr><td><strong>Always-write empty guard.</strong> Ensure the writer is called even when every specialist returns no items, deterministically producing the empty <code>items</code> list.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Keeps the "honest empty" contract — the panel always reflects that a review actually ran.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> like <code>run-lint</code>, the council already conceptually fans out to five specialists — making that a <em>literal</em> parallel sub-agent execution over one shared target snapshot, each emitting strictly schema-validated, target-grounded items, is the decisive change. It cuts the review from a serial five-pass walk to a single concurrent round and makes the items' <code>targets</code> — the ids that drive the re-open-on-accept behaviour — verified rather than asserted.</div>
+  </section>
+
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/council-review/SKILL.md</code></footer>
+</div>
+</body>
+</html>

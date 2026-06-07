@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>source-target — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">source-target</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Web-sourcing (non-interactive)</div>
+    <h1>source-target</h1>
+    <p class="lede">Not a web search — an internal consolidation. It reads every perspective the wiki already holds (As-Is, risk, CX, innovation, IT) and synthesises a first-stub Target Process: draft target-states, transformation-decisions, gaps and section seeds, all marked <code>proposed</code> for the transformation-agent to walk with the SME.</p>
+    <div class="meta-row">
+      <span class="chip">Non-interactive · button-invoked</span>
+      <span class="chip neutral">SOURCE: internal consolidation · provenance=proposed</span>
+      <span class="chip neutral">FILLS: To-Be Design · Transformation Decisions · Gaps · seeds</span>
+      <span class="chip neutral">Triaged, not approved</span>
+    </div>
+  </div>
+
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>source-target</code> is the <strong>internal-consolidation analogue</strong>
+      of <code>source-innovation</code>: where the other three sourcing skills pull from
+      the <em>web</em>, this one synthesises the <em>target</em> perspective entirely
+      from the wiki the five perspective specialists have already built. There is
+      <strong>no web search and no external source</strong> — every block it writes is
+      <code>source: proposed</code> with empty <code>evidence</code>, the honest default
+      for AI synthesis the SME has not confirmed.
+    </p>
+    <p>
+      It produces the heart of the consolidation — <code>target-state</code>
+      (in <code>to-be-design</code>), <code>transformation-decision</code> and
+      <code>gap</code> — plus three <strong>section seeds</strong> so the Target Process
+      area is not left structurally empty: <code>requirement</code>,
+      <code>process-dependency</code> and <code>assumption</code>, each derived
+      mechanically from the consolidation. The deep forward-synthesis with the SME is
+      the <code>transformation-agent</code>'s job; this is only the fast first stub it
+      starts from.
+    </p>
+    <p>Key constraints and behaviours:</p>
+    <ul>
+      <li><strong>Non-interactive.</strong> No SME, no Y/E/R, no approval — all
+        <code>status: draft</code>, <code>confidence: low</code>.</li>
+      <li><strong>Provenance = proposed, not web.</strong> This is the key difference from
+        the three web-sourcing skills: there is no URL to cite because nothing came from
+        the web. Every heading is <code>proposed</code> / <code>evidence: ""</code>, which
+        blocks approval until the transformation-agent walks it through the SME and flips
+        confirmed headings to <code>elicited</code>.</li>
+      <li><strong>Consolidate, never invent.</strong> It reads As-Is, risk, CX,
+        innovation and IT elements and only synthesises what they document — it never
+        creates or edits those elements, and never invents a problem, idea or capability
+        the wiki does not hold. A thin process honestly yields a thin stub.</li>
+      <li><strong>Coverage discipline.</strong> Every open problem across all
+        perspectives should be resolved by a decision or surfaced as a gap; innovation
+        ideas are the raw material of the target states.</li>
+      <li><strong>Single cross-referenced batch.</strong> The whole Target Process is one
+        <code>createElements</code> batch — decisions, gaps, requirements reference
+        target-states by <code>"@&lt;tempKey&gt;"</code>, and the writer resolves those
+        only within one batch.</li>
+    </ul>
+  </section>
+
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>Six prescribed steps (incl. a section-seed step), ending in one batched write.</p>
+    <ol class="steps">
+      <li><span class="st-title">Step 1 — Read the whole process</span><span class="st-body">Read the overview, then every perspective: As-Is (<code>process-step</code>, <code>pain-point</code>, <code>process-gap</code>, <code>role</code>, <code>metric</code>, <code>exception</code>), risk (<code>control</code>, <code>regulation</code>, <code>compliance-gap</code>, <code>audit-finding</code>), CX (<code>friction-point</code>, <code>cx-touchpoint</code>, <code>moment</code>, <code>cx-benchmark</code>), innovation (<code>market-trend</code>, competitor moves, <code>innovation-idea</code>, <code>innovation-risk</code>), IT (<code>system</code>, <code>integration</code>), and any existing target elements so it extends rather than duplicates. Tools: <span class="tool">expandElement()</span></span></li>
+      <li><span class="st-title">Step 2 — Draft the target states</span><span class="st-body">Cluster the innovation-ideas by the part of the process they reshape; each genuine cluster is one <code>target-state</code> theme. Capture <code>replaces</code> (the As-Is step ids it touches), give each a <code>tempKey</code>, hold for the batch.</span></li>
+      <li><span class="st-title">Step 3 — Draft the transformation decisions</span><span class="st-body">Derive a <code>transformation-decision</code> per target and per open problem; capture <code>resolves</code> (the As-Is problems it closes) and <code>realises</code> (the target-states by <code>"@&lt;tempKey&gt;"</code>). Walk every open problem so at least one decision resolves it. Give each a <code>tempKey</code>; hold.</span></li>
+      <li><span class="st-title">Step 4 — Draft the gaps</span><span class="st-body">Any open problem no decision resolves, any target no decision realises, and any <code>innovation-risk</code> the transformation must manage becomes a <code>gap</code>, linked to the target-state it serves by <code>"@&lt;tempKey&gt;"</code>.</span></li>
+      <li><span class="st-title">Step 4.5 — Section seeds</span><span class="st-body">Derive the seeds mechanically: a <code>requirement</code> per transformation-decision (linked by temp key), a <code>process-dependency</code> per external feeder/consumer named in <code>system</code>/<code>integration</code> (at least two), and at least two <code>assumption</code> elements — all <code>confidence: low</code>, every block <code>proposed</code>.</span></li>
+      <li><span class="st-title">Step 5 — Write the batch &amp; report</span><span class="st-body">Assemble one manifest of every target-state, decision, gap, requirement, dependency and assumption (each omitting <code>id</code>, carrying its <code>tempKey</code>, links as <code>"@&lt;tempKey&gt;"</code>), write it in a single batch and run conformance, then emit the canonical report from the returned <code>counts</code>. Tools: <span class="tool">createElements()</span>, <span class="tool">checkConformance()</span></span></li>
+    </ol>
+  </section>
+
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>One-call full-process read.</strong> Replace the many serial <code>expandElement</code> calls with a single tool that returns every perspective's elements in one payload (this skill reads <em>everything</em>, so progressive disclosure works against it).</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">med</span></td><td>Removes a long chain of round-trips and ensures the same complete view feeds the synthesis every run.</td></tr>
+        <tr><td><strong>Deterministic consolidation rules — one gap per documented delta.</strong> Generate exactly one <code>gap</code> per open problem that no decision resolves, in the tool layer, rather than free synthesis of gaps.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Makes the gap set a pure function of the As-Is/To-Be delta — two runs over the same wiki produce the same gaps.</td></tr>
+        <tr><td><strong>Problem→decision coverage matrix.</strong> Compute which open problems (pain/process/compliance/friction/audit) lack a resolving decision and hand the model the uncovered ids directly.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Guarantees the "every open problem gets a decision or a gap" discipline is enforced identically each run.</td></tr>
+        <tr><td><strong>Deterministic idea-clustering for target states.</strong> Pre-group innovation-ideas by the process steps they touch (via <code>addresses</code>/<code>replaces</code> overlap) so each cluster maps to one target-state.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-h">high</span></td><td>Stabilises how many target-states emerge and which ideas land in each — the main source of run-to-run variance.</td></tr>
+        <tr><td><strong>Mechanical section seeds.</strong> Auto-generate the requirement-per-decision, dependency-per-integration and load-bearing assumptions from the drafted elements in the tool layer.</td><td><span class="tag both">both</span></td><td><span class="tag effort-l">low</span></td><td>These seeds are already specified as mechanical derivations — moving them out of the model removes both effort and variance.</td></tr>
+        <tr><td><strong>Structured-output schema with temp-key validation.</strong> Constrain each spec to its fields and validate every <code>@&lt;tempKey&gt;</code> reference resolves before the batch write.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Prevents an unresolved cross-reference from failing the single mandatory batch write.</td></tr>
+        <tr><td><strong>Auto-fill the <code>replaces</code> and <code>resolves</code> relations.</strong> Derive the As-Is step ids a target touches, and the problems a decision closes, from the underlying ideas' existing links rather than re-judging them.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Makes the As-Is↔To-Be overlay reproducible and stops the model from dropping a link.</td></tr>
+        <tr><td><strong>Auto-compute the report's "consolidated from" tallies.</strong> Count pain/process gaps, compliance gaps/findings, friction points and ideas from the read, not from memory.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Guarantees the report figures match the wiki exactly every run, as the canonical template requires.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> turn the consolidation into deterministic rules — one gap per unresolved As-Is/To-Be delta, one requirement per decision, relations derived from the ideas' existing links — rather than free synthesis. Because <code>source-target</code> has no web variance (it only reads the wiki), its non-determinism comes entirely from how the model clusters ideas and judges coverage. Pushing those into rule-driven tool computation makes the first stub a near-pure function of the documented work, while a one-call full-process read removes the serial expand chain that dominates its (already non-web) latency.</div>
+  </section>
+
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/source-target/SKILL.md</code></footer>
+</div>
+</body>
+</html>
