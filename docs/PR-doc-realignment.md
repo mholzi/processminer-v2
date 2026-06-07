@@ -57,11 +57,24 @@ what it changes, behaviour/scope, and how it was verified.
 | **#54** | Advisor chat: full progress UI parity + read-only sub-agent fan-out | `feat/advisor-chat-progress-parity` → `main` | Code + skills | **Merged** (`bf5b81d`) |
 | **#55** | Advisor chat: clickable citations + capture-as-note + richer markdown | `feat/advisor-chat-citations-notes` → `main` | Code | **Open** (`pending`) |
 | **#56** | DTP Enhancer review tools — rollup, coverage, evidence, triage, export, summary | `feat/dtp-review-tools` → `main` | Code + skills | **Merged** |
-| **#58** | Live-testing feedback toolkit — floating widget, auto-context, screenshots, element pins, admin toggles | `feat/live-feedback-toolkit` → `main` | Code + UI | **Open** (`pending`) |
+| **#58** | Live-testing feedback toolkit — floating widget, auto-context, screenshots, element pins, admin toggles | `feat/live-feedback-toolkit` → `main` | Code + UI | **Merged** (`3ccfcf6`) |
 | **#61** | `new-process` determinism — `deriveProcessMeta` tool + templatized copy; skill deep-dive HTML | `feat/new-process-determinism` → `main` | Code + tests + skill + docs | **Merged** |
 | **#65** | `qer-session` determinism — perspective-aware cursor (skillBuilt/documented/next-built), counted cross-review gate, close-out renderer, SME actor on cursor | `feat/qer-determinism` → `main` | Code + tests + skill + docs | **Merged** |
 | **#67** | `foundational-run` determinism — control-coverage flag, close-out counts + still-to-document, one-call [Y] reconcile, opt-in [E] frontmatter-sync, gap-tail batch | `feat/foundational-determinism` → `main` | Code + tests + skill + docs | **Merged** |
 | **#70** | Specialists determinism — shared `getProcessRelations` tool + prose pass across all 8 perspective/architect specialists | `feat/specialists-determinism` → `main` | Code + tests + 8 skills + docs | **Open** (`pending`) |
+| **#59** | Design-review wave 1 — colour overload, AM green theming, primary button, table scan-ability + 7 more | `fix/design-review-wave-1` → `main` | Code + UI | **Merged** |
+| **#64** | Design-review wave 3 — login first-impression, guided-tour escape, DTP relabel, Help/⌘K focus-trap (also carried wave 2's `<Modal>` primitive, PR #60) | `fix/design-review-wave-3` → `main` | Code + UI | **Merged** |
+| **#68** | Design-review wave 5 — SettingsPanel access confirm + error surface (also carried wave 4's export-PDF provenance, PR #66) | `fix/design-review-wave-5-access` → `main` | Code + UI | **Merged** |
+| **#72** | Design-review wave 6 — DTP colour overload (kind neutral, severity the only colour axis) | `fix/design-review-wave-6-dtp-color` → `main` | Code (CSS) | **Merged** |
+
+> **Design-review stack note.** The six design-review waves were developed as a
+> stack (#59 → #60 → #64 → #66 → #68 → #71) on top of #58. When merged bottom-up
+> into a `main` that had moved on, the cumulative branches meant each merged PR
+> carried the waves below it: **#60** (wave 2, `<Modal>`) landed inside **#64**,
+> **#66** (wave 4, export PDF) inside **#68**, and **#71** (wave 6) was re-opened
+> as **#72** after its base branch was deleted. So #60/#66/#71 show *closed* but
+> their content is fully on `main`. The only merge conflict throughout was this
+> log itself; all code auto-merged.
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
