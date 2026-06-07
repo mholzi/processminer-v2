@@ -62,7 +62,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#65** | `qer-session` determinism — perspective-aware cursor (skillBuilt/documented/next-built), counted cross-review gate, close-out renderer, SME actor on cursor | `feat/qer-determinism` → `main` | Code + tests + skill + docs | **Merged** |
 | **#67** | `foundational-run` determinism — control-coverage flag, close-out counts + still-to-document, one-call [Y] reconcile, opt-in [E] frontmatter-sync, gap-tail batch | `feat/foundational-determinism` → `main` | Code + tests + skill + docs | **Merged** |
 | **#70** | Specialists determinism — shared `getProcessRelations` tool + prose pass across all 8 perspective/architect specialists | `feat/specialists-determinism` → `main` | Code + tests + 8 skills + docs | **Merged** |
-| **#74** | Source-* determinism — shared `getConsolidationInputs` tool + prose pass across the 4 sourcing skills | `feat/source-determinism` → `main` | Code + tests + 4 skills + docs | **Open** (`pending`) |
+| **#74** | Source-* determinism — shared `getConsolidationInputs` tool + prose pass across the 4 sourcing skills | `feat/source-determinism` → `main` | Code + tests + 4 skills + docs | **Merged** |
+| **#77** | add-entry determinism — shared `getSectionContext` tool (one-call skeleton + existing + overview) | `feat/add-entry-determinism` → `main` | Code + tests + skill + docs | **Open** (`pending`) |
 | **#59** | Design-review wave 1 — colour overload, AM green theming, primary button, table scan-ability + 7 more | `fix/design-review-wave-1` → `main` | Code + UI | **Merged** |
 | **#64** | Design-review wave 3 — login first-impression, guided-tour escape, DTP relabel, Help/⌘K focus-trap (also carried wave 2's `<Modal>` primitive, PR #60) | `fix/design-review-wave-3` → `main` | Code + UI | **Merged** |
 | **#68** | Design-review wave 5 — SettingsPanel access confirm + error surface (also carried wave 4's export-PDF provenance, PR #66) | `fix/design-review-wave-5-access` → `main` | Code + UI | **Merged** |
@@ -2197,6 +2198,38 @@ visible receipt; flip the catalog `default` to ship it dark instead.
 new `aggregateUsage` cases (cross-process per-skill + grand-total sum, skips
 empty; empty list → zeros). Admin route mirrors the `/api/admin/users`
 admin-only auth.
+
+---
+
+## PR #77 — add-entry determinism: one-call `getSectionContext`
+
+## Why
+add-entry's Step 1 was 3+ sequential reads (schema template + existing-elements
+list + overview) and the model then re-recalled the element shape at draft time
+— slow, and the top source of dropped-required-field conformance flags.
+
+## What
+- **`section-context.ts`** (new, pure) + a read-only **`getSectionContext`**
+  tool in both backends — for a section, each element type as a fill-in-the-
+  blanks skeleton (block headings, frontmatter fields, relation targets,
+  required keys), the existing elements (id+title), and the overview, in one
+  payload.
+- **SKILL.md** — Step 1 makes one `getSectionContext` call and drafts against
+  the skeleton; Step 3 adds a duplicate check (existing titles + searchProcesses
+  before drafting), concurrent read-only sub-agent web research, and relation
+  id-list pre-fill from the skeleton's targets.
+- Subsumes the template pre-fill (1) and per-session schema cache (8); enables
+  the structured draft (3, partial) and relation pre-fill (6, partial). Type
+  disambiguation up front (7) skipped by request.
+
+## Scope
+add-entry + one read-only additive tool. No change to other skills or write
+paths.
+
+## Verification
+`npm run typecheck` clean · `npm test` **160/160** — 5 new
+`section-context.test.ts` cases (skeleton shape, relation-target normalization,
+existing list, overview, empty section).
 
 ---
 
