@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>control-compliance-specialist — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">control-compliance-specialist</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Perspective specialist</div>
+    <h1>control-compliance-specialist</h1>
+    <p class="lede">A sceptical controls examiner: it walks a banking process step by step through a risk lens and captures the safeguards, the regulations they satisfy, and where compliance falls short &mdash; as strongly-typed draft elements.</p>
+    <div class="meta-row">
+      <span class="chip">Interactive · Y/E/R loop</span>
+      <span class="chip neutral">LENS: risk &amp; regulatory &mdash; a control exists to satisfy a regulation</span>
+      <span class="chip neutral">OWNS: control · regulation · compliance-gap · audit-finding</span>
+      <span class="chip neutral">Invoked by: free chat / Deep Dive / qer-session</span>
+    </div>
+  </div>
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>The control &amp; compliance specialist documents the <strong>Risk &amp; Compliance</strong> perspective. One specialist holds both control and regulation because the two are inseparable: <em>a control exists to satisfy a regulation</em>. It is precise, sceptical and evidence-driven &mdash; it thinks in risk, and treats every step that touches money, identity or client data as a candidate for a control.</p>
+    <p>It owns four element types, all in the Risk &amp; Compliance area:</p>
+    <ul>
+      <li><code>regulation</code> &mdash; a regulatory obligation the process must satisfy (AML/KYC, MiFID, GDPR, sanctions, banking-licence conditions): what it requires and its scope.</li>
+      <li><code>control</code> &mdash; a check or safeguard that mitigates a risk: what it checks, the control activity, the risk addressed, its timing &mdash; with the <code>step</code> it runs at and the <code>regulatedBy</code> regulation(s) it satisfies linked.</li>
+      <li><code>compliance-gap</code> (section <code>control-gaps</code>) &mdash; a regulation not fully satisfied: a control missing, weak or only partially effective. Links the <code>control</code>(s) involved; records severity and gap status.</li>
+      <li><code>audit-finding</code> &mdash; an issue raised by a past internal audit, regulatory review or self-assessment, with its status and what it implicates.</li>
+    </ul>
+    <p>Two disciplines define this specialist. <strong>Risk-first traceability</strong>: a control that satisfies no regulation, and a regulation satisfied by no control, are <em>both</em> findings &mdash; the graph must close. And the cross-perspective sweep: it <strong>reviews every step, not just the controlled ones</strong> &mdash; sweeping the process's <code>process-step</code> elements and surfacing any money/identity/data step with <em>no</em> control as a compliance-gap. That "step missing a control" finding is the most valuable thing it produces. Writes are recovery-safe (written the instant the SME confirms), and it stays strictly in its lane &mdash; it flags steps, friction and systems for their owners and steers back to controls and compliance.</p>
+  </section>
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>The shared Brainstorm &rarr; Author &rarr; Verify pattern, made concrete: <strong>Brainstorm</strong> is a step-by-step risk walk of the documented process; <strong>Author</strong> writes each control/regulation the moment the SME says [Y]; <strong>Verify</strong> is the per-element Y/E/R loop plus a closing graph-closure sweep. Phases 0, 1 and 6 are skipped under <code>orchestrated</code> mode (qer-session owns them).</p>
+    <ol class="steps">
+      <li><span class="st-title">Phase 0 &mdash; Setup</span><span class="st-body">Take the SME name/role from the invocation as the provenance <code>source</code> (do not re-ask). Identify the process, then read its overview and existing elements &mdash; especially the <code>process-step</code>s &mdash; so you extend, not duplicate. Tools: <span class="tool">expandElement()</span></span></li>
+      <li><span class="st-title">Phase 1 &mdash; Orientation</span><span class="st-body">Read the documented steps. You do not re-document them; you confirm with the SME which steps carry regulatory or risk weight, so you know where controls should live. Tools: <span class="tool">expandElement()</span></span></li>
+      <li><span class="st-title">Phase 2 &mdash; Regulations</span><span class="st-body">The obligations this process must satisfy. For each: what it requires of the process and its scope. Draft each as a <code>regulation</code>. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 3 &mdash; Controls</span><span class="st-body">Walk the process step by step. For each control capture what it checks, the control activity, the risk it addresses, its timing &mdash; and link the <code>step</code> it runs at and the <code>regulatedBy</code> regulation(s). Aim to cover every risk-bearing step. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 4 &mdash; Compliance gaps</span><span class="st-body">[A] Add · [E] Explore · [N] None. Narrative-first &mdash; "what's not covered, and what could go wrong because of it." Link the <code>control</code>(s) involved; record severity and gap status. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 5 &mdash; Audit findings</span><span class="st-body">[A]/[E]/[N]. Issues raised by past audits, regulatory reviews or self-assessments. Capture the finding, its status and what it implicates. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 6 &mdash; Validation &amp; close-out</span><span class="st-body">Sweep for: controls with no regulation, regulations with no control, risk-bearing steps with no control, gaps not linked to a control. Surface each as a short question, then print the canonical close-out filling the <code>{n}</code>/<code>{type}</code> counts. Tools: <span class="tool">expandElement()</span></span></li>
+    </ol>
+    <div class="callout">The <strong>read-back</strong> and provenance contract applies throughout: any risk or control detail the specialist proposed (not literally stated by the SME) is <code>proposed</code> until confirmed in a read-back, then flips to <code>elicited</code> with the SME's quote. Regulation text lifted from a source is <code>document</code>. An element with any <code>proposed</code>/<code>web</code> heading cannot be approved.</div>
+  </section>
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Batch the regulation roster into one Y/E/R</strong> &mdash; regulations are reference-type, low-judgement elements; present the named-and-scoped list (AML, KYC, MiFID, GDPR&hellip;) for a single approval rather than one at a time.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>The core prompt already allows batching reference-type lists; regulations are the textbook case &mdash; push it further and collapse N approvals into one.</td></tr>
+        <tr><td><strong>Deterministic control-coverage matrix</strong> &mdash; compute the step&times;control grid up front and drive Phase&nbsp;3 down the uncovered cells, instead of improvising the step walk.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">medium</span></td><td>Makes "every risk-bearing step reviewed" provable, not best-effort; turns the most valuable finding (step missing a control) into a deterministic gap rather than a hope.</td></tr>
+        <tr><td><strong>Auto-flag orphan controls/regulations</strong> &mdash; run the graph-closure check (control&rarr;regulation, regulation&rarr;control) continuously and surface orphans inline.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>The two halves of the contract are pure relation checks; doing them deterministically beats relying on the Phase&nbsp;6 sweep to remember every link.</td></tr>
+        <tr><td><strong>Structured-output authoring</strong> &mdash; emit each control/regulation against the JSON Schema so <code>createElement</code> never bounces on a missing heading or out-of-range block.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">medium</span></td><td>Removes the draft &rarr; conformance-fail &rarr; re-draft retry loop; every write lands first time and provenance stays clean.</td></tr>
+        <tr><td><strong>Pre-seed a banking control library</strong> &mdash; offer the standard controls for the process type (four-eyes at approval, sanctions screening, EDD trigger) as draftable stubs in Phase&nbsp;3.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Most banking controls are well-known patterns; correction from a primed stub is far faster than eliciting each from a blank.</td></tr>
+        <tr><td><strong>Skip read-back for <code>document</code>-sourced regulation text</strong> &mdash; regulation requirements quoted verbatim from a policy/source are marked <code>document</code> directly, not <code>proposed</code> + read-back.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Read-back guards AI-inflated detail; verbatim regulatory text already carries its evidence, so the extra confirmation turn is overhead.</td></tr>
+        <tr><td><strong>Deterministic question-bank per risk class</strong> &mdash; fixed primed multiple-choice prompts keyed to money / identity / data movement, instead of free improvisation.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Same process &rarr; same risk questions &rarr; reproducible, auditable coverage; removes run-to-run variance in what risk gets probed.</td></tr>
+        <tr><td><strong>Reuse process-step transitions to scope controls</strong> &mdash; read the As-Is <code>transitions</code> to find approval/handoff junctions where four-eyes and sign-off controls cluster.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">medium</span></td><td>Junctions are where most controls live; jumping straight to them is faster and less likely to miss a high-risk handoff than a flat step walk.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">Biggest win: the <strong>deterministic control-coverage matrix</strong>. This specialist's signature value is the "risk-bearing step with no control" finding, yet today it depends on the model remembering to sweep every step. Computing the step&times;control grid up front &mdash; and driving the session down the uncovered, money/identity/data-touching cells &mdash; converts that value from a diligence hope into a guarantee, and lets a bank audit that <em>every</em> step was reviewed for coverage.</div>
+  </section>
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/control-compliance-specialist/SKILL.md</code></footer>
+</div>
+</body>
+</html>

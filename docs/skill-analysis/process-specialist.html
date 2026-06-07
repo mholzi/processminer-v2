@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>process-specialist — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">process-specialist</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Perspective specialist</div>
+    <h1>process-specialist</h1>
+    <p class="lede">A forensic As-Is interviewer: it walks a banking SME through how a process actually runs today and captures the mechanics as strongly-typed draft elements &mdash; steps, exceptions, pain points, gaps, roles and metrics.</p>
+    <div class="meta-row">
+      <span class="chip">Interactive · Y/E/R loop</span>
+      <span class="chip neutral">LENS: operational mechanics &mdash; who does what, in what order, where it breaks</span>
+      <span class="chip neutral">OWNS: process-step · exception · pain-point · process-gap · role · metric</span>
+      <span class="chip neutral">Invoked by: free chat / Deep Dive / qer-session</span>
+    </div>
+  </div>
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>The process specialist documents the <strong>As-Is process</strong> &mdash; the spine of the whole wiki, the elements every other perspective hangs relations off. It is forensic and methodical: it examines the process piece by piece, and every question earns its place. The discipline is <em>you draft, the SME validates</em> &mdash; the SME is never asked to write prose; the specialist listens, drafts the schema-shaped element itself, and lets the SME correct it.</p>
+    <p>It owns six element types plus the process overview, all in the <strong>As-Is Process</strong> area:</p>
+    <ul>
+      <li><code>process-step</code> &mdash; a stage of the process: what happens, inputs, outputs, the <strong>why-it-matters</strong> (non-optional &mdash; a step nobody can justify is a finding), the owning role, conditions/SLAs, and outgoing <code>transitions</code>.</li>
+      <li><code>exception</code> &mdash; a deviation from the standard flow, linked back into the affecting step as an <code>exception</code>-kind transition.</li>
+      <li><code>pain-point</code> &mdash; <strong>staff/process</strong> friction in <em>running</em> the process (re-keying, chasing, waiting). Client-facing pain is the Client Journey specialist's.</li>
+      <li><code>process-gap</code> &mdash; something missing in how the process is run or measured (no owner, no SLA tracking). A thing the SME says is "not measured" is recorded here, not as a metric.</li>
+      <li><code>role</code> &mdash; a participant, its responsibility, and its full <strong>RACI</strong> across the steps it touches.</li>
+      <li><code>metric</code> &mdash; how the process is measured today (cycle time, volume, error rates).</li>
+    </ul>
+    <p>Key disciplines baked into the skill: <strong>recovery-safe writes</strong> (each element is written the instant the SME confirms it &mdash; never batched in the model's head, so an interrupted session loses nothing), <strong>structure and traceability</strong> (a process is a graph &mdash; exceptions and pain points name the step IDs they affect; roles name the steps they touch), and a hard <strong>stay-in-your-lane</strong> rule: it never authors controls, systems, CX or target-state elements &mdash; it just flags them for the owning specialist and steers back.</p>
+  </section>
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>The shared Brainstorm &rarr; Author &rarr; Verify pattern, made concrete: <strong>Brainstorm</strong> is the technique-led, narrative-first elicitation; <strong>Author</strong> is a <code>createElement</code>/<code>updateElement</code> write the moment the SME says [Y]; <strong>Verify</strong> is the per-element Y/E/R loop plus a closing gap-analysis pass. The SME picks the process and decides when each phase &mdash; and the session &mdash; is done. Phases 0, 1 and 8 are skipped under <code>orchestrated</code> mode (qer-session owns them).</p>
+    <ol class="steps">
+      <li><span class="st-title">Phase 0 &mdash; Setup</span><span class="st-body">Take the SME name/role from the invocation as the provenance <code>source</code> (do not re-ask). Identify the process: review the Document Map of an existing one so you extend not duplicate, or scaffold a new one. Tools: <span class="tool">expandElement()</span></span></li>
+      <li><span class="st-title">Phase 1 &mdash; Overview</span><span class="st-body">Elicit purpose, trigger, frequency, volume, in/out of scope. Draft, run Y/E/R, and on [Y] write the root content (<code>title</code>, <code>purpose</code>, <code>trigger</code>, <code>frequency</code>, <code>scopeIn</code>, <code>scopeOut</code>). Tools: <span class="tool">updateElement()</span></span></li>
+      <li><span class="st-title">Phase 2 &mdash; Process steps</span><span class="st-body">The spine (aim 5&ndash;15 steps). Three ways in: walk it start-to-finish, draft-from-typical-and-correct, or name-phases-first. Capture what happens, in/out, why-it-matters, owning role, conditions/SLAs, and the <code>transitions</code> list (<code>targetId|kind|when</code>). Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 3 &mdash; Exceptions</span><span class="st-body">[A] Add · [E] Explore · [N] None. Narrative-first: let the SME talk; you extract the fields. Write the exception, then patch the affecting step with an <code>exception</code>-kind transition. Tools: <span class="tool">createElement()</span> · <span class="tool">updateElement()</span></span></li>
+      <li><span class="st-title">Phase 4 &mdash; Pain points</span><span class="st-body">[A]/[E]/[N]. Staff/process friction in running it. Capture severity, impact, root cause; link the affected step IDs. Client-facing friction is noted for the Client Journey specialist. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 5 &mdash; Process gaps</span><span class="st-body">[A]/[E]/[N]. Things missing in how the process is run or measured. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 6 &mdash; Roles &amp; RACI</span><span class="st-body">For each role, capture its responsibility and RACI across every step it touches &mdash; exactly one A per step. Build R/A/C/I with the SME, never guess; write as the <code>raci</code> relation list (e.g. <code>["PS-COB-001:R","PS-COB-002:A"]</code>). Tools: <span class="tool">createElement()</span> · <span class="tool">updateElement()</span></span></li>
+      <li><span class="st-title">Phase 7 &mdash; Metrics</span><span class="st-body">How the process is measured today. A "not measured" answer becomes a Phase&nbsp;5 gap, not a metric. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 8 &mdash; Validation &amp; close-out</span><span class="st-body">Gap-analysis sweep: steps with no owner/rationale, exceptions or pain points linked to no step, step count in 5&ndash;15, every step with &ge;1 R and exactly 1 A. Surface discrepancies as questions, then print the canonical close-out verbatim. Tools: <span class="tool">expandElement()</span> · <span class="tool">checkTransitions()</span></span></li>
+    </ol>
+    <div class="callout">Throughout, the <strong>read-back</strong> rule applies: any operational detail the specialist proposed (but the SME did not literally state) is marked <code>proposed</code> until the SME confirms it in a read-back, at which point its heading provenance flips to <code>elicited</code> with the SME's quote. An element with any <code>proposed</code> heading cannot be approved.</div>
+  </section>
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Structured-output authoring</strong> &mdash; have the model emit each element against the JSON Schema (the AJV "LLM output schema") natively, so <code>createElement</code> never bounces on a block out of word-range or a missing heading.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">medium</span></td><td>Eliminates the silent draft &rarr; conformance-fail &rarr; re-draft retry loop that currently burns turns; every write lands first time.</td></tr>
+        <tr><td><strong>Deterministic question-bank ordering</strong> &mdash; ship a fixed, primed multiple-choice bank per phase instead of improvising questions each run.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Same SME, same process &rarr; same elicitation path; auditable and reproducible, removes run-to-run drift in what gets asked.</td></tr>
+        <tr><td><strong>Batch roles into one RACI grid</strong> &mdash; present the full role&times;step RACI matrix once for a single Y/E/R approval instead of per-role.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">medium</span></td><td>RACI is a low-judgement grid once the roles are named; one approval beats N, and the matrix view makes the "exactly one A per step" rule self-checking.</td></tr>
+        <tr><td><strong>Draft step list, then parallel-detail</strong> &mdash; name all phases/steps first (titles only), then draft the independent step bodies in parallel and run one batched review.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">medium</span></td><td>Steps are largely independent; serially drafting 5&ndash;15 one Y/E/R at a time is the slowest part of the session.</td></tr>
+        <tr><td><strong>Auto-wire transitions via <code>checkTransitions()</code></strong> &mdash; infer the next-step / exception transitions from the captured order and reconcile rather than hand-typing <code>targetId|kind|when</code> per step.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Hand-formatted transition strings are an error-prone, repetitive chore; the reconcile tool already exists &mdash; lean on it instead of the model.</td></tr>
+        <tr><td><strong>Pre-computed process scaffold</strong> &mdash; seed Phase&nbsp;2 with a typical step skeleton for the named banking process (onboarding, payments, COB) before the first question.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>The "I'll draft from what's typical and you correct it" path is the fastest; precomputing the skeleton turns authoring into correction from the first turn.</td></tr>
+        <tr><td><strong>Skip read-back for <code>document</code>-sourced headings</strong> &mdash; when a block is lifted verbatim from an ingested source, mark it <code>document</code> directly instead of <code>proposed</code> + read-back.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Read-back exists to confirm AI-inflated detail; document-grounded text already has its evidence, so the extra confirmation turn is pure overhead.</td></tr>
+        <tr><td><strong>Live validation gating</strong> &mdash; run the Phase&nbsp;8 gap checks (orphan exceptions, missing A, step-count band) continuously and surface them inline, not only at close.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">medium</span></td><td>Catches a missing rationale or unlinked exception at the moment it happens, while the SME's context is fresh, instead of a late re-open.</td></tr>
+        <tr><td><strong>One batched approval for confirmed-empty sections</strong> &mdash; when the SME says "none" to exceptions/pain/gaps, stamp the section <code>confirmed-empty</code> in a single deterministic action.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Optional sections are common; a fixed "none" handshake is faster and more consistent than improvised wrap-up prose per section.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">Biggest win: <strong>structured-output authoring driven by the JSON Schema</strong>. The process specialist writes more elements than any other specialist, and each one currently risks a conformance bounce that costs a turn and muddies provenance. Emitting schema-valid elements on the first attempt &mdash; combined with a deterministic question bank so the <em>same</em> process is documented the <em>same</em> way every run &mdash; is what turns this from an improvised interview into a reproducible, audit-grade extraction.</div>
+  </section>
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/process-specialist/SKILL.md</code></footer>
+</div>
+</body>
+</html>

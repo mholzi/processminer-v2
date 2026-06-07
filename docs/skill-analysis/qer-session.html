@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>qer-session — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">qer-session</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">End-to-end session</div>
+    <h1>qer-session</h1>
+    <p class="lede">The conductor for a complete process-documentation session. It runs a fixed six-step frame — select the process, capture its overview, then hand each perspective to its specialist in turn, review across perspectives, validate, and close out — while a resumable QER cursor keeps the long session auditable and restartable.</p>
+    <div class="meta-row">
+      <span class="chip">SME asks to document a process end to end</span>
+      <span class="chip neutral">interactive (SME present)</span>
+      <span class="chip neutral">WRITES_TO: process overview (root) + delegated to specialists</span>
+      <span class="chip neutral">RESUMABLE via QER step cursor · OWNS: the frame, not the content</span>
+    </div>
+  </div>
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>qer-session is the <strong>orchestration backbone</strong> for documenting a banking process with a subject-matter expert. It is explicitly a <em>conductor</em>: it runs the session frame and dispatches each perspective's work to its specialist skill. It never elicits or writes elements itself — the specialists do that.</p>
+    <p>The session follows one fixed sequence and never reorders or skips steps:</p>
+    <ol class="steps">
+      <li><span class="st-title">1 SELECT</span><span class="st-body">Identify the process and read the cursor.</span></li>
+      <li><span class="st-title">2 OVERVIEW</span><span class="st-body">Capture the process-level frame with a Y/E/R loop.</span></li>
+      <li><span class="st-title">3 PERSPECTIVE PASSES</span><span class="st-body">Six cursor positions — one specialist per perspective, in registry order.</span></li>
+      <li><span class="st-title">4 CROSS-REVIEW</span><span class="st-body">Each specialist reviews the <em>other</em> perspectives' elements.</span></li>
+      <li><span class="st-title">5 VALIDATION</span><span class="st-body">Deterministic conformance check plus a judgement gap-analysis pass.</span></li>
+      <li><span class="st-title">6 DONE</span><span class="st-body">Mark the session done and present the canonical close-out.</span></li>
+    </ol>
+    <p>Two principles govern the whole run. <strong>Deterministic frame:</strong> the six steps run in order, the cursor is auditable, and the SME — never the skill — decides what to work on and when it is done. <strong>You own the frame, specialists own the content:</strong> SELECT, OVERVIEW, cross-review, validation and completion belong to qer-session; element elicitation belongs to the dispatched specialist. Everything written in a session is <code>status: draft</code> — the SME approves later, in the web app. Specialists write each element to disk as it is confirmed, so an interrupted session loses nothing.</p>
+    <p>The skill is careful to distinguish its own cursor from the foundational-run cursor: <strong>every</strong> <span class="tool">getSessionStatus()</span> and <span class="tool">advanceSession()</span> call passes <code>kind: "qer"</code>, because omitting it would read or advance the <em>foundational</em> cursor by mistake. <span class="tool">startSession()</span> is QER-specific and needs no <code>kind</code>.</p>
+  </section>
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>Each step ends by advancing the QER cursor — that is what moves the session forward and lands a resume in the right place.</p>
+    <ol class="steps">
+      <li><span class="st-title">SELECT — identify the process</span><span class="st-body">If the invocation names a process, use it. Otherwise greet the SME and either list existing process slugs for them to pick (reading the current overview so the session extends rather than duplicates), or run the <code>new-process</code> skill to scaffold a fresh JSON document.</span></li>
+      <li><span class="st-title">SELECT — read the cursor</span><span class="st-body">Read the QER step cursor. If <code>exists: false</code> or <code>done: true</code> it is a fresh session: start it, use the SME name/role handed over by the session-scope preamble verbatim, advance, and go to OVERVIEW. If <code>exists: true, done: false</code> a session is in flight: tell the SME "Resuming … at step {current}" and jump straight to that step. Tools: <span class="tool">getSessionStatus({ slug, kind: "qer" })</span> <span class="tool">startSession({ slug })</span> <span class="tool">advanceSession({ slug, kind: "qer" })</span></span></li>
+      <li><span class="st-title">OVERVIEW — draft and confirm the frame</span><span class="st-body">Capture purpose, trigger, frequency, volume, scope-in and scope-out. Draft it — never make the SME write prose — then confirm with the verbatim Y/E/R loop, always offering all three choices. On <strong>[Y]</strong>, write the overview by addressing the process's <strong>root id</strong> (the root <code>meta.id</code>). The overview is the process page, not a collection element. Tools: <span class="tool">updateElement({ id, patch })</span> <span class="tool">advanceSession()</span></span></li>
+      <li><span class="st-title">PERSPECTIVE PASSES — the dispatch loop</span><span class="st-body">Six cursor positions, in registry order: Process → Control &amp; Compliance → Client Journey → Innovation → IT Architecture → Target Process. For each: read status; if <code>skillBuilt</code> is false, tell the SME and advance; otherwise announce the perspective, dispatch its skill in <strong>orchestrated mode</strong> (read its SKILL.md and run only its perspective phases, skipping its own setup/overview/validation), then advance and checkpoint with the SME ("{Perspective} done — N elements drafted. Continue, or pause?"). Target Process runs last because it synthesises the others. Tools: <span class="tool">getSessionStatus()</span> <span class="tool">advanceSession()</span></span></li>
+      <li><span class="st-title">CROSS-PERSPECTIVE REVIEW</span><span class="st-body">Once two or more perspectives are documented, dispatch each built specialist again for a review-only pass — each reviews the <em>other</em> perspectives' elements from its own lens (a step with no control, a touchpoint with no step behind it, a system nothing references) and surfaces clarifying questions for the SME. With only one perspective documented, state it needs at least two and skip. Tools: <span class="tool">advanceSession()</span></span></li>
+      <li><span class="st-title">VALIDATION</span><span class="st-body">First run the deterministic conformance check, which lists every element whose blocks don't match its schema template. Then do a judgement gap-analysis pass over everything written this session — missing required links, steps with no owner or rationale, orphans, anything thin — and surface each finding (and each conformance issue) as a short clarifying question the SME can answer, defer or skip, applying answers through the owning specialist. Tools: <span class="tool">checkConformance({ slug })</span> <span class="tool">advanceSession()</span></span></li>
+      <li><span class="st-title">DONE — close out</span><span class="st-body">Advance the cursor a final time, which marks the session <code>done</code>, then present the canonical close-out verbatim, filling only the <code>{process}</code> / <code>{n}</code> / <code>{type}</code> placeholders. Never set <code>approved</code> — that is the SME's call, in the app. Tools: <span class="tool">advanceSession()</span></span></li>
+    </ol>
+  </section>
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Parallel cross-review fan-out.</strong> Step 4 dispatches each built specialist for a read-only review pass. Run them as concurrent read-only sub-agents instead of in series, then merge the flagged questions.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">medium</span></td><td>Cross-review is N independent passes over the same frozen document — no shared writes, so they parallelise cleanly and collapse N round-trips into one wall-clock pass.</td></tr>
+        <tr><td><strong>Precompute the document map once per session.</strong> Build the spine, relation graph and per-section counts a single time at SELECT and pass them to each dispatched specialist rather than re-expanding on every hand-off.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">medium</span></td><td>Six perspective passes plus a cross-review each re-read the same document; a shared snapshot removes redundant <span class="tool">expandElement()</span> calls and gives every specialist an identical view, removing drift.</td></tr>
+        <tr><td><strong>Deterministic "is it done" roll-up.</strong> Step 4's "needs at least two perspectives" gate and Step 6's completion are decided by counting documented perspectives — make that a tool-computed boolean in <span class="tool">getSessionStatus()</span> rather than an LLM judgement.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Replaces an "is the session complete / reviewable" reasoning step with a counted fact, so the gate fires identically every run.</td></tr>
+        <tr><td><strong>Structured overview-draft schema.</strong> Have the OVERVIEW step emit the seven overview fields as a typed object validated before the Y/E/R loop, instead of free prose later mapped to the patch.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Guarantees every <span class="tool">updateElement()</span> root patch is well-formed on the first write and avoids re-prompt retries when a field is missing.</td></tr>
+        <tr><td><strong>Carry SME name/role through the cursor.</strong> The session-scope preamble already hands over name and role; persist them on the QER cursor record so a resumed session never re-derives or re-asks.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Makes the human-in-the-loop record and every <code>source</code> stamp identical across an interruption boundary.</td></tr>
+        <tr><td><strong>Skip-built-skills loop in the cursor.</strong> Step 3 walks all six positions and advances past any with <code>skillBuilt: false</code>. Have <span class="tool">getSessionStatus()</span> return the next <em>built</em> perspective directly so the model never spends a turn announcing-and-advancing an unbuilt one.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Collapses dead cursor positions, saving a model turn per unbuilt specialist.</td></tr>
+        <tr><td><strong>Cache expandElement results within the session.</strong> Cross-review and validation re-read elements the perspective passes already loaded; key a per-session cache on element id + revision.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">medium</span></td><td>The same elements are read in Steps 3, 4 and 5; caching avoids re-fetching unchanged bodies across the back half of the session.</td></tr>
+        <tr><td><strong>Batch validation clarifying questions.</strong> Step 5 surfaces conformance issues and gap findings one by one; group low-judgement findings (missing owner, missing required link) into a single labelled batch the SME can triage at once.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Reference-grade findings need no per-item discussion; batching them mirrors the core batching rule and shortens the validation tail dramatically.</td></tr>
+        <tr><td><strong>Single canonical close-out renderer.</strong> Have a tool emit the filled close-out string (counts by type already known to the backend) instead of the model assembling placeholders from memory.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>The close-out is "single source of truth" wording; rendering it server-side removes any chance the model drifts a bullet label or count.</td></tr>
+        <tr><td><strong>Pre-flight skill-built map at SELECT.</strong> Report the full <code>skillBuilt</code> registry up front so the SME sees which perspectives the session will and won't cover before Step 3 begins.</td><td><span class="tag both">both</span></td><td><span class="tag effort-l">low</span></td><td>Sets expectations once and lets the model plan the whole pass deterministically rather than discovering gaps mid-loop.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> parallelising the cross-review fan-out (Step 4) on a shared, precomputed document snapshot. Cross-review is the most expensive part of the frame — every built specialist re-reads the whole process to flag inter-perspective gaps — and it is embarrassingly parallel because the document is frozen and the passes only read. Running the specialists concurrently against one cached snapshot turns the slowest serial stretch of the session into a single wall-clock pass, and the shared snapshot makes every reviewer see exactly the same document, removing a source of run-to-run drift at the same time.</div>
+  </section>
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/qer-session/SKILL.md</code></footer>
+</div>
+</body>
+</html>

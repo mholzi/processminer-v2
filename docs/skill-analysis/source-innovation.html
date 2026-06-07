@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>source-innovation — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">source-innovation</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Web-sourcing (non-interactive)</div>
+    <h1>source-innovation</h1>
+    <p class="lede">Autonomously sources the innovation perspective from the web — market trends, what EU/global/fintech competitors are doing, and innovation ideas that address the documented problems — writing the whole run as one cross-referenced batch so ideas trace back to their trends and sources.</p>
+    <div class="meta-row">
+      <span class="chip">Non-interactive · button-invoked</span>
+      <span class="chip neutral">SOURCE: web · provenance=web</span>
+      <span class="chip neutral">FILLS: Market Trends · Competitor · Innovation Ideas</span>
+      <span class="chip neutral">Triaged, not approved</span>
+    </div>
+  </div>
+
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>source-innovation</code> is the web-research analogue of
+      <code>document-ingest</code>: where ingest extracts from an uploaded document, this
+      extracts from the live web. Invoked with a process <code>&lt;slug&gt;</code>, it
+      drafts <code>market-trend</code> elements, the three competitor-move tiers
+      (<code>competitor-eu</code>, <code>competitor-global</code>,
+      <code>competitor-fintech</code>) and <code>innovation-idea</code> elements — each
+      idea linked to the documented pain it addresses.
+    </p>
+    <p>
+      It does <strong>not</strong> produce innovation-risks (the
+      <code>innovation-analyst</code>'s) or the Target Process (the
+      <code>transformation-agent</code>'s) — both need the SME. It is the fast sourcing
+      pass that those deeper interactive skills build on.
+    </p>
+    <p>Key constraints and behaviours:</p>
+    <ul>
+      <li><strong>Non-interactive.</strong> No SME, no Y/E/R, no approval — all
+        <code>status: draft</code> for later triage.</li>
+      <li><strong>Reads wider than the happy path.</strong> It deliberately reads the
+        control / regulatory angle (<code>control</code>, <code>control-gap</code>,
+        <code>compliance-gap</code>, <code>audit-finding</code>) and the automated/STP
+        branches — a control gap is as real an improvement target as a pain-point.</li>
+      <li><strong>Fills pending citations first.</strong> An element with
+        <code>sourceUrl: pending</code> is an analyst draft waiting for citation; it
+        verifies and fills it in place, never duplicating it with a fresh draft.</li>
+      <li><strong>Single cross-referenced batch.</strong> Unlike <code>source-cx</code> /
+        <code>source-regulation</code> (incremental), the whole run is written in one
+        <code>createElements</code> batch — ideas reference trends and moves by
+        <code>"@&lt;tempKey&gt;"</code>, and the writer only resolves those references
+        within one batch.</li>
+      <li><strong>Coverage gate.</strong> It must reach idea coverage
+        <code>"complete": true</code> — every pain-point, friction-point, process-gap and
+        control-gap is addressed by some idea, or the leftover is a noted, conscious gap.</li>
+      <li><strong>Provenance = web.</strong> Each block (<em>The trend</em> /
+        <em>Relevance</em> / <em>Evidence</em>) carries <code>source: web</code> with
+        URL + snippet + fetch date, blocking approval until SME confirmation.</li>
+    </ul>
+  </section>
+
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>Six prescribed steps, ending in one batched, coverage-checked write.</p>
+    <ol class="steps">
+      <li><span class="st-title">Step 1 — Read the process</span><span class="st-body">Read the overview, the As-Is (especially pain-points and friction-points), the control/regulatory elements and the automated/STP branches, plus existing trends/competitors/ideas. Verify and fill any <code>sourceUrl: pending</code> elements in place. Tools: <span class="tool">expandElement()</span>, <span class="tool">updateElement()</span></span></li>
+      <li><span class="st-title">Step 2 — Scan the web</span><span class="st-body">Build queries from the process title, industry and sub-domain; run several searches and read a promising study in depth. Gather the trends that genuinely bear on this process, not a generic dump. Tools: <span class="tool">webSearch()</span>, <span class="tool">webFetch()</span></span></li>
+      <li><span class="st-title">Step 3 — Draft market trends</span><span class="st-body">Draft each <code>market-trend</code> (blocks <em>The trend</em>/<em>Relevance</em>/<em>Evidence</em> with a specific figure), frontmatter incl. <code>source</code>, <code>sourceUrl</code>, <code>horizon</code>, <code>bearsOn</code> (manual and STP branches, controls, gaps). Give each a <code>tempKey</code>; hold for the Step 5 batch.</span></li>
+      <li><span class="st-title">Step 4 — Scan competitors (concurrently)</span><span class="st-body">Dispatch three read-only sub-agents — EU, global, fintech — in one message; each web-searches named competitors' moves and returns a JSON array of draft specs with type-prefixed <code>tempKey</code>s. Collect the three arrays and hold them. Tools: <span class="tool">Task()</span></span></li>
+      <li><span class="st-title">Step 5 — Draft ideas, then write the run</span><span class="st-body">Derive <code>innovation-idea</code> elements (each <code>addresses</code> at least one real documented problem; <code>fromTrend</code> / <code>fromCompetitor</code> reference temp keys), then write the whole run in one batch and run conformance. Re-work uncovered problems until idea coverage is <code>"complete": true</code>. Tools: <span class="tool">createElements()</span>, <span class="tool">checkConformance()</span></span></li>
+      <li><span class="st-title">Step 6 — Report</span><span class="st-body">Map the per-type <code>counts</code> the batch returned into the canonical report (trends; competitor moves with EU/global/fintech split; ideas), including the conditional web-unavailable and pending-citations blocks only when they apply.</span></li>
+    </ol>
+  </section>
+
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Fan out the trend scan too, not just competitors.</strong> Steps 2–3 (trends) run serially before the competitor fan-out; dispatch the trend search as its own sub-agent concurrently with the three competitor tiers.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">med</span></td><td>Collapses two serial web phases into one parallel fan-out — the largest latency saving in the flow.</td></tr>
+        <tr><td><strong>Authored query templates per tier + sub-domain.</strong> Pre-write the search strings (KYC automation, digital identity, agentic AI controls…) keyed off the process, instead of improvised terms.</td><td><span class="tag both">both</span></td><td><span class="tag effort-l">low</span></td><td>Removes query-wording variance and a planning round per stream — same process, same searches.</td></tr>
+        <tr><td><strong>Deterministic problem→idea coverage map.</strong> Build the {problem → addressing idea} matrix in the tool layer and feed the model the uncovered ids directly, rather than relying on it to walk every pain/friction/gap.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Guarantees the "every documented problem gets an idea" gate is hit the same way every run, with no missed control-gap.</td></tr>
+        <tr><td><strong>Pre-resolve pending citations as a batch step.</strong> Collect all <code>sourceUrl: pending</code> ids up front and verify them in one parallel sub-agent pass.</td><td><span class="tag both">both</span></td><td><span class="tag effort-l">low</span></td><td>Stops pending-fill from being interleaved ad hoc with fresh sourcing, making the pending report deterministic.</td></tr>
+        <tr><td><strong>Structured-output schema for each spec.</strong> Constrain trends/moves/ideas to their field set incl. the <code>@&lt;tempKey&gt;</code> cross-references and the web <code>provenance</code> map.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Prevents an unresolved temp-key reference or a missing provenance entry from failing the single batch write.</td></tr>
+        <tr><td><strong>Deterministic dedup + cap per stream.</strong> Normalise trends by claim and competitor moves by competitor name, capping each stream before the batch.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Keeps the run a "handful, not a dump" and makes output length reproducible.</td></tr>
+        <tr><td><strong>Cache fetched studies and analyst reports.</strong> Key on URL + day so the same market studies are reused across processes and re-runs.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">med</span></td><td>Trend studies are domain-wide, not process-specific — caching makes repeat runs near-instant.</td></tr>
+        <tr><td><strong>Curated competitor seed lists per tier.</strong> Maintain named EU/global/fintech sets per banking domain so sub-agents search known names rather than rediscovering them.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Stabilises which competitor moves surface and stops a key player being missed on a given run.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> a deterministic problem→idea coverage map combined with fanning the trend scan out alongside the competitor tiers. The coverage gate is the skill's hardest correctness requirement — computing it in the tool layer makes every run close the same gaps the same way, while parallelising the trend stream removes the last serial web phase. Together they make the skill both reproducible at the gate and parallel across all of its IO.</div>
+  </section>
+
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/source-innovation/SKILL.md</code></footer>
+</div>
+</body>
+</html>

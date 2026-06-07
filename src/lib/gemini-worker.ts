@@ -11,6 +11,7 @@ import { writeRuntime, getRuntime, setDtpSummary } from "./runtime-store.ts";
 import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch } from "./session-writes.ts";
 import { writeDtpReport, writeDtpComparison } from "./dtp-report.ts";
 import { buildNote, appendNote, resolveNotesInDoc } from "./session-notes.ts";
+import { deriveProcessMeta, scaffoldClosing } from "./process-scaffold.ts";
 import {
   buildFoundationalQueue,
   newReviewState,
@@ -300,8 +301,19 @@ const toolDeclarations: any[] = [
     }
   },
   {
+    name: "deriveProcessMeta",
+    description: "Deterministically derive a new process's slug and `<PROC>` abbreviation from its name, and report whether the slug is taken (with non-colliding alternatives). Returns a guaranteed-valid abbreviation (2–6 uppercase letters) and the exact confirm-bullet template. Call this in the new-process skill before scaffolding; use exactly what it returns — never invent the slug or abbreviation.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        name: { type: "STRING", description: "The raw process name the user gave." }
+      },
+      required: ["name"]
+    }
+  },
+  {
     name: "scaffoldProcess",
-    description: "Create a brand-new, empty process document (root meta + an empty overview). Used only by the new-process skill, in an unscoped session, before any content exists. Refuses to overwrite an existing process.",
+    description: "Create a brand-new, empty process document (root meta + an empty overview). Used only by the new-process skill, in an unscoped session, before any content exists. Refuses to overwrite an existing process. Returns the canonical closing message to relay verbatim.",
     parameters: {
       type: "OBJECT",
       properties: {
@@ -992,6 +1004,13 @@ export class GeminiWorker implements IProcessWorker {
                 const els = getProcessElements(String(args.slug || ""), String(args.collection || ""));
                 if (els === null) throw new Error(`Process not found: ${args.slug}`);
                 resultText = JSON.stringify({ slug: args.slug, collection: args.collection, elements: els }, null, 2);
+              } else if (originalName === "deriveProcessMeta") {
+                // No slug yet — derive deterministically from the raw name.
+                const procName = String(args.name || "").trim();
+                if (!procName) throw new Error("name is required.");
+                const slugExists = (s: string) =>
+                  fs.existsSync(path.join(process.cwd(), "wiki", "processes", `${s}.json`));
+                resultText = JSON.stringify(deriveProcessMeta(procName, slugExists), null, 2);
               } else if (originalName === "scaffoldProcess") {
                 const newSlug = String(args.slug || "").trim();
                 const PROC = String(args.PROC || "").toUpperCase().trim();
@@ -1007,7 +1026,7 @@ export class GeminiWorker implements IProcessWorker {
                 // Scope this session to the freshly created process for subsequent turns.
                 this.slug = newSlug;
                 if (this.sessionId) saveSessionSlug(this.sessionId, this.slug, this.activeSkill);
-                resultText = JSON.stringify({ ok: true, slug: newSlug, id: newDoc.meta.id, created: true }, null, 2);
+                resultText = JSON.stringify({ ok: true, slug: newSlug, id: newDoc.meta.id, created: true, closing: scaffoldClosing(title) }, null, 2);
               } else if (isExpandElement) {
                 const type = args.type;
                 const id = args.id;

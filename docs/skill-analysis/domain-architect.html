@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>domain-architect — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">domain-architect</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">ArchitectMiner specialist</div>
+    <h1>domain-architect</h1>
+    <p class="lede">Develops the <strong>business-architecture layer</strong> of a process's target state — the capabilities the target process needs, the target applications that host them (with their build / buy / configure / keep verdict), and the ADRs that justify the shape — drafting each as a schema-typed element in the process JSON. It is pure downstream synthesis: it reads the documented target process and never authors upstream content.</p>
+    <div class="meta-row">
+      <span class="chip">Interactive · Y/E/R loop</span>
+      <span class="chip neutral">LAYER: business</span>
+      <span class="chip neutral">OWNS: capability · target-application · adr</span>
+      <span class="chip neutral">Invoked by: ArchitectMiner canvas buttons</span>
+    </div>
+  </div>
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>domain-architect</code> is one of the two ArchitectMiner specialists. It
+      facilitates a banking architect through the <strong>business-architecture
+      layer</strong> of a process's target state and writes the result into the same
+      process JSON via the schema-enforced tools. It owns exactly three element types:
+      <code>capability</code> (what the business must be able to do, independent of how),
+      <code>target-application</code> (what hosts each capability, with its build /
+      buy / configure / keep verdict), and <code>adr</code> (the Architecture Decision
+      Records that lock the shape, with alternatives and consequences written down so
+      they survive the people who made them).
+    </p>
+    <p>
+      Architecture here is <strong>downstream synthesis</strong>, not fresh elicitation.
+      Every element it drafts must be grounded in work already in the document — the
+      target state (<code>to-be-design</code>), the
+      <code>transformation-decisions</code>, the <code>requirements</code>, the
+      <code>gap-resolution</code>, the dependencies, the <code>controls</code>, the
+      <code>regulation</code>, and the as-is <code>systems</code>. An element grounded in
+      nothing upstream is treated as a finding, not architecture. Because the
+      capabilities and applications it authors are the substrate the
+      <code>solution-architect</code> builds on, it usually runs first of the two.
+    </p>
+    <p>The frontmatter it must set (the schema hard-blocks approval if missing):</p>
+    <ul>
+      <li><strong>capability</strong> — <code>criticality</code> (CRITICAL / HIGH /
+        MEDIUM / LOW), <code>reuse</code> (NEW / REUSED); optionally
+        <code>owningDomain</code>. Relations: <code>hostedIn</code> →
+        target-application, <code>realisesStep</code> → target-state,
+        <code>resolvesGap</code> → gap.</li>
+      <li><strong>target-application</strong> — <code>verdict</code> (BUILD / BUY /
+        CONFIGURE / KEEP); optionally <code>vendor</code>, <code>owningDomain</code>,
+        <code>costBand</code>. Relation: <code>drivenByADR</code> → adr.</li>
+      <li><strong>adr</strong> — <code>adrStatus</code> (DRAFT / PROPOSED / ACCEPTED /
+        REJECTED / SUPERSEDED), <code>owner</code> (a role, not a named person);
+        optionally <code>domain</code>. Relations: <code>decision</code> →
+        transformation-decision, <code>resolvesGap</code>,
+        <code>satisfiesControl</code>, <code>dependsOn</code> /
+        <code>supersededBy</code> → adr.</li>
+    </ul>
+    <p>Key constraints and behaviours:</p>
+    <ul>
+      <li><strong>Capability before application before decision.</strong> Map what the
+        business must do first; only then what hosts it; record the ADR once the choice
+        is real. Don't name a vendor before you know the capability it serves.</li>
+      <li><strong>Build / buy is a decision, not a label.</strong> When it sets an
+        application's <code>verdict</code>, it must draft the ADR that justifies it
+        (alternatives, consequences) and wire <code>drivenByADR</code>. A verdict with
+        no recorded reasoning is half an answer.</li>
+      <li><strong>Recovery-safe writes.</strong> Each element is written the moment the
+        architect confirms it via <code>createElement</code> — never batched in the
+        model's head.</li>
+      <li><strong>Draft, not truth-yet.</strong> Everything is authored
+        <code>draft</code> with honest provenance; the architect approves later in the
+        web app. The skill never sets <code>approved</code>.</li>
+      <li><strong>Stays in its lane.</strong> It does not create integrations,
+        components, NFRs or migration phases (the <code>solution-architect</code>'s), nor
+        any As-Is, target-state, transformation-decision, gap, requirement, control,
+        regulation or client/innovation element — those are read-only inputs.</li>
+    </ul>
+  </section>
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>Five phases run in order; if invoked from a single section's canvas button it starts at the matching phase, otherwise it runs them all. Every draft goes through the universal Y/E/R loop with per-heading provenance.</p>
+    <ol class="steps">
+      <li><span class="st-title">Phase 0 — Orient</span><span class="st-body">The session is already scoped to one process (title, id, architect name/role). Read the upstream artifacts to ground on and the architecture already authored, so it extends rather than duplicates. Tools: <span class="tool">expandElement()</span> over <code>to-be-design</code>, <code>transformation-decisions</code>, <code>requirements</code>, <code>gap-resolution</code>, <code>controls</code>, as-is <code>systems</code>, plus existing <code>capabilities</code> / <code>target-applications</code> / <code>architecture-decisions</code>.</span></li>
+      <li><span class="st-title">Phase 1 — Capabilities</span><span class="st-body">Derive the business capabilities from the target-state steps and requirements. For each, set <code>criticality</code> and <code>reuse</code>, draft Description / Inputs and outputs / Boundaries, and wire <code>realisesStep</code> to the target-state it serves and <code>resolvesGap</code> to any gap it closes. Walk the whole target process so none is missed. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 2 — Target applications</span><span class="st-body">Opened with <strong>[A] Add one · [E] Explore · [N] None</strong>. The applications that host the capabilities — for each, its <code>verdict</code> (BUILD / BUY / CONFIGURE / KEEP) and reasoning, tech stack / vendor, and risks. Wire each capability's <code>hostedIn</code> to its application. A capability hosted nowhere, or an app hosting nothing, is a finding. Tools: <span class="tool">createElement()</span>, <span class="tool">updateElement()</span></span></li>
+      <li><span class="st-title">Phase 3 — Architecture decisions</span><span class="st-body">[A]/[E]/[N]. Each decision as an ADR with Context / Decision / Alternatives considered / Consequences; set <code>adrStatus</code> and <code>owner</code>. Wire <code>decision</code> to the transformation-decision it realises, <code>resolvesGap</code> / <code>satisfiesControl</code> where they apply, and <code>drivenByADR</code> back from the applications a decision drives. Every non-obvious verdict earns an ADR. Tools: <span class="tool">createElement()</span>, <span class="tool">updateElement()</span></span></li>
+      <li><span class="st-title">Phase 4 — Validation &amp; close</span><span class="st-body">Sweep what was written for gaps: a capability tracing to no target-state step or requirement; an application with a verdict but no driving ADR; an ADR with no alternatives; a capability hosted nowhere. Surface each as a short clarifying question, then emit the fixed close with per-type drafted counts. Tools: <span class="tool">expandElement()</span>, <span class="tool">updateElement()</span></span></li>
+    </ol>
+  </section>
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Pre-seed candidate capabilities from upstream.</strong> A deterministic derive pass over <code>to-be-design</code> and <code>requirements</code> proposes a starter capability list (with provisional <code>realisesStep</code> links) before Phase 1 starts.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">med</span></td><td>Turns "walk the whole target process so none is missed" from a model-memory task into confirm-or-cull. Fewer missed capabilities (determinism) and far fewer generation rounds (speed).</td></tr>
+        <tr><td><strong>Auto-map capabilities ↔ target-applications.</strong> When an application is created, suggest the <code>hostedIn</code> links from capability text / domain overlap, and flag any capability still hosted nowhere.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">med</span></td><td>The "hosted nowhere / hosts nothing" finding is computed continuously instead of rediscovered in Phase 4, and the architect wires relations by approving rather than dictating ids.</td></tr>
+        <tr><td><strong>Generate ADR stubs from transformation-decisions.</strong> For each <code>transformation-decision</code> and each build/buy <code>verdict</code>, emit a pre-filled ADR skeleton (Context from the decision, Alternatives placeholder, <code>decision</code> relation pre-wired).</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">med</span></td><td>Enforces the "a verdict needs a driving ADR" rule structurally and saves the model from authoring boilerplate ADR scaffolding each time.</td></tr>
+        <tr><td><strong>Parallel-draft independent capabilities.</strong> Capabilities that share no relation are independent; draft them in one batched pass with a single grouped Y/E/R rather than strictly one at a time.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Collapses many sequential drafting rounds for reference-style capabilities into one, which the core contract already permits for low-judgement elements.</td></tr>
+        <tr><td><strong>Structured-schema confirm payload.</strong> Have the model emit each element as a typed object (frontmatter + headings + relation ids) that renders the read-back, rather than free-form markdown the writer must re-parse.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Removes formatting drift and makes the draft machine-checkable against the schema before <code>createElement</code>, catching missing frontmatter pre-write.</td></tr>
+        <tr><td><strong>Cache the oriented document map.</strong> Persist the Phase 0 <code>expandElement</code> snapshot of upstream collections for the session so later phases don't re-expand the same arrays.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Phase 0 reads a lot; re-expanding the same <code>to-be-design</code> / <code>requirements</code> in Phases 1–3 is wasted round-trips and tokens.</td></tr>
+        <tr><td><strong>Deterministic Phase-4 validation report.</strong> Replace the model's improvised sweep with a fixed checklist query (capability→step, app→ADR, ADR→alternatives, capability→host) that returns the exact failing ids.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>The four validation rules are mechanical graph checks; computing them guarantees the same findings every run instead of relying on the model to remember all four.</td></tr>
+        <tr><td><strong>Pre-validate frontmatter enums client-side.</strong> Enforce <code>criticality</code> / <code>reuse</code> / <code>verdict</code> / <code>adrStatus</code> value sets at draft time, not via a writer rejection + retry.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Eliminates approval-blocking reject-retry loops from an out-of-enum value the model invented.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> push the upstream synthesis into a deterministic derive layer. Today the model must re-read the whole target state, remember every step that needs a capability, and hand-wire <code>realisesStep</code> / <code>hostedIn</code> / <code>drivenByADR</code> relations — the slowest and most variable part of the session. If the tool layer pre-seeds candidate capabilities from <code>to-be-design</code>/<code>requirements</code>, auto-suggests the host and ADR relations, and runs the Phase-4 graph checks itself, the architect's job collapses to confirming, culling and correcting — turning an open-ended synthesis into a fast, reproducible review while keeping every human approval intact.</div>
+  </section>
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/domain-architect/SKILL.md</code></footer>
+</div>
+</body>
+</html>

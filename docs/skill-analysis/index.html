@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Processminer — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><span class="home">Skill deep dive</span><span class="crumb">/</span><span class="crumb">index</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Processminer · JSON-native</div>
+    <h1>Skill deep dive</h1>
+    <p class="lede">A page per skill in <code>.claude/skills/</code> — what each one does, the exact sequence it runs, and concrete ideas to make it <strong>more deterministic</strong> and <strong>significantly faster</strong>. Twenty-six skills, grouped by the role they play in documenting a banking process end&#8209;to&#8209;end.</p>
+    <div class="meta-row">
+      <span class="chip">26 skills</span>
+      <span class="chip neutral">grounded in each SKILL.md</span>
+      <span class="chip neutral">shared contract: CORE_SYSTEM_PROMPT.md</span>
+    </div>
+  </div>
+
+  <section id="flow" style="margin-top:var(--space-2xl)">
+    <h2><span class="num">→</span> The spine</h2>
+    <div class="card">
+      <p style="margin-bottom:var(--space-sm)">The backbone flow for documenting a process, and where the rest hang off it:</p>
+      <p style="font-family:var(--mono);font-size:var(--text-sm);line-height:2">
+        <a href="new-process.html">new-process</a> &rarr; <a href="document-ingest.html">document-ingest</a> &rarr; <span style="color:var(--muted)">[triage]</span> &rarr; <a href="foundational-run.html">foundational-run</a> &rarr; perspective specialists &rarr; <a href="transformation-agent.html">transformation-agent</a> &rarr; <a href="council-review.html">council-review</a>
+      </p>
+      <p style="font-size:var(--text-sm);color:var(--muted);margin-bottom:0"><a href="qer-session.html">qer-session</a> is the authored conductor over the whole thing; <a href="run-lint.html">run-lint</a> is the consistency checkpoint you can run any time; the <code>source-*</code> skills pre-fill perspectives from the web; the <code>dtp-*</code> skills work the procedure document; <a href="dogfood-run.html">dogfood-run</a> drives all of it as a QA harness.</p>
+    </div>
+  </section>
+
+  <div class="group-title">Scaffolding &amp; ingest</div>
+  <div class="grid">
+    <a class="tile" href="new-process.html"><div class="name">new-process</div><div class="desc">Scaffold an empty, strongly-typed process JSON — name, confirm, create. <span class="arrow">&rarr;</span></div></a>
+    <a class="tile" href="document-ingest.html"><div class="name">document-ingest</div><div class="desc">Extract an uploaded document into draft elements, verifying each claim against the source. <span class="arrow">&rarr;</span></div></a>
+    <a class="tile" href="conflict-resolution.html"><div class="name">conflict-resolution</div><div class="desc">Walk the SME through conflicts a re-ingest flagged, doc vs wiki, and clear them. <span class="arrow">&rarr;</span></div></a>
+  </div>
+
+  <div class="group-title">Orchestration &amp; the current-state walk</div>
+  <div class="grid">
+    <a class="tile" href="qer-session.html"><div class="name">qer-session</div><div class="desc">The authored six-step conductor for a complete end-to-end documentation session. <span class="arrow">&rarr;</span></div></a>
+    <a class="tile" href="foundational-run.html"><div class="name">foundational-run</div><div class="desc">Resumable per-element challenge of every current-state element; deepens past the document. <span class="arrow">&rarr;</span></div></a>
+  </div>
+
+  <div class="group-title">Perspective specialists (interactive)</div>
+  <div class="grid">
+    <a class="tile" href="process-specialist.html"><div class="name">process-specialist</div><div class="desc">As-Is mechanics — steps, exceptions, roles, metrics, pain points, gaps. <span class="arrow">&rarr;</span></div></a>
+    <a class="tile" href="control-compliance-specialist.html"><div class="name">control-compliance-specialist</div><div class="desc">Risk &amp; regulatory lens — controls, regulations, control gaps, audit findings. <span class="arrow">&rarr;</span></div></a>
+    <a class="tile" href="client-journey-specialist.html"><div class="name">client-journey-specialist</div><div class="desc">The customer's experience — channels, touchpoints, moments, friction. <span class="arrow">&rarr;</span></div></a>
+    <a class="tile" href="innovation-analyst.html"><div class="name">innovation-analyst</div><div class="desc">Forward-looking — market trends, competitor moves, ideas and their risk. <span class="arrow">&rarr;</span></div></a>
+    <a class="tile" href="transformation-agent.html"><div class="name">transformation-agent</div><div class="desc">Forward synthesis — target state, transformation decisions, gaps to close. <span class="arrow">&rarr;</span></div></a>
+    <a class="tile" href="it-architect.html"><div class="name">it-architect</div><div class="desc">The systems landscape — applications and the integrations between them. <span class="arrow">&rarr;</span></div></a>
+  </div>
+
+  <div class="group-title">ArchitectMiner specialists</div>
+  <div class="grid">
+    <a class="tile" href="domain-architect.html"><div class="name">domain-architect</div><div class="desc">Business-architecture layer of the target — capabilities, target apps, ADRs. <span class="arrow">&rarr;</span></div></a>
+    <a class="tile" href="solution-architect.html"><div class="name">solution-architect</div><div class="desc">Technical layer — target integrations, components, NFRs, migration phases. <span class="arrow">&rarr;</span></div></a>
+  </div>
+
+  <div class="group-title">Web-sourcing (non-interactive)</div>
+  <div class="grid">
+    <a class="tile" href="source-regulation.html"><div class="name">source-regulation</div><div class="desc">Auto-source the regulatory landscape that governs the process. <span class="arrow">&rarr;</span></div></a>
+    <a class="tile" href="source-cx.html"><div class="name">source-cx</div><div class="desc">Auto-source competitor CX and industry CX benchmarks from the web. <span class="arrow">&rarr;</span></div></a>
+    <a class="tile" href="source-innovation.html"><div class="name">source-innovation</div><div class="desc">Auto-source market trends, competitor moves and innovation ideas. <span class="arrow">&rarr;</span></div></a>
+    <a class="tile" href="source-target.html"><div class="name">source-target</div><div class="desc">Consolidate everything documented into a first-stub Target Process. <span class="arrow">&rarr;</span></div></a>
+  </div>
+
+  <div class="group-title">Single-element &amp; review</div>
+  <div class="grid">
+    <a class="tile" href="add-entry.html"><div class="name">add-entry</div><div class="desc">Draft one new element into a section, with the SME, via Y/E/R. <span class="arrow">&rarr;</span></div></a>
+    <a class="tile" href="comment-review.html"><div class="name">comment-review</div><div class="desc">Work the open discussion comments on an element and close them out. <span class="arrow">&rarr;</span></div></a>
+    <a class="tile" href="run-lint.html"><div class="name">run-lint</div><div class="desc">Conformance check + five-lens cross-perspective sweep; re-opens approvals. <span class="arrow">&rarr;</span></div></a>
+    <a class="tile" href="area-summary.html"><div class="name">area-summary</div><div class="desc">Amazon-style narrative memo for one area, written to the summaries field. <span class="arrow">&rarr;</span></div></a>
+    <a class="tile" href="council-review.html"><div class="name">council-review</div><div class="desc">Five specialists challenge the target state from their own lens. <span class="arrow">&rarr;</span></div></a>
+  </div>
+
+  <div class="group-title">DTP Enhancer</div>
+  <div class="grid">
+    <a class="tile" href="dtp-regenerate.html"><div class="name">dtp-regenerate</div><div class="desc">Rewrite the procedure document from the As-Is and review the original against it. <span class="arrow">&rarr;</span></div></a>
+    <a class="tile" href="dtp-compare.html"><div class="name">dtp-compare</div><div class="desc">Review-only: measure a chosen DTP against the wiki, one finding per discrepancy. <span class="arrow">&rarr;</span></div></a>
+    <a class="tile" href="dtp-summary.html"><div class="name">dtp-summary</div><div class="desc">Executive memo summarising how far a DTP has drifted from the As-Is. <span class="arrow">&rarr;</span></div></a>
+  </div>
+
+  <div class="group-title">QA harness</div>
+  <div class="grid">
+    <a class="tile" href="dogfood-run.html"><div class="name">dogfood-run</div><div class="desc">Drive the whole skill roster through the running app's UI as a QA test, playing the SME. <span class="arrow">&rarr;</span></div></a>
+  </div>
+
+  <section id="themes">
+    <h2><span class="num">∑</span> Cross-cutting enhancement themes</h2>
+    <p>The same determinism-and-speed levers recur across the roster. The per-skill pages give the specifics; these are the patterns worth funding once and applying everywhere.</p>
+    <table>
+      <thead><tr><th>Theme</th><th>Type</th><th>Where it bites hardest</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Parallel sub-agent fan-out</strong> — run independent units of work concurrently instead of serially</td><td><span class="tag both">det + speed</span></td><td><a href="run-lint.html">run-lint</a> &amp; <a href="council-review.html">council-review</a> (the five lenses are already conceptually parallel), <a href="document-ingest.html">document-ingest</a>, <a href="area-summary.html">area-summary</a>, the <code>source-*</code> skills</td></tr>
+        <tr><td><strong>Authored sequences over LLM routing</strong> — fixed, auditable step order; the model judges within a step, never decides the order or when work is "done"</td><td><span class="tag det">determinism</span></td><td><a href="qer-session.html">qer-session</a>, <a href="foundational-run.html">foundational-run</a>; specialists' question banks</td></tr>
+        <tr><td><strong>Strict structured-output schemas</strong> — force each emitted element/finding through a JSON schema so malformed output retries at the tool layer, not the prose layer</td><td><span class="tag both">det + speed</span></td><td>every drafting skill — cuts conformance round-trips; especially the <code>source-*</code> and <code>dtp-*</code> writers</td></tr>
+        <tr><td><strong>Batch the Y/E/R loop</strong> — group low-judgement, reference-type elements into a single approval instead of one prompt each</td><td><span class="tag speed">speed</span></td><td>specialists drafting lists (regulations, systems, metrics), <a href="innovation-analyst.html">innovation-analyst</a> triage, <a href="comment-review.html">comment-review</a></td></tr>
+        <tr><td><strong>Precompute / cache the Document Map</strong> — build the progressive-disclosure map once per run and reuse it instead of re-expanding</td><td><span class="tag speed">speed</span></td><td>any long session — <a href="foundational-run.html">foundational-run</a>, <a href="qer-session.html">qer-session</a>, <a href="document-ingest.html">document-ingest</a></td></tr>
+        <tr><td><strong>Deterministic relation &amp; stub derivation</strong> — derive links/stubs by rule rather than asking the model to infer them</td><td><span class="tag det">determinism</span></td><td><code>checkTransitions</code> for exception↔step; <a href="it-architect.html">it-architect</a> integrations from the systems graph; <a href="transformation-agent.html">transformation-agent</a> / <a href="source-target.html">source-target</a> gaps from As-Is↔To-Be deltas; <a href="domain-architect.html">domain-architect</a> ADRs from transformation-decisions</td></tr>
+        <tr><td><strong>Skip the read-back when provenance is non-elicited</strong> — <code>document</code> / <code>web</code> sourced headings already carry their evidence; reserve the mandatory read-back for inflated drafts</td><td><span class="tag speed">speed</span></td><td><a href="document-ingest.html">document-ingest</a>, the <code>source-*</code> skills, <a href="add-entry.html">add-entry</a></td></tr>
+        <tr><td><strong>Fixture-driven, seedable runs</strong> — scripted SME answers and stable seeds make a run reproducible and fast</td><td><span class="tag both">det + speed</span></td><td><a href="dogfood-run.html">dogfood-run</a></td></tr>
+        <tr><td><strong>Diff before doing</strong> — compare against what already exists and only work the delta (dedupe sourced results, section-by-section DTP diff)</td><td><span class="tag both">det + speed</span></td><td><code>source-*</code> coverage gates, <a href="dtp-compare.html">dtp-compare</a> &amp; <a href="dtp-regenerate.html">dtp-regenerate</a></td></tr>
+      </tbody>
+    </table>
+    <div class="callout">The single highest-leverage move across the roster is <strong>literal parallel sub-agent fan-out backed by strict output schemas</strong>: the lint council, the target-state council, document ingest and the web-sourcing skills are all written as "do N independent things," yet run serially. Fanning them out collapses wall-clock to the slowest unit, and the schema makes every unit's output deterministic and auditable — determinism and speed from one change.</div>
+  </section>
+
+  <footer>Processminer skill analysis · 26 skills · generated from <code>.claude/skills/</code> and the shared <code>CORE_SYSTEM_PROMPT.md</code> contract.</footer>
+</div>
+</body>
+</html>

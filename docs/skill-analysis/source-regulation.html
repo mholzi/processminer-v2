@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>source-regulation — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">source-regulation</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Web-sourcing (non-interactive)</div>
+    <h1>source-regulation</h1>
+    <p class="lede">Autonomously scans the web for the financial-services regulation, supervisory rules and guidance that govern a process, and drafts one <code>regulation</code> element per material obligation — every block sourced from a real URL, no SME present.</p>
+    <div class="meta-row">
+      <span class="chip">Non-interactive · button-invoked</span>
+      <span class="chip neutral">SOURCE: web · provenance=web</span>
+      <span class="chip neutral">FILLS: Regulation</span>
+      <span class="chip neutral">Triaged, not approved</span>
+    </div>
+  </div>
+
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>source-regulation</code> is the Risk &amp; Compliance counterpart of
+      <code>source-cx</code> and <code>source-innovation</code>. Invoked with a process
+      <code>&lt;slug&gt;</code> by a UI button or another skill, it reads the process,
+      web-searches for the regulation that bears on it, and writes one
+      <code>regulation</code> draft element per material obligation. The Control &amp;
+      Compliance Specialist later refines each one with the SME and maps it to the
+      controls that satisfy it.
+    </p>
+    <p>
+      It produces <strong>exactly one element type</strong> — <code>regulation</code>,
+      in the <code>regulation</code> section. It deliberately does <em>not</em> produce
+      controls, control gaps or audit findings: those are drawn from the SME and the
+      process itself, not the web.
+    </p>
+    <p>Key constraints and behaviours:</p>
+    <ul>
+      <li><strong>Non-interactive.</strong> No SME is present — it asks nothing, runs no
+        Y/E/R loop, never sets <code>approved</code>. Everything is written
+        <code>status: draft</code>; the SME triages relevance and approves later in the app.</li>
+      <li><strong>Jurisdiction-scoped.</strong> It uses the process overview's
+        <code>jurisdiction</code> as the scope hint — the home-jurisdiction regulation
+        plus the international standards (e.g. Basel) that flow into it.</li>
+      <li><strong>Real sources only.</strong> It names real regulations and supervisory
+        bodies (BaFin, ECB, EBA) and cites real URLs — never invents a regulation or a
+        citation. If web search is unavailable, it writes only what it can solidly
+        support and says so.</li>
+      <li><strong>Provenance = web.</strong> Every block carries
+        <code>source: web</code> with <code>evidence</code> = URL + verbatim snippet +
+        fetch date. A <code>web</code> heading blocks approval until a specialist
+        confirms it with the SME, flipping it to <code>elicited</code>.</li>
+      <li><strong>Cross-links onto controls.</strong> Where a regulation is clearly
+        satisfied by an existing control, it patches that control's
+        <code>regulatedBy</code> — a regulation has no <code>controls</code> field of
+        its own; the control list is the derived reverse.</li>
+    </ul>
+  </section>
+
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>Three prescribed steps; writes are incremental, not one end-of-run batch.</p>
+    <ol class="steps">
+      <li><span class="st-title">Step 1 — Read the process</span><span class="st-body">Read the overview (domain, industry, jurisdiction, scope), the documented As-Is (<code>process-steps</code>, <code>roles</code>, <code>exceptions</code>) to know what activity is being regulated, the existing <code>controls</code> so a regulation can be mapped to the control that satisfies it, and any existing <code>regulation</code> elements so it extends rather than duplicates. Tools: <span class="tool">expandElement()</span></span></li>
+      <li><span class="st-title">Step 2 — Scan the regulatory landscape</span><span class="st-body">Web-search across the domains that bear on the process — prudential, financial crime, conduct, operational risk, data &amp; reporting — for named regulations and their supervisory body. Draft one <code>regulation</code> per material obligation (blocks <em>What it requires</em> / <em>Why it applies</em> / <em>How it is met</em>; frontmatter <code>domain</code>, <code>source</code>, <code>sourceUrl</code>) and write incrementally, keeping a running per-type total. Where a regulation maps to a control, patch that control's <code>regulatedBy</code>. Tools: <span class="tool">createElements()</span>, <span class="tool">updateElement()</span>, <span class="tool">checkConformance()</span></span></li>
+      <li><span class="st-title">Step 3 — Report</span><span class="st-body">Read the regulation count from the running total (summed across every <code>createElements</code> call, never recounted from memory) and emit the canonical report verbatim — count drafted, sources used, and the line that all are <code>status: draft</code> for review or refinement by the control &amp; compliance specialist. If web search was unavailable, add the one fixed line saying so.</span></li>
+    </ol>
+  </section>
+
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Fan out one sub-agent per regulatory domain.</strong> Prudential, financial-crime, conduct, op-risk and data/reporting are independent web streams — dispatch five read-only sub-agents in one message (the pattern <code>source-cx</code> already uses for its three tiers) and merge the returned draft specs.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">med</span></td><td>Turns a serial domain-by-domain crawl into one parallel pass — the single biggest wall-clock win for an IO-bound web skill.</td></tr>
+        <tr><td><strong>Authored query templates per domain + jurisdiction.</strong> Ship fixed search strings (e.g. <code>"{jurisdiction} AML KYC obligations {process-domain}"</code>) keyed off the overview, instead of letting the model improvise terms each run.</td><td><span class="tag both">both</span></td><td><span class="tag effort-l">low</span></td><td>Removes query-wording variance between runs and saves the model a planning round — same process yields the same searches.</td></tr>
+        <tr><td><strong>Diff against existing regulations before searching.</strong> Pre-load existing <code>regulation</code> ids + names and skip domains already well covered, rather than discovering duplicates after drafting.</td><td><span class="tag both">both</span></td><td><span class="tag effort-l">low</span></td><td>Avoids redundant searches and re-drafts on a re-run, and enforces the "extend, never duplicate" rule mechanically.</td></tr>
+        <tr><td><strong>Deterministic dedup + cap on results.</strong> Normalise by regulation name/citation and cap to N obligations per domain in the tool layer before drafting.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Two runs over the same landscape converge on the same set instead of a variable-length dump.</td></tr>
+        <tr><td><strong>Structured-output schema for the regulation spec.</strong> Constrain the model to emit <code>{ domain, source, sourceUrl, blocks, provenance }</code> directly, so it can't omit a provenance entry or a required block.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Eliminates conformance failures and the <code>checkConformance</code> fix-and-retry round at the end of the run.</td></tr>
+        <tr><td><strong>Cache fetched supervisory pages.</strong> Key the cache on URL + day so re-runs of the same process (or sibling processes in the same jurisdiction) reuse fetched BaFin/EBA pages.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">med</span></td><td>Regulatory pages are shared across many bank processes; caching turns the second run into near-instant.</td></tr>
+        <tr><td><strong>Auto-derive the <code>regulatedBy</code> patch.</strong> Given the drafted regulation's domain + the controls' domains, propose the control link deterministically instead of the model judging each mapping.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Makes the regulation↔control linkage reproducible and stops the model from missing obvious mappings.</td></tr>
+        <tr><td><strong>Batch the incremental writes by domain.</strong> One <code>createElements</code> call per domain sub-agent's return, rather than per-regulation, while still surfacing progress.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Cuts write round-trips without losing the "session visibly alive" benefit of incremental writing.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> fan the regulatory domains out to parallel sub-agents driven by authored, jurisdiction-keyed query templates. The skill is almost entirely IO-bound on web search, and its five domains are independent — running them serially with improvised queries is the dominant cost and the dominant source of run-to-run variance. Parallel fixed-query sub-agents plus a deterministic dedup/cap collapse both the latency and the non-determinism at once.</div>
+  </section>
+
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/source-regulation/SKILL.md</code></footer>
+</div>
+</body>
+</html>
