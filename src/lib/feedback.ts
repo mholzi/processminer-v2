@@ -23,6 +23,40 @@ export const FEEDBACK_STATUSES = [
 
 export type FeedbackStatus = (typeof FEEDBACK_STATUSES)[number]["id"];
 
+/** Auto-captured context about where the tester was when they filed — the
+ *  live-feedback "auto-capture page context" feature (idea #2). Every field is
+ *  optional; the widget fills what it can. Client-supplied, so the API
+ *  whitelists keys and caps lengths before persisting. */
+export interface FeedbackContext {
+  /** The browser path the tester was on (pathname + search). */
+  path?: string;
+  /** The active process slug, when inside a process. */
+  processSlug?: string;
+  /** The active process display name. */
+  processName?: string;
+  /** The section / area within the app the tester was viewing. */
+  area?: string;
+  /** Viewport size, e.g. "1440×900". */
+  viewport?: string;
+  /** Browser user-agent string. */
+  userAgent?: string;
+  /** ISO timestamp the context was captured. */
+  capturedAt?: string;
+}
+
+/** A reference to the wiki element a piece of feedback is pinned to — the
+ *  point-and-click "feedback on this element" feature (idea #3). Distinct from
+ *  the SME wiki discussion threads: this is app/tool feedback that happens to
+ *  name an element. */
+export interface FeedbackElementRef {
+  /** The element id, e.g. "PS-004". */
+  id: string;
+  /** The element's title at pin time, for display. */
+  title?: string;
+  /** The process the element belongs to. */
+  processSlug?: string;
+}
+
 export interface FeedbackItem {
   /** Sequential id, e.g. FB-001. */
   id: string;
@@ -39,7 +73,28 @@ export interface FeedbackItem {
   created: string;
   /** The feedback prose — the Markdown body of the file. */
   body: string;
+  /** Auto-captured page context, when the tester filed via a widget with the
+   *  auto-context feature on. */
+  context?: FeedbackContext;
+  /** Filename of an attached screenshot (e.g. "FB-001.png"), stored beside the
+   *  item in feedback/. Served via /api/feedback/screenshot. */
+  screenshot?: string;
+  /** The wiki element this feedback is pinned to, when filed via point-and-click
+   *  element feedback (idea #3). */
+  element?: FeedbackElementRef;
 }
+
+/** The whitelisted keys of FeedbackContext, used by the API to sanitize the
+ *  client-supplied object before persisting. */
+export const FEEDBACK_CONTEXT_KEYS: (keyof FeedbackContext)[] = [
+  "path",
+  "processSlug",
+  "processName",
+  "area",
+  "viewport",
+  "userAgent",
+  "capturedAt",
+];
 
 export const isFeedbackCategory = (v: unknown): v is FeedbackCategory =>
   FEEDBACK_CATEGORIES.some((c) => c.id === v);

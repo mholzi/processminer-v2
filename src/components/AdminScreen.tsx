@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { User, Entitlement } from "@/lib/user";
+import FeatureTogglesPanel from "@/components/FeatureTogglesPanel";
 
 // Admin screen — lists every user and lets an admin create, edit, reset
 // password, or delete. Only reachable when user.isAdmin === true; the
@@ -23,6 +24,7 @@ export default function AdminScreen({
   user: User;
   onReturnToSplash: () => void;
 }) {
+  const [tab, setTab] = useState<"users" | "features">("users");
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -110,6 +112,27 @@ export default function AdminScreen({
         </span>
       </header>
 
+      <nav className="admin-tabs">
+        <button
+          type="button"
+          className={`admin-tab${tab === "users" ? " admin-tab-on" : ""}`}
+          onClick={() => setTab("users")}
+        >
+          Users &amp; access
+        </button>
+        <button
+          type="button"
+          className={`admin-tab${tab === "features" ? " admin-tab-on" : ""}`}
+          onClick={() => setTab("features")}
+        >
+          Feature toggles
+        </button>
+      </nav>
+
+      {tab === "features" && <FeatureTogglesPanel />}
+
+      {tab === "users" && (
+      <>
       <main className="admin-page">
         <header className="admin-page-head">
           <div>
@@ -177,6 +200,8 @@ export default function AdminScreen({
           username={resetFor}
           onClose={() => setResetFor(null)}
         />
+      )}
+      </>
       )}
     </div>
   );

@@ -6,6 +6,7 @@ import { hasEntitlement, initials, type User } from "@/lib/user";
 import { buildAttentionFeed } from "@/lib/orchestrator";
 import RelativeTime from "./RelativeTime";
 import AdvisorChat from "./AdvisorChat";
+import UserProfileModal from "./UserProfileModal";
 import { ADVISORS } from "@/lib/advisor";
 
 // The welcome screen — replaces SplashScreen. One component, three faces:
@@ -64,6 +65,7 @@ export default function WelcomeScreen({
   onEnterArchitectminer,
   onEnterAdmin,
   onSignOut,
+  onUpdateUser,
 }: {
   docs: ProcessDoc[];
   user: User;
@@ -72,7 +74,9 @@ export default function WelcomeScreen({
   /** Set only for admin users — opens the admin screen. */
   onEnterAdmin?: () => void;
   onSignOut: () => void;
+  onUpdateUser: (user: User) => void;
 }) {
+  const [profileOpen, setProfileOpen] = useState(false);
   const hasPM = hasEntitlement(user, "pm");
   const hasAM = hasEntitlement(user, "am");
   const scenario: "pm" | "am" | "both" =
@@ -291,13 +295,22 @@ export default function WelcomeScreen({
         <button
           type="button"
           className="ws-avatar"
-          onClick={onSignOut}
-          title={`${user.name} · ${user.role} — sign out`}
-          aria-label={`${user.name}, ${user.role} — sign out`}
+          onClick={() => setProfileOpen(true)}
+          title={`${user.name} · ${user.role} — profile`}
+          aria-label={`${user.name}, ${user.role} — open profile`}
         >
           {initials(user.name)}
         </button>
       </header>
+
+      {profileOpen && (
+        <UserProfileModal
+          user={user}
+          onUpdateUser={onUpdateUser}
+          onSignOut={onSignOut}
+          onClose={() => setProfileOpen(false)}
+        />
+      )}
 
       <main className="ws-page">
         <div className="ws-greet-eyebrow">
@@ -397,10 +410,7 @@ export default function WelcomeScreen({
                     onClick={() => setAdvisorOpen(a.id)}
                   >
                     <span className="ws-ab-av">{a.monogram}</span>
-                    <span className="ws-ab-body">
-                      <span className="ws-ab-name">{a.name}</span>
-                      <span className="ws-ab-blurb">{a.blurb}</span>
-                    </span>
+                    <span className="ws-ab-name">{a.name}</span>
                     <span className="ws-ab-ask">Ask →</span>
                   </button>
                 ))}

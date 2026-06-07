@@ -598,6 +598,8 @@ export default function ElementCard({
         asDocument && !showMeta ? " el-hide-meta" : ""
       }`}
       id={page.id}
+      data-feedback-id={page.id}
+      data-feedback-title={page.title}
     >
       <div className="el-top">
         <button

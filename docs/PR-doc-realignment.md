@@ -57,6 +57,7 @@ what it changes, behaviour/scope, and how it was verified.
 | **#54** | Advisor chat: full progress UI parity + read-only sub-agent fan-out | `feat/advisor-chat-progress-parity` → `main` | Code + skills | **Merged** (`bf5b81d`) |
 | **#55** | Advisor chat: clickable citations + capture-as-note + richer markdown | `feat/advisor-chat-citations-notes` → `main` | Code | **Open** (`pending`) |
 | **#56** | DTP Enhancer review tools — rollup, coverage, evidence, triage, export, summary | `feat/dtp-review-tools` → `main` | Code + skills | **Merged** |
+| **#58** | Live-testing feedback toolkit — floating widget, auto-context, screenshots, element pins, admin toggles | `feat/live-feedback-toolkit` → `main` | Code + UI | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1781,3 +1782,55 @@ server driven directly over stdio JSON-RPC: non-owner **denied** on
 `getProcessElements` / `getProcessSummary`, admin allowed,
 `listAccessibleProcesses` excludes the governed process for the non-owner.
 `npm run typecheck` clean · `npm test` **108/108**.
+
+## PR #58 — Live-testing feedback toolkit (floating widget, auto-context, screenshots, element pins, admin toggles)
+
+## Why
+The app is going into user testing and needs the simplest possible way for
+testers to give feedback live, in-app. This adds the first tranche of a
+feedback toolkit, each capability gated by an admin toggle so it can be lit up
+per environment.
+
+## What
+- **Feature-flag framework.** A client-safe catalog (`src/lib/feature-flags.ts`),
+  a server store at `data/feature-flags.json` (gitignored, overrides-only so new
+  flags inherit defaults), a React provider/hook
+  (`src/lib/feature-flags-context.tsx`), an admin-gated API
+  (`src/app/api/admin/features/route.ts`), and a **Feature toggles** tab in
+  `AdminScreen`. Flipping a toggle calls `router.refresh()` so it takes effect
+  live, not on next reload.
+- **#1 Floating feedback button** (`FloatingFeedback.tsx`, design-shotgun
+  variant B): an accent pill (flips by `--ws-accent`) opening a slide-up sheet
+  that posts to the existing `/api/feedback`. Mounted app-wide in `AuthGate`,
+  self-gating on `feedback.floating_button`.
+- **#2 Auto-capture page context**: a live-context store
+  (`feedback-live-context.ts`) that `ProcessDocScreen` publishes the active
+  process/section into, merged with path/viewport/user-agent/timestamp at submit.
+- **#4 One-click screenshot**: `html-to-image` DOM capture (excludes the widget),
+  stored beside the item as `feedback/<id>.png`, served by
+  `/api/feedback/screenshot` (signed-in, strict id validation).
+- **#3 Point-and-click element feedback** (design-shotgun variant B): a
+  "Feedback mode" that makes element cards targetable (via `data-feedback-*` on
+  `ElementCard`) and pins the feedback to the clicked element, pre-filling the
+  sheet with the element ref. Stored as first-class `element` frontmatter.
+- The feedback model (`feedback.ts` / `feedback-store.ts`) gains `context`,
+  `screenshot`, and `element`; `FeedbackScreen` renders all three on each card.
+- **Profile-modal fix**: the welcome-screen avatar now opens a shared
+  `UserProfileModal` instead of signing out (sign-out is a deliberate button
+  inside), matching the dialog `ProcessDocScreen` already used.
+
+## Scope
+All four feedback features ship **off by default**; the admin lights them up in
+**Admin → Feature toggles**. The element-feedback affordance lives in the
+floating widget, so it follows `feedback.floating_button`. Profile edits remain
+in-session (no self-profile PATCH endpoint — pre-existing behaviour). Runtime
+flag state lives in `data/` (gitignored), keeping the Karpathy wiki guardrail.
+
+## Verification
+`npm run typecheck` clean · `npm test` **108/108**. Driven end-to-end in the
+running app: toggles persist + apply live; floating widget files items;
+auto-context stores live process/section (`area: "Triage"` etc.); screenshot
+captured + served (`200 image/png`, `400` on traversal, `404` missing);
+element pin stores `element: PS-COB-001` with title/process; avatar opens the
+profile (session intact). Test feedback items created during verification were
+removed.

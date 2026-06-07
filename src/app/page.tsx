@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { getSchema, listProcesses, getProcess, type ProcessDoc } from "@/lib/wiki";
 import { listFeedback } from "@/lib/feedback-store";
+import { getResolvedFlags } from "@/lib/feature-flags-store";
 import { COOKIE_NAME, verifySession } from "@/lib/auth-server";
 import { canAccess } from "@/lib/process-access";
 import AuthGate from "./AuthGate";
@@ -31,5 +32,12 @@ export default async function Home() {
         .filter((d): d is ProcessDoc => d !== null)
     : [];
 
-  return <AuthGate schema={schema} docs={docs} feedback={listFeedback()} />;
+  return (
+    <AuthGate
+      schema={schema}
+      docs={docs}
+      feedback={listFeedback()}
+      flags={getResolvedFlags()}
+    />
+  );
 }
