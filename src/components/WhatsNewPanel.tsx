@@ -17,6 +17,36 @@ const TAG_COLOR: Record<EntryTag, string> = {
   planned: "var(--muted)",
 };
 
+const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+// "2026-06-07" → "7 Jun"
+function formatShippedDate(isoDate: string): string {
+  if (!isoDate) return "";
+  const [, m, d] = isoDate.split("-");
+  return `${parseInt(d, 10)} ${MONTH_NAMES[parseInt(m, 10) - 1]}`;
+}
+
+// "7 Jun" → "2026-06-07" (best-effort; falls back to empty)
+function toDateInputValue(when: string): string {
+  if (!when) return "";
+  const m = when.match(/^(\d{1,2})\s+([A-Za-z]+)(?:\s+(\d{4}))?$/);
+  if (!m) return "";
+  const day = m[1].padStart(2, "0");
+  const monthIdx = MONTH_NAMES.findIndex(n => n.toLowerCase() === m[2].toLowerCase().slice(0, 3));
+  if (monthIdx < 0) return "";
+  const year = m[3] ?? new Date().getFullYear().toString();
+  return `${year}-${String(monthIdx + 1).padStart(2, "0")}-${day}`;
+}
+
+function slugify(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .slice(0, 48);
+}
+
 const EMPTY_FORM: Omit<WhatsNewEntry, "createdAt" | "updatedAt"> = {
   id: "",
   title: "",
@@ -38,6 +68,7 @@ export default function WhatsNewPanel() {
   const [bulletsRaw, setBulletsRaw] = useState("");
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [idTouched, setIdTouched] = useState(false);
 
   async function load() {
     setError(null);
@@ -60,6 +91,7 @@ export default function WhatsNewPanel() {
     setBulletsRaw("");
     setEditing(null);
     setCreating(true);
+    setIdTouched(false);
   }
 
   function openEdit(e: WhatsNewEntry) {
@@ -163,7 +195,10 @@ export default function WhatsNewPanel() {
                 <input
                   className="wn-input"
                   value={form.id}
-                  onChange={(e) => setForm((f) => ({ ...f, id: e.target.value }))}
+                  onChange={(e) => {
+                    setIdTouched(true);
+                    setForm((f) => ({ ...f, id: e.target.value }));
+                  }}
                   placeholder="kebab-case, e.g. new-feature"
                   autoFocus
                 />
@@ -175,7 +210,14 @@ export default function WhatsNewPanel() {
               <input
                 className="wn-input"
                 value={form.title}
-                onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+                onChange={(e) => {
+                  const title = e.target.value;
+                  setForm((f) => ({
+                    ...f,
+                    title,
+                    ...(creating && !idTouched ? { id: slugify(title) } : {}),
+                  }));
+                }}
                 placeholder="Feature or fix title"
               />
             </label>
@@ -195,12 +237,23 @@ export default function WhatsNewPanel() {
 
             <label className="wn-field">
               <span>When</span>
-              <input
-                className="wn-input"
-                value={form.when}
-                onChange={(e) => setForm((f) => ({ ...f, when: e.target.value }))}
-                placeholder="21 May  or  ~Q3"
-              />
+              {form.tag === "shipped" ? (
+                <input
+                  className="wn-input"
+                  type="date"
+                  value={form.when ? toDateInputValue(form.when) : ""}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, when: formatShippedDate(e.target.value) }))
+                  }
+                />
+              ) : (
+                <input
+                  className="wn-input"
+                  value={form.when}
+                  onChange={(e) => setForm((f) => ({ ...f, when: e.target.value }))}
+                  placeholder="~Jun  or  ~Q3"
+                />
+              )}
             </label>
 
             <label className="wn-field">
