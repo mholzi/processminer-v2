@@ -59,6 +59,7 @@ what it changes, behaviour/scope, and how it was verified.
 | **#56** | DTP Enhancer review tools — rollup, coverage, evidence, triage, export, summary | `feat/dtp-review-tools` → `main` | Code + skills | **Merged** |
 | **#58** | Live-testing feedback toolkit — floating widget, auto-context, screenshots, element pins, admin toggles | `feat/live-feedback-toolkit` → `main` | Code + UI | **Open** (`pending`) |
 | **#59** | Design-review wave 1 — colour overload, AM green theming, primary button, table scan-ability + 7 more | `fix/design-review-wave-1` → `feat/live-feedback-toolkit` | Code + UI | **Open** (`pending`) — stacked on #58 |
+| **#60** | Design-review wave 2 — shared `<Modal>` primitive; migrate every dialog onto it; de-dupe the profile modal | `fix/design-review-wave-2` → `fix/design-review-wave-1` | Code + UI | **Open** (`pending`) — stacked on #59 |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1876,3 +1877,34 @@ running app: provenance elicited neutral, web `#2563eb`; `.am` `--accent`→`#3f
 (green) with green-soft nav; `.act.ai` solid `#1e40af`; conf-medium dot `#9a7b32`;
 welcome h1 stable + single hero. The review report (`public/_mockups/`) is a
 throwaway artifact and is intentionally not committed.
+
+## PR #60 — Design-review wave 2: shared `<Modal>` primitive
+
+## Why
+Systemic root #4 from the review: every dialog hand-rolled its own overlay —
+none bound Esc, trapped focus, or set `aria-modal`, overlay-dismiss was
+inconsistent, and the "Signed-in user" dialog existed twice (already drifted).
+
+## What
+- New `src/components/Modal.tsx` — one dialog shell: overlay, **Esc to close**,
+  **focus trap** + initial focus, `aria-modal`, click-outside (opt-out via
+  `closeOnOverlay`), restore-focus-on-close. Reuses the `.modal-*` classes so the
+  look is unchanged. Supports forms (dialog renders its `<form>` as children).
+- Migrated every hand-rolled dialog onto it: `UserProfileModal`, `UploadModal`,
+  `ExportModal`, `AdminScreen` (create-user + reset-password), and the
+  ProcessDocScreen web-sourcing-result modal.
+- **De-duped** the profile dialog: ProcessDocScreen's inline "Signed-in user"
+  modal is gone — it now renders the shared `UserProfileModal` (with dark-mode as
+  an optional prop). Removed the dead `userEdit` state + `initials` import.
+- Standardised the Export dialog's bespoke buttons onto `.act` / `.act.ai`.
+
+## Scope
+Stacked on #59. The remaining tail (virtual-view wayfinding, chat-rail reflow,
+12px-floor sweep, toolbar grouping #3) is still open for later waves.
+
+## Verification
+`npm run typecheck` clean · `npm test` **108/108**. In the running app: the
+welcome profile dialog and the admin "New user" form dialog both open with
+`aria-modal="true"`, move focus inside (first field), and **close on Esc**
+(previously Esc did nothing); form submit semantics preserved. No hand-rolled
+`modal-overlay` remains outside the primitive.
