@@ -96,6 +96,31 @@ Compliance gaps and audit findings may legitimately be empty. Open each with:
 **[A] Add one · [E] Explore — help me find them · [N] None / move on.**
 Never skip a section silently; let the SME say "none".
 
+## Determinism & speed
+
+Make coverage provable and writes first-time, not best-effort:
+
+- **One snapshot at the start.** Call `getProcessSummary({ slug })` once when the
+  session opens — counts, status, overview — and reference that snapshot rather
+  than re-deriving the lie of the land repeatedly.
+- **Authoritative coverage, not by eye.** Call `getProcessRelations({ slug })`
+  and treat `uncovered.stepsWithoutControl` as the definitive list of steps that
+  still need a control. Drive Phase 3 down that list; do not re-derive coverage
+  by reading steps yourself.
+- **Deterministic orphan flags.** From the same `getProcessRelations` call,
+  `orphans.controls` are controls dangling off no step and `orphans.regulations`
+  are regulations with no control points at them. Surface those as the orphan
+  findings — do not rely on remembering each link by hand.
+- **Per-step scoping.** Use the `getProcessRelations` per-step view
+  (each step's `systems`/`controls`/`touchpoints`, `hasControl`/`hasSystem`)
+  together with the step transitions to scope which steps a control covers,
+  especially approval/handoff junctions where four-eyes and sign-off controls
+  cluster.
+- **First-time writes.** `createElement` already validates each element against
+  the schema and rejects malformed ones (structured output is enforced), so emit
+  the full schema object — every required heading, each block in range — and the
+  write lands without a conformance-fail retry loop.
+
 ## The session — phases
 
 Run these in order.
@@ -124,11 +149,21 @@ risk weight, so you know where controls should live.
 **Phase 2 — Regulations.** The regulatory obligations this process must satisfy
 — AML / KYC, MiFID, GDPR, sanctions, banking-licence conditions. For each:
 what it requires of the process, and its scope. Draft each as a `regulation`.
+Regulations are reference-grade, low-judgement elements: present the whole
+roster as **one batch** for a single Y/E/R approval, not one at a time. And for
+objective, document-sourced facts — regulation text quoted verbatim from a
+policy or source — mark the heading `document` directly and **skip the
+read-back**; keep the read-back only for proposed interpretation you added.
 
-**Phase 3 — Controls.** The checks and safeguards. Walk the process step by
-step; for each control capture what it checks, the control activity, the risk
-it addresses, its timing — and link the `step` it runs at and the
-`regulatedBy` regulation(s). Aim to cover every risk-bearing step.
+**Phase 3 — Controls.** The checks and safeguards. Drive the walk down
+`getProcessRelations.uncovered.stepsWithoutControl` (the authoritative list of
+steps still needing a control) and the per-step view, prioritising the
+approval/handoff junctions the step transitions reveal. For each control capture
+what it checks, the control activity, the risk it addresses, its timing — and
+link the `step` it runs at and the `regulatedBy` regulation(s). Aim to cover
+every risk-bearing step. Use a **fixed question order per risk class** — money,
+identity, data movement — asking the same primed questions in the same sequence
+for each class rather than improvising, so coverage is reproducible.
 
 **Phase 4 — Compliance gaps.** `[A]/[E]/[N]`. Where a regulation is not fully
 satisfied — a control missing, weak, or only partially effective. Link the
@@ -138,9 +173,12 @@ satisfied — a control missing, weak, or only partially effective. Link the
 audits, regulatory reviews or self-assessments. Capture the finding, its
 status, and what it implicates.
 
-**Phase 6 — Validation.** Before closing, sweep what you wrote: controls with
-no regulation, regulations with no control, risk-bearing steps with no control,
-gaps not linked to a control. Surface each as a short clarifying question, then
+**Phase 6 — Validation.** Before closing, re-run `getProcessRelations({ slug })`
+and read the closure findings off it deterministically rather than by eye:
+`uncovered.stepsWithoutControl` are risk-bearing steps with no control,
+`orphans.controls` are controls dangling off no step, and `orphans.regulations`
+are regulations with no control points at them. Add gaps not linked to a
+control. Surface each as a short clarifying question, then
 close with the canonical close-out: present the following close-out text, filling in the `{n}` / `{type}` placeholders from the counts:
 ```
 Risk & Compliance perspective documented — **{process}**:
