@@ -32,27 +32,30 @@ wiki/processes/<slug>.json     one strongly-typed JSON document:
 ## The flow
 
 **Step 1 — Name.** Ask the user for the process name. That is the only thing
-you ask for.
+you ask for. *(If the user's opening message already gives both a name **and** a
+one-line description of the process, skip the question and go straight to
+Step 2 with that description as your draft — don't ask for what you already
+have.)*
 
 **Step 2 — Derive, draft, confirm.**
 
-1.  Derive the process metadata (slug, abbreviation, and check for slug conflicts) for `"<name>"`. It returns JSON
-    with a deterministic **slug** (kebab-case folder name), a **`<PROC>`**
-    abbreviation (for element IDs), and **`slugTaken`**. Use exactly
-    what it returns — do not invent your own.
-
-    The **`<PROC>` abbreviation must be 2–6 uppercase letters — no digits, no
-    symbols** (the scaffolder rejects anything else, e.g. `FRD2` fails; use
-    `FRDT`). If you ever derive or correct an abbreviation yourself, keep it
-    letters-only so the scaffold succeeds on the first try.
+1.  Call **`deriveProcessMeta({ name })`** with the process name. It returns
+    JSON with a deterministic **`slug`** (kebab-case), a guaranteed-valid
+    **`PROC`** abbreviation (always 2–6 uppercase letters — you never have to
+    form or fix it), a **`slugTaken`** flag, a list of non-colliding
+    **`suggestedSlugs`**, and a **`confirmTemplate`** string. Use exactly what
+    it returns — never invent or "correct" the slug or abbreviation.
 
     If **`slugTaken` is `true`**, a process with this slug already exists. Do
     not confirm or scaffold — tell the user plainly that the name collides with
-    an existing process and ask for a different name, then return to Step 1.
+    an existing process, offer the `suggestedSlugs` (or a different name), and
+    return to Step 1.
 2.  Draft a **one-line description** — one plain sentence on what the process
     does. This is the one judgement item; the slug and abbreviation are not.
-3.  Present all three to the user **in exactly this format** — a bulleted list,
-    never a table, each label in bold:
+3.  Present the confirmation by taking the returned **`confirmTemplate`**
+    verbatim and replacing `{{description}}` with your one-line description.
+    Relay it exactly — do not reformat it into a table or restyle the labels.
+    It renders as:
 
     ```
     - **Description:** <the one-line description>
@@ -81,12 +84,14 @@ use the scaffoldProcess({ slug, PROC, title, description }) tool
 The tool creates the process document `wiki/processes/<slug>.json` with the
 process `meta` (identity) and an empty overview (`content`) — the overview
 fields are left blank (`qer-session`'s OVERVIEW step fills them later). It validates the slug and
-abbreviation and refuses to overwrite an existing process. **Do not relay the
-tool's printed output** — it is a technical record, not for the user. If it
-exits with an error, relay that error to the user and stop.
+abbreviation and refuses to overwrite an existing process. On success it returns
+a **`closing`** field — the canonical success message (see Step 4). If it exits
+with an error, relay that error to the user and stop.
 
 **Step 4 — Done.** On success, say nothing about the JSON document or paths —
-close with **only** the canonical closing:
+relay the tool's returned **`closing`** field **verbatim** as your entire
+message. Do not paraphrase it, add to it, or mention any other part of the
+tool's output. (For reference, it reads:)
 """
 **{process}** has been successfully created, and the app has switched to it.
 

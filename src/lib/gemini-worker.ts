@@ -8,15 +8,19 @@ import { execSync } from "node:child_process";
 import { getSchema, toCamelCase, jsonElementToWikiPage, transitionTarget, listProcesses, getProcessSummary, getProcessElements, searchProcesses, type WikiPage } from "./wiki.ts";
 import { canAccess } from "./process-access.ts";
 import { writeRuntime, getRuntime, setDtpSummary } from "./runtime-store.ts";
-import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch } from "./session-writes.ts";
+import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch, buildReconciledApprovalPatch, syncRelationsFromProse } from "./session-writes.ts";
+import { enrichFoundationalStatus } from "./foundational.ts";
+import { buildProcessRelations } from "./process-relations.ts";
 import { writeDtpReport, writeDtpComparison } from "./dtp-report.ts";
 import { buildNote, appendNote, resolveNotesInDoc } from "./session-notes.ts";
+import { deriveProcessMeta, scaffoldClosing } from "./process-scaffold.ts";
 import {
   buildFoundationalQueue,
   newReviewState,
   advance,
   foundationalStatus,
   qerStatus,
+  qerStatusWithPerspectives,
   QER_STEPS,
 } from "./session-cursor.ts";
 import { checkConformance } from "./conformance.ts";
@@ -188,7 +192,7 @@ const toolDeclarations: any[] = [
   },
   {
     name: "updateElement",
-    description: "Update an existing process element by applying a deep merge patch.",
+    description: "Update an existing process element by applying a deep merge patch. Set syncRelations:true (foundational-run [E] edits) to auto-add relation-list ids the reworked prose names but frontmatter is missing — only ids that exist and match the list's type.",
     parameters: {
       type: "OBJECT",
       properties: {
@@ -200,7 +204,8 @@ const toolDeclarations: any[] = [
             meta: { type: "OBJECT", description: "Metadata fields to update" },
             content: { type: "OBJECT", description: "Content fields to update" }
           }
-        }
+        },
+        syncRelations: { type: "BOOLEAN", description: "Opt-in: derive relation-list additions from ids named in the reworked prose (prevents prose/frontmatter drift)." }
       },
       required: ["id", "patch"]
     }
@@ -300,8 +305,28 @@ const toolDeclarations: any[] = [
     }
   },
   {
+    name: "getProcessRelations",
+    description: "Deterministic relation/coverage/orphan facts for the process — per-step systems/controls/touchpoints with hasControl/hasSystem flags, orphan systems/controls/regulations, candidate integrations (system pairs co-occurring on a step with no integration), and steps without a control/system. Specialists call this instead of re-deriving coverage by hand (Process, Control & Compliance, Client Journey, IT Architect).",
+    parameters: {
+      type: "OBJECT",
+      properties: { slug: { type: "STRING", description: "The process slug." } },
+      required: ["slug"]
+    }
+  },
+  {
+    name: "deriveProcessMeta",
+    description: "Deterministically derive a new process's slug and `<PROC>` abbreviation from its name, and report whether the slug is taken (with non-colliding alternatives). Returns a guaranteed-valid abbreviation (2–6 uppercase letters) and the exact confirm-bullet template. Call this in the new-process skill before scaffolding; use exactly what it returns — never invent the slug or abbreviation.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        name: { type: "STRING", description: "The raw process name the user gave." }
+      },
+      required: ["name"]
+    }
+  },
+  {
     name: "scaffoldProcess",
-    description: "Create a brand-new, empty process document (root meta + an empty overview). Used only by the new-process skill, in an unscoped session, before any content exists. Refuses to overwrite an existing process.",
+    description: "Create a brand-new, empty process document (root meta + an empty overview). Used only by the new-process skill, in an unscoped session, before any content exists. Refuses to overwrite an existing process. Returns the canonical closing message to relay verbatim.",
     parameters: {
       type: "OBJECT",
       properties: {
@@ -474,13 +499,14 @@ const toolDeclarations: any[] = [
   },
   {
     name: "setApproval",
-    description: "Set an element's approval state (in-progress | approved | rejected). The approval gate is enforced: 'approved' is refused while any heading's provenance is still 'proposed'/'web'. Used by foundational-run and the specialists when the SME signs an element off.",
+    description: "Set an element's approval state (in-progress | approved | rejected). The approval gate is enforced: 'approved' is refused while any heading's provenance is still 'proposed'/'web'. Pass `reconcile` (heading → SME's confirming quote) to flip those confirmed headings to 'elicited' and approve in one call (foundational-run [Y]). Used by foundational-run and the specialists when the SME signs an element off.",
     parameters: {
       type: "OBJECT",
       properties: {
         id: { type: "STRING", description: "The element id to set approval on, e.g. 'PS-COB-001'." },
         status: { type: "STRING", description: "in-progress | approved | rejected." },
-        approver: { type: "STRING", description: "The SME name signing it off (the session context)." }
+        approver: { type: "STRING", description: "The SME name signing it off (the session context)." },
+        reconcile: { type: "OBJECT", description: "Optional: { \"Heading Title\": \"SME confirming quote\" } — flips those headings to elicited (quote as evidence) before approving, in one write." }
       },
       required: ["id", "status"]
     }
@@ -496,10 +522,17 @@ const toolDeclarations: any[] = [
   },
   {
     name: "startSession",
-    description: "Start a fresh qer-session: build the cursor over the fixed QER step sequence and persist it. Returns position/total/done/current (the step name). Used by qer-session when no session state exists.",
+    description: "Start a fresh qer-session: build the cursor over the fixed QER step sequence and persist it. Pass the SME's name/role as `actor` so a resumed session carries them. Returns position/total/done/current (the step name). Used by qer-session when no session state exists.",
     parameters: {
       type: "OBJECT",
-      properties: { slug: { type: "STRING", description: "The process slug." } },
+      properties: {
+        slug: { type: "STRING", description: "The process slug." },
+        actor: {
+          type: "OBJECT",
+          description: "The SME running the session (from the session-scope preamble).",
+          properties: { name: { type: "STRING" }, role: { type: "STRING" } }
+        }
+      },
       required: ["slug"]
     }
   },
@@ -669,6 +702,13 @@ function customStringify(obj: any, indent = ""): string {
  * every later element gets `<prefix>-${PROC}-<seq>` ids without storing PROC
  * separately. Shared by both providers (gemini-worker + claude-mcp-server).
  */
+// Whether a perspective's specialist skill is installed — a deterministic
+// filesystem fact, so qer-session's Step 3 never has to guess which specialists
+// exist. Mirrors the same helper in claude-mcp-server.ts.
+function qerSkillBuilt(skill: string): boolean {
+  return fs.existsSync(path.join(process.cwd(), ".claude", "skills", skill, "SKILL.md"));
+}
+
 export function buildProcessDoc(PROC: string, title: string, description: string): any {
   return {
     meta: {
@@ -889,6 +929,15 @@ export class GeminiWorker implements IProcessWorker {
       let turns = 0;
       const MAX_TURNS = 35; // Loop cap to prevent infinity recursion
 
+      // Sum token usage across every generateContent call in this turn (a turn
+      // can loop through many tool-call round-trips). Surfaced on the final
+      // `result` event so the session route can record per-skill usage.
+      const turnUsage = {
+        promptTokenCount: 0,
+        candidatesTokenCount: 0,
+        cachedContentTokenCount: 0,
+      };
+
       const activeTools = toolDeclarations;
 
       appendToCentralLog(this.sessionId || "unknown", this.slug, "User", `Message:\n${message}`);
@@ -909,6 +958,14 @@ export class GeminiWorker implements IProcessWorker {
             tools: [{ functionDeclarations: activeTools }]
           }
         });
+
+        // Accumulate this call's usage into the turn total.
+        const um = (response as any).usageMetadata;
+        if (um) {
+          turnUsage.promptTokenCount += um.promptTokenCount || 0;
+          turnUsage.candidatesTokenCount += um.candidatesTokenCount || 0;
+          turnUsage.cachedContentTokenCount += um.cachedContentTokenCount || 0;
+        }
 
         const calls = response.functionCalls;
 
@@ -992,6 +1049,13 @@ export class GeminiWorker implements IProcessWorker {
                 const els = getProcessElements(String(args.slug || ""), String(args.collection || ""));
                 if (els === null) throw new Error(`Process not found: ${args.slug}`);
                 resultText = JSON.stringify({ slug: args.slug, collection: args.collection, elements: els }, null, 2);
+              } else if (originalName === "deriveProcessMeta") {
+                // No slug yet — derive deterministically from the raw name.
+                const procName = String(args.name || "").trim();
+                if (!procName) throw new Error("name is required.");
+                const slugExists = (s: string) =>
+                  fs.existsSync(path.join(process.cwd(), "wiki", "processes", `${s}.json`));
+                resultText = JSON.stringify(deriveProcessMeta(procName, slugExists), null, 2);
               } else if (originalName === "scaffoldProcess") {
                 const newSlug = String(args.slug || "").trim();
                 const PROC = String(args.PROC || "").toUpperCase().trim();
@@ -1007,7 +1071,7 @@ export class GeminiWorker implements IProcessWorker {
                 // Scope this session to the freshly created process for subsequent turns.
                 this.slug = newSlug;
                 if (this.sessionId) saveSessionSlug(this.sessionId, this.slug, this.activeSkill);
-                resultText = JSON.stringify({ ok: true, slug: newSlug, id: newDoc.meta.id, created: true }, null, 2);
+                resultText = JSON.stringify({ ok: true, slug: newSlug, id: newDoc.meta.id, created: true, closing: scaffoldClosing(title) }, null, 2);
               } else if (isExpandElement) {
                 const type = args.type;
                 const id = args.id;
@@ -1095,12 +1159,30 @@ export class GeminiWorker implements IProcessWorker {
                   }
                 }
 
+                // Opt-in frontmatter-sync (foundational-run [E] edits): add
+                // relation-list ids the reworked prose names but frontmatter lacks.
+                let relationsAdded: Record<string, string[]> = {};
+                if (args.syncRelations) {
+                  let el: any = null;
+                  for (const v of Object.values(doc)) {
+                    if (Array.isArray(v)) { const f = v.find((e: any) => e?.meta?.id === targetId); if (f) { el = f; break; } }
+                  }
+                  if (el) {
+                    const merged = { content: { ...(el.content || {}), ...(patch?.content || {}) } };
+                    const sync = syncRelationsFromProse(merged, doc);
+                    if (Object.keys(sync.content).length) {
+                      patch = { ...patch, content: { ...(patch?.content || {}), ...sync.content } };
+                      relationsAdded = sync.added;
+                    }
+                  }
+                }
+
                 // Call the unified updateElement helper function which validates and writes directly to disk
                 const res = await updateElement(this.slug!, targetId, patch);
                 if (!res.ok) {
                   resultText = `Error: Element validation failed:\n- ${res.error}`;
                 } else {
-                  resultText = JSON.stringify({ ok: true, id: targetId, element: res.element }, null, 2);
+                  resultText = JSON.stringify({ ok: true, id: targetId, element: res.element, ...(Object.keys(relationsAdded).length ? { relationsAdded } : {}) }, null, 2);
                 }
               } else if (originalName === "checkConformance") {
                 if (!doc) {
@@ -1289,29 +1371,42 @@ export class GeminiWorker implements IProcessWorker {
                 resultText = JSON.stringify({ ok: true, ...res }, null, 2);
               } else if (originalName === "setApproval") {
                 if (!this.slug) throw new Error("Process document context not loaded or slug is missing.");
-                const patch = buildApprovalPatch(args.status, args.approver, new Date().toISOString().slice(0, 10));
+                const reconcile = args.reconcile as Record<string, string> | undefined;
+                let el: any = doc?.meta?.id === args.id ? doc : null;
+                if (!el && doc) {
+                  for (const v of Object.values(doc)) {
+                    if (Array.isArray(v)) { const f = v.find((e: any) => e?.meta?.id === args.id); if (f) { el = f; break; } }
+                  }
+                }
+                const patch = buildReconciledApprovalPatch(el, args.status, args.approver, new Date().toISOString().slice(0, 10), reconcile);
                 const res = await updateElement(this.slug, args.id, patch);
                 if (!res.ok) {
                   resultText = `Error: ${res.error}`;
                 } else {
-                  resultText = JSON.stringify({ ok: true, id: args.id, approval: args.status }, null, 2);
+                  resultText = JSON.stringify({ ok: true, id: args.id, approval: args.status, reconciled: reconcile ? Object.keys(reconcile) : [] }, null, 2);
                 }
+              } else if (originalName === "getProcessRelations") {
+                if (!doc) throw new Error("Process document context not loaded or slug is missing.");
+                resultText = JSON.stringify(buildProcessRelations(doc), null, 2);
               } else if (originalName === "buildQueue") {
                 if (!doc || !this.slug) throw new Error("Process document context not loaded or slug is missing.");
                 const queue = buildFoundationalQueue(doc);
                 const rs = newReviewState(this.slug, queue, new Date().toISOString());
                 writeRuntime(this.slug, { reviewState: rs });
-                resultText = JSON.stringify(foundationalStatus(rs), null, 2);
+                resultText = JSON.stringify(enrichFoundationalStatus(rs, doc), null, 2);
               } else if (originalName === "startSession") {
                 if (!this.slug) throw new Error("Process document context not loaded or slug is missing.");
-                const qs = newReviewState(this.slug, QER_STEPS, new Date().toISOString());
+                const actor = args.actor as { name?: string; role?: string } | undefined;
+                const qs = newReviewState(this.slug, QER_STEPS, new Date().toISOString(), actor);
                 writeRuntime(this.slug, { qerState: qs });
-                resultText = JSON.stringify(qerStatus(qs), null, 2);
+                resultText = JSON.stringify(qerStatusWithPerspectives(qs, doc, qerSkillBuilt), null, 2);
               } else if (originalName === "getSessionStatus") {
                 if (!this.slug) throw new Error("Process document context not loaded or slug is missing.");
                 const rt = getRuntime(this.slug);
                 resultText = JSON.stringify(
-                  args.kind === "qer" ? qerStatus(rt.qerState) : foundationalStatus(rt.reviewState),
+                  args.kind === "qer"
+                    ? qerStatusWithPerspectives(rt.qerState, doc, qerSkillBuilt)
+                    : enrichFoundationalStatus(rt.reviewState, doc),
                   null,
                   2
                 );
@@ -1323,12 +1418,12 @@ export class GeminiWorker implements IProcessWorker {
                   if (!rt.qerState) throw new Error("No qer session to advance — call startSession first.");
                   const next = advance(rt.qerState, now);
                   writeRuntime(this.slug, { qerState: next });
-                  resultText = JSON.stringify(qerStatus(next), null, 2);
+                  resultText = JSON.stringify(qerStatusWithPerspectives(next, doc, qerSkillBuilt), null, 2);
                 } else {
                   if (!rt.reviewState) throw new Error("No foundational run to advance — call buildQueue first.");
                   const next = advance(rt.reviewState, now);
                   writeRuntime(this.slug, { reviewState: next });
-                  resultText = JSON.stringify(foundationalStatus(next), null, 2);
+                  resultText = JSON.stringify(enrichFoundationalStatus(next, doc), null, 2);
                 }
               } else {
                 throw new Error(`Unsupported tool: ${originalName}`);
@@ -1394,11 +1489,14 @@ export class GeminiWorker implements IProcessWorker {
             },
           };
 
-          // Yield the final result
+          // Yield the final result, carrying the turn's summed token usage so
+          // the session route can record it (same role as the claude CLI's
+          // `usage` on its result event).
           yield {
             type: "result",
             result: text,
             session_id: this.sessionId,
+            usageMetadata: turnUsage,
           };
 
           // Save history log to a debug file in the process directory

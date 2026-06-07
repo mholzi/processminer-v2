@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dtp-summary — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">dtp-summary</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">DTP Enhancer</div>
+    <h1>dtp-summary</h1>
+    <p class="lede">Writes an Amazon-style executive memo for one DTP comparison run — a tight narrative for a transformation lead or department head that says, in plain prose, how far the procedure document has drifted from the corrected As-Is and where to focus.</p>
+    <div class="meta-row">
+      <span class="chip">Non-interactive · button-invoked</span>
+      <span class="chip neutral">WRITES_TO: runtime store (memo on the run)</span>
+      <span class="chip neutral">READS: comparison findings (inline) + overview</span>
+      <span class="chip neutral">Never writes the wiki JSON</span>
+    </div>
+  </div>
+
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>dtp-summary</code> is the leadership-facing capstone of the DTP Enhancer. It takes a
+      single completed comparison run — the gap between an existing procedure document and the
+      corrected As-Is wiki — and writes a short <strong>executive memo</strong> about it. The reader
+      is a transformation lead or head of department, not an analyst: they want the <em>shape</em> of
+      the problem and where to focus, not a finding-by-finding list.
+    </p>
+    <p>
+      It does no comparison of its own. The findings from a <code>dtp-compare</code> (or
+      <code>dtp-regenerate</code>) run are handed to it <strong>inline in the request</strong> — each
+      with a kind, severity, one-line headline, what the DTP says, what the wiki holds, a rationale
+      and the implicated wiki elements — and the skill's job is purely to <em>frame</em> them into a
+      narrative. It is invoked by the DTP Enhancer's <em>"Generate executive summary"</em> button
+      with a process <code>&lt;slug&gt;</code> and the comparison's <code>&lt;runId&gt;</code>.
+    </p>
+    <p>Key constraints and behaviours:</p>
+    <ul>
+      <li><strong>Non-interactive.</strong> Like <code>area-summary</code>, it reads, writes the memo
+        and stores it — no SME questions, no approval loop.</li>
+      <li><strong>Works from the findings given.</strong> It uses the findings passed inline; for
+        framing it may read the process <strong>overview</strong> only. It does <em>not</em> read or
+        rewrite the DTP, and does not re-derive the comparison.</li>
+      <li><strong>Memo shape is fixed.</strong> A one-paragraph bottom-line verdict (current /
+        drifting / materially out of date), 2–4 themed paragraphs of what's changed (grouped by
+        theme, never by finding id), risk &amp; compliance call-outs, and a prioritised "where to
+        focus" — roughly 200–350 words, specific and quantified where the findings allow.</li>
+      <li><strong>One run per invocation.</strong> It summarises a single run; the memo is stored on
+        that run in the runtime store.</li>
+      <li><strong>Read-only on everything else.</strong> It never regenerates or edits the DTP, never
+        creates/edits/approves wiki elements, never changes a finding's disposition, and never
+        modifies the process JSON. Everything stated must trace to the findings handed to it or the
+        overview.</li>
+    </ul>
+  </section>
+
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>Three steps run in order: take in the findings, write the memo, store it on the run.</p>
+    <ol class="steps">
+      <li><span class="st-title">Step 1 — Read the inputs</span><span class="st-body">Use the findings handed in inline — each carries kind (outdated / missing / contradiction / added), severity, a one-line headline, <code>dtpSays</code>, <code>wikiSays</code>, a rationale and the implicated wiki elements. Optionally read the process overview for framing only. Tools: <span class="tool">expandElement()</span></span></li>
+      <li><span class="st-title">Step 2 — Write the memo</span><span class="st-body">Write a tight Markdown narrative: a one-paragraph bottom line leading with the verdict and its single biggest reason; 2–4 themed paragraphs of what's changed (by theme — automation, ownership, missing controls — not by id); a risk &amp; compliance call-out for anything touching controls, regulation, key-step owners or high-severity gaps; and a short prioritised "where to focus" framed as guidance, never as edits. ~200–350 words, quantified where possible, no preamble.</span></li>
+      <li><span class="st-title">Step 3 — Store the memo</span><span class="st-body">Pass the Markdown memo to the writer keyed by slug and run id. It stores the memo on that run in the runtime store — never the wiki JSON — and the skill reports exactly one line: "Executive summary written for {runId}." Tools: <span class="tool">writeDtpSummary()</span></span></li>
+    </ol>
+  </section>
+
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Precompute the finding rollup.</strong> Hand the skill deterministic counts up front — totals by kind and by severity, and the count of findings touching controls/regulation/owners — rather than the model tallying them from the inline list.</td><td><span class="tag both">both</span></td><td><span class="tag effort-l">low</span></td><td>Makes the quantified claims ("3 of 5 control steps are out of date") exact and identical every run, and removes the counting work from the prompt entirely.</td></tr>
+        <tr><td><strong>Deterministic theme bucketing.</strong> Pre-group the findings into themes (automation, ownership, missing controls, sequence, …) in the tool layer and pass the buckets in, so the model writes <em>about</em> groups instead of inferring them.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>The memo is required to be organised by theme, not by id; bucketing up front makes the structure reproducible and stops the model re-grouping the same findings differently each run.</td></tr>
+        <tr><td><strong>Auto-surface the risk &amp; compliance set.</strong> Flag findings whose <code>kind</code>/<code>elements</code>/severity touch controls, regulation or key-step owners, and pass that subset explicitly for the call-out section.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Guarantees the section a department head most needs is never missed because the model overlooked a high-severity control gap buried in a long list.</td></tr>
+        <tr><td><strong>Fixed memo template with slotted sections.</strong> Enforce the four-part shape (bottom line / what's changed / risk &amp; compliance / where to focus) as labelled slots the model fills, validated for presence and the ~200–350 word budget before store.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Eliminates run-to-run variance in memo structure and length, and catches a missing section pre-write rather than shipping a lopsided memo.</td></tr>
+        <tr><td><strong>Skip the overview read when findings suffice.</strong> Only fetch the process overview when the findings lack the framing the bottom-line needs; otherwise work purely from the inline payload.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>The findings are already inline; for most runs the one <code>expandElement</code> overview round-trip is avoidable, shaving the only I/O the skill does.</td></tr>
+        <tr><td><strong>Deterministic verdict thresholds.</strong> Derive the bottom-line verdict (broadly current / drifting / materially out of date) from rule-based thresholds over the severity counts, handed to the model as a suggestion.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Stops the headline verdict swinging between runs over the same finding set; the model phrases the verdict but no longer has to judge the threshold.</td></tr>
+        <tr><td><strong>Cache the overview per slug.</strong> Reuse a parsed overview across the compare/summary runs of the same process instead of re-reading it.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>The summary usually runs right after a comparison on the same slug; reusing the overview removes a redundant read.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> push the <strong>rollup, theme bucketing and risk-set selection into the tool layer</strong> and hand them to the skill alongside the inline findings. The memo's whole job is framing — but today the model also has to count the findings, infer the themes and spot the control/owner gaps before it can write a word, and all three drift between runs. Doing that arithmetic and grouping deterministically makes the quantified claims exact, guarantees the risk &amp; compliance section is never missed, and reduces the model's task to the prose itself — faster and far more reproducible, with a fixed four-part template enforcing the shape.</div>
+  </section>
+
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/dtp-summary/SKILL.md</code></footer>
+</div>
+</body>
+</html>

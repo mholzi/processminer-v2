@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dtp-regenerate — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">dtp-regenerate</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">DTP Enhancer</div>
+    <h1>dtp-regenerate</h1>
+    <p class="lede">Rewrites a bank's procedure document (DTP) from the corrected As-Is wiki and, in the same pass, critically reviews the original ingested DTP against that analysis — emitting a new versioned Markdown artifact plus one critical-review finding per material discrepancy.</p>
+    <div class="meta-row">
+      <span class="chip">Non-interactive · button-invoked</span>
+      <span class="chip neutral">WRITES_TO: runtime store + raw-sources artifact</span>
+      <span class="chip neutral">READS: As-Is wiki + original DTP</span>
+      <span class="chip neutral">Never writes the wiki JSON</span>
+    </div>
+  </div>
+
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>dtp-regenerate</code> closes the loop on the As-Is. A process typically starts from an
+      uploaded <strong>DTP</strong> — the bank's procedure document — which is then ingested and
+      worked end to end by an analyst, so the wiki now holds a <em>better, corrected</em> current
+      state than the document it came from. This skill turns that gap into two deliverables at once:
+    </p>
+    <ul>
+      <li>a <strong>regenerated DTP</strong> — the procedure rewritten from the wiki's current
+        truth, following the original's section structure so the bank still recognises it; and</li>
+      <li>a <strong>critical review</strong> — the original DTP measured against the wiki, one
+        finding per material discrepancy, each typed, severity-ranked and given a suggested
+        disposition.</li>
+    </ul>
+    <p>
+      The wiki is the <strong>authority</strong> here, exactly as the source document was the
+      authority during ingest: where the wiki and the original DTP disagree, the wiki wins, and that
+      disagreement <em>is</em> a finding. It is the As-Is counterpart of <code>area-summary</code> —
+      a silent generation, not a conversation.
+    </p>
+    <p>Key constraints and behaviours:</p>
+    <ul>
+      <li><strong>Non-interactive.</strong> It reads, writes and reports — no SME questions, no
+        Y/E/R loop, no approval gate. It is invoked by a button with a process <code>&lt;slug&gt;</code>
+        and (usually) the original DTP filename under <code>raw-sources/&lt;slug&gt;/</code>.</li>
+      <li><strong>Prefer approved content.</strong> An SME-approved element is the trusted current
+        state and strong ground for a "the analysis found…" claim; still-<code>draft</code> or
+        <code>in-progress</code> elements may be included but are weaker ground.</li>
+      <li><strong>As-Is only.</strong> One DTP per run, from the As-Is — never the target/to-be.</li>
+      <li><strong>Invents nothing.</strong> Everything in the regenerated document and every finding
+        must trace to a wiki As-Is element or the original document; where the wiki is silent on a
+        section the DTP covered, the section is left thin and the gap recorded as a
+        <code>missing</code>/<code>outdated</code> finding rather than filled with plausible prose.</li>
+      <li><strong>Read-only on the wiki.</strong> It never creates, edits or approves wiki elements,
+        never resolves conflicts, and never touches the process JSON. The artifact and findings go
+        to <code>raw-sources/</code> and the runtime store — never the wiki.</li>
+    </ul>
+  </section>
+
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>Five steps run in order: read the old document, read the corrected wiki, regenerate, critically review, then store both.</p>
+    <ol class="steps">
+      <li><span class="st-title">Step 1 — Read the original DTP</span><span class="st-body">Read the document at <code>raw-sources/&lt;slug&gt;/&lt;file&gt;</code> (PDF, Markdown, Word and text read directly). If no filename was given, list the folder and take the most recently ingested document, ignoring any file flagged <code>generated</code> in <code>uploads.json</code> (prior outputs of this skill). Study its section structure so the regenerated doc keeps the same shape.</span></li>
+      <li><span class="st-title">Step 2 — Read the corrected As-Is wiki</span><span class="st-body">Read the overview, then every As-Is element — <code>process-step</code>, <code>role</code>, <code>exception</code>, <code>pain-point</code>, <code>metric</code>, <code>process-gap</code>, <code>country-variation</code>, plus <code>control</code>/<code>system</code> where the DTP covered them. Tools: <span class="tool">expandElement()</span></span></li>
+      <li><span class="st-title">Step 3 — Regenerate the DTP</span><span class="st-body">Walk the process by <code>process-step</code> sequence; under each step write inputs/outputs, owner, SLA, systems and applicable controls from the wiki by element title, folding in the corrections and additions the analysis produced — exceptions, pain points, gaps and controls the original omitted.</span></li>
+      <li><span class="st-title">Step 4 — Critically review the original</span><span class="st-body">Walk the original section by section and emit one finding per <em>material</em> discrepancy: <code>{ kind, headline, dtpSays, wikiSays, elements, severity, rationale, suggestedDisposition }</code>. <code>kind</code> is <code>outdated</code> / <code>missing</code> / <code>contradiction</code> / <code>added</code>; <code>severity</code> high/medium/low; disposition <code>accepted</code> (the DTP is wrong) or <code>dismissed</code> (likely the wiki is wrong).</span></li>
+      <li><span class="st-title">Step 5 — Store both</span><span class="st-body">Hand the regenerated Markdown and findings to the writer with <code>basis: "as-is"</code>, the source filename, the markdown, the findings and <code>coverage.dtpSections</code> (every section walked, even findingless ones). The tool writes a versioned <code>generated</code> file, stamps <code>DTPF-…</code> ids, stores the report in the runtime store, and returns the filename + count for the one-line report. Tools: <span class="tool">writeDtpReport()</span></span></li>
+    </ol>
+  </section>
+
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Template-driven regeneration.</strong> Derive a deterministic Markdown skeleton from the wiki structure — one section per <code>process-step</code> in sequence, with owner/SLA/systems/controls slots pre-filled by the tool layer — and let the model write only the connecting prose.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">med</span></td><td>The document's <em>shape</em> stops being a model decision: step order, ownership and control attribution come straight from the graph, so Step&nbsp;3 can't drop a step or misattribute an owner, and the model's job shrinks to prose.</td></tr>
+        <tr><td><strong>Deterministic section-by-section diff.</strong> Replace the holistic free comparison in Step&nbsp;4 with a fixed walk: align each original-DTP section to the wiki elements that cover it, and review one aligned pair at a time.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Makes the review exhaustive and reproducible — every section is visited exactly once — instead of relying on the model to remember which sections it has already compared.</td></tr>
+        <tr><td><strong>Strict findings schema, one row per discrepancy.</strong> Validate each finding against the seven-field shape (kind/severity/disposition enums included) before it is accepted into the report.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Catches a malformed or half-filled finding pre-write instead of failing in <code>writeDtpReport</code>, removing reject-and-retry loops and making the output auditable.</td></tr>
+        <tr><td><strong>Cache the parsed As-Is wiki.</strong> Read and index every As-Is element once into an id→element map shared by both the regeneration and the review, instead of re-expanding bodies in each step.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Collapses the repeated <code>expandElement</code> round-trips that dominate Step&nbsp;2–4 wall-clock into a single read.</td></tr>
+        <tr><td><strong>Parallelise the per-section review.</strong> Once sections are aligned, fan the Step&nbsp;4 comparisons out across read-only sub-agents, one per section, and merge the findings.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-h">high</span></td><td>Section comparisons are independent; fanning them out turns a linear walk over a long DTP into a single concurrent pass.</td></tr>
+        <tr><td><strong>Chunk large DTPs, map-reduce.</strong> Split a long original document into section chunks for the review map step, then reduce to a deduplicated finding set.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">med</span></td><td>Keeps each comparison inside a tight context window so a long bank procedure doesn't blow the budget or get skimmed.</td></tr>
+        <tr><td><strong>Auto-derive <code>coverage.dtpSections</code>.</strong> Have the document parser emit the heading list directly and pass it through, rather than the model re-listing every section it walked.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Guarantees the coverage map matches the document's real headings every run, so the coverage view never silently misses a section the model forgot to name.</td></tr>
+        <tr><td><strong>Deterministic element-id resolution.</strong> Wire each finding's <code>elements</code> array from the aligned wiki elements automatically instead of the model recalling ids by hand.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Eliminates wrong or missing <code>PS-…</code>/<code>CP-…</code> ids on findings, which are what make a finding traceable back into the wiki.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> a <strong>template-driven skeleton derived from the wiki</strong> paired with a <strong>deterministic section-by-section diff</strong>. Today both halves of the run — the regenerated prose and the critical review — depend on the model holding the whole process in its head and choosing what to compare. Letting the tool layer fix the document's structure (step order, owners, controls) and align each original section to the wiki elements that cover it makes the artifact reproducible and the review exhaustive, while the model spends its tokens on the one thing it is actually good at: judging which discrepancies <em>matter</em>.</div>
+  </section>
+
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/dtp-regenerate/SKILL.md</code></footer>
+</div>
+</body>
+</html>

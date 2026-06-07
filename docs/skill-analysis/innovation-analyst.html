@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>innovation-analyst — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">innovation-analyst</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Perspective specialist</div>
+    <h1>innovation-analyst</h1>
+    <p class="lede">Refines the web-sourced forward-looking layer of a process with the SME — market trends, what competitor banks and fintechs are doing, innovation ideas — and weighs the risk of pursuing each, grounding every idea in a real documented pain or friction.</p>
+    <div class="meta-row">
+      <span class="chip">Interactive · Y/E/R loop</span>
+      <span class="chip neutral">LENS: forward-looking — trends, competitor moves, ideas, risk</span>
+      <span class="chip neutral">OWNS: market-trend · competitor-innovation · innovation-idea · innovation-risk</span>
+      <span class="chip neutral">Invoked by: free chat / Deep Dive / qer-session</span>
+    </div>
+  </div>
+
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>innovation-analyst</code> owns the <strong>Innovation perspective</strong> of a
+      process. It is a <em>refinement</em> specialist far more than a generator: market
+      trends, the three competitor scans (EU / global / fintech) and innovation ideas are
+      usually web-sourced first by the non-interactive <code>source-innovation</code> skill,
+      and this skill starts from those drafts — walking each with the SME, correcting it,
+      and adding what the sourcing missed. The one element type it builds from scratch with
+      the SME is the <strong>innovation-risk</strong>: the honest downside of pursuing an idea.
+    </p>
+    <p>
+      It is disciplined, not free-associating. Every <code>innovation-idea</code> must
+      <code>addresses</code> a real documented <code>pain-point</code> or
+      <code>friction-point</code> — an idea that solves no recorded problem is a prompt to
+      find the problem, not a finding. Ideas trace back to the <code>market-trend</code> or
+      competitor move they derive from (<code>fromTrend</code>), so the innovation view is a
+      graph that later feeds the <code>transformation-agent</code>'s Target Process, not a
+      wish list.
+    </p>
+    <p>Key constraints and behaviours:</p>
+    <ul>
+      <li><strong>No web research itself.</strong> Sourcing is <code>source-innovation</code>'s
+        job. When the SME wants a new <code>market-trend</code> or competitor move the skill
+        cannot cite, it still writes the element — but with <code>sourceUrl: pending</code>
+        (the literal word), <code>status: draft</code> and <code>confidence: low</code>, and
+        lists every such element in the close-out for a later sourcing pass.</li>
+      <li><strong>Preserve sourced frontmatter on edit.</strong> On <strong>[E]</strong>,
+        patch only the corrected block via <code>updateElement</code> — never re-author the
+        element — so a trend's <code>sourceUrl</code>, <code>asOf</code>, <code>horizon</code>,
+        <code>bearsOn</code> and an idea's <code>fromTrend</code> survive untouched.</li>
+      <li><strong>Honest risk.</strong> An upside with no downside named is incomplete; every
+        idea earns at least one <code>innovation-risk</code> (adoption, regulatory, delivery,
+        dependency).</li>
+      <li><strong>Stays in its lane.</strong> It <em>reads</em> the As-Is freely as input but
+        never authors As-Is, CX, control or systems elements; the Target Process belongs to
+        the <code>transformation-agent</code>, which it hands off to.</li>
+      <li><strong>Everything is <code>status: draft</code></strong> with an honest
+        <code>confidence</code>; the SME triages relevance and approves in the app.</li>
+    </ul>
+  </section>
+
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>Five phases run in order. Under <code>orchestrated</code> mode (called by <code>qer-session</code>) Phase&nbsp;0 and Phase&nbsp;4 are skipped, but Phase&nbsp;1 always runs — the skill always reads the As-Is and the sourced trends first.</p>
+    <ol class="steps">
+      <li><span class="st-title">Phase 0 — Setup</span><span class="st-body">Use the SME name/role from the invocation; only ask if absent. Identify the process from the slugs and read its overview. Tools: <span class="tool">expandElement()</span></span></li>
+      <li><span class="st-title">Phase 1 — Orientation</span><span class="st-body">Read the documented pain-points and friction-points and the existing web-sourced <code>market-trend</code> / <code>innovation-idea</code> elements; confirm with the SME which pains hurt most. If nothing is sourced yet, point them at <code>source-innovation</code> first. Tools: <span class="tool">expandElement()</span></span></li>
+      <li><span class="st-title">Phase 2 — Refine trends, competitors &amp; ideas</span><span class="st-body">Walk each existing trend / competitor move / idea one at a time, running <strong>Y/E/R</strong>; on <strong>[E]</strong> patch only the corrected field to keep sourced frontmatter intact. Then ask what is <em>missing</em> and draft with the <strong>[A]/[E]/[N]</strong> idiom; uncitable new trends get <code>sourceUrl: pending</code>. Tools: <span class="tool">updateElement()</span> <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 3 — Innovation risks</span><span class="st-body">For each idea, build <code>innovation-risk</code> elements from scratch with the SME via <strong>[A]/[E]/[N]</strong> — adoption, regulatory, delivery, dependency. An idea with no risk named is incomplete. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 4 — Validation &amp; close-out</span><span class="st-body">Sweep for ideas addressing no problem, ideas with no risk, trends nothing links to; surface each as a short question, then emit the canonical close-out with per-type counts and a separate list of every <code>sourceUrl: pending</code> element. Point the SME at <code>transformation-agent</code> next. Tools: <span class="tool">checkConformance()</span></span></li>
+    </ol>
+  </section>
+
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <div class="outcome-banner"><strong>Implementation status (2026-06-07).</strong> 7 implemented, 1 partial (structured-output, already enforced by createElement). Ideas now ground in a snapshot-built pain/friction index; sourced drafts are batch-triaged and skip read-back; the rest are SKILL.md prose patterns.</div>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th><th>Outcome</th></tr></thead>
+      <tbody>
+        <tr class="row-done"><td><strong>Batch-triage the sourced drafts.</strong> Present all <code>source-innovation</code> trends/competitors as one labelled batch with a keep / drop / edit flag each, instead of a strict one-at-a-time Y/E/R walk through Phase&nbsp;2.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">med</span></td><td>The reference-type drafts need minimal per-element judgement; one batch approval collapses a dozen serial round-trips into a single pass, the exact case <code>CORE_SYSTEM_PROMPT §3</code> permits.</td><td><span class="tag done">implemented</span><span class="outcome-note">Phase&nbsp;2 now triages the sourced drafts as one labelled keep/drop/edit batch (relevance), not a serial Y/E/R walk.</span></td></tr>
+        <tr class="row-done"><td><strong>Skip read-back when <code>provenance=web</code> already carries evidence.</strong> A sourced heading already has URL + snippet + date; only require a read-back when the SME edits it into <code>proposed</code>.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Removes a redundant confirmation turn per sourced heading — the evidence is already attached, so no hallucination risk to police.</td><td><span class="tag done">implemented</span><span class="outcome-note">Phase&nbsp;2 skips the read-back for any <code>web</code>-provenance heading; the read-back is reserved for AI-proposed detail.</span></td></tr>
+        <tr class="row-done"><td><strong>Precompute the pain/friction index.</strong> Hand the skill a deterministic map of every open <code>pain-point</code> / <code>friction-point</code> id→title up front, rather than expanding them ad hoc.</td><td><span class="tag both">both</span></td><td><span class="tag effort-l">low</span></td><td>Lets the model wire <code>addresses</code> by id without guessing or repeated <code>expandElement</code> calls, and makes "idea addresses no documented problem" a deterministic check.</td><td><span class="tag done">implemented</span><span class="outcome-note">Phase&nbsp;1 reads pain/friction once via <code>getProcessSummary</code> and keeps the id→title map as the session-long grounding index (Principle&nbsp;1).</span></td></tr>
+        <tr class="row-done"><td><strong>Auto-suggest <code>addresses</code> links.</strong> When drafting an idea, have the tool layer propose candidate pain/friction ids by keyword overlap for the model to confirm.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Stops ideas linking only one pain when they relieve several; the SKILL.md requires <em>every</em> relieved pain to be linked.</td><td><span class="tag done">implemented</span><span class="outcome-note">Principle&nbsp;1 directs each idea to set <code>addresses</code> from the pain/friction index to <em>every</em> id it relieves, not just one.</span></td></tr>
+        <tr class="row-partial"><td><strong>Structured-output the element body.</strong> Emit the template headings as a typed object validated before write, so a missing or out-of-range block is caught pre-write.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Eliminates conformance reject-and-retry loops on word ranges and heading order — the dominant source of run-to-run variance in authoring.</td><td><span class="tag partial">partial</span><span class="outcome-note"><code>createElement</code> already validates the structured body and rejects malformed/out-of-range elements at write time; Phase&nbsp;3 now notes this so headings aren't hand-checked first. A dedicated pre-write typed object is not added.</span></td></tr>
+        <tr class="row-done"><td><strong>Deterministic <code>sourceUrl: pending</code> stub.</strong> A dedicated tool path that writes an uncitable trend/competitor in one call with the fixed <code>pending</code> / <code>draft</code> / <code>low</code> triple set.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Guarantees the three fields are set identically every time and that the element lands on the Phase&nbsp;4 hand-off list automatically, not by the model remembering to list it.</td><td><span class="tag done">implemented</span><span class="outcome-note">Phase&nbsp;2 already fixes the <code>pending</code>/<code>draft</code>/<code>low</code> triple and Phase&nbsp;4 lists every such element by id under an explicit hand-off heading.</span></td></tr>
+        <tr class="row-done"><td><strong>Parallel-draft independent risks.</strong> Once ideas are settled, draft the <code>innovation-risk</code> for each idea concurrently rather than strictly serially.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">med</span></td><td>Risks are independent of one another; fanning them out removes the linear walk through Phase&nbsp;3.</td><td><span class="tag done">implemented</span><span class="outcome-note">Phase&nbsp;3 now permits drafting the independent <code>innovation-risk</code> elements together in one pass before SME review.</span></td></tr>
+        <tr class="row-done"><td><strong>Derive the Phase&nbsp;4 sweep deterministically.</strong> Compute "ideas with no risk / no <code>addresses</code>, trends with nothing linking to them" from the graph instead of re-reasoning over it.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Makes the validation sweep exhaustive and identical every run, and lets the close-out counts come straight from the tool layer.</td><td><span class="tag done">implemented</span><span class="outcome-note">Phase&nbsp;4 drives the sweep from a fresh <code>getProcessSummary</code> + <code>checkConformance</code> and the Phase&nbsp;1 index; close-out counts come from the snapshot, not eyeballing.</span></td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> turn Phase&nbsp;2 from a serial Y/E/R walk into a deterministic <em>batch triage</em> over the <code>source-innovation</code> drafts. The skill's real job is judgement on top of already-cited material; reviewing a screen of trends and competitor moves in one keep/drop/edit pass — with read-back skipped where <code>provenance=web</code> already carries evidence — removes the bulk of the round-trips while keeping every human decision intact. Pair it with a precomputed pain/friction index so <code>addresses</code> links are wired by id, and the skill becomes both far faster and far more reproducible.</div>
+  </section>
+
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/innovation-analyst/SKILL.md</code></footer>
+</div>
+</body>
+</html>

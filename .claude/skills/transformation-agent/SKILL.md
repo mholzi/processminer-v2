@@ -131,12 +131,19 @@ it. Only if the invocation supplies no SME identity, ask for it. Identify the
 process: list the slugs under `wiki/processes/`, let them pick; read its
 overview (root `meta`/`content` in the Document Map).
 
-**Phase 1 — Orientation.** Read the documented perspectives the target builds
-on — the As-Is pain-points, process-gaps and steps; the compliance-gaps and
-audit-findings; the friction-points; the `innovation-idea` and
-`innovation-risk` elements; the systems landscape. Then read the existing
-`target-state`, `transformation-decision` and `gap` elements (typically stubbed
-by `source-target`). Confirm with the SME which problems matter most and which
+**Phase 1 — Orientation.** Take **one** `getProcessSummary({ slug })` snapshot
+at the start and **reuse it as your cached document map** for the whole session
+— counts, status and the overview in a single call. This skill reads *six*
+perspectives; the snapshot replaces a long burst of `expandElement` probes and
+gives you the upstream ids/titles to wire `resolves` / `replaces` /
+`derivedFrom` by id without guessing. Only `expandElement` the specific elements
+you still need to read in full; do not re-snapshot mid-session. Read the
+documented perspectives the target builds on — the As-Is pain-points,
+process-gaps and steps; the compliance-gaps and audit-findings; the
+friction-points; the `innovation-idea` and `innovation-risk` elements; the
+systems landscape. Then read the existing `target-state`,
+`transformation-decision` and `gap` elements (typically stubbed by
+`source-target`). Confirm with the SME which problems matter most and which
 innovation ideas the bank actually intends to pursue. If the Target Process is
 empty, tell the SME they can run `source-target` first for a fast consolidated
 starting point — but you can also build it from scratch here.
@@ -161,15 +168,38 @@ or sequencing decision may realise none). These two drive the computed coverage
 check: every *open* As-Is problem should be `resolved` by at least one
 decision; an uncovered problem is either a real gap or a missing decision.
 
+**Wire links at draft time, from the snapshot.** When you draft a decision, set
+its `resolves` / `realises` to the upstream problem and target-state ids from
+the cached snapshot *as you draft* — by keyword overlap against the problem
+titles — and read the proposed links back to the SME for confirmation rather
+than discovering them later. Under-linking breaks the coverage contract, so link
+*all* the problems a decision fixes, not only the first that comes to mind.
+
+**Draft independent decisions together.** Once the target states are settled,
+decisions that resolve *disjoint* problem sets are independent — you may draft
+them as a batch before review, then run Y / E / R per decision. Serial authoring
+is the longest stretch of the session; only sequence decisions that genuinely
+depend on one another.
+
 **Phase 3b — Requirements.** `[A]/[E]/[N]`. Operationalise the decisions into
 `requirement` elements — testable statements of what the target process and
 systems must do. A transformation-decision says *what* changes; a requirement
 says *what the target must do*, concretely enough to hand to a BFA. For each
 requirement capture the `reqType` (FUNCTIONAL / NON-FUNCTIONAL), the `moscow`
 priority (MUST / SHOULD / COULD / WONT) and — **required** — `derivedFrom`: the
-`transformation-decision`, `gap` or `target-state` it comes from. A requirement
-with no traceable source is not a requirement; never write one without
-`derivedFrom`. Optionally link `addresses` — the gap it closes.
+`transformation-decision`, `gap` or `target-state` it comes from. **Resolve
+`derivedFrom` before you write** — set it from the cached snapshot to the
+decision/target/gap the requirement operationalises, and do not call
+`createElement` for a requirement until that link is in hand. A requirement with
+no traceable source is not a requirement; never write one without `derivedFrom`.
+(This is a prose rule the skill enforces; hard schema gating at the tool layer
+is a separate future change.) Optionally link `addresses` — the gap it closes.
+Independent requirements derived from different decisions may be drafted
+together before review, like the decisions above.
+
+`createElement` already validates each element body against its schema and
+rejects malformed output, so a missing required field or out-of-range block is
+caught at write time — you do not need a separate pre-write validation pass.
 
 **Phase 3c — Dependencies.** `[A]/[E]/[N]`. The target process's boundary —
 its `process-dependency` elements: the upstream feeders and downstream
@@ -178,22 +208,40 @@ DOWNSTREAM / BIDIRECTIONAL), the `atStep` it crosses at, what crosses the
 boundary, and why it matters. This is the target boundary, not the As-Is one.
 
 **Phase 4 — Gaps.** `[A]/[E]/[N]`. The `gap` elements — what stands between
-As-Is and target, and how to close each. After Phase 3, any open As-Is problem
-no decision resolves, any `target-state` no decision realises, and any
-`innovation-risk` the transformation must actively manage is a candidate gap.
-Each `gap` links the `target-state` it serves.
+As-Is and target, and how to close each. **Derive the gaps deterministically,
+don't free-synthesise them.** Diff the cached snapshot against the decisions you
+wrote: every documented As-Is problem (pain-point / process-gap /
+compliance-gap / friction-point / audit-finding) that no decision `resolves`,
+every `target-state` that no decision `realises`, and every uncovered area or
+`innovation-risk` the transformation must actively manage becomes **one** `gap`
+stub. Draft each candidate stub from that delta, then run `[A]/[E]/[N]` so the
+SME confirms or discards it — this guarantees no uncovered problem is silently
+dropped and removes the end-of-session re-reasoning. Each `gap` links the
+`target-state` it serves.
 
 **Assumptions — record them as you go.** Whenever the target work rests on
 something unconfirmed — a feasibility, an adoption or a timing assumption —
 write an `assumption` element: the assumption, why it is unconfirmed, the
 impact if wrong, its `assumptionStatus`, and **required** `bearsOn` — the
 element it bears on (ownership of the assumption is resolved from that). This
-is not a phase of its own; capture an assumption the moment it surfaces.
+is not a phase of its own; capture an assumption the moment it surfaces, in a
+**single one-pass write** against the element it bears on — set `bearsOn` to
+that element's id (from the cached snapshot) in the same `createElement` call,
+rather than deferring it or writing the assumption and back-filling the link
+later.
 
-**Phase 5 — Validation.** Before closing, sweep what you wrote: target states
-with no innovation ideas behind them, decisions that resolve nothing, open
-problems no decision covers, gaps not traced to a target state. Surface each as
-a short clarifying question, then close with the canonical close-out:
+**Track coverage live, don't only sweep at the end.** Keep a running
+open-problem → decision coverage map from the cached snapshot, updating it each
+time you write a decision (which problems are now resolved by a decision or
+realised target) and reconciling against `checkConformance`. Read which problems
+are still uncovered as a *fact* rather than re-inferring it at validation — this
+makes the same gaps surface every run and feeds the Phase 4 derivation directly.
+
+**Phase 5 — Validation.** Before closing, sweep what you wrote against the live
+coverage map: target states with no innovation ideas behind them, decisions that
+resolve nothing, open problems no decision covers, gaps not traced to a target
+state. Surface each as a short clarifying question, then close with the
+canonical close-out:
 """
 Target Process perspective documented — **{process}**:
 

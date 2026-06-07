@@ -85,6 +85,30 @@ contract). In short: draft → present → offer **[Y] Yes / [E] Edit / [R] Rewr
 carries provenance; AI-drafted detail is `proposed` until the SME confirms it in
 a read-back, then `elicited` with their quote.
 
+### Determinism & speed
+
+Be deterministic and fast — same process in, same journey skeleton out; spend
+the SME's time on judgement, not re-derivation.
+
+- **One snapshot up front.** In Phase 0 call `getProcessSummary({ slug })` once
+  and `getProcessRelations({ slug })` once; reference those results for the rest
+  of the session rather than re-reading elements. The relations payload gives
+  you `steps[]` (each with its `touchpoints[]`, `controls[]`, `systems[]`),
+  `orphans`, `integrationCandidates` and `uncovered`.
+- **Scaffold, don't improvise.** Derive the touchpoint set and the channel×step
+  map deterministically from that snapshot (Phases 2–3); a step with an empty
+  `touchpoints[]` is a coverage gap, not a guess.
+- **Set relations at write time.** When you create a friction-point, set its
+  `painPoint` link in the same `createElement` call — never leave linking to a
+  later lint pass.
+- **Trust structured output.** `createElement` validates each draft against the
+  JSON Schema and rejects a malformed element (missing heading, out-of-range
+  block) before it lands, so authoring is already first-time-right; you do not
+  need a separate self-conformance check.
+- **Batch the low-judgement work.** Reference-type elements (competitor-CX,
+  benchmarks) and confirmed-empty optional sections are batched, not walked one
+  by one (see Phases 4–6).
+
 ### Narrative-first capture
 For touchpoints, moments and friction points, ask the SME to **talk**: "Walk me
 through what the client actually does here — what they see, what they wait for,
@@ -113,49 +137,79 @@ mode from anything else in the invocation wording.
 **Phase 0 — Setup.** The invocation supplies the SME's name and role — use
 that as the `source` context and the human-in-the-loop record; do not re-ask
 it. Only if the invocation supplies no SME identity, ask for it. Identify the
-process: list the slugs under `wiki/processes/`, let them pick; read its
-overview (root `meta`/`content` in the Document Map) and the existing
-elements — especially the `process-step`s — so you
-can place touchpoints against them.
+process: list the slugs under `wiki/processes/`, let them pick. Then take the
+session snapshot **once**: `getProcessSummary({ slug })` for the overview and
+element inventory, and `getProcessRelations({ slug })` for `steps[]` (with each
+step's `touchpoints[]`, `controls[]`, `systems[]`), `orphans`,
+`integrationCandidates` and `uncovered`. Reference these throughout — you do not
+re-read elements step by step. The `steps[]` list is where touchpoints live.
 
-**Phase 1 — Orientation.** Read the documented process steps — you do not
-re-document them; you confirm with the SME which steps the client is actually
-present at, since those are where touchpoints live. Also read any existing
-`competitor-cx-*` and `cx-benchmark` elements (web-sourced by `source-cx`):
-they tell you what good looks like as you document the journey.
+**Phase 1 — Orientation.** From the Phase 0 snapshot, read the documented
+process steps — you do not re-document them; you confirm with the SME which
+steps the client is actually present at, since those are where touchpoints live.
+**Pre-compute the channel×step journey map once** from the snapshot: for each
+step, which channel(s) it is reachable on and which `touchpoints[]` already sit
+there. This map drives the Phase 3 walk and continuously exposes orphan
+touchpoints, so the Phase 7 sweep is a confirmation, not a fresh memory-based
+pass. Also note any existing `competitor-cx-*` and `cx-benchmark` elements
+(web-sourced by `source-cx`): they tell you what good looks like as you
+document the journey.
 
 **Phase 2 — Channels.** The channels the client uses to interact — online
 portal, branch, phone, email, post. For each: what it is and how it's used in
 this process. Draft each as a `cx-channel`.
 
-**Phase 3 — Touchpoints.** Each distinct interaction the client has. For each:
-what the client does, what they expect, how it feels — and link the process
-`step` it sits at and the `channel` it happens on. Walk the journey in order.
+**Phase 3 — Touchpoints.** Scaffold deterministically from the snapshot: from
+`steps[]`, take each client-present step and scaffold one candidate touchpoint
+against it, pre-linked to that `step` and its channel from the Phase 1 map.
+**Steps whose `touchpoints[]` is empty are the gaps** — those are where you must
+add coverage; steps that already carry a touchpoint are confirmations. Because
+the candidate touchpoints are independent of one another, **draft their bodies
+together** (what the client does, what they expect, how it feels) before review,
+then walk the SME through the grid in one pass to correct it, in journey order,
+rather than eliciting each from a blank slate.
 
 **Phase 4 — Moments.** `[A]/[E]/[N]`. Moments of truth — the emotionally
-pivotal points where the client's confidence in the bank is made or broken
-(first impression, the long wait, the activation).
+pivotal points where the client's confidence in the bank is made or broken.
+Probe with a **fixed moment-of-truth prompt set**, not improvised questions, so
+the same journey yields the same emotional coverage every run: **the first
+impression**, **the long wait**, **the activation**, and **the recovery** (when
+something went wrong and the bank had to make it right). Walk these four in
+order against the journey; if one does not apply, the SME says so and you move
+on. If the whole section is empty, follow the confirmed-empty handshake (Phase
+5 note).
 
 **Phase 5 — Friction points.** `[A]/[E]/[N]`. Client-facing pain — effort,
 confusion, repetition the *client* experiences. Capture severity, root cause,
-client impact; link `occursAt` the step, and `painPoint` where it mirrors a
-staff pain point.
+client impact; link `occursAt` the step. **Set the `painPoint` link at write
+time:** when a client friction-point mirrors a staff `pain-point` at the same
+step (match by `occursAt` step against the snapshot), set
+`friction-point.content.painPoint` to that pain-point id **in the same
+`createElement` call** — do not leave the link for a later lint pass.
 
-**Phase 6 — Refine competitor CX & benchmarks.** Walk the existing
-`competitor-cx-*` and `cx-benchmark` elements with the SME — the SME is the
-authority; the web-sourced drafts are a starting point. For each, run
-**Y / E / R** — on **[E]**, apply the correction with
-the updateElement({ id, patch }) tool, changing only the corrected block or
-field rather than re-writing the whole element. Use them to pressure-test the
-journey you just documented:
+**Confirmed-empty handshake.** Moments and friction points may legitimately be
+empty. When the SME answers `[N]` for an optional section, do a single
+deterministic "none" handshake to mark it `confirmed-empty` and move on — do
+**not** run a read-back or improvise wrap-up prose for an empty section.
+
+**Phase 6 — Refine competitor CX & benchmarks.** These are reference-type,
+low-judgement elements, so **refine them as one batch**, not one by one. Present
+the existing `competitor-cx-*` and `cx-benchmark` elements as a single labelled
+list and run **one Y / E / R** over the set — the SME is the authority; the
+web-sourced drafts are a starting point and most need only a light confirm. On
+**[E]** of any item, apply the correction with the updateElement({ id, patch })
+tool, changing only the corrected block or field rather than re-writing the
+whole element. Use them to pressure-test the journey you just documented:
 where a competitor or a benchmark exposes a gap, note it as a friction point
 or flag it for the Innovation Analyst. You do not web-search — that is
 `source-cx`'s job. If nothing has been sourced, say so and move on.
 
-**Phase 7 — Validation.** Before closing, sweep what you wrote: touchpoints not
-on any channel or step, friction points not linked to a step, a journey with
-gaps where the client surely interacts. Surface each as a short clarifying
-question, then close with the canonical close-out:
+**Phase 7 — Validation.** Before closing, confirm against the channel×step map
+and the snapshot's `orphans`/`uncovered` rather than re-deriving from memory:
+touchpoints not on any channel or step, friction points not linked to a step,
+steps still showing an empty `touchpoints[]` where the client surely interacts.
+Surface each as a short clarifying question, then close with the canonical
+close-out:
 > Client Experience perspective documented — **{process}**:
 >
 > - **Drafted:** {n} element(s)

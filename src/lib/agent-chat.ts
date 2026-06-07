@@ -9,6 +9,17 @@
 // ---- Session event protocol --------------------------------------------
 // Mirrors what /api/session emits over SSE (see src/app/api/session/route.ts).
 
+/** This turn's token usage, surfaced on the `done` event when the provider
+ *  reported it. Counts are tokens; `costUsd` is 0 unless the provider reports
+ *  it (claude does, the Gemini SDK does not). */
+export interface TurnUsage {
+  inputTokens: number;
+  outputTokens: number;
+  cacheReadTokens: number;
+  cacheCreationTokens: number;
+  costUsd: number;
+}
+
 export type SessionEvent =
   | { type: "progress"; text: string }
   | { type: "delta"; text: string }
@@ -18,7 +29,13 @@ export type SessionEvent =
   // payload. It has no case in `apply` below; its only job is to fire
   // `onAnyEvent`, which bumps the client's stuck-turn watchdog.
   | { type: "ping" }
-  | { type: "done"; reply?: string; sessionId?: string; isError?: boolean }
+  | {
+      type: "done";
+      reply?: string;
+      sessionId?: string;
+      isError?: boolean;
+      usage?: TurnUsage;
+    }
   | { type: "error"; error: string; sessionId?: string };
 
 export interface SessionHandlers {
@@ -28,7 +45,7 @@ export interface SessionHandlers {
   onTaskStart?: (id: string, label: string) => void;
   onTaskEnd?: (id: string) => void;
   onDelta?: (text: string) => void;
-  onDone?: (reply: string, sessionId: string | null) => void;
+  onDone?: (reply: string, sessionId: string | null, usage?: TurnUsage) => void;
   onError?: (error: string, sessionId: string | null) => void;
 }
 
@@ -101,7 +118,7 @@ export async function runSession(
         handlers.onDelta?.(evt.text);
         break;
       case "done":
-        handlers.onDone?.(evt.reply || "", evt.sessionId ?? null);
+        handlers.onDone?.(evt.reply || "", evt.sessionId ?? null, evt.usage);
         break;
       case "error":
         handlers.onError?.(evt.error, evt.sessionId ?? null);
