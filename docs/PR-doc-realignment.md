@@ -1950,3 +1950,38 @@ unchanged (`ReviewState.actor` is optional/additive). No other skill changes.
 `npm run typecheck` clean · `npm test` **115/115** — 7 new `session-cursor.test.ts`
 cases (perspective map, next-built loop, eligibility gate, close-out render,
 actor carry).
+
+---
+
+# fix(ingest): normalise the ingest report on read (F-002, upstream of F-003)
+
+## Why
+The `#62` triage guard stopped a malformed `ingest` report from *crashing* the
+UI; this addresses the upstream cause. The write path already normalises
+(`buildIngestReport` in `session-writes.ts` defaults every array and stamps
+`generatedAt`/`slug`), but the **read** path passed `data.ingest` through raw
+(`wiki.ts` `getProcess`). So any `ingest` object on disk that didn't go through
+that writer — a legacy report, or one written before the normaliser existed —
+reached every consumer with `created`/`updated` possibly `undefined`. The
+`/dogfood-run` harness produced exactly such a report (`{file, conflicts,
+corrections}`, no `created`/`updated`/`generatedAt`/`slug`), which is what blew
+up `TriagePanel` (F-003).
+
+## What
+- New exported `normalizeIngestReport(raw, slug)` in `src/lib/wiki.ts`: coerces
+  every array to `[]`, preserves scalars (defaulting `slug` from the arg,
+  `file`/`generatedAt` to `""`), returns `undefined` when there is no report.
+- `getProcess` now maps `ingest: normalizeIngestReport(data.ingest, slug)` so no
+  consumer can ever read a count off `undefined`, regardless of how the report
+  got onto disk.
+
+## Scope
+Read-boundary hardening only; no change for a well-formed report (round-trips
+unchanged, verified by a test). The writer (`buildIngestReport`) is already the
+normaliser for the write path and is left as-is; this closes the gap for reports
+that bypass it.
+
+## Verification
+`npm run typecheck` clean · `npm test` **111/111** (3 new `normalizeIngestReport`
+cases in `wiki.test.ts`: malformed→coerced, well-formed→preserved,
+null/non-object→undefined).
