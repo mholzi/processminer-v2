@@ -1875,3 +1875,38 @@ stays model-authored (the templated-description idea was deliberately skipped).
 `src/lib/process-scaffold.test.ts` **8/8** (slug/abbreviation validity,
 collision suggestions, deterministic output). Derivation smoke-tested across
 edge cases (`FRD2`→`FRD`, single-word `Onboarding`→`ONBO`, digit/symbol names).
+
+---
+
+# fix(triage): guard against a malformed ingest report crashing the workspace
+
+## Why
+`TriagePanel` read `ingest?.created.length` / `ingest?.updated.length`. The
+optional chain only guards a null `ingest`; once `ingest` exists, an undefined
+`ingest.created` throws `TypeError: Cannot read properties of undefined (reading
+'length')`, which the error boundary turns into a full-screen *"This page
+couldn't load"* — the whole process workspace is dead.
+
+This fires whenever a `document-ingest` run writes an `ingest` object without
+the `created`/`updated` arrays the `IngestReport` contract (`src/lib/wiki.ts`)
+declares required — i.e. on a real first ingest, the very first thing an SME
+does. Surfaced by the `/dogfood-run` harness (finding F-003; the malformed
+report itself is F-002).
+
+## What
+Two-character change in `src/components/TriagePanel.tsx`: `ingest?.created.length`
+→ `ingest?.created?.length` (and the same for `updated`). The existing
+`?? doc.elements.length` / `?? 0` fallbacks were clearly intended to handle a
+missing count — they were simply unreachable because the throw happened first.
+
+## Scope
+Defensive UI hardening only; no behaviour change when the ingest report is
+well-formed. Does **not** fix the upstream cause (F-002, `document-ingest`
+emitting a report missing `created`/`updated`) — that is a separate skill/writer
+fix, ideally with a validator on the ingest write so a malformed report is
+rejected at the source.
+
+## Verification
+`npm run typecheck` clean. The dogfood run reproduced the crash and confirmed
+the guarded version renders the triage screen normally (import record + element
+counts).
