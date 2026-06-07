@@ -69,7 +69,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#68** | Design-review wave 5 — SettingsPanel access confirm + error surface (also carried wave 4's export-PDF provenance, PR #66) | `fix/design-review-wave-5-access` → `main` | Code + UI | **Merged** |
 | **#72** | Design-review wave 6 — DTP colour overload (kind neutral, severity the only colour axis) | `fix/design-review-wave-6-dtp-color` → `main` | Code (CSS) | **Merged** |
 | **#75** | Admin token-usage tab, toggleable chat receipt, drop cost column | `feat/admin-token-usage` → `main` | Code + UI | **Merged** |
-| **#78** | What's New feed signal — unseen badge on Help button, admin CRUD panel, live badge count fix | `feat/whatsnew-admin-badge` → `main` | Code + UI | **Open** (`pending`) |
+| **#78** | What's New feed signal — unseen badge on Help button, admin CRUD panel, live badge count fix | `feat/whatsnew-admin-badge` → `main` | Code + UI | **Merged** |
+| **#79** | HelpCenter two-tab split — Release Notes vs Roadmap | `feat/helpcenter-two-tabs` → `main` | Code + UI | **Open** (`pending`) |
 
 > **Design-review stack note.** The six design-review waves were developed as a
 > stack (#59 → #60 → #64 → #66 → #68 → #71) on top of #58. When merged bottom-up

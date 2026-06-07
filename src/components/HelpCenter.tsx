@@ -4,11 +4,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useFocusTrap } from "./useFocusTrap";
 import type { Schema } from "@/lib/wiki";
 
-// Help center — a What's New + Roadmap feed opened from the top-bar "?"
-// button. One chronological list: shipped → in-flight → planned. No tabs,
-// no glossary, no concept explainers — for those the SME asks the assistant.
-// Entries are managed via Admin → What's new and stored in data/whatsnew.json.
-// ENTRIES below is the fallback seed; the live feed is loaded from the API.
+// Help center — opened from the top-bar "?" button. Two tabs: Release Notes
+// (shipped items, changelog layout) and Roadmap (in-flight + planned, card
+// layout with vote buttons). Entries are managed via Admin → What's new and
+// stored in data/whatsnew.json. ENTRIES below is the fallback seed; the live
+// feed is loaded from the API.
 
 export type EntryTag = "shipped" | "in-flight" | "planned";
 export type Entry = {
@@ -134,7 +134,7 @@ export function unseenCount(
   return count;
 }
 
-type FilterKind = "all" | EntryTag;
+type TabKind = "releases" | "roadmap";
 
 const TAG_LABEL: Record<EntryTag, string> = {
   shipped: "Shipped",
@@ -175,7 +175,7 @@ export default function HelpCenter({
   onReplayTour: () => void;
   onOpenFeedback: () => void;
 }) {
-  const [filter, setFilter] = useState<FilterKind>("all");
+  const [tab, setTab] = useState<TabKind>("releases");
   const [votes, setVotes] = useState<Record<string, true>>({});
   const [liveEntries, setLiveEntries] = useState<Entry[]>(ENTRIES);
 
@@ -196,11 +196,8 @@ export default function HelpCenter({
       .catch(() => {});
   }, [open]);
 
-  // Buckets, preserving the order entries appear in (Today → … → Horizon).
-  const buckets = useMemo(() => {
-    const visible = liveEntries.filter(
-      (e) => filter === "all" || e.tag === filter,
-    );
+  const releaseBuckets = useMemo(() => {
+    const visible = liveEntries.filter((e) => e.tag === "shipped");
     const order: string[] = [];
     const byBucket = new Map<string, Entry[]>();
     for (const e of visible) {
@@ -211,18 +208,24 @@ export default function HelpCenter({
       byBucket.get(e.bucket)!.push(e);
     }
     return order.map((b) => ({ name: b, items: byBucket.get(b)! }));
-  }, [filter, liveEntries]);
+  }, [liveEntries]);
 
-  const counts = useMemo(() => {
-    const c: Record<FilterKind, number> = {
-      all: liveEntries.length,
-      shipped: 0,
-      "in-flight": 0,
-      planned: 0,
-    };
-    for (const e of liveEntries) c[e.tag]++;
-    return c;
-  }, []);
+  const roadmapBuckets = useMemo(() => {
+    const visible = liveEntries.filter((e) => e.tag !== "shipped");
+    const order: string[] = [];
+    const byBucket = new Map<string, Entry[]>();
+    for (const e of visible) {
+      if (!byBucket.has(e.bucket)) {
+        byBucket.set(e.bucket, []);
+        order.push(e.bucket);
+      }
+      byBucket.get(e.bucket)!.push(e);
+    }
+    return order.map((b) => ({ name: b, items: byBucket.get(b)! }));
+  }, [liveEntries]);
+
+  const releasesCount = liveEntries.filter((e) => e.tag === "shipped").length;
+  const roadmapCount = liveEntries.filter((e) => e.tag !== "shipped").length;
 
   const toggleVote = (id: string) => {
     setVotes((prev) => {
@@ -247,46 +250,50 @@ export default function HelpCenter({
         aria-label="What's new in Processminer"
       >
         <div className="help-head">
-          <span className="help-title">What&rsquo;s new in ProcessMiner</span>
-          <div className="help-filter" role="tablist" aria-label="Filter">
-            {(["all", "shipped", "in-flight", "planned"] as const).map((f) => (
-              <button
-                key={f}
-                role="tab"
-                aria-selected={filter === f}
-                className={`help-filter-btn${filter === f ? " on" : ""}`}
-                onClick={() => setFilter(f)}
-              >
-                {f === "all" ? "All" : TAG_LABEL[f]}
-                <span className="help-filter-num">{counts[f]}</span>
-              </button>
-            ))}
+          <div className="help-head-top">
+            <span className="help-title">What&rsquo;s new in ProcessMiner</span>
+            <button className="help-close" onClick={onClose} aria-label="Close">
+              ✕
+            </button>
           </div>
-          <button className="help-close" onClick={onClose} aria-label="Close">
-            ✕
-          </button>
+          <div className="help-tabs" role="tablist" aria-label="Section">
+            <button
+              role="tab"
+              aria-selected={tab === "releases"}
+              className={`help-tab${tab === "releases" ? " active" : ""}`}
+              onClick={() => setTab("releases")}
+            >
+              Release Notes
+              <span className="help-tab-count">{releasesCount}</span>
+            </button>
+            <button
+              role="tab"
+              aria-selected={tab === "roadmap"}
+              className={`help-tab${tab === "roadmap" ? " active" : ""}`}
+              onClick={() => setTab("roadmap")}
+            >
+              Roadmap
+              <span className="help-tab-count">{roadmapCount}</span>
+            </button>
+          </div>
         </div>
 
-        <div className="help-feed">
-          {buckets.length === 0 ? (
-            <div className="help-feed-empty">
-              Nothing in that bucket yet.
-            </div>
-          ) : (
-            buckets.map((b) => (
-              <section key={b.name} className="help-feed-bucket">
-                <div className="help-feed-bucket-h">{b.name}</div>
-                {b.items.map((e) => {
-                  const voted = !!votes[e.id];
-                  const liveVotes = (e.votes ?? 0) + (voted ? 1 : 0);
-                  return (
+        {tab === "releases" && (
+          <div className="help-feed">
+            {releaseBuckets.length === 0 ? (
+              <div className="help-feed-empty">No releases yet.</div>
+            ) : (
+              releaseBuckets.map((b) => (
+                <section key={b.name} className="help-feed-bucket">
+                  <div className="help-feed-bucket-h">{b.name}</div>
+                  {b.items.map((e) => (
                     <article key={e.id} className="help-entry">
                       <div className="help-entry-when">{e.when}</div>
                       <div className="help-entry-body">
                         <header className="help-entry-h">
                           <h3>{e.title}</h3>
-                          <span className={`help-entry-tag tag-${e.tag}`}>
-                            {TAG_LABEL[e.tag]}
+                          <span className="help-entry-tag tag-shipped">
+                            Shipped
                           </span>
                         </header>
                         <p className="help-entry-summary">{e.summary}</p>
@@ -297,29 +304,60 @@ export default function HelpCenter({
                             ))}
                           </ul>
                         ) : null}
-                        {e.tag !== "shipped" && (
-                          <div className="help-entry-actions">
-                            <button
-                              className={`help-vote${voted ? " on" : ""}`}
-                              onClick={() => toggleVote(e.id)}
-                              aria-pressed={voted}
-                            >
-                              <span className="arrow">▲</span>
-                              {liveVotes}
-                              <span className="help-vote-label">
-                                {voted ? " you voted" : " vote"}
-                              </span>
-                            </button>
-                          </div>
-                        )}
                       </div>
                     </article>
-                  );
-                })}
-              </section>
-            ))
-          )}
-        </div>
+                  ))}
+                </section>
+              ))
+            )}
+          </div>
+        )}
+
+        {tab === "roadmap" && (
+          <div className="help-feed">
+            {roadmapBuckets.length === 0 ? (
+              <div className="help-feed-empty">Nothing planned yet.</div>
+            ) : (
+              roadmapBuckets.map((b) => (
+                <section key={b.name} className="help-feed-bucket">
+                  <div className="help-feed-bucket-h">{b.name}</div>
+                  {b.items.map((e) => {
+                    const voted = !!votes[e.id];
+                    const liveVotes = (e.votes ?? 0) + (voted ? 1 : 0);
+                    return (
+                      <article
+                        key={e.id}
+                        className={`help-rm-card${e.tag === "in-flight" ? " inflight" : ""}`}
+                      >
+                        <div className="help-rm-card-head">
+                          <h3 className="help-rm-card-title">{e.title}</h3>
+                          <span className={`help-entry-tag tag-${e.tag}`}>
+                            {TAG_LABEL[e.tag]}
+                          </span>
+                          <span className="help-rm-card-when">{e.when}</span>
+                        </div>
+                        <p className="help-entry-summary">{e.summary}</p>
+                        <div className="help-entry-actions">
+                          <button
+                            className={`help-vote${voted ? " on" : ""}`}
+                            onClick={() => toggleVote(e.id)}
+                            aria-pressed={voted}
+                          >
+                            <span className="arrow">▲</span>
+                            {liveVotes}
+                            <span className="help-vote-label">
+                              {voted ? " you voted" : " vote"}
+                            </span>
+                          </button>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </section>
+              ))
+            )}
+          </div>
+        )}
 
         <div className="help-foot">
           <button className="help-foot-link" onClick={onReplayTour}>
