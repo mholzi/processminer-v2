@@ -18,6 +18,7 @@ import {
   advance,
   foundationalStatus,
   qerStatus,
+  qerStatusWithPerspectives,
   QER_STEPS,
 } from "./session-cursor.ts";
 import { checkConformance } from "./conformance.ts";
@@ -508,10 +509,17 @@ const toolDeclarations: any[] = [
   },
   {
     name: "startSession",
-    description: "Start a fresh qer-session: build the cursor over the fixed QER step sequence and persist it. Returns position/total/done/current (the step name). Used by qer-session when no session state exists.",
+    description: "Start a fresh qer-session: build the cursor over the fixed QER step sequence and persist it. Pass the SME's name/role as `actor` so a resumed session carries them. Returns position/total/done/current (the step name). Used by qer-session when no session state exists.",
     parameters: {
       type: "OBJECT",
-      properties: { slug: { type: "STRING", description: "The process slug." } },
+      properties: {
+        slug: { type: "STRING", description: "The process slug." },
+        actor: {
+          type: "OBJECT",
+          description: "The SME running the session (from the session-scope preamble).",
+          properties: { name: { type: "STRING" }, role: { type: "STRING" } }
+        }
+      },
       required: ["slug"]
     }
   },
@@ -681,6 +689,13 @@ function customStringify(obj: any, indent = ""): string {
  * every later element gets `<prefix>-${PROC}-<seq>` ids without storing PROC
  * separately. Shared by both providers (gemini-worker + claude-mcp-server).
  */
+// Whether a perspective's specialist skill is installed — a deterministic
+// filesystem fact, so qer-session's Step 3 never has to guess which specialists
+// exist. Mirrors the same helper in claude-mcp-server.ts.
+function qerSkillBuilt(skill: string): boolean {
+  return fs.existsSync(path.join(process.cwd(), ".claude", "skills", skill, "SKILL.md"));
+}
+
 export function buildProcessDoc(PROC: string, title: string, description: string): any {
   return {
     meta: {
@@ -1323,14 +1338,17 @@ export class GeminiWorker implements IProcessWorker {
                 resultText = JSON.stringify(foundationalStatus(rs), null, 2);
               } else if (originalName === "startSession") {
                 if (!this.slug) throw new Error("Process document context not loaded or slug is missing.");
-                const qs = newReviewState(this.slug, QER_STEPS, new Date().toISOString());
+                const actor = args.actor as { name?: string; role?: string } | undefined;
+                const qs = newReviewState(this.slug, QER_STEPS, new Date().toISOString(), actor);
                 writeRuntime(this.slug, { qerState: qs });
-                resultText = JSON.stringify(qerStatus(qs), null, 2);
+                resultText = JSON.stringify(qerStatusWithPerspectives(qs, doc, qerSkillBuilt), null, 2);
               } else if (originalName === "getSessionStatus") {
                 if (!this.slug) throw new Error("Process document context not loaded or slug is missing.");
                 const rt = getRuntime(this.slug);
                 resultText = JSON.stringify(
-                  args.kind === "qer" ? qerStatus(rt.qerState) : foundationalStatus(rt.reviewState),
+                  args.kind === "qer"
+                    ? qerStatusWithPerspectives(rt.qerState, doc, qerSkillBuilt)
+                    : foundationalStatus(rt.reviewState),
                   null,
                   2
                 );
@@ -1342,7 +1360,7 @@ export class GeminiWorker implements IProcessWorker {
                   if (!rt.qerState) throw new Error("No qer session to advance — call startSession first.");
                   const next = advance(rt.qerState, now);
                   writeRuntime(this.slug, { qerState: next });
-                  resultText = JSON.stringify(qerStatus(next), null, 2);
+                  resultText = JSON.stringify(qerStatusWithPerspectives(next, doc, qerSkillBuilt), null, 2);
                 } else {
                   if (!rt.reviewState) throw new Error("No foundational run to advance — call buildQueue first.");
                   const next = advance(rt.reviewState, now);
