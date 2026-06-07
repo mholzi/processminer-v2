@@ -18,6 +18,9 @@ export type User = {
   role: string;
   /** Stream the assistant's reply word by word as it is written. */
   streamReplies?: boolean;
+  /** ID of the last What's New entry the user has seen. Used to compute the
+   *  unseen badge count on the Help button. */
+  whatsNewSeen?: string;
   /** Modules this user can open. Undefined = both granted. */
   entitlements?: Entitlement[];
   /** True for users who can manage other users + reset passwords. */

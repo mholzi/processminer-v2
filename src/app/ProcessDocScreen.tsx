@@ -52,7 +52,11 @@ import ControlsInTarget from "@/components/ControlsInTarget";
 import { COUNCIL_SPECIALISTS } from "@/lib/target-review";
 import UploadModal from "@/components/UploadModal";
 import CommandPalette from "@/components/CommandPalette";
-import HelpCenter from "@/components/HelpCenter";
+import HelpCenter, {
+  latestShippedId,
+  unseenCount,
+  type Entry as WhatsNewEntry,
+} from "@/components/HelpCenter";
 import GuidedTour, { TOUR_STEPS } from "@/components/GuidedTour";
 import ExportModal from "@/components/ExportModal";
 import ApprovalBar from "@/components/ApprovalBar";
@@ -539,6 +543,16 @@ export default function ProcessDocScreen({
   // steps light up in the process flow. Null = no theme picked.
   const [selectedThemeId, setSelectedThemeId] = useState<string | null>(null);
   const [dark, setDark] = useState(false);
+  const [liveWhatsNew, setLiveWhatsNew] = useState<WhatsNewEntry[]>([]);
+  useEffect(() => {
+    fetch("/api/admin/whatsnew", { credentials: "same-origin" })
+      .then(async (r) => {
+        if (!r.ok) return;
+        const data = (await r.json()) as { entries?: WhatsNewEntry[] };
+        if (data.entries?.length) setLiveWhatsNew(data.entries);
+      })
+      .catch(() => {});
+  }, []);
   // The numbered area spine (1..6) is always visible; the section detail
   // panel beside it collapses to widen the canvas.
   const [sectionsCollapsed, setSectionsCollapsed] = useState(false);
@@ -1911,10 +1925,28 @@ export default function ProcessDocScreen({
           <Tooltip label="Help">
             <button
               className="tb-icon"
-              onClick={() => setHelpOpen(true)}
+              onClick={() => {
+                setHelpOpen(true);
+                const entries = liveWhatsNew.length ? liveWhatsNew : undefined;
+                if (unseenCount(user.whatsNewSeen, entries) > 0) {
+                  const lid = latestShippedId(entries);
+                  onUpdateUser({ ...user, whatsNewSeen: lid });
+                  fetch("/api/auth/me", {
+                    method: "PATCH",
+                    credentials: "same-origin",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ whatsNewSeen: lid }),
+                  }).catch(() => {});
+                }
+              }}
               aria-label="Help"
             >
               <IconHelp />
+              {unseenCount(user.whatsNewSeen, liveWhatsNew.length ? liveWhatsNew : undefined) > 0 && (
+                <span className="tb-badge">
+                  {unseenCount(user.whatsNewSeen, liveWhatsNew.length ? liveWhatsNew : undefined)}
+                </span>
+              )}
             </button>
           </Tooltip>
           <Tooltip label={`${user.name} · ${user.role}`}>

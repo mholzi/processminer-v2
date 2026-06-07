@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { User, Entitlement } from "@/lib/user";
 import FeatureTogglesPanel from "@/components/FeatureTogglesPanel";
 import UsagePanel from "@/components/UsagePanel";
+import WhatsNewPanel from "@/components/WhatsNewPanel";
 import Modal from "@/components/Modal";
 
 // Admin screen — lists every user and lets an admin create, edit, reset
@@ -26,7 +27,7 @@ export default function AdminScreen({
   user: User;
   onReturnToSplash: () => void;
 }) {
-  const [tab, setTab] = useState<"users" | "features" | "usage">("users");
+  const [tab, setTab] = useState<"users" | "features" | "usage" | "whatsnew">("users");
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -136,9 +137,17 @@ export default function AdminScreen({
         >
           Token usage
         </button>
+        <button
+          type="button"
+          className={`admin-tab${tab === "whatsnew" ? " admin-tab-on" : ""}`}
+          onClick={() => setTab("whatsnew")}
+        >
+          What&rsquo;s new
+        </button>
       </nav>
 
       {tab === "features" && <FeatureTogglesPanel />}
+      {tab === "whatsnew" && <WhatsNewPanel />}
 
       {tab === "usage" && <UsagePanel />}
 

@@ -23,6 +23,7 @@ export type StoredUser = {
   isAdmin: boolean;
   entitlements?: Entitlement[];
   streamReplies?: boolean;
+  whatsNewSeen?: string;
   createdAt: string;
   createdBy?: string;
   updatedAt: string;
@@ -161,6 +162,7 @@ export type UpdateUserInput = Partial<{
   isAdmin: boolean;
   entitlements: Entitlement[];
   streamReplies: boolean;
+  whatsNewSeen: string;
 }>;
 
 export function updateUser(
