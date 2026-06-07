@@ -2164,3 +2164,36 @@ write paths.
 `npm run typecheck` clean · `npm test` **153/153** — 5 new
 `consolidation-inputs.test.ts` cases (open-problem inventory, tallies,
 existing-target, empty-perspective flags), wired into the runner.
+
+---
+
+# feat(admin): Token-usage tab, toggleable chat receipt, drop cost
+
+Follow-up to #69 (which captured per-skill token usage but only surfaced a
+per-turn chat line). Three asks: surface the totals in admin, let the admin turn
+the chat receipt on/off, and stop showing dollars.
+
+## What
+- **Admin → Token usage (new tab)** — `UsagePanel` fetches `/api/admin/usage`
+  (new admin-only route) and shows a grand total, a **by-skill** table (the
+  "tokens per skill" headline, summed across processes) and a **by-process**
+  table. `aggregateUsage()` (new, pure, in `token-usage.ts`) does the roll-up
+  over `listProcesses()` + `getRuntime().skillUsage`.
+- **Toggleable chat receipt** — new feature flag `session.token_receipt`
+  (group "Session", **default on**). `AgentChat` gates the per-turn receipt on
+  `useFeatureFlag("session.token_receipt")`, so an admin flips it from
+  Admin → Feature toggles. The per-skill recording + the admin tab are
+  unaffected by the toggle (it only hides the in-chat line).
+- **Dropped cost** — removed the `$…` from the chat receipt; the admin tables
+  are tokens-only. `costUsd` is still captured in the store (harmless, unshown).
+
+## Scope
+Read-only admin reporting + one flag + a display gate. No change to capture
+(#69) or turn behaviour. The flag defaults **on** to preserve #69's just-shipped
+visible receipt; flip the catalog `default` to ship it dark instead.
+
+## Verification
+`npm run typecheck` clean · `npm test` **155/155** (after rebase onto #74) — 2
+new `aggregateUsage` cases (cross-process per-skill + grand-total sum, skips
+empty; empty list → zeros). Admin route mirrors the `/api/admin/users`
+admin-only auth.

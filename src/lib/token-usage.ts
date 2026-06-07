@@ -110,3 +110,63 @@ export function recordSkillUsage(
   su.updatedAt = at;
   writeRuntime(slug, { skillUsage: su });
 }
+
+/** Add two accumulated entries (sums every field, incl. `turns`; keeps the
+ *  later `lastAt`). Distinct from `fold`, which folds a single turn (+1 turn). */
+function addEntries(a: SkillUsageEntry, b: SkillUsageEntry): SkillUsageEntry {
+  return {
+    inputTokens: a.inputTokens + b.inputTokens,
+    outputTokens: a.outputTokens + b.outputTokens,
+    cacheReadTokens: a.cacheReadTokens + b.cacheReadTokens,
+    cacheCreationTokens: a.cacheCreationTokens + b.cacheCreationTokens,
+    costUsd: a.costUsd + b.costUsd,
+    turns: a.turns + b.turns,
+    lastAt: a.lastAt > b.lastAt ? a.lastAt : b.lastAt,
+  };
+}
+
+export interface UsageOverview {
+  /** Per-process tallies, sorted by total tokens descending. */
+  processes: {
+    slug: string;
+    title: string;
+    total: SkillUsageEntry;
+    bySkill: Record<string, SkillUsageEntry>;
+    updatedAt: string;
+  }[];
+  /** Sum across every process. */
+  grandTotal: SkillUsageEntry;
+  /** Sum across every process, per skill — the "tokens per skill" headline. */
+  bySkill: Record<string, SkillUsageEntry>;
+}
+
+/**
+ * Roll every process's `skillUsage` into one overview — a grand total, a
+ * per-skill sum across processes, and the per-process breakdown. Pure (the
+ * caller gathers `{slug, title, usage}` via listProcesses + getRuntime), so it
+ * is unit-testable without the filesystem. Processes with no usage are skipped.
+ */
+export function aggregateUsage(
+  list: { slug: string; title: string; usage?: SkillUsage | null }[],
+): UsageOverview {
+  let grandTotal = zero();
+  const bySkill: Record<string, SkillUsageEntry> = {};
+  const processes: UsageOverview["processes"] = [];
+  for (const p of list) {
+    if (!p.usage) continue;
+    grandTotal = addEntries(grandTotal, p.usage.total);
+    for (const [skill, e] of Object.entries(p.usage.bySkill)) {
+      bySkill[skill] = addEntries(bySkill[skill] ?? zero(), e);
+    }
+    processes.push({
+      slug: p.slug,
+      title: p.title,
+      total: p.usage.total,
+      bySkill: p.usage.bySkill,
+      updatedAt: p.usage.updatedAt,
+    });
+  }
+  const tok = (e: SkillUsageEntry) => e.inputTokens + e.outputTokens;
+  processes.sort((a, b) => tok(b.total) - tok(a.total));
+  return { processes, grandTotal, bySkill };
+}

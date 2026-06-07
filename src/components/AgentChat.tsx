@@ -13,6 +13,7 @@ import remarkGfm from "remark-gfm";
 import { type GetRef, buildComponents } from "./chat-linkify";
 import { pickPerspective } from "@/lib/wait-perspective";
 import type { TurnUsage } from "@/lib/agent-chat";
+import { useFeatureFlag } from "@/lib/feature-flags-context";
 
 export interface ChatMessage {
   id: string;
@@ -30,15 +31,14 @@ function fmtTokens(n: number): string {
   return String(n);
 }
 
-/** The dim per-turn receipt: input/output tokens, cache reads, and cost when
- *  the provider reports it. */
+/** The dim per-turn receipt: input / output tokens and cache reads. Shown only
+ *  when the `session.token_receipt` admin flag is on. */
 function UsageReceipt({ u }: { u: TurnUsage }) {
   const parts = [
     `${fmtTokens(u.inputTokens)} in`,
     `${fmtTokens(u.outputTokens)} out`,
   ];
   if (u.cacheReadTokens > 0) parts.push(`${fmtTokens(u.cacheReadTokens)} cached`);
-  if (u.costUsd > 0) parts.push(`$${u.costUsd.toFixed(u.costUsd < 0.01 ? 4 : 2)}`);
   return (
     <div className="chat-msg-usage" title="LLM tokens for this turn">
       {parts.join(" · ")}
@@ -132,6 +132,7 @@ export default function AgentChat({
   showLint?: boolean;
 }) {
   const [draft, setDraft] = useState("");
+  const showTokenReceipt = useFeatureFlag("session.token_receipt");
   const scrollRef = useRef<HTMLDivElement>(null);
   const mdComponents = useMemo(
     () => buildComponents(getRef, onRefClick),
@@ -256,7 +257,9 @@ export default function AgentChat({
             <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
               {m.text}
             </ReactMarkdown>
-            {m.role === "agent" && m.usage && <UsageReceipt u={m.usage} />}
+            {showTokenReceipt && m.role === "agent" && m.usage && (
+              <UsageReceipt u={m.usage} />
+            )}
           </div>
         ))}
         {pending && activeSkillLabel && (

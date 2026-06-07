@@ -2788,6 +2788,51 @@ body {
 .admin-table tbody tr:hover { background: var(--bg); }
 
 .admin-mono { font-family: var(--mono); font-weight: 500; color: var(--ink); }
+
+/* ---- Admin → Token usage ---- */
+.admin-muted { color: var(--muted); font-size: 0.9rem; }
+.admin-btn-secondary {
+  border: 1px solid var(--line, var(--border, #e3e5ea));
+  background: var(--paper, #fff);
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.admin-btn-secondary:hover { background: var(--bg); }
+.usage-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.usage-h { margin: 0; }
+.usage-sub { margin: 22px 0 6px; font-size: 0.95rem; }
+.usage-totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 14px 0 6px;
+}
+.usage-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 92px;
+  padding: 10px 14px;
+  border: 1px solid var(--line, var(--border, #e3e5ea));
+  border-radius: 10px;
+  background: var(--paper, #fff);
+}
+.usage-stat-k {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+.usage-stat-v { font-size: 1.3rem; font-weight: 650; font-variant-numeric: tabular-nums; }
+.usage-table .num { text-align: right; font-variant-numeric: tabular-nums; }
 .admin-cell-user {
   display: flex; align-items: center; gap: var(--space-sm);
 }
