@@ -6,6 +6,7 @@ import {
   transitionToString,
   transitionTarget,
   raciToString,
+  normalizeIngestReport,
 } from "./wiki.ts";
 
 const roster = new Map([
@@ -49,4 +50,40 @@ test("transitionTarget extracts the target id from either form", () => {
 test("raciToString renders both the object and string forms", () => {
   assert.equal(raciToString({ step: "PS-1", level: "A" }), "PS-1:A");
   assert.equal(raciToString("PS-2:R"), "PS-2:R"); // legacy string passes through
+});
+
+test("normalizeIngestReport coerces a malformed report's arrays (F-002)", () => {
+  // The exact shape a bypassed/legacy write produced: no created/updated, no
+  // generatedAt/slug — the report that crashed TriagePanel (F-003).
+  const r = normalizeIngestReport(
+    { file: "doc-v1.md", conflicts: [], corrections: [] },
+    "cob-003",
+  );
+  assert.ok(r);
+  assert.deepEqual(r!.created, []); // was undefined -> [] (no more `.length` throw)
+  assert.deepEqual(r!.updated, []);
+  assert.deepEqual(r!.conflicts, []);
+  assert.deepEqual(r!.corrections, []);
+  assert.equal(r!.file, "doc-v1.md"); // scalar preserved
+  assert.equal(r!.slug, "cob-003"); // missing slug defaulted from the arg
+});
+
+test("normalizeIngestReport preserves a well-formed report", () => {
+  const src = {
+    generatedAt: "2026-06-07T00:00:00.000Z",
+    slug: "frd-001",
+    file: "v2.md",
+    created: ["PS-1"],
+    updated: ["PS-2"],
+    conflicts: [{ element: "M-1", field: "target", documentSays: "4h", wikiSays: "2h" }],
+    corrections: [],
+  };
+  const r = normalizeIngestReport(src, "ignored");
+  assert.deepEqual(r, src); // unchanged, and the arg slug is NOT used
+});
+
+test("normalizeIngestReport returns undefined when there is no report", () => {
+  assert.equal(normalizeIngestReport(undefined, "s"), undefined);
+  assert.equal(normalizeIngestReport(null, "s"), undefined);
+  assert.equal(normalizeIngestReport("not-an-object", "s"), undefined);
 });

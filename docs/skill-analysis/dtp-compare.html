@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dtp-compare — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">dtp-compare</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">DTP Enhancer</div>
+    <h1>dtp-compare</h1>
+    <p class="lede">Review-only sibling of dtp-regenerate: measures a chosen procedure document (DTP) against the corrected As-Is wiki and emits one critical-review finding per material discrepancy — without rewriting the document or producing any new artifact.</p>
+    <div class="meta-row">
+      <span class="chip">Non-interactive · button-invoked</span>
+      <span class="chip neutral">WRITES_TO: runtime store (comparison history)</span>
+      <span class="chip neutral">READS: As-Is wiki + chosen DTP</span>
+      <span class="chip neutral">Never writes the wiki JSON</span>
+    </div>
+  </div>
+
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>dtp-compare</code> checks an existing <strong>DTP</strong> — the bank's procedure
+      document — against the corrected As-Is wiki. An analyst has worked the As-Is end to end, so
+      the wiki holds a <em>better, corrected</em> current state than the document. The skill produces
+      exactly <strong>one</strong> thing: a <strong>critical review</strong>, the chosen DTP measured
+      against the wiki, one finding per material discrepancy.
+    </p>
+    <p>
+      It is the lightweight half of the DTP Enhancer. Where <code>dtp-regenerate</code> both rewrites
+      the procedure <em>and</em> reviews it, <code>dtp-compare</code> is <strong>review-only</strong>:
+      it does not regenerate or rewrite the DTP, and it writes no new document artifact. It is
+      invoked by the DTP Enhancer's <em>"Select a source DTP"</em> action, so it is the right tool
+      when a reviewer wants to check an existing document against the analysis without paying for a
+      full rebuild.
+    </p>
+    <p>Key constraints and behaviours:</p>
+    <ul>
+      <li><strong>Non-interactive.</strong> Like <code>area-summary</code>, it reads, reviews and
+        reports — no SME questions, no approval loop. Invoked with a process <code>&lt;slug&gt;</code>
+        and the DTP filename under <code>raw-sources/&lt;slug&gt;/</code>.</li>
+      <li><strong>The wiki is the authority.</strong> Where the wiki and the DTP disagree, the wiki
+        wins, and that disagreement is a finding. Approved content is the trusted current state;
+        <code>draft</code>/<code>in-progress</code> elements are weaker ground for a claim.</li>
+      <li><strong>No artifact.</strong> Unlike <code>dtp-regenerate</code>, it never writes a
+        regenerated Markdown file — only the comparison findings land, as a new entry in the runtime
+        past-comparison history.</li>
+      <li><strong>As-Is only.</strong> One DTP per run, against the As-Is — never the target/to-be.</li>
+      <li><strong>Read-only on the wiki.</strong> It never creates, edits or approves wiki elements,
+        never resolves conflicts, and never modifies the process JSON. Everything stated must trace
+        to a wiki As-Is element or the reviewed document.</li>
+    </ul>
+  </section>
+
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>Four steps run in order: read the document, read the corrected wiki, critically review, then store the review.</p>
+    <ol class="steps">
+      <li><span class="st-title">Step 1 — Read the DTP</span><span class="st-body">Read the document at <code>raw-sources/&lt;slug&gt;/&lt;file&gt;</code> (PDF, Markdown, Word and text read directly). If no filename was given, list the folder and take the most recently ingested document, ignoring any file flagged <code>generated</code> in <code>uploads.json</code>. Study its section structure so it can be walked methodically.</span></li>
+      <li><span class="st-title">Step 2 — Read the corrected As-Is wiki</span><span class="st-body">Read the overview, then every As-Is element — <code>process-step</code>, <code>role</code>, <code>exception</code>, <code>pain-point</code>, <code>metric</code>, <code>process-gap</code>, <code>country-variation</code>, plus <code>control</code>/<code>system</code> where the DTP covered them. Tools: <span class="tool">expandElement()</span></span></li>
+      <li><span class="st-title">Step 3 — Critically review the DTP</span><span class="st-body">Walk the DTP section by section and emit one finding per <em>material</em> discrepancy: <code>{ kind, headline, dtpSays, wikiSays, elements, severity, rationale, suggestedDisposition }</code>. <code>kind</code> is <code>outdated</code> / <code>missing</code> / <code>contradiction</code> / <code>added</code>; <code>severity</code> high/medium/low; disposition <code>accepted</code> (the DTP is wrong) or <code>dismissed</code> (likely the wiki is wrong, reconcile it) — a hint only, the reviewer decides.</span></li>
+      <li><span class="st-title">Step 4 — Store the review</span><span class="st-body">Hand the findings to the writer with the reviewed <code>sourceFile</code>, the findings and <code>coverage.dtpSections</code> (every section walked, even findingless ones). The tool stamps <code>DTPF-…</code> ids, stores the comparison as a new entry in the runtime past-comparison history (no artifact), and returns the run id + count for the one-line report. Tools: <span class="tool">writeDtpComparison()</span></span></li>
+    </ol>
+  </section>
+
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Deterministic section-to-element alignment.</strong> Before review, build a fixed map of each DTP section to the wiki elements that cover it (by step title / keyword overlap), then review one aligned pair at a time.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Turns Step&nbsp;3's holistic free comparison into a fixed walk where every section is visited exactly once — exhaustive and reproducible instead of relying on the model to track what it has covered.</td></tr>
+        <tr><td><strong>Parallelise the per-section comparison.</strong> Fan the aligned pairs out across read-only sub-agents, one per section, and merge the findings.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-h">high</span></td><td>Section comparisons are independent; concurrent fan-out collapses a linear walk over a long DTP into one pass — the single biggest wall-clock lever for review-only.</td></tr>
+        <tr><td><strong>Strict findings schema, one row per discrepancy.</strong> Validate each finding against the seven-field shape with enum-checked kind/severity/disposition before it enters the report.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Catches a malformed finding pre-write instead of failing in <code>writeDtpComparison</code>, killing retry loops and keeping the comparison history auditable, one row per discrepancy.</td></tr>
+        <tr><td><strong>Cache the parsed As-Is wiki.</strong> Index every As-Is element once into a shared id→element map rather than re-expanding bodies during the walk.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Removes the repeated <code>expandElement</code> round-trips that dominate Step&nbsp;2–3 latency.</td></tr>
+        <tr><td><strong>Chunk large DTPs, map-reduce.</strong> Split a long document into section chunks for the comparison map step, then reduce to a deduplicated finding set.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">med</span></td><td>Keeps each comparison inside a tight context window so a long bank procedure isn't skimmed or truncated.</td></tr>
+        <tr><td><strong>Auto-derive <code>coverage.dtpSections</code>.</strong> Emit the heading list from the document parser and pass it through, instead of the model re-listing the sections it walked.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Guarantees the coverage map matches the real headings every run, so the coverage view never misses a section the model forgot to name.</td></tr>
+        <tr><td><strong>Deterministic element-id resolution.</strong> Wire each finding's <code>elements</code> array from the aligned wiki elements automatically rather than the model recalling ids.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Eliminates wrong/missing element ids on findings, which are what make a finding traceable back into the wiki and triageable in the panel.</td></tr>
+        <tr><td><strong>Carry the diff into <code>dtp-summary</code>.</strong> Persist the aligned section map alongside the findings so the executive memo can group by section/theme without re-deriving the structure.</td><td><span class="tag both">both</span></td><td><span class="tag effort-l">low</span></td><td>The downstream summary skill is handed findings inline; passing the section grouping too makes its theme grouping deterministic and saves it re-reasoning over the gap.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> a <strong>deterministic section-to-element alignment</strong> that the per-section comparisons can then <strong>fan out across sub-agents</strong>. Because <code>dtp-compare</code> is review-only, almost all of its cost is the holistic walk in Step&nbsp;3. Aligning each DTP section to its covering wiki elements up front makes the review exhaustive and identical run-to-run; fanning the independent pairs out concurrently then removes the linear latency entirely. A strict one-row-per-discrepancy findings schema on top makes the comparison history fully auditable and retry-free.</div>
+  </section>
+
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/dtp-compare/SKILL.md</code></footer>
+</div>
+</body>
+</html>

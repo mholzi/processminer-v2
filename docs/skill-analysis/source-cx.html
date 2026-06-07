@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>source-cx — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">source-cx</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Web-sourcing (non-interactive)</div>
+    <h1>source-cx</h1>
+    <p class="lede">Autonomously sources the external client-experience layer from the web — how European, global and fintech competitors run the same client journey, plus industry CX benchmarks — and drafts <code>competitor-cx-*</code> and <code>cx-benchmark</code> elements. It never touches the bank's own journey.</p>
+    <div class="meta-row">
+      <span class="chip">Non-interactive · button-invoked</span>
+      <span class="chip neutral">SOURCE: web · provenance=web</span>
+      <span class="chip neutral">FILLS: Competitor CX · CX Benchmarks</span>
+      <span class="chip neutral">Triaged, not approved</span>
+    </div>
+  </div>
+
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>source-cx</code> is the CX counterpart of <code>source-innovation</code>.
+      Invoked with a process <code>&lt;slug&gt;</code>, it sources only the
+      <em>comparative</em> client-experience layer: how competitors run the same client
+      journey, and what the industry treats as the CX standard. It writes
+      <code>competitor-cx-eu</code>, <code>competitor-cx-global</code> and
+      <code>competitor-cx-fintech</code> into <code>competitor-cx</code>, and
+      <code>cx-benchmark</code> into <code>cx-benchmarks</code>.
+    </p>
+    <p>
+      It pointedly does <strong>not</strong> document this bank's own journey — its
+      channels, touchpoints, moments and friction are captured by the SME or
+      <code>document-ingest</code>, not the web. The skill closes its report with a
+      verbatim handoff line making that boundary explicit, so a user who clicks
+      "Source from the web" on the Client Experience area is not misled into thinking
+      the whole area was filled.
+    </p>
+    <p>Key constraints and behaviours:</p>
+    <ul>
+      <li><strong>Non-interactive.</strong> No SME, no Y/E/R, no approval — everything is
+        <code>status: draft</code> for later triage in the app.</li>
+      <li><strong>Three concurrent competitor tiers.</strong> EU / global / fintech are
+        independent research streams, dispatched as three read-only sub-agents in a
+        single message; each returns only a JSON array of draft specs.</li>
+      <li><strong>Real competitors only.</strong> Named real peers and real cited
+        sources — a handful of material examples per tier, never a dump, never invented.</li>
+      <li><strong>Provenance = web.</strong> Each block (<em>The journey</em> /
+        <em>Relevance</em> / <em>Evidence</em> for competitor CX; <em>The benchmark</em> /
+        <em>Relevance</em> / <em>Evidence</em> for benchmarks) carries
+        <code>source: web</code> with URL + snippet + fetch date, blocking approval until
+        a specialist confirms with the SME.</li>
+      <li><strong>Extend, never duplicate.</strong> It reads existing
+        <code>competitor-cx-*</code> and <code>cx-benchmark</code> elements first.</li>
+    </ul>
+  </section>
+
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>Four prescribed steps; competitor tiers are written incrementally as each returns.</p>
+    <ol class="steps">
+      <li><span class="st-title">Step 1 — Read the process</span><span class="st-body">Read the overview and the documented client journey (<code>channels</code>, <code>touchpoints</code>, <code>moments</code>, <code>friction-points</code>) to know what journey to benchmark, plus existing <code>competitor-cx-*</code> and <code>cx-benchmark</code> elements so it extends rather than duplicates. Tools: <span class="tool">expandElement()</span></span></li>
+      <li><span class="st-title">Step 2 — Scan competitor CX (concurrently)</span><span class="st-body">In one message, dispatch three read-only sub-agents — EU, global, fintech — each briefed to web-search named competitors' client experience (onboarding, channels, speed, self-service, reviews) and return a JSON array of draft specs (blocks <em>The journey</em>/<em>Relevance</em>/<em>Evidence</em>; <code>competitor</code>, <code>source</code>, <code>sourceUrl</code>; a web <code>provenance</code> map). Write each tier as soon as it returns, keeping a running per-type tally. Tools: <span class="tool">Task()</span>, <span class="tool">createElements()</span></span></li>
+      <li><span class="st-title">Step 3 — Scan CX benchmarks</span><span class="st-body">Web-search industry CX benchmarks and client-expectation research (onboarding-time standards, NPS/effort, what corporate clients expect) and write each <code>cx-benchmark</code> as its own <code>createElements</code> group. Then run conformance once over the run. Tools: <span class="tool">createElements()</span>, <span class="tool">checkConformance()</span></span></li>
+      <li><span class="st-title">Step 4 — Report</span><span class="st-body">Map the running per-type totals into the canonical report (Competitor CX total with EU/global/fintech split; CX benchmarks; sources), then append the verbatim handoff line that the internal journey was not touched and needs the client-journey-specialist. If web search was unavailable, add the fixed line saying so.</span></li>
+    </ol>
+  </section>
+
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Run the benchmark scan as a fourth concurrent sub-agent.</strong> Today Step 3 is serial after the three tiers; benchmarks are an independent stream — fan it out alongside the EU/global/fintech tiers in the same dispatch.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Removes the entire serial Step 3 from the critical path — all four research streams finish together.</td></tr>
+        <tr><td><strong>Authored per-tier query templates.</strong> Pre-write the search strings each sub-agent runs (keyed off the process domain and journey) instead of letting each sub-agent improvise terms.</td><td><span class="tag both">both</span></td><td><span class="tag effort-l">low</span></td><td>Same process yields the same searches across runs, and saves each sub-agent a planning round.</td></tr>
+        <tr><td><strong>Curated competitor seed lists per tier.</strong> Maintain a named set of EU peers, global players and fintechs for each banking domain, so sub-agents search known names rather than rediscovering "who counts" each run.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Stabilises which competitors appear and stops a strong peer being silently missed on a given run.</td></tr>
+        <tr><td><strong>Deterministic dedup + cap per tier.</strong> Normalise by competitor name and cap to a fixed count before drafting, in the tool layer.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Enforces "a handful, not a dump" mechanically and makes the output length reproducible.</td></tr>
+        <tr><td><strong>Structured-output schema per element.</strong> Constrain each draft spec to <code>{ competitor, source, sourceUrl, blocks, provenance }</code> so a provenance entry or block is never missing.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Removes the conformance fix-and-retry round and guarantees the web-provenance contract is met.</td></tr>
+        <tr><td><strong>Pre-load existing elements into each sub-agent brief.</strong> Pass the existing competitor/benchmark names down so a sub-agent never drafts a duplicate that has to be discarded after the fact.</td><td><span class="tag both">both</span></td><td><span class="tag effort-l">low</span></td><td>Avoids wasted searches and re-drafts on a re-run; bakes "extend, never duplicate" into the fan-out.</td></tr>
+        <tr><td><strong>Cache fetched competitor/benchmark pages.</strong> Key on URL + day so benchmark studies (shared across many processes) and competitor pages are reused.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">med</span></td><td>Industry CX studies are reused across processes; caching makes repeat runs near-instant.</td></tr>
+        <tr><td><strong>Deterministic relevance pre-scoring.</strong> Score each found example against the documented journey before drafting, and drop low-relevance hits, rather than the model judging relevance prose ad hoc.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Makes the kept set reproducible and front-loads the triage the SME would otherwise do.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> promote the benchmark scan to a fourth concurrent sub-agent and drive all four off authored query templates and curated competitor seed lists. The skill already parallelises the three competitor tiers; the remaining serial tail (benchmarks) and the per-run variance in which competitors and queries get chosen are the two levers left. Fixing both makes the whole run one parallel fan-out with a reproducible, deduplicated result.</div>
+  </section>
+
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/source-cx/SKILL.md</code></footer>
+</div>
+</body>
+</html>

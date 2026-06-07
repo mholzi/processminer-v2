@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>comment-review — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">comment-review</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Single-element &amp; review</div>
+    <h1>comment-review</h1>
+    <p class="lede">Works the <strong>open discussion comments</strong> on one element with the SME — assesses each comment's impact, incorporates the agreed changes via <code>updateElement</code>, flags the linked elements the change implicates, then posts a closing analyst summary into the discussion thread.</p>
+    <div class="meta-row">
+      <span class="chip">Interactive ([I]/[D]/[S] per comment)</span>
+      <span class="chip neutral">WRITES_TO: element via updateElement() + notes (resolve/summary)</span>
+      <span class="chip neutral">Invoked by: "Review with analyst" on the Discussion panel</span>
+      <span class="chip neutral">SCOPE: one element</span>
+    </div>
+  </div>
+
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>comment-review</code> walks the SME through the <strong>unresolved</strong>
+      discussion comments on a single element (process <code>&lt;slug&gt;</code>,
+      <code>&lt;elementId&gt;</code>). For each comment it presents an impact assessment,
+      lets the SME choose to incorporate, decline or skip it, applies the agreed edits
+      through the normal draft flow, and closes the loop with a summary note posted into
+      the thread.
+    </p>
+    <p>
+      The skill adopts the lens of <strong>the specialist that owns the element's
+      section</strong> — read from the element's <code>section:</code> frontmatter and
+      the schema's <code>specialist</code> mapping (process, control &amp; compliance,
+      client journey, innovation, transformation, or IT architect) — and signs the
+      closing note as that analyst. If the section declares no specialist, it adopts a
+      general process-analyst lens.
+    </p>
+    <p>
+      A distinctive responsibility is <strong>drift detection</strong>. Because an
+      incorporated change can leave a <em>linked</em> element describing the same fact
+      differently (a control's activity restates a step; a step's output is an
+      exception's input), the skill reads the edited element's relations, names every
+      implicated element by id in the summary, and — where a linked element is squarely
+      contradicted — posts a short comment on <em>that</em> element so its own review
+      picks it up. The skill edits only the one element it was invoked on; naming the
+      others is its safe substitute for editing them.
+    </p>
+  </section>
+
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>Read the element and its open comments, work each one with the SME, incorporate, then close the loop.</p>
+    <ol class="steps">
+      <li><span class="st-title">Read the element and its comments</span><span class="st-body">Read the element (content, status, confidence, relations) and its <code>notes</code> thread; the comments to review are the unresolved ones (no <code>resolved: true</code>). Read the type schema and any elements the comments touch. If there are no unresolved comments, say so and stop — write nothing. Tools: <span class="tool">expandElement({ type, id })</span></span></li>
+      <li><span class="st-title">Work each comment with the SME</span><span class="st-body">Oldest first, present the comment plus an impact assessment (factual correction / real gap / open question / out of scope), then offer exactly: <strong>[I]</strong> incorporate, <strong>[D]</strong> decline (capture a one-line reason), <strong>[S]</strong> skip for now. Loop until every unresolved comment has a decision; never decide for the SME.</span></li>
+      <li><span class="st-title">Incorporate the agreed changes</span><span class="st-body">For each [I], edit the element via the patch shape that fits (block / field / list / full replace). The edit re-opens approval automatically; conformance-check and fix flags. Then read the edited element's relations and list every linked element the change now puts at odds — posting a short comment on any squarely contradicted one. Tools: <span class="tool">updateElement({ id, patch })</span> · <span class="tool">checkConformance({ slug, elementId })</span> · <span class="tool">createNote()</span></span></li>
+      <li><span class="st-title">Close the loop</span><span class="st-body">Resolve every [I] and [D] comment, then post a single summary note as the owning analyst — what was incorporated, what was declined and why, what's left open, and the implicated linked elements by id. Confirm with the exact counts line. Tools: <span class="tool">resolveNotes({ noteIds, resolvedBy })</span> · <span class="tool">createNote({ elementId, author, content, type })</span></span></li>
+    </ol>
+  </section>
+
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Batch the impact assessments.</strong> Compute and present all unresolved comments' assessments in one pass up front, then collect the SME's [I]/[D]/[S] decisions together, rather than a serial round-trip per comment.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">med</span></td><td>Independent comments need no per-comment conversation; one batched presentation collapses N round-trips into one, the largest latency cost for elements with many comments.</td></tr>
+        <tr><td><strong>Deterministic drift map.</strong> A <code>relatedElements({ id })</code> helper that returns the linked elements (controls↔steps, step output↔exception input, role↔steps) so "which linked elements does this implicate" is computed, not inferred.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Drift detection is the skill's most-missable step; a mechanical relation walk makes the implicated-id list reproducible every run.</td></tr>
+        <tr><td><strong>Single thread+element fetch.</strong> One <code>commentReviewContext({ slug, elementId })</code> returning the element body, its type schema, the unresolved notes and the touched elements together.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">med</span></td><td>Step 1 is several reads; one payload removes latency and fixes the exact context every run is built on.</td></tr>
+        <tr><td><strong>Structured decision record.</strong> Capture each comment's outcome as <code>{ noteId, decision, reason }</code> objects, then derive the resolve list and summary mechanically from them.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Removes the risk of resolving the wrong notes or omitting a declined-reason from the summary.</td></tr>
+        <tr><td><strong>Template the closing summary.</strong> Fixed sections (incorporated / declined / open / implicated) populated from the decision record, instead of free-form composition.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Every summary reads the same and never silently drops the implicated-elements section.</td></tr>
+        <tr><td><strong>Auto-skip the no-op run.</strong> Detect zero unresolved comments deterministically and exit before any model reasoning starts.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Saves an entire model turn on the common "nothing to review" case.</td></tr>
+        <tr><td><strong>Pre-validate the patch.</strong> Validate the proposed [I] edit against the type schema before writing, so the re-open + conformance step never bounces.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Turns the post-write conformance check from a possible failure into a guaranteed pass.</td></tr>
+        <tr><td><strong>One-call resolve+summary.</strong> A combined <code>closeReview({ resolveIds, resolvedBy, summary })</code> so resolving handled comments and posting the summary are atomic.</td><td><span class="tag both">both</span></td><td><span class="tag effort-l">low</span></td><td>Removes a two-call dance and guarantees the thread is never left half-closed.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> batching the impact assessments and decisions. Today the skill converses comment-by-comment even when comments are independent; presenting all assessments at once and collecting decisions together cuts the dominant per-comment round-trip cost, while a deterministic drift map makes the one judgement step most prone to omission — naming the linked elements a change implicates — reproducible rather than dependent on the model remembering to walk the relations.</div>
+  </section>
+
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/comment-review/SKILL.md</code></footer>
+</div>
+</body>
+</html>
