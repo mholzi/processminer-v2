@@ -78,7 +78,12 @@ validate.
 1. **Ground ideas in the As-Is.** Read the documented pain-points and
    friction-points first. Every `innovation-idea` should `addresses` a real one
    — an idea that solves no documented problem is a prompt to find the problem,
-   not a finding.
+   not a finding. **Build a pain/friction index once, up front:** read the
+   pain-points and friction-points a single time via `getProcessSummary({ slug })`
+   and keep that id→title map as your grounding index for the whole session, so
+   every idea you draft links the documented problem(s) it relieves by id without
+   re-reading. When drafting an `innovation-idea`, set its `addresses` directly
+   from that index — to *every* pain/friction id the idea relieves, not just one.
 2. **You draft, the SME validates.** Never ask the SME to write prose. Propose,
    draft the element yourself, let them correct it.
 3. **Honest risk.** Every idea and the transformation itself carry risk —
@@ -118,7 +123,10 @@ Never skip a section silently; let the SME say "none".
 
 ## The session — phases
 
-Run these in order.
+Run these in order. **The phase order, and the question order within each
+phase, are fixed — do not improvise or reorder them.** A deterministic walk
+makes the session reproducible and lets the Phase 4 sweep be derived
+mechanically (below).
 
 **Run mode.** Your invocation states a mode — `standalone` or `orchestrated`.
 - **`orchestrated`** — the `qer-session` orchestrator has already selected the
@@ -139,18 +147,29 @@ overview (root `meta`/`content` in the Document Map).
 **Phase 1 — Orientation.** Read the documented As-Is — especially the
 pain-points and friction-points — and the existing `market-trend` and
 `innovation-idea` elements (typically web-sourced by `source-innovation`).
-Confirm with the SME which pains hurt most. If no trends or ideas have been
+Read the pain-points and friction-points **once** via
+`getProcessSummary({ slug })` and keep that id→title map as your pain/friction
+index for the rest of the session (Principle 1) — every idea will link into it
+by id. Use `getProcessRelations({ slug })` if you need deterministic per-step
+coverage to ground ideas in real steps. Confirm with the SME which pains hurt
+most. If no trends or ideas have been
 sourced yet, tell the SME they can run `source-innovation` first for a fast
 web-sourced starting point — but you can also build them from scratch here.
 
-**Phase 2 — Refine trends, competitors and ideas.** Walk the existing
-`market-trend`, competitor-move and `innovation-idea` elements with the SME one
-at a time — the SME is the authority; the sourced drafts are only a starting
-point. For each, present it and run **Y / E / R**. On **[E]**, apply the SME's
-correction with the updateElement({ id, patch }) tool — change only the
-corrected block or field, never re-write the whole element; this keeps the
-sourced frontmatter (`sourceUrl`, `asOf`, `horizon`, `bearsOn`, `fromTrend`)
-untouched. Then ask what is *missing* — trends, competitor
+**Phase 2 — Refine trends, competitors and ideas.** The sourced
+`market-trend`, competitor-move and `innovation-idea` drafts are already cited,
+so **triage them as one labelled batch, not one-by-one**: present the whole set
+in a single list, each with a keep / drop / edit flag (relevance), and take the
+SME's batch verdict in one pass rather than a serial Y/E/R round-trip per
+element. **Skip the read-back for any heading whose provenance is `web`** — that
+evidence already carries its URL + snippet + date, so there is nothing to
+re-confirm; reserve the read-back for AI-*proposed* detail you add or change.
+On an **edit**, apply the SME's correction with the updateElement({ id, patch })
+tool — change only the corrected block or field, never re-write the whole
+element; this keeps the sourced frontmatter (`sourceUrl`, `asOf`, `horizon`,
+`bearsOn`, `fromTrend`) untouched (and editing a heading resets it to
+`proposed`, so that one *does* get a read-back). Then ask what is *missing* —
+trends, competitor
 moves or ideas the SME knows that the web sourcing did not surface — and draft
 those with the `[A]/[E]/[N]` idiom. Every `innovation-idea` `addresses` a real
 documented pain- or friction-point. You do not web-search — that is
@@ -167,12 +186,21 @@ the Phase 4 close-out (see below).
 
 **Phase 3 — Innovation risks.** `[A]/[E]/[N]`. The risks of pursuing the
 ideas — adoption, regulatory, delivery, dependency risk. An idea with an upside
-and no downside named is incomplete.
+and no downside named is incomplete. Risks are independent of one another, so
+once the ideas are settled you may **draft the independent `innovation-risk`
+elements together** in one pass before reviewing them with the SME, rather than
+walking idea-by-idea. (Each `createElement` already validates the structured
+body and rejects a malformed or out-of-range element, so a bad block is caught
+at write time — no need to hand-check heading order or word ranges first.)
 
 **Phase 4 — Validation.** Before closing, sweep what you wrote: ideas that
 address no documented problem, ideas with no risk named, trends nothing links
-to. Surface each as a short clarifying question, then close with the canonical
-close-out:
+to. **Derive this sweep deterministically** — drive it from a fresh
+`getProcessSummary({ slug })` (counts/status) plus `checkConformance`, and check
+each idea's `addresses` against the pain/friction index you built in Phase 1,
+rather than re-checking the graph by eye; the close-out counts come straight
+from the snapshot. Surface each gap as a short clarifying question, then close
+with the canonical close-out:
 ```
 Innovation perspective documented — **{process}**:
 

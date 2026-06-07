@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>document-ingest — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">document-ingest</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Scaffolding &amp; ingest</div>
+    <h1>document-ingest</h1>
+    <p class="lede">Reads an uploaded source document and extracts its content into the wiki as draft elements — fanning out drafter and verifier sub-agents per element-type group, verifying every claim against the source, filling the overview, and flagging conflicts. No SME is in the loop; the document is the only authority.</p>
+    <div class="meta-row">
+      <span class="chip">Invoked by: "⬆ Upload document" modal after the file is saved</span>
+      <span class="chip neutral">Semi-interactive (single Y/N gate, then non-interactive)</span>
+      <span class="chip neutral">WRITES_TO: process JSON elements + overview + ingest report</span>
+      <span class="chip neutral">OWNS: no fixed type — cross-perspective by nature</span>
+    </div>
+  </div>
+
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>document-ingest</code> takes a file already uploaded under
+      <code>raw-sources/&lt;slug&gt;/</code> (Karpathy LLM-Wiki layer 1) and extracts
+      its process content into typed wiki elements. It is the second step in the
+      documentation flow, between <code>new-process</code> and the triage screen /
+      <code>foundational-run</code>. It is <strong>cross-perspective</strong>: it writes
+      whatever element types the document covers (steps, roles, systems, controls,
+      regulations, metrics, …), all as <code>status: draft</code>. It never sets
+      <code>approved</code> and never overwrites on a conflict.
+    </p>
+    <p>
+      Its defining constraint is that <strong>no SME is present</strong>. The document
+      is the sole authority, and an extraction can quietly claim more than the source
+      says — so every drafted element is <strong>verified against its source passage
+      before it is written</strong>. This is the Verify half of the
+      Brainstorm/Author/Verify pattern, realised "against a source" rather than
+      interactively.
+    </p>
+    <p>
+      Mechanically it is a <strong>map-reduce</strong>. A whole document of drafts is too
+      much linear writing for one turn (the legacy linear flow emitted ~315k tokens and
+      triggered mid-flow auto-compact), so the main agent plans an <strong>outline</strong>
+      of every candidate element, then fans out <em>one drafter sub-agent per
+      element-type group</em>, then <em>one verifier per group</em>, then merges and writes
+      everything in a single batch. The main-agent output drops to ~30k tokens.
+    </p>
+    <p>Key behaviours and constraints:</p>
+    <ul>
+      <li><strong>Verbatim user-facing wording.</strong> The summary prompt, the
+        [Y]/[N] gate, and the final extraction report are reproduced exactly from the
+        prompt — never written from memory.</li>
+      <li><strong>tempKey discipline.</strong> New elements get deterministic
+        <code>tempKey</code>s (<code>role-1</code>, <code>sys-3</code>); cross-group
+        relations reference sisters by <code>@&lt;tempKey&gt;</code>, which
+        <code>createElements</code> resolves at write time. tempKeys may appear only in
+        relation/field arrays, never in prose blocks.</li>
+      <li><strong>Three outline dispositions.</strong> New topic (tempKey), refine
+        (existing id, no contradiction), or conflict (existing id, contradicts) — the
+        last is never drafted, only recorded.</li>
+      <li><strong>Provenance is earned by the verifier.</strong> Drafters tag headings
+        provisionally and omit evidence; verifiers trace each claim, strip
+        hallucinations, fill the verbatim <code>evidence</code> quote, set
+        <code>confidence</code>, and demote untraceable headings to
+        <code>proposed</code>.</li>
+      <li><strong>Conflicts are reported, not resolved</strong> — they flow to the ingest
+        report and are later worked by <code>conflict-resolution</code>.</li>
+    </ul>
+  </section>
+
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>One Y/N gate, then a deterministic map-reduce; Step 3 is the engine.</p>
+    <ol class="steps">
+      <li><span class="st-title">Step 1 — Review and summarise</span><span class="st-body">Read the document at the given path; take the slug from the path and the title from the process overview. Write a summary and present the canonical "Shall I extract…?" prompt with the <strong>[Y]/[N]</strong> choice.</span></li>
+      <li><span class="st-title">Step 2 — Wait for the user</span><span class="st-body">On <strong>[N]</strong> stop with the exact "document stays in raw-sources" reply. On <strong>[Y]</strong> continue to Step 3.</span></li>
+      <li><span class="st-title">Step 3.1 — Identify the source</span><span class="st-body">Confirm which uploaded file to ingest (already in <code>uploads.json</code>; no register step). Carry its filename through to the report.</span></li>
+      <li><span class="st-title">Step 3.2 — Outline every element up front</span><span class="st-body">Read <code>schema/process-schema.json</code>; list existing ids+titles per type. Tools: <span class="tool">expandElement({ type })</span>. Read the document end-to-end and emit one outline entry per candidate (new / refine / conflict), partitioned one group per type (split &gt;~10 into <code>-a</code>/<code>-b</code>). Write <code>/tmp/&lt;slug&gt;-outline.json</code>.</span></li>
+      <li><span class="st-title">Step 3.3 — Draft (fan out, one sub-agent per group)</span><span class="st-body">Dispatch all drafters in a single message; wait for all. Each reads its group, reads the schema and (if refining) existing bodies via <span class="tool">expandElement({ type, id })</span>, drafts createElement specs / refine specs / conflict entries, omits evidence, tags provenance provisionally, and writes <code>/tmp/&lt;slug&gt;-drafts-&lt;group&gt;.json</code>. Drafters are read-only on the wiki.</span></li>
+      <li><span class="st-title">Step 3.4 — Verify (fan out, 1:1 with drafters)</span><span class="st-body">Dispatch all verifiers in one message; wait for all. Each traces every claim to the source, removes/rewrites unsupported claims, sets <code>confidence</code>, fills <code>provenance.evidence</code> (or demotes to <code>proposed</code>), and writes <code>/tmp/&lt;slug&gt;-verified-&lt;group&gt;.json</code>. Read-only on the wiki.</span></li>
+      <li><span class="st-title">Step 3.5 — Merge + write (one batch)</span><span class="st-body">Concatenate all verified specs and the conflict/correction lists. Tools: <span class="tool">createElements({ elements })</span> — it assigns ids, resolves every <code>@&lt;tempKey&gt;</code>, writes all elements, and returns <code>created</code> + per-type <code>counts</code>.</span></li>
+      <li><span class="st-title">Step 3.6 — Fill the process overview</span><span class="st-body">Draft the overview body fields from what the document explicitly states (purpose, owner, trigger, frequency, scope in/out, input, output); leave un-stated fields blank; never overwrite a contradicted field (record a conflict) — except <code>description</code>, which is corrected if stale. Verify against source, then Tools: <span class="tool">updateElement({ id, patch })</span> on the root overview id.</span></li>
+      <li><span class="st-title">Step 3.7 — Check conformance</span><span class="st-body">Tools: <span class="tool">checkConformance({ slug })</span>. Fix any flagged element; re-verify every <code>document</code> heading's evidence is a verbatim, traceable quote.</span></li>
+      <li><span class="st-title">Step 3.8 — Write the ingest report</span><span class="st-body">Assemble <code>{ file, conflicts, corrections }</code> (plus any overview-level entry). Tools: <span class="tool">writeIngestReport({ slug, report })</span> — writes the <code>ingest</code> field the triage screen reads.</span></li>
+      <li><span class="st-title">Step 4 — Summarise the extraction</span><span class="st-body">Emit the canonical report (created / updated / overview / verified-corrected / conflicts, with one bullet per correction and per conflict), using counts from the tools, not memory.</span></li>
+    </ol>
+  </section>
+
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Merge drafter+verifier per group into one sub-agent.</strong> Have each group sub-agent draft and self-verify against the source in a single pass, writing the verified file directly.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">med</span></td><td>Halves the fan-out rounds (two waves → one) and the per-group file I/O; the source passage is already in that sub-agent's context, so re-reading it for verification is wasted work.</td></tr>
+        <tr><td><strong>Cache the document map once and pass it to sub-agents.</strong> Read the schema + existing-element index in the parent and hand it down, instead of every drafter re-running <code>expandElement</code>.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Removes N redundant schema/collection reads (one per group) that all return the same data.</td></tr>
+        <tr><td><strong>Structured-output the outline + draft specs.</strong> Constrain outline and draft specs to the schema with strict JSON output rather than free-form <code>/tmp</code> JSON.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Eliminates malformed-spec retries and tempKey-format drift before they reach <code>createElements</code>, and makes the outline machine-validatable.</td></tr>
+        <tr><td><strong>Skip the verifier for pure-quote headings.</strong> When a drafter marks a heading <code>document</code> with an exact span offset, validate the quote deterministically (substring match) instead of an LLM re-trace.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">med</span></td><td>The most common verification — "does this quote literally appear?" — becomes a string compare, reserving model verification for the inference-across-passages cases that actually need judgement.</td></tr>
+        <tr><td><strong>Fold conformance into the batch write.</strong> Have <code>createElements</code> run <code>checkConformance</code> internally and return failures, instead of a separate Step 3.7 round.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">med</span></td><td>Collapses write + validate into one tool call; failures come back attributed to the spec, avoiding a re-read-and-fix cycle.</td></tr>
+        <tr><td><strong>Deterministic evidence-traceability gate.</strong> Make <code>checkConformance</code> assert every <code>document</code> heading's evidence is a verbatim substring of a <code>raw-sources/&lt;slug&gt;/</code> file.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Turns "re-read the passage and confirm" (a judgement step that can pass a bad quote) into a hard, repeatable check — exactly the hallucination class the skill exists to catch.</td></tr>
+        <tr><td><strong>Generate the final report from tool counts.</strong> Render the Step 4 report directly from <code>createElements</code> + <code>writeIngestReport</code> return values.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Removes any chance of recounting drift in the user-facing summary and guarantees the verbatim template.</td></tr>
+        <tr><td><strong>Dynamic group balancing from outline counts.</strong> Split/merge groups by actual entry counts (not just the fixed ~10 heuristic) before dispatch.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Balances sub-agent load so the slowest group doesn't gate the whole fan-out wall-clock.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> collapse the two fan-out waves into one draft-and-self-verify sub-agent per group, and make quote traceability a deterministic substring check inside conformance. Today the source passage is read twice (drafter, then verifier) across two dispatch barriers, and the integrity guarantee rests on an LLM re-reading the document — slow and fallible. A single per-group pass with a string-match evidence gate cuts the wall-clock roughly in half and replaces the highest-stakes judgement step (did this <code>document</code> quote actually come from the source?) with a check that can't drift between runs.</div>
+  </section>
+
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/document-ingest/SKILL.md</code></footer>
+</div>
+</body>
+</html>

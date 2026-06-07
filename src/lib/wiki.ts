@@ -142,6 +142,33 @@ export interface IngestReport {
   conflicts: IngestConflict[];
   corrections: IngestCorrection[];
 }
+
+/**
+ * Coerce a raw `ingest` value read off disk into a valid `IngestReport` — every
+ * array defaulted to `[]`, scalars preserved (or defaulted). The write path
+ * already normalises via `buildIngestReport`, but a malformed or legacy report
+ * on disk (e.g. one written before that normaliser existed) would otherwise be
+ * passed through raw and let consumers read `ingest.created.length` on
+ * `undefined`. Normalising on read closes that for every consumer. Returns
+ * `undefined` when there is no ingest report at all.
+ */
+export function normalizeIngestReport(
+  raw: unknown,
+  slug: string,
+): IngestReport | undefined {
+  if (raw == null || typeof raw !== "object") return undefined;
+  const r = raw as Record<string, unknown>;
+  const arr = <T>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : []);
+  return {
+    generatedAt: typeof r.generatedAt === "string" ? r.generatedAt : "",
+    slug: typeof r.slug === "string" ? r.slug : slug,
+    file: typeof r.file === "string" ? r.file : "",
+    created: arr<string>(r.created),
+    updated: arr<string>(r.updated),
+    conflicts: arr<IngestConflict>(r.conflicts),
+    corrections: arr<IngestCorrection>(r.corrections),
+  };
+}
 /** Executive summaries per area — stored under the process JSON's `summaries`.
  *  Each is an Amazon-style memo broken into four individually-editable parts. */
 export type SectionSummaries = Record<
@@ -158,6 +185,8 @@ export interface ReviewState {
   done: boolean;
   startedAt: string;
   updatedAt: string;
+  /** The SME running the session (QER) — persisted so a resume never re-derives or re-asks. */
+  actor?: { name?: string; role?: string };
 }
 
 /** An imported source document — a file under raw-sources/<slug>/. */
@@ -537,7 +566,7 @@ export function getProcess(slug: string): ProcessDoc | null {
     sources,
     lint,
     targetReview: data.targetReview,
-    ingest: data.ingest,
+    ingest: normalizeIngestReport(data.ingest, slug),
     reviewState: runtime.reviewState,
     qerState: runtime.qerState,
     dtpReports,

@@ -13,7 +13,9 @@ import * as path from "node:path";
 import { getSchema, jsonElementToWikiPage, transitionTarget, listProcesses, getProcessSummary, getProcessElements, searchProcesses } from "./wiki.ts";
 import { canAccess } from "./process-access.ts";
 import { writeRuntime, getRuntime, setDtpSummary } from "./runtime-store.ts";
-import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch } from "./session-writes.ts";
+import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch, buildReconciledApprovalPatch, syncRelationsFromProse } from "./session-writes.ts";
+import { enrichFoundationalStatus } from "./foundational.ts";
+import { buildProcessRelations } from "./process-relations.ts";
 import { writeDtpReport, writeDtpComparison } from "./dtp-report.ts";
 import { buildNote, appendNote, resolveNotesInDoc } from "./session-notes.ts";
 import {
@@ -22,11 +24,13 @@ import {
   advance,
   foundationalStatus,
   qerStatus,
+  qerStatusWithPerspectives,
   QER_STEPS,
 } from "./session-cursor.ts";
 import { checkConformance } from "./conformance.ts";
 import { updateElement } from "./wiki-write.ts";
 import { buildProcessDoc } from "./gemini-worker.ts";
+import { deriveProcessMeta, scaffoldClosing } from "./process-scaffold.ts";
 import {
   replaceTempKeys,
   buildElement,
@@ -74,6 +78,13 @@ function assertAccess(slug: string): void {
       `Access denied: you do not have access to process "${slug}".`,
     );
   }
+}
+
+// Whether a perspective's specialist skill is installed — a deterministic
+// filesystem fact, so qer-session's Step 3 never has to guess which specialists
+// exist. Used to compute the perspective map in getSessionStatus.
+function qerSkillBuilt(skill: string): boolean {
+  return fs.existsSync(path.join(process.cwd(), ".claude", "skills", skill, "SKILL.md"));
 }
 
 // Global state for temp keys within a single process run, shared across multiple tool calls
@@ -174,7 +185,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "updateElement",
-        description: "Update an existing process element by applying a deep merge patch.",
+        description: "Update an existing process element by applying a deep merge patch. Set syncRelations:true (foundational-run [E] edits) to auto-add any relation-list ids the reworked prose names but the frontmatter is missing — it only adds ids that exist and match the list's type.",
         inputSchema: {
           type: "object",
           properties: {
@@ -187,7 +198,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                 meta: { type: "object" },
                 content: { type: "object" }
               }
-            }
+            },
+            syncRelations: { type: "boolean", description: "Opt-in: derive relation-list additions from ids named in the reworked prose (prevents prose/frontmatter drift)." }
           },
           required: ["slug", "id", "patch"]
         }
@@ -284,8 +296,28 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         }
       },
       {
+        name: "getProcessRelations",
+        description: "Deterministic relation/coverage/orphan facts for the process — per-step systems/controls/touchpoints with hasControl/hasSystem flags, orphan systems/controls/regulations, candidate integrations (system pairs co-occurring on a step with no integration), and steps without a control/system. Specialists call this instead of re-deriving coverage by hand (Process, Control & Compliance, Client Journey, IT Architect).",
+        inputSchema: {
+          type: "object",
+          properties: { slug: { type: "string", description: "The process slug." } },
+          required: ["slug"]
+        }
+      },
+      {
+        name: "deriveProcessMeta",
+        description: "Deterministically derive a new process's slug and `<PROC>` abbreviation from its name, and report whether the slug is taken (with non-colliding alternatives). Returns a guaranteed-valid abbreviation (2–6 uppercase letters) and the exact confirm-bullet template. Call this in the new-process skill before scaffolding; use exactly what it returns — never invent the slug or abbreviation.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            name: { type: "string", description: "The raw process name the user gave." }
+          },
+          required: ["name"]
+        }
+      },
+      {
         name: "scaffoldProcess",
-        description: "Create a brand-new, empty process document (root meta + an empty overview). Used only by the new-process skill before any content exists. Refuses to overwrite an existing process.",
+        description: "Create a brand-new, empty process document (root meta + an empty overview). Used only by the new-process skill before any content exists. Refuses to overwrite an existing process. Returns the canonical closing message to relay verbatim.",
         inputSchema: {
           type: "object",
           properties: {
@@ -464,14 +496,15 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "setApproval",
-        description: "Set an element's approval (in-progress | approved | rejected). The gate is enforced: 'approved' is refused while any heading's provenance is 'proposed'/'web'. Used by foundational-run and the specialists.",
+        description: "Set an element's approval (in-progress | approved | rejected). The gate is enforced: 'approved' is refused while any heading's provenance is 'proposed'/'web'. Pass `reconcile` (heading → SME's confirming quote) to flip those confirmed headings to 'elicited' and approve in one call (foundational-run [Y]). Used by foundational-run and the specialists.",
         inputSchema: {
           type: "object",
           properties: {
             slug: { type: "string", description: "The process slug." },
             id: { type: "string", description: "The element id." },
             status: { type: "string", description: "in-progress | approved | rejected." },
-            approver: { type: "string", description: "The SME name signing it off." }
+            approver: { type: "string", description: "The SME name signing it off." },
+            reconcile: { type: "object", description: "Optional: { \"Heading Title\": \"SME confirming quote\" } — flips those headings to elicited (with the quote as evidence) before approving, in one write." }
           },
           required: ["slug", "id", "status"]
         }
@@ -487,10 +520,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "startSession",
-        description: "Start a fresh qer-session: build the cursor over the fixed QER step sequence and persist it. Returns position/total/done/current (the step name).",
+        description: "Start a fresh qer-session: build the cursor over the fixed QER step sequence and persist it. Pass the SME's name/role as `actor` so a resumed session carries them. Returns position/total/done/current (the step name).",
         inputSchema: {
           type: "object",
-          properties: { slug: { type: "string", description: "The process slug." } },
+          properties: {
+            slug: { type: "string", description: "The process slug." },
+            actor: {
+              type: "object",
+              description: "The SME running the session (from the session-scope preamble).",
+              properties: { name: { type: "string" }, role: { type: "string" } }
+            }
+          },
           required: ["slug"]
         }
       },
@@ -599,6 +639,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     return { content: [{ type: "text", text: JSON.stringify({ slug, collection, elements }, null, 2) }] };
   }
 
+  // deriveProcessMeta takes a name (not a slug) and runs before any process
+  // exists, so it sits above the slug guard alongside the cross-process tools.
+  if (name === "deriveProcessMeta") {
+    const procName = String(args?.name || "").trim();
+    if (!procName) throw new McpError(ErrorCode.InvalidParams, "name is required.");
+    const slugExists = (s: string) =>
+      fs.existsSync(path.join(process.cwd(), "wiki", "processes", `${s}.json`));
+    const meta = deriveProcessMeta(procName, slugExists);
+    return { content: [{ type: "text", text: JSON.stringify(meta, null, 2) }] };
+  }
+
   if (!slug) {
     throw new McpError(ErrorCode.InvalidParams, "slug is required for all tools.");
   }
@@ -632,7 +683,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
     const newDoc = buildProcessDoc(PROC, title, description);
     atomicWriteFileSync(processFilePath, JSON.stringify(newDoc, null, 2) + "\n");
-    return { content: [{ type: "text", text: JSON.stringify({ ok: true, slug, id: newDoc.meta.id, created: true }, null, 2) }] };
+    return { content: [{ type: "text", text: JSON.stringify({ ok: true, slug, id: newDoc.meta.id, created: true, closing: scaffoldClosing(title) }, null, 2) }] };
   }
 
   let doc: any = null;
@@ -727,11 +778,29 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (tempKeyMap.has(key)) targetId = tempKeyMap.get(key)!;
       }
 
+      // Opt-in frontmatter-sync (foundational-run [E] edits): add relation-list
+      // ids the reworked prose names but the frontmatter is missing.
+      let relationsAdded: Record<string, string[]> = {};
+      if (args?.syncRelations) {
+        let el: any = null;
+        for (const v of Object.values(doc)) {
+          if (Array.isArray(v)) { const f = v.find((e: any) => e?.meta?.id === targetId); if (f) { el = f; break; } }
+        }
+        if (el) {
+          const merged = { content: { ...(el.content || {}), ...(patch?.content || {}) } };
+          const sync = syncRelationsFromProse(merged, doc);
+          if (Object.keys(sync.content).length) {
+            patch = { ...patch, content: { ...(patch?.content || {}), ...sync.content } };
+            relationsAdded = sync.added;
+          }
+        }
+      }
+
       const res = await updateElement(slug, targetId, patch);
       if (!res.ok) {
         return { content: [{ type: "text", text: `Error: Element validation failed:\n- ${res.error}` }] };
       }
-      return { content: [{ type: "text", text: JSON.stringify({ ok: true, id: targetId, element: res.element }, null, 2) }] };
+      return { content: [{ type: "text", text: JSON.stringify({ ok: true, id: targetId, element: res.element, ...(Object.keys(relationsAdded).length ? { relationsAdded } : {}) }, null, 2) }] };
     } 
     
     else if (name === "checkConformance") {
@@ -893,30 +962,45 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
 
     else if (name === "setApproval") {
-      const patch = buildApprovalPatch(args?.status as string, args?.approver as string, new Date().toISOString().slice(0, 10));
+      const reconcile = args?.reconcile as Record<string, string> | undefined;
+      // Find the element so a reconcile can deep-merge over its real provenance.
+      let el: any = doc.meta?.id === args?.id ? doc : null;
+      if (!el) {
+        for (const v of Object.values(doc)) {
+          if (Array.isArray(v)) { const f = v.find((e: any) => e?.meta?.id === args?.id); if (f) { el = f; break; } }
+        }
+      }
+      const patch = buildReconciledApprovalPatch(el, args?.status as string, args?.approver as string, new Date().toISOString().slice(0, 10), reconcile);
       const res = await updateElement(slug, args?.id as string, patch);
       if (!res.ok) {
         return { content: [{ type: "text", text: `Error: ${res.error}` }], isError: true };
       }
-      return { content: [{ type: "text", text: JSON.stringify({ ok: true, id: args?.id, approval: args?.status }, null, 2) }] };
+      return { content: [{ type: "text", text: JSON.stringify({ ok: true, id: args?.id, approval: args?.status, reconciled: reconcile ? Object.keys(reconcile) : [] }, null, 2) }] };
+    }
+
+    else if (name === "getProcessRelations") {
+      return { content: [{ type: "text", text: JSON.stringify(buildProcessRelations(doc), null, 2) }] };
     }
 
     else if (name === "buildQueue") {
       const queue = buildFoundationalQueue(doc);
       const rs = newReviewState(slug, queue, new Date().toISOString());
       writeRuntime(slug, { reviewState: rs });
-      return { content: [{ type: "text", text: JSON.stringify(foundationalStatus(rs), null, 2) }] };
+      return { content: [{ type: "text", text: JSON.stringify(enrichFoundationalStatus(rs, doc), null, 2) }] };
     }
 
     else if (name === "startSession") {
-      const qs = newReviewState(slug, QER_STEPS, new Date().toISOString());
+      const actor = args?.actor as { name?: string; role?: string } | undefined;
+      const qs = newReviewState(slug, QER_STEPS, new Date().toISOString(), actor);
       writeRuntime(slug, { qerState: qs });
-      return { content: [{ type: "text", text: JSON.stringify(qerStatus(qs), null, 2) }] };
+      return { content: [{ type: "text", text: JSON.stringify(qerStatusWithPerspectives(qs, doc, qerSkillBuilt), null, 2) }] };
     }
 
     else if (name === "getSessionStatus") {
       const rt = getRuntime(slug);
-      const view = args?.kind === "qer" ? qerStatus(rt.qerState) : foundationalStatus(rt.reviewState);
+      const view = args?.kind === "qer"
+        ? qerStatusWithPerspectives(rt.qerState, doc, qerSkillBuilt)
+        : enrichFoundationalStatus(rt.reviewState, doc);
       return { content: [{ type: "text", text: JSON.stringify(view, null, 2) }] };
     }
 
@@ -927,12 +1011,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (!rt.qerState) throw new McpError(ErrorCode.InvalidParams, "No qer session to advance — call startSession first.");
         const next = advance(rt.qerState, now);
         writeRuntime(slug, { qerState: next });
-        return { content: [{ type: "text", text: JSON.stringify(qerStatus(next), null, 2) }] };
+        return { content: [{ type: "text", text: JSON.stringify(qerStatusWithPerspectives(next, doc, qerSkillBuilt), null, 2) }] };
       }
       if (!rt.reviewState) throw new McpError(ErrorCode.InvalidParams, "No foundational run to advance — call buildQueue first.");
       const next = advance(rt.reviewState, now);
       writeRuntime(slug, { reviewState: next });
-      return { content: [{ type: "text", text: JSON.stringify(foundationalStatus(next), null, 2) }] };
+      return { content: [{ type: "text", text: JSON.stringify(enrichFoundationalStatus(next, doc), null, 2) }] };
     }
 
     else {
