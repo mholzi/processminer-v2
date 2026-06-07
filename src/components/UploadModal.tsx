@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Modal from "./Modal";
 
 // The document-upload popup. Drag a file (or click to browse), or paste the
 // document's text directly. Either way the content is sent to /api/upload,
@@ -67,9 +68,27 @@ export default function UploadModal({
   }
 
   return (
-    <div className="modal-overlay" onClick={uploading ? undefined : onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()} role="dialog">
-        <div className="modal-title">Upload a document</div>
+    <Modal
+      title="Upload a document"
+      onClose={onClose}
+      closeOnOverlay={!uploading}
+      actions={
+        <>
+          <button className="act" onClick={onClose} disabled={uploading}>
+            Cancel
+          </button>
+          {mode === "paste" && (
+            <button
+              className="act ai"
+              onClick={uploadPasted}
+              disabled={uploading || !pasteText.trim()}
+            >
+              {uploading ? "Uploading…" : "Add document"}
+            </button>
+          )}
+        </>
+      }
+    >
         <p className="modal-text">
           Add a document relevant to this process. The assistant will review
           it, summarise it, and extract its content into the documentation.
@@ -149,21 +168,6 @@ export default function UploadModal({
         )}
 
         {error && <div className="modal-error">⚠ {error}</div>}
-        <div className="modal-actions">
-          <button className="act" onClick={onClose} disabled={uploading}>
-            Cancel
-          </button>
-          {mode === "paste" && (
-            <button
-              className="act ai"
-              onClick={uploadPasted}
-              disabled={uploading || !pasteText.trim()}
-            >
-              {uploading ? "Uploading…" : "Add document"}
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
+    </Modal>
   );
 }

@@ -44,7 +44,8 @@ export default function LoginGate({
   return (
     <div className="login-gate">
       <form className="login-card" onSubmit={submit}>
-        <div className="login-brand">Processminer v2</div>
+        <div className="login-brand">Processminer</div>
+        <p className="login-tagline">AI-native process documentation</p>
         <p className="login-intro">
           Sign in with your username and password. Approvals and edits in
           the wiki are stamped with your account.
@@ -70,7 +71,11 @@ export default function LoginGate({
             disabled={busy}
           />
         </label>
-        {error && <div className="modal-error">⚠ {error}</div>}
+        {error && (
+          <div className="modal-error" role="alert">
+            ⚠ {error}
+          </div>
+        )}
         <button className="login-submit" type="submit" disabled={!ready || busy}>
           {busy ? "Signing in…" : "Sign in"}
         </button>

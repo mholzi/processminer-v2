@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useFocusTrap } from "./useFocusTrap";
 import type { Schema } from "@/lib/wiki";
 
 // Help center — a What's New + Roadmap feed opened from the top-bar "?"
@@ -153,15 +154,12 @@ export default function HelpCenter({
   const [filter, setFilter] = useState<FilterKind>("all");
   const [votes, setVotes] = useState<Record<string, true>>({});
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(dialogRef, onClose, open); // Esc + focus trap + restore
+
   useEffect(() => {
-    if (!open) return;
-    setVotes(readVotes());
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+    if (open) setVotes(readVotes());
+  }, [open]);
 
   // Buckets, preserving the order entries appear in (Today → … → Horizon).
   const buckets = useMemo(() => {
@@ -206,10 +204,12 @@ export default function HelpCenter({
   return (
     <div className="help-overlay" onClick={onClose}>
       <div
+        ref={dialogRef}
         className="help-modal"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
-        aria-label="What's new in ProcessMiner"
+        aria-modal="true"
+        aria-label="What's new in Processminer"
       >
         <div className="help-head">
           <span className="help-title">What&rsquo;s new in ProcessMiner</span>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { User, Entitlement } from "@/lib/user";
 import FeatureTogglesPanel from "@/components/FeatureTogglesPanel";
+import Modal from "@/components/Modal";
 
 // Admin screen — lists every user and lets an admin create, edit, reset
 // password, or delete. Only reachable when user.isAdmin === true; the
@@ -344,13 +345,13 @@ function CreateUserDialog({
   }
 
   return (
-    <div className="modal-overlay" onClick={busy ? undefined : onClose}>
-      <form
-        className="modal admin-modal"
-        onClick={(e) => e.stopPropagation()}
-        onSubmit={submit}
-      >
-        <div className="modal-title">New user</div>
+    <Modal
+      title="New user"
+      className="admin-modal"
+      onClose={onClose}
+      closeOnOverlay={!busy}
+    >
+      <form onSubmit={submit}>
         <label className="login-field">
           <span>Username</span>
           <input
@@ -432,7 +433,7 @@ function CreateUserDialog({
           </button>
         </div>
       </form>
-    </div>
+    </Modal>
   );
 }
 
@@ -485,13 +486,13 @@ function ResetPasswordDialog({
   }
 
   return (
-    <div className="modal-overlay" onClick={busy ? undefined : onClose}>
-      <form
-        className="modal admin-modal"
-        onClick={(e) => e.stopPropagation()}
-        onSubmit={submit}
-      >
-        <div className="modal-title">Reset password for {username}</div>
+    <Modal
+      title={`Reset password for ${username}`}
+      className="admin-modal"
+      onClose={onClose}
+      closeOnOverlay={!busy}
+    >
+      <form onSubmit={submit}>
         {done ? (
           <>
             <p className="modal-text">
@@ -543,7 +544,7 @@ function ResetPasswordDialog({
           </>
         )}
       </form>
-    </div>
+    </Modal>
   );
 }
 
