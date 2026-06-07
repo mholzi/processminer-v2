@@ -4,8 +4,23 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { rmSync } from "node:fs";
 import { join } from "node:path";
-import { extractUsage, recordSkillUsage } from "./token-usage.ts";
-import { getRuntime } from "./runtime-store.ts";
+import { extractUsage, recordSkillUsage, aggregateUsage } from "./token-usage.ts";
+import { getRuntime, type SkillUsage } from "./runtime-store.ts";
+
+const entry = (input: number, output: number, turns: number, lastAt = "") => ({
+  inputTokens: input,
+  outputTokens: output,
+  cacheReadTokens: 0,
+  cacheCreationTokens: 0,
+  costUsd: 0,
+  turns,
+  lastAt,
+});
+const su = (
+  total: ReturnType<typeof entry>,
+  bySkill: Record<string, ReturnType<typeof entry>>,
+  updatedAt = "",
+): SkillUsage => ({ total, bySkill, updatedAt });
 
 const SLUG = "__token_usage_test";
 const FILE = join(process.cwd(), "data", "runtime", `${SLUG}.json`);
@@ -91,4 +106,44 @@ test("recordSkillUsage is a no-op when usage is null", () => {
   } finally {
     rmSync(FILE, { force: true });
   }
+});
+
+test("aggregateUsage sums per skill + grand total across processes, skips empty", () => {
+  const o = aggregateUsage([
+    {
+      slug: "a",
+      title: "Alpha",
+      usage: su(entry(300, 30, 3, "2026-06-07T10:00:00Z"), {
+        "document-ingest": entry(300, 30, 3, "2026-06-07T10:00:00Z"),
+      }),
+    },
+    {
+      slug: "b",
+      title: "Bravo",
+      usage: su(entry(1000, 100, 5, "2026-06-07T11:00:00Z"), {
+        "document-ingest": entry(400, 40, 2, "2026-06-07T11:00:00Z"),
+        "foundational-run": entry(600, 60, 3, "2026-06-07T11:00:00Z"),
+      }),
+    },
+    { slug: "c", title: "Charlie", usage: null }, // skipped
+  ]);
+
+  // grand total spans both non-empty processes
+  assert.equal(o.grandTotal.inputTokens, 1300);
+  assert.equal(o.grandTotal.outputTokens, 130);
+  assert.equal(o.grandTotal.turns, 8);
+  // per-skill summed across processes
+  assert.equal(o.bySkill["document-ingest"].inputTokens, 700); // 300 + 400
+  assert.equal(o.bySkill["document-ingest"].turns, 5); // 3 + 2
+  assert.equal(o.bySkill["foundational-run"].inputTokens, 600);
+  // empty process dropped; Bravo (bigger) sorts before Alpha
+  assert.equal(o.processes.length, 2);
+  assert.equal(o.processes[0].slug, "b");
+});
+
+test("aggregateUsage on an empty list is all zeros", () => {
+  const o = aggregateUsage([]);
+  assert.equal(o.grandTotal.turns, 0);
+  assert.deepEqual(o.processes, []);
+  assert.deepEqual(o.bySkill, {});
 });

@@ -107,6 +107,14 @@ export const FEATURE_FLAGS = [
     group: "Live feedback",
     default: false,
   },
+  {
+    id: "session.token_receipt",
+    label: "Show token receipt in chat",
+    description:
+      "Print a small per-turn token tally (input / output / cached) under each assistant reply in the chat. Per-skill totals are always recorded and visible in Admin → Token usage regardless of this toggle.",
+    group: "Session",
+    default: true,
+  },
 ] as const satisfies readonly FeatureFlagDef[];
 
 /** The union of valid flag IDs, derived from the catalog. */
