@@ -7,10 +7,11 @@ import type { Schema } from "@/lib/wiki";
 // Help center — a What's New + Roadmap feed opened from the top-bar "?"
 // button. One chronological list: shipped → in-flight → planned. No tabs,
 // no glossary, no concept explainers — for those the SME asks the assistant.
-// Edit ENTRIES below to update the feed.
+// Entries are managed via Admin → What's new and stored in data/whatsnew.json.
+// ENTRIES below is the fallback seed; the live feed is loaded from the API.
 
-type EntryTag = "shipped" | "in-flight" | "planned";
-type Entry = {
+export type EntryTag = "shipped" | "in-flight" | "planned";
+export type Entry = {
   id: string;
   title: string;
   tag: EntryTag;
@@ -110,6 +111,29 @@ const ENTRIES: Entry[] = [
   },
 ];
 
+/** The id of the first shipped entry — stamps the user record when they open
+ *  the feed. Pass live entries when available; falls back to the seed list. */
+export function latestShippedId(entries: Entry[] = ENTRIES): string {
+  return entries.find((e) => e.tag === "shipped")?.id ?? "";
+}
+
+/** How many shipped entries the user hasn't seen yet. Pass live entries when
+ *  available so newly-added shipped items are reflected in the badge count. */
+export function unseenCount(
+  whatsNewSeen: string | undefined,
+  entries: Entry[] = ENTRIES,
+): number {
+  if (!whatsNewSeen) {
+    return entries.filter((e) => e.tag === "shipped").length;
+  }
+  let count = 0;
+  for (const e of entries) {
+    if (e.id === whatsNewSeen) break;
+    if (e.tag === "shipped") count++;
+  }
+  return count;
+}
+
 type FilterKind = "all" | EntryTag;
 
 const TAG_LABEL: Record<EntryTag, string> = {
@@ -153,17 +177,28 @@ export default function HelpCenter({
 }) {
   const [filter, setFilter] = useState<FilterKind>("all");
   const [votes, setVotes] = useState<Record<string, true>>({});
+  const [liveEntries, setLiveEntries] = useState<Entry[]>(ENTRIES);
 
   const dialogRef = useRef<HTMLDivElement>(null);
   useFocusTrap(dialogRef, onClose, open); // Esc + focus trap + restore
 
   useEffect(() => {
-    if (open) setVotes(readVotes());
+    if (!open) return;
+    setVotes(readVotes());
+    // Refresh entries from the API each time the panel opens so admin edits
+    // are reflected without a page reload.
+    fetch("/api/admin/whatsnew", { credentials: "same-origin" })
+      .then(async (r) => {
+        if (!r.ok) return;
+        const data = (await r.json()) as { entries?: Entry[] };
+        if (data.entries?.length) setLiveEntries(data.entries);
+      })
+      .catch(() => {});
   }, [open]);
 
   // Buckets, preserving the order entries appear in (Today → … → Horizon).
   const buckets = useMemo(() => {
-    const visible = ENTRIES.filter(
+    const visible = liveEntries.filter(
       (e) => filter === "all" || e.tag === filter,
     );
     const order: string[] = [];
@@ -176,16 +211,16 @@ export default function HelpCenter({
       byBucket.get(e.bucket)!.push(e);
     }
     return order.map((b) => ({ name: b, items: byBucket.get(b)! }));
-  }, [filter]);
+  }, [filter, liveEntries]);
 
   const counts = useMemo(() => {
     const c: Record<FilterKind, number> = {
-      all: ENTRIES.length,
+      all: liveEntries.length,
       shipped: 0,
       "in-flight": 0,
       planned: 0,
     };
-    for (const e of ENTRIES) c[e.tag]++;
+    for (const e of liveEntries) c[e.tag]++;
     return c;
   }, []);
 
