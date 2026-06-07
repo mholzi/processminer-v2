@@ -2262,4 +2262,3 @@ think-time.
 `npm run typecheck` clean · `npm test` **155/155** — `token-usage.test.ts`
 extended (per-turn duration fold + sum, duration-only no-token turn still
 records, cross-process duration sum).
->>>>>>> origin/main
