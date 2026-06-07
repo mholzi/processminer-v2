@@ -231,7 +231,40 @@ export default function FeedbackScreen({
                     ))}
                   </select>
                 </div>
+                {f.element && (
+                  <div className="fb-card-el">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+                      <line x1="4" y1="22" x2="4" y2="15" />
+                    </svg>
+                    <span className="fb-card-el-id">{f.element.id}</span>
+                    {f.element.title && <span>{f.element.title}</span>}
+                  </div>
+                )}
                 {f.body && <p className="fb-card-body">{f.body}</p>}
+                {f.context && (
+                  <div className="fb-card-ctx">
+                    {f.context.processName && (
+                      <span>{f.context.processName}</span>
+                    )}
+                    {f.context.area && <span>· {f.context.area}</span>}
+                    {f.context.path && <code>· {f.context.path}</code>}
+                    {f.context.viewport && <span>· {f.context.viewport}</span>}
+                  </div>
+                )}
+                {f.screenshot && (
+                  <a
+                    className="fb-card-shot"
+                    href={`/api/feedback/screenshot?id=${encodeURIComponent(f.id)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <img
+                      src={`/api/feedback/screenshot?id=${encodeURIComponent(f.id)}`}
+                      alt={`Screenshot for ${f.id}`}
+                    />
+                  </a>
+                )}
                 <div className="fb-card-meta">
                   <span>
                     {f.author}

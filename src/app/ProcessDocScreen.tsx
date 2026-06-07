@@ -11,6 +11,7 @@ import {
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { setLiveFeedbackContext } from "@/lib/feedback-live-context";
 import type { Schema, ProcessDoc, WikiPage } from "@/lib/wiki";
 import type { DtpFinding, DtpReport } from "@/lib/runtime-store";
 import { isSourcedType } from "@/lib/element-types";
@@ -555,6 +556,26 @@ export default function ProcessDocScreen({
     );
     if (a) setNavAreaId(a.id);
   }, [section, schema.areas]);
+
+  // Publish the tester's live location for the floating feedback widget's
+  // auto-capture (idea #2). Kept fresh as they switch processes or sections, so
+  // filed feedback points at where they actually were — not a stale mount-time
+  // value. Cleared on unmount.
+  useEffect(() => {
+    // Humanize the raw section id into a readable area label.
+    const areaLabel =
+      section === "__triage"
+        ? "Triage"
+        : (section.startsWith("__area:") ? section.slice(7) : section)
+            .replace(/[-_]+/g, " ")
+            .replace(/\b\w/g, (c) => c.toUpperCase());
+    setLiveFeedbackContext({
+      processSlug: doc.slug,
+      processName: doc.process.title || doc.slug,
+      area: areaLabel,
+    });
+    return () => setLiveFeedbackContext({});
+  }, [doc.slug, doc.process.title, section]);
 
   // Spine click: re-clicking the active area toggles the panel; a different
   // area selects it, reopens the panel and shows its executive summary.

@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import type { Schema, ProcessDoc } from "@/lib/wiki";
 import type { FeedbackItem } from "@/lib/feedback";
+import type { FeatureFlags } from "@/lib/feature-flags";
+import { FeatureFlagsProvider } from "@/lib/feature-flags-context";
 import type { User } from "@/lib/user";
 import LoginGate from "@/components/LoginGate";
+import FloatingFeedback from "@/components/FloatingFeedback";
 import WelcomeScreen from "@/components/WelcomeScreen";
 import AdminScreen from "@/components/AdminScreen";
 import HandoffInbox from "@/components/HandoffInbox";
@@ -21,10 +24,12 @@ export default function AuthGate({
   schema,
   docs,
   feedback,
+  flags,
 }: {
   schema: Schema;
   docs: ProcessDoc[];
   feedback: FeedbackItem[];
+  flags: FeatureFlags;
 }) {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
@@ -93,8 +98,13 @@ export default function AuthGate({
 
   if (!loaded) return null;
   if (!user) return <LoginGate onSignedIn={handleSignedIn} />;
+
+  // The signed-in workspace is wrapped in the flag provider so any feature can
+  // read its toggle with useFeatureFlag(). The login/splash-loading states
+  // above don't need it.
+  let content: ReactNode;
   if (workspace === "splash") {
-    return (
+    content = (
       <WelcomeScreen
         docs={docs}
         user={user}
@@ -102,29 +112,25 @@ export default function AuthGate({
         onEnterArchitectminer={enterArchitectminer}
         onEnterAdmin={user.isAdmin ? enterAdmin : undefined}
         onSignOut={handleSignOut}
+        onUpdateUser={setUser}
       />
     );
-  }
-  if (workspace === "admin") {
-    return (
+  } else if (workspace === "admin") {
+    content = (
       <AdminScreen
         user={user}
         onReturnToSplash={() => setWorkspace("splash")}
       />
     );
-  }
-  if (workspace === "architectminer") {
+  } else if (workspace === "architectminer") {
     const openDoc = architectSlug ? docs.find((d) => d.slug === architectSlug) : undefined;
-    if (openDoc) {
-      return (
-        <ArchitectureCanvas
-          doc={openDoc}
-          user={user}
-          onReturnToInbox={() => setArchitectSlug(undefined)}
-        />
-      );
-    }
-    return (
+    content = openDoc ? (
+      <ArchitectureCanvas
+        doc={openDoc}
+        user={user}
+        onReturnToInbox={() => setArchitectSlug(undefined)}
+      />
+    ) : (
       <HandoffInbox
         docs={docs}
         user={user}
@@ -132,17 +138,40 @@ export default function AuthGate({
         onOpenProcess={(slug) => setArchitectSlug(slug)}
       />
     );
+  } else {
+    content = (
+      <ProcessDocScreen
+        schema={schema}
+        docs={docs}
+        feedback={feedback}
+        user={user}
+        onUpdateUser={setUser}
+        onSignOut={handleSignOut}
+        initialSlug={initialSlug}
+        onReturnToSplash={() => setWorkspace("splash")}
+      />
+    );
   }
+
+  // Best-effort label of where the tester is, attached to feedback they file.
+  // A fuller per-process auto-capture is its own feature (live-feedback #2).
+  const contextLabel =
+    workspace === "admin"
+      ? "Admin"
+      : workspace === "architectminer"
+        ? architectSlug
+          ? `ArchitectMiner · ${architectSlug}`
+          : "ArchitectMiner"
+        : workspace === "processminer"
+          ? initialSlug
+            ? `Processminer · ${initialSlug}`
+            : "Processminer"
+          : "Welcome";
+
   return (
-    <ProcessDocScreen
-      schema={schema}
-      docs={docs}
-      feedback={feedback}
-      user={user}
-      onUpdateUser={setUser}
-      onSignOut={handleSignOut}
-      initialSlug={initialSlug}
-      onReturnToSplash={() => setWorkspace("splash")}
-    />
+    <FeatureFlagsProvider flags={flags}>
+      {content}
+      <FloatingFeedback user={user} contextLabel={contextLabel} />
+    </FeatureFlagsProvider>
   );
 }
