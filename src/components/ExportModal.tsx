@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Schema } from "@/lib/wiki";
+import Modal from "./Modal";
 
 type Status = "all" | "approved" | "draft";
 
@@ -55,9 +56,24 @@ export default function ExportModal({
   }
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()} role="dialog">
-        <div className="modal-title">Export documentation</div>
+    <Modal
+      title="Export documentation"
+      onClose={onClose}
+      actions={
+        <>
+          <button className="act" onClick={onClose}>
+            Cancel
+          </button>
+          <button
+            className="act ai"
+            onClick={generate}
+            disabled={areaIds.length === 0}
+          >
+            Generate PDF
+          </button>
+        </>
+      }
+    >
         <p className="modal-text">
           Build a printable PDF of this process to share for review. Opens in a
           new tab — use “Print / Save as PDF” there.
@@ -132,19 +148,6 @@ export default function ExportModal({
           </label>
         </div>
 
-        <div className="export-actions">
-          <button className="export-cancel" onClick={onClose}>
-            Cancel
-          </button>
-          <button
-            className="export-generate"
-            onClick={generate}
-            disabled={areaIds.length === 0}
-          >
-            Generate PDF
-          </button>
-        </div>
-      </div>
-    </div>
+    </Modal>
   );
 }

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Modal from "@/components/Modal";
 
 interface Person {
   username: string;
@@ -42,6 +43,16 @@ export default function SettingsPanel({
   const [roster, setRoster] = useState<Person[]>([]);
   const [pick, setPick] = useState("");
   const [accessBusy, setAccessBusy] = useState(false);
+  const [accessError, setAccessError] = useState<string | null>(null);
+  // A pending access change awaiting confirmation (widening/removing access is
+  // not a one-click action in a regulated tool — review R4).
+  const [pendingAccess, setPendingAccess] = useState<{
+    action: string;
+    username?: string;
+    title: string;
+    body: ReactNode;
+    confirmLabel: string;
+  } | null>(null);
 
   useEffect(() => {
     let live = true;
@@ -64,22 +75,38 @@ export default function SettingsPanel({
 
   async function accessAction(action: string, username?: string) {
     setAccessBusy(true);
+    setAccessError(null);
     try {
-      await fetch(`/api/processes/${encodeURIComponent(slug)}/access`, {
+      const res = await fetch(`/api/processes/${encodeURIComponent(slug)}/access`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "same-origin",
         body: JSON.stringify({ action, username }),
       });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
+        setAccessError(data.error || `Couldn't update access (HTTP ${res.status}).`);
+        return;
+      }
       const fresh = await fetch(`/api/processes/${encodeURIComponent(slug)}/access`, {
         credentials: "same-origin",
       }).then((r) => r.json());
       setAccess(fresh);
       setPick("");
       router.refresh(); // the process list re-filters by access
+    } catch (e) {
+      setAccessError(e instanceof Error ? e.message : "Couldn't update access.");
     } finally {
       setAccessBusy(false);
     }
+  }
+
+  // Run a confirmed pending action, then close the dialog.
+  async function runPending() {
+    if (!pendingAccess) return;
+    const { action, username } = pendingAccess;
+    setPendingAccess(null);
+    await accessAction(action, username);
   }
 
   // Users not already the owner or a grantee — candidates for sharing / owning.
@@ -187,7 +214,20 @@ export default function SettingsPanel({
                       type="button"
                       className="access-revoke"
                       disabled={accessBusy}
-                      onClick={() => accessAction("revoke", g.username)}
+                      onClick={() =>
+                        setPendingAccess({
+                          action: "revoke",
+                          username: g.username,
+                          title: "Remove access?",
+                          body: (
+                            <>
+                              <b>{g.name}</b> will no longer be able to open this
+                              process.
+                            </>
+                          ),
+                          confirmLabel: "Remove",
+                        })
+                      }
                     >
                       remove
                     </button>
@@ -224,14 +264,54 @@ export default function SettingsPanel({
                 type="button"
                 className="access-open"
                 disabled={accessBusy}
-                onClick={() => accessAction("ungovern")}
+                onClick={() =>
+                  setPendingAccess({
+                    action: "ungovern",
+                    title: "Open this process to everyone?",
+                    body: (
+                      <>
+                        Every signed-in user will be able to view{" "}
+                        <b>{title}</b>. You can restrict it again afterwards.
+                      </>
+                    ),
+                    confirmLabel: "Open to everyone",
+                  })
+                }
               >
                 Make open to everyone
               </button>
             )}
           </>
         )}
+        {accessError && (
+          <div className="settings-error" role="alert">
+            ⚠ {accessError}
+          </div>
+        )}
       </section>
+
+      {pendingAccess && (
+        <Modal
+          title={pendingAccess.title}
+          onClose={() => setPendingAccess(null)}
+          actions={
+            <>
+              <button
+                type="button"
+                className="act"
+                onClick={() => setPendingAccess(null)}
+              >
+                Cancel
+              </button>
+              <button type="button" className="act ai" onClick={runPending}>
+                {pendingAccess.confirmLabel}
+              </button>
+            </>
+          }
+        >
+          <p className="modal-text">{pendingAccess.body}</p>
+        </Modal>
+      )}
 
       <section className="danger-zone">
         <h2>Danger zone</h2>

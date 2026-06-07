@@ -156,11 +156,9 @@ export default function GuidedTour({
             {idx + 1} / {steps.length}
           </span>
           <div className="tour-card-actions">
-            {!last && (
-              <button className="tour-btn tour-skip" onClick={onClose}>
-                Skip tour
-              </button>
-            )}
+            <button className="tour-btn tour-skip" onClick={onClose}>
+              {last ? "Close" : "Skip tour"}
+            </button>
             {idx > 0 && (
               <button
                 className="tour-btn"

@@ -15,7 +15,7 @@ import { setLiveFeedbackContext } from "@/lib/feedback-live-context";
 import type { Schema, ProcessDoc, WikiPage } from "@/lib/wiki";
 import type { DtpFinding, DtpReport } from "@/lib/runtime-store";
 import { isSourcedType } from "@/lib/element-types";
-import { initials, type User } from "@/lib/user";
+import { type User } from "@/lib/user";
 import { buildRelations, type LinkGroup } from "@/lib/relations";
 import { sectionForId } from "@/lib/nav";
 import { isOpen, type LintFinding } from "@/lib/lint";
@@ -62,6 +62,8 @@ import SourceDocViewer from "@/components/SourceDocViewer";
 import Tooltip from "@/components/Tooltip";
 import ToastStack, { type Toast } from "@/components/ToastStack";
 import FeedbackScreen from "@/components/FeedbackScreen";
+import UserProfileModal from "@/components/UserProfileModal";
+import Modal from "@/components/Modal";
 import type { FeedbackItem } from "@/lib/feedback";
 
 const mid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -681,10 +683,8 @@ export default function ProcessDocScreen({
   // Document upload — the modal saves to raw-sources/, then the chat runs
   // the document-ingest skill on the saved file.
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
-  // Signed-in-user popover — the topbar person icon opens it. The name/role
-  // fields are editable; `userEdit` holds the draft while the modal is open.
+  // Signed-in-user dialog — the topbar avatar opens the shared UserProfileModal.
   const [userModalOpen, setUserModalOpen] = useState(false);
-  const [userEdit, setUserEdit] = useState<User>(user);
 
   // A non-interactive web-sourcing run (source-innovation / source-cx /
   // source-regulation). It runs outside the chat — a section banner shows
@@ -1923,10 +1923,7 @@ export default function ProcessDocScreen({
           <Tooltip label={`${user.name} · ${user.role}`}>
             <button
               className="tb-icon"
-              onClick={() => {
-                setUserEdit(user);
-                setUserModalOpen(true);
-              }}
+              onClick={() => setUserModalOpen(true)}
               aria-label="Signed-in user"
             >
               <IconUser />
@@ -2392,9 +2389,13 @@ export default function ProcessDocScreen({
               ) : (
                 <div className="empty-state">
                   <p>No quality check has been run for this process yet.</p>
-                  <p className="empty-hint">
-                    Use “⊛ Run quality check” in the top bar to run one.
-                  </p>
+                  <button
+                    type="button"
+                    className="empty-action"
+                    onClick={runLint}
+                  >
+                    Run quality check
+                  </button>
                 </div>
               )}
             </>
@@ -2418,9 +2419,13 @@ export default function ProcessDocScreen({
               ) : (
                 <div className="empty-state">
                   <p>No document has been imported for this process yet.</p>
-                  <p className="empty-hint">
-                    Use “⬆ Upload document” in the top bar to import one.
-                  </p>
+                  <button
+                    type="button"
+                    className="empty-action"
+                    onClick={() => setUploadModalOpen(true)}
+                  >
+                    Upload document
+                  </button>
                 </div>
               )}
             </>
@@ -3137,157 +3142,36 @@ export default function ProcessDocScreen({
       />
 
       {userModalOpen && (
-        <div
-          className="modal-overlay"
-          onClick={() => setUserModalOpen(false)}
-        >
-          <div
-            className="modal"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-label="Signed-in user"
-          >
-            <div className="modal-title">Signed-in user</div>
-            <div className="user-card">
-              <span className="user-avatar">
-                {initials(userEdit.name.trim() || user.name)}
-              </span>
-              <div>
-                <div className="user-name">{user.name}</div>
-                <div className="user-role">{user.role}</div>
-              </div>
-            </div>
-            <p className="modal-text">
-              Approvals and edits in this process are stamped with this name.
-              Change it below, or sign out to switch user.
-            </p>
-            <label className="login-field">
-              <span>Name</span>
-              <input
-                value={userEdit.name}
-                onChange={(e) =>
-                  setUserEdit((u) => ({ ...u, name: e.target.value }))
-                }
-              />
-            </label>
-            <label className="login-field">
-              <span>Role</span>
-              <input
-                value={userEdit.role}
-                onChange={(e) =>
-                  setUserEdit((u) => ({ ...u, role: e.target.value }))
-                }
-              />
-            </label>
-            <label className="pref-field">
-              <input
-                type="checkbox"
-                checked={userEdit.streamReplies === true}
-                onChange={(e) =>
-                  setUserEdit((u) => ({
-                    ...u,
-                    streamReplies: e.target.checked,
-                  }))
-                }
-              />
-              <span>
-                Stream replies as they are written
-                <small>
-                  Show the assistant&apos;s answer word by word, instead of
-                  all at once when the turn finishes.
-                </small>
-              </span>
-            </label>
-            <label className="pref-field">
-              <input
-                type="checkbox"
-                checked={dark}
-                onChange={toggleTheme}
-              />
-              <span>
-                <span className="pref-field-row">
-                  Dark mode
-                  <span className="pref-field-ico" aria-hidden>
-                    {dark ? <IconSun /> : <IconMoon />}
-                  </span>
-                </span>
-                <small>
-                  Switch to a darker palette. Applies immediately; no need to
-                  save.
-                </small>
-              </span>
-            </label>
-            <div className="modal-actions">
-              <button
-                className="act act-signout"
-                onClick={() => {
-                  setUserModalOpen(false);
-                  onSignOut();
-                }}
-              >
-                Sign out
-              </button>
-              <span className="modal-actions-gap" />
-              <button
-                className="act"
-                onClick={() => setUserModalOpen(false)}
-              >
-                Close
-              </button>
-              <button
-                className="act ai"
-                disabled={
-                  !userEdit.name.trim() ||
-                  !userEdit.role.trim() ||
-                  (userEdit.name.trim() === user.name &&
-                    userEdit.role.trim() === user.role &&
-                    (userEdit.streamReplies === true) ===
-                      (user.streamReplies === true))
-                }
-                onClick={() => {
-                  onUpdateUser({
-                    ...user,
-                    name: userEdit.name.trim(),
-                    role: userEdit.role.trim(),
-                    streamReplies: userEdit.streamReplies === true,
-                  });
-                  setUserModalOpen(false);
-                }}
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
+        <UserProfileModal
+          user={user}
+          onUpdateUser={onUpdateUser}
+          onSignOut={onSignOut}
+          onClose={() => setUserModalOpen(false)}
+          dark={dark}
+          onToggleTheme={toggleTheme}
+          themeIcon={dark ? <IconSun /> : <IconMoon />}
+        />
       )}
 
       {sourceResultOpen && sourcing?.report && (
-        <div
-          className="modal-overlay"
-          onClick={() => setSourceResultOpen(false)}
+        <Modal
+          title="Web sourcing result"
+          onClose={() => setSourceResultOpen(false)}
+          actions={
+            <button
+              className="act"
+              onClick={() => setSourceResultOpen(false)}
+            >
+              Close
+            </button>
+          }
         >
-          <div
-            className="modal"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-label="Web sourcing result"
-          >
-            <div className="modal-title">Web sourcing result</div>
-            <div className="source-result-body">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {sourcing.report}
-              </ReactMarkdown>
-            </div>
-            <div className="modal-actions">
-              <button
-                className="act"
-                onClick={() => setSourceResultOpen(false)}
-              >
-                Close
-              </button>
-            </div>
+          <div className="source-result-body">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {sourcing.report}
+            </ReactMarkdown>
           </div>
-        </div>
+        </Modal>
       )}
 
       <ToastStack toasts={toasts} onDismiss={dismissToast} />

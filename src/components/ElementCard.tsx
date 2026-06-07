@@ -578,12 +578,15 @@ export default function ElementCard({
         : review === "disregarded"
           ? "disregarded by"
           : "flagged by";
-  // An approved element drops the "AI-drafted" provenance — once the SME has
-  // signed off, the only thing that matters is who approved it and when.
+  // Keep the origin in the line even after approval — for a regulated audit
+  // trail, lineage (machine-drafted vs human-authored) matters most at sign-off
+  // (review #8). `status` survives approval (setApproval is metadata-only), so
+  // `isDraft` still tells us whether this started as an AI draft.
   const approved = review === "approved";
+  const origin = isDraft ? "AI-drafted" : "Authored";
   const provenanceText =
     approved && reviewBy && reviewDate
-      ? `Approved by ${reviewBy}, ${reviewDate}`
+      ? `${origin} · approved by ${reviewBy}, ${reviewDate}`
       : reviewBy && reviewDate
         ? `${isDraft ? "AI-drafted" : "Authored"} · ${reviewVerb} ${reviewBy}, ${reviewDate}`
         : isDraft

@@ -1,11 +1,22 @@
 import type { Schema, WikiPage } from "@/lib/wiki";
 import Markdown from "@/components/Markdown";
 import { elementStatus } from "@/lib/element-format";
+import { parseProvenance } from "@/lib/conformance";
 
 // One element, rendered for the print/export document — read-only, fully
 // expanded, every reference shown as "ID (Name)" so it reads on paper.
 
 import { asList } from "@/lib/meta";
+
+// Per-heading provenance must survive into the export — it's the product's
+// signature (SME-confirmed vs AI-proposed). The cover legend defines each tag.
+const PROV_LABEL: Record<string, string> = {
+  elicited: "SME",
+  document: "DOC",
+  proposed: "PROPOSED",
+  web: "WEB",
+  "legacy-approved": "LEGACY",
+};
 
 export default function PrintElement({
   page,
@@ -22,6 +33,8 @@ export default function PrintElement({
   const status = elementStatus(page);
   const fields = type?.frontmatter?.fields ?? [];
   const relations = type?.frontmatter?.relations ?? [];
+
+  const provenance = parseProvenance(page);
 
   const transitions = asList(page.meta.transitions)
     .map((entry) => {
@@ -45,12 +58,22 @@ export default function PrintElement({
       <div className="print-el-status">{status.label}</div>
 
       {page.blocks.length > 0
-        ? page.blocks.map((b) => (
-            <div className="print-el-block" key={b.heading}>
-              <h5>{b.heading}</h5>
-              <Markdown text={b.text} />
-            </div>
-          ))
+        ? page.blocks.map((b) => {
+            const src = provenance[b.heading]?.source;
+            return (
+              <div className="print-el-block" key={b.heading}>
+                <h5>
+                  {b.heading}
+                  {src && PROV_LABEL[src] && (
+                    <span className={`print-prov prov-${src}`}>
+                      {PROV_LABEL[src]}
+                    </span>
+                  )}
+                </h5>
+                <Markdown text={b.text} />
+              </div>
+            );
+          })
         : page.body && <Markdown text={page.body} />}
 
       {fields.some((f) => page.meta[f.key]) && (
