@@ -61,7 +61,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#61** | `new-process` determinism — `deriveProcessMeta` tool + templatized copy; skill deep-dive HTML | `feat/new-process-determinism` → `main` | Code + tests + skill + docs | **Merged** |
 | **#65** | `qer-session` determinism — perspective-aware cursor (skillBuilt/documented/next-built), counted cross-review gate, close-out renderer, SME actor on cursor | `feat/qer-determinism` → `main` | Code + tests + skill + docs | **Merged** |
 | **#67** | `foundational-run` determinism — control-coverage flag, close-out counts + still-to-document, one-call [Y] reconcile, opt-in [E] frontmatter-sync, gap-tail batch | `feat/foundational-determinism` → `main` | Code + tests + skill + docs | **Merged** |
-| **#70** | Specialists determinism — shared `getProcessRelations` tool + prose pass across all 8 perspective/architect specialists | `feat/specialists-determinism` → `main` | Code + tests + 8 skills + docs | **Open** (`pending`) |
+| **#70** | Specialists determinism — shared `getProcessRelations` tool + prose pass across all 8 perspective/architect specialists | `feat/specialists-determinism` → `main` | Code + tests + 8 skills + docs | **Merged** |
+| **#74** | Source-* determinism — shared `getConsolidationInputs` tool + prose pass across the 4 sourcing skills | `feat/source-determinism` → `main` | Code + tests + 4 skills + docs | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -2108,3 +2109,45 @@ right; there's no per-invocation id yet. Gemini reports no cost, so `costUsd` is
 `npm run typecheck` clean · `npm test` **148/148** (after rebase onto #70) — 5
 new `token-usage.test.ts` cases (claude shape, Gemini shape + cache-netting,
 empty→null, per-skill+total fold, null no-op).
+
+---
+
+## PR #74 — Source-* determinism: shared `getConsolidationInputs` + prose pass
+
+## Why
+The 4 source-* skills' ideas converge on a few moves; the standout is that
+source-target and source-innovation both re-walked the document by hand to
+enumerate open problems and tally inputs. Worked as a consolidated-by-theme
+pass: build that once + apply the uniform prose wins.
+
+## What
+- **`consolidation-inputs.ts`** (new, pure) + a read-only **`getConsolidationInputs`**
+  tool in both backends — the open As-Is problem inventory (pain-points,
+  process-gaps, control-gaps, friction-points, audit-findings + a union `all`),
+  the innovation-idea/system/integration id lists, the existing Target Process
+  ids (extend-not-duplicate), the "consolidated from" tallies, and which
+  perspectives are empty.
+- **source-regulation** — per-domain sub-agent fan-out, authored query
+  templates, diff-before-search, dedup+cap, per-domain batched writes,
+  reg→control links from existing controls.
+- **source-cx** — benchmark scan as a 4th concurrent sub-agent, per-tier query
+  templates, dedup+cap, existing-element pre-load, relevance pre-scoring.
+- **source-innovation** — trend scan fanned out, query templates, dedup+cap,
+  batched citation resolution, problem→idea coverage from
+  `getConsolidationInputs.openProblems.all`.
+- **source-target** — one-call read (`getProcessSummary` +
+  `getConsolidationInputs`), deterministic gap-per-uncovered-delta,
+  problem→decision coverage, mechanical section seeds, and the report tallies
+  from the tool.
+- Structured-output marked **partial** (already enforced by createElement/
+  createElements); curated seed lists + page-fetch caches **skipped**
+  (content/infra). HTML deep-dives updated with per-idea outcomes.
+
+## Scope
+4 source skills + one read-only additive tool. No change to other skills or
+write paths.
+
+## Verification
+`npm run typecheck` clean · `npm test` **153/153** — 5 new
+`consolidation-inputs.test.ts` cases (open-problem inventory, tallies,
+existing-target, empty-perspective flags), wired into the runner.
