@@ -101,6 +101,9 @@ export interface SkillUsageEntry extends TokenUsage {
   /** Number of worker turns folded in. NB: a multi-turn skill (a foundational
    *  run is dozens of turns) counts each turn — not one per invocation. */
   turns: number;
+  /** Summed wall-clock run-time of those turns, in ms (server-side processing
+   *  time per turn, summed — excludes idle time between turns). */
+  durationMs: number;
   /** ISO timestamp of the most recent turn folded in. */
   lastAt: string;
 }

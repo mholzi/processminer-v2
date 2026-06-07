@@ -179,6 +179,9 @@ export async function POST(req: NextRequest) {
       const enc = new TextEncoder();
       let closed = false;
       let resultSent = false;
+      // Wall-clock when the turn started — reset just before the runTurn loop;
+      // the result handler uses it to record per-skill run-time.
+      let turnStart = Date.now();
       // Running count of wiki elements written this turn — surfaced in the
       // activity line so a long extraction shows visible progress.
       let elementsWritten = 0;
@@ -270,13 +273,15 @@ export async function POST(req: NextRequest) {
           }
         } else if (evt.type === "result") {
           resultSent = true;
-          // Fold this turn's token usage into the per-skill runtime tally. Both
-          // backends already carry usage on the result event; we just read it.
-          // Only for a real process turn (slug) and a non-error result.
+          // Fold this turn's token usage AND wall-clock run-time into the
+          // per-skill runtime tally. Both backends already carry usage on the
+          // result event; the duration is measured here. Only for a real
+          // process turn (slug) and a non-error result.
           const usage = extractUsage(evt as Record<string, unknown>);
-          if (usage && slug && !evt.is_error) {
+          const durationMs = Math.max(0, Date.now() - turnStart);
+          if ((usage || durationMs > 0) && slug && !evt.is_error) {
             try {
-              recordSkillUsage(slug, skill ?? "free-chat", usage);
+              recordSkillUsage(slug, skill ?? "free-chat", usage, durationMs);
             } catch {
               // never let usage accounting break the turn
             }
@@ -287,6 +292,7 @@ export async function POST(req: NextRequest) {
             sessionId: worker.sessionId,
             isError: Boolean(evt.is_error),
             ...(usage ? { usage } : {}),
+            ...(durationMs > 0 ? { durationMs } : {}),
           });
         } else if (evt.type === "error") {
           resultSent = true;
@@ -325,6 +331,7 @@ export async function POST(req: NextRequest) {
 
       (async () => {
         try {
+          turnStart = Date.now();
           for await (const evt of worker.runTurn(wireMessage, skill)) {
             handleEvent(evt);
           }

@@ -1124,29 +1124,26 @@ export default function ProcessDocScreen({
             );
           }
         },
-        onDone: (reply, sid, usage) => {
+        onDone: (reply, sid, usage, durationMs) => {
           if (sid) setChatSessionId(sid);
+          const meta = {
+            ...(usage ? { usage } : {}),
+            ...(durationMs ? { durationMs } : {}),
+          };
           if (streamingId !== null) {
             // The reply already streamed in — keep what was shown; only fall
             // back to the result text if nothing actually streamed.
             const id = streamingId;
             setMessages((m) =>
               m.map((msg) =>
-                msg.id === id
-                  ? { ...msg, text: msg.text || reply, ...(usage ? { usage } : {}) }
-                  : msg,
+                msg.id === id ? { ...msg, text: msg.text || reply, ...meta } : msg,
               ),
             );
             streamingId = null;
           } else {
             setMessages((m) => [
               ...m,
-              {
-                id: mid(),
-                role: "agent",
-                text: reply || "(no reply)",
-                ...(usage ? { usage } : {}),
-              },
+              { id: mid(), role: "agent", text: reply || "(no reply)", ...meta },
             ]);
           }
           // a skill may have written wiki files — re-read the doc view

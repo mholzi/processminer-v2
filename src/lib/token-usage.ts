@@ -74,11 +74,17 @@ function zero(): SkillUsageEntry {
     cacheCreationTokens: 0,
     costUsd: 0,
     turns: 0,
+    durationMs: 0,
     lastAt: "",
   };
 }
 
-function fold(into: SkillUsageEntry, u: TokenUsage, at: string): SkillUsageEntry {
+function fold(
+  into: SkillUsageEntry,
+  u: TokenUsage,
+  durationMs: number,
+  at: string,
+): SkillUsageEntry {
   return {
     inputTokens: into.inputTokens + u.inputTokens,
     outputTokens: into.outputTokens + u.outputTokens,
@@ -86,33 +92,47 @@ function fold(into: SkillUsageEntry, u: TokenUsage, at: string): SkillUsageEntry
     cacheCreationTokens: into.cacheCreationTokens + u.cacheCreationTokens,
     costUsd: into.costUsd + u.costUsd,
     turns: into.turns + 1,
+    durationMs: into.durationMs + Math.max(0, durationMs),
     lastAt: at,
   };
 }
 
+/** A completed turn that reported no token usage — still counts toward
+ *  per-skill turns + run-time. */
+const NO_TOKENS: TokenUsage = {
+  inputTokens: 0,
+  outputTokens: 0,
+  cacheReadTokens: 0,
+  cacheCreationTokens: 0,
+  costUsd: 0,
+};
+
 /**
- * Fold one turn's usage into a process's runtime tally, under `skill` (and the
- * process total). `skill` is the value the chat passed; pass `"free-chat"` when
- * a turn ran with no skill. `at` is the turn-boundary timestamp (injectable for
- * tests). A no-op when `usage` is null.
+ * Fold one turn's usage + run-time into a process's runtime tally, under `skill`
+ * (and the process total). `skill` is the value the chat passed; pass
+ * `"free-chat"` when a turn ran with no skill. `durationMs` is the turn's
+ * wall-clock. `at` is the turn-boundary timestamp (injectable for tests). A
+ * no-op only when there is neither usage nor a measured duration.
  */
 export function recordSkillUsage(
   slug: string,
   skill: string,
   usage: TokenUsage | null,
+  durationMs: number = 0,
   at: string = new Date().toISOString(),
 ): void {
-  if (!usage) return;
+  if (!usage && durationMs <= 0) return;
+  const u = usage ?? NO_TOKENS;
   const prev = getRuntime(slug).skillUsage;
   const su: SkillUsage = prev ?? { total: zero(), bySkill: {}, updatedAt: "" };
-  su.total = fold(su.total ?? zero(), usage, at);
-  su.bySkill[skill] = fold(su.bySkill[skill] ?? zero(), usage, at);
+  su.total = fold(su.total ?? zero(), u, durationMs, at);
+  su.bySkill[skill] = fold(su.bySkill[skill] ?? zero(), u, durationMs, at);
   su.updatedAt = at;
   writeRuntime(slug, { skillUsage: su });
 }
 
-/** Add two accumulated entries (sums every field, incl. `turns`; keeps the
- *  later `lastAt`). Distinct from `fold`, which folds a single turn (+1 turn). */
+/** Add two accumulated entries (sums every field, incl. `turns` + `durationMs`;
+ *  keeps the later `lastAt`). Distinct from `fold`, which folds a single turn. */
 function addEntries(a: SkillUsageEntry, b: SkillUsageEntry): SkillUsageEntry {
   return {
     inputTokens: a.inputTokens + b.inputTokens,
@@ -121,6 +141,7 @@ function addEntries(a: SkillUsageEntry, b: SkillUsageEntry): SkillUsageEntry {
     cacheCreationTokens: a.cacheCreationTokens + b.cacheCreationTokens,
     costUsd: a.costUsd + b.costUsd,
     turns: a.turns + b.turns,
+    durationMs: a.durationMs + b.durationMs,
     lastAt: a.lastAt > b.lastAt ? a.lastAt : b.lastAt,
   };
 }

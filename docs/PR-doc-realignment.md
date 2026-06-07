@@ -2230,3 +2230,36 @@ paths.
 `npm run typecheck` clean · `npm test` **160/160** — 5 new
 `section-context.test.ts` cases (skeleton shape, relation-target normalization,
 existing list, overview, empty section).
+
+---
+
+# feat(session): per-skill run-time alongside token usage
+
+Extends the token tally (#69/#75) with **wall-clock run-time per skill**.
+
+## What
+- **Measured in the route** — `turnStart` is reset just before the `runTurn`
+  loop; on the `result` event the elapsed ms is computed (provider-agnostic, so
+  it works for claude and Gemini alike) and folded into the per-skill tally.
+- **`SkillUsageEntry.durationMs`** — summed server-side processing time per
+  turn (excludes idle time between turns). `recordSkillUsage` now takes a
+  `durationMs`, records when there is usage **or** a duration (so a turn with no
+  token data still counts toward run-time), and `aggregateUsage` sums it.
+- **Admin → Token usage** — a "Run-time" stat in the totals and a Run-time
+  column in both the by-skill and by-process tables (`4.2s` / `3m 12s` /
+  `1h 4m`).
+- **Chat receipt** — the per-turn line now appends the turn's run-time
+  (`… · 4.2s`), still behind the `session.token_receipt` flag, and now renders
+  even for a usage-less turn that has a duration.
+
+## Scope
+Read-only measurement; no change to turn behaviour. Run-time is the summed
+per-turn processing time, so a multi-turn skill (a foundational run) is the sum
+of its turns' run-times — the compute time, not the wall-clock including SME
+think-time.
+
+## Verification
+`npm run typecheck` clean · `npm test` **155/155** — `token-usage.test.ts`
+extended (per-turn duration fold + sum, duration-only no-token turn still
+records, cross-process duration sum).
+>>>>>>> origin/main
