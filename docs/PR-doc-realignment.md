@@ -61,6 +61,7 @@ what it changes, behaviour/scope, and how it was verified.
 | **#59** | Design-review wave 1 — colour overload, AM green theming, primary button, table scan-ability + 7 more | `fix/design-review-wave-1` → `feat/live-feedback-toolkit` | Code + UI | **Open** (`pending`) — stacked on #58 |
 | **#60** | Design-review wave 2 — shared `<Modal>` primitive; migrate every dialog onto it; de-dupe the profile modal | `fix/design-review-wave-2` → `fix/design-review-wave-1` | Code + UI | **Open** (`pending`) — stacked on #59 |
 | **#64** | Design-review wave 3 (round-2 fixes) — login first-impression, guided-tour escape, DTP relabel, Help/⌘K focus-trap | `fix/design-review-wave-3` → `fix/design-review-wave-2` | Code + UI | **Open** (`pending`) — stacked on #60 |
+| **#66** | Design-review wave 4 — the export PDF: provenance tags + legend, page footer, print-color-adjust, tokens | `fix/design-review-wave-4-print` → `fix/design-review-wave-3` | Code + UI | **Open** (`pending`) — stacked on #64 |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1942,3 +1943,35 @@ is a throwaway artifact, not committed.
 `npm run typecheck` clean · `npm test` **108/108**. In-app: HelpCenter opens with
 `aria-modal="true"`, moves focus inside, and closes on Esc (it didn't before);
 CommandPalette uses the identical hook.
+
+## PR #66 — Design-review wave 4: the export PDF
+
+## Why
+The `/print/<slug>` document — the PDF shared with clients/auditors — was never
+reviewed, and it dropped the product's defining signal: **provenance**. A reader
+could not tell SME-confirmed fact from AI-proposed guess on paper.
+
+## What
+- **Provenance survives into the export.** Each heading now prints its source as
+  a quiet mono tag (`SME` / `DOC` / `PROPOSED` / `WEB` / `LEGACY`) — neutral for
+  confirmed sources, amber for `proposed`, info-blue for `web` (mirrors the
+  in-app treatment). Applied to both elements and the overview.
+- **A "How to read this document" legend** on the cover defines every tag +
+  DRAFT, so the PDF is self-contained.
+- **`print-color-adjust: exact`** so the accent + tier colours actually render
+  (browsers were stripping them, collapsing to flat black).
+- **A running footer** (`{process} · {id} · {docId}`) repeats on every printed
+  page for traceability, plus an `@page` page-counter for engines that support it.
+- **Token + legibility cleanup**: the invented orange (`#b4540a`/`#fdeee2`) → the
+  `--mid` tier; greys/sizes → tokens; sub-12px heading labels + DRAFT chip raised
+  to the 12px floor; long URLs now print their href and wrap.
+
+## Scope
+Deferred (heavier / browser-limited): exhibit (flow/RACI) print pagination,
+true per-page numbers in Chrome (the @page counter covers capable engines; the
+fixed footer gives traceability everywhere), and ToC page references.
+
+## Verification
+`npm run typecheck` clean · `npm test` **115/115**. Rendered `/print/cob-003`:
+16 provenance tags on headings, the 5-row legend on the cover, the running
+footer present, `print-color-adjust: exact`, DRAFT chip on the `--mid` token.

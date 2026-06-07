@@ -4493,9 +4493,12 @@ body.ffb-targeting [data-feedback-id]:hover {
   padding: 64px 24px 96px;
 }
 .print-doc {
-  max-width: 860px; margin: 0 auto; background: #fff; color: #1a1a1a;
-  font-family: var(--font); font-size: 14px; line-height: 1.6;
+  max-width: 860px; margin: 0 auto; background: #fff; color: var(--ink);
+  font-family: var(--font); font-size: var(--text-base); line-height: 1.6;
   padding: 56px 64px; box-shadow: 0 6px 28px rgba(0, 0, 0, 0.18);
+  /* Without this, browsers strip the accent rules + tier colours when printing,
+     collapsing the document to flat black (review — print finding #3). */
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
 }
 
 /* ---- Toolbar (screen only) ---- */
@@ -4533,7 +4536,7 @@ body.ffb-targeting [data-feedback-id]:hover {
 .print-cover-meta dd { margin: 0; font-size: 13px; color: #333; }
 .print-cover-draft {
   margin: 28px 0 0; padding: 8px 12px; font-size: 13px; font-weight: 600;
-  color: #b4540a; background: #fdeee2; border-radius: var(--r-sm);
+  color: var(--mid); background: var(--mid-bg); border-radius: var(--r-sm);
 }
 .print-cover-note {
   margin: 16px 0 0; font-size: 13px; font-style: italic; color: #555;
@@ -4590,19 +4593,60 @@ body.ffb-targeting [data-feedback-id]:hover {
   font-size: 14px; font-weight: 700; margin: 0; flex: 1;
 }
 .print-draft {
-  flex: none; font-family: var(--mono); font-size: 10px; font-weight: 700;
-  letter-spacing: 0.08em; color: #b4540a;
-  background: #fdeee2; border: 1px solid #f0c9ab;
+  flex: none; font-family: var(--mono); font-size: var(--text-xs); font-weight: 700;
+  letter-spacing: 0.08em; color: var(--mid);
+  background: var(--mid-bg);
+  border: 1px solid color-mix(in srgb, var(--mid) 40%, transparent);
   border-radius: var(--r-sm); padding: 1px 6px;
 }
 .print-el-status {
-  font-size: 12px; color: #666; margin: 2px 0 8px;
+  font-size: 12px; color: var(--muted); margin: 2px 0 8px;
 }
 .print-el-block { margin: 8px 0; }
 .print-el-block h5 {
-  font-family: var(--mono); font-size: 11px; font-weight: 700;
-  letter-spacing: 0.05em; text-transform: uppercase; color: #555;
+  font-family: var(--mono); font-size: var(--text-xs); font-weight: 700;
+  letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted);
   margin: 0 0 2px;
+}
+/* Per-heading provenance tag — neutral mono by default (confirmed sources),
+   colour only for the unconfirmed states, mirroring the in-app treatment. */
+.print-prov {
+  margin-left: 8px; font-family: var(--mono); font-size: 10px; font-weight: 600;
+  letter-spacing: 0.04em; padding: 0 5px; border-radius: 3px;
+  border: 1px solid var(--line); background: #fff; color: var(--muted);
+  vertical-align: middle;
+}
+.print-prov.prov-proposed {
+  background: var(--mid-bg);
+  border-color: color-mix(in srgb, var(--mid) 40%, transparent); color: var(--mid);
+}
+.print-prov.prov-web {
+  background: color-mix(in srgb, var(--bright) 12%, #fff);
+  border-color: color-mix(in srgb, var(--bright) 45%, transparent); color: var(--bright);
+}
+/* Provenance legend on the cover. */
+.print-legend {
+  margin: 28px 0 0; padding: 14px 16px;
+  border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--bg);
+}
+.print-legend-h {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--muted); margin: 0 0 8px;
+}
+.print-legend dl { margin: 0; display: grid; gap: 6px; }
+.print-legend dl > div { display: flex; align-items: baseline; gap: 10px; }
+.print-legend dt { flex: none; width: 96px; }
+.print-legend dt .print-prov, .print-legend dt .print-draft { margin: 0; }
+.print-legend dd { margin: 0; font-size: 12px; color: var(--ink); }
+/* Running footer — repeats per printed page (Chrome repeats fixed elements). */
+.print-running-foot { display: none; }
+/* Citations are useless on paper without the URL; show it, and don't overflow. */
+@media print {
+  .print-el-block a::after {
+    content: " (" attr(href) ")";
+    font-family: var(--mono); font-size: 10px; color: var(--muted);
+  }
+  .print-el-block { overflow-wrap: anywhere; }
 }
 .print-el-block p { margin: 0 0 6px; }
 .print-el-block ul { margin: 4px 0; padding-left: 20px; }
@@ -4641,15 +4685,31 @@ body.ffb-targeting [data-feedback-id]:hover {
 
 /* ---- Print output ---- */
 @media print {
-  @page { margin: 18mm; }
+  /* Extra bottom margin clears the running footer; the page counter renders in
+     engines that support @page margin boxes (Firefox / print engines). */
+  @page {
+    margin: 16mm 18mm 22mm;
+    @bottom-right {
+      content: counter(page);
+      font-family: var(--mono); font-size: 10px; color: #6b7280;
+    }
+  }
   .print-exhibit { break-inside: avoid; }
   .print-toolbar { display: none !important; }
   .print-page { background: #fff; padding: 0; }
   .print-doc {
     max-width: none; margin: 0; padding: 0; box-shadow: none;
   }
+  /* Fixed elements repeat on every printed page in Chrome — gives the document
+     a traceable identity even where the @page counter isn't supported. */
+  .print-running-foot {
+    display: block; position: fixed; bottom: 8mm; left: 0; right: 0;
+    text-align: center; font-family: var(--mono); font-size: 11px;
+    color: var(--muted);
+  }
   .print-cover { break-after: page; }
   .print-toc { break-after: page; }
+  .print-legend { break-inside: avoid; }
   .print-area { break-before: page; padding-top: 0; }
   .print-element { break-inside: avoid; }
   .print-el-head, .print-section h3, .print-area-head,

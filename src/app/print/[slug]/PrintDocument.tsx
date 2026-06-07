@@ -3,8 +3,17 @@ import type { ProcessDoc, Schema, WikiPage } from "@/lib/wiki";
 import Markdown from "@/components/Markdown";
 import PrintElement from "@/components/print/PrintElement";
 import { elementApproved, elementStatus } from "@/lib/element-format";
+import { parseProvenance } from "@/lib/conformance";
 import PrintExhibits from "@/components/print/PrintExhibits";
 import PrintToolbar from "./PrintToolbar";
+
+const PROV_LABEL: Record<string, string> = {
+  elicited: "SME",
+  document: "DOC",
+  proposed: "PROPOSED",
+  web: "WEB",
+  "legacy-approved": "LEGACY",
+};
 
 export interface PrintScope {
   /** Selected area ids, kept in schema order by the caller. */
@@ -102,11 +111,16 @@ export default function PrintDocument({
     .slice(0, 12)}`;
 
   const overviewStatus = elementStatus(doc.process);
+  const overviewProv = parseProvenance(doc.process);
 
   return (
     <div className="print-page">
       <PrintToolbar />
       <div className="print-doc">
+        {/* Running footer — repeats on every printed page for traceability. */}
+        <div className="print-running-foot" aria-hidden>
+          {doc.process.title} · {doc.process.id} · {docId}
+        </div>
         {/* ---- Cover ---- */}
         <section className="print-cover">
           <div className="print-cover-kicker">Process Documentation</div>
@@ -142,6 +156,34 @@ export default function PrintDocument({
             This document is for review. Please give feedback by section number
             and element ID.
           </p>
+
+          {/* Provenance legend — makes the export self-contained: a reader can
+              tell SME-confirmed fact from AI-proposed without the app. */}
+          <div className="print-legend">
+            <div className="print-legend-h">How to read this document</div>
+            <dl>
+              <div>
+                <dt><span className="print-prov prov-elicited">SME</span></dt>
+                <dd>Confirmed by the subject-matter expert.</dd>
+              </div>
+              <div>
+                <dt><span className="print-prov prov-document">DOC</span></dt>
+                <dd>Taken from an uploaded source document.</dd>
+              </div>
+              <div>
+                <dt><span className="print-prov prov-proposed">PROPOSED</span></dt>
+                <dd>AI-drafted — <b>not yet confirmed</b> by the SME.</dd>
+              </div>
+              <div>
+                <dt><span className="print-prov prov-web">WEB</span></dt>
+                <dd>Sourced from the web with a citation — not yet SME-confirmed.</dd>
+              </div>
+              <div>
+                <dt><span className="print-draft">DRAFT</span></dt>
+                <dd>The element as a whole is not yet approved.</dd>
+              </div>
+            </dl>
+          </div>
         </section>
 
         {/* ---- Contents ---- */}
@@ -171,12 +213,22 @@ export default function PrintDocument({
         <section className="print-section print-overview">
           <h2>Process Overview</h2>
           <div className="print-el-status">{overviewStatus.label}</div>
-          {doc.process.blocks.map((b) => (
-            <div className="print-el-block" key={b.heading}>
-              <h5>{b.heading}</h5>
-              <Markdown text={b.text} />
-            </div>
-          ))}
+          {doc.process.blocks.map((b) => {
+            const src = overviewProv[b.heading]?.source;
+            return (
+              <div className="print-el-block" key={b.heading}>
+                <h5>
+                  {b.heading}
+                  {src && PROV_LABEL[src] && (
+                    <span className={`print-prov prov-${src}`}>
+                      {PROV_LABEL[src]}
+                    </span>
+                  )}
+                </h5>
+                <Markdown text={b.text} />
+              </div>
+            );
+          })}
         </section>
 
         {/* ---- Areas ---- */}
