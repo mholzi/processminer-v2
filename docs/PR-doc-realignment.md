@@ -60,7 +60,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#58** | Live-testing feedback toolkit — floating widget, auto-context, screenshots, element pins, admin toggles | `feat/live-feedback-toolkit` → `main` | Code + UI | **Open** (`pending`) |
 | **#61** | `new-process` determinism — `deriveProcessMeta` tool + templatized copy; skill deep-dive HTML | `feat/new-process-determinism` → `main` | Code + tests + skill + docs | **Merged** |
 | **#65** | `qer-session` determinism — perspective-aware cursor (skillBuilt/documented/next-built), counted cross-review gate, close-out renderer, SME actor on cursor | `feat/qer-determinism` → `main` | Code + tests + skill + docs | **Merged** |
-| **#67** | `foundational-run` determinism — control-coverage flag, close-out counts + still-to-document, one-call [Y] reconcile, opt-in [E] frontmatter-sync, gap-tail batch | `feat/foundational-determinism` → `main` | Code + tests + skill + docs | **Open** (`pending`) |
+| **#67** | `foundational-run` determinism — control-coverage flag, close-out counts + still-to-document, one-call [Y] reconcile, opt-in [E] frontmatter-sync, gap-tail batch | `feat/foundational-determinism` → `main` | Code + tests + skill + docs | **Merged** |
+| **#70** | Specialists determinism — shared `getProcessRelations` tool + prose pass across all 8 perspective/architect specialists | `feat/specialists-determinism` → `main` | Code + tests + 8 skills + docs | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -2028,3 +2029,40 @@ worker cache deferred (staleness risk).
 `npm run typecheck` clean · `npm test` **138/138** — 12 new `foundational.test.ts`
 cases (control coverage, gap-tail, close-out, reconcile, conservative relation
 sync).
+
+---
+
+## PR #70 — Specialists determinism: shared `getProcessRelations` + prose pass
+
+## Why
+The deep-dive surfaced ~66 enhancement ideas across the 8 specialists that
+collapse into a few recurring moves (the specialists are pure-prompt skills over
+one shared tool layer). Worked as a consolidated-by-theme pass: implement the
+shared wins once + each specialist's high-value deterministic derivation.
+
+## What
+- **`process-relations.ts`** (new, pure) + a read-only **`getProcessRelations`**
+  tool in both backends — per-step systems/controls/touchpoints with
+  hasControl/hasSystem, orphan systems/controls/regulations, candidate
+  integrations (system pairs co-occurring on a step with no integration), and
+  steps without a control/system. Replaces by-hand coverage derivation for the
+  Process, Control & Compliance, Client Journey and IT Architect specialists.
+- **All 8 SKILL.md** (surgical prose, contract unchanged) — one
+  `getProcessSummary` snapshot up front; derive coverage/orphans/candidates from
+  `getProcessRelations`; batch reference-grade lists; skip read-back for
+  objective/sourced facts; parallel-draft independent elements; fixed
+  question-bank order; set relations at write time. Transformation / Domain /
+  Solution derive gaps / capabilities / ADR stubs / integration & migration
+  coverage from the snapshot.
+- Structured-output / enum gating marked **partial** (already enforced by
+  `createElement` + `checkConformance`); banking libraries/catalogs **skipped**
+  (content work). HTML deep-dives updated with per-idea outcomes.
+
+## Scope
+8 specialist skills + the new read-only tool. `getProcessRelations` is additive
+and read-only; no change to other skills or write paths.
+
+## Verification
+`npm run typecheck` clean · `npm test` **143/143** — 5 new
+`process-relations.test.ts` cases (coverage, orphans, integration candidates,
+uncovered), wired into the runner.
