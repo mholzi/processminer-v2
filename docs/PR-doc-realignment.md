@@ -62,6 +62,7 @@ what it changes, behaviour/scope, and how it was verified.
 | **#60** | Design-review wave 2 — shared `<Modal>` primitive; migrate every dialog onto it; de-dupe the profile modal | `fix/design-review-wave-2` → `fix/design-review-wave-1` | Code + UI | **Open** (`pending`) — stacked on #59 |
 | **#64** | Design-review wave 3 (round-2 fixes) — login first-impression, guided-tour escape, DTP relabel, Help/⌘K focus-trap | `fix/design-review-wave-3` → `fix/design-review-wave-2` | Code + UI | **Open** (`pending`) — stacked on #60 |
 | **#66** | Design-review wave 4 — the export PDF: provenance tags + legend, page footer, print-color-adjust, tokens | `fix/design-review-wave-4-print` → `fix/design-review-wave-3` | Code + UI | **Open** (`pending`) — stacked on #64 |
+| **#68** | Design-review wave 5 — confirm access-widening + surface failures in SettingsPanel | `fix/design-review-wave-5-access` → `fix/design-review-wave-4-print` | Code + UI | **Open** (`pending`) — stacked on #66 |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1975,3 +1976,30 @@ fixed footer gives traceability everywhere), and ToC page references.
 `npm run typecheck` clean · `npm test` **115/115**. Rendered `/print/cob-003`:
 16 provenance tags on headings, the 5-row legend on the cover, the running
 footer present, `print-color-adjust: exact`, DRAFT chip on the `--mid` token.
+
+## PR #68 — Design-review wave 5: SettingsPanel access safety
+
+## Why
+Access changes in the per-process Settings applied on one click with no
+confirmation and no error surface — "Make open to everyone" un-governs a process
+(every signed-in user can then see it), and `accessAction` had no `catch`, so a
+failed write vanished silently. In a regulated-banking tool this was the riskiest
+spot in the app (review R4).
+
+## What
+- **`accessAction` now handles failures** — checks `res.ok`, catches network
+  errors, and surfaces them in a new `.settings-error` (`role="alert"`) block.
+- **Access-widening + revoke now confirm.** "Make open to everyone" (ungovern)
+  and per-person "remove" (revoke) open a `<Modal>` confirm that names the impact
+  ("Every signed-in user will be able to view …") before acting. Additive actions
+  (Share / Restrict-to-owner) stay one-click.
+
+## Scope
+Reuses the wave-2 `<Modal>` primitive (Esc / focus-trap / aria-modal). Stacked on
+#66.
+
+## Verification
+`npm run typecheck` clean · `npm test` **140/140**. Driven end-to-end in the app:
+governed a process → "Make open to everyone" → the confirm dialog appears
+(`aria-modal`, impact spelled out) → confirming un-governs and the panel returns
+to "open" (state restored); no silent failures.

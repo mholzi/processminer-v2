@@ -6969,6 +6969,14 @@ body.ffb-targeting [data-feedback-id]:hover {
 .settings-access h2 { font-size: var(--text-md); margin: 0 0 var(--space-sm); }
 .settings-access p { font-size: var(--text-sm); margin: 0 0 var(--space-sm); }
 .settings-dim { color: var(--muted); }
+.settings-error {
+  margin-top: var(--space-md);
+  background: var(--lo-bg); color: var(--lo);
+  border: 1px solid color-mix(in srgb, var(--lo) 30%, transparent);
+  border-radius: var(--r-sm);
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--text-sm);
+}
 .access-row { display: flex; gap: var(--space-sm); align-items: center; margin-top: var(--space-sm); }
 .access-row select {
   flex: 1; font: inherit; font-size: var(--text-sm); padding: var(--space-xs) var(--space-sm);
