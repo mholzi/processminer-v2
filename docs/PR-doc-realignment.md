@@ -58,6 +58,7 @@ what it changes, behaviour/scope, and how it was verified.
 | **#55** | Advisor chat: clickable citations + capture-as-note + richer markdown | `feat/advisor-chat-citations-notes` → `main` | Code | **Open** (`pending`) |
 | **#56** | DTP Enhancer review tools — rollup, coverage, evidence, triage, export, summary | `feat/dtp-review-tools` → `main` | Code + skills | **Merged** |
 | **#58** | Live-testing feedback toolkit — floating widget, auto-context, screenshots, element pins, admin toggles | `feat/live-feedback-toolkit` → `main` | Code + UI | **Open** (`pending`) |
+| **#59** | Design-review wave 1 — colour overload, AM green theming, primary button, table scan-ability + 7 more | `fix/design-review-wave-1` → `feat/live-feedback-toolkit` | Code + UI | **Open** (`pending`) — stacked on #58 |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1834,3 +1835,44 @@ captured + served (`200 image/png`, `400` on traversal, `404` missing);
 element pin stores `element: PS-COB-001` with title/process; avatar opens the
 profile (session intact). Test feedback items created during verification were
 removed.
+
+## PR #59 — Design-review wave 1 (11 findings)
+
+## Why
+A six-agent design + UX review (`public/_mockups/design-review.html`) surfaced
+44 findings, most laddering up to four systemic roots. This PR resolves 11 of
+the 12 highest-impact before/after items (all except #3, the toolbar grouping).
+Stacked on #58 because several fixes build on files #58 touched.
+
+## What
+- **#1 / #12 colour overload** — provenance chips become neutral mono; colour is
+  reserved for the *unconfirmed* states (`proposed` amber, `web` info-blue). The
+  semantic triad (`--hi/--mid/--lo`) stops meaning confidence + provenance +
+  approval at once.
+- **#2 ArchitectMiner green** — remap the accent tokens on the `.am` shell root
+  so the whole `.am-*` surface themes green from one place (it was rendering in
+  Processminer blue).
+- **#4 / #5 dashboard** — one resume hero + compact rows for the rest; stable
+  "Your workspace" h1 with the count demoted to a subline.
+- **#6 primary button** — `.act.ai` is now solid accent everywhere.
+- **#7 bug** — `.conf-med` → `.conf-medium`; medium-confidence dots were invisible.
+- **#8 lineage** — approved cards keep "AI-drafted · approved by X".
+- **#9 pill misuse** — interactive controls (buttons, filter/category chips)
+  de-pilled to `--r-sm`; status/confidence chips, badges, switch track, FAB kept.
+- **#10 tables** — `useCapped` hook caps the cross-process portfolio + handoff
+  tables with a "show more"; zebra rows + tabular-nums across AM tables.
+- **#11 empty states** — real action buttons (Run quality check / Upload) instead
+  of references to unlabeled toolbar glyphs.
+
+## Scope
+`#3` (toolbar grouping/labels) and the long tail (12px-floor sweep, shared
+`<Modal>` primitive, chat-rail reflow, virtual-view wayfinding) are deferred to
+later waves. `#9` is intentionally partial — only clear interactive controls
+were de-pilled; the full token sweep is its own pass.
+
+## Verification
+`npm run typecheck` clean · `npm test` **108/108**. Computed-style checks in the
+running app: provenance elicited neutral, web `#2563eb`; `.am` `--accent`→`#3f7d5c`
+(green) with green-soft nav; `.act.ai` solid `#1e40af`; conf-medium dot `#9a7b32`;
+welcome h1 stable + single hero. The review report (`public/_mockups/`) is a
+throwaway artifact and is intentionally not committed.

@@ -2385,9 +2385,13 @@ export default function ProcessDocScreen({
               ) : (
                 <div className="empty-state">
                   <p>No quality check has been run for this process yet.</p>
-                  <p className="empty-hint">
-                    Use “⊛ Run quality check” in the top bar to run one.
-                  </p>
+                  <button
+                    type="button"
+                    className="empty-action"
+                    onClick={runLint}
+                  >
+                    Run quality check
+                  </button>
                 </div>
               )}
             </>
@@ -2411,9 +2415,13 @@ export default function ProcessDocScreen({
               ) : (
                 <div className="empty-state">
                   <p>No document has been imported for this process yet.</p>
-                  <p className="empty-hint">
-                    Use “⬆ Upload document” in the top bar to import one.
-                  </p>
+                  <button
+                    type="button"
+                    className="empty-action"
+                    onClick={() => setUploadModalOpen(true)}
+                  >
+                    Upload document
+                  </button>
                 </div>
               )}
             </>

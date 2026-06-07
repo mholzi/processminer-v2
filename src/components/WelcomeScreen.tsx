@@ -316,79 +316,112 @@ export default function WelcomeScreen({
         <div className="ws-greet-eyebrow">
           {todayLabel()} · welcome back, {user.name.split(/\s+/)[0]}
         </div>
-        <h1 className="ws-greet-h">{greetCount}</h1>
+        <h1 className="ws-greet-h">Your workspace</h1>
+        <p className="ws-greet-sub">{greetCount}</p>
 
-        {/* Resume hero — primary in-flight thing. PM only for now. */}
-        {inflightPM && (view === "both" || view === "pm") && (
-          <button
-            type="button"
-            className="ws-resume"
-            onClick={() => openProcess(inflightPM.slug)}
-          >
-            <span className="ws-resume-ico">▶</span>
-            <span className="ws-resume-body">
-              <span className="ws-resume-eyebrow">Resume foundational run</span>
-              <span className="ws-resume-title">
-                {inflightPM.process.id} · {inflightPM.process.title}
-              </span>
-              <span className="ws-resume-sub">
-                Paused at item{" "}
-                <b>
-                  {inflightPM.reviewState!.cursor + 1} of {inflightPM.reviewState!.total}
-                </b>
-              </span>
-            </span>
-            <span className="ws-resume-cta">Resume →</span>
-          </button>
-        )}
-
-        {/* Resume hero — in-flight QER session. */}
-        {inflightQER && (view === "both" || view === "pm") && (
-          <button
-            type="button"
-            className="ws-resume"
-            onClick={() => openProcess(inflightQER.slug)}
-          >
-            <span className="ws-resume-ico">▶</span>
-            <span className="ws-resume-body">
-              <span className="ws-resume-eyebrow">Resume QER session</span>
-              <span className="ws-resume-title">
-                {inflightQER.process.id} · {inflightQER.process.title}
-              </span>
-              <span className="ws-resume-sub">
-                Paused at step{" "}
-                <b>{inflightQER.qerState!.queue[inflightQER.qerState!.cursor] ?? "—"}</b>{" "}
-                ({inflightQER.qerState!.cursor + 1} of {inflightQER.qerState!.total})
-              </span>
-            </span>
-            <span className="ws-resume-cta">Resume →</span>
-          </button>
-        )}
-
-        {/* Resume hero — a regenerated DTP awaiting critical review. */}
-        {dtpReady && (view === "both" || view === "pm") && (
-          <button
-            type="button"
-            className="ws-resume"
-            onClick={() => openProcess(dtpReady.slug)}
-          >
-            <span className="ws-resume-ico">♻</span>
-            <span className="ws-resume-body">
-              <span className="ws-resume-eyebrow">Review regenerated DTP</span>
-              <span className="ws-resume-title">
-                {dtpReady.process.id} · {dtpReady.process.title}
-              </span>
-              <span className="ws-resume-sub">
-                <b>
-                  {dtpReady.dtpReport!.findings.length} review finding
-                  {dtpReady.dtpReport!.findings.length === 1 ? "" : "s"}
-                </b>{" "}
-                · diff vs {dtpReady.dtpReport!.sourceFile}
-              </span>
-            </span>
-            <span className="ws-resume-cta">Review →</span>
-          </button>
-        )}
+        {/* In-flight work — the single highest-priority item is the hero; any
+            others collapse into compact rows so there's one obvious next step
+            (review #4). */}
+        {(() => {
+          const showPM = view === "both" || view === "pm";
+          const items = [
+            inflightPM && showPM
+              ? {
+                  key: "pm",
+                  ico: "▶",
+                  eyebrow: "Resume foundational run",
+                  title: `${inflightPM.process.id} · ${inflightPM.process.title}`,
+                  sub: (
+                    <>
+                      Paused at item{" "}
+                      <b>
+                        {inflightPM.reviewState!.cursor + 1} of{" "}
+                        {inflightPM.reviewState!.total}
+                      </b>
+                    </>
+                  ),
+                  cta: "Resume →",
+                  onClick: () => openProcess(inflightPM.slug),
+                }
+              : null,
+            inflightQER && showPM
+              ? {
+                  key: "qer",
+                  ico: "▶",
+                  eyebrow: "Resume QER session",
+                  title: `${inflightQER.process.id} · ${inflightQER.process.title}`,
+                  sub: (
+                    <>
+                      Paused at step{" "}
+                      <b>
+                        {inflightQER.qerState!.queue[inflightQER.qerState!.cursor] ??
+                          "—"}
+                      </b>{" "}
+                      ({inflightQER.qerState!.cursor + 1} of{" "}
+                      {inflightQER.qerState!.total})
+                    </>
+                  ),
+                  cta: "Resume →",
+                  onClick: () => openProcess(inflightQER.slug),
+                }
+              : null,
+            dtpReady && showPM
+              ? {
+                  key: "dtp",
+                  ico: "♻",
+                  eyebrow: "Review regenerated DTP",
+                  title: `${dtpReady.process.id} · ${dtpReady.process.title}`,
+                  sub: (
+                    <>
+                      <b>
+                        {dtpReady.dtpReport!.findings.length} review finding
+                        {dtpReady.dtpReport!.findings.length === 1 ? "" : "s"}
+                      </b>{" "}
+                      · diff vs {dtpReady.dtpReport!.sourceFile}
+                    </>
+                  ),
+                  cta: "Review →",
+                  onClick: () => openProcess(dtpReady.slug),
+                }
+              : null,
+          ].filter((x): x is NonNullable<typeof x> => x !== null);
+          if (items.length === 0) return null;
+          const [hero, ...rest] = items;
+          return (
+            <>
+              <button
+                type="button"
+                className={`ws-resume${rest.length ? " ws-resume--has-more" : ""}`}
+                onClick={hero.onClick}
+              >
+                <span className="ws-resume-ico">{hero.ico}</span>
+                <span className="ws-resume-body">
+                  <span className="ws-resume-eyebrow">{hero.eyebrow}</span>
+                  <span className="ws-resume-title">{hero.title}</span>
+                  <span className="ws-resume-sub">{hero.sub}</span>
+                </span>
+                <span className="ws-resume-cta">{hero.cta}</span>
+              </button>
+              {rest.length > 0 && (
+                <div className="ws-resume-more">
+                  {rest.map((it) => (
+                    <button
+                      type="button"
+                      key={it.key}
+                      className="ws-resume-mini"
+                      onClick={it.onClick}
+                    >
+                      <span className="ws-resume-mini-ico">{it.ico}</span>
+                      <span className="ws-resume-mini-eyebrow">{it.eyebrow}</span>
+                      <span className="ws-resume-mini-title">{it.title}</span>
+                      <span className="ws-resume-mini-cta">{it.cta}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          );
+        })()}
 
         {/* Advisory Board — sits above the processes; chat with the senior team. */}
         {showAdvisory && (

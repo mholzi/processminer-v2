@@ -13,6 +13,7 @@ import {
   migrationPlan,
   processPortfolio,
 } from "@/lib/architect-portfolio";
+import { useCapped } from "./useCapped";
 
 function EmptyTier({ title, body }: { title: string; body: React.ReactNode }) {
   return (
@@ -34,6 +35,7 @@ const STAGE_LABEL: Record<string, string> = {
 export function AllProcesses({ docs }: { docs: ProcessDoc[] }) {
   const rows = processPortfolio(docs);
   const architected = rows.filter((r) => r.total > 0).length;
+  const { shown, hasMore, remaining, showAll } = useCapped(rows);
 
   return (
     <>
@@ -55,7 +57,7 @@ export function AllProcesses({ docs }: { docs: ProcessDoc[] }) {
           </tr>
         </thead>
         <tbody>
-          {rows.map((r) => (
+          {shown.map((r) => (
             <tr key={r.slug}>
               <td>
                 <div className="am-canvas-app-name">{r.title}</div>
@@ -76,9 +78,20 @@ export function AllProcesses({ docs }: { docs: ProcessDoc[] }) {
                   </div>
                 )}
               </td>
-              <td>{r.lastModified ? r.lastModified.slice(0, 10) : "—"}</td>
+              <td className="am-num">
+                {r.lastModified ? r.lastModified.slice(0, 10) : "—"}
+              </td>
             </tr>
           ))}
+          {hasMore && (
+            <tr className="am-more-row">
+              <td colSpan={4}>
+                <button type="button" className="am-more-btn" onClick={showAll}>
+                  Show {remaining} more
+                </button>
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
 

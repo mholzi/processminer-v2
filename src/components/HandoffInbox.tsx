@@ -12,6 +12,7 @@ import {
   PatternLibrary,
 } from "./LibraryViews";
 import { AllProcesses, MyAdrs, MigrationPlans } from "./PersonalViews";
+import { useCapped } from "./useCapped";
 import {
   adrQueue,
   applicationRegister,
@@ -169,6 +170,7 @@ export default function HandoffInbox({
       return r.title.toLowerCase().includes(q) || r.id.toLowerCase().includes(q);
     });
   }, [rows, filter, query]);
+  const { shown, hasMore, remaining, showAll } = useCapped(filtered);
 
   const counts = useMemo(() => {
     const c = { all: rows.length, "needs-domain": 0, "needs-solution": 0, "in-build": 0 } as Record<Filter, number>;
@@ -354,7 +356,7 @@ export default function HandoffInbox({
                   </td>
                 </tr>
               )}
-              {filtered.map((r) => {
+              {shown.map((r) => {
                 const pill = statusPill(r.status);
                 const targetPct =
                   r.targetTotal === 0 ? 0 : Math.round((r.targetConfirmed / r.targetTotal) * 100);
@@ -434,6 +436,15 @@ export default function HandoffInbox({
                   </tr>
                 );
               })}
+              {hasMore && (
+                <tr className="am-more-row">
+                  <td colSpan={5}>
+                    <button type="button" className="am-more-btn" onClick={showAll}>
+                      Show {remaining} more
+                    </button>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
           </>
