@@ -12,6 +12,7 @@ import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestCon
 import { enrichFoundationalStatus } from "./foundational.ts";
 import { buildProcessRelations } from "./process-relations.ts";
 import { buildConsolidationInputs } from "./consolidation-inputs.ts";
+import { buildSectionContext } from "./section-context.ts";
 import { writeDtpReport, writeDtpComparison } from "./dtp-report.ts";
 import { buildNote, appendNote, resolveNotesInDoc } from "./session-notes.ts";
 import { deriveProcessMeta, scaffoldClosing } from "./process-scaffold.ts";
@@ -321,6 +322,18 @@ const toolDeclarations: any[] = [
       type: "OBJECT",
       properties: { slug: { type: "STRING", description: "The process slug." } },
       required: ["slug"]
+    }
+  },
+  {
+    name: "getSectionContext",
+    description: "One-call context for add-entry: for a section, the element type(s) it holds — each as a fill-in-the-blanks skeleton (block headings, frontmatter fields, relation targets, required keys) — plus the section's existing elements (id+title, so the draft fits and isn't a duplicate) and the process overview. Replaces the several expandElement reads of Step 1 and guarantees no required field is dropped.",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        slug: { type: "STRING", description: "The process slug." },
+        section: { type: "STRING", description: "The section/collection id, e.g. 'innovation-ideas'." }
+      },
+      required: ["slug", "section"]
     }
   },
   {
@@ -1401,6 +1414,11 @@ export class GeminiWorker implements IProcessWorker {
               } else if (originalName === "getConsolidationInputs") {
                 if (!doc) throw new Error("Process document context not loaded or slug is missing.");
                 resultText = JSON.stringify(buildConsolidationInputs(doc), null, 2);
+              } else if (originalName === "getSectionContext") {
+                if (!doc) throw new Error("Process document context not loaded or slug is missing.");
+                const section = String(args.section || "");
+                if (!section) throw new Error("section is required.");
+                resultText = JSON.stringify(buildSectionContext(doc, getSchema(), section), null, 2);
               } else if (originalName === "buildQueue") {
                 if (!doc || !this.slug) throw new Error("Process document context not loaded or slug is missing.");
                 const queue = buildFoundationalQueue(doc);

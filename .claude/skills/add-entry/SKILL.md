@@ -21,18 +21,23 @@ counterpart to the bulk `source-innovation` / `source-cx` skills.
 
 ## Step 1 — Read the section's context
 
-- Read `schema/process-schema.json` for the section — the element type(s) it
-  holds. For each of those types, read its schema template (its `## ` blocks
-  **and** its type-specific frontmatter fields and relations) from the schema /
-  Document Map, so the entry you draft is as complete as one the dedicated
-  sourcing skills produce.
-- List the section's existing elements with `expandElement({ type })`, then
-  read any specific one with `expandElement({ type, id })`, so the new entry
-  fits and does not duplicate one already there.
-- Read the process overview (root `meta`/`content`) in the Document Map — its
-  domain, what it does, its scope.
+`use the getSectionContext({ slug, section }) tool` **once** — it returns
+everything Step 1 needs in one call, so you never re-recall the element shape:
 
-If the section holds more than one element type, note them.
+- **`types`** — the element type(s) this section holds, each as a fill-in-the-
+  blanks **skeleton**: the `blocks` (the `##` headings to write), the `fields`
+  (type-specific frontmatter, with hints), the `relations` (each with the
+  element type(s) it may point at), and **`required`** (the frontmatter keys
+  that must be present — drop one and conformance fails). Draft against this
+  skeleton; do not recall the shape from the schema by memory.
+- **`existing`** — the section's current elements (`id` + `title`), so the new
+  entry fits and does not duplicate one already there (see the duplicate check
+  in Step 3).
+- **`overview`** — the process overview (domain, what it does), for context.
+
+If `types` holds more than one element type, note them (you pick the right one
+from the SME's description in Step 3). `expandElement({ type, id })` is still
+available if you need a specific existing element's full body.
 
 ## Step 2 — Ask what to add
 
@@ -45,6 +50,12 @@ Wait for their answer.
 
 ## Step 3 — Research, then draft
 
+**Duplicate check first.** Compare the SME's description against the `existing`
+titles from Step 1; if it looks close to one already there, also
+`use the searchProcesses({ query }) tool` to confirm. If it is a near-duplicate,
+say so and ask whether to extend the existing element instead of drafting a new
+one — don't silently create a second copy.
+
 Research the entry before drafting — never draft from a blank guess:
 - **Always** read the related wiki elements — for an innovation idea, the pain-
   and friction-points it might address; for a control, the process steps; for
@@ -52,14 +63,26 @@ Research the entry before drafting — never draft from a blank guess:
   the wiki already holds.
 - **Use web search** when the entry is an external signal — a market trend, a
   competitor move, a CX benchmark — or when the SME's request needs facts you
-  do not have. Cite the real source; never invent one.
+  do not have. Cite the real source; never invent one. When the entry needs
+  several external signals (e.g. the trend, a competitor and a benchmark),
+  **dispatch the searches concurrently as read-only sub-agents** in one message
+  rather than running them serially, then merge the findings.
 
-Then draft the element: every block per its schema `template`, **every
-frontmatter field and relation the schema template lists for the type** (for a
-web-sourced type that means `sourceUrl`, `asOf` and the rest — do not leave
-them off), an honest `confidence`, and a `source` (the SME, the wiki element,
-or the study/URL the research found). If the
-section holds several element types, pick the type from what the SME
+Then draft the element against the Step-1 **skeleton** for the chosen type —
+fill **every** `block`, **every** `field`, and **every** `required` relation it
+lists (for a web-sourced type that means `sourceUrl`, `asOf` and the rest — do
+not leave them off), an honest `confidence`, and a `source` (the SME, the wiki
+element, or the study/URL the research found). Because you draft straight into
+the skeleton, no required field is dropped and the post-write conformance check
+passes first time.
+
+**Pre-fill the relations.** Each relation in the skeleton names the element
+type(s) it may point at; match the SME's description (and your research) against
+those target sections and **pre-populate the relation id-lists** for the SME to
+confirm in Step 4 — relations are the field most often left empty, and grounding
+the entry is the point.
+
+If the section holds several element types, pick the type from what the SME
 described; if it is genuinely ambiguous, ask which.
 
 ## Step 4 — Refine with the SME — Y / E / R

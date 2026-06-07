@@ -17,6 +17,7 @@ import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestCon
 import { enrichFoundationalStatus } from "./foundational.ts";
 import { buildProcessRelations } from "./process-relations.ts";
 import { buildConsolidationInputs } from "./consolidation-inputs.ts";
+import { buildSectionContext } from "./section-context.ts";
 import { writeDtpReport, writeDtpComparison } from "./dtp-report.ts";
 import { buildNote, appendNote, resolveNotesInDoc } from "./session-notes.ts";
 import {
@@ -312,6 +313,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           type: "object",
           properties: { slug: { type: "string", description: "The process slug." } },
           required: ["slug"]
+        }
+      },
+      {
+        name: "getSectionContext",
+        description: "One-call context for add-entry: for a section, the element type(s) it holds — each as a fill-in-the-blanks skeleton (block headings, frontmatter fields, relation targets, required keys) — plus the section's existing elements (id+title, so the draft fits and isn't a duplicate) and the process overview. Replaces the several expandElement reads of Step 1 and guarantees no required field is dropped.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            slug: { type: "string", description: "The process slug." },
+            section: { type: "string", description: "The section/collection id, e.g. 'innovation-ideas'." }
+          },
+          required: ["slug", "section"]
         }
       },
       {
@@ -994,6 +1007,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     else if (name === "getConsolidationInputs") {
       return { content: [{ type: "text", text: JSON.stringify(buildConsolidationInputs(doc), null, 2) }] };
+    }
+
+    else if (name === "getSectionContext") {
+      const section = String(args?.section || "");
+      if (!section) throw new McpError(ErrorCode.InvalidParams, "section is required.");
+      return { content: [{ type: "text", text: JSON.stringify(buildSectionContext(doc, getSchema(), section), null, 2) }] };
     }
 
     else if (name === "buildQueue") {
