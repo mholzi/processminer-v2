@@ -12,11 +12,38 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { type GetRef, buildComponents } from "./chat-linkify";
 import { pickPerspective } from "@/lib/wait-perspective";
+import type { TurnUsage } from "@/lib/agent-chat";
 
 export interface ChatMessage {
   id: string;
   role: "user" | "agent";
   text: string;
+  /** This turn's token usage, shown as a compact receipt under an agent
+   *  message when the provider reported it. */
+  usage?: TurnUsage;
+}
+
+/** "12.3k" / "950" — compact token count. */
+function fmtTokens(n: number): string {
+  if (n >= 10_000) return `${(n / 1000).toFixed(1)}k`;
+  if (n >= 1000) return `${(n / 1000).toFixed(2)}k`;
+  return String(n);
+}
+
+/** The dim per-turn receipt: input/output tokens, cache reads, and cost when
+ *  the provider reports it. */
+function UsageReceipt({ u }: { u: TurnUsage }) {
+  const parts = [
+    `${fmtTokens(u.inputTokens)} in`,
+    `${fmtTokens(u.outputTokens)} out`,
+  ];
+  if (u.cacheReadTokens > 0) parts.push(`${fmtTokens(u.cacheReadTokens)} cached`);
+  if (u.costUsd > 0) parts.push(`$${u.costUsd.toFixed(u.costUsd < 0.01 ? 4 : 2)}`);
+  return (
+    <div className="chat-msg-usage" title="LLM tokens for this turn">
+      {parts.join(" · ")}
+    </div>
+  );
 }
 
 export type { GetRef };
@@ -229,6 +256,7 @@ export default function AgentChat({
             <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
               {m.text}
             </ReactMarkdown>
+            {m.role === "agent" && m.usage && <UsageReceipt u={m.usage} />}
           </div>
         ))}
         {pending && activeSkillLabel && (

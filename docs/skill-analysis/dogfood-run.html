@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dogfood-run — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">dogfood-run</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">QA test harness</div>
+    <h1>dogfood-run</h1>
+    <p class="lede">An end-to-end test harness that creates a throwaway process and drives the entire skill roster through the running app's UI — ingest, foundational run, web sourcing, specialist refinement, comments, lint and a destructive re-ingest — while playing a banking SME at every prompt, then writes a pass/fail QA report and a self-assessment, and even auto-tunes its own walkthrough for the next run.</p>
+    <div class="meta-row">
+      <span class="chip">CLI-only · /dogfood-run</span>
+      <span class="chip neutral">Drives the running web app UI end-to-end</span>
+      <span class="chip neutral">Plays a banking SME</span>
+      <span class="chip neutral">Writes a pass/fail QA report</span>
+    </div>
+  </div>
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>dogfood-run</code> is not a content skill — it is an automated
+      <strong>end-to-end test harness</strong> for the Processminer web app. In one run
+      (1&ndash;3 hours) it creates a brand-new throwaway process and drives it through the
+      <strong>entire skill roster</strong>, exactly as a real banking subject-matter expert
+      would by clicking through the UI, then writes a pass/fail QA report that the app
+      itself serves on the Mac Mini's LAN IP.
+    </p>
+    <p>
+      It is <strong>CLI-only</strong>: it runs only when the user types
+      <code>/dogfood-run</code> in the terminal. It must <em>never</em> be auto-routed from
+      the app's free chat and never run against a real process — the test process is
+      deliberately named <strong>"Funds Release Dogfood"</strong>, distinct from any real
+      <code>funds-release</code> process, so the destructive Stage 8 re-ingest can't touch
+      real content.
+    </p>
+    <p>The harness wears <strong>two hats at once</strong>:</p>
+    <ul>
+      <li><strong>The test driver</strong> — drives the browser via the <code>preview_*</code>
+        MCP tools, observes the app, records evidence, and judges each stage pass or fail.</li>
+      <li><strong>The SME</strong> — at every interactive prompt it answers as a knowledgeable
+        but slightly impatient payment-operations expert: mostly approving, deliberately
+        editing a few times, rejecting at least once, and posting real reviewer comments.
+        It never breaks character to the app's chat; the test-driver judgement stays in its
+        reasoning and the report.</li>
+    </ul>
+    <p>Key behaviours and constraints:</p>
+    <ul>
+      <li><strong>Two Claude instances kept straight.</strong> The harness is the
+        <em>outer</em> Claude (CLI + browser tools). The app's chat spawns its <em>own</em>
+        <code>claude</code> worker that runs the wiki skills. The harness never calls a wiki
+        skill itself — it types messages into the chat and the app's worker runs them.</li>
+      <li><strong>Browser-only via <code>preview_*</code>.</strong> Never Bash for browser
+        work, never the Chrome MCP. There is <strong>no <code>preview_snapshot</code></strong> —
+        page state is read with <code>preview_eval</code> DOM queries;
+        <code>preview_screenshot</code> is for live verification only and
+        <strong>cannot be written to disk</strong>, so all report evidence is textual.</li>
+      <li><strong>SME answers are grounded in the fixtures.</strong> Two paste-text source
+        documents drive the run: <code>fixtures/source-doc-v1.md</code> (the initial ingest)
+        and <code>fixtures/source-doc-v2.md</code> (deliberately contradictory — changed STP
+        SLA, cut-off, Treasury threshold and a control owner) for the Stage 8 conflict edge
+        case. The SME must not invent facts that contradict them.</li>
+      <li><strong>Resumable.</strong> After every stage it writes
+        <code>state.json</code> under <code>public/test-report-assets/&lt;run-id&gt;/</code>;
+        <code>/dogfood-run &lt;run-id&gt;</code> reloads it and skips completed stages. No run's
+        process is ever deleted.</li>
+      <li><strong>The loop closes on itself.</strong> Stage 9 gets an independent SME verdict
+        on the produced <em>content</em>; Stage 10 traces every shortfall to a
+        <code>[walkthrough]</code> gap (fixable here) or a <code>[skill]</code> finding, then
+        <strong>auto-edits this very SKILL.md</strong> — additively, never touching the
+        scope-locked sections — and logs each edit to <code>REVISIONS.md</code>.</li>
+    </ul>
+  </section>
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>Twelve checkpointed stages. Each is asserted PASS/FAIL with a one-line reason, a textual DOM snapshot is captured as evidence, <code>state.json</code> is written, and the run continues even past a FAIL. There are no wiki-skill tool calls here — the harness drives the UI and the app's worker runs the skills.</p>
+    <ol class="steps">
+      <li><span class="st-title">Stage 0 — Preflight</span><span class="st-body">Start the dev server bound to <code>0.0.0.0</code> so the report is LAN-reachable; read the LAN IP (<code>ipconfig getifaddr en0</code>); form the run id <code>YYYY-MM-DD-HHMM</code>; create the run folder. Open the app, confirm it loads, the process switcher is present and the console is clean. Tools: <span class="tool">preview_start()</span>, <span class="tool">preview_eval()</span></span></li>
+      <li><span class="st-title">Stage 1 — Create process</span><span class="st-body">Open the switcher's "new process" action; the app runs <code>new-process</code>. As the SME give the name "Funds Release Dogfood" and confirm description/slug/abbreviation with <strong>[Y]</strong>. <em>Assert:</em> the process appears in the switcher and <code>wiki/processes/&lt;slug&gt;.json</code> exists with root <code>meta</code> + overview. Tools: <span class="tool">preview_click()</span>, <span class="tool">preview_fill()</span></span></li>
+      <li><span class="st-title">Stage 2 — Upload and ingest</span><span class="st-body">Open "⬆ Upload document", switch to "Paste text", name it <code>funds-release-dogfood-v1.md</code>, paste the full <code>fixtures/source-doc-v1.md</code>, click "Add document". The app saves to <code>raw-sources/&lt;slug&gt;/</code> and runs <code>document-ingest</code> (20+ min). <em>Assert:</em> triage screen appears; report stored in the <code>ingest</code> field; a dozen-plus elements created across the typed arrays. Tools: <span class="tool">preview_fill()</span>, <span class="tool">preview_eval()</span></span></li>
+      <li><span class="st-title">Stage 3 — Foundational run</span><span class="st-body">From triage, start the foundational run and walk every challenged element. Approve most; make <strong>at least one [E] edit</strong> with a concrete correction and <strong>at least one [R] reject</strong> forcing a redraft. <em>Assert:</em> the cursor (in <code>data/runtime/&lt;slug&gt;.json</code> <code>reviewState</code>) reaches completion; approved elements are stamped; the edit and redraft are visible. Tools: <span class="tool">preview_fill()</span>, <span class="tool">preview_console_logs()</span></span></li>
+      <li><span class="st-title">Stage 4 — Source from the web</span><span class="st-body">Trigger each "✦ Source from the web" empty-state CTA: <code>source-regulation</code>, <code>source-cx</code>, <code>source-innovation</code>, and the Target Process <code>source-target</code>. These do live web research. <em>Assert:</em> each produces drafts; sourced elements carry a <code>relevant</code>/<code>disregarded</code> relevance state (not approval); <code>source-target</code> yields target-state, transformation-decision and gap drafts. Tools: <span class="tool">preview_click()</span>, <span class="tool">preview_eval()</span></span></li>
+      <li><span class="st-title">Stage 5 — Specialist refinement</span><span class="st-body">Use Deep Dive on 2&ndash;3 elements and triage some sourced elements <code>relevant</code>/<code>disregarded</code>, then run <strong>eight specialist sub-passes</strong> (each front-loaded with the full SME brief so the specialist runs to one commit-cycle): <strong>5a</strong> client-journey (internal CX, ≥4 friction-points), <strong>5b</strong> transformation-agent (to-be per As-Is step, gap-resolution per gap), <strong>5c</strong> control-compliance (≥3 audit-findings, ≥5 exceptions, control per step), <strong>5d</strong> process-specialist (process-gaps), <strong>5e</strong> innovation-analyst (prioritisation + risk per idea), <strong>5f</strong> add-entry on Metrics, <strong>5g</strong> it-architect (integrations + system attributes), <strong>5h</strong> add-entry on Country-Variations. <em>Assert:</em> each sub-pass populated its section or left an explicit "accepted as empty" note. Tools: <span class="tool">preview_click()</span>, <span class="tool">preview_fill()</span></span></li>
+      <li><span class="st-title">Stage 6 — Comments and comment-review</span><span class="st-body">Post real reviewer comments (challenges, missing-link questions) on 2&ndash;3 elements, then click "✦ Review with analyst" on one to run <code>comment-review</code>. <em>Assert:</em> comments appear in <code>notes</code>; the analyst resolves them with a closing summary; an element whose content the review changed reverts <code>approved</code> → <code>in-progress</code>. Tools: <span class="tool">preview_fill()</span>, <span class="tool">preview_eval()</span></span></li>
+      <li><span class="st-title">Stage 7 — Lint</span><span class="st-body">Click "⊛ Run lint" and let <code>run-lint</code> finish. <em>Assert:</em> the lint report is written to <code>data/runtime/&lt;slug&gt;.json</code> (<code>lint</code>, not a sidecar) with findings; the Review panel shows them; any implicated approved element reverts to <code>in-progress</code> stamped <code>run-lint</code>. Tools: <span class="tool">preview_click()</span>, <span class="tool">preview_eval()</span></span></li>
+      <li><span class="st-title">Stage 8 — Conflict edge case</span><span class="st-body">Re-upload <code>fixtures/source-doc-v2.md</code> (contradicts v1: STP SLA 2→4h, cut-off 14:00→12:00 CET, new callback step, Treasury threshold EUR 5m→2m, C-3 owner change). Let <code>document-ingest</code> flag conflicts, then run <code>conflict-resolution</code> and walk each — accept some, keep some, edit one. Then a <strong>stale-reference sweep</strong>: ask the assistant to grep the wiki for superseded values and patch every remaining occurrence. <em>Assert:</em> conflicts flagged and cleared per the SME's decisions; ≥1 approved element reverted to <code>in-progress</code>. Tools: <span class="tool">preview_fill()</span>, <span class="tool">preview_eval()</span></span></li>
+      <li><span class="st-title">Stage 9 — Process SME assessment</span><span class="st-body">Launch a <strong>subagent</strong> (<code>general-purpose</code>) with a fully self-contained prompt, briefed as a senior payment-operations SME. It reads the whole process JSON + runtime store, scores empty/sparse <em>and</em> populated sections against the schema, gives per-area 0&ndash;10 scores, lists the top three gaps, and verdicts auditor-readiness in ≤800 words. <em>Assert:</em> the subagent ran and returned an assessment (FAIL only if it couldn't read the wiki). Tools: <span class="tool">Agent()</span></span></li>
+      <li><span class="st-title">Stage 10 — Walkthrough tuning</span><span class="st-body">Trace every Stage 9 shortfall to a <code>[walkthrough]</code> gap (fixable here) or a <code>[skill]</code> finding (not). Write the prioritised list to <code>walkthrough-tweaks.md</code>, then <strong>auto-apply the <code>[walkthrough]</code> tweaks by editing this SKILL.md</strong> — additive only, never the scope-locked sections — logging each to <code>REVISIONS.md</code> and re-checking the file is still well-formed. <em>Assert:</em> every shortfall is accounted for and the SKILL.md is valid. Tools: <span class="tool">Edit()</span></span></li>
+      <li><span class="st-title">Stage 11 — Report</span><span class="st-body">Assemble the self-contained QA report (verdict header, stage table, per-stage detail, the SME assessment with a section inventory, the walkthrough-tuning split, the process artifact, and a consolidated errors/findings list) and write it to <code>public/test-report.html</code> and the archived <code>public/test-report-&lt;run-id&gt;.html</code>. Tell the user the LAN report URL. Tools: <span class="tool">Write()</span></span></li>
+    </ol>
+  </section>
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Scripted SME persona answers from fixtures.</strong> Ship a <code>fixtures/sme-script.json</code> keyed by stage/element with the exact [Y]/[E]/[R] decision and edit text, instead of improvising each reply.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">med</span></td><td>The single biggest source of run-to-run variance is the SME improvising different corrections each time. A fixed script makes the produced content reproducible and removes per-prompt reasoning latency.</td></tr>
+        <tr><td><strong>Fixed assertion checklist per stage.</strong> Encode each stage's assertions as a static checklist (selector + expected DOM/JSON predicate) the harness evaluates, rather than free-form judgement.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Today "did this stage pass?" is a per-run model judgement that can drift; a declared predicate set makes pass/fail repeatable and the health score comparable across runs.</td></tr>
+        <tr><td><strong>Snapshot + diff the process JSON between stages.</strong> Save <code>wiki/processes/&lt;slug&gt;.json</code> after each stage and assert the expected delta (N new steps, cursor advanced, owner changed) by diff.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Replaces "read the DOM and eyeball it" with an exact structural assertion — the same input always produces the same pass/fail, and regressions surface as concrete field diffs.</td></tr>
+        <tr><td><strong>Pre-seed fixtures to skip live web sourcing.</strong> Add a test mode where Stage 4's <code>source-*</code> CTAs draft from canned fixture results instead of live web research.</td><td><span class="tag both">both</span></td><td><span class="tag effort-h">high</span></td><td>Web sourcing is slow and non-deterministic (results change daily). Canned fixtures cut the longest non-deterministic stage to seconds and make the resulting drafts identical every run.</td></tr>
+        <tr><td><strong>Drive at the API level, not UI clicks.</strong> Where a stage just needs an action triggered (upload, run-lint, source CTA), POST to the existing endpoints instead of <code>preview_fill</code>/<code>preview_click</code>.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-h">high</span></td><td>DOM polling for the <code>Working…</code>→<code>Message the assistant…</code> placeholder flip is brittle and slow; calling the session/findings/upload endpoints directly removes click latency and selector fragility while still exercising the real backend.</td></tr>
+        <tr><td><strong>Parallelise independent stage checks.</strong> Run the Stage 5 specialist sub-passes that touch disjoint sections (e.g. 5e innovation, 5g IT, 5h country) concurrently rather than serially.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-h">high</span></td><td>Stage 5 is the wall-clock bulk (eight slow sub-passes, ~15&ndash;25 min/turn as the JSON grows). Sub-passes on non-overlapping element types have no ordering dependency and can overlap.</td></tr>
+        <tr><td><strong>Cache the login/session.</strong> Persist the authenticated cookie/session across resumes and stages so each <code>preview</code> turn isn't re-authenticating.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Removes repeated bootstrap-admin login round-trips, especially on resume where the run reconnects to a fresh browser context.</td></tr>
+        <tr><td><strong>Structured QA-report schema.</strong> Have the harness emit a machine-readable <code>report.json</code> (stages, assertions, scores, findings) and render the HTML from it deterministically.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Decouples the verdict data from prose, lets runs be diffed/trended over time, and guarantees the HTML can't disagree with <code>state.json</code>.</td></tr>
+        <tr><td><strong>Fail-fast gating on preconditions.</strong> Hard-stop a stage if its precondition assertion fails (e.g. Stage 3 won't start if Stage 2 created zero elements) instead of pressing on into a long broken stage.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Avoids burning an hour of downstream stages on a wiki that the ingest never populated; the failure is caught at its origin with a clear cause.</td></tr>
+        <tr><td><strong>Seedable randomness for SME variety.</strong> When the SME does vary (which element to [R], which to comment on), drive the choice from a logged seed in <code>state.json</code>.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Keeps the desirable coverage variety while making any individual run exactly replayable for debugging a flaky stage.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> a scripted SME persona (from a fixture) plus snapshot-and-diff of the process JSON between stages. Today the harness's two slowest, least repeatable parts are the SME improvising fresh answers at every prompt and the test driver eyeballing the DOM to judge each stage — so two runs of the "same" test produce different content and different verdicts. Pairing a fixed answer script with structural JSON diffs turns the run into a deterministic regression test: identical inputs yield identical wiki output and an identical pass/fail, which is exactly what a dogfood harness needs to catch real regressions instead of attributing every difference to model variance. Layer the API-level drive and pre-seeded sourcing fixtures on top and the 1&ndash;3 hour run collapses toward minutes.</div>
+  </section>
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/dogfood-run/SKILL.md</code></footer>
+</div>
+</body>
+</html>

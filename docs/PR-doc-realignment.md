@@ -58,8 +58,10 @@ what it changes, behaviour/scope, and how it was verified.
 | **#55** | Advisor chat: clickable citations + capture-as-note + richer markdown | `feat/advisor-chat-citations-notes` → `main` | Code | **Open** (`pending`) |
 | **#56** | DTP Enhancer review tools — rollup, coverage, evidence, triage, export, summary | `feat/dtp-review-tools` → `main` | Code + skills | **Merged** |
 | **#58** | Live-testing feedback toolkit — floating widget, auto-context, screenshots, element pins, admin toggles | `feat/live-feedback-toolkit` → `main` | Code + UI | **Open** (`pending`) |
-| **#59** | Design-review wave 1 — colour overload, AM green theming, primary button, table scan-ability + 7 more | `fix/design-review-wave-1` → `feat/live-feedback-toolkit` | Code + UI | **Open** (`pending`) — stacked on #58 |
-| **#60** | Design-review wave 2 — shared `<Modal>` primitive; migrate every dialog onto it; de-dupe the profile modal | `fix/design-review-wave-2` → `fix/design-review-wave-1` | Code + UI | **Open** (`pending`) — stacked on #59 |
+| **#61** | `new-process` determinism — `deriveProcessMeta` tool + templatized copy; skill deep-dive HTML | `feat/new-process-determinism` → `main` | Code + tests + skill + docs | **Merged** |
+| **#65** | `qer-session` determinism — perspective-aware cursor (skillBuilt/documented/next-built), counted cross-review gate, close-out renderer, SME actor on cursor | `feat/qer-determinism` → `main` | Code + tests + skill + docs | **Merged** |
+| **#67** | `foundational-run` determinism — control-coverage flag, close-out counts + still-to-document, one-call [Y] reconcile, opt-in [E] frontmatter-sync, gap-tail batch | `feat/foundational-determinism` → `main` | Code + tests + skill + docs | **Merged** |
+| **#70** | Specialists determinism — shared `getProcessRelations` tool + prose pass across all 8 perspective/architect specialists | `feat/specialists-determinism` → `main` | Code + tests + 8 skills + docs | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1837,74 +1839,272 @@ element pin stores `element: PS-COB-001` with title/process; avatar opens the
 profile (session intact). Test feedback items created during verification were
 removed.
 
-## PR #59 — Design-review wave 1 (11 findings)
+---
+
+## PR #61 — `new-process` determinism + skill deep-dive HTML
 
 ## Why
-A six-agent design + UX review (`public/_mockups/design-review.html`) surfaced
-44 findings, most laddering up to four systemic roots. This PR resolves 11 of
-the 12 highest-impact before/after items (all except #3, the toolbar grouping).
-Stacked on #58 because several fixes build on files #58 touched.
+A deep-dive review of all 26 skills (delivered as the `docs/skill-analysis/`
+HTML site) flagged `new-process` as carrying avoidable run-to-run variance: the
+model derived the slug and `<PROC>` abbreviation in its head (the `FRD2`-style
+malformed abbreviation was a guaranteed reject-and-retry), reproduced the
+confirm bullets / closing message verbatim from the prompt (drift-prone), and
+re-prompted on slug collisions. The mechanics belong in the deterministic tool
+layer; only the one-line description is genuine judgement.
 
 ## What
-- **#1 / #12 colour overload** — provenance chips become neutral mono; colour is
-  reserved for the *unconfirmed* states (`proposed` amber, `web` info-blue). The
-  semantic triad (`--hi/--mid/--lo`) stops meaning confidence + provenance +
-  approval at once.
-- **#2 ArchitectMiner green** — remap the accent tokens on the `.am` shell root
-  so the whole `.am-*` surface themes green from one place (it was rendering in
-  Processminer blue).
-- **#4 / #5 dashboard** — one resume hero + compact rows for the rest; stable
-  "Your workspace" h1 with the count demoted to a subline.
-- **#6 primary button** — `.act.ai` is now solid accent everywhere.
-- **#7 bug** — `.conf-med` → `.conf-medium`; medium-confidence dots were invisible.
-- **#8 lineage** — approved cards keep "AI-drafted · approved by X".
-- **#9 pill misuse** — interactive controls (buttons, filter/category chips)
-  de-pilled to `--r-sm`; status/confidence chips, badges, switch track, FAB kept.
-- **#10 tables** — `useCapped` hook caps the cross-process portfolio + handoff
-  tables with a "show more"; zebra rows + tabular-nums across AM tables.
-- **#11 empty states** — real action buttons (Run quality check / Upload) instead
-  of references to unlabeled toolbar glyphs.
+- **New `deriveProcessMeta({ name })` tool** (`src/lib/process-scaffold.ts`),
+  wired into both backends (`claude-mcp-server.ts`, `gemini-worker.ts`).
+  Returns a deterministic `slug`, a guaranteed-valid `PROC` (2–6 uppercase
+  letters — the model never forms it), `slugTaken` + up to three non-colliding
+  `suggestedSlugs`, and a fixed `confirmTemplate` (with a `{{description}}`
+  slot, so the bullet structure can't drift).
+- **Templatized copy** — `confirmBulletsTemplate` + `scaffoldClosing` are now
+  the single source of truth; `scaffoldProcess` returns the canonical `closing`
+  for verbatim relay.
+- **SKILL.md** updated to call the tool, take a one-shot confirm path when the
+  opening message already carries a description, and relay the tool-provided
+  copy verbatim.
+- **`docs/skill-analysis/`** — a per-skill HTML deep-dive (what it does, the
+  sequence, determinism/speed enhancement ideas) for all 26 skills, with the
+  `new-process` outcomes marked.
 
 ## Scope
-`#3` (toolbar grouping/labels) and the long tail (12px-floor sweep, shared
-`<Modal>` primitive, chat-rail reflow, virtual-view wayfinding) are deferred to
-later waves. `#9` is intentionally partial — only clear interactive controls
-were de-pilled; the full token sweep is its own pass.
+`new-process` only. No change to any other skill's behaviour. Description text
+stays model-authored (the templated-description idea was deliberately skipped).
 
 ## Verification
-`npm run typecheck` clean · `npm test` **108/108**. Computed-style checks in the
-running app: provenance elicited neutral, web `#2563eb`; `.am` `--accent`→`#3f7d5c`
-(green) with green-soft nav; `.act.ai` solid `#1e40af`; conf-medium dot `#9a7b32`;
-welcome h1 stable + single hero. The review report (`public/_mockups/`) is a
-throwaway artifact and is intentionally not committed.
+`npm run typecheck` clean · `npm test` **108/108** · new
+`src/lib/process-scaffold.test.ts` **8/8** (slug/abbreviation validity,
+collision suggestions, deterministic output). Derivation smoke-tested across
+edge cases (`FRD2`→`FRD`, single-word `Onboarding`→`ONBO`, digit/symbol names).
 
-## PR #60 — Design-review wave 2: shared `<Modal>` primitive
+---
+
+# fix(triage): guard against a malformed ingest report crashing the workspace
 
 ## Why
-Systemic root #4 from the review: every dialog hand-rolled its own overlay —
-none bound Esc, trapped focus, or set `aria-modal`, overlay-dismiss was
-inconsistent, and the "Signed-in user" dialog existed twice (already drifted).
+`TriagePanel` read `ingest?.created.length` / `ingest?.updated.length`. The
+optional chain only guards a null `ingest`; once `ingest` exists, an undefined
+`ingest.created` throws `TypeError: Cannot read properties of undefined (reading
+'length')`, which the error boundary turns into a full-screen *"This page
+couldn't load"* — the whole process workspace is dead.
+
+This fires whenever a `document-ingest` run writes an `ingest` object without
+the `created`/`updated` arrays the `IngestReport` contract (`src/lib/wiki.ts`)
+declares required — i.e. on a real first ingest, the very first thing an SME
+does. Surfaced by the `/dogfood-run` harness (finding F-003; the malformed
+report itself is F-002).
 
 ## What
-- New `src/components/Modal.tsx` — one dialog shell: overlay, **Esc to close**,
-  **focus trap** + initial focus, `aria-modal`, click-outside (opt-out via
-  `closeOnOverlay`), restore-focus-on-close. Reuses the `.modal-*` classes so the
-  look is unchanged. Supports forms (dialog renders its `<form>` as children).
-- Migrated every hand-rolled dialog onto it: `UserProfileModal`, `UploadModal`,
-  `ExportModal`, `AdminScreen` (create-user + reset-password), and the
-  ProcessDocScreen web-sourcing-result modal.
-- **De-duped** the profile dialog: ProcessDocScreen's inline "Signed-in user"
-  modal is gone — it now renders the shared `UserProfileModal` (with dark-mode as
-  an optional prop). Removed the dead `userEdit` state + `initials` import.
-- Standardised the Export dialog's bespoke buttons onto `.act` / `.act.ai`.
+Two-character change in `src/components/TriagePanel.tsx`: `ingest?.created.length`
+→ `ingest?.created?.length` (and the same for `updated`). The existing
+`?? doc.elements.length` / `?? 0` fallbacks were clearly intended to handle a
+missing count — they were simply unreachable because the throw happened first.
 
 ## Scope
-Stacked on #59. The remaining tail (virtual-view wayfinding, chat-rail reflow,
-12px-floor sweep, toolbar grouping #3) is still open for later waves.
+Defensive UI hardening only; no behaviour change when the ingest report is
+well-formed. Does **not** fix the upstream cause (F-002, `document-ingest`
+emitting a report missing `created`/`updated`) — that is a separate skill/writer
+fix, ideally with a validator on the ingest write so a malformed report is
+rejected at the source.
 
 ## Verification
-`npm run typecheck` clean · `npm test` **108/108**. In the running app: the
-welcome profile dialog and the admin "New user" form dialog both open with
-`aria-modal="true"`, move focus inside (first field), and **close on Esc**
-(previously Esc did nothing); form submit semantics preserved. No hand-rolled
-`modal-overlay` remains outside the primitive.
+`npm run typecheck` clean. The dogfood run reproduced the crash and confirmed
+the guarded version renders the triage screen normally (import record + element
+counts).
+
+---
+
+## PR #65 — `qer-session` determinism: perspective-aware cursor
+
+## Why
+The skill deep-dive (`docs/skill-analysis/qer-session.html`) found qer-session's
+SKILL.md describing a cursor that did not fully exist: Step 3 assumed
+`getSessionStatus()` reported six per-perspective positions with a `skillBuilt`
+flag, but the real QER cursor had five steps and PERSPECTIVE PASSES was a single
+stop — the model improvised the six-specialist loop and judged "is it
+reviewable / done" by eye. This PR aligns the cursor with the prose and turns
+those judgements into deterministic, counted facts.
+
+## What
+- **`session-cursor.ts`** — `QER_PERSPECTIVES` registry (perspective → owning
+  collections); `qerPerspectiveStatus` / `documentedPerspectiveCount` /
+  `nextBuiltPerspective` (deterministic `skillBuilt` injected as an fs fact +
+  `documented` from the doc; next = first built and not-yet-documented, so
+  writing elements advances the loop); `crossReviewEligible` (≥2 documented) as
+  a counted gate; `QER_CLOSEOUT_TEMPLATE` + `renderQerCloseout`;
+  `ReviewState.actor` carried on the cursor; `qerStatusWithPerspectives` merges
+  all of it into the status.
+- **Both backends** — `getSessionStatus` / `advanceSession` / `startSession`
+  return the perspective map + filled close-out; `skillBuilt` computed from
+  installed specialist skill dirs; `startSession` accepts `actor`.
+- **SKILL.md** — snapshot once via `getProcessSummary` at SELECT; pre-flight
+  skill-built map; Step 3 driven by `nextBuiltPerspective`; cross-review gated on
+  `crossReviewEligible` and run as concurrent read-only sub-agents; batched
+  validation; verbatim rendered close-out; structured overview checklist.
+
+## Scope
+qer-session + the shared session-cursor core. The foundational cursor is
+unchanged (`ReviewState.actor` is optional/additive). No other skill changes.
+
+## Verification
+`npm run typecheck` clean · `npm test` **115/115** — 7 new `session-cursor.test.ts`
+cases (perspective map, next-built loop, eligibility gate, close-out render,
+actor carry).
+
+---
+
+# fix(ingest): normalise the ingest report on read (F-002, upstream of F-003)
+
+## Why
+The `#62` triage guard stopped a malformed `ingest` report from *crashing* the
+UI; this addresses the upstream cause. The write path already normalises
+(`buildIngestReport` in `session-writes.ts` defaults every array and stamps
+`generatedAt`/`slug`), but the **read** path passed `data.ingest` through raw
+(`wiki.ts` `getProcess`). So any `ingest` object on disk that didn't go through
+that writer — a legacy report, or one written before the normaliser existed —
+reached every consumer with `created`/`updated` possibly `undefined`. The
+`/dogfood-run` harness produced exactly such a report (`{file, conflicts,
+corrections}`, no `created`/`updated`/`generatedAt`/`slug`), which is what blew
+up `TriagePanel` (F-003).
+
+## What
+- New exported `normalizeIngestReport(raw, slug)` in `src/lib/wiki.ts`: coerces
+  every array to `[]`, preserves scalars (defaulting `slug` from the arg,
+  `file`/`generatedAt` to `""`), returns `undefined` when there is no report.
+- `getProcess` now maps `ingest: normalizeIngestReport(data.ingest, slug)` so no
+  consumer can ever read a count off `undefined`, regardless of how the report
+  got onto disk.
+
+## Scope
+Read-boundary hardening only; no change for a well-formed report (round-trips
+unchanged, verified by a test). The writer (`buildIngestReport`) is already the
+normaliser for the write path and is left as-is; this closes the gap for reports
+that bypass it.
+
+## Verification
+`npm run typecheck` clean · `npm test` **111/111** (3 new `normalizeIngestReport`
+cases in `wiki.test.ts`: malformed→coerced, well-formed→preserved,
+null/non-object→undefined).
+
+---
+
+## PR #67 — `foundational-run` determinism: doc-derived facts
+
+## Why
+The skill deep-dive found the walk's most fragile spots were judgement the model
+re-derived each run: whether a step has a control, the close-out counts +
+"still to document" list, the rewrite-then-approve provenance dance on [Y], and
+prose/frontmatter drift on [E]. This PR turns each into a counted fact or a
+one-call write, leaving the sharp lens-specific challenge to the model.
+
+## What
+- **`foundational.ts`** (new, pure) — `buildControlCoverage` / `uncoveredSteps`
+  (per-step "has a control?" from `control.content.step`); `stillToDocument` +
+  `FOUNDATIONAL_FILL_MAP` (empty section → filling skill/✦, Target Process
+  excluded); `closeoutCounts`; `enrichFoundationalStatus` (layers
+  `currentHasControl`, `uncoveredSteps`, `gapTail`, and the close-out counts +
+  still-to-document onto the base cursor view).
+- **`session-writes.ts`** — `buildReconciledApprovalPatch` (reconcile + approve
+  in one gated write) and `syncRelationsFromProse` (conservative, opt-in
+  frontmatter sync — only adds ids that exist and match the list's type).
+- **Both backends** — foundational `getSessionStatus`/`buildQueue`/`advanceSession`
+  return the enriched status; `setApproval` gains `reconcile`; `updateElement`
+  gains opt-in `syncRelations`.
+- **SKILL.md** — snapshot once + reuse bodies; control probe off
+  `currentHasControl`; one-message per-step template; [Y] one-call reconcile;
+  [E] `syncRelations`; gap-tail batch; close-out from the counted facts.
+- **Test wiring** — added `foundational.test.ts` AND the #61
+  `process-scaffold.test.ts` to `npm test` (both existed but weren't run).
+
+## Scope
+foundational-run + the shared cursor/write cores. `setApproval.reconcile` and
+`updateElement.syncRelations` are optional/opt-in, so other skills and the
+in-app write paths are unaffected. Skipped by request: atomic cursor (#3).
+Partial: per-element body cache (#9) — Step-1 read-once reuse done, stateful
+worker cache deferred (staleness risk).
+
+## Verification
+`npm run typecheck` clean · `npm test` **138/138** — 12 new `foundational.test.ts`
+cases (control coverage, gap-tail, close-out, reconcile, conservative relation
+sync).
+
+---
+
+## PR #70 — Specialists determinism: shared `getProcessRelations` + prose pass
+
+## Why
+The deep-dive surfaced ~66 enhancement ideas across the 8 specialists that
+collapse into a few recurring moves (the specialists are pure-prompt skills over
+one shared tool layer). Worked as a consolidated-by-theme pass: implement the
+shared wins once + each specialist's high-value deterministic derivation.
+
+## What
+- **`process-relations.ts`** (new, pure) + a read-only **`getProcessRelations`**
+  tool in both backends — per-step systems/controls/touchpoints with
+  hasControl/hasSystem, orphan systems/controls/regulations, candidate
+  integrations (system pairs co-occurring on a step with no integration), and
+  steps without a control/system. Replaces by-hand coverage derivation for the
+  Process, Control & Compliance, Client Journey and IT Architect specialists.
+- **All 8 SKILL.md** (surgical prose, contract unchanged) — one
+  `getProcessSummary` snapshot up front; derive coverage/orphans/candidates from
+  `getProcessRelations`; batch reference-grade lists; skip read-back for
+  objective/sourced facts; parallel-draft independent elements; fixed
+  question-bank order; set relations at write time. Transformation / Domain /
+  Solution derive gaps / capabilities / ADR stubs / integration & migration
+  coverage from the snapshot.
+- Structured-output / enum gating marked **partial** (already enforced by
+  `createElement` + `checkConformance`); banking libraries/catalogs **skipped**
+  (content work). HTML deep-dives updated with per-idea outcomes.
+
+## Scope
+8 specialist skills + the new read-only tool. `getProcessRelations` is additive
+and read-only; no change to other skills or write paths.
+
+## Verification
+`npm run typecheck` clean · `npm test` **143/143** — 5 new
+`process-relations.test.ts` cases (coverage, orphans, integration candidates,
+uncovered), wired into the runner.
+
+---
+
+# feat(session): per-skill token usage — capture, tally, receipt
+
+## Why
+There was no way to see how many tokens a skill run costs. Both backends already
+*surface* usage on the turn's `result` event — the claude CLI
+(`--output-format stream-json`) on `usage` + `total_cost_usd`, the Gemini SDK on
+`usageMetadata` — but the session route read neither and threw it away. Asked for
+by the `/dogfood-run` review ("show tokens per skill run").
+
+## What
+- **`token-usage.ts`** (new) — `extractUsage(evt)` normalises either provider's
+  shape into a `TokenUsage` (input/output/cache tokens + cost; returns null when
+  absent or all-zero); `recordSkillUsage(slug, skill, usage)` folds a turn into
+  the runtime store under that skill **and** a process total.
+- **`runtime-store.ts`** — `TokenUsage` / `SkillUsageEntry` / `SkillUsage` types
+  and a `skillUsage?` field on `ProcessRuntime`. Derived state → runtime store,
+  not the wiki (Karpathy guardrail). Keyed by the skill the chat passed; free
+  chat is `"free-chat"`.
+- **`/api/session`** — on the `result` event, record usage (best-effort,
+  wrapped so accounting can't break a turn) and add `usage` to the `done` SSE
+  payload.
+- **`gemini-worker.ts`** — sum `usageMetadata` across the turn's
+  generateContent round-trips and attach it to the `result` event (parity with
+  the claude path).
+- **UI** — `done.usage` → `onDone(…, usage)` → attached to the agent
+  `ChatMessage`; `AgentChat` renders a dim per-turn receipt
+  (`1.2k in · 340 out · 50 cached · $0.01`).
+
+## Scope / notes
+Read-only accounting; no change to a turn's behaviour, and a thrown error in the
+tally is swallowed. `turns` counts worker turns, so a multi-turn skill (a
+foundational run is dozens of turns) sums across them — the per-skill total is
+right; there's no per-invocation id yet. Gemini reports no cost, so `costUsd` is
+0 there.
+
+## Verification
+`npm run typecheck` clean · `npm test` **148/148** (after rebase onto #70) — 5
+new `token-usage.test.ts` cases (claude shape, Gemini shape + cache-netting,
+empty→null, per-skill+total fold, null no-op).

@@ -85,7 +85,15 @@ You draft, they validate — every question earns its place.
    confirms it (`createElement`). Never batch writes in your head.
 6. **Conform to the schema.** Each element follows its `template` headings and
    word ranges; set the required frontmatter. A block too thin for its range is
-   a prompt for one more question, not padding.
+   a prompt for one more question, not padding. Emit each draft as the **full,
+   typed object** (frontmatter + headings + relation ids) you pass to
+   `createElement`, not free-form markdown the writer must re-parse —
+   `createElement`/`checkConformance` already validate that object against the
+   schema and reject malformed elements, so the structured payload is what gets
+   checked. Choose every frontmatter enum value (`criticality`, `reuse`,
+   `verdict`, `adrStatus`) from the schema's allowed set: the JSON-schema/AJV
+   validator already rejects out-of-enum values at write, so picking from the
+   schema avoids a reject-retry round trip.
 7. **Draft, not truth-yet.** Everything is authored `draft` with honest
    provenance. The architect approves in the web app; you never set `approved`.
 
@@ -115,37 +123,62 @@ section in focus (e.g. an "Elicit with domain architect" button on
 Capabilities), start at the matching phase; otherwise run them all.
 
 **Phase 0 — Orient.** The session is already scoped to one process (its title,
-id and the architect's name and role are in the session scope). Read the
-upstream artifacts you'll ground on — `expandElement` the `to-be-design`,
+id and the architect's name and role are in the session scope). Take **one**
+`getProcessSummary({ slug })` snapshot — the oriented document map of the whole
+target — and **reuse it for the rest of the session**; do not re-snapshot or
+re-`expandElement` the same upstream collections in Phases 1–4. Ground on the
+snapshot's upstream artifacts — the `to-be-design`,
 `transformation-decisions`, `requirements`, `gap-resolution`, `controls` and
 as-is `systems` collections — and the architecture already authored
 (`capabilities`, `target-applications`, `architecture-decisions`) so you extend
-rather than duplicate.
+rather than duplicate. Only `expandElement` an individual element when you need
+detail the snapshot abridged.
 
 **Phase 1 — Capabilities.** The business capabilities the target process needs.
-Derive them from the target-state steps and requirements; for each, set
-`criticality` and `reuse`, draft Description / Inputs and outputs / Boundaries,
-and wire `realisesStep` to the target-state it serves and `resolvesGap` to any
-gap it closes. Walk the target process so none is missed.
+**Pre-seed first:** derive a candidate capability list deterministically from
+the `to-be-design`/`process-steps` and `requirements` already in the Phase-0
+snapshot (one candidate per distinct capability a documented step or requirement
+implies, with the provisional `realisesStep` link already attached), then refine
+that list *with* the architect — confirm, cull and correct — rather than
+generating from memory. This turns "walk the process so none is missed" into a
+confirm-or-cull review. For each, set `criticality` and `reuse`, draft
+Description / Inputs and outputs / Boundaries, and wire `realisesStep` to the
+target-state it serves and `resolvesGap` to any gap it closes.
+**Parallel-draft the independent ones:** capabilities that share no relation are
+independent — draft them together in one batched pass under a single grouped
+Y/E/R, as the core contract permits for low-judgement reference elements, rather
+than strictly one at a time. Reserve one-at-a-time for capabilities that need
+real per-element judgement.
 
 **Phase 2 — Target applications.** `[A]/[E]/[N]`. The applications that host the
 capabilities. For each: its `verdict` (BUILD / BUY / CONFIGURE / KEEP) and the
-reasoning, the tech stack / vendor, the risks. Wire each capability's `hostedIn`
-to its application. A capability hosted nowhere, or an application hosting no
-capability, is a finding.
+reasoning, the tech stack / vendor, the risks. **Auto-map at draft time:** as you
+create each application, propose its `hostedIn` ↔ capability links from the
+capability text and domain overlap and let the architect confirm them, and flag
+any capability still hosted nowhere right then — so the "hosted nowhere / hosts
+nothing" finding is resolved continuously, not rediscovered in Phase 4. A
+capability hosted nowhere, or an application hosting no capability, is a finding.
 
 **Phase 3 — Architecture decisions.** `[A]/[E]/[N]`. The decisions that lock the
 shape — each as an ADR with Context / Decision / Alternatives considered /
-Consequences. Set `adrStatus` and `owner`. Wire `decision` to the
+Consequences. **Seed the stubs deterministically:** from the Phase-0 snapshot,
+emit one ADR stub per `transformation-decision` and one per build/buy `verdict`
+— Context pre-filled from the decision, an Alternatives placeholder, and the
+`decision` / `drivenByADR` relation pre-wired — then work each stub up with the
+architect rather than authoring ADR scaffolding from scratch. This makes the "a
+verdict needs a driving ADR" rule structural. Set `adrStatus` and `owner`. Wire
+`decision` to the
 transformation-decision it realises, `resolvesGap` / `satisfiesControl` where
 they apply, and `drivenByADR` back from the applications a decision drives.
 Every non-obvious build/buy verdict and every capability boundary worth
 defending earns an ADR.
 
-**Phase 4 — Validation.** Before closing, sweep what you wrote: a capability
-that traces to no target-state step or requirement; an application with a
-verdict but no driving ADR; an ADR with no alternatives; a capability hosted
-nowhere. Surface each as a short clarifying question, then close:
+**Phase 4 — Validation.** Drive the sweep from `checkConformance` plus the
+Phase-0 snapshot, not by eye — run the four graph checks mechanically against the
+elements you wrote so the same findings surface every run: a capability that
+traces to no target-state step or requirement; an application with a verdict but
+no driving ADR; an ADR with no alternatives; a capability hosted nowhere. Report
+the exact failing ids. Surface each as a short clarifying question, then close:
 
 > Domain Architecture documented — **{process}**:
 >

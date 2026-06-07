@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>run-lint — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">run-lint</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Single-element &amp; review</div>
+    <h1>run-lint</h1>
+    <p class="lede">The consistency checkpoint: a <strong>deterministic conformance + transitions check</strong> followed by a <strong>five-lens cross-perspective sweep</strong> of the whole process. Writes the findings via <code>applyLint</code> to the runtime store and re-opens every approved element a finding implicates.</p>
+    <div class="meta-row">
+      <span class="chip">Largely non-interactive</span>
+      <span class="chip neutral">WRITES_TO: lint field in data/runtime/&lt;slug&gt;.json via applyLint()</span>
+      <span class="chip neutral">Invoked by: "lint" CTA / free chat</span>
+      <span class="chip neutral">SCOPE: whole process</span>
+    </div>
+  </div>
+
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>run-lint</code> is the council made mechanical — every perspective sweeping
+      the whole process (SKILLS.md §9). It runs over one process <code>&lt;slug&gt;</code>
+      in two halves. The <strong>deterministic half</strong> calls
+      <code>checkConformance</code> (every element against its schema template and
+      required frontmatter) and <code>checkTransitions</code> (exception wiring — orphan
+      exceptions and dangling process-step transitions). Both return ready-shaped
+      findings arrays that the skill must keep <em>exactly as returned</em> — it never
+      authors or reshapes them.
+    </p>
+    <p>
+      The <strong>judgement half</strong> is a five-lens cross-perspective sweep —
+      Process, Control &amp; Compliance, Client Journey, Innovation, and IT Architect.
+      Each lens reads the whole process and records discrepancies (two elements
+      disagree, or a link is missing) and questions (the wiki is ambiguous, only the SME
+      can resolve). Crucially the lenses route by <em>potential</em> relations: "a step
+      with no control" is found by looking at steps that link to nothing.
+    </p>
+    <p>
+      Both halves are concatenated and handed to <code>applyLint</code>, which assigns
+      finding ids, writes the <code>lint</code> field in the runtime store the Review
+      panel reads, and re-opens every approved element a finding implicates (back to
+      <code>in-progress</code>, stamped <code>run-lint</code>). It always runs — an empty
+      pass writes an all-clear report. The skill never resolves a finding or edits an
+      element; the SME resolves findings in the app.
+    </p>
+  </section>
+
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>Load, run the deterministic checks, sweep five lenses, apply, summarise — verbatim wording throughout.</p>
+    <ol class="steps">
+      <li><span class="st-title">Load the process</span><span class="st-body">Take the process title from the overview. The skill orchestrates; the deterministic tools and per-lens sub-agents each read what they need, so it does not read every element itself.</span></li>
+      <li><span class="st-title">Deterministic checks</span><span class="st-body">Run conformance (element vs. template + required frontmatter) and transitions reconciliation (orphan exceptions, dangling transitions). Keep both arrays exactly as returned — a clean process returns <code>[]</code>. Tools: <span class="tool">checkConformance({ slug })</span> · <span class="tool">checkTransitions({ slug })</span></span></li>
+      <li><span class="st-title">Cross-perspective sweep (five parallel lenses)</span><span class="st-body">In one message dispatch five read-only sub-agents — Process, Control &amp; Compliance, Client Journey, Innovation, IT Architect — each sweeping the whole process through its lens and returning a JSON array of <code>discrepancy</code>/<code>question</code> findings. Wait for all five, then state one coverage line naming all five. Tools: Task (×5)</span></li>
+      <li><span class="st-title">Apply (deterministic)</span><span class="st-body">Concatenate the conformance + transitions arrays (unchanged) with the five lens arrays and apply. The tool id-stamps findings, writes the <code>lint</code> field in the runtime store, and re-opens implicated approvals. Always run it, even with zero findings. Tools: <span class="tool">applyLint({ slug, findings })</span></span></li>
+      <li><span class="st-title">Summarise</span><span class="st-body">Report with the canonical template — discrepancy / structure / question counts and approvals re-opened — or the clean variant when there were no findings at all.</span></li>
+    </ol>
+  </section>
+
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Literal parallel sub-agent fan-out for the five lenses</strong> (already specified as concurrent in the SKILL — ensure the harness truly dispatches all five in one message and awaits together, never falling back to serial).</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">med</span></td><td>The sweep dominates wall-clock; five concurrent read-only agents cut it to roughly the time of the slowest single lens instead of the sum.</td></tr>
+        <tr><td><strong>Strict structured output schema for findings.</strong> Constrain each lens to emit objects validated against <code>{ kind, title, detail, elements }</code>, rejecting malformed or empty-id findings at the boundary.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Guarantees <code>applyLint</code> never receives a finding with an unknown or missing element id — the one place lens output can corrupt the report.</td></tr>
+        <tr><td><strong>Share a single document snapshot across lenses.</strong> Build the expanded process once and pass it to all five sub-agents, instead of each re-listing and re-expanding every collection.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">med</span></td><td>Removes five redundant full reads of the wiki and ensures all five lenses judge the exact same state.</td></tr>
+        <tr><td><strong>Deterministic pre-filters for mechanical lens checks.</strong> "step with no control", "system touched by no step", "integration referencing no system" are graph queries — compute them in code and feed the lens only the genuinely judgement-bearing cases.</td><td><span class="tag both">both</span></td><td><span class="tag effort-h">high</span></td><td>Moves the most reproducible findings out of the LLM entirely, shrinking each lens's job and making those findings exact every run.</td></tr>
+        <tr><td><strong>Validate lens element ids against the live id set</strong> before <code>applyLint</code>, surfacing the warning the tool already prints earlier.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Catches hallucinated ids before they reach the runtime store rather than as a post-hoc warning.</td></tr>
+        <tr><td><strong>Cache deterministic results by content hash.</strong> Skip re-running conformance/transitions when the process JSON is unchanged since the last lint.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">med</span></td><td>Repeat lints after no edits return instantly for the deterministic half.</td></tr>
+        <tr><td><strong>Deduplicate cross-lens findings.</strong> A merge step that collapses the same discrepancy raised by two lenses into one finding before applying.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Keeps the Review panel counts honest and avoids re-opening the same approval twice for one issue.</td></tr>
+        <tr><td><strong>Fixed coverage-line assembly.</strong> Build the "Swept: …" line and the summary counts mechanically from the returned arrays rather than narrating them.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Makes every run read identically and the counts always match what <code>applyLint</code> stored.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> the SKILL already conceptualises five lenses — making that a <em>literal</em> parallel sub-agent fan-out over one shared document snapshot, with each lens emitting a strictly schema-validated findings array, turns the slowest and least reproducible part of lint into a fast, deterministic step. The deterministic pre-filters then push the most mechanical findings out of the model entirely, so what the LLM judges shrinks to the genuinely ambiguous cases.</div>
+  </section>
+
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/run-lint/SKILL.md</code></footer>
+</div>
+</body>
+</html>

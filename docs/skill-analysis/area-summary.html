@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>area-summary — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">area-summary</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Single-element &amp; review</div>
+    <h1>area-summary</h1>
+    <p class="lede">Reads every section in one area of a process and writes an <strong>Amazon-style narrative memo</strong> — four fixed headings, full prose, grounded in real ids and figures — into the process's <code>summaries</code> field for the app to render. Non-interactive: no SME questions, no approval loop.</p>
+    <div class="meta-row">
+      <span class="chip">Non-interactive (read, write, report)</span>
+      <span class="chip neutral">WRITES_TO: summaries field via writeSummary()</span>
+      <span class="chip neutral">Invoked by: a button</span>
+      <span class="chip neutral">SCOPE: one area</span>
+    </div>
+  </div>
+
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>area-summary</code> generates an executive summary of one area of a process
+      (<code>&lt;slug&gt;</code> + <code>&lt;area&gt;</code>, one of <code>as-is</code>,
+      <code>risk-compliance</code>, <code>client-experience</code>,
+      <code>innovation</code>, <code>target</code>, <code>it-architecture</code>). It
+      reads every element across all of the area's sections plus the process overview,
+      then writes a memo and stores it where the app's summary panel renders it. It is a
+      silent generation, like <code>source-cx</code> — no SME questions, no Y/E/R, no
+      approval.
+    </p>
+    <p>
+      The memo style is non-optional: an <strong>Amazon-style narrative</strong> — full
+      sentences and paragraphs, no bullets, that tells a story (context → substance →
+      honest read → recommendation), specific and measurable ("three of the eight steps
+      carry no control" beats "some steps lack controls"), and standing on its own so a
+      reader understands the whole area in a couple of minutes. It uses exactly four
+      <code>##</code> headings in order: Introduction, Current state, What stands out,
+      Recommendation.
+    </p>
+    <p>
+      Every statement must trace to the area's actual elements — nothing invented. An
+      area with no elements gets a summary that plainly says it is not yet documented,
+      in the same narrative voice. The <code>writeSummary</code> tool validates that the
+      memo has exactly those four headings in order and errors otherwise. The skill
+      summarises one area per run and writes nothing else.
+    </p>
+  </section>
+
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>Read the whole area, write the narrative memo, store it — three steps, no loop.</p>
+    <ol class="steps">
+      <li><span class="st-title">Read the area</span><span class="st-body">Find the area in the schema and its sections, then read every element across all of them plus the process overview for domain context. An empty area is noted as not-yet-documented. Tools: <span class="tool">expandElement({ type })</span> · <span class="tool">expandElement({ type, id })</span></span></li>
+      <li><span class="st-title">Write it as an Amazon-style narrative memo</span><span class="st-body">Compose flowing prose under exactly four headings in order — <em>Introduction</em>, <em>Current state</em> (the heart and longest part), <em>What stands out</em> (the candid read), <em>Recommendation</em>. No bullets; name elements by title, cite ids and real figures; ground every statement in actual elements.</span></li>
+      <li><span class="st-title">Store it</span><span class="st-body">Pass the markdown to the writer, which stores it in <code>summaries</code> keyed by area and checks the four headings are present and in order — if it errors, fix the headings and rerun. Then report exactly one line. Tools: <span class="tool">writeSummary({ slug, area, summary })</span></span></li>
+    </ol>
+  </section>
+
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Parallelise the per-section reads.</strong> Fan out one read per section (or per collection) concurrently instead of expanding each in sequence.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">med</span></td><td>Step 1 is the bulk of the wall-clock for a populated area; concurrent reads collapse it to the slowest single section.</td></tr>
+        <tr><td><strong>One bundled area-context call.</strong> An <code>areaContext({ slug, area })</code> returning every section's elements and the overview in one payload.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">med</span></td><td>Removes orchestration latency and fixes the exact element set the memo is built from every run.</td></tr>
+        <tr><td><strong>Computed facts pack.</strong> Pre-compute the measurable figures the memo wants — element counts, "steps with no control", approval/triage ratios, unreviewed counts — and hand them to the model.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-h">high</span></td><td>Turns "specific and measurable" from a thing the model must derive (and can miscount) into figures it merely narrates — the single biggest accuracy lever.</td></tr>
+        <tr><td><strong>Fixed memo template.</strong> Provide the four-heading skeleton with per-section prompts so the model fills a known structure rather than recalling the heading contract.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>The <code>writeSummary</code> heading check never bounces, so the rerun-on-error path effectively disappears.</td></tr>
+        <tr><td><strong>Validate headings before write.</strong> Check the four-heading-in-order rule in the skill before calling the tool.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Catches the only failure mode the writer enforces, removing a round-trip.</td></tr>
+        <tr><td><strong>Deterministic empty-area path.</strong> Detect zero elements in code and emit the canonical not-yet-documented memo without model reasoning.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Saves a full generation on undocumented areas and makes that output identical every time.</td></tr>
+        <tr><td><strong>Cite-check pass.</strong> Verify every id the memo references exists in the area's element set before storing.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Guarantees the "trace to actual elements / never invent" rule mechanically, so no memo cites a non-existent id.</td></tr>
+        <tr><td><strong>Cache the schema area→sections map.</strong> Load the area definition once rather than re-parsing the schema each run.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Small but free latency saving on every invocation.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> a computed facts pack. The memo's defining quality is being specific and measurable, yet every figure is something the model derives by hand from the elements it read — the place it is most likely to miscount. Pre-computing the counts, ratios and gap figures and handing them to the model turns the riskiest part of the memo into pure narration, while parallel section reads remove the dominant latency.</div>
+  </section>
+
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/area-summary/SKILL.md</code></footer>
+</div>
+</body>
+</html>

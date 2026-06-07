@@ -104,6 +104,14 @@ Follow the universal **Y / E / R capture loop**, **provenance** rules and
 heading carries provenance; AI-drafted detail is `proposed` until the architect
 confirms it in a read-back, then `elicited` with their quote.
 
+Emit each draft as the full element object — frontmatter (with its enum fields:
+`pattern`, `direction`, `category`, `phaseStatus`), template headings and
+relation id lists — exactly as it will be written, so the read-back is the
+payload. `createElement` and `checkConformance` already validate the schema and
+field/enum values at write, so the structured object you confirm is the object
+they check; don't paraphrase it into free prose that then drifts from what is
+written.
+
 ### Narrative-first capture
 For an integration or a migration phase, ask the architect to **talk**: "Walk
 me through how these two apps exchange data — what moves, which way, sync or
@@ -122,39 +130,72 @@ Run these in order. If you were invoked from the architect canvas with a single
 section in focus (e.g. an "Elicit with solution architect" button on
 Integrations), start at the matching phase; otherwise run them all.
 
-**Phase 0 — Orient.** The session is already scoped to one process. Read the
-domain layer you'll build on — `expandElement` the `capabilities` and
-`target-applications` collections — and the upstream `requirements`,
-`controls`, `regulation` and as-is `systems`/`integrations`, plus the technical
-elements already authored (`target-integrations`, `components`, `nfrs`,
-`migration-phases`) so you extend rather than duplicate.
+**Phase 0 — Orient.** The session is already scoped to one process. Take a
+single `getProcessSummary({ slug })` snapshot of the document and reuse it as
+your oriented document map for the whole session — do not re-fetch the same
+collections in later phases. Then read the domain layer you'll build on —
+`expandElement` the `capabilities` and `target-applications` collections — and
+the upstream `requirements`, `controls`, `regulation` and as-is
+`systems`/`integrations`, plus the technical elements already authored
+(`target-integrations`, `components`, `nfrs`, `migration-phases`) so you extend
+rather than duplicate. Also call `getProcessRelations({ slug })` once: its
+`integrationCandidates` (system pairs that co-occur on a step with no
+integration between them) are your seeded list of candidate target-integrations
+for Phase 1.
 
-**Phase 1 — Integrations.** The interfaces between target applications. For
-each: `from` and `to` applications, `pattern` (SYNC / ASYNC / EVENT / BATCH),
-`direction`, the contract and the failure mode. Wire `realises` to the
-capability the interface serves. An integration naming fewer than two
+**Phase 1 — Integrations.** The interfaces between target applications. Work
+the `integrationCandidates` from Phase 0 as your candidate list — each pair is a
+provisional `from`/`to` to confirm or discard with the architect — rather than
+inferring interfaces from memory. For each: `from` and `to` applications,
+`pattern` (SYNC / ASYNC / EVENT / BATCH), `direction`, the contract and the
+failure mode. Wire `realises` to the capability the interface serves — at draft
+time, link each integration to the capability and target-application it serves
+rather than leaving the relation for later. An integration naming fewer than two
 applications, or a data hand-off with no integration, is a finding.
 
 **Phase 2 — Components.** `[A]/[E]/[N]`. The decomposition of each target
 application into components (services, gateways, workers, stores). For each: its
 `inApp` application (required), its `tech`, its responsibility and technical
-detail, and `dependsOn` / `realisesCapability` where they apply.
+detail, and `dependsOn` / `realisesCapability` where they apply. At draft time,
+link each component to the capability and target-application it serves rather
+than wiring the relations afterwards. Components in different applications with
+no `dependsOn` link between them are independent — you may draft such a batch
+together and present them in one grouped Y/E/R before writing, rather than one
+round per component.
 
-**Phase 3 — NFRs.** `[A]/[E]/[N]`. The non-functional requirements. Derive them
-from the requirements, controls and regulation; for each set `category` and a
-measurable `target`, draft Definition / Measurement / Verification, and wire
-`appliesTo`, `satisfiesControl` and `regulatedBy` where they apply.
+**Phase 3 — NFRs.** `[A]/[E]/[N]`. The non-functional requirements. Work them
+from a fixed category checklist — at minimum performance, availability,
+security, scalability, then compliance and any others the upstream constraints
+imply — so the same NFR space is covered every run rather than improvised.
+Derive them from the requirements, controls and regulation; for each set
+`category` and a measurable `target`, draft Definition / Measurement /
+Verification, and wire `appliesTo`, `satisfiesControl` and `regulatedBy` where
+they apply — link each NFR at draft time to the capability, component,
+application or integration it constrains. **Require a numeric, measurable
+`target` before you write.** A `target` must carry a number plus a unit or
+threshold ("p95 < 1.2s", "RTO ≤ 4h", "99.95% monthly"); "fast" / "secure" /
+"highly available" are prompts for a number, not values, and must not reach
+`createElement`. *(This is enforced here as a drafting rule; hard schema gating
+on a non-numeric target is a future change.)*
 
 **Phase 4 — Migration phases.** `[A]/[E]/[N]`. The sequence from the as-is
 estate to the target. For each phase: `phaseStatus`, `startQuarter`,
 `endQuarter`, the Scope, the Acceptance criteria and Risks, and `delivers` /
-`dependsOn` / `resolvesGap`. The phases together should deliver every
-capability and application without a big-bang cutover.
+`dependsOn` / `resolvesGap`. Derive coverage deterministically from the Phase 0
+snapshot: every target-application must appear in exactly one phase's `delivers`
+set — compute the applications not yet covered and the ones covered twice, and
+work that list rather than reconstructing coverage from memory. The phases
+together should deliver every capability and application without a big-bang
+cutover.
 
-**Phase 5 — Validation.** Before closing, sweep what you wrote: an integration
-naming fewer than two applications; a component with no `inApp`; an NFR with no
-measurable target; a capability or application delivered by no migration phase.
-Surface each as a short clarifying question, then close:
+**Phase 5 — Validation.** Before closing, drive the validation report from
+`checkConformance` over what you wrote plus the Phase 0 snapshot — don't
+improvise the sweep from memory. The mechanical checks: an integration naming
+fewer than two applications; a component with no `inApp`; an NFR with no
+numeric/measurable target; a target-application delivered by no migration phase
+(or by more than one). Run them deterministically so the same findings surface
+every run, report the exact failing element ids, surface each as a short
+clarifying question, then close:
 
 > Solution Architecture documented — **{process}**:
 >

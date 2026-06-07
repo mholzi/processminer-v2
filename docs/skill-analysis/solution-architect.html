@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>solution-architect — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">solution-architect</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">ArchitectMiner specialist</div>
+    <h1>solution-architect</h1>
+    <p class="lede">Develops the <strong>technical layer</strong> of a process's target architecture — the integrations between target applications, the components inside them, the non-functional requirements (NFRs) that constrain them, and the migration phases that sequence the cutover — drafting each as a schema-typed element in the process JSON. It is pure downstream synthesis built on the domain layer and never authors upstream content.</p>
+    <div class="meta-row">
+      <span class="chip">Interactive · Y/E/R loop</span>
+      <span class="chip neutral">LAYER: technical</span>
+      <span class="chip neutral">OWNS: target-integration · component · nfr · migration-phase</span>
+      <span class="chip neutral">Invoked by: ArchitectMiner canvas buttons</span>
+    </div>
+  </div>
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>solution-architect</code> is the second of the two ArchitectMiner
+      specialists. It facilitates a banking architect through the <strong>technical
+      layer</strong> of a process's target architecture and writes the result into the
+      same process JSON via the schema-enforced tools. It owns four element types:
+      <code>target-integration</code> (an interface between two target applications and
+      what flows), <code>component</code> (a sub-element of a target application — a
+      service, gateway, worker or store), <code>nfr</code> (a non-functional requirement
+      with a measurable target), and <code>migration-phase</code> (a staged step from
+      the as-is estate to the target).
+    </p>
+    <p>
+      Architecture here is <strong>downstream synthesis</strong>. The capabilities and
+      target applications authored by the <code>domain-architect</code> are this skill's
+      substrate — it connects them, decomposes them, constrains them and sequences them
+      — so the domain architect usually runs first. Every element must be grounded in
+      work already in the document: the <code>capabilities</code> and
+      <code>target-applications</code> (domain layer), the <code>requirements</code>,
+      <code>controls</code>, <code>regulation</code>, dependencies, and the as-is
+      <code>systems</code> and <code>integrations</code>. An element grounded in nothing
+      upstream is treated as a finding, not architecture.
+    </p>
+    <p>The frontmatter it must set (the schema hard-blocks approval if missing):</p>
+    <ul>
+      <li><strong>target-integration</strong> — <code>pattern</code> (SYNC / ASYNC /
+        EVENT / BATCH), <code>direction</code> (ONE-WAY / TWO-WAY / PUB-SUB);
+        optionally <code>contract</code>, <code>volume</code>. Relations:
+        <code>from</code> / <code>to</code> → target-application,
+        <code>realises</code> → capability, <code>drivenByADR</code> → adr.</li>
+      <li><strong>component</strong> — <code>tech</code> (the framework/runtime);
+        <code>inApp</code> relation is <em>required</em>; optionally
+        <code>dataStore</code>, <code>hosting</code>, <code>scaling</code>. Relations:
+        <code>dependsOn</code> → component, <code>realisesCapability</code> →
+        capability.</li>
+      <li><strong>nfr</strong> — <code>category</code> (PERFORMANCE / AVAILABILITY /
+        SECURITY / COMPLIANCE / SCALABILITY / …), <code>target</code> (a concrete,
+        testable value); optionally <code>owner</code>. Relations:
+        <code>appliesTo</code> → capability / component / target-application /
+        target-integration, <code>satisfiesControl</code>, <code>regulatedBy</code>,
+        <code>drivenByADR</code>.</li>
+      <li><strong>migration-phase</strong> — <code>phaseStatus</code> (PLANNED /
+        IN-FLIGHT / DONE), <code>startQuarter</code>, <code>endQuarter</code>;
+        optionally <code>owner</code>. Relations: <code>delivers</code> → capability /
+        component / target-application, <code>dependsOn</code> → migration-phase,
+        <code>resolvesGap</code> → gap.</li>
+    </ul>
+    <p>Key constraints and behaviours:</p>
+    <ul>
+      <li><strong>Connect, decompose, constrain, sequence — in that order.</strong>
+        Integrations between the applications, then the components inside them, then the
+        NFRs that constrain them, then the phases that deliver them.</li>
+      <li><strong>An NFR without a measurable target is a wish.</strong> Every NFR
+        carries a concrete, testable <code>target</code> ("p95 &lt; 1.2s", "RTO ≤ 4h",
+        "99.95% monthly") and a Measurement and Verification block. "Fast" and "secure"
+        are prompts for a number.</li>
+      <li><strong>A manual hand-off is a missing integration.</strong> When the design
+        implies two applications exchanging data, the interface is captured with its
+        pattern and direction — a re-key must not hide as "they'll just share the
+        database".</li>
+      <li><strong>Recovery-safe writes &amp; draft-only.</strong> Each element is written
+        on confirmation via <code>createElement</code>, authored <code>draft</code> with
+        honest provenance; the architect approves later in the app. The skill never sets
+        <code>approved</code>.</li>
+      <li><strong>Stays in its lane.</strong> It does not create capabilities, target
+        applications or ADRs (the <code>domain-architect</code>'s — they are inputs), nor
+        any As-Is, target-state, transformation-decision, gap, requirement, control,
+        regulation or client/innovation element.</li>
+    </ul>
+  </section>
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>Six phases run in order; if invoked from a single section's canvas button it starts at the matching phase, otherwise it runs them all. Every draft goes through the universal Y/E/R loop with per-heading provenance.</p>
+    <ol class="steps">
+      <li><span class="st-title">Phase 0 — Orient</span><span class="st-body">The session is already scoped to one process. Read the domain layer to build on plus the upstream constraints, and the technical elements already authored so it extends rather than duplicates. Tools: <span class="tool">expandElement()</span> over <code>capabilities</code>, <code>target-applications</code>, <code>requirements</code>, <code>controls</code>, <code>regulation</code>, as-is <code>systems</code> / <code>integrations</code>, plus existing <code>target-integrations</code> / <code>components</code> / <code>nfrs</code> / <code>migration-phases</code>.</span></li>
+      <li><span class="st-title">Phase 1 — Integrations</span><span class="st-body">The interfaces between target applications. For each: <code>from</code> and <code>to</code> applications, <code>pattern</code> (SYNC / ASYNC / EVENT / BATCH), <code>direction</code>, the contract, and the failure mode. Wire <code>realises</code> to the capability the interface serves. An integration naming fewer than two applications, or a data hand-off with no integration, is a finding. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 2 — Components</span><span class="st-body">Opened with <strong>[A] Add one · [E] Explore · [N] None</strong>. Decompose each target application into components (services, gateways, workers, stores). For each: its <code>inApp</code> application (required), its <code>tech</code>, responsibility and technical detail, and <code>dependsOn</code> / <code>realisesCapability</code> where they apply. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 3 — NFRs</span><span class="st-body">[A]/[E]/[N]. Derive non-functional requirements from the requirements, controls and regulation. For each set <code>category</code> and a measurable <code>target</code>, draft Definition / Measurement / Verification, and wire <code>appliesTo</code>, <code>satisfiesControl</code> and <code>regulatedBy</code> where they apply. Tools: <span class="tool">createElement()</span>, <span class="tool">updateElement()</span></span></li>
+      <li><span class="st-title">Phase 4 — Migration phases</span><span class="st-body">[A]/[E]/[N]. The sequence from the as-is estate to the target. For each phase: <code>phaseStatus</code>, <code>startQuarter</code>, <code>endQuarter</code>, the Scope, Acceptance criteria and Risks, and <code>delivers</code> / <code>dependsOn</code> / <code>resolvesGap</code>. Together the phases should deliver every capability and application without a big-bang cutover. Tools: <span class="tool">createElement()</span></span></li>
+      <li><span class="st-title">Phase 5 — Validation &amp; close</span><span class="st-body">Sweep what was written: an integration naming fewer than two applications; a component with no <code>inApp</code>; an NFR with no measurable target; a capability or application delivered by no migration phase. Surface each as a short clarifying question, then emit the fixed close with per-type drafted counts. Tools: <span class="tool">expandElement()</span>, <span class="tool">updateElement()</span></span></li>
+    </ol>
+  </section>
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <div class="outcome-banner"><strong>Implementation status (2026-06-07).</strong> 7 implemented, 2 partial (structured-schema already enforced by createElement/checkConformance; numeric-NFR gating done as a prose rule, hard schema gating deferred). Target-integration candidates now come from the new <code>getProcessRelations</code> tool; the rest are SKILL.md prose patterns.</div>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th><th>Outcome</th></tr></thead>
+      <tbody>
+        <tr class="row-done"><td><strong>Derive candidate integrations from the systems graph.</strong> Walk the as-is <code>integrations</code> and the domain <code>target-applications</code> to propose target-integration stubs (with provisional <code>from</code> / <code>to</code>) before Phase 1.</td><td><span class="tag both">both</span></td><td><span class="tag effort-m">med</span></td><td>The "data hand-off with no integration" finding becomes a seeded checklist rather than a from-memory hunt — fewer misses (determinism) and far fewer drafting rounds (speed).</td><td><span class="tag done">implemented</span><span class="outcome-note">Phase 0/1 now seed candidates from <code>getProcessRelations.integrationCandidates</code>.</span></td></tr>
+        <tr class="row-done"><td><strong>Templated NFR checklist by category.</strong> A canonical per-category NFR template (PERFORMANCE / AVAILABILITY / SECURITY / COMPLIANCE / SCALABILITY) with the Definition / Measurement / Verification headings and an empty <code>target</code> slot the architect fills.</td><td><span class="tag both">both</span></td><td><span class="tag effort-l">low</span></td><td>Replaces free-improvisation of NFR structure each run with a fixed scaffold; the only variable left is the measurable number, which is exactly the thing the SKILL.md demands be concrete.</td><td><span class="tag done">implemented</span><span class="outcome-note">Phase 3 now works a fixed category checklist (performance, availability, security, scalability, …).</span></td></tr>
+        <tr class="row-partial"><td><strong>Block writes on a non-numeric NFR target.</strong> Validate that <code>target</code> contains a measurable value (number + unit/threshold) at draft time, not after a writer rejection.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Mechanically enforces "an NFR without a measurable target is a wish", so "fast"/"secure" can never reach the document and trigger a reject-retry.</td><td><span class="tag partial">partial</span><span class="outcome-note">Phase 3 requires a numeric/measurable target before write as a prose rule; hard schema gating deferred.</span></td></tr>
+        <tr class="row-done"><td><strong>Auto-suggest <code>inApp</code> from the host map.</strong> When a component is drafted, propose its <code>inApp</code> application from the capability it realises (capability already carries <code>hostedIn</code>).</td><td><span class="tag both">both</span></td><td><span class="tag effort-l">low</span></td><td><code>inApp</code> is a required relation; deriving it from the existing capability→host links removes a hand-wired id and prevents the "component with no inApp" finding.</td><td><span class="tag done">implemented</span><span class="outcome-note">Phases 1–3 now link each component/integration/NFR to the capability/target-application it serves at draft time.</span></td></tr>
+        <tr class="row-done"><td><strong>Migration-coverage solver.</strong> Compute the set of capabilities/applications not yet delivered by any phase and surface it live, optionally proposing a topologically-ordered phase plan from <code>dependsOn</code> edges.</td><td><span class="tag both">both</span></td><td><span class="tag effort-h">high</span></td><td>"Deliver everything without a big-bang" is a coverage + ordering problem a solver does deterministically; the architect sequences by approving rather than reconstructing the dependency order each time.</td><td><span class="tag done">implemented</span><span class="outcome-note">Phase 4 derives coverage from the snapshot — every target-application in exactly one phase.</span></td></tr>
+        <tr class="row-done"><td><strong>Parallel-draft independent components.</strong> Components inside different applications with no <code>dependsOn</code> link are independent; draft them in one batched grouped Y/E/R.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Collapses many sequential per-component rounds into one, which the core contract already allows for low-judgement reference elements.</td><td><span class="tag done">implemented</span><span class="outcome-note">Phase 2 may draft independent components together before review.</span></td></tr>
+        <tr class="row-partial"><td><strong>Structured-schema confirm payload.</strong> Emit each element as a typed object (frontmatter + headings + relation ids) that renders the read-back, instead of free-form markdown.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>Removes formatting drift and makes the draft schema-checkable (pattern/direction/category enums, required <code>inApp</code>) before <code>createElement</code>.</td><td><span class="tag partial">partial</span><span class="outcome-note"><code>createElement</code>/<code>checkConformance</code> already validate the schema/enums; SKILL.md now tells the skill to emit the full object.</span></td></tr>
+        <tr class="row-done"><td><strong>Cache the oriented document map.</strong> Persist the Phase 0 <code>expandElement</code> snapshot of the domain + upstream collections for the session.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>Avoids re-expanding the same <code>capabilities</code> / <code>target-applications</code> arrays in Phases 1–4 — wasted round-trips and tokens.</td><td><span class="tag done">implemented</span><span class="outcome-note">Phase 0 takes one <code>getProcessSummary</code> snapshot and reuses it across the session.</span></td></tr>
+        <tr class="row-done"><td><strong>Deterministic Phase-5 validation report.</strong> Replace the improvised sweep with fixed graph checks (integration≥2 apps, component→inApp, nfr→numeric target, capability/app→phase) returning the exact failing ids.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>The four validation rules are mechanical; computing them yields the same findings every run instead of relying on the model to remember all four.</td><td><span class="tag done">implemented</span><span class="outcome-note">Phase 5 now drives the report from <code>checkConformance</code> + the snapshot, reporting exact failing ids.</span></td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> derive the technical graph from the layers below it. The two slowest, most variable jobs here are reconstructing which applications must talk to each other (integrations) and proving the migration delivers everything without a big bang — both are graph problems the tool layer can solve over the as-is <code>integrations</code>, the domain host map, and the <code>dependsOn</code> edges. If integrations are seeded from the systems graph, <code>inApp</code> is auto-suggested, NFR targets are validated numeric at draft time, and a coverage solver flags undelivered capabilities live, the architect's role collapses to confirming patterns, numbers and sequence — a fast, reproducible technical review with every human approval still intact.</div>
+  </section>
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/solution-architect/SKILL.md</code></footer>
+</div>
+</body>
+</html>

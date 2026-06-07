@@ -74,6 +74,33 @@ have the structure. You draft, they validate — every question earns its place.
 7. **Draft, not truth-yet.** Everything is `status: draft` with an honest
    `confidence` and a `source`. The SME approves in the web app.
 
+## Determinism — read the document, don't re-derive it
+
+Take **one** `getProcessSummary({ slug })` snapshot at the start of the session
+and reference it throughout instead of re-reading elements piecemeal. Then lean
+on `getProcessRelations({ slug })` for the two judgement-light passes — it
+returns the facts you would otherwise re-derive by hand, so every run is
+identical:
+
+- **Step↔system coverage matrix.** Read `steps[].systems` for which systems each
+  step touches, `uncovered.stepsWithoutSystem` for steps touching no system, and
+  `orphans.systems` for systems no step references. Do **not** re-walk the steps
+  to reconstruct this — the tool already computed it. These are the two
+  Phase 4 findings, read as facts.
+- **Integration candidates.** `integrationCandidates` lists each system pair that
+  co-occurs on a step with no integration yet, with the `viaSteps` they meet on.
+  Propose one candidate `integration` per entry — confirm-or-drop with the SME —
+  rather than inferring candidates from memory.
+- **Skip read-back for objective system facts.** A system's name and type, taken
+  verbatim from the SME, carry no AI-added detail — write them without a
+  read-back turn. Reserve the mandatory read-back for the *proposed* purpose/role
+  prose where you inflated detail.
+- **Run the checks after writes.** After creating systems/integrations and
+  patching step links, call `checkConformance` to confirm the writes are clean
+  before the close-out. `createElement` already validates each element and
+  rejects a malformed body, so trust it for per-element shape and use
+  `checkConformance` for the cross-element sweep.
+
 ## Interaction patterns
 
 Follow the universal **Y / E / R capture loop**, **batching**, **provenance**
@@ -113,20 +140,37 @@ re-document them; you confirm with the SME which steps are system-supported, so
 you know where each system is used.
 
 **Phase 2 — Systems.** Every application or platform the process runs on —
-CRM, core banking, workflow, screening, document management. For each: its
+CRM, core banking, workflow, screening, document management. The system roster
+is largely reference-type, so capture the broad "name every system anyone
+touches" answer as **one labelled batch** — each line with its type and one-line
+purpose — and take a single Y/E/R over the batch (the batching case
+`CORE_SYSTEM_PROMPT §3` allows), rather than one element at a time. For each: its
 purpose, its role in this process, its type. To link a system to the steps it
-serves, patch each of those process-steps' `systems` field
-(use the updateElement({ id, patch }) tool) — the link is stored on the step, not the system.
-Walk the process to be sure none is missed.
+serves, **create the system, then patch each serving process-step's `systems`
+field in the same exchange** (`updateElement({ id, patch })`) so a system is
+never left half-linked — the link is stored on the step, not the system. *(A
+single transactional create-system-and-link-steps tool would collapse this into
+one atomic call; that is a future change — today it is the create + per-step
+patch sequence above.)* Use the `getProcessRelations` coverage matrix
+(`steps[].systems`, `orphans.systems`) to confirm none is missed rather than
+re-walking the process by hand.
 
-**Phase 3 — Integrations.** `[A]/[E]/[N]`. The connections between systems —
-what connects, what data flows, in which direction. Link the two `systems`
-each integration joins. A manual hand-off the SME describes is a candidate
+**Phase 3 — Integrations.** `[A]/[E]/[N]`. Start from the
+`getProcessRelations` `integrationCandidates` — each entry is a system pair that
+co-occurs on a step with no integration yet, with the `viaSteps` they meet on.
+**Propose one candidate `integration` per entry** for the SME to confirm or drop,
+rather than inferring connections from memory; this turns the phase from a
+blank-page elicitation into a confirm-or-drop pass. For each confirmed one,
+narrate what connects, what data flows and in which direction, and link the two
+`systems` it joins. A manual hand-off the SME describes is still a candidate
 integration — capture the systems and flag the gap.
 
-**Phase 4 — Validation.** Before closing, sweep what you wrote: systems linked
-to no step, steps that touch no system, integrations naming fewer than two
-systems, a re-key described but no integration captured. Surface each as a
+**Phase 4 — Validation.** Before closing, run `checkConformance` over what you
+wrote, then sweep using the `getProcessRelations` facts rather than re-deriving
+them: `orphans.systems` (systems linked to no step) and
+`uncovered.stepsWithoutSystem` (steps touching no system) are the two coverage
+findings read as facts; also catch integrations naming fewer than two systems and
+a re-key described but no integration captured. Surface each as a
 short clarifying question, then close with the canonical close-out:
 > IT Architecture perspective documented — **{process}**:
 >
