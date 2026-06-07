@@ -45,6 +45,9 @@ are the `transformation-agent`'s. All need the SME.
 
 ## Step 1 — Read the process
 
+Take a snapshot once at the start with `use the getProcessSummary({ slug }) tool` — read the
+process state from it rather than re-querying piecemeal.
+
 Read the process overview (root meta/content in the Document Map — the domain,
 what the process does, its industry, its scope) and the documented As-Is,
 **especially the pain-points and friction-points** — innovation ideas address
@@ -64,14 +67,17 @@ carries that sourcing routinely misses:
   moves about automation, agentic AI and continuous controls bear on the
   *automated* branch — not only the manual steps. Account for both.
 
-**Fill any pending elements first.** An element with `sourceUrl: pending` is a
-draft the `innovation-analyst` wrote but could not cite — it is waiting for
-exactly this skill. Before sourcing anything fresh, for each pending element:
-web-search to verify its claim, then attach the real `source` and `sourceUrl`
-with `use the updateElement({ id, patch }) tool`, and raise `confidence` from `low`
-if the web confirms it. If the web does not support the claim, leave it
-`pending` and say so in the Step 6 report. Never duplicate a pending element
-with a freshly-sourced one — fill it in place.
+**Fill any pending elements first — as one batch step.** An element with
+`sourceUrl: pending` is a draft the `innovation-analyst` wrote but could not
+cite — it is waiting for exactly this skill. Before sourcing anything fresh,
+**collect every `sourceUrl: pending` id up front and web-verify them in one
+batch pass** (rather than interleaving pending-fills ad hoc with fresh
+sourcing) — this keeps the pending report deterministic. For each pending
+element: web-search to verify its claim, then attach the real `source` and
+`sourceUrl` with `use the updateElement({ id, patch }) tool`, and raise
+`confidence` from `low` if the web confirms it. If the web does not support the
+claim, leave it `pending` and say so in the Step 6 report. Never duplicate a
+pending element with a freshly-sourced one — fill it in place.
 
 ## Step 2 — Scan the web
 
@@ -81,6 +87,19 @@ automation, digital identity, onboarding experience). Use the web search and
 web-fetch tools: run several searches and read a promising study or analyst
 report in depth. Gather the trends that genuinely bear on *this* process — not
 a generic industry dump.
+
+**Use authored query templates, not improvised terms** — to keep the searches
+reproducible across runs, derive each stream's queries from a fixed per-tier and
+per-sub-domain template rather than inventing wording each time. From the
+snapshot's sub-domains, instantiate the same templates every run:
+- **trend stream:** `"<industry> <sub-domain> market trends <year>"`,
+  `"<sub-domain> automation agentic AI banking"`,
+  `"<sub-domain> supervisory expectations controls"`.
+- **per competitor tier:** `"<named-tier-peers> <sub-domain> launch"`,
+  `"<tier> <sub-domain> platform investment announcement"`,
+  `"<tier> <sub-domain> analyst write-up"`.
+
+Same process and sub-domain ⇒ same query strings, so the search set is stable.
 
 If web search is unavailable in this environment, write what your own domain
 knowledge solidly supports, at `low` confidence, and say so in the summary —
@@ -116,11 +135,16 @@ reference it later. Hold the drafts — the whole run is written in one batch in
 Step 5. Aim for the handful of trends that are genuinely material — not an
 exhaustive list.
 
-## Step 4 — Scan competitors and draft competitor moves
+## Step 4 — Scan competitors and draft competitor moves (concurrently with the trend scan)
 
-The three competitor tiers are independent web-research streams, so scan them
-**concurrently**: in a single message, dispatch **three sub-agents** with the
-Task tool — one per tier — and wait for all three.
+The trend scan (Steps 2–3) and the three competitor tiers are all independent
+web-research streams, so **fan all four out at once** — do not run the trend
+scan serially first. In a single message, dispatch **four sub-agents** with the
+Task tool: one **trend** sub-agent (the Step 2–3 work — run the authored trend
+queries, read a promising study in depth, and return draft `market-trend` specs
+with `"trend-N"` `tempKey`s) alongside the **three competitor** sub-agents, one
+per tier. Wait for all four. This collapses the last serial web phase into the
+parallel fan-out.
 
 | Tier | Type | Who |
 |---|---|---|
@@ -148,13 +172,27 @@ Give each sub-agent this brief, filling in its tier:
 > material moves, not a dump. You are **read-only** — do not write or run any
 > write script. Return **only** a JSON array of the draft specs.
 
-Collect the three arrays and hold the drafts for the Step 5 batch write.
+Collect the four arrays — the trend specs and the three competitor-tier specs —
+and hold the drafts for the Step 5 batch write.
+
+**Dedup and cap each stream before the batch (disposition 6).** Each stream is
+sourced independently, so normalise before holding: dedup **trends by claim**
+(drop a second spec asserting the same trend) and **competitor moves by
+competitor name** (one spec per competitor per tier, keep the best-evidenced),
+then **cap each stream** to a handful — this keeps the run "a handful, not a
+dump" and makes the output length reproducible run to run.
 
 ## Step 5 — Draft innovation ideas, then write the run
 
-Derive `innovation-idea` elements from the trends, the competitor moves and the
-documented problems. Every idea must `addresses` at least one real documented
-problem id — an idea that solves no documented problem is not written. Each
+**Ground ideas on the deterministic problem inventory, not a re-walk.** Call
+`use the getConsolidationInputs({ slug }) tool` — `openProblems.all` is the
+deterministic inventory of every pain-point, friction-point, process-gap,
+control-gap and audit-finding id in the process. **Use it as the checklist** of
+problems an innovation idea should address, instead of re-walking the whole doc
+yourself. Derive `innovation-idea` elements from the trends, the competitor
+moves and that inventory. Every idea must `addresses` at least one real
+documented problem id from `openProblems.all` — an idea that solves no
+documented problem is not written. Each
 element's frontmatter carries:
 - `addresses:` **every** pain-point, friction-point, process-gap or
   control-gap the idea genuinely relieves — not just one. A unified-workspace
@@ -171,18 +209,17 @@ these are unvalidated proposals). Then write the **whole run in one batch**:
 assemble a manifest `{ "slug": "<slug>", "elements": [ … ] }` of every trend
 from Step 3, every competitor move from Step 4 and every idea here — each spec
 omitting `id`, each carrying its `tempKey`, ideas referencing trends and moves
-by `"@<tempKey>"` — and `use the createElements({ elements }) tool`, then `use the checkConformance() tool`. The batch writer assigns every id and resolves every `@<tempKey>`, and returns `created` (the ids) plus per-type `counts` — read your Step 6 report counts from `counts`. **This run must stay a single batch** (unlike source-cx / source-regulation, which write incrementally): the ideas reference trends and moves by `@<tempKey>`, and the writer only resolves those cross-references *within one batch* — splitting the write would leave the references unresolved.
+by `"@<tempKey>"` — and `use the createElements({ elements }) tool`, then `use the checkConformance() tool`. The batch writer assigns every id and resolves every `@<tempKey>`, and returns `created` (the ids) plus per-type `counts` — read your Step 6 report counts from `counts`. You need not pre-validate each spec's field set by hand: `createElement` already validates each element against its schema and rejects a malformed one (structured output is enforced), so a missing field or unresolved temp-key reference surfaces as a rejection — fix and re-batch. **This run must stay a single batch** (unlike source-cx / source-regulation, which write incrementally): the ideas reference trends and moves by `@<tempKey>`, and the writer only resolves those cross-references *within one batch* — splitting the write would leave the references unresolved.
 
-**Completeness check — every documented problem gets an idea.** Once the ideas
-are written, check the idea coverage for the process. It enumerates
-every pain-point, friction-point, process-gap and control-gap in the process
-and checks each is named by some idea's `addresses` list, reporting `covered`
-and `uncovered` ids. While it reports `"complete": false`, work the `uncovered` ids: a control gap with no
-idea against it is exactly the omission to catch. For each, either write an
-idea that `addresses` it, or — if no improvement genuinely applies — leave it
-and note the deliberate gap in the Step 6 report. Do not leave Step 5 until
-the idea coverage check reports `"complete": true`, or every still-`uncovered` id is
-a conscious decision.
+**Completeness check — every documented problem gets an idea.** Compute coverage
+deterministically: the **uncovered** set is `openProblems.all` (from
+`getConsolidationInputs`) minus the union of every idea's `addresses` list. This
+is the same problem→idea coverage map every run — no re-walking. Surface the
+uncovered ids directly and work them: a control gap with no idea against it is
+exactly the omission to catch. For each, either write an idea that `addresses`
+it, or — if no improvement genuinely applies — leave it and note the deliberate
+gap in the Step 6 report. Do not leave Step 5 until the uncovered set is empty,
+or every still-uncovered id is a conscious decision.
 
 ## Step 6 — Report
 

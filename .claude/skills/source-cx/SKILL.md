@@ -44,19 +44,27 @@ those are the process's own journey, `client-journey-specialist`'s and
 
 ## Step 1 — Read the process
 
+Take a `getProcessSummary({ slug })` snapshot **once** at the start — that single
+read is your orientation for the whole run; do not re-fetch it per tier.
+
 Read the process overview (root meta/content in the Document Map — the domain,
 what the process does, its industry, its scope) and the documented client
 journey — the `channels`, `touchpoints`, `moments` and `friction-points`
 elements. This tells you what client journey to benchmark. Also read any
-existing `competitor-cx-*` and `cx-benchmark` elements (`expandElement({ type })`
-to list a collection, then `expandElement({ type, id })` for a specific
-element): you extend, you never duplicate.
+existing `competitor-cx-*` and `cx-benchmark` elements (`getProcessElements({ slug, collection })`,
+or `expandElement({ type })` to list a collection, then `expandElement({ type, id })`
+for a specific element): you extend, you never duplicate. Capture the existing
+competitor / benchmark **names and ids** here — you pass them down into every
+sub-agent brief in Step 2 so no stream re-sources what already exists.
 
-## Step 2 — Scan competitor CX
+## Step 2 — Scan competitor CX and benchmarks (one fan-out)
 
-The three competitor tiers are independent web-research streams, so scan them
-**concurrently**: in a single message, dispatch **three sub-agents** with the
-Task tool — one per tier — and wait for all three.
+The three competitor tiers **and** the CX-benchmark scan (Step 3) are four
+independent web-research streams, so scan them **concurrently**: in a single
+message, dispatch **four sub-agents** with the Task tool — one per competitor
+tier plus the benchmark scan — and wait for all four. Do not run the benchmark
+scan serially after the tiers; fan it out alongside them so all four streams
+finish together.
 
 | Tier | Type | Who |
 |---|---|---|
@@ -64,35 +72,67 @@ Task tool — one per tier — and wait for all three.
 | Global corporate banks | `competitor-cx-global` | the major global players |
 | Fintechs | `competitor-cx-fintech` | the challengers reshaping this experience |
 
-Give each sub-agent this brief, filling in its tier:
+Use **fixed per-tier query templates** rather than improvising search terms:
+keep the search strings the same shape every run so the same process yields the
+same searches. For each competitor tier, run (substituting the process domain
+and the journey stages read in Step 1):
+
+- `"{domain} {tier-noun} client onboarding journey"`
+- `"{domain} {tier-noun} digital self-service / status visibility"`
+- `"{domain} {tier-noun} client experience reviews case study"`
+
+where `{tier-noun}` is *European corporate banks* / *global corporate banks* /
+*fintechs*. The benchmark stream's templates are in Step 3.
+
+Give each competitor sub-agent this brief, filling in its tier and passing down
+the existing names/ids from Step 1:
 
 > You are sourcing competitor client experience for process `<slug>`, tier
 > **{tier}** (element type `{type}`). Read the process overview (root
 > meta/content in the Document Map) and the documented client journey
-> (`channels`, `touchpoints`, `moments`, `friction-points`) for context, and
-> the existing `{type}` elements (`expandElement({ type })`) so you do not
-> duplicate one. Refer to the `{type}` schema template (in the Document Map /
-> output schema) for the element's shape. Web-search for **named** {who}'s client experience
-> in this domain — onboarding journey, channels, speed, self-service, reviews,
-> case studies. Draft one `createElement({ type, element })` tool spec per material example:
-> blocks *The journey* / *Relevance* / *Evidence*; frontmatter `competitor:`,
-> `source:`, `sourceUrl:`; `status: draft`, `confidence: medium` (`low` if
-> thinly evidenced); a `provenance` map, one entry per block heading, every
-> entry `{ "source": "web", "evidence": "<url> — \"<snippet>\" — fetched
-> <date>" }`. Name **real** competitors and cite **real** sources; never
-> invent one. A handful of material examples, not a dump. You are
-> **read-only** — do not write or call any write tool. Return **only** a
-> JSON array of the draft specs.
+> (`channels`, `touchpoints`, `moments`, `friction-points`) for context. These
+> `{type}` elements already exist — **do not re-source or duplicate any of
+> them**: {existing names + ids for this tier, from Step 1}. Refer to the
+> `{type}` schema template (in the Document Map / output schema) for the
+> element's shape. Run these fixed searches (do not improvise other terms):
+> {the three per-tier query templates above}. Then for each candidate found,
+> **pre-score its relevance** against the documented client journey and
+> friction-points — how directly it maps to this process's stages and pains —
+> on a 0–2 scale, and keep only the highest-scoring; drop low-relevance hits
+> before drafting. **Dedup by competitor name** (one element per competitor)
+> and **cap at the top 3** by relevance score for this tier. Draft one
+> `createElement({ type, element })` tool spec per kept example: blocks *The
+> journey* / *Relevance* / *Evidence*; frontmatter `competitor:`, `source:`,
+> `sourceUrl:`; `status: draft`, `confidence: medium` (`low` if thinly
+> evidenced); a `provenance` map, one entry per block heading, every entry
+> `{ "source": "web", "evidence": "<url> — \"<snippet>\" — fetched <date>" }`.
+> Name **real** competitors and cite **real** sources; never invent one. You
+> are **read-only** — do not write or call any write tool. `createElement`
+> validates and rejects any malformed spec, so emit each spec in exactly that
+> shape. Return **only** a JSON array of the draft specs, sorted by relevance
+> score descending.
 
-**Write each tier as soon as its drafts are ready** — do not hold all three for
-a single end-of-run batch. As each tier's array comes back, call
-`createElements({ elements })` for that tier (each `{ type, element }`, omitting
-`id`). Writing incrementally makes the elements appear in the workspace as the
-scan progresses instead of all at once at the end, and keeps the session
-visibly alive. Keep a **running per-type tally**: add the per-type `counts` each
-call returns to your totals — those totals are your Step 4 report counts.
+**Write each stream as soon as its drafts are ready** — do not hold all four for
+a single end-of-run batch. As each stream's array comes back (the three tiers
+and the benchmark scan), call `createElements({ elements })` for that stream
+(each `{ type, element }`, omitting `id`). Writing incrementally makes the
+elements appear in the workspace as the scan progresses instead of all at once
+at the end, and keeps the session visibly alive. Keep a **running per-type
+tally**: add the per-type `counts` each call returns to your totals — those
+totals are your Step 4 report counts.
 
-## Step 3 — Scan CX benchmarks
+## Step 3 — Scan CX benchmarks (the 4th concurrent stream)
+
+The benchmark scan is the **fourth sub-agent dispatched in the Step 2 fan-out**,
+not a serial pass afterwards. Give it the same discipline as the tiers: pass
+down the existing `cx-benchmark` names/ids from Step 1 so it does not re-source
+them; run **fixed query templates** —
+`"{domain} client onboarding time benchmark"`,
+`"{domain} corporate client NPS / customer effort benchmark"`,
+`"{domain} corporate client expectations status visibility self-service"` —
+instead of improvising; **pre-score** each candidate against the documented
+journey / friction-points and keep the highest-scoring; and **dedup by benchmark
+name** and **cap at the top 3** before drafting.
 
 Web-search for industry CX benchmarks and client-expectation research for this
 kind of process — onboarding-time standards, NPS / effort benchmarks, what
@@ -103,11 +143,13 @@ corporate clients expect (status visibility, digital self-service). Write a
 - Frontmatter: `source:` and `sourceUrl:`. (`asOf:` is auto-stamped — leave
   it out.)
 - Draft each `cx-benchmark` as a `createElement({ type, element })` tool spec (`status: draft`,
-  `confidence: medium`; `low` if thinly evidenced).
+  `confidence: medium`; `low` if thinly evidenced). `createElement` validates and
+  rejects any malformed spec, so emit each in exactly the schema shape.
 
 Write the benchmarks as their **own** `createElements({ elements })` call (the
-same incremental pattern as the Step 2 tiers — one group, written as soon as it
-is ready), and add the per-type `counts` it returns to your running tally. After
+same incremental pattern as the Step 2 tiers — one group, written as soon as the
+benchmark stream returns), and add the per-type `counts` it returns to your
+running tally. After
 the last group is written, run the checkConformance() tool once over the run.
 Each createElements call returns `created` (the assigned ids) and per-type
 `counts`; your Step 4 report counts are the **sum across all of your calls**.

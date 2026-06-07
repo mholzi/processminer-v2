@@ -16,6 +16,7 @@ import { writeRuntime, getRuntime, setDtpSummary } from "./runtime-store.ts";
 import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch, buildReconciledApprovalPatch, syncRelationsFromProse } from "./session-writes.ts";
 import { enrichFoundationalStatus } from "./foundational.ts";
 import { buildProcessRelations } from "./process-relations.ts";
+import { buildConsolidationInputs } from "./consolidation-inputs.ts";
 import { writeDtpReport, writeDtpComparison } from "./dtp-report.ts";
 import { buildNote, appendNote, resolveNotesInDoc } from "./session-notes.ts";
 import {
@@ -298,6 +299,15 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       {
         name: "getProcessRelations",
         description: "Deterministic relation/coverage/orphan facts for the process — per-step systems/controls/touchpoints with hasControl/hasSystem flags, orphan systems/controls/regulations, candidate integrations (system pairs co-occurring on a step with no integration), and steps without a control/system. Specialists call this instead of re-deriving coverage by hand (Process, Control & Compliance, Client Journey, IT Architect).",
+        inputSchema: {
+          type: "object",
+          properties: { slug: { type: "string", description: "The process slug." } },
+          required: ["slug"]
+        }
+      },
+      {
+        name: "getConsolidationInputs",
+        description: "Deterministic inputs for target-state consolidation — the open As-Is problem inventory (pain-points, process-gaps, control-gaps, friction-points, audit-findings with a union `all`), the innovation-idea/system/integration id lists, the existing Target Process ids (extend-not-duplicate), the 'consolidated from' tallies, and which perspectives are empty. Used by source-target (and source-innovation for its problem→idea coverage) instead of re-walking the doc and tallying from memory.",
         inputSchema: {
           type: "object",
           properties: { slug: { type: "string", description: "The process slug." } },
@@ -980,6 +990,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     else if (name === "getProcessRelations") {
       return { content: [{ type: "text", text: JSON.stringify(buildProcessRelations(doc), null, 2) }] };
+    }
+
+    else if (name === "getConsolidationInputs") {
+      return { content: [{ type: "text", text: JSON.stringify(buildConsolidationInputs(doc), null, 2) }] };
     }
 
     else if (name === "buildQueue") {

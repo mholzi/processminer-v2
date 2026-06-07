@@ -11,6 +11,7 @@ import { writeRuntime, getRuntime, setDtpSummary } from "./runtime-store.ts";
 import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch, buildReconciledApprovalPatch, syncRelationsFromProse } from "./session-writes.ts";
 import { enrichFoundationalStatus } from "./foundational.ts";
 import { buildProcessRelations } from "./process-relations.ts";
+import { buildConsolidationInputs } from "./consolidation-inputs.ts";
 import { writeDtpReport, writeDtpComparison } from "./dtp-report.ts";
 import { buildNote, appendNote, resolveNotesInDoc } from "./session-notes.ts";
 import { deriveProcessMeta, scaffoldClosing } from "./process-scaffold.ts";
@@ -307,6 +308,15 @@ const toolDeclarations: any[] = [
   {
     name: "getProcessRelations",
     description: "Deterministic relation/coverage/orphan facts for the process — per-step systems/controls/touchpoints with hasControl/hasSystem flags, orphan systems/controls/regulations, candidate integrations (system pairs co-occurring on a step with no integration), and steps without a control/system. Specialists call this instead of re-deriving coverage by hand (Process, Control & Compliance, Client Journey, IT Architect).",
+    parameters: {
+      type: "OBJECT",
+      properties: { slug: { type: "STRING", description: "The process slug." } },
+      required: ["slug"]
+    }
+  },
+  {
+    name: "getConsolidationInputs",
+    description: "Deterministic inputs for target-state consolidation — the open As-Is problem inventory (pain-points, process-gaps, control-gaps, friction-points, audit-findings with a union `all`), the innovation-idea/system/integration id lists, the existing Target Process ids (extend-not-duplicate), the 'consolidated from' tallies, and which perspectives are empty. Used by source-target (and source-innovation for its problem→idea coverage) instead of re-walking the doc and tallying from memory.",
     parameters: {
       type: "OBJECT",
       properties: { slug: { type: "STRING", description: "The process slug." } },
@@ -1388,6 +1398,9 @@ export class GeminiWorker implements IProcessWorker {
               } else if (originalName === "getProcessRelations") {
                 if (!doc) throw new Error("Process document context not loaded or slug is missing.");
                 resultText = JSON.stringify(buildProcessRelations(doc), null, 2);
+              } else if (originalName === "getConsolidationInputs") {
+                if (!doc) throw new Error("Process document context not loaded or slug is missing.");
+                resultText = JSON.stringify(buildConsolidationInputs(doc), null, 2);
               } else if (originalName === "buildQueue") {
                 if (!doc || !this.slug) throw new Error("Process document context not loaded or slug is missing.");
                 const queue = buildFoundationalQueue(doc);
