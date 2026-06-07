@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>conflict-resolution — Skill deep dive</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><div class="inner"><a class="home" href="index.html">Skill deep dive</a><span class="crumb">/</span><span class="crumb">conflict-resolution</span></div></div>
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Scaffolding &amp; ingest</div>
+    <h1>conflict-resolution</h1>
+    <p class="lede">Walks the SME through the conflicts a re-ingest flagged — where a document contradicted content the wiki already held — one at a time, document version versus wiki version, applies their decision, and clears the resolved conflicts.</p>
+    <div class="meta-row">
+      <span class="chip">Invoked by: free chat / triage when a process has ingest conflicts</span>
+      <span class="chip neutral">Interactive (per-conflict D/W/E decision)</span>
+      <span class="chip neutral">WRITES_TO: conflicted element fields + clears ingest.conflicts</span>
+      <span class="chip neutral">OWNS: no element types</span>
+    </div>
+  </div>
+
+  <section id="what">
+    <h2><span class="num">a</span> What it does</h2>
+    <p>
+      <code>conflict-resolution</code> is the human-in-the-loop counterpart to
+      <code>document-ingest</code>. When a re-ingested document contradicts content the
+      wiki already holds, the ingest <strong>never overwrites</strong> — it records each
+      collision in the process JSON's <code>ingest.conflicts</code> array and leaves the
+      wiki element untouched. This skill is how those parked conflicts get decided.
+    </p>
+    <p>
+      It is strictly <strong>interactive</strong>: the SME is present and decides
+      <em>every</em> conflict; the skill never resolves one itself and never invents a
+      resolution. Each conflict carries the <code>element</code> id, the
+      <code>field</code> (a block heading or a frontmatter field), <code>documentSays</code>
+      and <code>wikiSays</code>. The SME chooses per conflict: take the document, keep the
+      wiki, or edit a merged value.
+    </p>
+    <p>Key behaviours and constraints:</p>
+    <ul>
+      <li><strong>Surgical writes.</strong> A decision changes only the conflicted block
+        or field via <code>updateElement({ id, patch })</code>; the rest of the element
+        stays byte-identical, so nothing is re-typed.</li>
+      <li><strong>One at a time, never batched.</strong> Each decision is applied before
+        moving to the next conflict, and after every [D]/[E] write the skill runs a
+        conformance check and fixes any flag.</li>
+      <li><strong>Empty-state short circuit.</strong> If <code>conflicts</code> is empty,
+        the skill replies with one exact line and stops.</li>
+      <li><strong>Draft, not approved.</strong> Everything written stays
+        <code>status: draft</code>; the SME approves in the app. Edits reset that
+        element's approval/provenance per the shared contract.</li>
+      <li><strong>Verbatim wording.</strong> The per-conflict prompt and the final report
+        template are reproduced exactly, never written from memory.</li>
+    </ul>
+  </section>
+
+  <section id="sequence">
+    <h2><span class="num">b</span> The sequence</h2>
+    <p>Read the parked conflicts, decide each with the SME, clear, report.</p>
+    <ol class="steps">
+      <li><span class="st-title">Step 1 — Read the conflicts</span><span class="st-body">Read the <code>ingest.conflicts</code> array in <code>wiki/processes/&lt;slug&gt;.json</code>. If empty, reply with the exact "No conflicts to resolve" line and stop. Otherwise tell the SME how many there are and begin.</span></li>
+      <li><span class="st-title">Step 2 — Resolve each conflict (D/W/E)</span><span class="st-body">In order, present each conflict plainly (element id · field, document-says vs wiki-says) with three choices. <strong>[W]</strong> keep wiki — nothing written. <strong>[D]</strong> take document — apply via <span class="tool">updateElement({ id, patch })</span>. <strong>[E]</strong> work out a merged value with the SME, then apply via <span class="tool">updateElement({ id, patch })</span>.</span></li>
+      <li><span class="st-title">Conformance after every write</span><span class="st-body">After each [D] or [E] write, Tools: <span class="tool">checkConformance({ elementId })</span> — fix any flag before moving to the next conflict. Never batch decisions.</span></li>
+      <li><span class="st-title">Step 3 — Clear the resolved conflicts</span><span class="st-body">When every conflict has been decided, Tools: <span class="tool">clearConflicts()</span> — empties the <code>ingest.conflicts</code> array so the triage screen no longer flags them.</span></li>
+      <li><span class="st-title">Step 4 — Report</span><span class="st-body">Emit the canonical report with the counts (document version taken / wiki version kept / merged), reproducing every other character exactly.</span></li>
+    </ol>
+  </section>
+
+  <section id="enhance">
+    <h2><span class="num">c</span> Enhancement ideas</h2>
+    <p>Focused on making the skill <strong>more deterministic</strong> and <strong>significantly faster</strong>.</p>
+    <table>
+      <thead><tr><th>Idea</th><th>Type</th><th>Effort</th><th>Why it helps</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Pre-render all conflict prompts in one pass.</strong> Format the entire D/W/E prompt set deterministically from the <code>conflicts</code> array up front, then just collect answers.</td><td><span class="tag both">both</span></td><td><span class="tag effort-l">low</span></td><td>Removes a per-conflict generation step; presentation is pure templating over structured data, so it shouldn't cost a model turn each time.</td></tr>
+        <tr><td><strong>Batch the no-op [W] decisions.</strong> Let the SME accept "keep wiki" for several conflicts at once, since [W] writes nothing.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-l">low</span></td><td>The strictly-one-at-a-time rule exists to protect writes; a [W] is not a write, so serializing it adds round-trips for no safety gain.</td></tr>
+        <tr><td><strong>Deterministic [D] apply tool.</strong> Add a <code>takeDocumentVersion({ element, field })</code> that copies <code>documentSays</code> into the field directly from the stored conflict record.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-m">med</span></td><td>The document value is already captured verbatim in the conflict; re-authoring it into a patch invites paraphrase/drift. A direct copy is exact and unmissable.</td></tr>
+        <tr><td><strong>Fold conformance into the apply call.</strong> Have the update/take-document tool run <code>checkConformance</code> on that element and return failures inline.</td><td><span class="tag speed">speed</span></td><td><span class="tag effort-m">med</span></td><td>Collapses write + check into one call per conflict instead of two, while keeping the per-conflict integrity guarantee.</td></tr>
+        <tr><td><strong>Auto-resolve trivially-stale conflicts.</strong> Flag (and offer one-click apply for) conflicts where <code>wikiSays</code> is empty/placeholder and <code>documentSays</code> is concrete.</td><td><span class="tag both">both</span></td><td><span class="tag effort-l">low</span></td><td>Surfaces the obvious "the wiki had nothing, the document has something" cases so the SME spends judgement only on genuine contradictions.</td></tr>
+        <tr><td><strong>Clear conflicts incrementally.</strong> Remove each conflict from <code>ingest.conflicts</code> as it's decided, rather than one bulk <code>clearConflicts()</code> at the end.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Makes the skill resumable mid-session — an interrupted run leaves only the undecided conflicts, with no risk of clearing decisions that weren't applied.</td></tr>
+        <tr><td><strong>Generate the report from a running tally.</strong> Track D/W/E counts as decisions are applied and render the Step 4 report from them.</td><td><span class="tag det">determinism</span></td><td><span class="tag effort-l">low</span></td><td>Removes recount drift in the closing summary and guarantees the verbatim template.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Biggest win:</strong> add a deterministic <code>takeDocumentVersion</code> apply path (with conformance folded in) and make conflict clearing incremental. The [D] case — "the document is right" — is the most common decision, and today it routes through the model re-authoring a patch from <code>documentSays</code>, which can paraphrase the captured value and forces a separate conformance round. Copying the already-verbatim document value directly, checking it in the same call, and dropping that conflict from the array on success makes the dominant path exact, single-call, and resumable — turning a serial judgement loop into a tight confirm-and-apply rhythm.</div>
+  </section>
+
+  <footer>Processminer skill analysis · generated from <code>.claude/skills/conflict-resolution/SKILL.md</code></footer>
+</div>
+</body>
+</html>

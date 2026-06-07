@@ -84,9 +84,42 @@ export interface DtpReport {
   summary?: string;
 }
 
+/** LLM token usage for one worker turn, provider-normalised. */
+export interface TokenUsage {
+  inputTokens: number;
+  outputTokens: number;
+  /** Prompt tokens served from cache (claude `cache_read_input_tokens`). */
+  cacheReadTokens: number;
+  /** Prompt tokens written to cache (claude `cache_creation_input_tokens`). */
+  cacheCreationTokens: number;
+  /** Cost in USD if the provider reports it (claude `total_cost_usd`); else 0. */
+  costUsd: number;
+}
+
+/** Accumulated usage for a skill (or the process total) across many turns. */
+export interface SkillUsageEntry extends TokenUsage {
+  /** Number of worker turns folded in. NB: a multi-turn skill (a foundational
+   *  run is dozens of turns) counts each turn — not one per invocation. */
+  turns: number;
+  /** ISO timestamp of the most recent turn folded in. */
+  lastAt: string;
+}
+
+/** Per-process token-usage tally — a process total plus a per-skill breakdown.
+ *  Derived/orchestration state, so it lives in the runtime store, not the wiki
+ *  (Karpathy guardrail). Keyed by the `skill` the chat passed (`document-ingest`,
+ *  `foundational-run`, …); free chat with no skill is keyed `"free-chat"`. */
+export interface SkillUsage {
+  total: SkillUsageEntry;
+  bySkill: Record<string, SkillUsageEntry>;
+  updatedAt: string;
+}
+
 export interface ProcessRuntime {
   /** The foundational-run cursor (walks current-state element ids). */
   reviewState?: ReviewState;
+  /** LLM token usage, per skill + process total. */
+  skillUsage?: SkillUsage;
   /** The qer-session cursor (walks the fixed QER step sequence). Same shape as
    *  reviewState but kept separate so the orchestrator's foundational-resume
    *  read of reviewState is never confused by a QER session. */

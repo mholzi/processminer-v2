@@ -5,6 +5,7 @@ import { sessionPool, type WorkerEvent } from "@/lib/session-worker";
 import { buildAdvisorPreamble } from "@/lib/advisor-server";
 import { COOKIE_NAME, verifySession } from "@/lib/auth-server";
 import { canAccess } from "@/lib/process-access";
+import { extractUsage, recordSkillUsage } from "@/lib/token-usage";
 
 // The session → process-slug map the worker writes after each turn
 // (claude-mcp-server.ts / gemini-worker.ts). Used to cross-check resume turns:
@@ -269,11 +270,23 @@ export async function POST(req: NextRequest) {
           }
         } else if (evt.type === "result") {
           resultSent = true;
+          // Fold this turn's token usage into the per-skill runtime tally. Both
+          // backends already carry usage on the result event; we just read it.
+          // Only for a real process turn (slug) and a non-error result.
+          const usage = extractUsage(evt as Record<string, unknown>);
+          if (usage && slug && !evt.is_error) {
+            try {
+              recordSkillUsage(slug, skill ?? "free-chat", usage);
+            } catch {
+              // never let usage accounting break the turn
+            }
+          }
           send({
             type: "done",
             reply: typeof evt.result === "string" ? evt.result : "",
             sessionId: worker.sessionId,
             isError: Boolean(evt.is_error),
+            ...(usage ? { usage } : {}),
           });
         } else if (evt.type === "error") {
           resultSent = true;

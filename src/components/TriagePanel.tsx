@@ -49,8 +49,8 @@ export default function TriagePanel({
     doc.elements.find((e) => e.id === id)?.title ??
     (id === doc.process.id ? doc.process.title : id);
 
-  const created = ingest?.created.length ?? doc.elements.length;
-  const updated = ingest?.updated.length ?? 0;
+  const created = ingest?.created?.length ?? doc.elements.length;
+  const updated = ingest?.updated?.length ?? 0;
 
   const runState = !rs ? "not-started" : rs.done ? "done" : "in-progress";
   const worklistCount = conflicts.length + lowConf.length + empty.length;

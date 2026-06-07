@@ -47,13 +47,23 @@ blind.
 
 ## Step 1 — Read the whole process
 
-On invocation, read the process overview (root `meta`/`content`) in the Document Map and **every current-state
-element** in the process (use `expandElement({ type })` to list each collection, then `expandElement({ type, id })` for the bodies). Build the complete picture: the spine of steps, every relation,
-what is thin, what is missing, what does not connect. Then give the SME a
-one-line orientation, e.g.:
+First take the snapshot: `use the getProcessSummary({ slug }) tool` **once** to
+get the spine — per-section counts, section status and the overview. Then read
+**every current-state element body** once (use `expandElement({ type })` to list
+each collection, then `expandElement({ type, id })` for the bodies) and **keep
+those bodies as your working copy for the whole run** — do not re-`expandElement`
+an unchanged element later when you re-present or deep-dive it. Build the
+complete picture: the spine of steps, every relation, what is thin, what is
+missing, what does not connect.
+
+You do **not** need to work out by hand which steps lack a control — the
+foundational status reports that deterministically (`uncoveredSteps`, and
+`currentHasControl` per step; see Step 2). Then give the SME a one-line
+orientation, e.g.:
 
 > I've read **{process}** — {n} steps, {n} controls, {n} exceptions. The spine
-> is coherent; a few steps read thin. Starting the foundational run.
+> is coherent; a few steps read thin; {n} steps carry no control yet. Starting
+> the foundational run.
 
 ## Step 2 — Build or resume the queue
 
@@ -72,6 +82,16 @@ The tool's output is JSON: `position`, `total`, `done`, `current` (the id of
 the element to work now), and — the single source of truth so they never drift between turns — `outcomes_line`
 (present while the run is not done) and `closeout_template` (present once it is
 done). Both are SME-facing fixed wording: relay them to the SME exactly as they are provided, never re-typed from memory.
+
+The status also carries the run's deterministic, doc-derived facts, so you never
+re-derive them by eye:
+- **`currentHasControl`** (when `current` is a process-step) — `false` means the
+  step has no control linked; fire the control-coverage probe (Step 3 item 3).
+- **`uncoveredSteps`** — every step with no control, for the Step 1 orientation.
+- **`gapTail.ids`** — when `current` is in the process-gap tail, the remaining
+  gap ids to present together as one batch (see below).
+- once `done`: **`closeoutCounts`**, **`closeoutTotal`** and **`stillToDocument`**
+  (each empty section mapped to the skill / ✦ button that fills it) for Step 4.
 
 ## Step 3 — The challenged walk
 
@@ -115,8 +135,9 @@ For the `current` item, one element at a time:
         a frequent frustration. If they name one, create a `pain-point` element
         (the mid-run create path below). If the step genuinely runs clean, write
         nothing — an absent pain point is a valid answer; never invent one.
-    -   **Control coverage** — you read the whole process in Step 1, so you know
-        which controls link to this step. If the step has **no control linked**,
+    -   **Control coverage** — the status tells you deterministically:
+        **`currentHasControl: false`** means this step has no control linked.
+        (Don't re-derive it from memory — trust the flag.) When it is false,
         raise it: SKILLS.md §9 calls a step missing a control the Control
         Specialist's most valuable finding, and the Process-lens challenge in
         item 2 never asks it. Tell the SME the step has no control and ask — is
@@ -138,6 +159,16 @@ For the `current` item, one element at a time:
     per step — you are deepening the walk, not turning each step into a full
     interview. On any other element type (role, control, system, exception,
     metric, gap) there is no deepening beat; go straight to the outcomes.
+
+    **One message per step.** For a process-step, the challenge questions, the
+    `proposed`-heading read-backs, the pain-point probe, and (when
+    `currentHasControl` is false) the control-coverage probe all ship in the
+    **same** message — never split across turns. Use this fixed shape so the
+    step costs one exchange:
+
+    > **Challenge.** 1–3 sharp questions (owning lens) + each `proposed` heading read back.
+    > **Pain points.** One probe: where does this step hurt?
+    > **Control coverage.** (only if `currentHasControl: false`) No control links here — accepted gap, or should one exist?
 4.  **Offer the outcomes.** Present the `outcomes_line` string from the
     `getSessionStatus()` tool output — reproduce it **character-for-character** on its
     own line. It is fixed wording; do not retype it
@@ -146,17 +177,18 @@ For the `current` item, one element at a time:
 
     > **[Y] Yes — accept** · **[E] Edit — I have corrections** · **[D] Deep dive — full elicitation** · **Move on — defer approval**
 
-    -   **[Y]** — the SME is satisfied. **First reconcile provenance:** for every
-        heading still marked `proposed` that the SME confirmed during the
-        challenge (item 2), rewrite the element (use the `updateElement({ slug, element: { id: '<id>', ... } })` tool, same id) with
-        that heading marked `elicited` and its `evidence` set to the SME's
-        confirming quote. `setApproval()` **blocks `approved`** while any heading
-        is `proposed`, so a freshly-ingested element cannot be approved until this
-        is done — skip it and the approve call fails. Then use the
-        `setApproval({ slug, id, status: 'approved', approver: '<SME name>' })` tool — the SME
-        name from the invocation. If a `proposed` heading was *not* confirmed, it
-        stays `proposed` and the element cannot be `[Y]` — take it as **[E]**
-        rework or **Move on** instead.
+    -   **[Y]** — the SME is satisfied. Reconcile provenance **and** approve in a
+        **single** call: use the
+        `setApproval({ slug, id, status: 'approved', approver: '<SME name>', reconcile: { '<Heading>': '<SME confirming quote>', … } })`
+        tool. The `reconcile` map flips each named heading from `proposed` to
+        `elicited` (with the quote as evidence) before the approve is applied, so
+        the approval gate passes in one write — no separate rewrite-then-approve,
+        and no "approved before reconciling" failure. Include in `reconcile`
+        **every** heading the SME confirmed during the challenge (item 2); the
+        `<SME name>` is the one from the invocation. If a `proposed` heading was
+        *not* confirmed, leave it out of `reconcile` — it stays `proposed`, the
+        element cannot be `[Y]`, and you take it as **[E]** rework or **Move on**
+        instead.
     -   **[E]** — the challenge found rework. Redraft with the SME, then write:
         for a fix to one block or field, use the `updateElement({ slug, id, patch: { block: '<heading>', content: '...' } })` tool (or `field` /
         `list`); for a genuine multi-block redraft, use the `updateElement({ slug, element: { id: '<id>', ... } })` tool (same id). Then approve it
@@ -168,13 +200,14 @@ For the `current` item, one element at a time:
         **continue straight to step 5 (Advance) in this same turn** — writing an
         `[E]` edit is *not* the end of the turn; do not stop and wait for a nudge.
 
-        **Keep frontmatter relation lists in sync with prose.** If your rework
-        names a `SYS-*` (or any element id) in body text that is not already
-        listed in the element's `systems` / `relations` field, patch the
-        frontmatter field in the same write — use the `updateElement({ slug, id, patch: { list: 'systems', add: '<SYS-*>' } })` tool
-        to add it. Same for `roles`, `controls` and other
-        relation lists. Lint catches the drift afterwards as a discrepancy
-        finding; better to not create the drift.
+        **Keep frontmatter relation lists in sync with prose.** Pass
+        **`syncRelations: true`** on the `[E]` write — `updateElement({ slug, id, patch: { … }, syncRelations: true })` —
+        and the tool auto-adds any relation-list id your reworked prose names but
+        the frontmatter is missing (e.g. a `SYS-*` in the body that isn't in
+        `systems`). It is conservative: it only adds ids that actually exist and
+        match the list's type, so it can't invent a relation. The write's result
+        reports `relationsAdded`; mention them in your one-line "what changed"
+        echo. This prevents the prose/frontmatter drift lint would otherwise flag.
     -   **[D]** — the element needs a full elicitation. Read the owning
         specialist's `SKILL.md` and run a deep dive on this element, here, in this
         session. Then approve it.
@@ -189,10 +222,12 @@ For the `current` item, one element at a time:
 
 Work one element per exchange. Never batch the challenged walk — the challenge
 *is* the value, and a batched challenge earns a batched, shallow answer. The
-one carve-out: the **process-gap tail** of the queue (process-gaps come last)
-may be presented together, since gaps are cross-referential and low-challenge;
-steps, roles, controls, systems and every other current-state element are
-always one per exchange.
+one carve-out: the **process-gap tail** of the queue (process-gaps come last),
+since gaps are cross-referential and low-challenge. The status makes this
+deterministic — when `current` is in the tail it returns **`gapTail.ids`**, the
+remaining gap ids. Present that whole batch in one labelled exchange, then
+advance through them. Steps, roles, controls, systems and every other
+current-state element are always one per exchange.
 
 **New elements you create mid-run.** Two things produce a new element during
 the walk: a **challenge** that surfaces something missing — an unnamed role,
@@ -226,11 +261,14 @@ The close-out reports both.
 
 ## Step 4 — Close-out
 
-When the cursor is done, `getSessionStatus()` reports `done: true` and a `closeout_template` field — the canonical close-out. Count the current-state elements that are
-`approved` and those still `in-progress` (deferred), then present the
-`closeout_template` **exactly as provided**: fill in every `{…}`
-placeholder, but reproduce every fixed word, bullet and the closing sentence
-character-for-character. Do not author the close-out from memory.
+When the cursor is done, `getSessionStatus()` reports `done: true`, the
+`closeout_template`, and the **counted close-out facts** so you don't tally by
+hand: **`closeoutTotal`** (the element total), **`closeoutCounts`** (per-section
+counts for the "By type" line) and **`stillToDocument`** (each empty section
+already mapped to its filling skill / ✦ button). Present the `closeout_template`
+**exactly as provided**: fill every `{…}` placeholder from these fields,
+reproducing every fixed word, bullet and the closing sentence
+character-for-character. Do not author the close-out — or recount — from memory.
 
 > Process Analyst perspective documented — **{process}**:
 >
@@ -246,17 +284,12 @@ holds, omit the whole block when it does not.
     generic "pick them off the cards" hides a role or exception that genuinely
     was never challenged. Omit the block if nothing was created mid-run.
 2.  **Gaps created mid-run** — omit the gap line if no gaps were created.
-3.  **Still to document** — you read the whole process in Step 1, so you know
-    which sections are still empty. List each empty section with the skill that
-    fills it, mapped per §4 / §11 of `SKILLS.md`:
-    -   Channels, Touchpoints, Moments of Truth, Friction Points →
-        `client-journey-specialist`; Stakeholders → `process-specialist`;
-        Audit Findings → `control-compliance-specialist`; Innovation Risks →
-        `innovation-analyst`; Integrations → `it-architect` — "run the **{skill}**
-        skill".
-    -   Regulation, Competitor CX, CX Benchmarks, Market Trends, Competitor
-        Innovation, Innovation Ideas → "use the **✦ Source from the web** button
-        on the section".
+3.  **Still to document** — do **not** re-scan the doc: the status's
+    **`stillToDocument`** array already lists each empty section paired with its
+    exact filling action (`run the **{skill}** skill` or `use the **✦ Source from
+    the web** button on the section`), mapped per §4 / §11 of `SKILLS.md` and
+    excluding the Target Process sections by design. Render one line per entry
+    from that array. Omit the whole block if `stillToDocument` is empty.
     -   For the Client Experience sections, if the walk passed process-steps that
         carry an undocumented client interaction (a portal, a callback, a
         client confirmation), name those step ids in the line — the Client
