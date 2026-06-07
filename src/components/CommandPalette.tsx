@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { WikiPage } from "@/lib/wiki";
+import { useFocusTrap } from "./useFocusTrap";
 
 type Result =
   | { kind: "section"; id: string; label: string }
@@ -26,6 +27,8 @@ export default function CommandPalette({
   const [q, setQ] = useState("");
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(dialogRef, onClose, open); // Esc + focus trap + restore
 
   useEffect(() => {
     if (open) {
@@ -65,9 +68,11 @@ export default function CommandPalette({
   return (
     <div className="cmdk-overlay" onClick={onClose}>
       <div
+        ref={dialogRef}
         className="cmdk"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
+        aria-modal="true"
         aria-label="Search"
       >
         <input

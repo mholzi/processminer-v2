@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
+import { useFocusTrap } from "./useFocusTrap";
 
 // The one dialog shell. Every modal in the app hand-rolled its own overlay,
 // none bound Esc, trapped focus, or set aria-modal, and overlay-dismiss was
@@ -9,9 +10,6 @@ import { useEffect, useRef, type ReactNode } from "react";
 // actions row; the chrome (overlay, focus trap, Esc, click-outside, restore
 // focus) is handled here. Reuses the existing `.modal-*` classes so the look is
 // unchanged.
-
-const FOCUSABLE =
-  'button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
 export default function Modal({
   title,
@@ -36,46 +34,7 @@ export default function Modal({
   closeOnOverlay?: boolean;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const restore = document.activeElement as HTMLElement | null;
-    const panel = panelRef.current;
-    const focusables = () =>
-      panel
-        ? Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
-            (el) => el.offsetParent !== null || el === document.activeElement,
-          )
-        : [];
-    // Focus the first field/button so keyboard users land inside the dialog.
-    const t = setTimeout(() => focusables()[0]?.focus(), 0);
-
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        e.stopPropagation();
-        onClose();
-        return;
-      }
-      if (e.key === "Tab") {
-        const f = focusables();
-        if (f.length === 0) return;
-        const active = document.activeElement as HTMLElement;
-        const idx = f.indexOf(active);
-        if (e.shiftKey && idx <= 0) {
-          e.preventDefault();
-          f[f.length - 1].focus();
-        } else if (!e.shiftKey && idx === f.length - 1) {
-          e.preventDefault();
-          f[0].focus();
-        }
-      }
-    }
-    document.addEventListener("keydown", onKey, true);
-    return () => {
-      clearTimeout(t);
-      document.removeEventListener("keydown", onKey, true);
-      restore?.focus?.();
-    };
-  }, [onClose]);
+  useFocusTrap(panelRef, onClose);
 
   return (
     <div

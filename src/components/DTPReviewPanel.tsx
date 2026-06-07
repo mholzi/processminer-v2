@@ -40,12 +40,22 @@ function touchesCompliance(f: DtpFinding, getRef: GetRef): boolean {
   return f.elements.some((id) => COMPLIANCE_TYPES.has(getRef(id)?.page.type ?? ""));
 }
 
-// "Accept" = a DTP correction to make manually; "Dismiss" = not a DTP change —
-// opens a chat to reconcile the wiki instead.
-const DISPOSITIONS: { key: DtpDisposition; label: string }[] = [
-  { key: "open", label: "Open" },
-  { key: "accepted", label: "Accept" },
-  { key: "dismissed", label: "Dismiss" },
+// The two actions name their real effect (review R3 — "Accept/Dismiss" read as
+// the opposite of what they do): "Fix in DTP" = a correction to make manually in
+// the procedure document; "Reconcile wiki…" = not a DTP change, opens a chat to
+// update the wiki instead (the trailing … signals it starts a flow).
+const DISPOSITIONS: { key: DtpDisposition; label: string; hint: string }[] = [
+  { key: "open", label: "Open", hint: "Not yet decided" },
+  {
+    key: "accepted",
+    label: "Fix in DTP",
+    hint: "A correction to make manually in the procedure document",
+  },
+  {
+    key: "dismissed",
+    label: "Reconcile wiki…",
+    hint: "Not a DTP change — opens a chat to update the wiki instead",
+  },
 ];
 
 /** A one-line summary for scanning — the emitted headline, or a sensible
@@ -1091,7 +1101,11 @@ function FindingRow({
                       suggested === d.key ? " suggested" : ""
                     }`}
                     onClick={() => onSetDisposition(d.key)}
-                    title={suggested === d.key ? "Suggested by the analysis" : undefined}
+                    title={
+                      suggested === d.key
+                        ? `${d.hint} · suggested by the analysis`
+                        : d.hint
+                    }
                   >
                     {d.label}
                   </button>

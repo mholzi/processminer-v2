@@ -3806,9 +3806,18 @@ body.ffb-targeting [data-feedback-id]:hover {
 .login-brand {
   font-size: var(--text-lg); font-weight: 600; color: var(--accent);
 }
+.login-tagline {
+  font-size: var(--text-xs); color: var(--muted);
+  margin: 2px 0 var(--space-md);
+}
 .login-intro {
   font-size: var(--text-sm); line-height: 1.6; color: var(--muted);
   margin-bottom: 2px;
+}
+/* The quiet footnote — was inheriting 14px body and out-competing the labels
+   above it (review R-entry). */
+.login-hint {
+  font-size: var(--text-xs); color: var(--muted);
 }
 .login-field { display: flex; flex-direction: column; gap: 4px; }
 .login-field span {

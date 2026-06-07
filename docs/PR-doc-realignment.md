@@ -60,6 +60,7 @@ what it changes, behaviour/scope, and how it was verified.
 | **#58** | Live-testing feedback toolkit — floating widget, auto-context, screenshots, element pins, admin toggles | `feat/live-feedback-toolkit` → `main` | Code + UI | **Open** (`pending`) |
 | **#59** | Design-review wave 1 — colour overload, AM green theming, primary button, table scan-ability + 7 more | `fix/design-review-wave-1` → `feat/live-feedback-toolkit` | Code + UI | **Open** (`pending`) — stacked on #58 |
 | **#60** | Design-review wave 2 — shared `<Modal>` primitive; migrate every dialog onto it; de-dupe the profile modal | `fix/design-review-wave-2` → `fix/design-review-wave-1` | Code + UI | **Open** (`pending`) — stacked on #59 |
+| **#64** | Design-review wave 3 (round-2 fixes) — login first-impression, guided-tour escape, DTP relabel, Help/⌘K focus-trap | `fix/design-review-wave-3` → `fix/design-review-wave-2` | Code + UI | **Open** (`pending`) — stacked on #60 |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1908,3 +1909,36 @@ welcome profile dialog and the admin "New user" form dialog both open with
 `aria-modal="true"`, move focus inside (first field), and **close on Esc**
 (previously Esc did nothing); form submit semantics preserved. No hand-rolled
 `modal-overlay` remains outside the primitive.
+
+## PR #64 — Design-review wave 3 (round-2 findings)
+
+## Why
+A second review pass (3 more agents) covered surfaces the first pass missed:
+the print/export PDF, the entry/onboarding screens, and the specialist panels.
+This wave lands the contained, high-value fixes from that pass.
+
+## What
+- **LoginGate** (first impression): wordmark drops the stale "v2" → "Processminer"
+  + a one-line tagline; the footnote hint gets a token-bound `.login-hint` rule
+  (was inheriting 14px and out-competing the labels); the error gets `role="alert"`.
+- **GuidedTour**: "Skip tour" / "Close" now shows on **every** step (it was hidden
+  on the last), so a user is never trapped mid-tour.
+- **DTPReviewPanel**: relabel the triage to name its real effect — "Accept" →
+  **Fix in DTP**, "Dismiss" → **Reconcile wiki…** (the latter opens a chat; the
+  old label read as the opposite), with explanatory tooltips.
+- **Help / ⌘K accessibility**: extracted Modal's focus-trap into a shared
+  `useFocusTrap(ref, onEscape, active)` hook; `Modal`, `HelpCenter` and
+  `CommandPalette` all use it now — so the two overlays gain `aria-modal`, a Tab
+  focus trap, Esc, and focus-restore, instead of rolling their own. Continues
+  root #4 (shared primitives).
+
+## Scope
+The larger round-2 items (print/export provenance + page numbers, SettingsPanel
+access confirmation, DTP colour overload, a unified triage control) remain for
+later waves. The review report (`public/_mockups/design-review.html`, round 2)
+is a throwaway artifact, not committed.
+
+## Verification
+`npm run typecheck` clean · `npm test` **108/108**. In-app: HelpCenter opens with
+`aria-modal="true"`, moves focus inside, and closes on Esc (it didn't before);
+CommandPalette uses the identical hook.
