@@ -1,12 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
 import {
   AuthError,
-  COOKIE_NAME,
   findByUsername,
   setPassword,
-  verifySession,
-  type StoredUser,
 } from "@/lib/auth-server";
+import { requireAdmin } from "@/lib/route-guards";
 
 // POST /api/admin/users/[username]/password { password }
 // Admin-only password reset. There is no self-service reset flow (no email
@@ -15,20 +13,12 @@ import {
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function requireAdmin(req: NextRequest): StoredUser | NextResponse {
-  const cookie = req.cookies.get(COOKIE_NAME)?.value;
-  const user = verifySession(cookie);
-  if (!user) return NextResponse.json({ error: "Not signed in." }, { status: 401 });
-  if (!user.isAdmin) return NextResponse.json({ error: "Forbidden." }, { status: 403 });
-  return user;
-}
-
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ username: string }> },
 ) {
   const r = requireAdmin(req);
-  if (r instanceof NextResponse) return r;
+  if (r instanceof Response) return r;
   const { username } = await params;
   if (!findByUsername(username)) {
     return NextResponse.json({ error: "User not found." }, { status: 404 });

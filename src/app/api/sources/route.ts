@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join, basename, sep, extname } from "node:path";
 import type { NextRequest } from "next/server";
 import { listSources } from "@/lib/wiki";
+import { isValidSlug, requireAccess } from "@/lib/route-guards";
 
 // Serves the imported source documents under raw-sources/<slug>/ — layer 1 of
 // the Karpathy wiki. The left-rail Source Documents widget reads the list from
@@ -33,11 +34,14 @@ const MIME: Record<string, string> = {
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const slug = searchParams.get("slug");
-  // Process slugs are kebab-case. The strict grammar has no dots or slashes,
-  // so a slug can never traverse out of raw-sources/ (e.g. `..`).
-  if (!slug || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+  if (!isValidSlug(slug)) {
     return Response.json({ error: "Bad or missing slug." }, { status: 400 });
   }
+
+  // Source documents are governed per-process (R16) — require a signed-in user
+  // with access before listing or serving any document body.
+  const guard = requireAccess(req, slug);
+  if (guard instanceof Response) return guard;
 
   const file = searchParams.get("file");
   if (!file) {

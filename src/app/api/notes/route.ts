@@ -1,14 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { NextRequest } from "next/server";
-import { COOKIE_NAME, verifySession } from "@/lib/auth-server";
-
-// R6: the author of a write is the signed-in user, resolved from the session
-// cookie — never a client-supplied value (which could forge authorship). Stores
-// the stable username (R6b); display names are resolved at read time.
-function sessionAuthor(req: NextRequest): string {
-  return verifySession(req.cookies.get(COOKIE_NAME)?.value)?.username || "SME";
-}
+import { isValidSlug, requireAccess } from "@/lib/route-guards";
 
 // Appends an SME note to the process JSON's `notes` map (wiki/processes/<slug>.json,
 // keyed by element id). Notes are collaboration data, not process documentation:
@@ -32,7 +25,7 @@ export async function POST(req: NextRequest) {
   const text = body.text;
   const replyTo = body.replyTo;
 
-  if (typeof slug !== "string" || !/^[A-Za-z0-9._-]+$/.test(slug)) {
+  if (!isValidSlug(slug)) {
     return Response.json({ error: "Bad or missing slug." }, { status: 400 });
   }
   if (typeof elementId !== "string" || !elementId) {
@@ -42,9 +35,14 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "The note is empty." }, { status: 400 });
   }
 
+  // R16 + R6: caller must have access to this process; the author is the
+  // signed-in user, never a client-supplied value.
+  const guard = requireAccess(req, slug);
+  if (guard instanceof Response) return guard;
+
   const note = {
     id: `n-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-    author: sessionAuthor(req),
+    author: guard.username,
     text: text.trim(),
     ts: new Date().toISOString(),
     ...(typeof replyTo === "string" && replyTo ? { replyTo } : {}),
@@ -88,7 +86,7 @@ export async function PATCH(req: NextRequest) {
   const noteId = body.noteId;
   const resolved = body.resolved === true;
 
-  if (typeof slug !== "string" || !/^[A-Za-z0-9._-]+$/.test(slug)) {
+  if (!isValidSlug(slug)) {
     return Response.json({ error: "Bad or missing slug." }, { status: 400 });
   }
   if (typeof elementId !== "string" || !elementId) {
@@ -97,6 +95,9 @@ export async function PATCH(req: NextRequest) {
   if (typeof noteId !== "string" || !noteId) {
     return Response.json({ error: "Bad or missing note." }, { status: 400 });
   }
+
+  const guard = requireAccess(req, slug);
+  if (guard instanceof Response) return guard;
 
   const path = join(process.cwd(), "wiki", "processes", `${slug}.json`);
   let processData: any = {};
@@ -117,7 +118,7 @@ export async function PATCH(req: NextRequest) {
   }
   if (resolved) {
     note.resolved = true;
-    note.resolvedBy = sessionAuthor(req);
+    note.resolvedBy = guard.username;
     note.resolvedAt = new Date().toISOString().slice(0, 10);
   } else {
     delete note.resolved;

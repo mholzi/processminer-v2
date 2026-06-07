@@ -1,15 +1,8 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import type { NextRequest } from "next/server";
-import { COOKIE_NAME, verifySession } from "@/lib/auth-server";
 import { getRuntime, writeRuntime } from "@/lib/runtime-store";
-
-// R6: the author of a dismissal is the signed-in user, resolved from the
-// session cookie — never a client-supplied value. Stores the stable username
-// (R6b); display names are resolved at read time.
-function sessionAuthor(req: NextRequest): string {
-  return verifySession(req.cookies.get(COOKIE_NAME)?.value)?.username || "SME";
-}
+import { isValidSlug, requireAccess } from "@/lib/route-guards";
 
 // Records a lint-finding dismissal in the runtime store
 // (data/runtime/<slug>.json, R9) — app-owned, keyed by a content signature.
@@ -43,12 +36,17 @@ export async function PATCH(req: NextRequest) {
   const signature = body.signature;
   const action = body.action === "restore" ? "restore" : "dismiss";
 
-  if (typeof slug !== "string" || !/^[A-Za-z0-9._-]+$/.test(slug)) {
+  if (!isValidSlug(slug)) {
     return Response.json({ error: "Bad or missing slug." }, { status: 400 });
   }
   if (typeof signature !== "string" || !signature) {
     return Response.json({ error: "Bad or missing finding." }, { status: 400 });
   }
+
+  // R16 + R6: caller must have access to this process; the author is the
+  // signed-in user.
+  const guard = requireAccess(req, slug);
+  if (guard instanceof Response) return guard;
 
   let reason = "";
   if (action === "dismiss") {
@@ -79,7 +77,7 @@ export async function PATCH(req: NextRequest) {
         : 0;
     dismissals[signature] = {
       reason,
-      by: sessionAuthor(req),
+      by: guard.username,
       at: isoDate(),
       ...(days > 0 ? { until: isoDate(days) } : {}),
     };
