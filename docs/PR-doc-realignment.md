@@ -2066,3 +2066,45 @@ and read-only; no change to other skills or write paths.
 `npm run typecheck` clean · `npm test` **143/143** — 5 new
 `process-relations.test.ts` cases (coverage, orphans, integration candidates,
 uncovered), wired into the runner.
+
+---
+
+# feat(session): per-skill token usage — capture, tally, receipt
+
+## Why
+There was no way to see how many tokens a skill run costs. Both backends already
+*surface* usage on the turn's `result` event — the claude CLI
+(`--output-format stream-json`) on `usage` + `total_cost_usd`, the Gemini SDK on
+`usageMetadata` — but the session route read neither and threw it away. Asked for
+by the `/dogfood-run` review ("show tokens per skill run").
+
+## What
+- **`token-usage.ts`** (new) — `extractUsage(evt)` normalises either provider's
+  shape into a `TokenUsage` (input/output/cache tokens + cost; returns null when
+  absent or all-zero); `recordSkillUsage(slug, skill, usage)` folds a turn into
+  the runtime store under that skill **and** a process total.
+- **`runtime-store.ts`** — `TokenUsage` / `SkillUsageEntry` / `SkillUsage` types
+  and a `skillUsage?` field on `ProcessRuntime`. Derived state → runtime store,
+  not the wiki (Karpathy guardrail). Keyed by the skill the chat passed; free
+  chat is `"free-chat"`.
+- **`/api/session`** — on the `result` event, record usage (best-effort,
+  wrapped so accounting can't break a turn) and add `usage` to the `done` SSE
+  payload.
+- **`gemini-worker.ts`** — sum `usageMetadata` across the turn's
+  generateContent round-trips and attach it to the `result` event (parity with
+  the claude path).
+- **UI** — `done.usage` → `onDone(…, usage)` → attached to the agent
+  `ChatMessage`; `AgentChat` renders a dim per-turn receipt
+  (`1.2k in · 340 out · 50 cached · $0.01`).
+
+## Scope / notes
+Read-only accounting; no change to a turn's behaviour, and a thrown error in the
+tally is swallowed. `turns` counts worker turns, so a multi-turn skill (a
+foundational run is dozens of turns) sums across them — the per-skill total is
+right; there's no per-invocation id yet. Gemini reports no cost, so `costUsd` is
+0 there.
+
+## Verification
+`npm run typecheck` clean · `npm test` **148/148** (after rebase onto #70) — 5
+new `token-usage.test.ts` cases (claude shape, Gemini shape + cache-netting,
+empty→null, per-skill+total fold, null no-op).

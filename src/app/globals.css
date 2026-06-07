@@ -3316,6 +3316,13 @@ body.ffb-targeting [data-feedback-id]:hover {
 .chat-msg > :first-child { margin-top: 0; }
 .chat-msg > :last-child { margin-bottom: 0; }
 .chat-msg p { margin: 0 0 0.5em; }
+.chat-msg-usage {
+  margin-top: 0.4em;
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
 .chat-msg ul, .chat-msg ol { margin: 0.35em 0; padding-left: 1.2em; }
 .chat-msg li { margin-bottom: 0.15em; }
 .chat-msg h1, .chat-msg h2, .chat-msg h3 {

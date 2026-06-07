@@ -929,6 +929,15 @@ export class GeminiWorker implements IProcessWorker {
       let turns = 0;
       const MAX_TURNS = 35; // Loop cap to prevent infinity recursion
 
+      // Sum token usage across every generateContent call in this turn (a turn
+      // can loop through many tool-call round-trips). Surfaced on the final
+      // `result` event so the session route can record per-skill usage.
+      const turnUsage = {
+        promptTokenCount: 0,
+        candidatesTokenCount: 0,
+        cachedContentTokenCount: 0,
+      };
+
       const activeTools = toolDeclarations;
 
       appendToCentralLog(this.sessionId || "unknown", this.slug, "User", `Message:\n${message}`);
@@ -949,6 +958,14 @@ export class GeminiWorker implements IProcessWorker {
             tools: [{ functionDeclarations: activeTools }]
           }
         });
+
+        // Accumulate this call's usage into the turn total.
+        const um = (response as any).usageMetadata;
+        if (um) {
+          turnUsage.promptTokenCount += um.promptTokenCount || 0;
+          turnUsage.candidatesTokenCount += um.candidatesTokenCount || 0;
+          turnUsage.cachedContentTokenCount += um.cachedContentTokenCount || 0;
+        }
 
         const calls = response.functionCalls;
 
@@ -1472,11 +1489,14 @@ export class GeminiWorker implements IProcessWorker {
             },
           };
 
-          // Yield the final result
+          // Yield the final result, carrying the turn's summed token usage so
+          // the session route can record it (same role as the claude CLI's
+          // `usage` on its result event).
           yield {
             type: "result",
             result: text,
             session_id: this.sessionId,
+            usageMetadata: turnUsage,
           };
 
           // Save history log to a debug file in the process directory
