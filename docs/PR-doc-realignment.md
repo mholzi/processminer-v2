@@ -58,7 +58,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#55** | Advisor chat: clickable citations + capture-as-note + richer markdown | `feat/advisor-chat-citations-notes` → `main` | Code | **Open** (`pending`) |
 | **#56** | DTP Enhancer review tools — rollup, coverage, evidence, triage, export, summary | `feat/dtp-review-tools` → `main` | Code + skills | **Merged** |
 | **#58** | Live-testing feedback toolkit — floating widget, auto-context, screenshots, element pins, admin toggles | `feat/live-feedback-toolkit` → `main` | Code + UI | **Open** (`pending`) |
-| **#61** | `new-process` determinism — `deriveProcessMeta` tool + templatized copy; skill deep-dive HTML | `feat/new-process-determinism` → `main` | Code + tests + skill + docs | **Open** (`pending`) |
+| **#61** | `new-process` determinism — `deriveProcessMeta` tool + templatized copy; skill deep-dive HTML | `feat/new-process-determinism` → `main` | Code + tests + skill + docs | **Merged** |
+| **#65** | `qer-session` determinism — perspective-aware cursor (skillBuilt/documented/next-built), counted cross-review gate, close-out renderer, SME actor on cursor | `feat/qer-determinism` → `main` | Code + tests + skill + docs | **Open** (`pending`) |
 
 > **Numbering note.** The "Recover docs & standalone artifacts (R20–R22)" work
 > was pre-logged here as #19 but the real #19 went to the ArchitectMiner R1 PR;
@@ -1910,3 +1911,42 @@ rejected at the source.
 `npm run typecheck` clean. The dogfood run reproduced the crash and confirmed
 the guarded version renders the triage screen normally (import record + element
 counts).
+
+---
+
+## PR #65 — `qer-session` determinism: perspective-aware cursor
+
+## Why
+The skill deep-dive (`docs/skill-analysis/qer-session.html`) found qer-session's
+SKILL.md describing a cursor that did not fully exist: Step 3 assumed
+`getSessionStatus()` reported six per-perspective positions with a `skillBuilt`
+flag, but the real QER cursor had five steps and PERSPECTIVE PASSES was a single
+stop — the model improvised the six-specialist loop and judged "is it
+reviewable / done" by eye. This PR aligns the cursor with the prose and turns
+those judgements into deterministic, counted facts.
+
+## What
+- **`session-cursor.ts`** — `QER_PERSPECTIVES` registry (perspective → owning
+  collections); `qerPerspectiveStatus` / `documentedPerspectiveCount` /
+  `nextBuiltPerspective` (deterministic `skillBuilt` injected as an fs fact +
+  `documented` from the doc; next = first built and not-yet-documented, so
+  writing elements advances the loop); `crossReviewEligible` (≥2 documented) as
+  a counted gate; `QER_CLOSEOUT_TEMPLATE` + `renderQerCloseout`;
+  `ReviewState.actor` carried on the cursor; `qerStatusWithPerspectives` merges
+  all of it into the status.
+- **Both backends** — `getSessionStatus` / `advanceSession` / `startSession`
+  return the perspective map + filled close-out; `skillBuilt` computed from
+  installed specialist skill dirs; `startSession` accepts `actor`.
+- **SKILL.md** — snapshot once via `getProcessSummary` at SELECT; pre-flight
+  skill-built map; Step 3 driven by `nextBuiltPerspective`; cross-review gated on
+  `crossReviewEligible` and run as concurrent read-only sub-agents; batched
+  validation; verbatim rendered close-out; structured overview checklist.
+
+## Scope
+qer-session + the shared session-cursor core. The foundational cursor is
+unchanged (`ReviewState.actor` is optional/additive). No other skill changes.
+
+## Verification
+`npm run typecheck` clean · `npm test` **115/115** — 7 new `session-cursor.test.ts`
+cases (perspective map, next-built loop, eligibility gate, close-out render,
+actor carry).

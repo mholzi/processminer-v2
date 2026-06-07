@@ -158,6 +158,8 @@ export interface ReviewState {
   done: boolean;
   startedAt: string;
   updatedAt: string;
+  /** The SME running the session (QER) — persisted so a resume never re-derives or re-asks. */
+  actor?: { name?: string; role?: string };
 }
 
 /** An imported source document — a file under raw-sources/<slug>/. */
