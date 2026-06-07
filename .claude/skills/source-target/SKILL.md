@@ -73,10 +73,25 @@ perspective specialists. You only consolidate what they wrote into a target.
 
 ## Step 1 — Read the whole process
 
-Read the process overview (root meta/content in the Document Map — the domain,
-what the process does, its scope), then read **every perspective**
-(`expandElement({ type })` to list a collection, then `expandElement({ type, id })`
-for a specific element), because the target consolidates all of them:
+Read the process in **two one-shot calls**, not a long serial-probe chain — this
+skill reads *everything*, so progressive disclosure works against it:
+
+1. `getProcessSummary({ slug })` — a snapshot of counts, statuses and the
+   overview (domain, what the process does, its scope).
+2. `getConsolidationInputs({ slug })` — **the key read for this skill.** It
+   returns, in one payload: `openProblems` (`painPoints`, `processGaps`,
+   `complianceGaps`, `frictionPoints`, `auditFindings`, and `all` — every open
+   problem id), `innovationIdeas[]`, `systems[]`, `integrations[]`,
+   `existingTarget` (`toBeDesign`, `transformationDecisions`, `gapResolution` —
+   so you extend, never duplicate), `tallies` (`painProcessGaps`,
+   `complianceGapsAuditFindings`, `frictionPoints`, `innovationIdeas`) and
+   `emptyPerspectives`. This is the complete view that feeds the synthesis; the
+   same call every run keeps the consolidation reproducible.
+
+Use `expandElement({ type, id })` only when you need a *specific* element body
+the two reads above did not give you in full — never to re-list collections the
+consolidation inputs already enumerate. The perspectives the target
+consolidates, all surfaced by the reads above, are:
 
 - **As-Is** — `process-step`, `exception`, `pain-point`, `process-gap`,
   `role`, `metric`. The pain-points and process-gaps are the problems the
@@ -94,10 +109,10 @@ for a specific element), because the target consolidates all of them:
 - **IT Architecture** — `system`, `integration`. The target can only assume
   capabilities the systems landscape can plausibly support.
 
-Also read any existing `target-state`, `transformation-decision` or `gap`
-elements: you **extend, you never duplicate** an element the wiki already
-holds. If the Target Process area is already populated, draft only what is
-genuinely missing.
+The `existingTarget` block from `getConsolidationInputs` lists any
+`target-state`, `transformation-decision` or `gap` the wiki already holds: you
+**extend, you never duplicate** them. If the Target Process area is already
+populated, draft only what is genuinely missing.
 
 If the process has little documented yet — no innovation ideas, few
 pain-points — draft conservatively from what exists and say so in the Step 5
@@ -108,9 +123,11 @@ yields a thin first stub, and that is honest.
 
 A `target-state` is a **theme of how the process should work in the future** —
 not a restatement of one idea, but a coherent future picture that a cluster of
-innovation-ideas, addressing a cluster of related problems, points to. Group
-the innovation-ideas by the part of the process they reshape; each genuine
-cluster is one `target-state`.
+innovation-ideas, addressing a cluster of related problems, points to. Take the
+authoritative idea list from `getConsolidationInputs.innovationIdeas` and group
+them by the part of the process they reshape; each genuine cluster is one
+`target-state`. The id list is deterministic — the *clustering* of ideas into
+themes stays your judgement.
 
 Draft each as a `createElement` spec (`status: draft`, `confidence: low` —
 consolidated, not yet SME-validated). Capture `replaces` — the As-Is
@@ -130,11 +147,16 @@ a channel. Derive them from the target-states and the problems: every target
 implies decisions, and every open As-Is problem needs a decision that resolves
 it.
 
-For each decision capture two relations:
+Use `getConsolidationInputs.openProblems.all` as the **authoritative coverage
+checklist** — it is every open problem id across all perspectives. For each
+decision capture two relations:
 - `resolves` — the As-Is problems it resolves: `pain-point`, `process-gap`,
-  `compliance-gap`, `friction-point`, `audit-finding`. Walk **every** open
-  problem across all perspectives and make sure at least one decision resolves
-  it — an uncovered problem is either a real gap (Step 4) or a missing decision.
+  `compliance-gap`, `friction-point`, `audit-finding`. Walk **every** id in
+  `openProblems.all` and make sure at least one decision resolves it — any id
+  still uncovered is either a real gap (Step 4) or a missing decision. The tool
+  hands you the id list; the `resolves` links it drives are deterministic, but
+  `replaces` (the As-Is step ids a target touches) still needs your judgement
+  where an idea carries no step link.
 - `realises` — the `target-state` themes it brings about, each as
   `"@<tempKey>"` from Step 2 (optional; a governance or sequencing decision
   may realise none).
@@ -147,9 +169,12 @@ batch write.
 
 A `gap` is **what stands between the As-Is and the target, and how to close
 it** — a capability the bank does not yet have, a dependency, a sequencing
-constraint. After Step 3, any open As-Is problem that no decision resolves, and
-any `target-state` a decision does not realise, is a candidate gap. So is any
-`innovation-risk` that the transformation must actively manage.
+constraint. Apply one deterministic rule: **every id in
+`getConsolidationInputs.openProblems.all` that no transformation-decision
+resolves becomes exactly one `gap`** — one gap per uncovered documented delta,
+no more and no less. In addition, any `target-state` a decision does not
+realise, and any `innovation-risk` the transformation must actively manage, is
+also a candidate gap.
 
 Draft each `gap` per its template, linking the `target-state` it serves by its
 `"@<tempKey>"` from Step 2.
@@ -160,17 +185,20 @@ Before writing the batch, draft the section seeds described in
 "What you produce" so the Requirements, Dependencies and Assumptions sections
 are not left structurally empty:
 
+Derive all three mechanically — not by fresh synthesis:
+
 - **requirement** — for each `transformation-decision`, draft at least one
   `requirement` (template type `requirement`, section `requirements`) that
   states what the target must do for the decision to be true. Link it to its
-  parent decision by `"@<tempKey>"`.
-- **process-dependency** — read each `system` and `integration` for the
-  upstream and downstream parties named, and draft one `process-dependency`
-  (template type `process-dependency`, section `dependencies`) per external
-  feeder or consumer. Aim for at least two.
+  parent decision by `"@<tempKey>"`. One requirement per decision is the rule;
+  group only when decisions are tightly related.
+- **process-dependency** — draft one `process-dependency` (template type
+  `process-dependency`, section `dependencies`) per external feeder or consumer
+  named in a `getConsolidationInputs.integrations` or `systems` entry. Aim for
+  at least two.
 - **assumption** — draft at least two `assumption` elements (template type
   `assumption`, section `assumptions`) naming the most load-bearing
-  assumptions behind the transformation-decision cluster.
+  assumption per transformation-decision cluster.
 
 Every section-seed element is `status: draft`, `confidence: low`, with every
 block marked `proposed` — same convention as the target-states themselves.
@@ -181,9 +209,11 @@ Then write the **whole Target Process in one batch** — assemble a manifest
 transformation-decision, gap, requirement, process-dependency and assumption,
 each spec omitting `id`, each carrying its `tempKey`, every `realises`,
 target-state link and decision link written as `"@<tempKey>"` — and use the createElements({ elements }) tool, then
-use the checkConformance({ slug }) tool. The batch writer assigns
-every id and resolves every `@<tempKey>`, and returns `created` (the ids) plus
-per-type `counts`. **This run must stay a single batch** (unlike source-cx /
+use the checkConformance({ slug }) tool. `createElements` already **validates
+each spec against its template and rejects a malformed one**, and resolves every
+`@<tempKey>` within the batch — you do not need a separate validation pass. The
+batch writer assigns every id and resolves every `@<tempKey>`, and returns
+`created` (the ids) plus per-type `counts`. **This run must stay a single batch** (unlike source-cx /
 source-regulation, which write incrementally): the `realises`, target-state and
 decision links are written as `@<tempKey>`, and the writer only resolves those
 cross-references *within one batch* — splitting the write would leave the
@@ -192,6 +222,11 @@ references unresolved.
 ## Step 5 — Report
 
 Read the per-type `counts` the createElements call returned. Do not recount from memory.
+
+The "Consolidated from" line is filled **from `getConsolidationInputs.tallies`,
+never counted from memory** — map `painProcessGaps` → pain/process gaps,
+`complianceGapsAuditFindings` → compliance gaps / audit findings,
+`frictionPoints` → friction points, `innovationIdeas` → innovation ideas.
 
 Report with the canonical template:
 """
@@ -209,8 +244,9 @@ and present what it prints, substituting the counts.
 Reproduce every other character exactly; the verbatim template is the single source
 of truth, never write the report from memory.
 
-If a perspective was empty (no innovation ideas, no documented As-Is), add one
-line saying so before the consolidated-from line.
+If `getConsolidationInputs.emptyPerspectives` is non-empty (e.g. no innovation
+ideas, no documented As-Is), add one line saying so before the consolidated-from
+line — drive it from that array, not from memory.
 
 ## Scope
 

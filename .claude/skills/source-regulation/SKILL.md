@@ -25,6 +25,9 @@ and maps each one to the controls that satisfy it.
 approval loop — you read, search, draft, write, and report. Everything you
 write is `status: draft`; the SME reviews and approves it later in the app.
 
+Take a `getProcessSummary({ slug })` snapshot once at the start for the overview,
+counts and status, and work from it rather than re-reading the process repeatedly.
+
 ## What you produce
 
 | Element | Section | What it captures |
@@ -47,6 +50,14 @@ existing `controls` — they tell you what risks the process already manages, an
 let you map a regulation to the control that satisfies it. Read any existing
 `regulation` elements: you extend, you never duplicate.
 
+**Diff before you search.** Pull the existing `regulation` elements up front with
+`getProcessElements({ slug, collection: "regulation" })` and build the set of
+regulation names/citations already covered. When you plan each domain's searches
+(Step 2), skip any obligation already in that set — decide what is *missing*
+before searching, rather than discovering duplicates after drafting. Pull the
+existing `controls` the same way (`getProcessElements({ slug, collection: "controls" })`)
+so the reg→control mapping in Step 2 reads off real control ids.
+
 Use the process's `jurisdiction` field in the process overview as the scope hint — the
 regulation that governs the process's home jurisdiction, plus the international
 standards (e.g. Basel for banking) that flow into it.
@@ -64,6 +75,34 @@ process that typically means some of:
 - **Data, records & reporting** — record-keeping, audit trail, regulatory
   reporting.
 
+**Fan the domains out to parallel sub-agents.** The domains are independent web
+streams, so dispatch one concurrent read-only sub-agent per domain — prudential,
+financial-crime/AML, conduct, op-risk, data/reporting — **in a single message**
+(the parallel pattern `source-cx` uses for its tiers). Each sub-agent searches
+its own domain and returns draft `regulation` specs; you merge the returned
+drafts into one candidate set before writing. Running the domains in parallel
+rather than serially is the dominant wall-clock win for this IO-bound skill.
+
+**Use authored query templates, not improvised terms.** Drive each domain's
+search from a fixed search-string template keyed off the overview's
+`jurisdiction` and process domain, so the same process yields the same searches
+every run. For example:
+
+- Prudential — `"{jurisdiction} {process-domain} capital liquidity requirements CRR CRD Basel"`
+- Financial crime / AML — `"{jurisdiction} AML KYC sanctions obligations {process-domain}"`
+- Conduct — `"{jurisdiction} {process-domain} conduct consumer protection disclosure rules"`
+- Operational risk — `"{jurisdiction} {process-domain} operational risk outsourcing MaRisk governance"`
+- Data & reporting — `"{jurisdiction} {process-domain} record-keeping audit trail regulatory reporting"`
+
+Substitute the actual jurisdiction and process domain; do not improvise term
+wording per run.
+
+**Dedup and cap before drafting.** Merge the sub-agents' candidates, dedup by
+normalised regulation name/citation (and drop any already covered per the Step 1
+diff), then cap to at most **N obligations per domain** (default N = 5, the
+highest-materiality first) before you draft. Two runs over the same landscape
+then converge on the same set instead of a variable-length dump.
+
 Search for **named** regulations and the supervisory body behind them (BaFin,
 ECB, EBA, the EU institutions). Write one `regulation` element per material
 obligation that genuinely applies to *this* process:
@@ -76,19 +115,30 @@ obligation that genuinely applies to *this* process:
   "Operational Risk"); `source:` the regulation's name or the citing
   publication; `sourceUrl:` the page you drew it from. (`asOf:` is auto-stamped
   by the createElement({ type, element }) tool — leave it out.)
+- Emit each regulation as the **full structured spec object** —
+  `{ domain, source, sourceUrl, blocks, provenance }` — with every required block
+  and a `provenance` entry per heading filled in before you write. `createElement`
+  already validates each element against the schema and rejects malformed ones, so
+  a complete object up front avoids the conformance fix-and-retry round.
 - Where a regulation is clearly satisfied by an existing control, record the
   link on the **control**: patch that control's `regulatedBy` to add this
   regulation's id (use the updateElement({ id, patch }) tool). A regulation has no `controls`
   field — its control list is the derived reverse of `control.regulatedBy`.
-- Write regulations **incrementally** — as you draft each regulation (or a
-  small group), call `createElements({ elements })` for it (each
-  `{ type: "regulation", element: { … } }`, `status: draft`,
-  `confidence: medium`; `low` if thinly evidenced) rather than holding them all
-  for one end-of-run batch. Writing as you go surfaces each regulation in the
-  workspace while the scan proceeds and keeps the session visibly alive. Keep a
-  **running total** of the per-type `counts` each call returns. After the last
-  group, run the checkConformance() tool once; fix any flagged element and
-  re-run it. Each call also returns `created` (the assigned ids).
+  **Auto-derive the link** rather than judging each mapping by eye: read the
+  existing controls (`getProcessElements({ slug, collection: "controls" })`, plus
+  `getProcessRelations({ slug })` whose `orphans.regulations` flags regulations with
+  no control point) and, where a control's domain/scope clearly satisfies the
+  regulation, set that control's `regulatedBy` from those existing controls.
+- Write regulations **incrementally, one `createElements({ elements })` call per
+  domain** — collect a domain sub-agent's deduped, capped drafts into a single
+  call (each `{ type: "regulation", element: { … } }`, `status: draft`,
+  `confidence: medium`; `low` if thinly evidenced) rather than per-regulation or
+  one end-of-run batch. Batching by domain cuts write round-trips while still
+  surfacing each domain's regulations in the workspace as the scan proceeds,
+  keeping the session visibly alive. Keep a **running total** of the per-type
+  `counts` each call returns. After the last domain, run the checkConformance()
+  tool once; fix any flagged element and re-run it. Each call also returns
+  `created` (the assigned ids).
 
 Name **real** regulations and cite **real** sources — never invent a regulation
 or a citation. If web search is unavailable, write only what you can solidly
