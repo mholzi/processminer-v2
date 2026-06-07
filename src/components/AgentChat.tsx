@@ -22,6 +22,8 @@ export interface ChatMessage {
   /** This turn's token usage, shown as a compact receipt under an agent
    *  message when the provider reported it. */
   usage?: TurnUsage;
+  /** This turn's wall-clock run-time in ms, shown alongside the token receipt. */
+  durationMs?: number;
 }
 
 /** "12.3k" / "950" — compact token count. */
@@ -31,16 +33,27 @@ function fmtTokens(n: number): string {
   return String(n);
 }
 
-/** The dim per-turn receipt: input / output tokens and cache reads. Shown only
- *  when the `session.token_receipt` admin flag is on. */
-function UsageReceipt({ u }: { u: TurnUsage }) {
-  const parts = [
-    `${fmtTokens(u.inputTokens)} in`,
-    `${fmtTokens(u.outputTokens)} out`,
-  ];
-  if (u.cacheReadTokens > 0) parts.push(`${fmtTokens(u.cacheReadTokens)} cached`);
+/** "850ms" / "4.2s" / "3m 12s" — compact duration. */
+function fmtDuration(ms: number): string {
+  if (ms < 1000) return `${Math.round(ms)}ms`;
+  if (ms < 60_000) return `${(ms / 1000).toFixed(1)}s`;
+  const m = Math.floor(ms / 60_000);
+  const s = Math.round((ms % 60_000) / 1000);
+  return `${m}m ${s}s`;
+}
+
+/** The dim per-turn receipt: input / output tokens, cache reads, and run-time.
+ *  Shown only when the `session.token_receipt` admin flag is on. */
+function UsageReceipt({ u, durationMs }: { u?: TurnUsage; durationMs?: number }) {
+  const parts: string[] = [];
+  if (u) {
+    parts.push(`${fmtTokens(u.inputTokens)} in`, `${fmtTokens(u.outputTokens)} out`);
+    if (u.cacheReadTokens > 0) parts.push(`${fmtTokens(u.cacheReadTokens)} cached`);
+  }
+  if (durationMs && durationMs > 0) parts.push(fmtDuration(durationMs));
+  if (parts.length === 0) return null;
   return (
-    <div className="chat-msg-usage" title="LLM tokens for this turn">
+    <div className="chat-msg-usage" title="LLM tokens and run-time for this turn">
       {parts.join(" · ")}
     </div>
   );
@@ -257,9 +270,11 @@ export default function AgentChat({
             <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
               {m.text}
             </ReactMarkdown>
-            {showTokenReceipt && m.role === "agent" && m.usage && (
-              <UsageReceipt u={m.usage} />
-            )}
+            {showTokenReceipt &&
+              m.role === "agent" &&
+              (m.usage || m.durationMs) && (
+                <UsageReceipt u={m.usage} durationMs={m.durationMs} />
+              )}
           </div>
         ))}
         {pending && activeSkillLabel && (
