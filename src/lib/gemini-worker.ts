@@ -8,6 +8,7 @@ import { execSync } from "node:child_process";
 import { getSchema, toCamelCase, jsonElementToWikiPage, transitionTarget, listProcesses, getProcessSummary, getProcessElements, searchProcesses, type WikiPage } from "./wiki.ts";
 import { canAccess } from "./process-access.ts";
 import { writeRuntime, getRuntime, setDtpSummary } from "./runtime-store.ts";
+import { stripRuntimeState } from "./process-doc-hygiene.ts";
 import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch, buildReconciledApprovalPatch, syncRelationsFromProse } from "./session-writes.ts";
 import { enrichFoundationalStatus } from "./foundational.ts";
 import { buildProcessRelations } from "./process-relations.ts";
@@ -1033,7 +1034,18 @@ export class GeminiWorker implements IProcessWorker {
           const userParts: any[] = [];
 
           for (let idx = 0; idx < calls.length; idx++) {
-            // Reload doc from disk to get the latest state after any writes
+            // Reload doc from disk to get the latest state after any writes.
+            //
+            // LOAD-BEARING (LIB-2 guard): the model can return several function
+            // calls in one batch, executed sequentially below. Type-B tools
+            // (updateElement / setApproval) write through wiki-write, which
+            // re-reads and re-writes the file independently of this in-memory
+            // `doc`. Re-reading here, before every tool call, means a later
+            // direct-write tool in the same batch starts from the on-disk state
+            // that already contains the prior tool's write — so it cannot
+            // clobber an approval/provenance change that just landed. Do NOT
+            // hoist this read out of the per-call loop or make `doc` a single
+            // shared object; that would reintroduce the intra-turn clobber.
             if (this.slug && fs.existsSync(processFilePath)) {
               try {
                 doc = JSON.parse(fs.readFileSync(processFilePath, "utf8"));
@@ -1329,10 +1341,10 @@ export class GeminiWorker implements IProcessWorker {
                 lintReport.reopens = reopens;
                 // R9: the lint report is runtime state — store it above the wiki.
                 writeRuntime(this.slug!, { lint: lintReport as any });
-                delete doc.lint; // guardrail: lint never lives in the wiki JSON
 
-                // Write directly to disk immediately (element re-opens only)
-                atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
+                // Write directly to disk immediately (element re-opens only).
+                // R9 guardrail: strip any runtime keys before persisting.
+                atomicWriteFileSync(processFilePath, JSON.stringify(stripRuntimeState(doc), null, 2) + "\n");
 
                 resultText = JSON.stringify({
                   ok: true,

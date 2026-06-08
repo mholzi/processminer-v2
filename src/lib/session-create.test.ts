@@ -103,6 +103,71 @@ test("createElementsBatch isolates a bad element without dropping the good ones"
   assert.equal(res.created.length, 2);
 });
 
+// --- A1 approval gate at create time (LIB-1) ---
+// The create path writes the doc directly, bypassing wiki-write's gate, so
+// buildElement must itself refuse to mint an element that is `approved` while
+// any heading is still proposed/web.
+
+test("buildElement refuses to create an element born approved with an unconfirmed heading", () => {
+  const res = buildElement(
+    freshDoc(),
+    SCHEMA,
+    "widgets",
+    {
+      meta: { approval: "approved", provenance: { "What happens": { source: "proposed", evidence: "x" } } },
+      content: {},
+    },
+    new Map(),
+  );
+  assert.equal(res.ok, false);
+  assert.match(res.issues!.join(" "), /as approved/);
+  assert.match(res.issues!.join(" "), /What happens/);
+});
+
+test("buildElement allows approved when every heading is confirmed", () => {
+  const res = buildElement(
+    freshDoc(),
+    SCHEMA,
+    "widgets",
+    {
+      meta: { approval: "approved", provenance: { "What happens": { source: "document", evidence: "x" } } },
+      content: {},
+    },
+    new Map(),
+  );
+  assert.equal(res.ok, true);
+  assert.equal(res.fullElement.meta.approval, "approved");
+});
+
+test("buildElement allows a normal unapproved create with proposed headings", () => {
+  const res = buildElement(
+    freshDoc(),
+    SCHEMA,
+    "widgets",
+    { meta: { provenance: { "What happens": { source: "proposed", evidence: "x" } } }, content: {} },
+    new Map(),
+  );
+  assert.equal(res.ok, true);
+});
+
+test("createElementsBatch isolates a gate-violating element but writes the rest", () => {
+  const doc = freshDoc();
+  const res = createElementsBatch(doc, SCHEMA, [
+    { type: "widgets", element: { content: {} } },
+    {
+      type: "gadgets",
+      element: { meta: { approval: "approved", provenance: { "X": { source: "web" } } }, content: {} },
+    },
+    { type: "widgets", element: { content: {} } },
+  ]);
+  assert.equal(res.ok, false);
+  assert.equal(res.errors.length, 1);
+  assert.equal(res.errors[0].index, 1);
+  assert.match(res.errors[0].issues.join(" "), /as approved/);
+  assert.deepEqual(res.counts, { widgets: 2 });
+  assert.equal(doc.gadgets, undefined); // the gate-violating element never landed
+});
+
 test("generateNextId continues from the existing max sequence", () => {
   const doc = {
     meta: { id: "ACME-001" },
