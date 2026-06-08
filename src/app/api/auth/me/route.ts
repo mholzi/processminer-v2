@@ -23,7 +23,12 @@ export async function PATCH(req: NextRequest) {
   if (!user) {
     return NextResponse.json({ error: "Not signed in." }, { status: 401 });
   }
-  const body = (await req.json()) as { whatsNewSeen?: string };
+  let body: { whatsNewSeen?: string };
+  try {
+    body = (await req.json()) as { whatsNewSeen?: string };
+  } catch {
+    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+  }
   if (typeof body.whatsNewSeen !== "string") {
     return NextResponse.json({ error: "Invalid patch." }, { status: 400 });
   }

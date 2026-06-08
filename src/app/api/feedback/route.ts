@@ -111,10 +111,8 @@ export async function POST(req: NextRequest) {
     });
     return Response.json({ ok: true, item });
   } catch (e) {
-    return Response.json(
-      { error: `Could not save: ${e instanceof Error ? e.message : e}` },
-      { status: 500 },
-    );
+    console.error("[feedback] request failed:", e);
+    return Response.json({ error: "Could not save." }, { status: 500 });
   }
 }
 
@@ -143,9 +141,7 @@ export async function PATCH(req: NextRequest) {
     }
     return Response.json({ ok: true, item });
   } catch (e) {
-    return Response.json(
-      { error: `Could not save: ${e instanceof Error ? e.message : e}` },
-      { status: 500 },
-    );
+    console.error("[feedback] request failed:", e);
+    return Response.json({ error: "Could not save." }, { status: 500 });
   }
 }
