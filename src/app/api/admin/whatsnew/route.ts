@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { COOKIE_NAME, verifySession, type StoredUser } from "@/lib/auth-server";
+import { requireUser, requireAdmin } from "@/lib/route-guards";
 import {
   getEntries,
   createEntry,
@@ -18,20 +18,6 @@ import {
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function requireAuth(req: NextRequest): StoredUser | NextResponse {
-  const cookie = req.cookies.get(COOKIE_NAME)?.value;
-  const user = verifySession(cookie);
-  if (!user) return NextResponse.json({ error: "Not signed in." }, { status: 401 });
-  return user;
-}
-
-function requireAdmin(req: NextRequest): StoredUser | NextResponse {
-  const r = requireAuth(req);
-  if (r instanceof NextResponse) return r;
-  if (!r.isAdmin) return NextResponse.json({ error: "Forbidden." }, { status: 403 });
-  return r;
-}
-
 const VALID_TAGS: EntryTag[] = ["shipped", "in-flight", "planned"];
 
 function validateInput(b: Record<string, unknown>): string | null {
@@ -44,14 +30,14 @@ function validateInput(b: Record<string, unknown>): string | null {
 }
 
 export async function GET(req: NextRequest) {
-  const r = requireAuth(req);
-  if (r instanceof NextResponse) return r;
+  const r = requireUser(req);
+  if (r instanceof Response) return r;
   return NextResponse.json({ entries: getEntries() });
 }
 
 export async function POST(req: NextRequest) {
   const r = requireAdmin(req);
-  if (r instanceof NextResponse) return r;
+  if (r instanceof Response) return r;
   const b = (await req.json()) as Record<string, unknown>;
   const err = validateInput(b);
   if (err) return NextResponse.json({ error: err }, { status: 400 });
@@ -78,7 +64,7 @@ export async function POST(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   const r = requireAdmin(req);
-  if (r instanceof NextResponse) return r;
+  if (r instanceof Response) return r;
   const b = (await req.json()) as Record<string, unknown>;
   if (typeof b.id !== "string") return NextResponse.json({ error: "id required" }, { status: 400 });
   try {
@@ -100,7 +86,7 @@ export async function PATCH(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   const r = requireAdmin(req);
-  if (r instanceof NextResponse) return r;
+  if (r instanceof Response) return r;
   const b = (await req.json()) as Record<string, unknown>;
   if (typeof b.id !== "string") return NextResponse.json({ error: "id required" }, { status: 400 });
   try {

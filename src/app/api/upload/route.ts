@@ -1,8 +1,11 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { join } from "node:path";
+import { join, sep } from "node:path";
 import type { NextRequest } from "next/server";
-import { COOKIE_NAME, verifySession } from "@/lib/auth-server";
+import { isValidSlug, requireAccess } from "@/lib/route-guards";
+
+// Reject uploads larger than this — guards against memory-exhaustion / disk-fill.
+const MAX_UPLOAD_BYTES = 50 * 1024 * 1024; // 50 MB
 
 // Receives a document uploaded from the chat's upload modal and saves it into
 // raw-sources/<slug>/ — Karpathy LLM-Wiki layer 1, the immutable imported
@@ -22,16 +25,23 @@ export async function POST(req: NextRequest) {
 
   const file = form.get("file");
   const slug = form.get("slug");
-  // R6: the uploader is the signed-in user, resolved from the session cookie —
-  // never the client-supplied "uploadedBy" form field. Stores the stable
-  // username (R6b); the display name is resolved at read time.
-  const uploadedBy = verifySession(req.cookies.get(COOKIE_NAME)?.value)?.username;
   if (!(file instanceof File)) {
     return Response.json({ error: "No file in the upload." }, { status: 400 });
   }
-  if (typeof slug !== "string" || !slug) {
-    return Response.json({ error: "No process given." }, { status: 400 });
+  if (!isValidSlug(slug)) {
+    return Response.json({ error: "Bad or missing slug." }, { status: 400 });
   }
+  if (file.size > MAX_UPLOAD_BYTES) {
+    return Response.json({ error: "File too large." }, { status: 413 });
+  }
+
+  // Authn + per-process authz (R16): only a signed-in user with access to this
+  // process may write into its raw-sources/ layer. R6: the uploader is the
+  // signed-in user, never a client-supplied form field. Stores the stable
+  // username (R6b); the display name is resolved at read time.
+  const guard = requireAccess(req, slug);
+  if (guard instanceof Response) return guard;
+  const uploadedBy = guard.username;
 
   // Sanitise the filename — keep it a safe basename.
   const name =
@@ -42,7 +52,13 @@ export async function POST(req: NextRequest) {
       .replace(/^[._]+/, "") || "document";
 
   try {
-    const dir = join(process.cwd(), "raw-sources", slug);
+    const root = join(process.cwd(), "raw-sources");
+    const dir = join(root, slug);
+    // Defence-in-depth: the slug regex already forbids traversal, but assert the
+    // resolved directory stays inside raw-sources/ before any filesystem write.
+    if (dir !== join(root, slug) || !dir.startsWith(root + sep)) {
+      return Response.json({ error: "Bad slug." }, { status: 400 });
+    }
     await mkdir(dir, { recursive: true });
     await writeFile(join(dir, name), Buffer.from(await file.arrayBuffer()));
 

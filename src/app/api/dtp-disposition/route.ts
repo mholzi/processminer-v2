@@ -3,6 +3,7 @@ import { join } from "node:path";
 import type { NextRequest } from "next/server";
 import { setDtpDisposition } from "@/lib/runtime-store";
 import type { DtpDisposition } from "@/lib/runtime-store";
+import { isValidSlug, requireAccess } from "@/lib/route-guards";
 
 // Sets a reviewer's disposition on one DTP-review finding (the DTP Enhancer's
 // review workflow). The dispositions are app-owned runtime state — they live
@@ -26,7 +27,7 @@ export async function PATCH(req: NextRequest) {
 
   const { slug, runId, findingId, disposition } = body;
 
-  if (typeof slug !== "string" || !/^[A-Za-z0-9._-]+$/.test(slug)) {
+  if (!isValidSlug(slug)) {
     return Response.json({ error: "Bad or missing slug." }, { status: 400 });
   }
   if (typeof runId !== "string" || !runId) {
@@ -41,6 +42,10 @@ export async function PATCH(req: NextRequest) {
   ) {
     return Response.json({ error: "Bad or missing disposition." }, { status: 400 });
   }
+
+  // R16: a disposition is a per-process review action — require access.
+  const guard = requireAccess(req, slug);
+  if (guard instanceof Response) return guard;
 
   const wikiPath = join(process.cwd(), "wiki", "processes", `${slug}.json`);
   if (!existsSync(wikiPath)) {
