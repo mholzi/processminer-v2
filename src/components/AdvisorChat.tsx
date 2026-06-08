@@ -126,10 +126,16 @@ export default function AdvisorChat({
   const [savedNote, setSavedNote] = useState<
     Record<string, { elementId: string; slug: string }>
   >({});
+  // Per-message save error, surfaced inline so a failed save isn't silent.
+  const [noteError, setNoteError] = useState<Record<string, string>>({});
   const saveNote = async (msgId: string, text: string, elementId: string) => {
     const hit = refIndex.get(elementId);
     if (!hit) return;
     setNotePick(null);
+    setNoteError((e) => {
+      const { [msgId]: _drop, ...rest } = e;
+      return rest;
+    });
     try {
       const res = await fetch("/api/notes", {
         method: "POST",
@@ -143,9 +149,18 @@ export default function AdvisorChat({
       });
       if (res.ok) {
         setSavedNote((s) => ({ ...s, [msgId]: { elementId, slug: hit.slug } }));
+      } else {
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
+        setNoteError((e) => ({
+          ...e,
+          [msgId]: data.error || `Couldn’t save the note (${res.status}).`,
+        }));
       }
     } catch {
-      /* leave the button so the user can retry */
+      setNoteError((e) => ({
+        ...e,
+        [msgId]: "Couldn’t save the note — check your connection and retry.",
+      }));
     }
   };
 
@@ -329,17 +344,24 @@ export default function AdvisorChat({
                         </button>
                       </span>
                     ) : (
-                      <button
-                        type="button"
-                        className="ab-note-btn"
-                        onClick={() =>
-                          cited.length === 1
-                            ? saveNote(m.id, m.text, cited[0])
-                            : setNotePick(m.id)
-                        }
-                      >
-                        💬 Save as note
-                      </button>
+                      <>
+                        <button
+                          type="button"
+                          className="ab-note-btn"
+                          onClick={() =>
+                            cited.length === 1
+                              ? saveNote(m.id, m.text, cited[0])
+                              : setNotePick(m.id)
+                          }
+                        >
+                          💬 {noteError[m.id] ? "Retry save" : "Save as note"}
+                        </button>
+                        {noteError[m.id] && (
+                          <span className="ab-note-error" role="alert">
+                            {noteError[m.id]}
+                          </span>
+                        )}
+                      </>
                     )}
                   </div>
                 )}
