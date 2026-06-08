@@ -833,9 +833,19 @@ export default function ProcessDocScreen({
       return;
     }
     const urlSlug = params.get("p");
-    if (urlSlug && urlSlug !== currentSlug && docs.some((d) => d.slug === urlSlug)) {
+    // An explicit splash pick (initialSlug) wins over a stale `?p=` left in the
+    // URL by a previous process — otherwise picking COB-003 from the workspace
+    // gets clobbered back to whatever the URL still points at. Only restore from
+    // the URL on a cold reload (no splash pick); when the user did pick, sync the
+    // URL to it instead.
+    if (
+      !splashPick &&
+      urlSlug &&
+      urlSlug !== currentSlug &&
+      docs.some((d) => d.slug === urlSlug)
+    ) {
       switchProcess(urlSlug);
-    } else if (!urlSlug) {
+    } else {
       window.history.replaceState(null, "", `?p=${currentSlug}`);
     }
     // Mount-only: restore once from the URL, then switchProcess keeps it synced.
