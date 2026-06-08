@@ -5,6 +5,7 @@ import {
   createEntry,
   updateEntry,
   deleteEntry,
+  voteCountOf,
   type WhatsNewEntry,
   type EntryTag,
 } from "@/lib/whatsnew-store";
@@ -32,7 +33,14 @@ function validateInput(b: Record<string, unknown>): string | null {
 export async function GET(req: NextRequest) {
   const r = requireUser(req);
   if (r instanceof Response) return r;
-  return NextResponse.json({ entries: getEntries() });
+  // Expose a derived vote count + whether THIS user voted; never leak the raw
+  // `votedBy` voter list to clients.
+  const entries = getEntries().map(({ votedBy, ...e }) => ({
+    ...e,
+    voteCount: voteCountOf({ ...e, votedBy }),
+    youVoted: (votedBy ?? []).includes(r.username),
+  }));
+  return NextResponse.json({ entries });
 }
 
 export async function POST(req: NextRequest) {

@@ -19,10 +19,21 @@ export type WhatsNewEntry = {
   bucket: string;
   summary: string;
   bullets?: string[];
+  /** Admin-set baseline tally — a starting number an admin can seed. Real
+   *  per-user votes (`votedBy`) add on top of it. */
   votes?: number;
+  /** Usernames who have voted for this item. The source of truth for the real
+   *  vote count and for per-user dedup / retraction. Never exposed to clients
+   *  raw — the API returns a derived `voteCount` + `youVoted` instead. */
+  votedBy?: string[];
   createdAt: string;
   updatedAt: string;
 };
+
+/** The total shown to users: the admin baseline plus tracked per-user votes. */
+export function voteCountOf(entry: WhatsNewEntry): number {
+  return (entry.votes ?? 0) + (entry.votedBy?.length ?? 0);
+}
 
 const DATA_DIR = join(process.cwd(), "data");
 const PATH = join(DATA_DIR, "whatsnew.json");
@@ -183,4 +194,25 @@ export function deleteEntry(id: string): void {
   const next = entries.filter((e) => e.id !== id);
   if (next.length === entries.length) throw new Error(`Entry not found: ${id}`);
   write(next);
+}
+
+/** Toggle one user's vote on an entry (cast if absent, retract if present).
+ *  Per-user dedup is inherent — a username appears at most once in `votedBy`.
+ *  Returns the updated entry, or null if the id is unknown. */
+export function toggleVote(id: string, username: string): WhatsNewEntry | null {
+  const entries = read();
+  const idx = entries.findIndex((e) => e.id === id);
+  if (idx < 0) return null;
+  const current = entries[idx].votedBy ?? [];
+  const votedBy = current.includes(username)
+    ? current.filter((u) => u !== username)
+    : [...current, username];
+  const updated: WhatsNewEntry = {
+    ...entries[idx],
+    votedBy,
+    updatedAt: new Date().toISOString(),
+  };
+  entries[idx] = updated;
+  write(entries);
+  return updated;
 }
