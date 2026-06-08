@@ -5,7 +5,9 @@ import type { User, Entitlement } from "@/lib/user";
 import FeatureTogglesPanel from "@/components/FeatureTogglesPanel";
 import UsagePanel from "@/components/UsagePanel";
 import WhatsNewPanel from "@/components/WhatsNewPanel";
+import FeedbackScreen from "@/components/FeedbackScreen";
 import Modal from "@/components/Modal";
+import type { FeedbackItem } from "@/lib/feedback";
 
 // Admin screen — lists every user and lets an admin create, edit, reset
 // password, or delete. Only reachable when user.isAdmin === true; the
@@ -22,12 +24,16 @@ const ALL_ENTS: Entitlement[] = ["pm", "am"];
 
 export default function AdminScreen({
   user,
+  feedback,
   onReturnToSplash,
 }: {
   user: User;
+  feedback: FeedbackItem[];
   onReturnToSplash: () => void;
 }) {
-  const [tab, setTab] = useState<"users" | "features" | "usage" | "whatsnew">("users");
+  const [tab, setTab] = useState<
+    "users" | "features" | "usage" | "whatsnew" | "feedback"
+  >("users");
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -144,12 +150,23 @@ export default function AdminScreen({
         >
           What&rsquo;s new
         </button>
+        <button
+          type="button"
+          className={`admin-tab${tab === "feedback" ? " admin-tab-on" : ""}`}
+          onClick={() => setTab("feedback")}
+        >
+          Feedback{feedback.length > 0 ? ` (${feedback.length})` : ""}
+        </button>
       </nav>
 
       {tab === "features" && <FeatureTogglesPanel />}
       {tab === "whatsnew" && <WhatsNewPanel />}
 
       {tab === "usage" && <UsagePanel />}
+
+      {tab === "feedback" && (
+        <FeedbackScreen embedded feedback={feedback} user={user} />
+      )}
 
       {tab === "users" && (
       <>

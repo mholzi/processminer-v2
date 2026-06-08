@@ -27,17 +27,24 @@ export default function FeedbackScreen({
   feedback,
   user,
   onClose,
+  embedded = false,
 }: {
   feedback: FeedbackItem[];
   user: User;
-  onClose: () => void;
+  /** Required for the standalone overlay; omitted when embedded in a host
+   *  (e.g. the Admin Feedback tab), which has no Back/Esc-to-close. */
+  onClose?: () => void;
+  /** Render inline (no fixed overlay / focus-trap / Back button) so the panel
+   *  can live inside another screen such as the Admin area. */
+  embedded?: boolean;
 }) {
   const router = useRouter();
+  const close = onClose ?? (() => {});
 
-  // Trap focus + Esc in the feedback overlay (a11y — was a hand-rolled overlay
-  // with no dialog semantics).
+  // Trap focus + Esc only for the standalone overlay; an embedded panel must
+  // not trap focus inside the host screen.
   const overlayRef = useRef<HTMLDivElement>(null);
-  useFocusTrap(overlayRef, onClose);
+  useFocusTrap(overlayRef, close, !embedded);
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState<FeedbackCategory>("idea");
@@ -115,18 +122,20 @@ export default function FeedbackScreen({
   }
 
   return (
-    <div className="fb-overlay">
+    <div className={embedded ? "fb-embedded" : "fb-overlay"}>
       <div
         ref={overlayRef}
         className="fb-main"
-        role="dialog"
-        aria-modal="true"
-        aria-label="App Feedback"
+        role={embedded ? undefined : "dialog"}
+        aria-modal={embedded ? undefined : true}
+        aria-label={embedded ? undefined : "App Feedback"}
       >
         <div className="fb-head">
-          <button type="button" className="fb-back" onClick={onClose}>
-            ‹ Back to process
-          </button>
+          {!embedded && (
+            <button type="button" className="fb-back" onClick={close}>
+              ‹ Back to process
+            </button>
+          )}
           <h1>App Feedback</h1>
           <p className="fb-sub">
             Bugs, ideas and improvements for Processminer itself — kept

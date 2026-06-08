@@ -80,14 +80,12 @@ export default function ProcessSwitcher({
   currentSlug,
   onSelect,
   onCreate,
-  onOpenFeedback,
   draftingNewProcess,
 }: {
   processes: Proc[];
   currentSlug: string;
   onSelect: (slug: string) => void;
   onCreate: () => void;
-  onOpenFeedback: () => void;
   draftingNewProcess?: boolean;
 }) {
   const [open, setOpen] = useState(false);
@@ -529,16 +527,6 @@ export default function ProcessSwitcher({
                   onClick={() => setConfirmingNew(true)}
                 >
                   + New process
-                </button>
-                <button
-                  type="button"
-                  className="pal-foot-btn"
-                  onClick={() => {
-                    onOpenFeedback();
-                    setOpen(false);
-                  }}
-                >
-                  ★ Feedback
                 </button>
               </span>
             </div>

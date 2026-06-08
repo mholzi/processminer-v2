@@ -4612,6 +4612,10 @@ body.ffb-targeting [data-feedback-id]:hover {
   height: calc(100vh - 84px);
   background: var(--bg); overflow-y: auto;
 }
+/* Embedded in a host screen (Admin Feedback tab): no fixed overlay height,
+   just flow inline. The inner .fb-main keeps its own width/padding. */
+.fb-embedded { background: var(--bg); }
+.fb-embedded .fb-main { padding-top: 0; }
 .fb-main { max-width: 760px; margin: 0 auto; padding: 24px 32px 64px; }
 .fb-back {
   border: 0; background: none; cursor: pointer; padding: 0;

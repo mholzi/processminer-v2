@@ -1774,7 +1774,6 @@ export default function ProcessDocScreen({
             setAppView("process");
             createProcess();
           }}
-          onOpenFeedback={openFeedback}
         />
         <span className="spacer" />
         <div className="tb-icons">
