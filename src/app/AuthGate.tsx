@@ -119,6 +119,7 @@ export default function AuthGate({
     content = (
       <AdminScreen
         user={user}
+        feedback={feedback}
         onReturnToSplash={() => setWorkspace("splash")}
       />
     );
