@@ -81,7 +81,10 @@ export async function POST(req: NextRequest) {
     const res = NextResponse.json({ user: redact(user) });
     res.cookies.set(COOKIE_NAME, cookie, {
       httpOnly: true,
-      sameSite: "lax",
+      // strict: the cookie is never sent on cross-site requests (CSRF defense,
+      // API-10). Safe for this SPA — it loads at "/" and authenticates via
+      // same-origin XHR, so a cold deep-link still works.
+      sameSite: "strict",
       path: "/",
       maxAge: 30 * 24 * 60 * 60,
       // Secure cookie when served over HTTPS — Next sets this implicitly in
