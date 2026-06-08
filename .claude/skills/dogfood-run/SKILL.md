@@ -412,7 +412,56 @@ Assert:
 
 ---
 
-### Stage 10 — Report
+### Stage 10 — qer-session skill (interactive authoring path)
+
+`document-ingest` (Stage 2) is one authoring entry; `qer-session` is the other —
+the interactive SME-interview path. It is **chat-triggered** (no CTA): type into
+the main chat. It runs on its **own fresh process** so it does not collide with
+the main test process used by Stages 2–9.
+
+Trigger it in the chat:
+`Run a full QER documentation session. Create a new process called "Dogfood QER <run-id>".`
+
+The skill conducts a fixed six-step frame —
+`SELECT → OVERVIEW → PERSPECTIVE PASSES → CROSS-REVIEW → VALIDATION → DONE` —
+driven by a **separate** session cursor (`kind: "qer"`, distinct from the
+foundational-run element cursor). Do **not** walk every specialist (that is a
+30-min+ session); exercise the *frame* and its paths, then wrap it up.
+
+**Paths to exercise:** Edit (overview), Y (overview), one perspective pass, early wrap-up.
+
+1. **SELECT** — the skill scaffolds the new process. Assert a new
+   `wiki/processes/<qer-slug>.json` exists with `meta` + `content`, and the
+   runtime store gains a `qer` session record (`getSessionStatus` cursor).
+2. **OVERVIEW** — when the skill drafts the overview (purpose, trigger, scope,
+   etc.), send `[E]` with a concrete correction, then `[Y]`.
+   Assert: the edit is incorporated; on `[Y]` the root `content` is written
+   (`trigger`, `scopeIn`, etc. populated) `status: draft`; the qer cursor advances.
+3. **ONE perspective pass** — let the Process perspective run; answer one or two
+   elicitation prompts so the `process-specialist` writes at least one element.
+   Assert: at least one `process-step`/`role` element appears in the JSON as
+   `status: draft` (not `approved` — qer never approves).
+4. **Wrap up** — send `That's enough for this test — please move to validation
+   and close out the session.` Assert: the qer cursor reaches the `done` state
+   and the skill relays the rendered close-out (element + perspective counts).
+
+After each turn, read the qer cursor from `data/runtime/<qer-slug>.json` and the
+element arrays from `wiki/processes/<qer-slug>.json`.
+
+Assert overall:
+
+- A separate process was created (distinct slug from the main test process)
+- The `qer` cursor advances step-by-step and ends `done: true`
+- Everything written is `status: draft` — nothing is `approved` (qer-session
+  never approves; the SME approves later in the app)
+- The OVERVIEW `[E]` edit was incorporated before `[Y]`
+
+**Speed:** record per-turn timing (SELECT, OVERVIEW, the perspective pass,
+close-out). Perspective passes can be slow; flag any turn > 300 s.
+
+---
+
+### Stage 11 — Report
 
 Assemble the QA report and write it to:
 - `public/test-report.html` (latest)
