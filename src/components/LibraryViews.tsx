@@ -101,7 +101,7 @@ export function ApplicationRegister({ docs }: { docs: ProcessDoc[] }) {
         <table className="am-canvas-app-table" style={{ marginTop: 14 }}>
           <thead>
             <tr>
-              <th style={{ width: "28%" }}>Application</th>
+              <th className="col-pct28">Application</th>
               <th>Verdict</th>
               <th>Vendor / tech</th>
               <th>Process</th>
@@ -159,7 +159,7 @@ export function NfrTemplates({ docs }: { docs: ProcessDoc[] }) {
         <table className="am-canvas-app-table" style={{ marginTop: 14 }}>
           <thead>
             <tr>
-              <th style={{ width: 140 }}>NFR</th>
+              <th className="col-w140">NFR</th>
               <th>Name</th>
               <th>Category</th>
               <th>Target</th>

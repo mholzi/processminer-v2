@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { diffLines } from "diff";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -832,8 +832,10 @@ function FindingsList({
   const [filter, setFilter] = useState<FilterKey>("all");
   // Optimistic disposition overrides, keyed by finding id.
   const [dispo, setDispo] = useState<Record<string, DtpDisposition>>({});
-  const dispoOf = (f: DtpFinding): DtpDisposition =>
-    dispo[f.id] ?? f.disposition ?? "open";
+  const dispoOf = useCallback(
+    (f: DtpFinding): DtpDisposition => dispo[f.id] ?? f.disposition ?? "open",
+    [dispo],
+  );
 
   const shown = useMemo(
     () =>
@@ -843,8 +845,7 @@ function FindingsList({
         if (filter === "accepted") return dispoOf(f) === "accepted";
         return true;
       }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [findings, filter, dispo],
+    [findings, filter, dispoOf],
   );
 
   function setDisposition(f: DtpFinding, d: DtpDisposition) {

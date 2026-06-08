@@ -758,11 +758,11 @@ export default function ArchitectureCanvas({
               <table className="am-canvas-trace-table">
                 <thead>
                   <tr>
-                    <th style={{ width: 120 }}>ID</th>
+                    <th className="col-w120">ID</th>
                     <th>Element</th>
-                    <th style={{ width: 150 }}>Type</th>
+                    <th className="col-w150">Type</th>
                     <th>Trace check</th>
-                    <th style={{ width: 90, textAlign: "right" }}>Status</th>
+                    <th className="col-w90 col-right">Status</th>
                   </tr>
                 </thead>
                 <tbody>
