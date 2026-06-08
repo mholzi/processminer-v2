@@ -895,15 +895,22 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     } 
     
     else if (name === "applyLint") {
-      const findings = args?.findings as any[];
-      // R9: the lint report is runtime/derived state — store it above the wiki.
-      writeRuntime(slug, { lint: findings as any });
+      const findings = (args?.findings as any[]) || [];
+      // Assign stable display ids; the app's ReviewPanel and getProcess expect a
+      // full LintReport ({ generatedAt, slug, summary, findings, reopens }) — not
+      // a bare findings array. Writing the array alone makes `report.findings`
+      // undefined downstream and crashes the Review panel.
+      const enrichedFindings = findings.map((f: any, i: number) => ({
+        ...f,
+        id: `F-${i + 1}`,
+      }));
 
       const implicated = new Set<string>();
-      for (const f of findings) {
+      for (const f of enrichedFindings) {
         for (const elId of (f.elements || [])) implicated.add(elId);
       }
 
+      const reopens: string[] = [];
       for (const [key, val] of Object.entries(doc)) {
         if (Array.isArray(val)) {
           for (const el of val) {
@@ -913,13 +920,29 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               el.meta.approval = "in-progress";
               el.meta.approvalBy = "run-lint";
               el.meta.approvalDate = new Date().toISOString().slice(0, 10);
+              if (!reopens.includes(el.meta.id)) reopens.push(el.meta.id);
             }
           }
         }
       }
+
+      const lintReport = {
+        generatedAt: new Date().toISOString(),
+        slug,
+        summary: {
+          conformance: enrichedFindings.filter((f: any) => f.kind === "conformance").length,
+          discrepancy: enrichedFindings.filter((f: any) => f.kind === "discrepancy").length,
+          question: enrichedFindings.filter((f: any) => f.kind === "question").length,
+        },
+        findings: enrichedFindings,
+        reopens,
+      };
+      // R9: the lint report is runtime/derived state — store it above the wiki.
+      writeRuntime(slug, { lint: lintReport as any });
+
       // R9 guardrail: strip any runtime keys before persisting the wiki JSON.
       atomicWriteFileSync(processFilePath, JSON.stringify(stripRuntimeState(doc), null, 2) + "\n");
-      return { content: [{ type: "text", text: JSON.stringify({ ok: true, implicatedCount: implicated.size }, null, 2) }] };
+      return { content: [{ type: "text", text: JSON.stringify({ ok: true, implicatedCount: implicated.size, reopens: reopens.length }, null, 2) }] };
     }
 
     else if (name === "writeTargetReview") {

@@ -114,7 +114,18 @@ export async function updateElement(
   }
 
   const doc = JSON.parse(readFileSync(filePath, "utf8"));
-  
+
+  // Guard the approval value at the single write chokepoint. setApproval already
+  // validates, but the MCP setApproval tool and any direct meta patch route
+  // through updateElement, which previously let non-canonical values (e.g. a
+  // model passing "in-review") persist and break the approval gate / Review UI.
+  if (patch.meta?.approval !== undefined && !APPROVAL_VALUES.includes(patch.meta.approval)) {
+    return {
+      ok: false,
+      error: `Invalid approval value: ${patch.meta.approval} (expected one of ${APPROVAL_VALUES.join(", ")}).`,
+    };
+  }
+
   if (doc.meta?.id === id) {
     if (patch.meta?.approval === "approved") {
       const gate = approvalGateError(id, doc.meta?.provenance);
