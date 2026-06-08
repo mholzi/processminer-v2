@@ -83,7 +83,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#89** | Modal a11y (1/2) — focus-trap + dialog semantics on 3 hand-rolled overlays (SkillsDashboard drawer, FeedbackScreen, SourcesPanel) via the shared `useFocusTrap` (audit UI-4/5/6a) | `fix/modal-a11y-batch-1` → `main` | Code (UI) | **Merged** |
 | **#90** | Modal a11y (2/2) — ProcessSwitcher: focus-trap both dialogs (⌘K palette + confirm), gated so only the topmost traps; preserves layered Esc + arrow nav (audit UI-6b) | `fix/processswitcher-a11y` → `main` | Code (UI) | **Merged** |
 | **#91** | `listProcesses` resilience — guard the per-file `JSON.parse` so one corrupt process file skips instead of breaking the whole portfolio; pure `parseProcessListing` helper + tests (audit LIB-6) | `fix/list-processes-resilience` → `main` | Code + tests | **Merged** |
-| **#92** | Atomic writes for the auth/access/feedback/session stores — swap plain `writeFileSync` → `atomicWriteFileSync` (closes the torn-read that could zero out `users.json` or `process-access.json`) (audit LIB-4) | `feat/atomic-auth-stores` → `main` | Code | **Open** (`pending`) |
+| **#92** | Atomic writes for the auth/access/feedback/session stores — swap plain `writeFileSync` → `atomicWriteFileSync` (closes the torn-read that could zero out `users.json` or `process-access.json`) (audit LIB-4) | `feat/atomic-auth-stores` → `main` | Code | **Merged** |
+| **#93** | Repo-root cleanup — gitignore the dogfood/test process artifacts, the generated audit HTML, and the `tmp-*.ts` scratch scripts so they stop cluttering the tree and can't be committed (audit DOC-5) | `chore/gitignore-stray-artifacts` → `main` | Config | **Open** (`pending`) |
 
 > **Design-review stack note.** The six design-review waves were developed as a
 > stack (#59 → #60 → #64 → #66 → #68 → #71) on top of #58. When merged bottom-up
