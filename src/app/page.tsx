@@ -36,7 +36,7 @@ export default async function Home() {
     <AuthGate
       schema={schema}
       docs={docs}
-      feedback={listFeedback()}
+      feedback={user?.isAdmin ? listFeedback() : []}
       flags={getResolvedFlags()}
     />
   );
