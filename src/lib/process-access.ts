@@ -43,14 +43,24 @@ export function isGoverned(slug: string): boolean {
 
 /** Whether a user may see/open a process. Ungoverned → everyone; governed →
  *  admins, the owner, and granted users only. */
+/** The pure access decision for one process's access record. Split out from
+ *  `canAccess` (which loads the record off disk) so the authorization rule is
+ *  unit-testable without the access-map file. `undefined`/owner-less record =
+ *  ungoverned = visible to everyone. */
+export function canAccessWith(
+  access: ProcessAccess | undefined,
+  user: { username: string; isAdmin?: boolean },
+): boolean {
+  if (!access || !access.owner) return true; // ungoverned
+  if (user.isAdmin) return true;
+  return access.owner === user.username || access.grants.includes(user.username);
+}
+
 export function canAccess(
   user: { username: string; isAdmin?: boolean },
   slug: string,
 ): boolean {
-  const a = load()[slug];
-  if (!a || !a.owner) return true; // ungoverned
-  if (user.isAdmin) return true;
-  return a.owner === user.username || a.grants.includes(user.username);
+  return canAccessWith(load()[slug], user);
 }
 
 // ----- mutations (authz is enforced by the API route, not here) -----
