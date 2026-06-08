@@ -547,7 +547,7 @@ export function getProcess(slug: string): ProcessDoc | null {
       ? [
           {
             ...runtime.dtpReport,
-            runId: runtime.dtpReport.runId ?? "DTP-REGEN-001",
+            runId: runtime.dtpReport.runId ?? "DTP-001",
             mode: runtime.dtpReport.mode ?? "regenerate",
           },
         ]

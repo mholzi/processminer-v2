@@ -191,6 +191,14 @@ write the report, and stop (the rest of the run cannot be meaningful).
 `transformation-agent` is **chat-triggered** (no CTA). Trigger it:
 `Let's design the target state for this process.`
 
+> **Note on SME identity.** The session scope preamble (which hands the SME's
+> name/role to the skill) is only injected on the **first turn of a fresh chat
+> session**. If you trigger transformation-agent in a chat that already has
+> history, no identity is supplied and the skill will correctly ask for it
+> (per its Phase 0 spec) — that prompt is expected, not a defect. To avoid it,
+> start this stage from a fresh chat (clear the conversation) so the preamble
+> lands; otherwise just answer the identity question and continue.
+
 **Paths to exercise:** Y, E, R.
 
 Walk the first few elements the skill drafts, cycling the paths:
@@ -213,9 +221,25 @@ After each path, assert:
 - **R:** the next turn's draft differs from the rejected one; the element stays
   `in-progress` / unapproved.
 
-Then tell the skill `That covers enough for this test — wrap up the target
-design.` Assert: at least one `target-state` (TS-…) and one
-`transformation-decision` (TD-…) exist, all `status: draft`.
+Then drive the skill through its **later optional phases** so the full target
+data model is exercised — these do not run unless you ask for them (the skill
+offers `[N] close out` after target-states + decisions, and stops there if you
+take it). Send, accepting each draft with `[Y]`:
+
+- `Now capture the gap(s) for this target.` → at least one `gap` (VG-…) in
+  `gap-resolution`.
+- `Now capture the key requirements the target state implies.` → at least one
+  `requirement` in `requirements`.
+- `Now capture the dependencies and assumptions behind this target.` → at least
+  one `dependency` in `dependencies` **and** one `assumption` in `assumptions`.
+
+Then `Wrap up the target design for this test.`
+
+Assert: at least one element exists in **each** of `to-be-design`,
+`transformation-decisions`, `gap-resolution`, `requirements`, `dependencies`
+and `assumptions`; all `status: draft`, none `approved`. (A phase the skill
+genuinely cannot populate — e.g. no dependencies apply — is a documented skip,
+not a fail: record which array stayed empty and the skill's stated reason.)
 
 **Speed:** per-turn timing. Flag any turn > 180 s.
 

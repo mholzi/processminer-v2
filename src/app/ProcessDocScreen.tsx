@@ -765,7 +765,7 @@ export default function ProcessDocScreen({
     status: "generating" | "error";
   } | null>(null);
 
-  // DTP regeneration + critical review — runs the dtp-regenerate skill in the
+  // DTP comparison + critical review — runs the dtp-compare skill in the
   // chat; `dtpGenerating` drives the module's spinner until the turn completes.
   const [dtpGenerating, setDtpGenerating] = useState(false);
 
@@ -1293,39 +1293,6 @@ export default function ProcessDocScreen({
             "Council review complete",
             "See the Council Review panel in the Validation section.",
           ),
-      },
-    );
-  }
-
-  // Regenerate the DTP — runs the dtp-regenerate skill in the chat: it rewrites
-  // the procedure document from the corrected As-Is wiki and critically reviews
-  // the original DTP against it. The result lands in the DTP module.
-  function runDtpRegenerate(file?: string) {
-    if (chatPending) return;
-    setChatOpen(true);
-    setDtpGenerating(true);
-    // The DTP Enhancer's "Select a source DTP" card passes the chosen document;
-    // with none, fall back to the ingested original.
-    const baseFile = file ?? doc.ingest?.file;
-    handleSend(
-      `Run the dtp-regenerate skill on the process with slug "${currentSlug}".` +
-        (baseFile
-          ? ` The original DTP to regenerate from and review is "${baseFile}" (under raw-sources/${currentSlug}/).`
-          : ""),
-      {
-        skill: "dtp-regenerate",
-        displayText: "Regenerate the DTP from the As-Is and review the original.",
-        // onComplete fires on both done and error; the module shows the result
-        // (or its empty state if the run failed).
-        onComplete: () => {
-          setDtpGenerating(false);
-          setSection("__dtp");
-          pushToast(
-            "success",
-            "DTP regeneration finished",
-            "See the diff and critical review in the DTP module.",
-          );
-        },
       },
     );
   }
@@ -2088,6 +2055,9 @@ export default function ProcessDocScreen({
                   >
                     <span className="nav-sec-n">{activeAreaNo}</span>
                     {activeArea.label}
+                    <span className="nav-sec-sum" aria-hidden>
+                      ✦
+                    </span>
                   </button>
                   {areaStats[activeArea.id].total > 0 && (
                     <Tooltip
@@ -2141,10 +2111,21 @@ export default function ProcessDocScreen({
                 )}
                 {activeArea.sections.map((s) => {
                 const isOverview = s.id === "overview";
+                // Validation has no typed elements of its own — its content is
+                // the council-review items in `targetReview`. Count/state come
+                // from there, not from doc.elements (which would always be 0).
+                const isValidation = s.id === "validation";
+                const reviewItems = isValidation
+                  ? (doc.targetReview?.items ?? [])
+                  : [];
                 const els = isOverview
                   ? []
                   : doc.elements.filter((e) => e.section === s.id);
-                const count = isOverview ? null : els.length;
+                const count = isOverview
+                  ? null
+                  : isValidation
+                    ? reviewItems.length
+                    : els.length;
                 // An element is "reviewed" when approved — or, for a
                 // web-sourced type, when triaged relevant or disregarded.
                 const reviewed = els.filter((e) =>
@@ -2167,6 +2148,20 @@ export default function ProcessDocScreen({
                     state === "approved"
                       ? "Overview approved"
                       : "Overview not yet approved";
+                } else if (isValidation) {
+                  // Triaged = any item the SME accepted/rejected (not pending).
+                  const triaged = reviewItems.filter(
+                    (i) => i.triage && i.triage !== "pending",
+                  ).length;
+                  if (reviewItems.length === 0) {
+                    state = "empty";
+                  } else if (triaged === reviewItems.length) {
+                    state = "approved";
+                    dotTitle = `All ${reviewItems.length} council item(s) triaged`;
+                  } else {
+                    state = "gaps";
+                    dotTitle = `${triaged} of ${reviewItems.length} council item(s) triaged`;
+                  }
                 } else if (els.length === 0) {
                   state = "empty";
                 } else if (reviewed === els.length) {
@@ -2231,7 +2226,7 @@ export default function ProcessDocScreen({
                   <button
                     className={`src-head${section === "__dtp" ? " active" : ""}`}
                     onClick={() => setSection("__dtp")}
-                    title="Regenerate the DTP from the corrected As-Is and review the original"
+                    title="Compare a DTP against the corrected As-Is and review the original"
                   >
                     <span className="src-ico" aria-hidden>
                       <svg
@@ -2476,7 +2471,6 @@ export default function ProcessDocScreen({
                   dtpGenerating ? "generating" : "idle"
                 }
                 onCompare={runDtpCompare}
-                onRegenerate={runDtpRegenerate}
                 onUpload={() => setUploadModalOpen(true)}
                 onGoToElement={goToElement}
                 getRef={getRef}

@@ -472,7 +472,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           type: "object",
           properties: {
             slug: { type: "string", description: "The process slug." },
-            runId: { type: "string", description: "The DTP run id the memo summarises (e.g. DTP-REGEN-003)." },
+            runId: { type: "string", description: "The DTP run id the memo summarises (e.g. DTP-007)." },
             summary: { type: "string", description: "The executive-summary memo, as Markdown." }
           },
           required: ["slug", "runId", "summary"]

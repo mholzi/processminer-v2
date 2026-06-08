@@ -477,7 +477,7 @@ const toolDeclarations: any[] = [
     parameters: {
       type: "OBJECT",
       properties: {
-        runId: { type: "STRING", description: "The DTP run id the memo summarises (e.g. DTP-REGEN-003)." },
+        runId: { type: "STRING", description: "The DTP run id the memo summarises (e.g. DTP-007)." },
         summary: { type: "STRING", description: "The executive-summary memo, as Markdown." }
       },
       required: ["runId", "summary"]

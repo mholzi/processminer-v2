@@ -93,7 +93,7 @@ function existingReports(slug: string): DtpReport[] {
     return [
       {
         ...rt.dtpReport,
-        runId: rt.dtpReport.runId ?? "DTP-REGEN-001",
+        runId: rt.dtpReport.runId ?? "DTP-001",
         mode: rt.dtpReport.mode ?? "regenerate",
       },
     ];
@@ -101,15 +101,17 @@ function existingReports(slug: string): DtpReport[] {
   return [];
 }
 
-/** Next "DTP-REGEN-NNN" run id, one past the highest existing. (One id space for
- *  both compare and regenerate runs, so the history reads as one timeline.) */
+/** Next "DTP-NNN" run id, one past the highest existing. One id space for both
+ *  compare and regenerate runs, so the history reads as one timeline. Parses the
+ *  legacy "DTP-REGEN-NNN" ids too, so the counter continues unbroken across the
+ *  rename. (The mode lives in `report.mode`, never in the id prefix.) */
 function nextRunId(reports: DtpReport[]): string {
   let max = 0;
   for (const r of reports) {
-    const m = /^DTP-REGEN-(\d+)$/.exec(r.runId ?? "");
+    const m = /^DTP-(?:REGEN-)?(\d+)$/.exec(r.runId ?? "");
     if (m) max = Math.max(max, parseInt(m[1], 10));
   }
-  return `DTP-REGEN-${String(max + 1).padStart(3, "0")}`;
+  return `DTP-${String(max + 1).padStart(3, "0")}`;
 }
 
 /** Stamp a run id and prepend the report to the past-comparison history. */

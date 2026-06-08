@@ -252,8 +252,10 @@ From the compare run view (Stage 2), click **`Generate executive summary`**
 Assert:
 
 - The runtime `dtpReports[r].summary` field is written with a Markdown memo
-- The memo carries the narrative structure (Introduction / Current state / What
-  stands out / Recommendation)
+- The memo follows the dtp-summary shape (a bottom-line verdict, then
+  what's-changed-by-theme, risk & compliance call-outs, and a where-to-focus
+  prioritisation) — a ~200–350-word leadership narrative, **not** the
+  area-summary's `## Introduction / Current state / …` headings
 - The DTP summary section renders it with a `Regenerate` button
 
 **Speed:** time from click to summary rendering.
