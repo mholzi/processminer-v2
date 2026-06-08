@@ -1,7 +1,8 @@
-// R16 — per-process access control. A process is "ungoverned" (visible to every
-// authenticated user) until an admin gives it an owner; once governed, only the
-// owner, explicitly granted users, and admins can see it. Authz config, like the
-// user store, lives in data/ (gitignored, per-deployment) — never in the wiki.
+// R16 — per-process access control. Private by default: an "ungoverned" process
+// (no owner) is visible to admins only. An admin gives it an owner to govern it;
+// once governed, the owner, explicitly granted users, and admins can see it.
+// Authz config, like the user store, lives in data/ (gitignored, per-deployment)
+// — never in the wiki.
 import { readFileSync, existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { atomicWriteFileSync } from "./atomic-write.ts";
@@ -41,18 +42,18 @@ export function isGoverned(slug: string): boolean {
   return !!load()[slug]?.owner;
 }
 
-/** Whether a user may see/open a process. Ungoverned → everyone; governed →
+/** Whether a user may see/open a process. Ungoverned → admins only; governed →
  *  admins, the owner, and granted users only. */
 /** The pure access decision for one process's access record. Split out from
  *  `canAccess` (which loads the record off disk) so the authorization rule is
  *  unit-testable without the access-map file. `undefined`/owner-less record =
- *  ungoverned = visible to everyone. */
+ *  ungoverned = visible to admins only (private by default). */
 export function canAccessWith(
   access: ProcessAccess | undefined,
   user: { username: string; isAdmin?: boolean },
 ): boolean {
-  if (!access || !access.owner) return true; // ungoverned
   if (user.isAdmin) return true;
+  if (!access || !access.owner) return false; // ungoverned → admins only
   return access.owner === user.username || access.grants.includes(user.username);
 }
 

@@ -167,7 +167,8 @@ export default function SettingsPanel({
         ) : !access.governed ? (
           <>
             <p className="settings-dim">
-              Open — every signed-in user can see this process.
+              Private — only admins can see this process. Restrict it to an owner
+              to share it with specific users.
             </p>
             {isAdmin && (
               <div className="access-row">
@@ -267,18 +268,18 @@ export default function SettingsPanel({
                 onClick={() =>
                   setPendingAccess({
                     action: "ungovern",
-                    title: "Open this process to everyone?",
+                    title: "Remove the owner?",
                     body: (
                       <>
-                        Every signed-in user will be able to view{" "}
-                        <b>{title}</b>. You can restrict it again afterwards.
+                        <b>{title}</b> will become private — only admins will be
+                        able to view it until you restrict it to an owner again.
                       </>
                     ),
-                    confirmLabel: "Open to everyone",
+                    confirmLabel: "Make admin-only",
                   })
                 }
               >
-                Make open to everyone
+                Remove owner (admins only)
               </button>
             )}
           </>
