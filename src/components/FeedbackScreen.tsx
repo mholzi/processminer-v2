@@ -40,6 +40,10 @@ export default function FeedbackScreen({
 }) {
   const router = useRouter();
   const close = onClose ?? (() => {});
+  // The list of submitted feedback is review-only — admins see it (in the Admin
+  // Feedback tab, where this renders embedded). On the standalone App Feedback
+  // page a non-admin only gets the filing form, never other people's feedback.
+  const showList = embedded || !!user.isAdmin;
 
   // Trap focus + Esc only for the standalone overlay; an embedded panel must
   // not trap focus inside the host screen.
@@ -202,6 +206,8 @@ export default function FeedbackScreen({
           {flash && <p className="fb-flash">{flash}</p>}
         </form>
 
+        {showList && (
+        <>
         <div className="fb-list-head">
           <h2>Submitted feedback</h2>
           <div className="fb-filters">
@@ -297,6 +303,8 @@ export default function FeedbackScreen({
               </li>
             ))}
           </ul>
+        )}
+        </>
         )}
       </div>
     </div>
