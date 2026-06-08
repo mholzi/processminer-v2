@@ -5,6 +5,7 @@ import { atomicWriteFileSync } from "./atomic-write.ts";
 import { join } from "node:path";
 import { getSchema, jsonElementToWikiPage, toCamelCase } from "./wiki.ts";
 import { checkElement, checkFrontmatter, checkFieldValues, checkProvenance, unconfirmedHeadings } from "./conformance.ts";
+import { stripRuntimeState } from "./process-doc-hygiene.ts";
 
 /** A1 approval gate — an element may not be set to `approved` while any heading
  *  is still `proposed`/`web` (unconfirmed by the SME). HALLUCINATION-PLAN.md. */
@@ -130,7 +131,7 @@ export async function updateElement(
       doc.meta.approvalBy = "";
       doc.meta.approvalDate = "";
     }
-    atomicWriteFileSync(filePath, JSON.stringify(doc, null, 2) + "\n");
+    atomicWriteFileSync(filePath, JSON.stringify(stripRuntimeState(doc), null, 2) + "\n");
     revalidatePath("/");
     return { ok: true, element: { meta: doc.meta, content: doc.content } };
   }
@@ -244,7 +245,7 @@ export async function updateElement(
     doc[foundCollection].sort((a: any, b: any) => (a.meta?.id || "").localeCompare(b.meta?.id || ""));
   }
 
-  atomicWriteFileSync(filePath, JSON.stringify(doc, null, 2) + "\n");
+  atomicWriteFileSync(filePath, JSON.stringify(stripRuntimeState(doc), null, 2) + "\n");
   revalidatePath("/");
   return { ok: true, element: fullElement };
 }
@@ -293,7 +294,7 @@ export async function saveSummaryPart(
     throw new Error(`Summary part not found: ${area}[${index}]`);
   }
   entry.parts[index].text = text.trim();
-  atomicWriteFileSync(path, JSON.stringify(data, null, 2) + "\n");
+  atomicWriteFileSync(path, JSON.stringify(stripRuntimeState(data), null, 2) + "\n");
   revalidatePath("/");
   return { ok: true };
 }
@@ -371,7 +372,7 @@ export async function triageTargetReview(
     }
   }
 
-  atomicWriteFileSync(path, JSON.stringify(doc, null, 2) + "\n");
+  atomicWriteFileSync(path, JSON.stringify(stripRuntimeState(doc), null, 2) + "\n");
   revalidatePath("/");
   return { ok: true };
 }
