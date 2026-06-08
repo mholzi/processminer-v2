@@ -73,7 +73,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#79** | HelpCenter two-tab split — Release Notes vs Roadmap | `feat/helpcenter-two-tabs` → `main` | Code + UI | **Merged** |
 | **#80** | Token usage — avg per turn dual-bar layout (avg tokens + avg run-time per skill) | `feat/token-usage-avg-per-turn` → `main` | Code + UI | **Merged** |
 | **#81** | Lock down data routes — upload path-traversal fix + auth/access gates on upload/sources/notes/findings/dtp; shared `route-guards` (audit API-1/2/3/4/6/8/16) | `feat/lock-down-data-routes` → `main` | Code + tests | **Merged** |
-| **#82** | R9 guardrail hardening — central `stripRuntimeState` on every process-doc write, backfill `funds-release.json`, fix stale migration/sidecar docs (audit DOC-1/2/4) | `fix/r9-guardrail-hardening` → `main` | Code + tests + data + docs | **Open** (`pending`) |
+| **#82** | R9 guardrail hardening — central `stripRuntimeState` on every process-doc write, backfill `funds-release.json`, fix stale migration/sidecar docs (audit DOC-1/2/4) | `fix/r9-guardrail-hardening` → `main` | Code + tests + data + docs | **Merged** |
+| **#83** | Dispatcher integrity — enforce the A1 approval gate at element-create time (shared `buildElement`), centralize `applyLint` on `stripRuntimeState`, document the LIB-2 reload invariant (audit LIB-1/2) | `fix/create-approval-gate-lib1` → `main` | Code + tests | **Open** (`pending`) |
 
 > **Design-review stack note.** The six design-review waves were developed as a
 > stack (#59 → #60 → #64 → #66 → #68 → #71) on top of #58. When merged bottom-up

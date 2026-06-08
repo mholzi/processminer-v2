@@ -13,6 +13,7 @@ import * as path from "node:path";
 import { getSchema, jsonElementToWikiPage, transitionTarget, listProcesses, getProcessSummary, getProcessElements, searchProcesses } from "./wiki.ts";
 import { canAccess } from "./process-access.ts";
 import { writeRuntime, getRuntime, setDtpSummary } from "./runtime-store.ts";
+import { stripRuntimeState } from "./process-doc-hygiene.ts";
 import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch, buildReconciledApprovalPatch, syncRelationsFromProse } from "./session-writes.ts";
 import { enrichFoundationalStatus } from "./foundational.ts";
 import { buildProcessRelations } from "./process-relations.ts";
@@ -897,7 +898,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const findings = args?.findings as any[];
       // R9: the lint report is runtime/derived state — store it above the wiki.
       writeRuntime(slug, { lint: findings as any });
-      delete doc.lint; // guardrail: lint never lives in the wiki JSON
 
       const implicated = new Set<string>();
       for (const f of findings) {
@@ -917,7 +917,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }
         }
       }
-      atomicWriteFileSync(processFilePath, JSON.stringify(doc, null, 2) + "\n");
+      // R9 guardrail: strip any runtime keys before persisting the wiki JSON.
+      atomicWriteFileSync(processFilePath, JSON.stringify(stripRuntimeState(doc), null, 2) + "\n");
       return { content: [{ type: "text", text: JSON.stringify({ ok: true, implicatedCount: implicated.size }, null, 2) }] };
     }
 

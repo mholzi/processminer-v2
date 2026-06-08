@@ -20,6 +20,7 @@ import {
   checkProvenance,
   checkFrontmatter,
   checkFieldValues,
+  unconfirmedHeadings,
 } from "./conformance.ts";
 
 /**
@@ -166,6 +167,22 @@ export function buildElement(
     ...checkFieldValues(page, info, schema),
     ...checkProvenance(page, info),
   ];
+
+  // A1 approval gate, enforced at create time. The gate lives in
+  // `wiki-write.updateElement` for edits, but the create path writes the doc
+  // directly (it never routes through wiki-write), so without this a new
+  // element could be born `approved` while its headings are still
+  // `proposed`/`web` — a state an edit could never reach. Mirror the same gate:
+  // a freshly-authored element may not claim `approved` until the SME has
+  // confirmed its headings in the read-back.
+  if (fullElement.meta.approval === "approved") {
+    const unconfirmed = unconfirmedHeadings(fullElement.meta.provenance);
+    if (unconfirmed.length > 0) {
+      issues.push(
+        `Cannot create ${newId} as approved — these headings are not yet confirmed by the SME (still proposed/web): ${unconfirmed.join(", ")}. Create it unapproved and approve after the read-back.`,
+      );
+    }
+  }
 
   if (issues.length > 0) return { ok: false, issues, singularType };
   return { ok: true, id: newId, fullElement, singularType };
