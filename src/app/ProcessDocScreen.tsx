@@ -353,12 +353,10 @@ export default function ProcessDocScreen({
   initialSlug?: string;
   onReturnToSplash?: () => void;
 }) {
-  // If a foundational run is in progress on any process, the app opens on it
-  // (most-recently-touched first) so a reload never strands outstanding work —
-  // it lands on Triage, opens the chat and seeds a resume prompt. An explicit
-  // initialSlug from the splash (user picked a process to continue) wins
-  // over both the run cursor and docs[0].
-  const openingRunDoc =
+  // The most-recent in-flight run anywhere — used only when the user hasn't
+  // explicitly picked a process (cold load / reload): the app opens on it so a
+  // reload never strands outstanding work.
+  const globalRunDoc =
     docs
       .filter((d) => d.reviewState && !d.reviewState.done)
       .sort((a, b) =>
@@ -366,9 +364,21 @@ export default function ProcessDocScreen({
       )[0] ?? null;
 
   const splashPick = initialSlug && docs.some((d) => d.slug === initialSlug) ? initialSlug : null;
-  const [currentSlug, setCurrentSlug] = useState(
-    splashPick ?? (openingRunDoc ? openingRunDoc.slug : docs[0].slug),
-  );
+
+  // The process we actually open: an explicit splash pick wins over the global
+  // run cursor and docs[0].
+  const openingSlug =
+    splashPick ?? (globalRunDoc ? globalRunDoc.slug : docs[0].slug);
+
+  // The run to resume *on the opened process* — drives the Triage landing, the
+  // chat-open default and the resume seed. Tied to openingSlug so the chat
+  // always reflects the process actually open, never another process's run.
+  const openingRunDoc =
+    docs.find(
+      (d) => d.slug === openingSlug && d.reviewState && !d.reviewState.done,
+    ) ?? null;
+
+  const [currentSlug, setCurrentSlug] = useState(openingSlug);
   // The app has two top-level views: the process documentation shell, and the
   // App Feedback page (feedback on the tool itself, kept in feedback/).
   const [appView, setAppView] = useState<"process" | "feedback">("process");
