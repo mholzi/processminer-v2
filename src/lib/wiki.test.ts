@@ -7,7 +7,22 @@ import {
   transitionTarget,
   raciToString,
   normalizeIngestReport,
+  parseProcessListing,
 } from "./wiki.ts";
+
+test("parseProcessListing reads the title from valid JSON", () => {
+  const e = parseProcessListing("cob-003", JSON.stringify({ content: { title: "Client Onboarding" } }));
+  assert.deepEqual(e, { slug: "cob-003", title: "Client Onboarding" });
+});
+
+test("parseProcessListing falls back to the slug when there is no title", () => {
+  assert.deepEqual(parseProcessListing("frl-001", "{}"), { slug: "frl-001", title: "frl-001" });
+});
+
+test("parseProcessListing returns null for malformed JSON (so one bad file is skipped, not fatal)", () => {
+  assert.equal(parseProcessListing("broken", "{ not json"), null);
+  assert.equal(parseProcessListing("empty", ""), null);
+});
 
 const roster = new Map([
   ["m.berger", "M. Berger"],
