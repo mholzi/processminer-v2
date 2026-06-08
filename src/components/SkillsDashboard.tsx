@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useFocusTrap } from "./useFocusTrap";
 
 interface SkillData {
   id: string;
@@ -33,6 +34,11 @@ export default function SkillsDashboard({ onBack }: SkillsDashboardProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSkill, setSelectedSkill] = useState<SkillData | null>(null);
   const [activeTab, setActiveTab] = useState<"roster" | "core-prompt">("roster");
+
+  // Trap focus + Esc in the skill drawer while it's open (a11y — was a
+  // hand-rolled overlay with no dialog semantics).
+  const drawerRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(drawerRef, () => setSelectedSkill(null), !!selectedSkill);
 
   useEffect(() => {
     fetch("/api/skills")
@@ -294,7 +300,14 @@ export default function SkillsDashboard({ onBack }: SkillsDashboardProps) {
       {/* Slide-over details drawer for a single skill */}
       {selectedSkill && (
         <div className="skill-drawer-overlay" onClick={() => setSelectedSkill(null)}>
-          <div className="skill-drawer" onClick={(e) => e.stopPropagation()}>
+          <div
+            ref={drawerRef}
+            className="skill-drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${formatTitle(selectedSkill.name)} skill details`}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="skill-drawer-head">
               <div className="drawer-title-block">
                 <h2>{formatTitle(selectedSkill.name)}</h2>

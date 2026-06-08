@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { SourceFile, IngestReport } from "@/lib/wiki";
+import { useFocusTrap } from "./useFocusTrap";
 
 // The Source Documents picker — a Cmd-K-style palette. The trigger lives at
 // the bottom of the left rail (a compact button showing the doc count);
@@ -61,6 +62,10 @@ export default function SourcesPanel({
   const [filter, setFilter] = useState<"all" | "imported" | "pending">("all");
   const [focusIdx, setFocusIdx] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const paletteRef = useRef<HTMLDivElement>(null);
+  // Trap Tab focus inside the open palette and close on Esc (a11y — the dialog
+  // had role="dialog" but Tab could escape to the page behind it).
+  useFocusTrap(paletteRef, () => setOpen(false), open);
 
   // A document is "imported" when the most recent ingest names its filename.
   // (The ingest report only records the last run; older imports lose this
@@ -79,15 +84,8 @@ export default function SourcesPanel({
     }
   }, [open]);
 
-  // Esc closes the palette from anywhere.
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open]);
+  // Esc is handled by useFocusTrap (above), which also restores focus to the
+  // trigger on close.
 
   const submit = useCallback(
     (name: string) => {
@@ -166,8 +164,10 @@ export default function SourcesPanel({
             onClick={() => setOpen(false)}
           />
           <div
+            ref={paletteRef}
             className="cmd-palette"
             role="dialog"
+            aria-modal="true"
             aria-label="Open source document"
           >
             <div className="pal-search">
