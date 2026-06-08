@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useFocusTrap } from "./useFocusTrap";
 
 // Topbar process picker — a Cmd-K command palette. Topbar shows a compact
 // chip with the current process + attention dot + ⌘K hint. Click or ⌘K
@@ -99,6 +100,14 @@ export default function ProcessSwitcher({
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const confirmBtnRef = useRef<HTMLButtonElement>(null);
+  const paletteRef = useRef<HTMLDivElement>(null);
+  const confirmRef = useRef<HTMLDivElement>(null);
+
+  // Trap focus + Esc in whichever dialog is topmost. Gating the palette on
+  // !confirmingNew keeps the layered Esc (Esc closes the confirm modal first,
+  // then a second Esc closes the palette) and avoids two active traps fighting.
+  useFocusTrap(confirmRef, () => setConfirmingNew(false), confirmingNew);
+  useFocusTrap(paletteRef, () => setOpen(false), open && !confirmingNew);
 
   const current = processes.find((p) => p.slug === currentSlug);
   const anyAttention = processes.some((p) => needsAttention(p.status));
@@ -125,20 +134,18 @@ export default function ProcessSwitcher({
     });
   }, [currentSlug]);
 
-  // Global ⌘K / Ctrl+K opens the palette from anywhere in the app.
+  // Global ⌘K / Ctrl+K opens the palette from anywhere in the app. Esc is
+  // handled by useFocusTrap on the open dialog (layered: confirm then palette).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         setOpen((v) => !v);
-      } else if (e.key === "Escape") {
-        if (confirmingNew) setConfirmingNew(false);
-        else if (open) setOpen(false);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, confirmingNew]);
+  }, []);
 
   // Focus the primary action when the confirm modal opens, so Enter
   // immediately commits.
@@ -313,6 +320,7 @@ export default function ProcessSwitcher({
             onClick={() => setConfirmingNew(false)}
           />
           <div
+            ref={confirmRef}
             className="procsw-confirm"
             role="dialog"
             aria-modal="true"
@@ -358,8 +366,10 @@ export default function ProcessSwitcher({
             onClick={() => setOpen(false)}
           />
           <div
+            ref={paletteRef}
             className="cmd-palette"
             role="dialog"
+            aria-modal="true"
             aria-label="Switch process"
           >
             <div className="pal-search">
