@@ -88,7 +88,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#94** | Conformance test coverage — 10 tests for the gate's foundation: `parseProvenance` (malformed-safe), `checkProvenance`, `checkFrontmatter`, `checkFieldValues` (audit LIB-8) | `test/conformance-coverage` → `main` | Tests | **Merged** |
 | **#95** | Auth-boundary test coverage — extract pure `decodeSession` + `canAccessWith`; cover the authn/authz gate (13 tests) (audit LIB-9) | `test/auth-access-coverage` → `main` | Code + tests | **Merged** |
 | **#96** | Login rate-limit — in-memory fixed-window limiter on `/api/auth/login` per IP (20/min) + username (10/min) → 429 (audit API-11) | `feat/login-rate-limit` → `main` | Code + tests | **Merged** |
-| **#97** | CSRF protection — session cookie `sameSite=strict` + `middleware.ts` blocks cross-origin `/api/*` mutations via pure `isForbiddenCrossOrigin` (audit API-10) | `feat/csrf-protection` → `main` | Code + tests | **Open** (`pending`) |
+| **#97** | CSRF protection — session cookie `sameSite=strict` + `middleware.ts` blocks cross-origin `/api/*` mutations via pure `isForbiddenCrossOrigin` (audit API-10) | `feat/csrf-protection` → `main` | Code + tests | **Merged** |
+| **#98** | API error-handling hygiene — stop leaking `node:fs` paths in error responses (generic message + server log); 400 not 500 on malformed JSON bodies (audit API-12/14) | `fix/api-error-hygiene` → `main` | Code | **Open** (`pending`) |
 
 > **Design-review stack note.** The six design-review waves were developed as a
 > stack (#59 → #60 → #64 → #66 → #68 → #71) on top of #58. When merged bottom-up

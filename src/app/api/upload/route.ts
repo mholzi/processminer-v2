@@ -81,10 +81,8 @@ export async function POST(req: NextRequest) {
     };
     await writeFile(manifestPath, JSON.stringify(manifest, null, 2));
   } catch (e) {
-    return Response.json(
-      { error: `Could not save the file: ${e instanceof Error ? e.message : e}` },
-      { status: 500 },
-    );
+    console.error("[upload] request failed:", e);
+    return Response.json({ error: "Could not save the file." }, { status: 500 });
   }
 
   return Response.json({ ok: true, file: name, path: `raw-sources/${slug}/${name}` });

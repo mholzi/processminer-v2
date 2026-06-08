@@ -46,7 +46,12 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const r = requireAdmin(req);
   if (r instanceof Response) return r;
-  const b = (await req.json()) as Record<string, unknown>;
+  let b: Record<string, unknown>;
+  try {
+    b = (await req.json()) as Record<string, unknown>;
+  } catch {
+    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+  }
   const err = validateInput(b);
   if (err) return NextResponse.json({ error: err }, { status: 400 });
   if (typeof b.id !== "string" || !b.id.trim())
@@ -73,7 +78,12 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const r = requireAdmin(req);
   if (r instanceof Response) return r;
-  const b = (await req.json()) as Record<string, unknown>;
+  let b: Record<string, unknown>;
+  try {
+    b = (await req.json()) as Record<string, unknown>;
+  } catch {
+    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+  }
   if (typeof b.id !== "string") return NextResponse.json({ error: "id required" }, { status: 400 });
   try {
     const patch: Partial<Omit<WhatsNewEntry, "id" | "createdAt" | "updatedAt">> = {};
@@ -95,7 +105,12 @@ export async function PATCH(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   const r = requireAdmin(req);
   if (r instanceof Response) return r;
-  const b = (await req.json()) as Record<string, unknown>;
+  let b: Record<string, unknown>;
+  try {
+    b = (await req.json()) as Record<string, unknown>;
+  } catch {
+    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+  }
   if (typeof b.id !== "string") return NextResponse.json({ error: "id required" }, { status: 400 });
   try {
     deleteEntry(b.id);

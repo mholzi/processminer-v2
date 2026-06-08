@@ -66,10 +66,8 @@ export async function PATCH(req: NextRequest) {
       );
     }
   } catch (e) {
-    return Response.json(
-      { error: `Could not save: ${e instanceof Error ? e.message : e}` },
-      { status: 500 },
-    );
+    console.error("[dtp] request failed:", e);
+    return Response.json({ error: "Could not save." }, { status: 500 });
   }
   return Response.json({ ok: true });
 }
