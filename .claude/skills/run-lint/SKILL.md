@@ -21,10 +21,10 @@ You are invoked with a process `<slug>`. Lint covers that one process only.
 
 ## Step 1 — Load the process
 
-Take the process title from the process overview (root `meta`/`content`) in the Document Map. You orchestrate
-the lint pass — the deterministic tools (Step 2) and the per-lens sub-agents
-(Step 3) each read the elements they need, so you do not have to read every
-element yourself.
+Use `expandElement({ type })` for every collection to read all elements into
+your working context, then `expandElement({ type, id })` for any bodies you
+need in full. Take the process title from the root `meta`/`content`. You must
+read every element yourself — do not delegate this to sub-agents.
 
 ## Step 2 — Deterministic checks
 
@@ -44,65 +44,50 @@ Keep both arrays exactly as returned. You do not author, reshape or re-type
 these findings — they are fully deterministic; a clean process returns `[]`.
 Together they are the deterministic half of Step 4's input.
 
-## Step 3 — Cross-perspective sweep (five parallel lenses)
+## Step 3 — Cross-perspective sweep (five lenses, in-context)
 
-The council sweeps the whole process from all five perspectives. The lenses
-are independent, so run them **concurrently**: in a single message, dispatch
-**five sub-agents** with the Task tool — one per lens — and wait for all five.
+Using the elements you loaded in Step 1, sweep the process through each of the
+five lenses below **sequentially in this session** — no sub-agents, no Task
+tool. Accumulate all findings into a single array as you go.
 
-Give each sub-agent this brief, with `{Lens}` and `{what to check}` filled
-from the table below:
+For each lens, look across every element (including elements with no
+relations — "a step with no control" is found by looking at steps that link to
+nothing). Record a finding for every real issue:
+- `kind: "discrepancy"` — two elements disagree or a required link is missing
+- `kind: "question"` — wiki is ambiguous; only the SME can resolve it
 
-> You are the **{Lens}** lens of a lint pass on process `<slug>`. Read every
-> element in the process (use `expandElement({ type })` to list each collection, then `expandElement({ type, id })` for the bodies). Looking only through your lens,
-> check: {what to check}. The council looks at every element, including ones
-> it has no relation to — "a step with no control" is found by looking at
-> steps that link to nothing. Record a finding for every real issue: use
-> `kind: "discrepancy"` when two elements disagree or a link is missing,
-> `kind: "question"` when the wiki is ambiguous and only the SME can resolve
-> it. Each finding is `{ "kind", "title", "detail", "elements" }` — `detail`
-> explains it concretely, `elements` lists the **actual element ids**
-> involved. Be specific and conservative: only a finding you can point to in
-> the elements; never invent one to pad. You are **read-only** — do not write,
-> edit or run any script. Return **only** a JSON array of your findings, `[]`
-> if none.
+Each finding: `{ "kind", "title", "detail", "elements" }` — `detail` is
+concrete, `elements` lists the actual element ids involved. Be conservative:
+only record what you can point to; never pad.
 
 | Lens | What to check across the process |
 |---|---|
 | **Process** | a process-step with no control linked; a step with no SLA where a touchpoint sets a client expectation; a missing or contradictory RACI entry; an exception with no scope or no fallback procedure |
-| **Control & Compliance** | a compliance-gap on a topic that has no control; a control linked to no step; segregation-of-duties not covered by any control; a control whose `owner` is a coarse function ("Operations", "Compliance") where a more precise documented role element exists ("Operations Analyst", "Approver", "Team Lead") — name both the control and the role it should point to |
+| **Control & Compliance** | a compliance-gap on a topic that has no control; a control linked to no step; segregation-of-duties not covered by any control; a control whose `owner` is a coarse function ("Operations", "Compliance") where a more precise documented role element exists — name both the control and the role it should point to |
 | **Client Journey** | a friction-point and a pain-point describing the same issue but not linked; an innovation or friction item not traced to the pain-point it addresses |
 | **Innovation** | an innovation-idea not linked to the friction- or pain-point it solves; a pain-point with no innovation-idea addressing it |
 | **IT Architect** | a count stated in prose that disagrees with the documented elements (e.g. "6+ systems" vs 8 systems); an integration referencing no system; a system touched by no step |
 
-The sub-agents are read-only and each reads the wiki itself — that is what
-lets them run in parallel. Only you write, in Step 4.
-
-**Confirm coverage.** When all five return you hold five findings arrays —
-one per lens, even when a lens found nothing. State one coverage line naming
-all five, e.g. `Swept: Process · Control & Compliance · Client Journey ·
-Innovation · IT Architecture`, so a thorough run is visibly distinct from one
-that skipped a lens.
+Once done, state one coverage line naming all five lenses swept, e.g.
+`Swept: Process · Control & Compliance · Client Journey · Innovation · IT Architecture`.
 
 ## Step 4 — Apply (deterministic)
 
 Assemble the full findings array: the conformance array and the
 transitions-reconciliation array from Step 2 — **both kept exactly as the
-tools returned them** — followed by the discrepancy and question findings
-from the five lens sub-agents in Step 3 (concatenate their five arrays). Each
-finding is an object:
+tools returned them** — followed by the discrepancy and question findings from
+the five lenses in Step 3 (concatenate all). Each finding is an object:
 
 ```json
 { "kind": "discrepancy", "title": "...", "detail": "...", "elements": ["PS-COB-004", "CP-COB-004"] }
 ```
 
-Then use the `applyLint({ slug, findings })` tool.
-
-This tool assigns finding ids, writes the `lint` field in the runtime store
-`data/runtime/<slug>.json` (which the app's Review panel reads), and re-opens every approved element a
-finding implicates — setting it back to `in-progress`, stamped `run-lint`.
-**Always run it, even when you found nothing** — an empty pass writes an
-all-clear `lint` report. Relay any warning it prints about unknown element ids.
+**You must call `applyLint({ slug, findings })` before reporting — no
+exceptions.** This is the only step that writes findings to the runtime store
+(`data/runtime/<slug>.json`) where the Review panel reads them. Generating a
+summary in chat without calling this tool means findings are lost on reload.
+Always call it even when `findings` is `[]` — an empty pass writes an
+all-clear report. Relay any warning the tool returns about unknown element ids.
 
 ## Step 5 — Summarise
 

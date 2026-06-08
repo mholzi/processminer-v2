@@ -123,6 +123,11 @@ group. The 315k-token main-agent output of the legacy flow becomes ~30k.
     > is `<group_id>`; draft every outline entry whose `group_id` matches
     > yours. The full outline is yours to consult for cross-group relations.
     >
+    > **Do not read TypeScript source files** (`.ts`, `.tsx`) or any file under
+    > `src/`. The schema is at `schema/process-schema.json` — that is the only
+    > codebase file you need. The tool API is defined by the tools available to
+    > you; do not inspect source code to understand them.
+    >
     > Read `schema/process-schema.json` for your element types' frontmatter,
     > relations and template headings. Use `expandElement({ type })` to list
     > your types' collections, then `expandElement({ type, id })` if you need an
@@ -192,6 +197,8 @@ group. The 315k-token main-agent output of the legacy flow becomes ~30k.
     > You verify drafted wiki elements against their source document, for an
     > ingest of process `<slug>`. The source document is at `<path>`. Read
     > `/tmp/<slug>-drafts-<group_id>.json` — verify every spec in `elements`.
+    > **Do not read TypeScript source files** (`.ts`, `.tsx`) or any file under
+    > `src/` — you only need the source document and the draft file.
     > For each, find the passage it came from and challenge it claim by claim:
     > -   For every statement in every block, find where the document supports
     >     it. A claim you cannot trace — an inferred SLA, an invented system or

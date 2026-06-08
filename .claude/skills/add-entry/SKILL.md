@@ -98,6 +98,10 @@ Loop until [Y]. Always offer all three.
 
 ## Step 5 — Write it
 
+**Do not call `createElement` during Steps 3 or 4.** The element exists only
+in the chat until the SME sends [Y]. Writing before confirmation is forbidden —
+no exceptions, even if the draft looks final.
+
 While drafting and presenting (Steps 3–4) the element has no id yet — refer to
 it by description, never guess an id. The id is assigned here, at write time.
 
