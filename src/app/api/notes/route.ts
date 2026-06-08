@@ -62,10 +62,8 @@ export async function POST(req: NextRequest) {
   try {
     await writeFile(path, `${JSON.stringify(processData, null, 2)}\n`);
   } catch (e) {
-    return Response.json(
-      { error: `Could not save: ${e instanceof Error ? e.message : e}` },
-      { status: 500 },
-    );
+    console.error("[notes] request failed:", e);
+    return Response.json({ error: "Could not save." }, { status: 500 });
   }
   return Response.json({ ok: true, note });
 }
@@ -129,10 +127,8 @@ export async function PATCH(req: NextRequest) {
   try {
     await writeFile(path, `${JSON.stringify(processData, null, 2)}\n`);
   } catch (e) {
-    return Response.json(
-      { error: `Could not save: ${e instanceof Error ? e.message : e}` },
-      { status: 500 },
-    );
+    console.error("[notes] request failed:", e);
+    return Response.json({ error: "Could not save." }, { status: 500 });
   }
   return Response.json({ ok: true });
 }

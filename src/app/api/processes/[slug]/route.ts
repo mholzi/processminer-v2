@@ -62,10 +62,8 @@ export async function DELETE(
       }
     }
   } catch (e) {
-    return Response.json(
-      { error: `Could not delete: ${e instanceof Error ? e.message : e}` },
-      { status: 500 },
-    );
+    console.error("[processes] delete failed:", e);
+    return Response.json({ error: "Could not delete." }, { status: 500 });
   }
 
   revalidatePath("/");

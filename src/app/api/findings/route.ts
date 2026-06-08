@@ -86,10 +86,8 @@ export async function PATCH(req: NextRequest) {
   try {
     writeRuntime(slug, { findingDismissals: dismissals });
   } catch (e) {
-    return Response.json(
-      { error: `Could not save: ${e instanceof Error ? e.message : e}` },
-      { status: 500 },
-    );
+    console.error("[findings] request failed:", e);
+    return Response.json({ error: "Could not save." }, { status: 500 });
   }
   return Response.json({ ok: true });
 }
