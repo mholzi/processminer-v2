@@ -294,18 +294,45 @@ export function getSchema(): Schema {
   return JSON.parse(readFileSync(SCHEMA_PATH, "utf8")) as Schema;
 }
 
+/** Parse one process file's contents into a list entry, or null if it is
+ *  unparseable. Resilience helper for `listProcesses` — a single corrupt or
+ *  half-written `<slug>.json` must not break the whole portfolio (which feeds
+ *  the dashboard, cross-process tools, the architect inbox and usage roll-up).
+ *  Pure (no I/O) so it is unit-testable. */
+export function parseProcessListing(
+  slug: string,
+  contents: string,
+): { slug: string; title: string } | null {
+  try {
+    const data = JSON.parse(contents);
+    return { slug, title: data?.content?.title || slug };
+  } catch {
+    return null;
+  }
+}
+
 /** List documented processes (one wiki/processes/<slug>.json each). */
 export function listProcesses(): { slug: string; title: string }[] {
   if (!existsSync(WIKI_DIR)) return [];
-  return readdirSync(WIKI_DIR, { withFileTypes: true })
+  const out: { slug: string; title: string }[] = [];
+  for (const f of readdirSync(WIKI_DIR, { withFileTypes: true })) {
     // Skip dotfiles — e.g. the .sessions.json runtime map — so they never
     // surface as bogus "processes" in the list or the cross-process tools.
-    .filter((f) => f.isFile() && f.name.endsWith(".json") && !f.name.startsWith("."))
-    .map((f) => {
-      const slug = f.name.replace(".json", "");
-      const data = JSON.parse(readFileSync(join(WIKI_DIR, f.name), "utf8"));
-      return { slug, title: data.content?.title || slug };
-    });
+    if (!f.isFile() || !f.name.endsWith(".json") || f.name.startsWith(".")) continue;
+    const slug = f.name.replace(".json", "");
+    let contents: string;
+    try {
+      contents = readFileSync(join(WIKI_DIR, f.name), "utf8");
+    } catch (e) {
+      // Unreadable file — skip it rather than failing the whole list.
+      console.error(`[wiki] could not read ${f.name}:`, e);
+      continue;
+    }
+    const entry = parseProcessListing(slug, contents);
+    if (entry) out.push(entry);
+    else console.error(`[wiki] skipping unparseable process file ${f.name}`);
+  }
+  return out;
 }
 
 /** List the imported source documents for a process — raw-sources/<slug>/.
