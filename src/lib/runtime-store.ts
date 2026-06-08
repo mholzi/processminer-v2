@@ -59,7 +59,7 @@ export interface DtpFinding {
  *  findings. The full text lives in the .md file; only the pointer + findings
  *  live here. */
 export interface DtpReport {
-  /** Backend-stamped run id, e.g. "DTP-REGEN-003" — stable per run, used as the
+  /** Backend-stamped run id, e.g. "DTP-007" — stable per run, used as the
    *  key in the DTP Enhancer's past-comparison history. */
   runId: string;
   /** "compare" — review the chosen DTP against the wiki (findings only, no new
@@ -177,7 +177,7 @@ export function setDtpDisposition(
       ? [
           {
             ...rt.dtpReport,
-            runId: rt.dtpReport.runId ?? "DTP-REGEN-001",
+            runId: rt.dtpReport.runId ?? "DTP-001",
             mode: rt.dtpReport.mode ?? "regenerate",
           },
         ]
@@ -200,7 +200,7 @@ export function setDtpSummary(slug: string, runId: string, summary: string): boo
       ? [
           {
             ...rt.dtpReport,
-            runId: rt.dtpReport.runId ?? "DTP-REGEN-001",
+            runId: rt.dtpReport.runId ?? "DTP-001",
             mode: rt.dtpReport.mode ?? "regenerate",
           },
         ]

@@ -519,6 +519,14 @@ body {
 }
 .nav-sec-title:hover { color: var(--accent); }
 .nav-sec-title.active { color: var(--accent); }
+/* Marks the area title as actionable: clicking it opens the area's executive
+   summary. Subtle until hover/active so it reads as an affordance, not noise. */
+.nav-sec-sum {
+  flex: none; margin-left: 4px; color: var(--muted);
+  font-size: var(--text-xs); transition: color 0.12s ease;
+}
+.nav-sec-title:hover .nav-sec-sum,
+.nav-sec-title.active .nav-sec-sum { color: var(--accent); }
 .nav-sec-n {
   flex: none; width: 17px; height: 17px; border-radius: var(--r-sm);
   display: flex; align-items: center; justify-content: center;

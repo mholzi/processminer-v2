@@ -79,16 +79,17 @@ function evidenceProvenance(f: DtpFinding, getRef: GetRef): "approved" | "draft"
 // The DTP Enhancer module — shown after the As-Is is worked.
 //
 // It has two screens:
-//   1. Home — the entry-point launcher: three actions (regenerate from an
-//      uploaded source DTP, upload an old DTP, browse past comparisons) plus a
-//      table of the past-comparison history.
-//   2. Run — for one chosen comparison: a full-text diff of the regenerated DTP
-//      against its original (jsdiff, fetched on demand from /api/sources) and
-//      the critical-review findings that run produced.
+//   1. Home — the entry-point launcher: compare an uploaded source DTP against
+//      the corrected As-Is, upload an old DTP, or browse past comparisons, plus
+//      a table of the past-comparison history.
+//   2. Run — for one chosen comparison: the critical-review findings that run
+//      produced (and, for legacy regenerate-mode runs still in history, a
+//      full-text diff of the regenerated DTP against its original via jsdiff).
 //
-// Each regenerated .md is a real artifact under raw-sources/<slug>/; the report
-// pointers + findings live in the runtime store as a history (R9). Generation
-// runs through the chat (onRegenerate), mirroring council-review / area-summary.
+// Comparison runs through the chat (onCompare), mirroring council-review /
+// area-summary. Report pointers + findings live in the runtime store as a
+// history (R9). (Older regenerate-mode runs may exist in the history; the
+// regenerate entry point has been retired in favour of compare-only.)
 
 type FileState =
   | { status: "loading" }
@@ -118,7 +119,6 @@ export default function DTPReviewPanel({
   sources,
   status,
   onCompare,
-  onRegenerate,
   onUpload,
   onGoToElement,
   getRef,
@@ -133,8 +133,6 @@ export default function DTPReviewPanel({
   status: "idle" | "generating" | "error";
   /** Review the chosen DTP against the As-Is (findings only, no regeneration). */
   onCompare: (file: string) => void;
-  /** Rebuild the DTP from the As-Is (legacy regenerate path, with diff). */
-  onRegenerate: (file?: string) => void;
   onUpload: () => void;
   onGoToElement: (id: string) => void;
   getRef: GetRef;
@@ -171,7 +169,6 @@ export default function DTPReviewPanel({
         report={activeReport}
         onBack={() => setActiveRunId(null)}
         onCompare={onCompare}
-        onRegenerate={onRegenerate}
         onGoToElement={onGoToElement}
         getRef={getRef}
         asIsElements={asIsElements}
@@ -212,7 +209,7 @@ function Home({
   onOpenRun: (runId: string) => void;
 }) {
   const [pickerOpen, setPickerOpen] = useState(false);
-  // Only genuine uploads are valid sources to regenerate from — never our own
+  // Only genuine uploads are valid sources to compare against — never our own
   // generated artifacts.
   const picks = useMemo(() => sources.filter((s) => !s.generated), [sources]);
 
@@ -223,7 +220,7 @@ function Home({
       )}
 
       <div className="dtpx-cards">
-        {/* 1 — regenerate from an uploaded source DTP */}
+        {/* 1 — compare an uploaded source DTP against the As-Is */}
         <div className="dtpx-card">
           <span className="dtpx-cico">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -368,7 +365,6 @@ function RunView({
   report,
   onBack,
   onCompare,
-  onRegenerate,
   onGoToElement,
   getRef,
   asIsElements,
@@ -380,7 +376,6 @@ function RunView({
   report: DtpReport;
   onBack: () => void;
   onCompare: (file: string) => void;
-  onRegenerate: (file?: string) => void;
   onGoToElement: (id: string) => void;
   getRef: GetRef;
   asIsElements: AsIsElement[];
@@ -465,14 +460,7 @@ function RunView({
               ↓ Download .md
             </button>
           )}
-          {isRegen ? (
-            <button
-              className="section-summary-btn"
-              onClick={() => onRegenerate(report.sourceFile || undefined)}
-            >
-              Regenerate
-            </button>
-          ) : (
+          {!isRegen && (
             <button
               className="section-summary-btn"
               onClick={() => report.sourceFile && onCompare(report.sourceFile)}
