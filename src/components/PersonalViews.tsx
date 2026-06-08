@@ -50,7 +50,7 @@ export function AllProcesses({ docs }: { docs: ProcessDoc[] }) {
       <table className="am-canvas-app-table" style={{ marginTop: 14 }}>
         <thead>
           <tr>
-            <th style={{ width: "30%" }}>Process</th>
+            <th className="col-pct30">Process</th>
             <th>Stage</th>
             <th>Architecture progress</th>
             <th>Last activity</th>
@@ -131,7 +131,7 @@ export function MyAdrs({ docs, user }: { docs: ProcessDoc[]; user: User }) {
         <table className="am-canvas-app-table" style={{ marginTop: 14 }}>
           <thead>
             <tr>
-              <th style={{ width: 140 }}>ADR</th>
+              <th className="col-w140">ADR</th>
               <th>Title</th>
               <th>Process</th>
               <th>Owner</th>
@@ -190,7 +190,7 @@ export function MigrationPlans({ docs }: { docs: ProcessDoc[] }) {
         <table className="am-canvas-app-table" style={{ marginTop: 14 }}>
           <thead>
             <tr>
-              <th style={{ width: 140 }}>Phase</th>
+              <th className="col-w140">Phase</th>
               <th>Scope</th>
               <th>Process</th>
               <th>Window</th>

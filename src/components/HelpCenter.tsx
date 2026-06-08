@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useFocusTrap } from "./useFocusTrap";
-import type { Schema } from "@/lib/wiki";
 
 // Help center — opened from the top-bar "?" button. Two tabs: Release Notes
 // (shipped items, changelog layout) and Roadmap (in-flight + planned, card
@@ -155,9 +154,6 @@ export default function HelpCenter({
 }: {
   open: boolean;
   onClose: () => void;
-  // The schema prop is kept on the signature for callers; the feed doesn't
-  // read it but removing it would force a churn-y call-site edit.
-  schema: Schema;
   onReplayTour: () => void;
   onOpenFeedback: () => void;
 }) {
@@ -170,12 +166,16 @@ export default function HelpCenter({
   useEffect(() => {
     if (!open) return;
     // Refresh entries from the API each time the panel opens so admin edits
-    // and the user's own votes are reflected without a page reload.
+    // and the user's own votes are reflected without a page reload. On a
+    // successful response we adopt the live feed even when it is EMPTY, so a
+    // deliberately-cleared feed shows the empty state rather than the hardcoded
+    // seed (the seed is bootstrap-only). A failed/unreachable fetch keeps the
+    // seed as a graceful fallback.
     fetch("/api/admin/whatsnew", { credentials: "same-origin" })
       .then(async (r) => {
         if (!r.ok) return;
         const data = (await r.json()) as { entries?: Entry[] };
-        if (data.entries?.length) setLiveEntries(data.entries);
+        setLiveEntries(data.entries ?? []);
       })
       .catch(() => {});
   }, [open]);

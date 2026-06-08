@@ -2886,7 +2886,6 @@ export default function ProcessDocScreen({
       <HelpCenter
         open={helpOpen}
         onClose={() => setHelpOpen(false)}
-        schema={schema}
         onReplayTour={() => {
           setHelpOpen(false);
           setTourOpen(true);

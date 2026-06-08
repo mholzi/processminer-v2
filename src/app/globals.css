@@ -5340,6 +5340,15 @@ body.ffb-targeting [data-feedback-id]:hover {
 .am-more-btn:hover { background: var(--bg); text-decoration: underline; }
 .am-pmeta { color: var(--muted); font-size: var(--text-xs); margin-top: 2px; }
 .am-pmono { font-family: var(--mono); }
+/* Data-table column widths — content-driven, so kept out of inline styles
+   (moved off `style={{ width }}` in the architect tables). */
+.col-w90 { width: 90px; }
+.col-w120 { width: 120px; }
+.col-w140 { width: 140px; }
+.col-w150 { width: 150px; }
+.col-pct28 { width: 28%; }
+.col-pct30 { width: 30%; }
+.col-right { text-align: right; }
 /* "Solution architecture" is a forthcoming module: a single muted header tag
    signposts it once, and each row cell shows a quiet em-dash (tooltip explains)
    rather than repeating "coming soon" on every row. */
