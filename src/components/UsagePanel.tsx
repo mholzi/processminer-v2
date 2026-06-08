@@ -66,15 +66,6 @@ function pct(value: number, max: number): number {
   return Math.round((value / max) * 100);
 }
 
-/** Pick a bar colour from a 5-stop purple ramp based on relative position. */
-function rtColor(ratio: number): string {
-  if (ratio > 0.8) return "var(--accent)";
-  if (ratio > 0.6) return "#7c3aed";
-  if (ratio > 0.4) return "#a78bfa";
-  if (ratio > 0.2) return "#c4b5fd";
-  return "#ddd6fe";
-}
-
 export default function UsagePanel() {
   const [data, setData] = useState<UsageOverview | null>(null);
   const [loading, setLoading] = useState(true);
@@ -189,7 +180,7 @@ export default function UsagePanel() {
               Avg input
             </span>
             <span className="usage-legend-item">
-              <span className="usage-legend-swatch" style={{ background: "#6366f1" }} />
+              <span className="usage-legend-swatch" style={{ background: "var(--bright)" }} />
               Avg output
             </span>
           </div>
@@ -228,7 +219,6 @@ export default function UsagePanel() {
           <div className="usage-col usage-col--rt">
             <div className="usage-col-head">Avg run-time / turn</div>
             {skillRows.map((row) => {
-              const ratio = row.avgDurationMs / maxAvgDuration;
               const w = pct(row.avgDurationMs, maxAvgDuration);
               return (
                 <div key={row.skill} className="usage-bar-row">
@@ -237,8 +227,8 @@ export default function UsagePanel() {
                   </span>
                   <div className="usage-bar-track">
                     <div
-                      className="usage-bar-seg"
-                      style={{ width: `${w}%`, background: rtColor(ratio) }}
+                      className="usage-bar-seg usage-bar-rt"
+                      style={{ width: `${w}%` }}
                     />
                   </div>
                   <span className="usage-bar-val">{dur(row.avgDurationMs)}</span>
