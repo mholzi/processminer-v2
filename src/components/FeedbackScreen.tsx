@@ -1,7 +1,8 @@
 "use client";
 
-import { type FormEvent, useMemo, useState } from "react";
+import { type FormEvent, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useFocusTrap } from "./useFocusTrap";
 import {
   FEEDBACK_CATEGORIES,
   FEEDBACK_STATUSES,
@@ -32,6 +33,11 @@ export default function FeedbackScreen({
   onClose: () => void;
 }) {
   const router = useRouter();
+
+  // Trap focus + Esc in the feedback overlay (a11y — was a hand-rolled overlay
+  // with no dialog semantics).
+  const overlayRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(overlayRef, onClose);
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState<FeedbackCategory>("idea");
@@ -110,7 +116,13 @@ export default function FeedbackScreen({
 
   return (
     <div className="fb-overlay">
-      <div className="fb-main">
+      <div
+        ref={overlayRef}
+        className="fb-main"
+        role="dialog"
+        aria-modal="true"
+        aria-label="App Feedback"
+      >
         <div className="fb-head">
           <button type="button" className="fb-back" onClick={onClose}>
             ‹ Back to process

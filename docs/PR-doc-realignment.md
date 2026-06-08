@@ -79,7 +79,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#85** | Combobox fix — drop broken inline tokens (`--bg-card`/`--border` → CSS `--surface`/`--line`, fixes dark mode), add keyboard nav + ARIA listbox roles (audit UI-1/2) | `fix/combobox-tokens-a11y` → `main` | Code (UI) | **Merged** |
 | **#86** | AdvisorChat "Save as note" — surface save failures inline (was a silent no-op on error) + Retry affordance (audit UI-9) | `fix/advisor-note-error` → `main` | Code (UI) | **Merged** |
 | **#87** | HandoffInbox — de-emphasize the forthcoming "Solution architecture" column: single muted header `soon` tag + quiet per-row em-dash w/ tooltip (was "Locked · coming soon" on every row) (audit UI-8) | `fix/handoff-solution-column` → `main` | Code (UI) | **Merged** |
-| **#88** | Roadmap voting made real — per-user server-side votes (`votedBy` + `toggleVote`), `POST /api/whatsnew/vote`, derived `voteCount`/`youVoted` (no voter-list leak); HelpCenter off localStorage with optimistic + rollback (audit UI-7) | `feat/real-roadmap-votes` → `main` | Code + API (UI) | **Open** (`pending`) |
+| **#88** | Roadmap voting made real — per-user server-side votes (`votedBy` + `toggleVote`), `POST /api/whatsnew/vote`, derived `voteCount`/`youVoted` (no voter-list leak); HelpCenter off localStorage with optimistic + rollback (audit UI-7) | `feat/real-roadmap-votes` → `main` | Code + API (UI) | **Merged** |
+| **#89** | Modal a11y (1/2) — focus-trap + dialog semantics on 3 hand-rolled overlays (SkillsDashboard drawer, FeedbackScreen, SourcesPanel) via the shared `useFocusTrap` (audit UI-4/5/6a) | `fix/modal-a11y-batch-1` → `main` | Code (UI) | **Open** (`pending`) |
 
 > **Design-review stack note.** The six design-review waves were developed as a
 > stack (#59 → #60 → #64 → #66 → #68 → #71) on top of #58. When merged bottom-up
