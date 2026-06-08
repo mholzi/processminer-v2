@@ -19,7 +19,12 @@ export type Entry = {
   bucket: string;
   summary: string;
   bullets?: string[];
+  /** Admin-seeded baseline; only used as a fallback for the hardcoded seed. */
   votes?: number;
+  /** Derived total (baseline + real votes), supplied by the API. */
+  voteCount?: number;
+  /** Whether the signed-in user currently votes for this item (from the API). */
+  youVoted?: boolean;
 };
 
 const ENTRIES: Entry[] = [
@@ -142,25 +147,6 @@ const TAG_LABEL: Record<EntryTag, string> = {
   planned: "Planned",
 };
 
-const VOTE_KEY = "pm.help.votes";
-
-function readVotes(): Record<string, true> {
-  try {
-    const raw = localStorage.getItem(VOTE_KEY);
-    return raw ? (JSON.parse(raw) as Record<string, true>) : {};
-  } catch {
-    return {};
-  }
-}
-
-function writeVotes(v: Record<string, true>) {
-  try {
-    localStorage.setItem(VOTE_KEY, JSON.stringify(v));
-  } catch {
-    // localStorage may be unavailable; votes silently become session-only.
-  }
-}
-
 export default function HelpCenter({
   open,
   onClose,
@@ -176,7 +162,6 @@ export default function HelpCenter({
   onOpenFeedback: () => void;
 }) {
   const [tab, setTab] = useState<TabKind>("releases");
-  const [votes, setVotes] = useState<Record<string, true>>({});
   const [liveEntries, setLiveEntries] = useState<Entry[]>(ENTRIES);
 
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -184,9 +169,8 @@ export default function HelpCenter({
 
   useEffect(() => {
     if (!open) return;
-    setVotes(readVotes());
     // Refresh entries from the API each time the panel opens so admin edits
-    // are reflected without a page reload.
+    // and the user's own votes are reflected without a page reload.
     fetch("/api/admin/whatsnew", { credentials: "same-origin" })
       .then(async (r) => {
         if (!r.ok) return;
@@ -227,14 +211,35 @@ export default function HelpCenter({
   const releasesCount = liveEntries.filter((e) => e.tag === "shipped").length;
   const roadmapCount = liveEntries.filter((e) => e.tag !== "shipped").length;
 
+  // Cast/retract a vote server-side (per-user, deduped). Optimistic: flip the
+  // entry locally, then reconcile with the authoritative count from the API;
+  // roll back on failure so the button never lies about a vote that didn't land.
   const toggleVote = (id: string) => {
-    setVotes((prev) => {
-      const next = { ...prev };
-      if (next[id]) delete next[id];
-      else next[id] = true;
-      writeVotes(next);
-      return next;
-    });
+    const apply = (e: Entry, youVoted: boolean, voteCount: number): Entry =>
+      e.id === id ? { ...e, youVoted, voteCount } : e;
+    const prev = liveEntries.find((e) => e.id === id);
+    const wasVoted = !!prev?.youVoted;
+    const optimisticCount = (prev?.voteCount ?? prev?.votes ?? 0) + (wasVoted ? -1 : 1);
+    setLiveEntries((es) => es.map((e) => apply(e, !wasVoted, optimisticCount)));
+    fetch("/api/whatsnew/vote", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ id }),
+    })
+      .then(async (r) => {
+        if (!r.ok) throw new Error("vote failed");
+        const d = (await r.json()) as { voteCount: number; youVoted: boolean };
+        setLiveEntries((es) => es.map((e) => apply(e, d.youVoted, d.voteCount)));
+      })
+      .catch(() => {
+        // Roll back to the pre-click state.
+        setLiveEntries((es) =>
+          es.map((e) =>
+            apply(e, wasVoted, prev?.voteCount ?? prev?.votes ?? 0),
+          ),
+        );
+      });
   };
 
   if (!open) return null;
@@ -322,8 +327,8 @@ export default function HelpCenter({
                 <section key={b.name} className="help-feed-bucket">
                   <div className="help-feed-bucket-h">{b.name}</div>
                   {b.items.map((e) => {
-                    const voted = !!votes[e.id];
-                    const liveVotes = (e.votes ?? 0) + (voted ? 1 : 0);
+                    const voted = !!e.youVoted;
+                    const liveVotes = e.voteCount ?? e.votes ?? 0;
                     return (
                       <article
                         key={e.id}
