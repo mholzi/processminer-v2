@@ -265,7 +265,11 @@ export function signSession(username: string, ttlDays = SESSION_TTL_DAYS): strin
   return `${payload}.${sig}`;
 }
 
-export function verifySession(cookie: string | undefined): StoredUser | null {
+/** Cryptographically verify a session cookie and return the encoded username
+ *  if (and only if) the signature is valid and the token is unexpired — else
+ *  null. The user lookup is left to `verifySession`, so this — where all the
+ *  security logic lives — is unit-testable without the user store. */
+export function decodeSession(cookie: string | undefined): string | null {
   if (!cookie) return null;
   const parts = cookie.split(".");
   if (parts.length !== 2) return null;
@@ -292,7 +296,12 @@ export function verifySession(cookie: string | undefined): StoredUser | null {
   if (!username || !Number.isFinite(expiresMs) || expiresMs < Date.now()) {
     return null;
   }
-  return findByUsername(username);
+  return username;
+}
+
+export function verifySession(cookie: string | undefined): StoredUser | null {
+  const username = decodeSession(cookie);
+  return username ? findByUsername(username) : null;
 }
 
 /** Random opaque ID — currently unused, kept for future audit-log entries. */
