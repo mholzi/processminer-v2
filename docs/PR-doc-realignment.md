@@ -100,6 +100,7 @@ what it changes, behaviour/scope, and how it was verified.
 | **#110** | Chat seed reflects the open process — the resume seed, Triage landing and chat-open default were all driven by `openingRunDoc`, computed as the most-recent in-flight run across *all* processes, so opening one process (e.g. COB-003) showed another's resume prompt (Funds Release Dogfood). Now `openingRunDoc` is tied to the actually-opened slug (`openingSlug = splashPick ?? globalRunDoc ?? docs[0]`); the global run is only the fallback when nothing was picked | `fix/chat-seed-wrong-process` → `main` | Code | **Merged** (`114df04`) |
 | **#112** | Feedback review moves into the Admin area — new **Feedback** tab (item count badge) renders the existing `FeedbackScreen` in a new `embedded` mode (no overlay / focus-trap / Back button); `AuthGate` passes the server-read `feedback` to `AdminScreen`. Removed the misleading ⌘K switcher "★ Feedback" entry so Admin is the canonical place to review filed feedback. Filing is unchanged (floating widget + HelpCenter "Suggest a feature") | `feat/feedback-in-admin` → `main` | Code + UI | **Merged** (`0c811c0`) |
 | **#114** | Feedback is admin-only — non-admins no longer see the submitted-feedback list on the standalone App Feedback page. `page.tsx` sends `feedback` only to admins (`[]` otherwise), and `FeedbackScreen` hides the "Submitted feedback" list unless embedded (Admin tab) or the user is an admin; the filing form stays for everyone | `fix/feedback-admin-only` → `main` | Code | **Merged** (`b736d9a`) |
+| **#116** | Private-by-default process access (R16 flip) — an ungoverned process (no owner) is now visible to **admins only**, not every signed-in user; and `scaffoldProcess` makes the creator the owner so a non-admin no longer creates a process they immediately can't see | `fix/private-by-default-access` → `main` | Code + tests | **Open** (`pending`) |
 
 > **Design-review stack note.** The six design-review waves were developed as a
 > stack (#59 → #60 → #64 → #66 → #68 → #71) on top of #58. When merged bottom-up
@@ -2294,3 +2295,39 @@ think-time.
 `npm run typecheck` clean · `npm test` **155/155** — `token-usage.test.ts`
 extended (per-turn duration fold + sum, duration-only no-token turn still
 records, cross-process duration sum).
+
+# fix(access): private-by-default process visibility (R16 flip)
+
+Flips the per-process access model (R16, #17) from **open-by-default** to
+**private-by-default**, and closes the orphaned-creator gap that flip exposes.
+
+## Why
+Setting an owner on one process (to restrict it) left every *other* owner-less
+process world-visible, so a newly-restricted user still saw everything. The
+intended model is the inverse: a process is private until explicitly shared.
+
+## What
+- **`canAccessWith` flip** ([`process-access.ts`](../src/lib/process-access.ts)) —
+  an ungoverned record (no owner) now resolves to **admins only** instead of
+  everyone. Admins still pass first; owner + grantees unchanged. All callers
+  (home list, session endpoint, MCP/Gemini tool gate, route guards, write path)
+  inherit it through the single chokepoint.
+- **Creator owns what they create** — `scaffoldProcess` now calls
+  `setOwner(slug, <creator>)` after writing the doc, in **both** providers
+  ([`claude-mcp-server.ts`](../src/lib/claude-mcp-server.ts) via `SESSION_USER`,
+  [`gemini-worker.ts`](../src/lib/gemini-worker.ts) via `this.user`). Without
+  this, a non-admin could scaffold a process and immediately lose sight of it.
+  No session identity (CLI/dogfood) → stays ungoverned/admin-only.
+- **Copy** — SettingsPanel's ungoverned-state text and the former "Make open to
+  everyone" button reworded to "Private — only admins…" / "Remove owner
+  (admins only)"; file header comment updated.
+
+## Scope / migration
+Existing owner-less processes become admin-only the moment this lands — assign
+owners to any that should stay broadly visible. Admins are unaffected (they see
+everything).
+
+## Verification
+`npm run typecheck` clean · `process-access.test.ts` **6/6** (the two
+"visible to everyone" cases flipped to admins-only). Creator-owns-it path is
+server-side worker code, not unit-covered yet.

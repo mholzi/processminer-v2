@@ -11,13 +11,14 @@ const admin = { username: "a.admin", isAdmin: true };
 
 const governed = { owner: "o.owner", grants: ["g.guest"] };
 
-test("an ungoverned process (no record) is visible to everyone", () => {
-  assert.equal(canAccessWith(undefined, stranger), true);
+test("an ungoverned process (no record) is visible to admins only", () => {
+  assert.equal(canAccessWith(undefined, stranger), false);
   assert.equal(canAccessWith(undefined, admin), true);
 });
 
-test("a record without an owner counts as ungoverned", () => {
-  assert.equal(canAccessWith({ owner: "", grants: [] }, stranger), true);
+test("a record without an owner counts as ungoverned (admins only)", () => {
+  assert.equal(canAccessWith({ owner: "", grants: [] }, stranger), false);
+  assert.equal(canAccessWith({ owner: "", grants: [] }, admin), true);
 });
 
 test("the owner and explicit grantees can access a governed process", () => {

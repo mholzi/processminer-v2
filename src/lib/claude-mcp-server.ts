@@ -11,7 +11,7 @@ import * as fs from "node:fs";
 import { atomicWriteFileSync } from "./atomic-write.ts";
 import * as path from "node:path";
 import { getSchema, jsonElementToWikiPage, transitionTarget, listProcesses, getProcessSummary, getProcessElements, searchProcesses } from "./wiki.ts";
-import { canAccess } from "./process-access.ts";
+import { canAccess, setOwner } from "./process-access.ts";
 import { writeRuntime, getRuntime, setDtpSummary } from "./runtime-store.ts";
 import { stripRuntimeState } from "./process-doc-hygiene.ts";
 import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch, buildReconciledApprovalPatch, syncRelationsFromProse } from "./session-writes.ts";
@@ -707,6 +707,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
     const newDoc = buildProcessDoc(PROC, title, description);
     atomicWriteFileSync(processFilePath, JSON.stringify(newDoc, null, 2) + "\n");
+    // Creator owns what they create — otherwise a non-admin would scaffold a
+    // process and immediately lose sight of it (ungoverned = admins-only, R16).
+    if (SESSION_USER) setOwner(slug, SESSION_USER);
     return { content: [{ type: "text", text: JSON.stringify({ ok: true, slug, id: newDoc.meta.id, created: true, closing: scaffoldClosing(title) }, null, 2) }] };
   }
 

@@ -6,7 +6,7 @@ import * as path from "node:path";
 import * as os from "node:os";
 import { execSync } from "node:child_process";
 import { getSchema, toCamelCase, jsonElementToWikiPage, transitionTarget, listProcesses, getProcessSummary, getProcessElements, searchProcesses, type WikiPage } from "./wiki.ts";
-import { canAccess } from "./process-access.ts";
+import { canAccess, setOwner } from "./process-access.ts";
 import { writeRuntime, getRuntime, setDtpSummary } from "./runtime-store.ts";
 import { stripRuntimeState } from "./process-doc-hygiene.ts";
 import { buildTargetReview, parseSummaryParts, buildIngestReport, clearIngestConflicts, buildApprovalPatch, buildReconciledApprovalPatch, syncRelationsFromProse } from "./session-writes.ts";
@@ -1103,6 +1103,10 @@ export class GeminiWorker implements IProcessWorker {
                 if (fs.existsSync(newPath)) throw new Error(`A process already exists for slug: ${newSlug}`);
                 const newDoc = buildProcessDoc(PROC, title, description);
                 atomicWriteFileSync(newPath, JSON.stringify(newDoc, null, 2) + "\n");
+                // Creator owns what they create — otherwise a non-admin would
+                // scaffold a process and immediately lose sight of it
+                // (ungoverned = admins-only, R16).
+                if (this.user) setOwner(newSlug, this.user.username);
                 // Scope this session to the freshly created process for subsequent turns.
                 this.slug = newSlug;
                 if (this.sessionId) saveSessionSlug(this.sessionId, this.slug, this.activeSkill);
