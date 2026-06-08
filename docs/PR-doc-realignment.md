@@ -91,7 +91,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#97** | CSRF protection — session cookie `sameSite=strict` + `middleware.ts` blocks cross-origin `/api/*` mutations via pure `isForbiddenCrossOrigin` (audit API-10) | `feat/csrf-protection` → `main` | Code + tests | **Merged** |
 | **#98** | API error-handling hygiene — stop leaking `node:fs` paths in error responses (generic message + server log); 400 not 500 on malformed JSON bodies (audit API-12/14) | `fix/api-error-hygiene` → `main` | Code | **Merged** |
 | **#99** | `resolveWriter` fails closed — only a genuine "no request context" error (ModuleNotFound / E251) grants the trusted "SME" author; anything else rethrows (audit LIB-10) | `fix/resolvewriter-failclosed` → `main` | Code + tests | **Merged** |
-| **#100** | AgentChat a11y — `aria-label` on the icon-only ✦/↻/⟩ buttons; resize handle becomes a keyboard-operable `role="separator"` (←/→ resize) (audit UI-10/11) | `fix/agentchat-a11y` → `main` | Code (UI) | **Open** (`pending`) |
+| **#100** | AgentChat a11y — `aria-label` on the icon-only ✦/↻/⟩ buttons; resize handle becomes a keyboard-operable `role="separator"` (←/→ resize) (audit UI-10/11) | `fix/agentchat-a11y` → `main` | Code (UI) | **Merged** |
+| **#101** | HelpCenter cleanup + DTP deps + table-width hygiene — drop dead `schema` prop; empty live feed no longer masked by the seed; remove benign exhaustive-deps suppress; move hardcoded `<th>` widths to CSS classes (audit UI-12/13/14/15) | `fix/ui-cleanup-12-15` → `main` | Code (UI) | **Open** (`pending`) |
 
 > **Design-review stack note.** The six design-review waves were developed as a
 > stack (#59 → #60 → #64 → #66 → #68 → #71) on top of #58. When merged bottom-up
