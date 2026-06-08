@@ -2936,7 +2936,8 @@ body {
 }
 .usage-bar-seg { height: 100%; }
 .usage-bar-input { background: var(--accent); }
-.usage-bar-output { background: #6366f1; }
+.usage-bar-output { background: var(--bright); }
+.usage-bar-rt { background: var(--accent); }
 .usage-bar-val {
   font-family: var(--mono);
   font-size: 0.72rem;
