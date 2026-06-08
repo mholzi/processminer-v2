@@ -344,7 +344,10 @@ export default function HandoffInbox({
                 <th style={{ width: "34%" }}>Process</th>
                 <th>Handoff</th>
                 <th>Domain architecture</th>
-                <th>Solution architecture</th>
+                <th>
+                  Solution architecture
+                  <span className="am-th-soon">soon</span>
+                </th>
                 <th>Last activity</th>
               </tr>
             </thead>
@@ -420,11 +423,12 @@ export default function HandoffInbox({
                       </div>
                     </td>
                     <td>
-                      <span className="am-pill am-pill-neu">
-                        <span className="am-dot" />
-                        Locked
+                      <span
+                        className="am-pmeta am-soon-cell"
+                        title="Solution architecture module coming soon"
+                      >
+                        —
                       </span>
-                      <div className="am-pmeta">solution module coming soon</div>
                     </td>
                     <td>
                       {r.lastModified ? (

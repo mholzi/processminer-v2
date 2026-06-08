@@ -78,6 +78,7 @@ what it changes, behaviour/scope, and how it was verified.
 | **#84** | UsagePanel palette fix — replace off-palette purples/indigo with theme tokens (`--accent`/`--bright`); run-time bars single accent (width encodes magnitude); dark-mode-safe (audit UI-3) | `fix/usage-panel-palette` → `main` | Code (UI) | **Merged** |
 | **#85** | Combobox fix — drop broken inline tokens (`--bg-card`/`--border` → CSS `--surface`/`--line`, fixes dark mode), add keyboard nav + ARIA listbox roles (audit UI-1/2) | `fix/combobox-tokens-a11y` → `main` | Code (UI) | **Merged** |
 | **#86** | AdvisorChat "Save as note" — surface save failures inline (was a silent no-op on error) + Retry affordance (audit UI-9) | `fix/advisor-note-error` → `main` | Code (UI) | **Open** (`pending`) |
+| **#87** | HandoffInbox — de-emphasize the forthcoming "Solution architecture" column: single muted header `soon` tag + quiet per-row em-dash w/ tooltip (was "Locked · coming soon" on every row) (audit UI-8) | `fix/handoff-solution-column` → `main` | Code (UI) | **Open** (`pending`) |
 
 > **Design-review stack note.** The six design-review waves were developed as a
 > stack (#59 → #60 → #64 → #66 → #68 → #71) on top of #58. When merged bottom-up
