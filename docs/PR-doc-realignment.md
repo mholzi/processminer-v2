@@ -75,7 +75,8 @@ what it changes, behaviour/scope, and how it was verified.
 | **#81** | Lock down data routes — upload path-traversal fix + auth/access gates on upload/sources/notes/findings/dtp; shared `route-guards` (audit API-1/2/3/4/6/8/16) | `feat/lock-down-data-routes` → `main` | Code + tests | **Merged** |
 | **#82** | R9 guardrail hardening — central `stripRuntimeState` on every process-doc write, backfill `funds-release.json`, fix stale migration/sidecar docs (audit DOC-1/2/4) | `fix/r9-guardrail-hardening` → `main` | Code + tests + data + docs | **Merged** |
 | **#83** | Dispatcher integrity — enforce the A1 approval gate at element-create time (shared `buildElement`), centralize `applyLint` on `stripRuntimeState`, document the LIB-2 reload invariant (audit LIB-1/2) | `fix/create-approval-gate-lib1` → `main` | Code + tests | **Merged** |
-| **#84** | UsagePanel palette fix — replace off-palette purples/indigo with theme tokens (`--accent`/`--bright`); run-time bars single accent (width encodes magnitude); dark-mode-safe (audit UI-3) | `fix/usage-panel-palette` → `main` | Code (UI) | **Open** (`pending`) |
+| **#84** | UsagePanel palette fix — replace off-palette purples/indigo with theme tokens (`--accent`/`--bright`); run-time bars single accent (width encodes magnitude); dark-mode-safe (audit UI-3) | `fix/usage-panel-palette` → `main` | Code (UI) | **Merged** |
+| **#85** | Combobox fix — drop broken inline tokens (`--bg-card`/`--border` → CSS `--surface`/`--line`, fixes dark mode), add keyboard nav + ARIA listbox roles (audit UI-1/2) | `fix/combobox-tokens-a11y` → `main` | Code (UI) | **Open** (`pending`) |
 
 > **Design-review stack note.** The six design-review waves were developed as a
 > stack (#59 → #60 → #64 → #66 → #68 → #71) on top of #58. When merged bottom-up

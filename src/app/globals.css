@@ -6362,17 +6362,35 @@ body.ffb-targeting [data-feedback-id]:hover {
   margin-top: 2px;
 }
 
+.combobox-container { position: relative; width: 100%; }
+
 .combobox-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  max-height: 180px;
+  overflow-y: auto;
+  margin: 4px 0 0 0;
+  padding: 4px 0;
+  list-style: none;
+  border-radius: var(--r-sm);
   background: var(--surface);
   border: 1px solid var(--line);
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .combobox-option {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: var(--text-xs);
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.combobox-option:hover {
+/* Pointer hover and keyboard highlight share the same active styling. */
+.combobox-option:hover,
+.combobox-option.active {
   background: var(--accent-soft);
   color: var(--accent);
 }

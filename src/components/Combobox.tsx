@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useId, useRef } from "react";
 
 export interface Option {
   value: string;
@@ -24,7 +24,11 @@ export default function Combobox({
 }: ComboboxProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [filter, setFilter] = useState("");
+  // Index of the keyboard-highlighted option within `filteredOptions`; -1 = none.
+  const [activeIndex, setActiveIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const listboxId = useId();
 
   // Find corresponding label for the current value
   const activeOption = options.find((o) => o.value === value);
@@ -56,18 +60,68 @@ export default function Combobox({
       o.label.toLowerCase().includes(filter.toLowerCase())
   );
 
+  // Keep the highlight in range as the filtered list changes, and keep the
+  // highlighted option scrolled into view.
+  useEffect(() => {
+    setActiveIndex((i) => (i >= filteredOptions.length ? filteredOptions.length - 1 : i));
+  }, [filteredOptions.length]);
+
+  useEffect(() => {
+    if (!isOpen || activeIndex < 0 || !listRef.current) return;
+    const el = listRef.current.children[activeIndex] as HTMLElement | undefined;
+    el?.scrollIntoView({ block: "nearest" });
+  }, [activeIndex, isOpen]);
+
+  const selectOption = (opt: Option) => {
+    onChange(opt.value);
+    setFilter(opt.label);
+    setIsOpen(false);
+    setActiveIndex(-1);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (!isOpen) {
+        setIsOpen(true);
+        return;
+      }
+      setActiveIndex((i) => Math.min(i + 1, filteredOptions.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((i) => Math.max(i - 1, 0));
+    } else if (e.key === "Enter") {
+      if (isOpen && activeIndex >= 0 && filteredOptions[activeIndex]) {
+        e.preventDefault();
+        selectOption(filteredOptions[activeIndex]);
+      }
+    } else if (e.key === "Escape") {
+      if (isOpen) {
+        e.preventDefault();
+        setIsOpen(false);
+        setActiveIndex(-1);
+      }
+    }
+  };
+
+  const showList = isOpen && filteredOptions.length > 0;
+  const activeOptionId =
+    showList && activeIndex >= 0 ? `${listboxId}-opt-${activeIndex}` : undefined;
+
   return (
-    <div
-      ref={containerRef}
-      className="combobox-container"
-      style={{ position: "relative", width: "100%" }}
-    >
+    <div ref={containerRef} className="combobox-container">
       <input
         type="text"
+        role="combobox"
+        aria-expanded={showList}
+        aria-controls={listboxId}
+        aria-autocomplete="list"
+        aria-activedescendant={activeOptionId}
         value={isOpen ? filter : displayValue}
         placeholder={placeholder || "Type or select..."}
         onChange={(e) => {
           setFilter(e.target.value);
+          setActiveIndex(-1);
           // Update parent dynamically while typing so custom values work
           onChange(e.target.value);
         }}
@@ -75,43 +129,23 @@ export default function Combobox({
           setFilter(displayValue);
           setIsOpen(true);
         }}
+        onKeyDown={handleKeyDown}
         className={className}
       />
-      {isOpen && filteredOptions.length > 0 && (
-        <ul
-          className="combobox-dropdown"
-          style={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            right: 0,
-            zIndex: 100,
-            maxHeight: "180px",
-            overflowY: "auto",
-            margin: "4px 0 0 0",
-            padding: "4px 0",
-            listStyle: "none",
-            borderRadius: "var(--r-sm)",
-            backgroundColor: "var(--bg-card, #fff)",
-            border: "1px solid var(--border, #ccc)",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-          }}
-        >
-          {filteredOptions.map((opt) => (
+      {showList && (
+        <ul ref={listRef} className="combobox-dropdown" role="listbox" id={listboxId}>
+          {filteredOptions.map((opt, i) => (
             <li
               key={opt.value}
+              id={`${listboxId}-opt-${i}`}
+              role="option"
+              aria-selected={i === activeIndex}
+              className={`combobox-option${i === activeIndex ? " active" : ""}`}
               onMouseDown={(e) => {
                 e.preventDefault();
-                onChange(opt.value);
-                setFilter(opt.label);
-                setIsOpen(false);
+                selectOption(opt);
               }}
-              style={{
-                padding: "8px 12px",
-                cursor: "pointer",
-                fontSize: "var(--text-xs)",
-              }}
-              className="combobox-option"
+              onMouseEnter={() => setActiveIndex(i)}
             >
               {opt.label}
             </li>
