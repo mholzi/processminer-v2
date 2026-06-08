@@ -21,11 +21,16 @@ Each process is **one strongly-typed JSON document**:
 `meta` + `content` (the overview) at the root, then typed arrays of elements
 (`process-steps`, `roles`, `systems`, `exceptions`, `controls`, `regulation`,
 `to-be-design`, `transformation-decisions`, …). Each element is
-`{ meta: {...}, ...content }`. All former sidecars (lint, review-state, notes,
-sections, summaries, ingest) are consolidated into this one file.
+`{ meta: {...}, ...content }`. The durable former sidecars (notes, sections,
+summaries, ingest) are consolidated into this one file. Runtime / derived state
+(lint, review-state, finding-dismissals, …) does **not** live here — it sits in
+the sibling runtime store (R9, below); the write layer strips it on every save
+([`stripRuntimeState`](src/lib/process-doc-hygiene.ts)).
 
-> Only `cob-003.json` has been migrated so far. Other processes' content was
-> dropped in the migration (see roadmap item A2).
+> Migrated process documents: `cob-003.json` and `funds-release.json`. The
+> `funds-release-dogfood*.json` files are dogfood/test artifacts, not curated
+> processes. Some other processes' content was dropped in the migration and
+> still needs a backfill (see roadmap item A2).
 
 Three conceptual layers (Karpathy LLM-Wiki):
 
