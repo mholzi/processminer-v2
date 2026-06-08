@@ -2,8 +2,9 @@
 // authenticated user) until an admin gives it an owner; once governed, only the
 // owner, explicitly granted users, and admins can see it. Authz config, like the
 // user store, lives in data/ (gitignored, per-deployment) — never in the wiki.
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { readFileSync, existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
+import { atomicWriteFileSync } from "./atomic-write.ts";
 
 const DATA_DIR = join(process.cwd(), "data");
 const ACCESS_PATH = join(DATA_DIR, "process-access.json");
@@ -27,7 +28,7 @@ function load(): AccessMap {
 
 function save(map: AccessMap): void {
   if (!existsSync(DATA_DIR)) mkdirSync(DATA_DIR, { recursive: true });
-  writeFileSync(ACCESS_PATH, JSON.stringify(map, null, 2) + "\n", "utf8");
+  atomicWriteFileSync(ACCESS_PATH, JSON.stringify(map, null, 2) + "\n");
 }
 
 export function getAccess(slug: string): ProcessAccess | undefined {

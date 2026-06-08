@@ -595,7 +595,7 @@ function saveSessionSlug(sessionId: string, slug: string, activeSkill: string | 
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     const data = fs.existsSync(SESSIONS_MAP_PATH) ? JSON.parse(fs.readFileSync(SESSIONS_MAP_PATH, "utf8")) : {};
     data[sessionId] = { slug, activeSkill };
-    fs.writeFileSync(SESSIONS_MAP_PATH, JSON.stringify(data, null, 2), "utf8");
+    atomicWriteFileSync(SESSIONS_MAP_PATH, JSON.stringify(data, null, 2) + "\n");
   } catch (e) {
     console.error("Failed to save session slug map:", e);
   }

@@ -6,6 +6,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { join } from "node:path";
+import { atomicWriteFileSync } from "./atomic-write.ts";
 import {
   type FeedbackCategory,
   type FeedbackContext,
@@ -211,7 +212,7 @@ export function writeFeedback(input: {
     screenshot,
     element: input.element,
   };
-  writeFileSync(feedbackPath(item.id), serializeFeedback(item));
+  atomicWriteFileSync(feedbackPath(item.id), serializeFeedback(item));
   return item;
 }
 
@@ -223,6 +224,6 @@ export function updateFeedbackStatus(
   const item = getFeedback(id);
   if (!item) return null;
   const next: FeedbackItem = { ...item, status };
-  writeFileSync(feedbackPath(id), serializeFeedback(next));
+  atomicWriteFileSync(feedbackPath(id), serializeFeedback(next));
   return next;
 }

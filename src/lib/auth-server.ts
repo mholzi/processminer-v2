@@ -1,10 +1,11 @@
 // Server-side authentication: user store, password hashing, signed session
 // cookies, bootstrap admin. Never import this from a client component.
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import bcrypt from "bcryptjs";
+import { atomicWriteFileSync } from "./atomic-write.ts";
 import type { Entitlement } from "./user";
 
 const DATA_DIR = join(process.cwd(), "data");
@@ -52,7 +53,7 @@ function ensureDir() {
 function loadFromDisk(): StoredUser[] {
   ensureDir();
   if (!existsSync(USERS_PATH)) {
-    writeFileSync(USERS_PATH, "[]\n", "utf8");
+    atomicWriteFileSync(USERS_PATH, "[]\n");
     return [];
   }
   try {
@@ -66,7 +67,7 @@ function loadFromDisk(): StoredUser[] {
 
 function saveToDisk(users: StoredUser[]): void {
   ensureDir();
-  writeFileSync(USERS_PATH, JSON.stringify(users, null, 2) + "\n", "utf8");
+  atomicWriteFileSync(USERS_PATH, JSON.stringify(users, null, 2) + "\n");
   cache = users;
 }
 
