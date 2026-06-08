@@ -52,8 +52,14 @@ async function resolveWriter(slug: string): Promise<string> {
   try {
     const { cookies } = await import("next/headers");
     store = await cookies();
-  } catch {
-    return "SME"; // in-process AI worker — no request context, trusted via /api/session
+  } catch (err) {
+    // ONLY a genuine "no request context" error means this is the in-process/
+    // headless AI worker (trusted via /api/session) → system author. Any other
+    // failure must NOT silently grant trusted access — fail closed so a browser
+    // write can never bypass the auth/ACL check below (LIB-10).
+    const { isNoRequestContextError } = await import("./request-scope.ts");
+    if (isNoRequestContextError(err)) return "SME";
+    throw err;
   }
   // Browser-originated server action: authentication + authorization required.
   const { COOKIE_NAME, verifySession } = await import("./auth-server.ts");

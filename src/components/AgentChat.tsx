@@ -5,6 +5,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
   type ReactNode,
 } from "react";
@@ -147,6 +148,13 @@ export default function AgentChat({
   const [draft, setDraft] = useState("");
   const showTokenReceipt = useFeatureFlag("session.token_receipt");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const asideRef = useRef<HTMLElement>(null);
+  // Current panel width, mirrored for the resize separator's aria-valuenow.
+  // The parent owns the width (via onWidthChange); we read it off the DOM.
+  const [panelWidth, setPanelWidth] = useState(0);
+  useEffect(() => {
+    if (open && asideRef.current) setPanelWidth(asideRef.current.offsetWidth);
+  }, [open]);
   const mdComponents = useMemo(
     () => buildComponents(getRef, onRefClick),
     [getRef, onRefClick],
@@ -185,10 +193,11 @@ export default function AgentChat({
       <aside className="rail rail-r">
         <button
           className="rrail-btn"
+          aria-label="Open the process assistant"
           title="Open the process assistant"
           onClick={onToggle}
         >
-          ✦
+          <span aria-hidden="true">✦</span>
         </button>
         <span className="rrail-lbl">Assistant</span>
       </aside>
@@ -202,16 +211,24 @@ export default function AgentChat({
     setDraft("");
   }
 
-  // Drag the left-edge handle to widen / narrow the panel. The panel is
-  // flush-right, so its width is the distance from the cursor to the
-  // viewport's right edge; clamped to keep the document canvas usable.
+  // Resize the panel, clamped to keep the document canvas usable. The panel is
+  // flush-right, so a wider panel means its left edge moves left.
+  const RESIZE_MIN = 300;
+  const RESIZE_MAX = 720;
+  const RESIZE_STEP = 16;
+  const applyWidth = (w: number) => {
+    const clamped = Math.min(RESIZE_MAX, Math.max(RESIZE_MIN, Math.round(w)));
+    onWidthChange(clamped);
+    setPanelWidth(clamped);
+  };
+
+  // Drag the left-edge handle to widen / narrow the panel.
   function onResizeStart(e: ReactMouseEvent) {
     e.preventDefault();
     document.body.style.userSelect = "none";
     document.body.style.cursor = "col-resize";
     function onMove(ev: MouseEvent) {
-      const w = window.innerWidth - ev.clientX;
-      onWidthChange(Math.min(720, Math.max(300, w)));
+      applyWidth(window.innerWidth - ev.clientX);
     }
     function onUp() {
       document.body.style.userSelect = "";
@@ -223,12 +240,43 @@ export default function AgentChat({
     window.addEventListener("mouseup", onUp);
   }
 
+  // Keyboard equivalent for the resize separator (a11y). ←/→ nudge the width,
+  // Home/End jump to the bounds. Left = wider (the panel is flush-right).
+  function onResizeKey(e: ReactKeyboardEvent<HTMLDivElement>) {
+    const cur = panelWidth || asideRef.current?.offsetWidth || RESIZE_MIN;
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      applyWidth(cur + RESIZE_STEP);
+    } else if (e.key === "ArrowRight") {
+      e.preventDefault();
+      applyWidth(cur - RESIZE_STEP);
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      applyWidth(RESIZE_MAX);
+    } else if (e.key === "End") {
+      e.preventDefault();
+      applyWidth(RESIZE_MIN);
+    }
+  }
+
+  const restartLabel = pending
+    ? "Cancel the running turn and restart the session"
+    : "Restart the assistant session — clears this conversation";
+
   return (
-    <aside className="rail rail-r chat">
+    <aside ref={asideRef} className="rail rail-r chat">
       <div
         className="chat-resize"
-        title="Drag to resize the panel"
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="Resize assistant panel"
+        aria-valuemin={RESIZE_MIN}
+        aria-valuemax={RESIZE_MAX}
+        aria-valuenow={panelWidth || undefined}
+        tabIndex={0}
+        title="Drag (or use arrow keys) to resize the panel"
         onMouseDown={onResizeStart}
+        onKeyDown={onResizeKey}
       />
       <div className="chat-head">
         <span className="chat-title">{title}</span>
@@ -236,20 +284,18 @@ export default function AgentChat({
           className="chat-restart"
           onClick={onRestart}
           disabled={!pending && messages.length === 0}
-          title={
-            pending
-              ? "Cancel the running turn and restart the session"
-              : "Restart the assistant session — clears this conversation"
-          }
+          aria-label={restartLabel}
+          title={restartLabel}
         >
-          ↻
+          <span aria-hidden="true">↻</span>
         </button>
         <button
           className="chat-collapse"
           onClick={onToggle}
+          aria-label="Collapse panel"
           title="Collapse panel"
         >
-          ⟩
+          <span aria-hidden="true">⟩</span>
         </button>
       </div>
       <div className="chat-sub">{subtitle}</div>
