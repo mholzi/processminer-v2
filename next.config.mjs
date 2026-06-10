@@ -8,6 +8,16 @@ if (basePath) {
   }
 }
 
+let assetPrefix = process.env.NEXT_ASSET_PREFIX || undefined;
+if (assetPrefix) {
+  if (!assetPrefix.startsWith("/")) {
+    assetPrefix = "/" + assetPrefix;
+  }
+  if (!assetPrefix.endsWith("/")) {
+    assetPrefix = assetPrefix + "/";
+  }
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Wiki pages are read from the local filesystem at request time (Karpathy
@@ -18,8 +28,10 @@ const nextConfig = {
   // Dev leaves NEXT_DIST_DIR unset → `.next`; prod sets it → `.next-prod`.
   distDir: process.env.NEXT_DIST_DIR || ".next",
   basePath,
+  assetPrefix,
   env: {
     NEXT_PUBLIC_BASE_PATH: basePath || "",
+    NEXT_PUBLIC_ASSET_PREFIX: assetPrefix || "",
   },
 };
 

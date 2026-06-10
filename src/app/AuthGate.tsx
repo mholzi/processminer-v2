@@ -3,11 +3,14 @@
 if (typeof window !== "undefined" && !(window as any).__fetchIntercepted) {
   (window as any).__fetchIntercepted = true;
   const originalFetch = window.fetch;
-  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-  if (basePath) {
+  let prefix = process.env.NEXT_PUBLIC_BASE_PATH || process.env.NEXT_PUBLIC_ASSET_PREFIX || "";
+  if (prefix.endsWith("/")) {
+    prefix = prefix.slice(0, -1);
+  }
+  if (prefix) {
     window.fetch = function (input, init) {
       if (typeof input === "string" && input.startsWith("/api/")) {
-        return originalFetch.call(this, basePath + input, init);
+        return originalFetch.call(this, prefix + input, init);
       }
       return originalFetch.call(this, input, init);
     };
