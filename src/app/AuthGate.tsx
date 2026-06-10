@@ -1,5 +1,19 @@
 "use client";
 
+if (typeof window !== "undefined" && !(window as any).__fetchIntercepted) {
+  (window as any).__fetchIntercepted = true;
+  const originalFetch = window.fetch;
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+  if (basePath) {
+    window.fetch = function (input, init) {
+      if (typeof input === "string" && input.startsWith("/api/")) {
+        return originalFetch.call(this, basePath + input, init);
+      }
+      return originalFetch.call(this, input, init);
+    };
+  }
+}
+
 import { useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import type { Schema, ProcessDoc } from "@/lib/wiki";
