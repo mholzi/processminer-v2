@@ -1,13 +1,8 @@
-// Tests for the session-cookie verifier — the authn boundary. `decodeSession`
-// holds all the crypto/expiry logic (the user lookup is split into
-// verifySession), so it is testable without the user store. A test secret is
-// set before any call, since sessionSecret() reads PM_SESSION_SECRET at use.
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { signSession, decodeSession } from "./auth-server.ts";
 
 process.env.PM_SESSION_SECRET = "test-secret-at-least-16-chars-long";
-
-const { signSession, decodeSession } = await import("./auth-server.ts");
 
 test("decodeSession round-trips a freshly signed token to its username", () => {
   assert.equal(decodeSession(signSession("u.test")), "u.test");

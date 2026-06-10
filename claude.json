@@ -2,7 +2,7 @@
   "mcpServers": {
     "processminer": {
       "command": "node",
-      "args": ["--experimental-strip-types", "src/lib/claude-mcp-server.ts"]
+      "args": ["--import", "tsx", "src/lib/claude-mcp-server.ts"]
     }
   }
 }
