@@ -815,7 +815,7 @@ export class GeminiWorker implements IProcessWorker {
   constructor(resumeId?: string | null, user?: { username: string; isAdmin: boolean } | null) {
     this.user = user ?? null;
     this.sessionId = resumeId || crypto.randomUUID();
-    const useVertex = process.env.VERTEX_AI === "true";
+    const useVertex = process.env.VERTEX_AI?.toLowerCase() === "true";
     if (useVertex) {
       this.ai = new GoogleGenAI({
         vertexai: true,

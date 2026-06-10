@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 
 const API_KEY = process.env.GEMINI_API_KEY;
-const VERTEX_AI = process.env.VERTEX_AI === "true";
+const VERTEX_AI = process.env.VERTEX_AI?.toLowerCase() === "true";
 if (!API_KEY && !VERTEX_AI) {
   console.error("Neither GEMINI_API_KEY nor VERTEX_AI=true is set.");
   process.exit(1);
