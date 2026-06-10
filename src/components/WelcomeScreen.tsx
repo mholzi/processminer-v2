@@ -66,17 +66,84 @@ export default function WelcomeScreen({
   onEnterAdmin,
   onSignOut,
   onUpdateUser,
+  onSignIn,
 }: {
   docs: ProcessDoc[];
-  user: User;
+  user: User | null;
   onEnterProcessminer: (slug?: string) => void;
   onEnterArchitectminer: (slug?: string) => void;
   /** Set only for admin users — opens the admin screen. */
   onEnterAdmin?: () => void;
   onSignOut: () => void;
   onUpdateUser: (user: User) => void;
+  onSignIn?: () => void;
 }) {
   const [profileOpen, setProfileOpen] = useState(false);
+  const [advisorOpen, setAdvisorOpen] = useState<string | null>(null);
+
+  if (!user) {
+    return (
+      <div className="ws-root" data-mod="pm" data-scenario="pm">
+        <header className="ws-topbar">
+          <span className="ws-wordmark">PROCESSMINER</span>
+          <span className="ws-sub">platform</span>
+          <span className="ws-spacer" />
+          <button
+            type="button"
+            className="ws-signin-btn"
+            onClick={onSignIn}
+            style={{
+              background: "var(--accent)",
+              color: "#fff",
+              border: "none",
+              padding: "0.5rem 1rem",
+              borderRadius: "0.25rem",
+              cursor: "pointer",
+              fontWeight: 500,
+            }}
+          >
+            Sign In
+          </button>
+        </header>
+
+        <main className="ws-page" style={{ maxWidth: "800px", margin: "4rem auto 0 auto", padding: "0 2rem" }}>
+          <h1 className="ws-greet-h" style={{ fontSize: "2.25rem", fontWeight: 600, letterSpacing: "-0.02em", marginBottom: "0.5rem" }}>Chat to an Agent</h1>
+          <p className="ws-greet-sub" style={{ fontSize: "1rem", color: "var(--text-muted)", marginBottom: "3rem" }}>
+            Get expert feedback and guidance on your documents and designs.
+          </p>
+
+          <section className="ws-sec ws-advisory">
+            <div className="ws-ab-roster">
+              {ADVISORS.filter(a => a.id === "solution-architect" || a.id === "domain-architect").map((a) => (
+                <button
+                  key={a.id}
+                  type="button"
+                  className="ws-ab-card"
+                  onClick={() => setAdvisorOpen(a.id)}
+                >
+                  <span className="ws-ab-av">{a.monogram}</span>
+                  <span className="ws-ab-name">{a.name}</span>
+                  <span className="ws-ab-ask">Ask →</span>
+                </button>
+              ))}
+            </div>
+          </section>
+        </main>
+
+        {advisorOpen && (
+          <AdvisorChat
+            key={advisorOpen}
+            advisorId={advisorOpen}
+            onSwitch={setAdvisorOpen}
+            onClose={() => setAdvisorOpen(null)}
+            docs={[]}
+            user={null}
+          />
+        )}
+      </div>
+    );
+  }
+
   const hasPM = hasEntitlement(user, "pm");
   const hasAM = hasEntitlement(user, "am");
   const scenario: "pm" | "am" | "both" =
@@ -84,7 +151,6 @@ export default function WelcomeScreen({
 
   const [view, setView] = useState<View>(scenario === "both" ? "both" : scenario);
   // Advisory Board — which advisor's slide-over is open (id), or null.
-  const [advisorOpen, setAdvisorOpen] = useState<string | null>(null);
   const showAdvisory = hasPM && (view === "both" || view === "pm");
   useEffect(() => {
     // If the user's entitlements change between renders, fix the view to
@@ -313,11 +379,6 @@ export default function WelcomeScreen({
       )}
 
       <main className="ws-page">
-        <div className="ws-greet-eyebrow">
-          {todayLabel()} · welcome back, {user.name.split(/\s+/)[0]}
-        </div>
-        <h1 className="ws-greet-h">Your workspace</h1>
-        <p className="ws-greet-sub">{greetCount}</p>
 
         {/* In-flight work — the single highest-priority item is the hero; any
             others collapse into compact rows so there's one obvious next step
@@ -423,39 +484,40 @@ export default function WelcomeScreen({
           );
         })()}
 
-        {/* Advisory Board — sits above the processes; chat with the senior team. */}
-        {showAdvisory && (
-          <section className="ws-sec ws-advisory">
-            <div className="ws-ab-panel">
-              <div className="ws-ab-intro">
-                <h2>Advisory Board</h2>
-                <p>
-                  Chat with your senior team across all your processes.
-                  <span className="ws-ab-tag">read-only</span>
-                </p>
-              </div>
-              <div className="ws-ab-roster">
-                {ADVISORS.map((a) => (
-                  <button
-                    key={a.id}
-                    type="button"
-                    className="ws-ab-card"
-                    onClick={() => setAdvisorOpen(a.id)}
-                  >
-                    <span className="ws-ab-av">{a.monogram}</span>
-                    <span className="ws-ab-name">{a.name}</span>
-                    <span className="ws-ab-ask">Ask →</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
+        {/* Open process */}
+        <section className="ws-sec">
+          <div className="ws-sec-h">
+            <h2>Open process</h2>
+          </div>
+          <div className="ws-recents">
+            {recents.map((r, i) => (
+              <button
+                key={r.slug}
+                type="button"
+                className={`ws-recent-chip${i === 0 ? " current" : ""}`}
+                onClick={() => openProcess(r.slug)}
+              >
+                <span className="ws-recent-id">{r.id}</span>
+                <span className="ws-recent-name">{r.title}</span>
+                {r.lastModified && (
+                  <RelativeTime ts={r.lastModified} className="ws-recent-when" />
+                )}
+              </button>
+            ))}
+            <button
+              type="button"
+              className="ws-recent-chip add"
+              onClick={() => onEnterProcessminer("_new_")}
+            >
+              + New process
+            </button>
+          </div>
+        </section>
 
         {/* The queue */}
         <section className="ws-sec">
           <div className="ws-sec-h">
-            <h2>Needs your attention</h2>
+            <h2>Review your actions</h2>
             <span className="ws-sec-num">{queueLength} items</span>
           </div>
 
@@ -480,36 +542,37 @@ export default function WelcomeScreen({
                   }`}
                   onClick={() => openHandoff(d.slug)}
                 >
-                  <span className="ws-attn-body">
-                    <span className="ws-badges">
-                      <span className="ws-badge handoff">
-                        {scenario === "pm"
-                          ? "Outbound"
-                          : scenario === "am"
-                            ? "PM → AM · Inbox"
-                            : "PM → AM"}
-                      </span>
-                    </span>
-                    <span className="ws-attn-title">
-                      <span className="ws-pm-id">{d.process.id}</span> ·{" "}
-                      <b>{d.process.title}</b>{" "}
+                  <div className="ws-attn-col-badge">
+                    <span className="ws-badge handoff">
                       {scenario === "pm"
-                        ? "is locked — awaiting architect pickup"
+                        ? "Outbound"
                         : scenario === "am"
-                          ? "just landed in your inbox"
-                          : "ready for architecture handoff"}
+                          ? "PM → AM"
+                          : "PM → AM"}
                     </span>
-                    <span className="ws-attn-sub">
-                      Target Process complete · transformation team signed off
-                    </span>
-                  </span>
-                  <span className="ws-attn-cta">
+                  </div>
+                  <div className="ws-attn-col-id">
+                    <span className="ws-pm-id">{d.process.id}</span>
+                  </div>
+                  <div className="ws-attn-col-title">
+                    {d.process.title}
+                  </div>
+                  <div className="ws-attn-col-reason">
                     {scenario === "pm"
-                      ? "View status →"
+                      ? "locked — awaiting architect pickup"
                       : scenario === "am"
-                        ? "Open handoff →"
-                        : "Hand off →"}
-                  </span>
+                        ? "just landed in your inbox"
+                        : "ready for architecture handoff"}
+                  </div>
+                  <div className="ws-attn-col-cta">
+                    <span className="ws-attn-cta">
+                      {scenario === "pm"
+                        ? "View status →"
+                        : scenario === "am"
+                          ? "Open handoff →"
+                          : "Hand off →"}
+                    </span>
+                  </div>
                 </button>
               ))}
 
@@ -521,18 +584,21 @@ export default function WelcomeScreen({
                   className="ws-attn-item"
                   onClick={() => openProcess(it.slug)}
                 >
-                  <span className="ws-attn-body">
-                    {scenario === "both" && (
-                      <span className="ws-badges">
-                        <span className="ws-badge pm">PM</span>
-                      </span>
-                    )}
-                    <span className="ws-attn-title">
-                      <span className="ws-pm-id">{it.id}</span> · {it.reasons.join(" · ")}
-                    </span>
-                    <span className="ws-attn-sub">{it.title}</span>
-                  </span>
-                  <span className="ws-attn-cta">Open →</span>
+                  <div className="ws-attn-col-badge">
+                    <span className="ws-badge pm">PM</span>
+                  </div>
+                  <div className="ws-attn-col-id">
+                    <span className="ws-pm-id">{it.id}</span>
+                  </div>
+                  <div className="ws-attn-col-title">
+                    {it.title}
+                  </div>
+                  <div className="ws-attn-col-reason">
+                    {it.reasons.join(" · ")}
+                  </div>
+                  <div className="ws-attn-col-cta">
+                    <span className="ws-attn-cta">Open →</span>
+                  </div>
                 </button>
               ))}
 
@@ -541,33 +607,31 @@ export default function WelcomeScreen({
           )}
         </section>
 
-        {/* Footer: recents strip + new process */}
-        <footer className="ws-foot">
-          <div className="ws-foot-label">Recent</div>
-          <div className="ws-recents">
-            {recents.map((r, i) => (
-              <button
-                key={r.slug}
-                type="button"
-                className={`ws-recent-chip${i === 0 ? " current" : ""}`}
-                onClick={() => openProcess(r.slug)}
-              >
-                <span className="ws-recent-id">{r.id}</span>
-                <span className="ws-recent-name">{r.title}</span>
-                {r.lastModified && (
-                  <RelativeTime ts={r.lastModified} className="ws-recent-when" />
-                )}
-              </button>
-            ))}
-            <button
-              type="button"
-              className="ws-recent-chip add"
-              onClick={() => onEnterProcessminer()}
-            >
-              + New process
-            </button>
-          </div>
-        </footer>
+        {/* Advisory Board — sits below the queue; chat with the senior team. */}
+        {showAdvisory && (
+          <section className="ws-sec ws-advisory">
+            <div className="ws-sec-h">
+              <h2>Chat to an Agent</h2>
+              <span className="ws-sec-num">
+                Chat with your senior team across all your processes. <span className="ws-ab-tag">read-only</span>
+              </span>
+            </div>
+            <div className="ws-ab-roster">
+              {ADVISORS.map((a) => (
+                <button
+                  key={a.id}
+                  type="button"
+                  className="ws-ab-card"
+                  onClick={() => setAdvisorOpen(a.id)}
+                >
+                  <span className="ws-ab-av">{a.monogram}</span>
+                  <span className="ws-ab-name">{a.name}</span>
+                  <span className="ws-ab-ask">Ask →</span>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
 
       {advisorOpen && (

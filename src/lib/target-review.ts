@@ -14,7 +14,7 @@ export type CouncilSpecialist =
   | "control-compliance-specialist"
   | "client-journey-specialist"
   | "innovation-analyst"
-  | "it-architect";
+  | "solution-architect";
 
 /** The SME's ruling on one feedback item. */
 export type TriageState = "pending" | "accepted" | "rejected";
@@ -53,7 +53,7 @@ export const COUNCIL_SPECIALISTS: {
   { id: "control-compliance-specialist", label: "Control & Compliance" },
   { id: "client-journey-specialist", label: "Client Journey" },
   { id: "innovation-analyst", label: "Innovation" },
-  { id: "it-architect", label: "IT Architecture" },
+  { id: "solution-architect", label: "IT Architecture" },
 ];
 
 export function specialistLabel(s: CouncilSpecialist): string {

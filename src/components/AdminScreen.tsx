@@ -8,6 +8,7 @@ import WhatsNewPanel from "@/components/WhatsNewPanel";
 import FeedbackScreen from "@/components/FeedbackScreen";
 import Modal from "@/components/Modal";
 import type { FeedbackItem } from "@/lib/feedback";
+import SkillsEditorPanel from "@/components/SkillsEditorPanel";
 
 // Admin screen — lists every user and lets an admin create, edit, reset
 // password, or delete. Only reachable when user.isAdmin === true; the
@@ -32,7 +33,7 @@ export default function AdminScreen({
   onReturnToSplash: () => void;
 }) {
   const [tab, setTab] = useState<
-    "users" | "features" | "usage" | "whatsnew" | "feedback"
+    "users" | "features" | "usage" | "whatsnew" | "feedback" | "skills"
   >("users");
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -157,6 +158,13 @@ export default function AdminScreen({
         >
           Feedback{feedback.length > 0 ? ` (${feedback.length})` : ""}
         </button>
+        <button
+          type="button"
+          className={`admin-tab${tab === "skills" ? " admin-tab-on" : ""}`}
+          onClick={() => setTab("skills")}
+        >
+          Agent Skills
+        </button>
       </nav>
 
       {tab === "features" && <FeatureTogglesPanel />}
@@ -167,6 +175,7 @@ export default function AdminScreen({
       {tab === "feedback" && (
         <FeedbackScreen embedded feedback={feedback} user={user} />
       )}
+      {tab === "skills" && <SkillsEditorPanel />}
 
       {tab === "users" && (
       <>
@@ -354,6 +363,12 @@ function CreateUserDialog({
     e.preventDefault();
     setBusy(true);
     setErr(null);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(username.trim())) {
+      setErr("Please enter a valid email address (e.g., user@domain.com).");
+      setBusy(false);
+      return;
+    }
     try {
       const r = await fetch("/api/admin/users", {
         method: "POST",
@@ -389,11 +404,11 @@ function CreateUserDialog({
     >
       <form onSubmit={submit}>
         <label className="login-field">
-          <span>Username</span>
+          <span>Username (Email)</span>
           <input
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="e.g. s.kowalski"
+            placeholder="e.g. sarah.kowalski@bank.com"
             autoFocus
             disabled={busy}
           />

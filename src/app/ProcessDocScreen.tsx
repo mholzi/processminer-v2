@@ -133,6 +133,23 @@ const IconExport = () => (
   </svg>
 );
 
+const IconShare = () => (
+  <svg
+    width={13}
+    height={13}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+    <polyline points="16 6 12 2 8 6" />
+    <line x1="12" y1="2" x2="12" y2="15" />
+  </svg>
+);
+
 // The non-interactive web-sourcing skills, and the sections each fills.
 const INNOVATION_SECTIONS = [
   "market-trends",
@@ -175,8 +192,8 @@ const AREA_NEXT: Record<
     blurb: "draft a first-stub target state from the work so far",
   },
   "it-architecture": {
-    skill: "it-architect",
-    label: "IT architect",
+    skill: "solution-architect",
+    label: "Solution architect",
     blurb: "map the systems landscape",
   },
 };
@@ -197,8 +214,8 @@ const SPECIALIST: Record<string, { label: string; blurb: string }> = {
     label: "Client Journey Specialist",
     blurb: "maps the client journey",
   },
-  "it-architect": {
-    label: "IT Architect",
+  "solution-architect": {
+    label: "Solution Architect",
     blurb: "maps the systems landscape",
   },
   "innovation-analyst": {
@@ -222,7 +239,6 @@ const SKILL_LABEL: Record<string, string> = {
   "process-specialist": "Process Specialist",
   "control-compliance-specialist": "Control & Compliance Specialist",
   "client-journey-specialist": "Client Journey Specialist",
-  "it-architect": "IT Architect",
   "innovation-analyst": "Innovation Analyst",
   "transformation-agent": "Transformation Agent",
   "domain-architect": "Domain Architect",
@@ -543,6 +559,7 @@ export default function ProcessDocScreen({
     openingRunDoc ? "__triage" : "process-steps",
   );
   const [wholeDocMode, setWholeDocMode] = useState<"word" | "word-meta" | "source" | "source-expanded">("word");
+  const [shareCopied, setShareCopied] = useState(false);
   // Element-list view filter for the current section: all, only those a lint
   // finding touches, or only those not yet reviewed. Set by the nav `!` badge
   // and the area progress meter; reset to "all" on a plain section change.
@@ -843,6 +860,7 @@ export default function ProcessDocScreen({
       return;
     }
     const urlSlug = params.get("p");
+    const urlSection = params.get("section");
     // An explicit splash pick (initialSlug) wins over a stale `?p=` left in the
     // URL by a previous process — otherwise picking COB-003 from the workspace
     // gets clobbered back to whatever the URL still points at. Only restore from
@@ -855,12 +873,34 @@ export default function ProcessDocScreen({
       docs.some((d) => d.slug === urlSlug)
     ) {
       switchProcess(urlSlug);
+      if (urlSection) {
+        setSection(urlSection);
+      }
     } else {
-      window.history.replaceState(null, "", `?p=${currentSlug}`);
+      if (urlSection) {
+        setSection(urlSection);
+      }
+      const newParams = new URLSearchParams();
+      newParams.set("p", currentSlug);
+      if (urlSection) {
+        newParams.set("section", urlSection);
+      }
+      window.history.replaceState(null, "", `?${newParams.toString()}`);
     }
     // Mount-only: restore once from the URL, then switchProcess keeps it synced.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Keep URL parameters in sync with current slug and section
+  useEffect(() => {
+    if (appView === "feedback") return;
+    const params = new URLSearchParams();
+    params.set("p", currentSlug);
+    if (section && section !== "process-steps" && section !== "overview") {
+      params.set("section", section);
+    }
+    window.history.replaceState(null, "", `?${params.toString()}`);
+  }, [currentSlug, section, appView]);
 
   // While a foundational run is active, the canvas follows the skill's lead —
   // the reviewState cursor advances each turn, and the app opens the section of
@@ -1473,6 +1513,13 @@ export default function ProcessDocScreen({
     });
   }
 
+  useEffect(() => {
+    if (initialSlug === "_new_") {
+      createProcess();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // The App Feedback page — feedback on the tool itself, kept in feedback/.
   // Opening it leaves the process shell mounted underneath; the URL carries
   // the view so a browser reload returns here.
@@ -1740,6 +1787,16 @@ export default function ProcessDocScreen({
     requestAnimationFrame(tryScroll);
   }
 
+  const handleShareLink = () => {
+    const shareUrl = `${window.location.origin}${window.location.pathname}?p=${currentSlug}&section=__wholedoc`;
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    }).catch(err => {
+      console.error("Failed to copy share link: ", err);
+    });
+  };
+
   return (
     <>
       <header className="topbar">
@@ -1879,15 +1936,7 @@ export default function ProcessDocScreen({
               <IconExport />
             </button>
           </Tooltip>
-          <Tooltip label="Agent Skills">
-            <button
-              className={`tb-icon${section === "__skills" ? " active" : ""}`}
-              onClick={() => setSection(section === "__skills" ? "overview" : "__skills")}
-              aria-label="Agent Skills"
-            >
-              <IconSkills />
-            </button>
-          </Tooltip>
+
           <Tooltip label="Contributors">
             <button
               className={`tb-icon${section === "__contributors" ? " active" : ""}`}
@@ -2309,13 +2358,43 @@ export default function ProcessDocScreen({
                 onReturnToSplash?.();
               }}
             />
-          ) : section === "__skills" ? (
-            <SkillsDashboard onBack={() => setSection("overview")} />
+
           ) : section === "__wholedoc" ? (
             <>
               <div className="canvas-head">
                 <h1>{doc.process.title} - {doc.process.id}</h1>
                 <div className="canvas-actions">
+                  <button
+                    className="canvas-act"
+                    onClick={handleShareLink}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "4px",
+                      padding: "4px 8px",
+                      ...(shareCopied ? {
+                        backgroundColor: "var(--hi-bg)",
+                        color: "var(--hi)",
+                        borderColor: "color-mix(in srgb, var(--hi) 30%, transparent)",
+                        fontWeight: "600",
+                        transition: "all 0.2s ease"
+                      } : {
+                        transition: "all 0.2s ease"
+                      })
+                    }}
+                  >
+                    {shareCopied ? (
+                      <>
+                        <span style={{ fontSize: "12px" }}>✓</span>
+                        <span>Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <IconShare />
+                        <span>Share Link</span>
+                      </>
+                    )}
+                  </button>
                   <select
                     className="canvas-act"
                     value={wholeDocMode}

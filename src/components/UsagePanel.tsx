@@ -100,13 +100,18 @@ export default function UsagePanel() {
 
   if (!hasAny) {
     return (
-      <div className="usage-panel">
-        <div className="usage-head-row">
-          <h2 className="usage-h">Token usage</h2>
+      <main className="admin-page usage-page-main">
+        <header className="admin-page-head">
+          <div>
+            <h1>Token usage</h1>
+            <p className="admin-muted" style={{ marginTop: 2 }}>
+              Average tokens and run-time per turn, by skill — across all processes.
+            </p>
+          </div>
           <button type="button" className="admin-btn-secondary" onClick={refresh}>
             Refresh
           </button>
-        </div>
+        </header>
         <div className="empty-state">
           <p>No usage recorded yet.</p>
           <p className="empty-hint">
@@ -114,7 +119,7 @@ export default function UsagePanel() {
             it will appear here.
           </p>
         </div>
-      </div>
+      </main>
     );
   }
 
@@ -129,10 +134,10 @@ export default function UsagePanel() {
   const maxAvgDuration = Math.max(...skillRows.map((r) => r.avgDurationMs), 1);
 
   return (
-    <div className="usage-panel">
-      <div className="usage-head-row">
+    <main className="admin-page usage-page-main">
+      <header className="admin-page-head">
         <div>
-          <h2 className="usage-h">Token usage</h2>
+          <h1>Token usage</h1>
           <p className="admin-muted" style={{ marginTop: 2 }}>
             Average tokens and run-time per turn, by skill — across all processes.
           </p>
@@ -140,7 +145,7 @@ export default function UsagePanel() {
         <button type="button" className="admin-btn-secondary" onClick={refresh}>
           Refresh
         </button>
-      </div>
+      </header>
 
       {/* Fleet averages strip */}
       <div className="usage-totals">
@@ -271,6 +276,6 @@ export default function UsagePanel() {
           ))}
         </tbody>
       </table>
-    </div>
+    </main>
   );
 }

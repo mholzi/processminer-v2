@@ -72,7 +72,7 @@ export default function WholeDocWordView({
       <section className="word-doc-toc">
         <h2 className="toc-title">Table of Contents</h2>
         <ul className="toc-list">
-          {schema.areas.map((area) => {
+          {schema.areas.map((area, idx) => {
             const hasElementsInArea = area.sections.some(
               (sec) => (elementsBySection[sec.id]?.length ?? 0) > 0
             );
@@ -81,17 +81,27 @@ export default function WholeDocWordView({
             return (
               <li key={area.id} className="toc-area-item">
                 <a href={`#area-${area.id}`} className="toc-link area-link">
-                  {area.label}
+                  {idx + 1}. {area.label}
                 </a>
                 <ul className="toc-sublist">
-                  {area.sections.map((section) => {
+                  {area.sections.map((section, sectionIdx) => {
                     const sectionElements = elementsBySection[section.id] ?? [];
                     if (sectionElements.length === 0) return null;
                     return (
                       <li key={section.id} className="toc-section-item">
                         <a href={`#section-${section.id}`} className="toc-link section-link">
-                          {section.label}
+                          {idx + 1}.{sectionIdx + 1} {section.label}
                         </a>
+                        <ul className="toc-element-list">
+                          {sectionElements.map((el) => (
+                            <li key={el.id} className="toc-element-item">
+                              <a href={`#${el.id}`} className="toc-link element-link">
+                                <span className="toc-element-id">{el.id}</span>
+                                <span className="toc-element-title">{el.title || "Untitled"}</span>
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
                       </li>
                     );
                   })}
@@ -103,7 +113,7 @@ export default function WholeDocWordView({
       </section>
 
       <div className="word-doc-content">
-        {schema.areas.map((area) => {
+        {schema.areas.map((area, idx) => {
           // Check if area has any sections with elements
           const hasElementsInArea = area.sections.some(
             (sec) => (elementsBySection[sec.id]?.length ?? 0) > 0
@@ -113,10 +123,10 @@ export default function WholeDocWordView({
           return (
             <div key={area.id} className="word-doc-area">
               <h2 id={`area-${area.id}`} className="word-doc-area-title">
-                {area.label}
+                {idx + 1}. {area.label}
               </h2>
               
-              {area.sections.map((section) => {
+              {area.sections.map((section, sectionIdx) => {
                 const sectionElements = elementsBySection[section.id] ?? [];
                 if (sectionElements.length === 0) return null;
 
@@ -134,7 +144,7 @@ export default function WholeDocWordView({
                 return (
                   <div key={section.id} className="word-doc-section">
                     <h3 id={`section-${section.id}`} className="word-doc-section-title">
-                      {section.label}
+                      {idx + 1}.{sectionIdx + 1} {section.label}
                       {section.description && (
                         <span className="word-doc-section-desc">
                           {section.description}

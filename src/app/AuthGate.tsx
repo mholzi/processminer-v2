@@ -15,7 +15,7 @@ import HandoffInbox from "@/components/HandoffInbox";
 import ArchitectureCanvas from "@/components/ArchitectureCanvas";
 import ProcessDocScreen from "./ProcessDocScreen";
 
-type Workspace = "splash" | "processminer" | "architectminer" | "admin";
+type Workspace = "splash" | "processminer" | "architectminer" | "admin" | "login";
 
 // Gates the workspace behind a real authenticated session. On mount, asks
 // /api/auth/me whether a valid session cookie is present; if not, shows
@@ -49,6 +49,14 @@ export default function AuthGate({
         if (r.ok) {
           const data = (await r.json()) as { user: User };
           setUser(data.user);
+
+          // Deep-link direct reload bypass for share link
+          const params = new URLSearchParams(window.location.search);
+          const p = params.get("p");
+          if (p && docs.some((d) => d.slug === p)) {
+            setInitialSlug(p);
+            setWorkspace("processminer");
+          }
         }
       })
       .catch(() => {
@@ -60,12 +68,11 @@ export default function AuthGate({
     return () => {
       live = false;
     };
-  }, []);
+  }, [docs]);
 
   function handleSignedIn(next: User) {
     setUser(next);
-    // Re-run the server component so the process list is rebuilt with this
-    // user's access (R16) — page.tsx filters by the session cookie.
+    setWorkspace("splash");
     router.refresh();
   }
 
@@ -79,7 +86,7 @@ export default function AuthGate({
     setWorkspace("splash");
     setInitialSlug(undefined);
     setArchitectSlug(undefined);
-    router.refresh(); // drop the (now inaccessible) docs server-side
+    router.refresh();
   }
 
   function enterProcessminer(slug?: string) {
@@ -97,7 +104,12 @@ export default function AuthGate({
   }
 
   if (!loaded) return null;
-  if (!user) return <LoginGate onSignedIn={handleSignedIn} />;
+  if (!user && workspace !== "splash" && workspace !== "login") {
+    return <LoginGate onSignedIn={handleSignedIn} onCancel={() => setWorkspace("splash")} />;
+  }
+  if (workspace === "login") {
+    return <LoginGate onSignedIn={handleSignedIn} onCancel={() => setWorkspace("splash")} />;
+  }
 
   // The signed-in workspace is wrapped in the flag provider so any feature can
   // read its toggle with useFeatureFlag(). The login/splash-loading states
@@ -110,15 +122,16 @@ export default function AuthGate({
         user={user}
         onEnterProcessminer={enterProcessminer}
         onEnterArchitectminer={enterArchitectminer}
-        onEnterAdmin={user.isAdmin ? enterAdmin : undefined}
+        onEnterAdmin={user?.isAdmin ? enterAdmin : undefined}
         onSignOut={handleSignOut}
         onUpdateUser={setUser}
+        onSignIn={() => setWorkspace("login")}
       />
     );
   } else if (workspace === "admin") {
     content = (
       <AdminScreen
-        user={user}
+        user={user!}
         feedback={feedback}
         onReturnToSplash={() => setWorkspace("splash")}
       />
@@ -128,13 +141,13 @@ export default function AuthGate({
     content = openDoc ? (
       <ArchitectureCanvas
         doc={openDoc}
-        user={user}
+        user={user!}
         onReturnToInbox={() => setArchitectSlug(undefined)}
       />
     ) : (
       <HandoffInbox
         docs={docs}
-        user={user}
+        user={user!}
         onReturnToSplash={() => setWorkspace("splash")}
         onOpenProcess={(slug) => setArchitectSlug(slug)}
       />
@@ -145,7 +158,7 @@ export default function AuthGate({
         schema={schema}
         docs={docs}
         feedback={feedback}
-        user={user}
+        user={user!}
         onUpdateUser={setUser}
         onSignOut={handleSignOut}
         initialSlug={initialSlug}
@@ -172,7 +185,7 @@ export default function AuthGate({
   return (
     <FeatureFlagsProvider flags={flags}>
       {content}
-      <FloatingFeedback user={user} contextLabel={contextLabel} />
+      <FloatingFeedback user={user || ({ name: "Guest", role: "Guest", username: "guest", entitlements: ["pm"] } as User)} contextLabel={contextLabel} />
     </FeatureFlagsProvider>
   );
 }

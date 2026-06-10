@@ -8,8 +8,10 @@ import type { User } from "@/lib/user";
 // this whenever /api/auth/me responds 401.
 export default function LoginGate({
   onSignedIn,
+  onCancel,
 }: {
   onSignedIn: (user: User) => void;
+  onCancel?: () => void;
 }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -79,6 +81,26 @@ export default function LoginGate({
         <button className="login-submit" type="submit" disabled={!ready || busy}>
           {busy ? "Signing in…" : "Sign in"}
         </button>
+        {onCancel && (
+          <button
+            className="login-cancel"
+            type="button"
+            onClick={onCancel}
+            disabled={busy}
+            style={{
+              marginTop: "0.5rem",
+              background: "transparent",
+              border: "1px solid var(--border)",
+              color: "var(--text-muted)",
+              padding: "0.5rem 1rem",
+              borderRadius: "0.25rem",
+              cursor: "pointer",
+              width: "100%",
+            }}
+          >
+            Continue as Guest
+          </button>
+        )}
         <p className="login-hint">
           No account? Ask your administrator to create one for you.
         </p>

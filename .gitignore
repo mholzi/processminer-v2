@@ -53,3 +53,6 @@ tmp/
 # Local user store: bcrypt-hashed passwords, session secrets, audit log.
 # Server-only, never committed.
 /data/
+
+# Local diff reports
+diff-report.html

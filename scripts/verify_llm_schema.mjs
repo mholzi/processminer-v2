@@ -3,15 +3,25 @@ import fs from "fs";
 import path from "path";
 
 const API_KEY = process.env.GEMINI_API_KEY;
-if (!API_KEY) {
-  console.error("GEMINI_API_KEY is not set.");
+const VERTEX_AI = process.env.VERTEX_AI === "true";
+if (!API_KEY && !VERTEX_AI) {
+  console.error("Neither GEMINI_API_KEY nor VERTEX_AI=true is set.");
   process.exit(1);
 }
 
 const MODEL = process.env.SESSION_MODEL || "gemini-2.5-flash";
 console.log(`Using model: ${MODEL}`);
 
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+let ai;
+if (VERTEX_AI) {
+  ai = new GoogleGenAI({
+    vertexai: true,
+    project: process.env.GOOGLE_CLOUD_PROJECT || undefined,
+    location: process.env.GOOGLE_CLOUD_LOCATION || "us-central1",
+  });
+} else {
+  ai = new GoogleGenAI({ apiKey: API_KEY });
+}
 
 // Read process-schema.json
 const schemaPath = path.resolve("src/lib/schema/process-schema.json");

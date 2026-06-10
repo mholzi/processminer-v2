@@ -11,7 +11,7 @@ Follow this script to verify that the **Process Specialist** is correctly utiliz
    ```env
    SESSION_PROVIDER=gemini
    SESSION_MODEL=gemini-3.5-flash
-   GEMINI_API_KEY=AIzaSyCgiE8Byy6m2M6mizEivyvk1NLWQE725KE
+   GEMINI_API_KEY=YOUR_GEMINI_API_KEY
    ```
 
 2. **Start the Development Server**:

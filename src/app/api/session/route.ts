@@ -77,19 +77,13 @@ function describeTool(name: string, input: Record<string, unknown>): string {
   if (name === "Skill") return "Working …";
   if (name === "Grep" || name === "Glob") return "Searching files …";
   if (name === "Task" || name === "Agent") return "Starting sub-agent …";
+  if (name === "readDocument") {
+    return input.url ? `🔍 Reading document ${String(input.url).split("/").pop()} …` : "🔍 Reading document …";
+  }
   return `${name} …`;
 }
 
 export async function POST(req: NextRequest) {
-  // Authentication gate. This endpoint drives a `claude` worker running with
-  // --dangerously-skip-permissions that writes wiki files and runs scripts —
-  // the single most powerful surface in the app. It must never be reachable
-  // without a valid session.
-  const sessionUser = verifySession(req.cookies.get(COOKIE_NAME)?.value);
-  if (!sessionUser) {
-    return Response.json({ error: "Not signed in." }, { status: 401 });
-  }
-
   let body: {
     message?: unknown;
     sessionId?: unknown;
@@ -115,12 +109,33 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "A message is required." }, { status: 400 });
   }
 
-  // Advisory Board: on the FIRST turn of an advisor session (no resume id yet)
-  // the server prepends the persona + read-only contract + allow-list, exactly
-  // like the per-process scope preamble but cross-process. Later turns inherit
-  // it via --resume. Access scoping is prompt-level for now (plan §5, B).
   const advisor =
     typeof body.advisor === "string" && body.advisor ? body.advisor.trim() : null;
+
+  // Determine mode
+  let mode = 1;
+  if (advisor) {
+    const advisorSlugs = Array.isArray(body.advisorSlugs)
+      ? body.advisorSlugs.filter((s): s is string => typeof s === "string")
+      : [];
+    mode = advisorSlugs.length > 0 ? 2 : 3;
+  }
+
+  // Authentication gate. This endpoint drives a `claude` worker running with
+  // --dangerously-skip-permissions that writes wiki files and runs scripts —
+  // the single most powerful surface in the app. It must never be reachable
+  // without a valid session.
+  const sessionUser = verifySession(req.cookies.get(COOKIE_NAME)?.value);
+  if (!sessionUser) {
+    const allowedAdvisor = advisor === "solution-architect" || advisor === "domain-architect";
+    if (mode === 3 && allowedAdvisor) {
+      // Allow unauthenticated guests for Mode 3 only
+    } else {
+      return Response.json({ error: "Not signed in." }, { status: 401 });
+    }
+  }
+
+  const activeUser = sessionUser || { username: "guest", isAdmin: false };
 
   // Per-process access gate (R16). Ordinary process/architect turns carry the
   // open process `slug`; the user must pass canAccess for it — exactly the
@@ -129,7 +144,7 @@ export async function POST(req: NextRequest) {
   // fan-out) and exempt: they scope access at the prompt level via
   // buildAdvisorPreamble, so they never carry a single per-process slug.
   if (!advisor && slug) {
-    if (!canAccess(sessionUser, slug)) {
+    if (!canAccess(activeUser, slug)) {
       return Response.json(
         { error: "You don't have access to this process." },
         { status: 403 },
@@ -140,7 +155,7 @@ export async function POST(req: NextRequest) {
     // against the slug the worker recorded for this session, if any.
     if (sessionId) {
       const bound = recordedSlug(sessionId);
-      if (bound && !canAccess(sessionUser, bound)) {
+      if (bound && !canAccess(activeUser, bound)) {
         return Response.json(
           { error: "You don't have access to this process." },
           { status: 403 },
@@ -156,7 +171,7 @@ export async function POST(req: NextRequest) {
       : [];
     const userName =
       typeof body.userName === "string" && body.userName ? body.userName : undefined;
-    const preamble = buildAdvisorPreamble(advisor, advisorSlugs, userName);
+    const preamble = buildAdvisorPreamble(advisor, advisorSlugs, userName, mode === 3);
     if (preamble) wireMessage = preamble + message;
   }
   // When true, the caller wants the reply streamed as it is written — we
@@ -170,8 +185,8 @@ export async function POST(req: NextRequest) {
   // a session can only reach processes its user can see, not every process on
   // disk (the cross-process read tools would otherwise leak governed ones).
   const worker = sessionPool.acquire(sessionId, {
-    username: sessionUser.username,
-    isAdmin: sessionUser.isAdmin === true,
+    username: activeUser.username,
+    isAdmin: activeUser.isAdmin === true,
   });
 
   const stream = new ReadableStream<Uint8Array>({
@@ -277,11 +292,12 @@ export async function POST(req: NextRequest) {
           // per-skill runtime tally. Both backends already carry usage on the
           // result event; the duration is measured here. Only for a real
           // process turn (slug) and a non-error result.
+          const targetSlug = slug || (advisor ? "_advisory_" : null);
           const usage = extractUsage(evt as Record<string, unknown>);
           const durationMs = Math.max(0, Date.now() - turnStart);
-          if ((usage || durationMs > 0) && slug && !evt.is_error) {
+          if ((usage || durationMs > 0) && targetSlug && !evt.is_error) {
             try {
-              recordSkillUsage(slug, skill ?? "free-chat", usage, durationMs);
+              recordSkillUsage(targetSlug, skill ?? "free-chat", usage, durationMs);
             } catch {
               // never let usage accounting break the turn
             }
@@ -332,7 +348,7 @@ export async function POST(req: NextRequest) {
       (async () => {
         try {
           turnStart = Date.now();
-          for await (const evt of worker.runTurn(wireMessage, skill)) {
+          for await (const evt of worker.runTurn(wireMessage, skill, mode)) {
             handleEvent(evt);
           }
           if (!resultSent) {

@@ -32,20 +32,29 @@ export function buildAdvisorPreamble(
   advisorId: string,
   allowedSlugs: string[],
   userName?: string,
+  isStandalone?: boolean,
 ): string {
   const advisor = getAdvisor(advisorId);
   if (!advisor) return "";
 
   const core = readPrompt("CORE_ADVISOR_PROMPT.md");
-  const persona = readPrompt(advisorId, "ADVISOR.md");
+  let persona = "";
+  if (advisorId === "solution-architect" || advisorId === "domain-architect") {
+    const skillPath = join(process.cwd(), ".claude", "skills", advisorId, "SKILL.md");
+    persona = existsSync(skillPath) ? readFileSync(skillPath, "utf8").trim() : "";
+  } else {
+    persona = readPrompt(advisorId, "ADVISOR.md");
+  }
 
   // Resolve allowed slugs to {slug,title}; intersect with what's on disk so a
   // stale/forged slug can't widen the set beyond real processes.
   const onDisk = listProcesses();
   const allowSet = new Set(allowedSlugs);
-  const visible = onDisk.filter(
-    (p) => allowSet.size === 0 || allowSet.has(p.slug),
-  );
+  const visible = isStandalone
+    ? []
+    : onDisk.filter(
+        (p) => allowSet.size === 0 || allowSet.has(p.slug),
+      );
   const roster =
     visible.length > 0
       ? visible.map((p) => `- ${p.slug} — ${p.title}`).join("\n")

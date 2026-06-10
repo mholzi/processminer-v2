@@ -10,12 +10,13 @@ interface SkillData {
   name: string;
   description: string;
   body: string;
+  raw?: string;
 }
 
 function parseSkillMd(raw: string, defaultId: string): SkillData {
   const match = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
   if (!match) {
-    return { id: defaultId, name: defaultId, description: "", body: raw };
+    return { id: defaultId, name: defaultId, description: "", body: raw, raw };
   }
   
   const fm = match[1];
@@ -39,7 +40,7 @@ function parseSkillMd(raw: string, defaultId: string): SkillData {
       .join(" ");
   }
   
-  return { id: defaultId, name, description, body };
+  return { id: defaultId, name, description, body, raw };
 }
 
 export async function GET() {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, type RefObject } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 
 const FOCUSABLE =
   'button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
@@ -16,6 +16,13 @@ export function useFocusTrap(
    *  when shown, e.g. Modal). Pass an `open` flag for always-mounted overlays. */
   active = true,
 ) {
+  const onEscapeRef = useRef(onEscape);
+  
+  // Keep the ref updated with the latest callback instance
+  useEffect(() => {
+    onEscapeRef.current = onEscape;
+  });
+
   useEffect(() => {
     if (!active) return;
     const restore = document.activeElement as HTMLElement | null;
@@ -36,7 +43,7 @@ export function useFocusTrap(
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
         e.stopPropagation();
-        onEscape();
+        onEscapeRef.current();
         return;
       }
       if (e.key === "Tab") {
@@ -58,5 +65,5 @@ export function useFocusTrap(
       document.removeEventListener("keydown", onKey, true);
       restore?.focus?.();
     };
-  }, [ref, onEscape, active]);
+  }, [ref, active]);
 }

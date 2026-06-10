@@ -4,6 +4,9 @@
   "private": true,
   "description": "Processminer — AI-native process documentation. Claude Code skills elicit SME process knowledge into a file-backed wiki with per-heading provenance.",
   "scripts": {
+    "generate-schema": "node --experimental-strip-types scripts/generate-json-schema.ts",
+    "predev": "npm run generate-schema",
+    "prebuild": "npm run generate-schema",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

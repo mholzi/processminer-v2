@@ -27,14 +27,14 @@ test("buildApprovalPatch: rejects an invalid approval value", () => {
 
 test("buildTargetReview: id-stamps items R-001… and marks each pending", () => {
   const r = buildTargetReview("cob-003", {
-    ran: ["process-specialist", "it-architect"],
+    ran: ["process-specialist", "solution-architect"],
     items: [
       { specialist: "process-specialist", title: "A", detail: "d1", targets: ["TD-1"] },
-      { specialist: "it-architect", title: "B", detail: "d2", targets: ["TS-2", "TD-3"] },
+      { specialist: "solution-architect", title: "B", detail: "d2", targets: ["TS-2", "TD-3"] },
     ],
   });
   assert.equal(r.slug, "cob-003");
-  assert.deepEqual(r.ran, ["process-specialist", "it-architect"]);
+  assert.deepEqual(r.ran, ["process-specialist", "solution-architect"]);
   assert.deepEqual(r.items.map((i) => i.id), ["R-001", "R-002"]);
   assert.ok(r.items.every((i) => i.triage === "pending"));
   assert.deepEqual(r.items[1].targets, ["TS-2", "TD-3"]);

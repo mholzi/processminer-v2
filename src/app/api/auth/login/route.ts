@@ -79,6 +79,7 @@ export async function POST(req: NextRequest) {
     touchLastLogin(user.username);
     const cookie = signSession(user.username);
     const res = NextResponse.json({ user: redact(user) });
+    const isSecure = req.nextUrl.protocol === "https:" || req.headers.get("x-forwarded-proto") === "https";
     res.cookies.set(COOKIE_NAME, cookie, {
       httpOnly: true,
       // strict: the cookie is never sent on cross-site requests (CSRF defense,
@@ -89,7 +90,7 @@ export async function POST(req: NextRequest) {
       maxAge: 30 * 24 * 60 * 60,
       // Secure cookie when served over HTTPS — Next sets this implicitly in
       // production. Allowed insecure on localhost for dev.
-      secure: process.env.NODE_ENV === "production",
+      secure: isSecure,
     });
     return res;
   } catch (e) {

@@ -42,8 +42,8 @@
             "source": "document"
           },
           "Inputs": {
-            "evidence": "DTP-BB-ONB-001 v2.3",
-            "source": "document"
+            "source": "proposed",
+            "evidence": ""
           },
           "What happens": {
             "source": "elicited",
@@ -71,13 +71,15 @@
         "transitions": [
           "PS-COB-002|normal|",
           "PS-COB-003|normal|if overdraft requested"
-        ]
+        ],
+        "updatedBy": "admin",
+        "updatedAt": "2026-06-08"
       },
       "content": {
         "title": "Application Receipt & Initial Triage",
         "inputs": [
           "A submitted client application (online portal, paper, branch referral or partner channel)",
-          "Whatever supporting documents the client attached"
+          "Whatever supporting documents the client attached or included."
         ],
         "outputs": [
           "A triaged application that has formally entered the pipeline with a CRM case record",
@@ -88,7 +90,8 @@
         "systems": [
           "SYS-COB-001",
           "SYS-COB-002",
-          "SYS-COB-007"
+          "SYS-COB-007",
+          "SYS-COB-004"
         ],
         "description": "The Operations Officer receives the incoming application from one of the four intake channels and performs an initial triage. They confirm the mandatory documents are present, that the business is eligible for BizBanking, and that the case is routed to the correct downstream queue. Incomplete applications are flagged and returned to the client before they consume pipeline capacity.",
         "businessValue": "This is the gate that protects the rest of the process. Catching an incomplete or ineligible application here costs minutes; catching it three steps later costs days of rework and a frustrated client.",

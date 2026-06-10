@@ -74,7 +74,7 @@ export default function AdvisorChat({
   /** The user's accessible processes — drives the allow-list, the picker, and
    *  the overview cards (each card is computed from its ProcessDoc). */
   docs: ProcessDoc[];
-  user: User;
+  user: User | null;
   /** Open a process in the main canvas (closes the slide-over). */
   onOpenProcess?: (slug: string) => void;
 }) {
@@ -82,17 +82,53 @@ export default function AdvisorChat({
   const allowedSlugs = docs.map((d) => d.slug);
   const [picker, setPicker] = useState(false);
   const [draft, setDraft] = useState("");
+  const [mode3Override, setMode3Override] = useState(false);
+  const [attachments, setAttachments] = useState<{ type: "file" | "url"; name: string; content: string }[]>([]);
+  const [width, setWidth] = useState(452);
+  const [isMaximized, setIsMaximized] = useState(false);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startWidth = width;
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const deltaX = startX - moveEvent.clientX; // drag left to increase width
+      const targetWidth = isMaximized 
+        ? (window.innerWidth - moveEvent.clientX) 
+        : (startWidth + deltaX);
+      const newWidth = Math.max(300, targetWidth);
+      if (isMaximized) {
+        setIsMaximized(false);
+      }
+      setWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+  };
+
+  const isMode3 = !user || mode3Override;
 
   const chat = useAgentChat({
     storePrefix: "ab",
     slug: advisor.id, // per-advisor transcript + session
-    streamReplies: user.streamReplies !== false,
+    streamReplies: user ? user.streamReplies !== false : false,
     skillLabels: ADVISOR_LABELS,
     scopePreamble: "", // the server builds the advisor preamble from `advisor`
     advisor: advisor.id,
-    advisorSlugs: allowedSlugs,
-    userName: user.name,
+    advisorSlugs: isMode3 ? [] : allowedSlugs,
+    userName: user ? user.name : "Guest",
   });
+
+  const visibleAdvisors = user
+    ? ADVISORS
+    : ADVISORS.filter((a) => a.id === "solution-architect" || a.id === "domain-architect");
 
   // Cross-process element-id linkify: resolve a cited id (e.g. CTL-COB-004)
   // against every accessible process, preview on hover, open its process on
@@ -184,12 +220,45 @@ export default function AdvisorChat({
     }
   }, [chat.pending, elapsedMs, perspective]);
 
+  const handleFileAttach = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const text = evt.target?.result as string;
+      setAttachments((prev) => [...prev, { type: "file", name: file.name, content: text }]);
+    };
+    reader.readAsText(file);
+    e.target.value = ""; // reset input
+  };
+
+  const handleUrlAttach = () => {
+    const url = prompt("Enter document URL or absolute file path:");
+    if (!url) return;
+    setAttachments((prev) => [...prev, { type: "url", name: url, content: url }]);
+  };
+
   const submit = () => {
     const t = draft.trim();
-    if (!t || chat.pending) return;
+    if (!t && attachments.length === 0) return;
+    if (chat.pending) return;
+
+    let composedText = t;
+    if (attachments.length > 0) {
+      const formatted = attachments.map((att) => {
+        if (att.type === "file") {
+          return `\n\n[Attached File: ${att.name}]\n\`\`\`\n${att.content}\n\`\`\``;
+        } else {
+          return `\n\n[Attached URL: ${att.content}]`;
+        }
+      }).join("");
+      composedText += formatted;
+    }
+
     // Drive the running/ETA chip + per-advisor ETA history off the advisor id.
-    chat.send(t, { skill: advisor.id });
+    chat.send(composedText, { skill: advisor.id });
     setDraft("");
+    setAttachments([]);
   };
 
   // A standard-question chip → pick a process → inject a deterministic overview
@@ -208,6 +277,10 @@ export default function AdvisorChat({
   // Portfolio overview — no picker, covers every process the user can see.
   const askPortfolio = () => {
     setPicker(false);
+    const lastMsg = chat.messages[chat.messages.length - 1];
+    if (lastMsg && lastMsg.text === "```pm-portfolio\n```") {
+      return;
+    }
     chat.setMessages((m) => [
       ...m,
       { id: mid(), role: "user", text: "Overview of my portfolio" },
@@ -222,7 +295,24 @@ export default function AdvisorChat({
         className="ab-over"
         role="dialog"
         aria-label={`Chat with the ${advisor.name}`}
+        style={{
+          width: isMaximized ? "100vw" : `${width}px`,
+          maxWidth: "100vw",
+        }}
       >
+        <div
+          className="ab-resizer"
+          onMouseDown={handleMouseDown}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "6px",
+            height: "100%",
+            cursor: "ew-resize",
+            zIndex: 50,
+          }}
+        />
         <div className="ab-over-head">
           <span className="ab-av">{advisor.monogram}</span>
           <span className="ab-over-who">
@@ -241,6 +331,29 @@ export default function AdvisorChat({
           </button>
           <button
             type="button"
+            className="ab-over-max"
+            onClick={() => setIsMaximized((m) => !m)}
+            title={isMaximized ? "Restore size" : "Maximize window"}
+            aria-label={isMaximized ? "Restore window size" : "Maximize window size"}
+          >
+            {isMaximized ? (
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: "block" }}>
+                <polyline points="4 14 10 14 10 20"></polyline>
+                <polyline points="20 10 14 10 14 4"></polyline>
+                <line x1="14" y1="10" x2="21" y2="3"></line>
+                <line x1="10" y1="14" x2="3" y2="21"></line>
+              </svg>
+            ) : (
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ display: "block" }}>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <polyline points="9 21 3 21 3 15"></polyline>
+                <line x1="21" y1="3" x2="14" y2="10"></line>
+                <line x1="3" y1="21" x2="10" y2="14"></line>
+              </svg>
+            )}
+          </button>
+          <button
+            type="button"
             className="ab-over-x"
             onClick={onClose}
             title="Close"
@@ -251,7 +364,7 @@ export default function AdvisorChat({
         </div>
 
         <div className="ab-switch" role="tablist" aria-label="Switch advisor">
-          {ADVISORS.map((a: Advisor) => (
+          {visibleAdvisors.map((a: Advisor) => (
             <button
               key={a.id}
               type="button"
@@ -414,44 +527,139 @@ export default function AdvisorChat({
           )}
         </div>
 
-        {/* Standard-question chips — deterministic entry points. Clicking one
-            renders a defined layout (the overview card), no model guesswork. */}
-        <div className="ab-chips">
-          <button
-            type="button"
-            className={`ab-chip${picker ? " on" : ""}`}
-            onClick={() => setPicker((p) => !p)}
-          >
-            📋 Process overview
-          </button>
-          <button type="button" className="ab-chip" onClick={askPortfolio}>
-            📊 Portfolio overview
-          </button>
-          {picker && (
-            <div className="ab-picker" role="menu">
-              <div className="ab-picker-h">Which process?</div>
-              {docs.length === 0 && (
-                <div className="ab-picker-empty muted">No processes available.</div>
-              )}
-              {docs
-                .filter((d) => d.process.id || d.process.title)
-                .map((d) => (
+        {user && (
+          <div className="ab-chips" style={{ alignItems: "center" }}>
+            <button
+              type="button"
+              className={`ab-chip${picker ? " on" : ""}`}
+              onClick={() => setPicker((p) => !p)}
+              disabled={isMode3}
+            >
+              📋 Process overview
+            </button>
+            <button
+              type="button"
+              className="ab-chip"
+              onClick={askPortfolio}
+              disabled={isMode3 || (chat.messages[chat.messages.length - 1]?.text === "```pm-portfolio\n```")}
+            >
+              📊 Portfolio overview
+            </button>
+
+            <div className="ab-mode-toggle" style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.25rem",
+              marginLeft: "auto",
+              fontSize: "var(--text-xs)",
+              color: "var(--text-muted)",
+              cursor: "pointer",
+              userSelect: "none",
+              whiteSpace: "nowrap",
+              flexShrink: 0
+            }}>
+              <input
+                type="checkbox"
+                id="mode3-toggle"
+                checked={mode3Override}
+                onChange={(e) => {
+                  setMode3Override(e.target.checked);
+                }}
+                style={{ cursor: "pointer", width: "13px", height: "13px", margin: 0 }}
+              />
+              <label htmlFor="mode3-toggle" style={{ cursor: "pointer", fontSize: "var(--text-xs)", fontWeight: 500 }}>
+                Standalone Mode
+              </label>
+            </div>
+
+            {picker && (
+              <div className="ab-picker" role="menu">
+                <div className="ab-picker-h">Which process?</div>
+                {docs.length === 0 && (
+                  <div className="ab-picker-empty muted">No processes available.</div>
+                )}
+                {docs
+                  .filter((d) => d.process.id || d.process.title)
+                  .map((d) => (
+                  <button
+                    key={d.slug}
+                    type="button"
+                    role="menuitem"
+                    className="ab-picker-row"
+                    onClick={() => askOverview(d.slug)}
+                  >
+                    <span className="ab-picker-id">{d.process.id}</span>
+                    <span className="ab-picker-nm">{d.process.title}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {attachments.length > 0 && (
+          <div className="ab-attachments" style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "0.5rem",
+            padding: "0.5rem 1rem",
+            borderBottom: "1px solid var(--border)",
+            background: "var(--bg-app)"
+          }}>
+            {attachments.map((att, idx) => (
+              <span key={idx} style={{
+                display: "inline-flex",
+                alignItems: "center",
+                background: "var(--bg-card)",
+                border: "1px solid var(--border)",
+                borderRadius: "0.25rem",
+                padding: "0.25rem 0.5rem",
+                fontSize: "0.8rem",
+                gap: "0.5rem"
+              }}>
+                {att.type === "file" ? "📄" : "🔗"} {att.name.length > 25 ? att.name.slice(0, 25) + "..." : att.name}
                 <button
-                  key={d.slug}
                   type="button"
-                  role="menuitem"
-                  className="ab-picker-row"
-                  onClick={() => askOverview(d.slug)}
+                  onClick={() => setAttachments((prev) => prev.filter((_, i) => i !== idx))}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: 0,
+                    color: "var(--text-muted)",
+                  }}
                 >
-                  <span className="ab-picker-id">{d.process.id}</span>
-                  <span className="ab-picker-nm">{d.process.title}</span>
+                  ✕
                 </button>
-              ))}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div className="ab-composer" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          {isMode3 && (
+            <div style={{ display: "flex", gap: "0.25rem" }}>
+              <label
+                style={{
+                  fontSize: "1.2rem",
+                  cursor: "pointer",
+                  padding: "0.25rem 0.5rem",
+                  color: "var(--text-muted)",
+                  display: "inline-flex",
+                  alignItems: "center"
+                }}
+                title="Attach text file"
+              >
+                📎
+                <input
+                  type="file"
+                  accept=".txt,.md,.json,.html,.xml,.csv,.yaml,.yml,.js,.ts"
+                  onChange={handleFileAttach}
+                  style={{ display: "none" }}
+                />
+              </label>
             </div>
           )}
-        </div>
-
-        <div className="ab-composer">
           <textarea
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
@@ -463,6 +671,7 @@ export default function AdvisorChat({
             }}
             placeholder={`Ask the ${advisor.name}…`}
             rows={1}
+            style={{ flex: 1 }}
           />
           {chat.pending ? (
             <button
@@ -478,7 +687,7 @@ export default function AdvisorChat({
               type="button"
               className="ab-send"
               onClick={submit}
-              disabled={!draft.trim()}
+              disabled={!draft.trim() && attachments.length === 0}
               title="Send"
             >
               ↑

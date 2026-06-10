@@ -31,12 +31,20 @@ export const ADVISORS: Advisor[] = [
       "Hi — I'm your **Lead Banking SME**. I look across all your processes as a banking practitioner: where the steps don't match how a bank really runs, the exceptions and manual overrides that are missing, and controls that are weak or inconsistent between processes.\n\nTry something like *“Which of my processes are missing a sanctions re-screen?”* I only read — I cite the process and element behind every point, and never change anything.",
   },
   {
-    id: "lead-architect",
-    name: "Lead Architect",
-    monogram: "LA",
-    blurb: "cross-process architecture",
+    id: "solution-architect",
+    name: "Solution Architect",
+    monogram: "SA",
+    blurb: "solution design & architecture guidelines",
     greeting:
-      "Hi — I'm your **Lead Architect**. I look across your processes for systems, integrations and target-state design: what to reuse instead of rebuild, where two processes are quietly diverging, and which point integrations should really be a shared service.\n\nTry something like *“What can funds-release reuse from COB-003?”* I only read — I cite the elements I draw on, and never change anything.",
+      "Hi — I'm your **Solution Architect**. I'm here to help design and document target architectures, components, systems, and interfaces for specific process workflows, ensuring they align with industry standards and your organization's design patterns. Ask me anything about components, technical designs, or target architectures.",
+  },
+  {
+    id: "domain-architect",
+    name: "Domain Architect",
+    monogram: "DA",
+    blurb: "domain strategy, roadmaps & enterprise principles",
+    greeting:
+      "Hi — I'm your **Domain Architect**. I specialize in aligning solutions with your company's enterprise architecture principles, domain roadmaps, standards, and broader industry trends. Ask me anything about strategic alignment, principles, or roadmaps.",
   },
   {
     id: "lead-project-manager",

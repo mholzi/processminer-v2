@@ -62,7 +62,7 @@ export const FOUNDATIONAL_FILL_MAP: Record<string, { label: string; action: stri
   "friction-points": { label: "Friction Points", action: "run the **client-journey-specialist** skill" },
   "audit-findings": { label: "Audit Findings", action: "run the **control-compliance-specialist** skill" },
   "innovation-risks": { label: "Innovation Risks", action: "run the **innovation-analyst** skill" },
-  integrations: { label: "Integrations", action: "run the **it-architect** skill" },
+  integrations: { label: "Integrations", action: "run the **solution-architect** skill" },
   regulation: { label: "Regulation", action: "use the **✦ Source from the web** button on the section" },
   "competitor-cx": { label: "Competitor CX", action: "use the **✦ Source from the web** button on the section" },
   "cx-benchmarks": { label: "CX Benchmarks", action: "use the **✦ Source from the web** button on the section" },

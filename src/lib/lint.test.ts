@@ -2,6 +2,9 @@
 // (Node's built-in test runner + type stripping; no extra dependency.)
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { promises as fs } from "node:fs";
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   applyFindingDismissals,
   findingSignature,
@@ -179,4 +182,68 @@ test("generateNextId generates correct sequential IDs", () => {
   // For role (prefix ROLE) with no existing elements, should use the process abbreviation (COB) and start at 001
   const nextRoleId = generateNextId(mockDoc, "role", "ROLE");
   assert.equal(nextRoleId, "ROLE-COB-001");
+});
+
+// Recursively find files, excluding build, modules, git, temp, and ignored directories
+async function scanForKeys(dir: string): Promise<string[]> {
+  const leaks: string[] = [];
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (
+      entry.isDirectory() &&
+      [
+        "node_modules",
+        ".next",
+        ".git",
+        "dist",
+        "build",
+        "coverage",
+        ".gstack",
+        "tmp",
+        "data"
+      ].includes(entry.name)
+    ) {
+      continue;
+    }
+
+    if (entry.isDirectory()) {
+      leaks.push(...(await scanForKeys(fullPath)));
+    } else {
+      // Don't scan binary/image files, bak files, or ignored env files
+      if (
+        entry.name.endsWith(".png") ||
+        entry.name.endsWith(".jpg") ||
+        entry.name.endsWith(".jpeg") ||
+        entry.name.endsWith(".gif") ||
+        entry.name.endsWith(".ico") ||
+        entry.name.endsWith(".bak") ||
+        entry.name.startsWith(".env")
+      ) {
+        continue;
+      }
+      try {
+        const content = await fs.readFile(fullPath, "utf8");
+        // Pattern for Google API key (AIzaSy followed by 35 alphanumeric/dash/underscore characters)
+        if (/AIzaSy[a-zA-Z0-9_-]{35}/.test(content)) {
+          leaks.push(fullPath);
+        }
+      } catch (err) {
+        // Skip files that can't be read as text
+      }
+    }
+  }
+  return leaks;
+}
+
+test("no Google API keys are hardcoded in source/docs files", async () => {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const rootDir = path.resolve(__dirname, "../../");
+  const leakedFiles = await scanForKeys(rootDir);
+  assert.deepEqual(
+    leakedFiles.map((p) => path.relative(rootDir, p)),
+    [],
+    `The following files contain potential Google API keys: ${leakedFiles.join(", ")}`
+  );
 });

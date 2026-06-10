@@ -59,7 +59,6 @@ const SKILL_NAMES = [
   "dtp-regenerate",
   "foundational-run",
   "innovation-analyst",
-  "it-architect",
   "new-process",
   "process-specialist",
   "qer-session",
@@ -70,6 +69,33 @@ const SKILL_NAMES = [
   "source-target",
   "transformation-agent"
 ];
+
+async function readDocumentContent(urlStr: string): Promise<string> {
+  if (urlStr.startsWith("file://")) {
+    const filePath = urlStr.replace("file://", "");
+    if (fs.existsSync(filePath)) {
+      return fs.readFileSync(filePath, "utf8");
+    }
+    throw new Error(`File not found: ${filePath}`);
+  }
+  if (urlStr.startsWith("/") || /^[a-zA-Z]:\\/.test(urlStr)) {
+    if (fs.existsSync(urlStr)) {
+      return fs.readFileSync(urlStr, "utf8");
+    }
+    throw new Error(`File not found: ${urlStr}`);
+  }
+  const localRelative = path.join(process.cwd(), urlStr);
+  if (fs.existsSync(localRelative) && fs.statSync(localRelative).isFile()) {
+    return fs.readFileSync(localRelative, "utf8");
+  }
+  try {
+    const res = await fetch(urlStr);
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+    return await res.text();
+  } catch (e: any) {
+    throw new Error(`Failed to fetch URL ${urlStr}: ${e.message}`);
+  }
+}
 
 // Declarations of local tools available to the Gemini agent
 const toolDeclarations: any[] = [
@@ -584,6 +610,17 @@ const toolDeclarations: any[] = [
       required: ["slug"]
     }
   },
+  {
+    name: "readDocument",
+    description: "Read the full text content of an external document, URL, or file path. (Mode 3 only)",
+    parameters: {
+      type: "OBJECT",
+      properties: {
+        url: { type: "STRING", description: "The URL or absolute/relative file path to read." }
+      },
+      required: ["url"]
+    }
+  },
 ];
 
 // SESSIONS_MAP_PATH tracks process slugs across session IDs
@@ -778,9 +815,18 @@ export class GeminiWorker implements IProcessWorker {
   constructor(resumeId?: string | null, user?: { username: string; isAdmin: boolean } | null) {
     this.user = user ?? null;
     this.sessionId = resumeId || crypto.randomUUID();
-    this.ai = new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY || undefined,
-    });
+    const useVertex = process.env.VERTEX_AI === "true";
+    if (useVertex) {
+      this.ai = new GoogleGenAI({
+        vertexai: true,
+        project: process.env.GOOGLE_CLOUD_PROJECT || undefined,
+        location: process.env.GOOGLE_CLOUD_LOCATION || "us-central1",
+      });
+    } else {
+      this.ai = new GoogleGenAI({
+        apiKey: process.env.GEMINI_API_KEY || undefined,
+      });
+    }
     if (this.sessionId) {
       const info = getSessionInfo(this.sessionId);
       this.slug = info.slug || undefined;
@@ -800,7 +846,7 @@ export class GeminiWorker implements IProcessWorker {
     }
   }
 
-  private buildSystemInstruction(message: string): string {
+  private buildSystemInstruction(message: string, mode: number = 1): string {
     let instruction = "";
 
     // 1. Prepend CORE_SYSTEM_PROMPT.md if available
@@ -872,7 +918,18 @@ export class GeminiWorker implements IProcessWorker {
       const skillPath = path.join(process.cwd(), ".claude", "skills", activeSkill, "SKILL.md");
       if (fs.existsSync(skillPath)) {
         try {
-          const skillInstruction = fs.readFileSync(skillPath, "utf8");
+          let skillInstruction = fs.readFileSync(skillPath, "utf8");
+          if (activeSkill === "solution-architect" || activeSkill === "domain-architect") {
+            let modeText = "";
+            if (mode === 2) {
+              modeText = "\n\n### Mode 2: Cross-Process Context (Read-Only Mode)\n- You are currently consulting across multiple processes in a read-only dashboard overview context.\n- You do NOT have a specific process context and cannot use any elements-writing/editing/creating tools.\n- Keep your focus on portfolio overview, search, and reading summaries. Do NOT attempt to modify anything.\n- File/URL attachments are disabled. Do not ask for or attempt to read external documents.";
+            } else if (mode === 3) {
+              modeText = "\n\n### Mode 3: Standalone / No-Process Context (Advisory Mode)\n- You are operating in a standalone advisory context with no connection to any specific process.\n- You do not have access to any processes and cannot use any process-related tools.\n- You CAN read external documents or URLs using the `readDocument(url)` tool.\n- File or URL attachments are enabled in this mode. Read and analyze the contents of documents provided by the user, or fetch them via `readDocument`. Your goal is to provide expert guidance and feedback on these documents and designs.";
+            } else {
+              modeText = "\n\n### Mode 1: Specific Process Context (Design Mode)\n- You are operating in the context of a single specific process workflow.\n- You have read-write access to this process. Use the JSON CRUD tools (createElement, updateElement, etc.) to author target architecture elements.\n- File or URL attachments are disabled.";
+            }
+            skillInstruction += modeText;
+          }
           instruction += `### Active Specialist Guidelines (${activeSkill}):\nFollow these procedures strictly:\n${skillInstruction}\n\n`;
         } catch {
           /* fallback */
@@ -906,7 +963,7 @@ export class GeminiWorker implements IProcessWorker {
     return instruction;
   }
 
-  async *runTurn(message: string, skill?: string | null): AsyncGenerator<WorkerEvent> {
+  async *runTurn(message: string, skill?: string | null, mode?: number | null): AsyncGenerator<WorkerEvent> {
     if (!this.alive) {
       throw new Error("This assistant session is no longer running.");
     }
@@ -942,7 +999,7 @@ export class GeminiWorker implements IProcessWorker {
       // separately in the dispatch below.)
       if (this.slug) this.assertAccess(this.slug);
 
-      const systemInstruction = this.buildSystemInstruction(message);
+      const systemInstruction = this.buildSystemInstruction(message, mode || 1);
 
       this.history.push({
         role: "user",
@@ -962,10 +1019,23 @@ export class GeminiWorker implements IProcessWorker {
         cachedContentTokenCount: 0,
       };
 
-      const activeTools = toolDeclarations;
+      let activeTools = toolDeclarations;
+      if (mode === 2) {
+        activeTools = toolDeclarations.filter(t =>
+          ["listAccessibleProcesses", "getProcessSummary", "getProcessElements", "searchProcesses"].includes(t.name)
+        );
+      } else if (mode === 3) {
+        activeTools = toolDeclarations.filter(t =>
+          ["readDocument"].includes(t.name)
+        );
+      } else {
+        activeTools = toolDeclarations.filter(t =>
+          t.name !== "readDocument"
+        );
+      }
 
       appendToCentralLog(this.sessionId || "unknown", this.slug, "User", `Message:\n${message}`);
-      appendToCentralLog(this.sessionId || "unknown", this.slug, "System", `Skill: ${this.activeSkill} | Active Tools: ${activeTools.map(t => t.name).join(", ")}`);
+      appendToCentralLog(this.sessionId || "unknown", this.slug, "System", `Skill: ${this.activeSkill} | Mode: ${mode || 1} | Active Tools: ${activeTools.map(t => t.name).join(", ")}`);
 
       while (loopActive && turns < MAX_TURNS) {
         if (!this.alive) {
@@ -1472,6 +1542,10 @@ export class GeminiWorker implements IProcessWorker {
                   writeRuntime(this.slug, { reviewState: next });
                   resultText = JSON.stringify(enrichFoundationalStatus(next, doc), null, 2);
                 }
+              } else if (originalName === "readDocument") {
+                const docUrl = String(args.url || "").trim();
+                if (!docUrl) throw new Error("url is required.");
+                resultText = await readDocumentContent(docUrl);
               } else {
                 throw new Error(`Unsupported tool: ${originalName}`);
               }

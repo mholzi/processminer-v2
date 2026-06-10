@@ -215,13 +215,13 @@
           "id": "systems",
           "label": "Systems",
           "description": "The applications and platforms the process runs on.",
-          "specialist": "it-architect"
+          "specialist": "solution-architect"
         },
         {
           "id": "integrations",
           "label": "Integrations",
           "description": "The interfaces and data flows that connect those systems.",
-          "specialist": "it-architect"
+          "specialist": "solution-architect"
         }
       ]
     },

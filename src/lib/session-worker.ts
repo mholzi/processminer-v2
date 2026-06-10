@@ -140,7 +140,7 @@ export class SessionWorker implements IProcessWorker {
    * turn's `result`. Throws if the worker is dead, already busy, the turn
    * times out, or the process exits mid-turn.
    */
-  async *runTurn(message: string, skill?: string | null): AsyncGenerator<WorkerEvent> {
+  async *runTurn(message: string, skill?: string | null, mode?: number | null): AsyncGenerator<WorkerEvent> {
     if (!this.alive) {
       throw new Error("This assistant session is no longer running.");
     }

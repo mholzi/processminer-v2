@@ -132,8 +132,9 @@ export function createUser(
   createdBy: string,
 ): StoredUser {
   const username = input.username.trim();
-  if (!/^[a-zA-Z0-9._-]{2,40}$/.test(username)) {
-    throw new AuthError("Username must be 2-40 chars: letters, digits, . _ -");
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(username) || username.length > 100) {
+    throw new AuthError("Username must be a valid email address (e.g., user@domain.com).");
   }
   if (input.password.length < 8) {
     throw new AuthError("Password must be at least 8 characters.");

@@ -25,7 +25,7 @@ export interface IProcessWorker {
    * Run one turn: send the user message, yield raw event stream chunks.
    * Throws if worker is dead, busy, or execution fails.
    */
-  runTurn(message: string, skill?: string | null): AsyncGenerator<WorkerEvent>;
+  runTurn(message: string, skill?: string | null, mode?: number | null): AsyncGenerator<WorkerEvent>;
 
   /** Kill the worker. */
   dispose(): void;

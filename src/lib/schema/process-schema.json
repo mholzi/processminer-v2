@@ -1,5 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "$comment": "DO NOT EDIT BY HAND. Auto-generated from schema/process-schema.json",
   "title": "Process Document Schema (v3)",
   "type": "object",
   "description": "The golden source JSON Schema representing a full Process Document instance.",
@@ -82,81 +83,35 @@
         "description"
       ]
     },
-    "process-steps": {
-      "type": [
-        "array",
-        "null"
-      ],
-      "description": "The ordered process steps. If null, they have not yet been evaluated by the AI or user.",
-      "items": {
-        "$ref": "#/definitions/ProcessStep"
-      }
-    },
     "roles": {
       "type": [
         "array",
         "null"
       ],
-      "description": "The roles involved in the process.",
       "items": {
         "$ref": "#/definitions/Role"
-      }
+      },
+      "description": "The teams, functions and individuals involved in the process, and who is responsible for what."
     },
-    "systems": {
+    "process-steps": {
       "type": [
         "array",
         "null"
       ],
-      "description": "The systems involved in the process.",
       "items": {
-        "$ref": "#/definitions/System"
-      }
+        "$ref": "#/definitions/ProcessStep"
+      },
+      "description": "The ordered steps that make up the process as it runs today, end to end."
     },
     "exceptions": {
       "type": [
         "array",
         "null"
       ],
-      "description": "The exceptions involved in the process.",
       "items": {
         "$ref": "#/definitions/Exception"
-      }
-    },
-    "controls": {
-      "type": [
-        "array",
-        "null"
-      ],
-      "items": {
-        "$ref": "#/definitions/Control"
-      }
-    },
-    "regulation": {
-      "type": [
-        "array",
-        "null"
-      ],
-      "items": {
-        "$ref": "#/definitions/Regulation"
-      }
-    },
-    "control-gaps": {
-      "type": [
-        "array",
-        "null"
-      ],
-      "items": {
-        "$ref": "#/definitions/ComplianceGap"
-      }
-    },
-    "audit-findings": {
-      "type": [
-        "array",
-        "null"
-      ],
-      "items": {
-        "$ref": "#/definitions/AuditFinding"
-      }
+      },
+      "description": "The off-happy-path cases — where the process deviates, stalls or needs manual handling."
     },
     "pain-points": {
       "type": [
@@ -165,70 +120,8 @@
       ],
       "items": {
         "$ref": "#/definitions/PainPoint"
-      }
-    },
-    "country-variations": {
-      "type": [
-        "array",
-        "null"
-      ],
-      "items": {
-        "$ref": "#/definitions/CountryVariation"
-      }
-    },
-    "friction-points": {
-      "type": [
-        "array",
-        "null"
-      ],
-      "items": {
-        "$ref": "#/definitions/FrictionPoint"
-      }
-    },
-    "touchpoints": {
-      "type": [
-        "array",
-        "null"
-      ],
-      "items": {
-        "$ref": "#/definitions/CxTouchpoint"
-      }
-    },
-    "moments": {
-      "type": [
-        "array",
-        "null"
-      ],
-      "items": {
-        "$ref": "#/definitions/Moment"
-      }
-    },
-    "channels": {
-      "type": [
-        "array",
-        "null"
-      ],
-      "items": {
-        "$ref": "#/definitions/CxChannel"
-      }
-    },
-    "competitor-cx": {
-      "type": [
-        "array",
-        "null"
-      ],
-      "items": {
-        "$ref": "#/definitions/CompetitorCxEu"
-      }
-    },
-    "cx-benchmarks": {
-      "type": [
-        "array",
-        "null"
-      ],
-      "items": {
-        "$ref": "#/definitions/CxBenchmark"
-      }
+      },
+      "description": "Where the current process hurts — friction, delays and frustrations reported by the people who run it."
     },
     "metrics": {
       "type": [
@@ -237,7 +130,8 @@
       ],
       "items": {
         "$ref": "#/definitions/Metric"
-      }
+      },
+      "description": "The volumes, timings and service levels that quantify how the process performs."
     },
     "process-gaps": {
       "type": [
@@ -246,7 +140,118 @@
       ],
       "items": {
         "$ref": "#/definitions/ProcessGap"
-      }
+      },
+      "description": "Missing or unclear parts of the As-Is picture that need follow-up before it is complete."
+    },
+    "country-variations": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/CountryVariation"
+      },
+      "description": "How the process differs by country / jurisdiction — local regulatory or operational variations."
+    },
+    "controls": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/Control"
+      },
+      "description": "The checks and safeguards that keep the process within risk appetite and regulatory limits."
+    },
+    "regulation": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/Regulation"
+      },
+      "description": "The external rules and supervisory requirements the process must comply with."
+    },
+    "control-gaps": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/ComplianceGap"
+      },
+      "description": "Weaknesses or holes in the control framework that leave the process exposed."
+    },
+    "audit-findings": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/AuditFinding"
+      },
+      "description": "Issues raised by internal or external audit, and their remediation status."
+    },
+    "channels": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/CxChannel"
+      },
+      "description": "The channels through which clients reach the process — branch, online, phone, relationship manager."
+    },
+    "touchpoints": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/CxTouchpoint"
+      },
+      "description": "The individual moments where a client touches the process, step by step."
+    },
+    "moments": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/Moment"
+      },
+      "description": "The make-or-break interactions that most shape how clients judge the process."
+    },
+    "friction-points": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/FrictionPoint"
+      },
+      "description": "Where the client-facing journey is slow, confusing or effortful."
+    },
+    "competitor-cx": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/CompetitorCxEu"
+      },
+      "description": "How competitor banks and fintechs run the same client journey."
+    },
+    "cx-benchmarks": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/CxBenchmark"
+      },
+      "description": "Industry benchmarks and client-expectation research for this kind of journey."
     },
     "market-trends": {
       "type": [
@@ -255,7 +260,8 @@
       ],
       "items": {
         "$ref": "#/definitions/MarketTrend"
-      }
+      },
+      "description": "Market shifts, regulation and technology trends bearing on the process's future."
     },
     "competitor-innovation": {
       "type": [
@@ -264,7 +270,8 @@
       ],
       "items": {
         "$ref": "#/definitions/CompetitorEu"
-      }
+      },
+      "description": "What competitors and fintechs are doing that could reshape this process."
     },
     "innovation-ideas": {
       "type": [
@@ -273,7 +280,8 @@
       ],
       "items": {
         "$ref": "#/definitions/InnovationIdea"
-      }
+      },
+      "description": "Concrete ideas for improving or reinventing the process."
     },
     "innovation-risks": {
       "type": [
@@ -282,7 +290,8 @@
       ],
       "items": {
         "$ref": "#/definitions/InnovationRisk"
-      }
+      },
+      "description": "The risks that come with pursuing the innovation ideas."
     },
     "to-be-design": {
       "type": [
@@ -291,7 +300,8 @@
       ],
       "items": {
         "$ref": "#/definitions/TargetState"
-      }
+      },
+      "description": "The redesigned future-state process, step by step."
     },
     "transformation-decisions": {
       "type": [
@@ -300,25 +310,8 @@
       ],
       "items": {
         "$ref": "#/definitions/TransformationDecision"
-      }
-    },
-    "gap-resolution": {
-      "type": [
-        "array",
-        "null"
-      ],
-      "items": {
-        "$ref": "#/definitions/Gap"
-      }
-    },
-    "integrations": {
-      "type": [
-        "array",
-        "null"
-      ],
-      "items": {
-        "$ref": "#/definitions/Integration"
-      }
+      },
+      "description": "The key decisions that shape the move from the current state to the target."
     },
     "requirements": {
       "type": [
@@ -327,7 +320,8 @@
       ],
       "items": {
         "$ref": "#/definitions/Requirement"
-      }
+      },
+      "description": "Testable statements of what the target process and systems must do, derived from the transformation decisions and gaps."
     },
     "dependencies": {
       "type": [
@@ -336,7 +330,8 @@
       ],
       "items": {
         "$ref": "#/definitions/ProcessDependency"
-      }
+      },
+      "description": "The target process's boundary — the upstream feeders and downstream consumers it connects to."
     },
     "assumptions": {
       "type": [
@@ -345,7 +340,38 @@
       ],
       "items": {
         "$ref": "#/definitions/Assumption"
-      }
+      },
+      "description": "What the target design and the transformation rest on — assumptions still to be confirmed."
+    },
+    "gap-resolution": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/Gap"
+      },
+      "description": "How each As-Is gap, pain point and control weakness is resolved in the target state."
+    },
+    "systems": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/System"
+      },
+      "description": "The applications and platforms the process runs on."
+    },
+    "integrations": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/definitions/Integration"
+      },
+      "description": "The interfaces and data flows that connect those systems."
     },
     "capabilities": {
       "type": [
@@ -354,7 +380,8 @@
       ],
       "items": {
         "$ref": "#/definitions/Capability"
-      }
+      },
+      "description": "Business capabilities the target process needs — the 'what', not the 'how'."
     },
     "target-applications": {
       "type": [
@@ -363,7 +390,8 @@
       ],
       "items": {
         "$ref": "#/definitions/TargetApplication"
-      }
+      },
+      "description": "Applications hosting the target capabilities, with build / buy / configure / keep verdicts."
     },
     "architecture-decisions": {
       "type": [
@@ -372,7 +400,8 @@
       ],
       "items": {
         "$ref": "#/definitions/Adr"
-      }
+      },
+      "description": "ADRs — locked-in technical decisions with their alternatives and consequences."
     },
     "target-integrations": {
       "type": [
@@ -381,7 +410,8 @@
       ],
       "items": {
         "$ref": "#/definitions/TargetIntegration"
-      }
+      },
+      "description": "Interfaces between target applications, with patterns (sync / async / event / batch)."
     },
     "components": {
       "type": [
@@ -390,7 +420,8 @@
       ],
       "items": {
         "$ref": "#/definitions/Component"
-      }
+      },
+      "description": "Sub-elements of target applications — services, gateways, workers."
     },
     "nfrs": {
       "type": [
@@ -399,7 +430,8 @@
       ],
       "items": {
         "$ref": "#/definitions/Nfr"
-      }
+      },
+      "description": "Non-functional requirements with category, target value and traces back to controls and regulation."
     },
     "migration-phases": {
       "type": [
@@ -408,40 +440,42 @@
       ],
       "items": {
         "$ref": "#/definitions/MigrationPhase"
-      }
+      },
+      "description": "Staged sequence from today's systems landscape to the target architecture."
     }
   },
   "required": [
     "meta",
     "content",
-    "process-steps",
     "roles",
-    "systems",
+    "process-steps",
     "exceptions",
+    "pain-points",
+    "metrics",
+    "process-gaps",
+    "country-variations",
     "controls",
     "regulation",
     "control-gaps",
     "audit-findings",
-    "pain-points",
-    "friction-points",
+    "channels",
     "touchpoints",
     "moments",
-    "channels",
+    "friction-points",
     "competitor-cx",
     "cx-benchmarks",
-    "metrics",
-    "process-gaps",
     "market-trends",
     "competitor-innovation",
     "innovation-ideas",
     "innovation-risks",
     "to-be-design",
     "transformation-decisions",
-    "gap-resolution",
-    "integrations",
     "requirements",
     "dependencies",
     "assumptions",
+    "gap-resolution",
+    "systems",
+    "integrations",
     "capabilities",
     "target-applications",
     "architecture-decisions",
@@ -451,69 +485,6 @@
     "migration-phases"
   ],
   "definitions": {
-    "CountryVariation": {
-      "type": "object",
-      "properties": {
-        "meta": {
-          "allOf": [
-            {
-              "$ref": "#/definitions/BaseMeta"
-            },
-            {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "const": "country-variation"
-                },
-                "section": {
-                  "const": "country-variations"
-                }
-              }
-            }
-          ]
-        },
-        "content": {
-          "allOf": [
-            {
-              "$ref": "#/definitions/BaseContent"
-            },
-            {
-              "type": "object",
-              "properties": {
-                "country": {
-                  "type": "string"
-                },
-                "affects": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "whatDiffers": {
-                  "type": "string"
-                },
-                "whyItDiffers": {
-                  "type": "string"
-                },
-                "impact": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "country",
-                "whatDiffers",
-                "whyItDiffers",
-                "impact"
-              ]
-            }
-          ]
-        }
-      },
-      "required": [
-        "meta",
-        "content"
-      ]
-    },
     "BaseMeta": {
       "type": "object",
       "properties": {
@@ -617,7 +588,7 @@
         "title"
       ]
     },
-    "ProcessStep": {
+    "CountryVariation": {
       "type": "object",
       "properties": {
         "meta": {
@@ -629,19 +600,12 @@
               "type": "object",
               "properties": {
                 "type": {
-                  "const": "process-step"
+                  "const": "country-variation"
                 },
                 "section": {
-                  "const": "process-steps"
-                },
-                "sequence": {
-                  "type": "number",
-                  "description": "Execution order"
+                  "const": "country-variations"
                 }
-              },
-              "required": [
-                "sequence"
-              ]
+              }
             }
           ]
         },
@@ -653,86 +617,35 @@
             {
               "type": "object",
               "properties": {
-                "owner": {
+                "country": {
                   "type": "string",
-                  "description": "Who performs this step — a role, or 'system'."
+                  "description": "The country or jurisdiction this variation applies to."
                 },
-                "sla": {
-                  "type": "string",
-                  "description": "Turnaround target."
-                },
-                "condition": {
-                  "type": "string",
-                  "description": "Precondition or entry criterion."
-                },
-                "systems": {
+                "affects": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "IDs of systems used."
+                  "description": "Affects"
                 },
-                "transitions": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "to": {
-                        "type": "string"
-                      },
-                      "kind": {
-                        "type": "string",
-                        "enum": [
-                          "normal",
-                          "branch",
-                          "loopback",
-                          "exception"
-                        ]
-                      },
-                      "when": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "to",
-                      "kind"
-                    ]
-                  },
-                  "description": "Outgoing flow to other steps or exceptions."
-                },
-                "description": {
+                "whatDiffers": {
                   "type": "string",
-                  "description": "What happens in this step. The concrete actions performed in this step, in plain language. Do not just list inputs and outputs. Stylistic constraint: 20-95 words."
+                  "description": "How the process differs in this country versus the baseline. Stylistic constraint: 12–50 words."
                 },
-                "inputs": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "minItems": 2,
-                  "maxItems": 6,
-                  "description": "What the step consumes."
-                },
-                "outputs": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "minItems": 2,
-                  "maxItems": 6,
-                  "description": "What the step produces."
-                },
-                "businessValue": {
+                "whyItDiffers": {
                   "type": "string",
-                  "description": "Why it matters. The risk this step controls or the value it adds. Be concise and impactful. Stylistic constraint: 10-60 words."
+                  "description": "The regulation, market practice or local requirement that drives the difference. Stylistic constraint: 8–45 words."
+                },
+                "impact": {
+                  "type": "string",
+                  "description": "What the variation means for clients, operations or compliance. Stylistic constraint: 8–45 words."
                 }
               },
               "required": [
-                "owner",
-                "description",
-                "inputs",
-                "outputs",
-                "businessValue"
+                "country",
+                "whatDiffers",
+                "whyItDiffers",
+                "impact"
               ]
             }
           ]
@@ -772,27 +685,19 @@
             {
               "type": "object",
               "properties": {
-                "responsibility": {
-                  "type": "string",
-                  "description": "What the role owns in the process, stated in one clear sentence. Stylistic constraint: 8-45 words."
-                },
-                "inThisProcess": {
-                  "type": "string",
-                  "description": "The specific steps and controls this role performs in this process. Stylistic constraint: 10-50 words."
-                },
                 "systems": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "IDs of systems used."
+                  "description": "Systems"
                 },
                 "controls": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "IDs of controls owned."
+                  "description": "Controls"
                 },
                 "raci": {
                   "type": "array",
@@ -817,7 +722,15 @@
                       "level"
                     ]
                   },
-                  "description": "RACI assignments: each { step: <process-step id>, level: R|A|C|I }."
+                  "description": "RACI assignments mapping process step IDs to responsibility levels (R=Responsible, A=Accountable, C=Consulted, I=Informed)."
+                },
+                "responsibility": {
+                  "type": "string",
+                  "description": "What the role owns in the process, stated in one clear sentence. Stylistic constraint: 8–45 words."
+                },
+                "inThisProcess": {
+                  "type": "string",
+                  "description": "The specific steps and controls this role performs in this process. Stylistic constraint: 10–50 words."
                 }
               },
               "required": [
@@ -833,7 +746,7 @@
         "content"
       ]
     },
-    "System": {
+    "ProcessStep": {
       "type": "object",
       "properties": {
         "meta": {
@@ -845,12 +758,19 @@
               "type": "object",
               "properties": {
                 "type": {
-                  "const": "system"
+                  "const": "process-step"
                 },
                 "section": {
-                  "const": "systems"
+                  "const": "process-steps"
+                },
+                "sequence": {
+                  "type": "number",
+                  "description": "Execution order"
                 }
-              }
+              },
+              "required": [
+                "sequence"
+              ]
             }
           ]
         },
@@ -862,35 +782,82 @@
             {
               "type": "object",
               "properties": {
-                "systemType": {
+                "owner": {
                   "type": "string",
-                  "enum": [
-                    "CORE",
-                    "SUPPORTING",
-                    "EXTERNAL"
-                  ],
-                  "description": "Type of system: CORE, SUPPORTING, or EXTERNAL."
+                  "description": "Who performs this step — a role (e.g. 'Operations Analyst'), or 'system / unassigned' if automated. Never a named individual."
                 },
-                "purpose": {
+                "sla": {
                   "type": "string",
-                  "description": "What the system is for. Stylistic constraint: 4-30 words."
+                  "description": "The turnaround target for this step (e.g. 'within 2 hours', 'same business day')."
                 },
-                "roleInThisProcess": {
+                "condition": {
                   "type": "string",
-                  "description": "Which steps use the system and how. Stylistic constraint: 6-40 words."
+                  "description": "Any precondition or entry criterion that must hold before this step runs."
                 },
-                "integrates": {
+                "systems": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "IDs of systems it integrates with."
+                  "description": "Systems"
+                },
+                "transitions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "to": {
+                        "type": "string"
+                      },
+                      "kind": {
+                        "type": "string",
+                        "enum": [
+                          "normal",
+                          "branch",
+                          "loopback",
+                          "exception"
+                        ]
+                      },
+                      "when": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "to",
+                      "kind"
+                    ]
+                  },
+                  "description": "Outgoing flow from this step. Field `transitions` — a list of objects, each `{ \"to\": <target id>, \"kind\": <normal|branch|loopback|exception>, \"when\": <condition> }`: the element it flows to (a process-step or exception id), the transition kind, and the condition under which it fires."
+                },
+                "description": {
+                  "type": "string",
+                  "description": "The concrete actions performed in this step, in plain language. Stylistic constraint: 20–95 words."
+                },
+                "inputs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Each thing the step consumes — documents, data or prior outputs. Stylistic constraint: 2–6 items."
+                },
+                "outputs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Each thing the step produces and hands to the next step. Stylistic constraint: 2–6 items."
+                },
+                "businessValue": {
+                  "type": "string",
+                  "description": "The risk this step controls or the value it adds. Stylistic constraint: 10–60 words."
                 }
               },
               "required": [
-                "systemType",
-                "purpose",
-                "roleInThisProcess"
+                "owner",
+                "description",
+                "inputs",
+                "outputs",
+                "businessValue"
               ]
             }
           ]
@@ -931,13 +898,15 @@
               "type": "object",
               "properties": {
                 "category": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The kind of exception (e.g. data-quality, sanctions hit, missing approval)."
                 },
                 "frequencyPct": {
                   "type": [
                     "integer",
                     "null"
-                  ]
+                  ],
+                  "description": "Roughly how often the exception occurs, as a percentage of cases."
                 },
                 "impactSeverity": {
                   "type": "string",
@@ -945,10 +914,12 @@
                     "HIGH",
                     "MEDIUM",
                     "LOW"
-                  ]
+                  ],
+                  "description": "HIGH / MEDIUM / LOW — the severity of the exception's effect on the process or client."
                 },
                 "handlingOwner": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The role accountable for resolving this exception."
                 },
                 "affects": {
                   "type": "array",
@@ -958,15 +929,15 @@
                 },
                 "description": {
                   "type": "string",
-                  "description": "What the exception is and the conditions under which it arises. Stylistic constraint: 12-50 words."
+                  "description": "What the exception is and the conditions under which it arises. Stylistic constraint: 12–50 words."
                 },
                 "handling": {
                   "type": "string",
-                  "description": "How the exception is resolved, and by whom. Stylistic constraint: 10-60 words."
+                  "description": "How the exception is resolved, and by whom. Stylistic constraint: 10–60 words."
                 },
                 "impact": {
                   "type": "string",
-                  "description": "Effect on cycle time, cost, the client or compliance. Stylistic constraint: 8-40 words."
+                  "description": "Effect on cycle time, cost, the client or compliance. Stylistic constraint: 8–40 words."
                 }
               },
               "required": [
@@ -1015,40 +986,65 @@
               "type": "object",
               "properties": {
                 "controlType": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "PREVENTIVE",
+                    "DETECTIVE",
+                    "CORRECTIVE"
+                  ],
+                  "description": "PREVENTIVE / DETECTIVE / CORRECTIVE — when the control acts relative to the risk."
                 },
                 "execution": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "MANUAL",
+                    "AUTOMATED",
+                    "HYBRID"
+                  ],
+                  "description": "MANUAL / AUTOMATED / HYBRID — whether a person performs the control, the system enforces it, or both (a manual trigger plus an automated execution, e.g. an analyst initiating an automated screening tool)."
                 },
                 "effectiveness": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "HIGH",
+                    "MEDIUM",
+                    "LOW"
+                  ],
+                  "description": "HIGH / MEDIUM / LOW — how well the control mitigates its risk, as assessed."
                 },
                 "owner": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The accountable function (e.g. 'Compliance', 'Operations') — never a named individual, even for an automated control."
                 },
                 "step": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Step"
                 },
                 "regulatedBy": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Regulated by"
                 },
                 "whatItChecks": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The specific risk or condition the control verifies. Stylistic constraint: 10–40 words."
                 },
                 "controlActivity": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "How the control is performed, by whom and with what. Stylistic constraint: 10–50 words."
                 },
                 "riskAddressed": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The risk that would materialise without this control. Stylistic constraint: 6–40 words."
                 },
                 "timing": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "When and how often the control runs. Stylistic constraint: 6–35 words."
                 }
               },
               "required": [
@@ -1099,22 +1095,28 @@
               "type": "object",
               "properties": {
                 "domain": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The regulatory domain (e.g. AML, sanctions, prudential, conduct)."
                 },
                 "asOf": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The date this regulatory position was captured or last verified."
                 },
                 "source": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Citation or URL for the rule — the regulation, supervisory guidance or article."
                 },
                 "whatItRequires": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The obligations the regulation imposes on the process. Stylistic constraint: 6–45 words."
                 },
                 "whyItApplies": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Why this regulation is in scope for this process. Stylistic constraint: 8–45 words."
                 },
                 "howItIsMet": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The controls and process steps that satisfy the regulation. Stylistic constraint: 6–40 words."
                 }
               },
               "required": [
@@ -1162,25 +1164,48 @@
               "type": "object",
               "properties": {
                 "severity": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "HIGH",
+                    "MEDIUM",
+                    "LOW",
+                    "NONE"
+                  ],
+                  "description": "HIGH / MEDIUM / LOW / NONE — the regulatory exposure the gap creates."
                 },
                 "gapStatus": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "open",
+                    "in-remediation",
+                    "closed",
+                    "resolved",
+                    "addressed",
+                    "addressed-in-target",
+                    "remediated",
+                    "mitigated",
+                    "done"
+                  ],
+                  "description": "Where the gap stands — open, in remediation, or closed."
                 },
                 "control": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Control"
                 },
                 "theGap": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What is missing or non-compliant. Stylistic constraint: 12–45 words."
                 },
                 "risk": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The regulatory or operational exposure the gap creates. Stylistic constraint: 8–40 words."
                 },
                 "remediation": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The actions needed to close the gap. Stylistic constraint: 8–40 words."
                 }
               },
               "required": [
@@ -1229,19 +1254,30 @@
               "type": "object",
               "properties": {
                 "auditDate": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The date the finding was raised by audit."
                 },
                 "findingStatus": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Where the finding stands — open, in remediation, or closed."
                 },
                 "severity": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "HIGH",
+                    "MEDIUM",
+                    "LOW",
+                    "NONE"
+                  ],
+                  "description": "HIGH / MEDIUM / LOW / NONE — the audit-assessed severity."
                 },
                 "finding": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What the audit observed, with enough context to act on. Stylistic constraint: 15–60 words."
                 },
                 "recommendation": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The auditor's recommended action. Stylistic constraint: 10–45 words."
                 }
               },
               "required": [
@@ -1290,28 +1326,46 @@
               "type": "object",
               "properties": {
                 "category": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The kind of pain point (e.g. manual effort, delay, rework, hand-off friction)."
                 },
                 "severity": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "HIGH",
+                    "MEDIUM",
+                    "LOW",
+                    "NONE"
+                  ],
+                  "description": "HIGH / MEDIUM / LOW / NONE — how badly this hurts the process."
                 },
                 "priority": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "P1",
+                    "P2",
+                    "P3"
+                  ],
+                  "description": "P1 / P2 / P3 — how urgently it should be addressed."
                 },
                 "affects": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Affects"
                 },
                 "description": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What the pain point is, from the staff or process view. Stylistic constraint: 12–50 words."
                 },
                 "impact": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "How it slows, costs or degrades the process. Stylistic constraint: 8–45 words."
                 },
                 "rootCause": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The underlying reason the pain point exists. Stylistic constraint: 8–45 words."
                 }
               },
               "required": [
@@ -1359,34 +1413,47 @@
               "type": "object",
               "properties": {
                 "severity": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "HIGH",
+                    "MEDIUM",
+                    "LOW",
+                    "NONE"
+                  ],
+                  "description": "HIGH / MEDIUM / LOW / NONE — how badly this friction hurts the client experience."
                 },
                 "occursAt": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Occurs at"
                 },
                 "painPoint": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Pain point"
                 },
                 "addressedBy": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Addressed by"
                 },
                 "description": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Where and how the client experiences friction. Stylistic constraint: 10–45 words."
                 },
                 "rootCause": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Why the friction occurs. Stylistic constraint: 6–40 words."
                 },
                 "clientImpact": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "How it affects the client's effort and perception. Stylistic constraint: 8–45 words."
                 }
               },
               "required": [
@@ -1435,25 +1502,31 @@
               "type": "object",
               "properties": {
                 "channel": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The channel this touchpoint occurs on (e.g. branch, app, call centre)."
                 },
                 "ces": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Customer Effort Score for this touchpoint, if measured."
                 },
                 "occursAt": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Step"
                 },
                 "whatTheClientDoes": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The client's action at this touchpoint. Stylistic constraint: 8–40 words."
                 },
                 "whatTheBankDoes": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The bank's response or action at this touchpoint. Stylistic constraint: 6–35 words."
                 },
                 "experience": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "How the touchpoint feels — effort, clarity and emotion. Stylistic constraint: 10–45 words."
                 }
               },
               "required": [
@@ -1502,22 +1575,32 @@
               "type": "object",
               "properties": {
                 "sentiment": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "positive",
+                    "negative",
+                    "critical"
+                  ],
+                  "description": "positive / negative / critical — the client's emotional read of this moment."
                 },
                 "touchpoint": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Touchpoint"
                 },
                 "theMoment": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The specific moment in the client journey. Stylistic constraint: 6–35 words."
                 },
                 "whyItMatters": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Why this moment shapes the client's overall perception. Stylistic constraint: 10–45 words."
                 },
                 "designImplication": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What the process should do about this moment. Stylistic constraint: 10–45 words."
                 }
               },
               "required": [
@@ -1565,19 +1648,27 @@
               "type": "object",
               "properties": {
                 "channelType": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "DIGITAL",
+                    "ASSISTED"
+                  ],
+                  "description": "DIGITAL or ASSISTED — self-service, or mediated by staff."
                 },
                 "touchpoints": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Touchpoints"
                 },
                 "description": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What the channel is and how clients reach it. Stylistic constraint: 5–35 words."
                 },
                 "usage": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "When and how much the channel is used in onboarding. Stylistic constraint: 8–40 words."
                 }
               },
               "required": [
@@ -1624,28 +1715,35 @@
               "type": "object",
               "properties": {
                 "competitor": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The competitor bank or fintech this observation is about."
                 },
                 "asOf": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The date this competitor CX observation was captured."
                 },
                 "source": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Citation or URL for the observation."
                 },
                 "bearsOn": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Bears on"
                 },
                 "theJourney": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "How a European corporate bank runs this client journey. Stylistic constraint: 12–55 words."
                 },
                 "relevance": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What it means for this process — the experience gap it opens. Stylistic constraint: 12–55 words."
                 },
                 "evidence": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The review, case study or announcement that evidences it. Stylistic constraint: 8–40 words."
                 }
               },
               "required": [
@@ -1695,28 +1793,35 @@
               "type": "object",
               "properties": {
                 "competitor": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The competitor bank or fintech this observation is about."
                 },
                 "asOf": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The date this competitor CX observation was captured."
                 },
                 "source": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Citation or URL for the observation."
                 },
                 "bearsOn": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Bears on"
                 },
                 "theJourney": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "How a global corporate bank runs this client journey. Stylistic constraint: 12–55 words."
                 },
                 "relevance": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What it means for this process — the experience gap it opens. Stylistic constraint: 12–55 words."
                 },
                 "evidence": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The review, case study or announcement that evidences it. Stylistic constraint: 8–40 words."
                 }
               },
               "required": [
@@ -1766,28 +1871,35 @@
               "type": "object",
               "properties": {
                 "competitor": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The competitor bank or fintech this observation is about."
                 },
                 "asOf": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The date this competitor CX observation was captured."
                 },
                 "source": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Citation or URL for the observation."
                 },
                 "bearsOn": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Bears on"
                 },
                 "theJourney": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "How a fintech runs this client journey. Stylistic constraint: 12–55 words."
                 },
                 "relevance": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What it means for this process — the experience gap it opens. Stylistic constraint: 12–55 words."
                 },
                 "evidence": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The review, case study or announcement that evidences it. Stylistic constraint: 8–40 words."
                 }
               },
               "required": [
@@ -1837,25 +1949,31 @@
               "type": "object",
               "properties": {
                 "asOf": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The date this benchmark figure was captured."
                 },
                 "source": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Citation or URL for the benchmark."
                 },
                 "bearsOn": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Bears on"
                 },
                 "theBenchmark": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The industry CX standard or client expectation, described plainly. Stylistic constraint: 12–55 words."
                 },
                 "relevance": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "How this process measures against it. Stylistic constraint: 12–55 words."
                 },
                 "evidence": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The specific figure or signal — survey, study or standard. Stylistic constraint: 8–40 words."
                 }
               },
               "required": [
@@ -1904,22 +2022,28 @@
               "type": "object",
               "properties": {
                 "target": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The goal / SLA figure (e.g. 'same business day'). The figure stated in a process-design document is almost always the target, not the measured actual."
                 },
                 "value": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The measured actual today. Leave empty if only a target is known — an unmeasured metric is itself worth flagging."
                 },
                 "trend": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The direction of travel — improving, flat or worsening — if known."
                 },
                 "definition": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What the metric measures and how it is calculated. Stylistic constraint: 6–35 words."
                 },
                 "currentReading": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The latest value and the trend. Stylistic constraint: 4–35 words."
                 },
                 "whyItMatters": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What the metric tells the process owner. Stylistic constraint: 8–40 words."
                 }
               },
               "required": [
@@ -1966,25 +2090,42 @@
               "type": "object",
               "properties": {
                 "area": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The area the gap sits in (e.g. As-Is process, controls, systems)."
                 },
                 "gapStatus": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "open",
+                    "in-remediation",
+                    "closed",
+                    "resolved",
+                    "addressed",
+                    "addressed-in-target",
+                    "remediated",
+                    "mitigated",
+                    "done"
+                  ],
+                  "description": "Where the gap stands — open, in remediation, or closed."
                 },
                 "affects": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Affects"
                 },
                 "theGap": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What is missing in how the process is run or measured. Stylistic constraint: 10–45 words."
                 },
                 "impact": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What the gap prevents or puts at risk. Stylistic constraint: 8–40 words."
                 },
                 "nextStep": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The recommended action to close the gap. Stylistic constraint: 8–35 words."
                 }
               },
               "required": [
@@ -2033,28 +2174,40 @@
               "type": "object",
               "properties": {
                 "horizon": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "regulatory-deadline",
+                    "near-term",
+                    "emerging"
+                  ],
+                  "description": "regulatory-deadline / near-term / emerging — how soon the trend bites."
                 },
                 "asOf": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The date this trend was captured or last verified."
                 },
                 "source": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Citation or URL — the market study, analyst report or article."
                 },
                 "bearsOn": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Bears on"
                 },
                 "theTrend": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The market or industry trend, described plainly. Stylistic constraint: 12–55 words."
                 },
                 "relevance": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Why the trend matters for this process. Stylistic constraint: 12–55 words."
                 },
                 "evidence": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The specific figure, statistic or signal that evidences the trend — the data point, not a re-listing of the source. Stylistic constraint: 8–40 words."
                 }
               },
               "required": [
@@ -2104,28 +2257,35 @@
               "type": "object",
               "properties": {
                 "competitor": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The competitor bank or fintech this observation is about."
                 },
                 "asOf": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The date this competitor observation was captured."
                 },
                 "source": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Citation or URL for the observation."
                 },
                 "bearsOn": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Bears on"
                 },
                 "theMove": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The innovation a European corporate bank is pursuing, described plainly. Stylistic constraint: 12–55 words."
                 },
                 "relevance": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What it means for this process — the competitive gap it opens. Stylistic constraint: 12–55 words."
                 },
                 "evidence": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The announcement, report or launch that evidences the move. Stylistic constraint: 8–40 words."
                 }
               },
               "required": [
@@ -2175,28 +2335,35 @@
               "type": "object",
               "properties": {
                 "competitor": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The competitor bank or fintech this observation is about."
                 },
                 "asOf": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The date this competitor observation was captured."
                 },
                 "source": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Citation or URL for the observation."
                 },
                 "bearsOn": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Bears on"
                 },
                 "theMove": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The innovation a global corporate bank is pursuing, described plainly. Stylistic constraint: 12–55 words."
                 },
                 "relevance": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What it means for this process — the competitive gap it opens. Stylistic constraint: 12–55 words."
                 },
                 "evidence": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The announcement, report or launch that evidences the move. Stylistic constraint: 8–40 words."
                 }
               },
               "required": [
@@ -2246,28 +2413,35 @@
               "type": "object",
               "properties": {
                 "competitor": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The competitor bank or fintech this observation is about."
                 },
                 "asOf": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The date this competitor observation was captured."
                 },
                 "source": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Citation or URL for the observation."
                 },
                 "bearsOn": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Bears on"
                 },
                 "theMove": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The innovation a fintech is pursuing, described plainly. Stylistic constraint: 12–55 words."
                 },
                 "relevance": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What it means for this process — the competitive gap it opens. Stylistic constraint: 12–55 words."
                 },
                 "evidence": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The announcement, report or launch that evidences the move. Stylistic constraint: 8–40 words."
                 }
               },
               "required": [
@@ -2317,40 +2491,59 @@
               "type": "object",
               "properties": {
                 "category": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The kind of idea (e.g. automation, new channel, control redesign)."
                 },
                 "strategicFit": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "HIGH",
+                    "MEDIUM",
+                    "LOW"
+                  ],
+                  "description": "HIGH / MEDIUM / LOW — how well the idea aligns with strategy."
                 },
                 "complexity": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "HIGH",
+                    "MEDIUM",
+                    "LOW"
+                  ],
+                  "description": "HIGH / MEDIUM / LOW — the effort and difficulty of delivering it."
                 },
                 "addresses": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Addresses"
                 },
                 "fromTrend": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "From trend"
                 },
                 "fromCompetitor": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "From competitor"
                 },
                 "theIdea": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The proposed change, described plainly. Stylistic constraint: 12–55 words."
                 },
                 "expectedBenefit": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The outcome it would deliver and for whom. Stylistic constraint: 10–45 words."
                 },
                 "feasibility": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Effort, dependencies and the main risks. Stylistic constraint: 8–45 words."
                 }
               },
               "required": [
@@ -2398,16 +2591,26 @@
               "type": "object",
               "properties": {
                 "severity": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "HIGH",
+                    "MEDIUM",
+                    "LOW",
+                    "NONE"
+                  ],
+                  "description": "HIGH / MEDIUM / LOW / NONE — the severity of this risk if it materialises."
                 },
                 "theRisk": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What could go wrong with the innovation. Stylistic constraint: 12–50 words."
                 },
                 "likelihoodImpact": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "How likely the risk is and how severe its effect. Stylistic constraint: 10–45 words."
                 },
                 "mitigation": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "How the risk can be reduced or managed. Stylistic constraint: 8–45 words."
                 }
               },
               "required": [
@@ -2458,31 +2661,37 @@
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Replaces"
                 },
                 "systems": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Systems"
                 },
                 "risks": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Risks"
                 },
                 "targetDescription": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "How the step or process works in the target state. Stylistic constraint: 20–95 words."
                 },
                 "whatChanges": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Each concrete change from the As-Is. Stylistic constraint: 2–6 items."
                 },
                 "rationale": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Why the target state is designed this way. Stylistic constraint: 10–50 words."
                 }
               },
               "required": [
@@ -2529,40 +2738,48 @@
               "type": "object",
               "properties": {
                 "decisionType": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The kind of decision (e.g. build/buy, scope, sequencing)."
                 },
                 "decisionStatus": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Where the decision stands — proposed, agreed, or deferred."
                 },
                 "resolves": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Resolves"
                 },
                 "realises": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Realises"
                 },
                 "fromIdea": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "From idea"
                 },
                 "theDecision": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What was decided. Stylistic constraint: 10–50 words."
                 },
                 "optionsConsidered": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "The alternatives that were weighed. Stylistic constraint: 2–5 items."
                 },
                 "rationale": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Why this option was chosen over the others. Stylistic constraint: 12–60 words."
                 }
               },
               "required": [
@@ -2611,19 +2828,35 @@
               "type": "object",
               "properties": {
                 "validationArea": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The area this gap was surfaced in during validation."
                 },
                 "gapStatus": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "open",
+                    "in-remediation",
+                    "closed",
+                    "resolved",
+                    "addressed",
+                    "addressed-in-target",
+                    "remediated",
+                    "mitigated",
+                    "done"
+                  ],
+                  "description": "Where the gap stands — open, in remediation, or closed."
                 },
                 "theGap": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The As-Is gap being resolved. Stylistic constraint: 10–50 words."
                 },
                 "resolution": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "How the target state closes the gap. Stylistic constraint: 12–60 words."
                 },
                 "status": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Where the resolution currently stands. Stylistic constraint: 5–30 words."
                 }
               },
               "required": [
@@ -2631,6 +2864,74 @@
                 "theGap",
                 "resolution",
                 "status"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "meta",
+        "content"
+      ]
+    },
+    "System": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "const": "system"
+                },
+                "section": {
+                  "const": "systems"
+                }
+              }
+            }
+          ]
+        },
+        "content": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/BaseContent"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "systemType": {
+                  "type": "string",
+                  "enum": [
+                    "CORE",
+                    "SUPPORTING",
+                    "EXTERNAL"
+                  ],
+                  "description": "CORE / SUPPORTING / EXTERNAL — the system's role in this process."
+                },
+                "integrates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Integrates with"
+                },
+                "purpose": {
+                  "type": "string",
+                  "description": "What the system is for. Stylistic constraint: 4–30 words."
+                },
+                "roleInThisProcess": {
+                  "type": "string",
+                  "description": "Which steps use the system and how. Stylistic constraint: 6–40 words."
+                }
+              },
+              "required": [
+                "systemType",
+                "purpose",
+                "roleInThisProcess"
               ]
             }
           ]
@@ -2674,16 +2975,19 @@
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Systems"
                 },
                 "whatConnects": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The two systems the integration links. Stylistic constraint: 6–30 words."
                 },
                 "whatFlows": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Each kind of data that moves across the integration. Stylistic constraint: 2–6 items."
                 }
               },
               "required": [
@@ -2730,34 +3034,51 @@
               "type": "object",
               "properties": {
                 "reqType": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "FUNCTIONAL",
+                    "NON-FUNCTIONAL"
+                  ],
+                  "description": "FUNCTIONAL or NON-FUNCTIONAL — what the requirement constrains."
                 },
                 "moscow": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "MUST",
+                    "SHOULD",
+                    "COULD",
+                    "WONT"
+                  ],
+                  "description": "MUST / SHOULD / COULD / WONT — MoSCoW priority for this requirement."
                 },
                 "derivedFrom": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Derived from"
                 },
                 "addresses": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Addresses"
                 },
                 "requirement": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "One testable statement of what the target process or system must do. Stylistic constraint: 10–50 words."
                 },
                 "rationale": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The transformation decision or gap this requirement comes from. Stylistic constraint: 10–50 words."
                 },
                 "acceptanceCriteria": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "How you would confirm the requirement is met. Stylistic constraint: 2–6 items."
                 }
               },
               "required": [
@@ -2807,28 +3128,39 @@
               "type": "object",
               "properties": {
                 "direction": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "UPSTREAM",
+                    "DOWNSTREAM",
+                    "BIDIRECTIONAL"
+                  ],
+                  "description": "UPSTREAM / DOWNSTREAM / BIDIRECTIONAL — how this process and the dependency relate."
                 },
                 "atStep": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "At step"
                 },
                 "viaSystem": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Via system"
                 },
                 "theDependency": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The connected process or party at the boundary. Stylistic constraint: 8–45 words."
                 },
                 "whatCrossesTheBoundary": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The data, trigger or artefact handed over, and in which direction. Stylistic constraint: 10–50 words."
                 },
                 "whyItMatters": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The impact if the dependency fails or runs late. Stylistic constraint: 6–40 words."
                 }
               },
               "required": [
@@ -2877,22 +3209,32 @@
               "type": "object",
               "properties": {
                 "assumptionStatus": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "OPEN",
+                    "CONFIRMED",
+                    "INVALIDATED"
+                  ],
+                  "description": "OPEN / CONFIRMED / INVALIDATED — whether the assumption still holds."
                 },
                 "bearsOn": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Bears on"
                 },
                 "theAssumption": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What is being assumed. Stylistic constraint: 8–45 words."
                 },
                 "whyItIsUnconfirmed": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What is unknown, and why it could not be verified. Stylistic constraint: 8–45 words."
                 },
                 "impactIfWrong": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What breaks if the assumption does not hold. Stylistic constraint: 6–40 words."
                 }
               },
               "required": [
@@ -2941,40 +3283,49 @@
               "type": "object",
               "properties": {
                 "criticality": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "CRITICAL / HIGH / MEDIUM / LOW — how essential this capability is to the target process."
                 },
                 "reuse": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "NEW / REUSED — whether this is a fresh capability or one already in the catalog."
                 },
                 "owningDomain": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The business domain that owns this capability (e.g. 'Case management', 'Payments')."
                 },
                 "hostedIn": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Hosted in"
                 },
                 "realisesStep": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Realises step"
                 },
                 "resolvesGap": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Resolves gap"
                 },
                 "description": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What the capability does — the function from the consumer's perspective. Stylistic constraint: 20–80 words."
                 },
                 "inputsAndOutputs": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What the capability needs to operate, and what it produces. Stylistic constraint: 15–60 words."
                 },
                 "boundaries": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What this capability is NOT responsible for — adjacent capabilities it relies on. Stylistic constraint: 10–40 words."
                 }
               },
               "required": [
@@ -3023,34 +3374,42 @@
               "type": "object",
               "properties": {
                 "verdict": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "BUILD / BUY / CONFIGURE / KEEP — the disposition of this app in the target state."
                 },
                 "vendor": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Vendor name for BUY apps; tech stack for BUILD; vendor + 'configured' for CONFIGURE."
                 },
                 "owningDomain": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The business domain that owns this app."
                 },
                 "costBand": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Build / run / annual licence cost band (rough budgeting estimate)."
                 },
                 "drivenByADR": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Driven by ADR"
                 },
                 "rationale": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Why this app, and why this verdict — what the alternatives were. Stylistic constraint: 20–80 words."
                 },
                 "techStack": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Concrete technologies, hosting region, deployment model. Stylistic constraint: 10–60 words."
                 },
                 "risks": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Risks introduced or carried by this disposition (vendor lock-in, residency, capacity, etc.). Stylistic constraint: 1–5 items."
                 }
               },
               "required": [
@@ -3098,55 +3457,66 @@
               "type": "object",
               "properties": {
                 "adrStatus": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "DRAFT / PROPOSED / ACCEPTED / REJECTED / SUPERSEDED — the ADR lifecycle state."
                 },
                 "owner": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The accountable architect (a role, not a named person)."
                 },
                 "domain": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The architectural domain this decision belongs to (e.g. 'Case management', 'Payments')."
                 },
                 "decision": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What we decided to do. Stylistic constraint: 15–80 words."
                 },
                 "resolvesGap": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Resolves gap"
                 },
                 "satisfiesControl": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Satisfies control"
                 },
                 "supersededBy": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Superseded by"
                 },
                 "dependsOn": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Depends on"
                 },
                 "context": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Why the decision is needed — the situation, constraints and forces in play. Stylistic constraint: 30–120 words."
                 },
                 "alternativesConsidered": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "The options we weighed and why each was not chosen. Stylistic constraint: 2–6 items."
                 },
                 "consequences": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "What follows from the decision — new dependencies, NFRs, risks, technical debt. Stylistic constraint: 2–8 items."
                 }
               },
               "required": [
@@ -3196,49 +3566,65 @@
               "type": "object",
               "properties": {
                 "pattern": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "SYNC / ASYNC / EVENT / BATCH — the interaction style."
                 },
                 "direction": {
-                  "type": "string"
+                  "type": "string",
+                  "enum": [
+                    "UPSTREAM",
+                    "DOWNSTREAM",
+                    "BIDIRECTIONAL"
+                  ],
+                  "description": "ONE-WAY / TWO-WAY / PUB-SUB — the data-flow direction."
                 },
                 "contract": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Interface contract reference — OpenAPI 3.1, AsyncAPI 2.6, CMIS, Snowflake stage, etc."
                 },
                 "volume": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Approximate volume + latency target (e.g. '~12k req/day · p95 380ms')."
                 },
                 "from": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "From"
                 },
                 "to": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "To"
                 },
                 "realises": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Realises"
                 },
                 "drivenByADR": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Driven by ADR"
                 },
                 "purpose": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Why the two apps need to talk, and what data flows. Stylistic constraint: 15–60 words."
                 },
                 "contractDetails": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Auth, schema, idempotency, versioning — the contract specifics. Stylistic constraint: 15–80 words."
                 },
                 "failureMode": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Behaviour when the downstream is unavailable or returns an error. Stylistic constraint: 10–50 words."
                 }
               },
               "required": [
@@ -3287,40 +3673,49 @@
               "type": "object",
               "properties": {
                 "tech": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The technology / framework (e.g. 'Spring Boot 3', 'Camunda Zeebe', 'Quarkus')."
                 },
                 "dataStore": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The persistence layer this component owns, if any (e.g. 'Postgres 16')."
                 },
                 "hosting": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Runtime environment (e.g. 'EKS · eu-frankfurt', 'AWS Lambda', 'on-prem')."
                 },
                 "scaling": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Replica / scaling profile (e.g. 'HPA · 3 → 12 replicas')."
                 },
                 "inApp": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "In application"
                 },
                 "dependsOn": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Depends on"
                 },
                 "realisesCapability": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Realises capability"
                 },
                 "responsibility": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What this component owns within its application. Stylistic constraint: 15–60 words."
                 },
                 "technicalDetail": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Tech choices, data ownership, scaling profile. Stylistic constraint: 15–80 words."
                 }
               },
               "required": [
@@ -3368,46 +3763,56 @@
               "type": "object",
               "properties": {
                 "category": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "PERFORMANCE / AVAILABILITY / SECURITY / COMPLIANCE / SCALABILITY — the NFR family."
                 },
                 "target": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The concrete, testable target (e.g. 'p95 < 1.2s', 'RTO ≤ 4h', '10 years immutable')."
                 },
                 "owner": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The team accountable for meeting the NFR (a role, not a person)."
                 },
                 "satisfiesControl": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Satisfies control"
                 },
                 "regulatedBy": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Regulated by"
                 },
                 "appliesTo": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Applies to"
                 },
                 "drivenByADR": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Driven by ADR"
                 },
                 "definition": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What is being measured and at what threshold. Stylistic constraint: 15–60 words."
                 },
                 "measurement": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "How the target is observed in production — instrumentation and method. Stylistic constraint: 10–50 words."
                 },
                 "verification": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "How the NFR is tested before go-live — load test, audit, etc. Stylistic constraint: 10–60 words."
                 }
               },
               "required": [
@@ -3456,49 +3861,59 @@
               "type": "object",
               "properties": {
                 "phaseStatus": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "PLANNED / IN-FLIGHT / DONE — current execution state."
                 },
                 "startQuarter": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Calendar quarter the phase begins (e.g. '2026 Q3')."
                 },
                 "endQuarter": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "Calendar quarter the phase completes."
                 },
                 "owner": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "The accountable delivery owner (a role)."
                 },
                 "dependsOn": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Depends on"
                 },
                 "delivers": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Delivers"
                 },
                 "resolvesGap": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Resolves gap"
                 },
                 "scope": {
-                  "type": "string"
+                  "type": "string",
+                  "description": "What this phase delivers and what it explicitly does not. Stylistic constraint: 20–100 words."
                 },
                 "acceptanceCriteria": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "What must be true for the phase to be called done. Stylistic constraint: 2–6 items."
                 },
                 "risks": {
                   "type": "array",
                   "items": {
                     "type": "string"
-                  }
+                  },
+                  "description": "Risks that could push the phase late or break dependent phases. Stylistic constraint: 1–5 items."
                 }
               },
               "required": [

@@ -15,12 +15,30 @@ export async function GET(req: NextRequest) {
   const guard = requireAdmin(req);
   if (guard instanceof Response) return guard;
 
-  const overview = aggregateUsage(
-    listProcesses().map((p) => ({
-      slug: p.slug,
-      title: p.title,
-      usage: getRuntime(p.slug).skillUsage ?? null,
-    })),
-  );
+  const list = listProcesses().map((p) => ({
+    slug: p.slug,
+    title: p.title,
+    usage: getRuntime(p.slug).skillUsage ?? null,
+  }));
+
+  const advisoryUsage = getRuntime("_advisory_").skillUsage;
+  if (advisoryUsage) {
+    list.push({
+      slug: "_advisory_",
+      title: "Advisory Board / Cross-Process",
+      usage: advisoryUsage,
+    });
+  }
+
+  const newProcessUsage = getRuntime("_new_").skillUsage;
+  if (newProcessUsage) {
+    list.push({
+      slug: "_new_",
+      title: "New Process Creation (Unscoped)",
+      usage: newProcessUsage,
+    });
+  }
+
+  const overview = aggregateUsage(list);
   return NextResponse.json(overview);
 }

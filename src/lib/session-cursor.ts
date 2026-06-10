@@ -104,7 +104,7 @@ export const QER_PERSPECTIVES: QerPerspective[] = [
     sections: ["channels", "touchpoints", "moments", "friction-points", "competitor-cx", "cx-benchmarks"] },
   { key: "innovation", label: "Innovation", skill: "innovation-analyst",
     sections: ["market-trends", "competitor-innovation", "innovation-ideas", "innovation-risks"] },
-  { key: "it-architecture", label: "IT Architecture", skill: "it-architect",
+  { key: "it-architecture", label: "IT Architecture", skill: "solution-architect",
     sections: ["systems", "integrations"] },
   { key: "target-process", label: "Target Process", skill: "transformation-agent",
     sections: ["to-be-design", "transformation-decisions", "gap-resolution"] },
