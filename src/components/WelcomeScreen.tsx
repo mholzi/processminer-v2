@@ -58,16 +58,76 @@ function handoffReady(d: ProcessDoc): boolean {
   return total > 0 && confirmed === total;
 }
 
-export default function WelcomeScreen({
-  docs,
-  user,
-  onEnterProcessminer,
-  onEnterArchitectminer,
-  onEnterAdmin,
-  onSignOut,
-  onUpdateUser,
+function GuestWelcomeScreen({
   onSignIn,
 }: {
+  onSignIn?: () => void;
+}) {
+  const [advisorOpen, setAdvisorOpen] = useState<string | null>(null);
+
+  return (
+    <div className="ws-root" data-mod="pm" data-scenario="pm">
+      <header className="ws-topbar">
+        <span className="ws-wordmark">PROCESSMINER</span>
+        <span className="ws-sub">platform</span>
+        <span className="ws-spacer" />
+        <button
+          type="button"
+          className="ws-signin-btn"
+          onClick={onSignIn}
+          style={{
+            background: "var(--accent)",
+            color: "#fff",
+            border: "none",
+            padding: "0.5rem 1rem",
+            borderRadius: "0.25rem",
+            cursor: "pointer",
+            fontWeight: 500,
+          }}
+        >
+          Sign In
+        </button>
+      </header>
+
+      <main className="ws-page" style={{ maxWidth: "800px", margin: "4rem auto 0 auto", padding: "0 2rem" }}>
+        <h1 className="ws-greet-h" style={{ fontSize: "2.25rem", fontWeight: 600, letterSpacing: "-0.02em", marginBottom: "0.5rem" }}>Chat to an Agent</h1>
+        <p className="ws-greet-sub" style={{ fontSize: "1rem", color: "var(--text-muted)", marginBottom: "3rem" }}>
+          Get expert feedback and guidance on your documents and designs.
+        </p>
+
+        <section className="ws-sec ws-advisory">
+          <div className="ws-ab-roster">
+            {ADVISORS.filter(a => a.id === "solution-architect" || a.id === "domain-architect").map((a) => (
+              <button
+                key={a.id}
+                type="button"
+                className="ws-ab-card"
+                onClick={() => setAdvisorOpen(a.id)}
+              >
+                <span className="ws-ab-av">{a.monogram}</span>
+                <span className="ws-ab-name">{a.name}</span>
+                <span className="ws-ab-ask">Ask →</span>
+              </button>
+            ))}
+          </div>
+        </section>
+      </main>
+
+      {advisorOpen && (
+        <AdvisorChat
+          key={advisorOpen}
+          advisorId={advisorOpen}
+          onSwitch={setAdvisorOpen}
+          onClose={() => setAdvisorOpen(null)}
+          docs={[]}
+          user={null}
+        />
+      )}
+    </div>
+  );
+}
+
+export default function WelcomeScreen(props: {
   docs: ProcessDoc[];
   user: User | null;
   onEnterProcessminer: (slug?: string) => void;
@@ -78,71 +138,31 @@ export default function WelcomeScreen({
   onUpdateUser: (user: User) => void;
   onSignIn?: () => void;
 }) {
+  if (!props.user) {
+    return <GuestWelcomeScreen onSignIn={props.onSignIn} />;
+  }
+  return <AuthenticatedWelcomeScreen {...props} user={props.user} />;
+}
+
+function AuthenticatedWelcomeScreen({
+  docs,
+  user,
+  onEnterProcessminer,
+  onEnterArchitectminer,
+  onEnterAdmin,
+  onSignOut,
+  onUpdateUser,
+}: {
+  docs: ProcessDoc[];
+  user: User;
+  onEnterProcessminer: (slug?: string) => void;
+  onEnterArchitectminer: (slug?: string) => void;
+  onEnterAdmin?: () => void;
+  onSignOut: () => void;
+  onUpdateUser: (user: User) => void;
+}) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [advisorOpen, setAdvisorOpen] = useState<string | null>(null);
-
-  if (!user) {
-    return (
-      <div className="ws-root" data-mod="pm" data-scenario="pm">
-        <header className="ws-topbar">
-          <span className="ws-wordmark">PROCESSMINER</span>
-          <span className="ws-sub">platform</span>
-          <span className="ws-spacer" />
-          <button
-            type="button"
-            className="ws-signin-btn"
-            onClick={onSignIn}
-            style={{
-              background: "var(--accent)",
-              color: "#fff",
-              border: "none",
-              padding: "0.5rem 1rem",
-              borderRadius: "0.25rem",
-              cursor: "pointer",
-              fontWeight: 500,
-            }}
-          >
-            Sign In
-          </button>
-        </header>
-
-        <main className="ws-page" style={{ maxWidth: "800px", margin: "4rem auto 0 auto", padding: "0 2rem" }}>
-          <h1 className="ws-greet-h" style={{ fontSize: "2.25rem", fontWeight: 600, letterSpacing: "-0.02em", marginBottom: "0.5rem" }}>Chat to an Agent</h1>
-          <p className="ws-greet-sub" style={{ fontSize: "1rem", color: "var(--text-muted)", marginBottom: "3rem" }}>
-            Get expert feedback and guidance on your documents and designs.
-          </p>
-
-          <section className="ws-sec ws-advisory">
-            <div className="ws-ab-roster">
-              {ADVISORS.filter(a => a.id === "solution-architect" || a.id === "domain-architect").map((a) => (
-                <button
-                  key={a.id}
-                  type="button"
-                  className="ws-ab-card"
-                  onClick={() => setAdvisorOpen(a.id)}
-                >
-                  <span className="ws-ab-av">{a.monogram}</span>
-                  <span className="ws-ab-name">{a.name}</span>
-                  <span className="ws-ab-ask">Ask →</span>
-                </button>
-              ))}
-            </div>
-          </section>
-        </main>
-
-        {advisorOpen && (
-          <AdvisorChat
-            key={advisorOpen}
-            advisorId={advisorOpen}
-            onSwitch={setAdvisorOpen}
-            onClose={() => setAdvisorOpen(null)}
-            docs={[]}
-            user={null}
-          />
-        )}
-      </div>
-    );
-  }
 
   const hasPM = hasEntitlement(user, "pm");
   const hasAM = hasEntitlement(user, "am");

@@ -350,6 +350,27 @@ const PM = "pm";
 // visible so the process sequence never scrolls away — plus a collapsible
 // section panel that lists the sections of the selected area.
 // Right rail is the agent chat + the wiki-wide lint pass.
+const DUMMY_DOC: ProcessDoc = {
+  slug: "_new_",
+  process: {
+    id: "",
+    type: "process",
+    section: "overview",
+    title: "New Process",
+    status: "draft",
+    meta: {},
+    body: "",
+    blocks: [],
+  },
+  elements: [],
+  sources: [],
+  dtpReports: [],
+};
+
+// The one main screen. Left rail is a numbered 1..6 area spine — always
+// visible so the process sequence never scrolls away — plus a collapsible
+// section panel that lists the sections of the selected area.
+// Right rail is the agent chat + the wiki-wide lint pass.
 export default function ProcessDocScreen({
   schema,
   docs,
@@ -384,7 +405,7 @@ export default function ProcessDocScreen({
   // The process we actually open: an explicit splash pick wins over the global
   // run cursor and docs[0].
   const openingSlug =
-    splashPick ?? (globalRunDoc ? globalRunDoc.slug : docs[0].slug);
+    splashPick ?? (globalRunDoc ? globalRunDoc.slug : (docs[0]?.slug || "_new_"));
 
   // The run to resume *on the opened process* — drives the Triage landing, the
   // chat-open default and the resume seed. Tied to openingSlug so the chat
@@ -398,7 +419,7 @@ export default function ProcessDocScreen({
   // The app has two top-level views: the process documentation shell, and the
   // App Feedback page (feedback on the tool itself, kept in feedback/).
   const [appView, setAppView] = useState<"process" | "feedback">("process");
-  const doc = docs.find((d) => d.slug === currentSlug) ?? docs[0];
+  const doc = docs.find((d) => d.slug === currentSlug) ?? docs[0] ?? DUMMY_DOC;
   // The element the foundational run's cursor is on, if a run is active —
   // threaded into the section views as a "you are here" highlight.
   const currentRunId =
