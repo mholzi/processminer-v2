@@ -61,6 +61,7 @@ export function canAccess(
   user: { username: string; isAdmin?: boolean },
   slug: string,
 ): boolean {
+  if (slug === "_new_") return true;
   return canAccessWith(load()[slug], user);
 }
 

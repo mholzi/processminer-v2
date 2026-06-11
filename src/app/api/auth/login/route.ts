@@ -82,10 +82,10 @@ export async function POST(req: NextRequest) {
     const isSecure = req.nextUrl.protocol === "https:" || req.headers.get("x-forwarded-proto") === "https";
     res.cookies.set(COOKIE_NAME, cookie, {
       httpOnly: true,
-      // strict: the cookie is never sent on cross-site requests (CSRF defense,
-      // API-10). Safe for this SPA — it loads at "/" and authenticates via
-      // same-origin XHR, so a cold deep-link still works.
-      sameSite: "strict",
+      // lax: allow cookie to be sent on top-level cross-site GET navigations
+      // (like clicking the app from Coder dashboard), so the server component
+      // can fetch user-specific documents on initial load.
+      sameSite: "lax",
       path: "/",
       maxAge: 30 * 24 * 60 * 60,
       // Secure cookie when served over HTTPS — Next sets this implicitly in
