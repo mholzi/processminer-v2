@@ -70,28 +70,55 @@ const SKILL_NAMES = [
   "transformation-agent"
 ];
 
-async function readDocumentContent(urlStr: string): Promise<string> {
+async function readDocumentContent(urlStr: string): Promise<{ text?: string, inlineData?: { mimeType: string, data: string } }> {
+  let fileBuffer: Buffer | null = null;
+  let filePathStr = "";
+
   if (urlStr.startsWith("file://")) {
     const filePath = urlStr.replace("file://", "");
     if (fs.existsSync(filePath)) {
-      return fs.readFileSync(filePath, "utf8");
+      fileBuffer = fs.readFileSync(filePath);
+      filePathStr = filePath;
+    } else {
+      throw new Error(`File not found: ${filePath}`);
     }
-    throw new Error(`File not found: ${filePath}`);
-  }
-  if (urlStr.startsWith("/") || /^[a-zA-Z]:\\/.test(urlStr)) {
+  } else if (urlStr.startsWith("/") || /^[a-zA-Z]:\\/.test(urlStr)) {
     if (fs.existsSync(urlStr)) {
-      return fs.readFileSync(urlStr, "utf8");
+      fileBuffer = fs.readFileSync(urlStr);
+      filePathStr = urlStr;
+    } else {
+      throw new Error(`File not found: ${urlStr}`);
     }
-    throw new Error(`File not found: ${urlStr}`);
+  } else {
+    const localRelative = path.join(process.cwd(), urlStr);
+    if (fs.existsSync(localRelative) && fs.statSync(localRelative).isFile()) {
+      fileBuffer = fs.readFileSync(localRelative);
+      filePathStr = localRelative;
+    }
   }
-  const localRelative = path.join(process.cwd(), urlStr);
-  if (fs.existsSync(localRelative) && fs.statSync(localRelative).isFile()) {
-    return fs.readFileSync(localRelative, "utf8");
+
+  if (fileBuffer) {
+    const ext = path.extname(filePathStr).toLowerCase();
+    if (ext === ".pdf") {
+      return { inlineData: { mimeType: "application/pdf", data: fileBuffer.toString("base64") } };
+    }
+    return { text: fileBuffer.toString("utf8") };
   }
+
   try {
     const res = await fetch(urlStr);
     if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-    return await res.text();
+    
+    const contentType = res.headers.get("content-type") || "";
+    const isPdf = urlStr.toLowerCase().endsWith(".pdf") || contentType.includes("application/pdf");
+    
+    if (isPdf) {
+      const arrayBuffer = await res.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      return { inlineData: { mimeType: "application/pdf", data: buffer.toString("base64") } };
+    }
+    
+    return { text: await res.text() };
   } catch (e: any) {
     throw new Error(`Failed to fetch URL ${urlStr}: ${e.message}`);
   }
@@ -1130,6 +1157,7 @@ export class GeminiWorker implements IProcessWorker {
             const isUpdateElement = originalName === "updateElement";
 
             let resultText = "";
+            let inlineDataPart: any = null;
             try {
               console.log(`[gemini-worker] Executing tool sequentially: ${originalName}`, call.args);
               const args = (call.args || {}) as any;
@@ -1544,7 +1572,13 @@ export class GeminiWorker implements IProcessWorker {
               } else if (originalName === "readDocument") {
                 const docUrl = String(args.url || "").trim();
                 if (!docUrl) throw new Error("url is required.");
-                resultText = await readDocumentContent(docUrl);
+                const docContent = await readDocumentContent(docUrl);
+                if (docContent.inlineData) {
+                  resultText = "Document successfully loaded as inline data. See the attached document contents.";
+                  inlineDataPart = { inlineData: docContent.inlineData };
+                } else {
+                  resultText = docContent.text || "";
+                }
               } else {
                 throw new Error(`Unsupported tool: ${originalName}`);
               }
@@ -1568,6 +1602,9 @@ export class GeminiWorker implements IProcessWorker {
                 id: functionCallParts[idx]?.functionCall?.id || (call as any).id
               }
             });
+            if (inlineDataPart) {
+              userParts.push(inlineDataPart);
+            }
           }
 
           // 3. Yield tool resolutions to complete the UI chips
