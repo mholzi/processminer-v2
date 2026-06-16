@@ -1604,6 +1604,9 @@ export class GeminiWorker implements IProcessWorker {
             });
             if (inlineDataPart) {
               userParts.push(inlineDataPart);
+              userParts.push({
+                text: "The document has been successfully loaded. Please analyze this document and proceed with your instructions."
+              });
             }
           }
 
