@@ -612,7 +612,7 @@ const toolDeclarations: any[] = [
   },
   {
     name: "readDocument",
-    description: "Read the full text content of an external document, URL, or file path. (Mode 3 only)",
+    description: "Read the full text content of an external document, URL, or file path. (Mode 1 and Mode 3)",
     parameters: {
       type: "OBJECT",
       properties: {
@@ -1029,9 +1029,8 @@ export class GeminiWorker implements IProcessWorker {
           ["readDocument"].includes(t.name)
         );
       } else {
-        activeTools = toolDeclarations.filter(t =>
-          t.name !== "readDocument"
-        );
+        // Mode 1: Elicitation & Ingest Mode. Expose all tools including readDocument.
+        activeTools = toolDeclarations;
       }
 
       appendToCentralLog(this.sessionId || "unknown", this.slug, "User", `Message:\n${message}`);
